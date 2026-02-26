@@ -13,6 +13,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 
 /**
@@ -147,7 +148,7 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
                         .match("^Fondsname: (?<name>.*) Datum .*$") //
                         .match("^WKN \\/ ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$") //
                         .assign((t, v) -> {
-                            v.put("currency", "EUR");
+                            v.put("currency", CurrencyUnit.EUR);
 
                             t.setSecurity(getOrCreateSecurity(v));
                         })
@@ -183,7 +184,7 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
                         .match("^Zur (Wiederveranlagung|Wiederanlage/Auszahlung) zur Verf.gung stehend: (?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode("EUR");
+                            t.setCurrencyCode(CurrencyUnit.EUR);
                         })
 
                         // @formatter:off
@@ -215,7 +216,8 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
                         .section("tax").optional() //
                         .match("^Kapitalertragssteuer \\(KESt\\) gesamt: (?<tax>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
-                            v.put("currency", "EUR");
+                            v.put("currency", CurrencyUnit.EUR);
+
                             processTaxEntries(t, v, type);
                         });
     }

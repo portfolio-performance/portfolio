@@ -14,8 +14,9 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
+import name.abuchen.portfolio.online.SecurityType;
+import name.abuchen.portfolio.util.OnlineHelper;
 import name.abuchen.portfolio.util.WebAccess;
 import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
@@ -30,31 +31,31 @@ import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
         public static Optional<Result> from(JSONObject json)
         {
-            Object symbol = json.get("symbol"); //$NON-NLS-1$
+            var symbol = (String) json.get("symbol"); //$NON-NLS-1$
             if (symbol == null)
                 return Optional.empty();
 
-            Object name = json.get("name"); //$NON-NLS-1$
+            var name = (String) json.get("name"); //$NON-NLS-1$
             if (name == null)
-                name = json.get("longname"); //$NON-NLS-1$
+                name = (String) json.get("longname"); //$NON-NLS-1$
             if (name == null)
-                name = json.get("shortname"); //$NON-NLS-1$
+                name = (String) json.get("shortname"); //$NON-NLS-1$
             if (name == null)
-                name = json.get("shortName"); //$NON-NLS-1$
+                name = (String) json.get("shortName"); //$NON-NLS-1$
 
-            Object type = json.get("typeDisp"); //$NON-NLS-1$
+            var type = (String) json.get("typeDisp"); //$NON-NLS-1$
             if (type == null)
-                type = json.get("quoteType"); //$NON-NLS-1$
+                type = (String) json.get("quoteType"); //$NON-NLS-1$
 
-            if ("equity".equalsIgnoreCase(String.valueOf(type))) //$NON-NLS-1$
-                type = SecuritySearchProvider.Type.SHARE.toString();
+            // Convert the security type using the SecuritySearchProvider
+            // instance
+            type = SecurityType.convertType(type);
 
-            Object exchange = json.get("exchDisp"); //$NON-NLS-1$
+            var exchange = (String) json.get("exchDisp"); //$NON-NLS-1$
             if (exchange == null)
-                exchange = json.get("exchange"); //$NON-NLS-1$
+                exchange = (String) json.get("exchange"); //$NON-NLS-1$
 
-            return Optional.of(new Result(String.valueOf(symbol), String.valueOf(name), String.valueOf(type),
-                            String.valueOf(exchange)));
+            return Optional.of(new Result(symbol, name, type, exchange));
         }
 
         private Result(String symbol, String name, String type, String exchange)
@@ -113,9 +114,15 @@ import name.abuchen.portfolio.util.WebAccess.WebAccessException;
         }
 
         @Override
+        public String getFeedId()
+        {
+            return YahooFinanceQuoteFeed.ID;
+        }
+
+        @Override
         public Security create(Client client)
         {
-            Security security = new Security(name, client.getBaseCurrency());
+            var security = new Security(name, client.getBaseCurrency());
             security.setTickerSymbol(symbol);
             security.setFeed(YahooFinanceQuoteFeed.ID);
             return security;
@@ -129,7 +136,8 @@ import name.abuchen.portfolio.util.WebAccess.WebAccessException;
         try
         {
             @SuppressWarnings("nls")
-            String html = new WebAccess("query2.finance.yahoo.com", "/v1/finance/search") //
+            var html = new WebAccess("query2.finance.yahoo.com", "/v1/finance/search") //
+                            .addUserAgent(OnlineHelper.getYahooFinanceUserAgent()) //
                             .addParameter("q", query) //
                             .addParameter("region", "DE") //
                             .addParameter("lang", "de-DE") //
@@ -144,13 +152,13 @@ import name.abuchen.portfolio.util.WebAccess.WebAccessException;
                             .addParameter("enableEnhancedTrivialQuery", "false") //
                             .get();
 
-            JSONObject responseData = (JSONObject) JSONValue.parse(html);
+            var responseData = (JSONObject) JSONValue.parse(html);
             if (responseData != null)
             {
-                JSONArray result = (JSONArray) responseData.get("quotes"); //$NON-NLS-1$
+                var result = (JSONArray) responseData.get("quotes"); //$NON-NLS-1$
                 if (result != null)
                 {
-                    for (int ii = 0; ii < result.size(); ii++)
+                    for (var ii = 0; ii < result.size(); ii++)
                         Result.from((JSONObject) result.get(ii)).ifPresent(answer::add);
                 }
             }

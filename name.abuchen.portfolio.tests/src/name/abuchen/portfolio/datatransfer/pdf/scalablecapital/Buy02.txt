@@ -1,0 +1,25 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.79.1
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital Bank GmbH • Seitzstraße 8e • 80538 Munich • Germany 
+UbndH ryKcI
+tDd de FvipHyXkBWaV 40 
+98038 FRoCJwp Date 18.09.2025
+France Page 1 / 1
+Contract note 
+for client order 
+Type LIMIT Order ID tqnWxZxTmNwP8xJ
+Execution 18.09.2025 21:33:30 Exchange ID 85147s2LYBk82753
+Trading venue EIX Country of custody Luxembourg
+Securities account 3855937108 Kind of custody Non-collective safe custody
+Type Security Quantity Price Amount
+Buy Rocket Lab 50.00 pc. 40.00 EUR 2,000.00 EUR
+US7731211089
+Debit 2,000.00 EUR
+The amount will be settled via the clearing account DE00000000000000000000 (Value: 22.09.2025). 
+Please check the information for accuracy and report any concerns to us immediately.
+To do so, use the Support menu item in the client area. 
+Scalable Capital Bank GmbH HRB 217778 Managing Directors: Supervisory Board: Page 
+Seitzstraße 8e Registry Court: Munich Local Court Florian Prucker, Martin Krebs, Patrick Olson (Chairman) 
+80538 München Sales tax ID: DE300434774 Dirk Franzmeyer 1 / 1

@@ -1,0 +1,68 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.4
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+T  00800 00 586336*
+F  +49 89 5150 2442
+service@baaderbank.de
+Seite 1/2
+Herrn Unterschleißheim, 13.12.2025
+dXuhtUSmC QxLfFv igQHCakuC pBcXgE
+ruXjEp dynpC 0 Stamm-Nr.: 6437420    Portfolio: 1
+Depot-Nr.: 4182361464
+66926 ISJGSXfxA Vorgangs-Nr.: 16224553
+Referenz-Nr.: 374144040
+Dividendenabrechnung
+Ex-Tag: 14.11.2025
+Nominale ISIN: US30231G1022 WKN: 852549 Ausschüttung
+STK 3 Exxon Mobil Corp. USD 1,03 p.STK
+Zahlungszeitraum: 01.01.2025 - 31.12.2025 
+Zahltag: 10.12.2025
+Umrechnungskurs: EUR/USD 1,17529
+Bruttobetrag USD 3,09
+Bruttobetrag EUR 2,63
+Kapitalertragsteuer EUR 0,27 -
+Kirchensteuer EUR 0,02 -
+Solidaritätszuschlag EUR 0,01 -
+US-Quellensteuer EUR 0,39 -
+Zu Gunsten Konto N10560540gQB Valuta: 10.12.2025 EUR 1,94
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Baader Bank Aktiengesellschaft T 00800 00 222 337* Vorstand: Nico Baader (Vorsitzender), Amtsgericht München HRB 121537
+Weihenstephaner Straße 4 F +49 89 5150 2442 Oliver Riedel (stv. Vorsitzender) Sitz der Gesellschaft: Unterschleißheim
+85716 Unterschleißheim service@baaderbank.de Martin Zoller StNr. 143/107/04009
+Deutschland www.baaderbank.de Vorsitzender des Aufsichtsrates: USt-IdNr. DE114123893
+Dr. Louis Hagen LEI: 529900JFOPPEDUR61H13
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen. DCUP-055.048
+Dividendenabrechnung
+Fortsetzung: Seite 2/2
+Darstellung der steuerlichen Berechnungsgrundlagen:
+Merkposten / Steuertöpfe vorher Erhöhung/Reduktion nachher
+Quellensteuer-Anrechnung
+angerechnete QueSt. allg. Erträge EUR 159,48 EUR 0,39 EUR 159,87
+Kapitalertragsteuer EUR 38,50 EUR 0,65 EUR 39,15
+Kapitalertragsteuer EUR 39,15 EUR 0,38 - EUR 38,77
+Bemessungsgrundlagen Steuerpflicht brutto Steuerpflicht netto
+ausländische Dividende EUR 2,63 EUR 2,63
+Bemessungsgrundlage zur Kapitalertragsteuer bei 8% Kirchensteuer EUR 2,63 EUR 2,63
+Quellensteuer-Anrechnung bei 8% Kirchensteuer EUR 1,56 - EUR 1,56 -
+Bemessungsgrundlage zur Kapitalertragsteuer bei 8% Kirchensteuer
+Kapitalertragsteuer 24,51 % EUR 0,65 - EUR 0,65 -
+Kirchensteuer 8,00 % EUR 0,05 - EUR 0,05 -
+Solidaritätszuschlag 5,50 % EUR 0,03 - EUR 0,03 -
+Kapitalertragsteuer 24,51 % EUR 0,38 EUR 0,38
+Kirchensteuer 8,00 % EUR 0,03 EUR 0,03
+Solidaritätszuschlag 5,50 % EUR 0,02 EUR 0,02
+US-Quellensteuer 15,00 % EUR 0,39 - EUR 0,39 -
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Baader Bank Aktiengesellschaft T 00800 00 222 337* Vorstand: Nico Baader (Vorsitzender), Amtsgericht München HRB 121537
+Weihenstephaner Straße 4 F +49 89 5150 2442 Oliver Riedel (stv. Vorsitzender) Sitz der Gesellschaft: Unterschleißheim
+85716 Unterschleißheim service@baaderbank.de Martin Zoller StNr. 143/107/04009
+Deutschland www.baaderbank.de Vorsitzender des Aufsichtsrates: USt-IdNr. DE114123893
+Dr. Louis Hagen LEI: 529900JFOPPEDUR61H13
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen. DCUP-055.048

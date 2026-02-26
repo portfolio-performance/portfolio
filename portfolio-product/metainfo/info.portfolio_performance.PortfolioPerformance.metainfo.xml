@@ -37,6 +37,669 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+   <release version="0.81.5" date="2026-02-08">
+      <description>
+        <ul>
+          <li>New: Added dashboard widget for upcoming dividend events (ex-date and payment date).</li>
+          <li>New: Added PDF importers for Bundesschatz, Anadi Bank, and Nord LB (Norddeutsche Landesbank).</li>
+          <li>Improvement: Enhanced PDF importers for Scalable Capital, Trade Republic, DKB, Comdirect, flatexDEGIRO, BaaderBank, BoursoBank, ArkeaDirectBank, Santander Consumer Bank, Saxo Bank, Hypothekarbank Lenzburg, Tradegate, Questrade, apoBank, Audi Bank, Volkswagen Bank, and Nordax Bank.</li>
+          <li>Fix: Corrected pie chart display when an instrument is shared between classifications.</li>
+          <li xml:lang="de">Neu: Dashboard-Widget für bevorstehende Dividendenereignisse (Ex-Tag und Zahltag) hinzugefügt.</li>
+          <li xml:lang="de">Neu: PDF-Importer für Bundesschatz, Anadi Bank und Nord LB (Norddeutsche Landesbank) hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für Scalable Capital, Trade Republic, DKB, Comdirect, flatexDEGIRO, BaaderBank, BoursoBank, ArkeaDirectBank, Santander Consumer Bank, Saxo Bank, Hypothekarbank Lenzburg, Tradegate, Questrade, apoBank, Audi Bank, Volkswagen Bank und Nordax Bank verbessert.</li>
+          <li xml:lang="de">Fix: Kreisdiagramm korrigiert, wenn ein Wertpapier zwischen Klassifikationen geteilt wird.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.81.4" date="2026-01-26">
+      <description>
+        <ul>
+          <li>Fix: Reverts changes that attempted to reduce flickering when refreshing flare and pie charts.</li>
+          <li xml:lang="de">Fix: Macht Änderungen rückgängig, die versuchten, das Flackern beim Aktualisieren von Flächen- und Kreisdiagrammen zu reduzieren.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.81.3" date="2026-01-25">
+      <description>
+        <ul>
+          <li>New: Added PDF importers for Questrade, apoBank, and Volkswagen Bank.</li>
+          <li>Improvement: Enhanced PDF importers for Scalable Capital, WIR Bank, and Audi Bank.</li>
+          <li>Improvement: Reduced flickering when refreshing flare and pie charts.</li>
+          <li xml:lang="de">Neu: PDF-Importer für Questrade, apoBank und die Volkswagen Bank hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für Scalable Capital, WIR Bank und Audi Bank verbessert.</li>
+          <li xml:lang="de">Verbesserung: Flackern beim Aktualisieren von Flare- und Kreisdiagrammen reduziert.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.81.2" date="2026-01-18">
+      <description>
+        <ul>
+          <li>Improvement: Improved PDF importers for flatexDEGIRO, Postbank, Deutsche Bank, and DirectaSIM.</li>
+          <li>Improvement: Interactive Brokers Flex Query (IBFlex) now supports additional date and time formats.</li>
+          <li>Improvement: Added a dedicated submenu for selecting the reporting period when coloring the tree map by performance.</li>
+          <li>Fix: Prevented deletion of the main node in taxonomies.</li>
+          <li>Fix: Fixed an issue with filtering search results for new instruments by currency or type.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für flatexDEGIRO, Postbank, Deutsche Bank und DirectaSIM wurden verbessert.</li>
+          <li xml:lang="de">Verbesserung: Interactive Brokers Flex Query (IBFlex) unterstützt nun zusätzliche Datums- und Zeitformate.</li>
+          <li xml:lang="de">Verbesserung: Dediziertes Untermenü zur Auswahl des Berichtszeitraums, wenn die Tree Map farblich nach Rendite dargestellt wird.</li>
+          <li xml:lang="de">Fehlerbehebung: Das Löschen des Hauptknotens in Klassifikationen wird nun verhindert.</li>
+          <li xml:lang="de">Fehlerbehebung: Behebt ein Problem beim Filtern nach Währung oder Typ von Suchergebnissen nach neuen Wertpapieren.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.81.1" date="2026-01-11">
+      <description>
+        <ul>
+          <li>New: Added unit risk line visualization to the returns/volatility chart.</li>
+          <li>New: Added a PDF importer for Bank Norwegian.</li>
+          <li>Improvement: Improved warning messages for transactions that cannot be imported automatically due to missing information such as exchange rates, taxes, or fees.</li>
+          <li>Improvement: Enhanced PDF importers for Renault Bank Direkt, Scalable Capital, flatexDEGIRO, C24 Bank, and Raiffeisenbank Bankgruppe.</li>
+          <li>Improvement: Added a setting to deactivate cell editing on double-click.</li>
+          <li>Improvement: CSV import now supports the yyyy.MM.dd and dd-MMM-yyyy date formats.</li>
+          <li>Improvement: Interactive Brokers Flex Query (IBFlex) now supports multi-account imports with automatic account matching by alias and currency, and handles GBP/GBX currency conversion.</li>
+          <li>Improvement: Accounts and portfolios are now sorted alphabetically in drop-down boxes for in-place editing.</li>
+          <li>Improvement: Improved duplicate transaction detection during imports, enabling cross-account matching between transfers and deposits or withdrawals.</li>
+          <li>Fix: Fixed currency instantiation for locales that specify a region instead of a country.</li>
+          <li>Fix: Fixed grouped accounts not updating their base currency when switching.</li>
+          <li>Fix: Fixed chart ranges when adjusting them by pressing '0' in the historical prices chart.</li>
+          <li>Fix: Fixed taxonomy or filter names containing '@' not displaying correctly in menu items.</li>
+          <li xml:lang="de">Neu: Risikolinie im Rendite-/Volatilitätsdiagramm hinzugefügt.</li>
+          <li xml:lang="de">Neu: PDF-Importer für Bank Norwegian hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: Warnmeldungen für Buchungen verbessert, die aufgrund fehlender Informationen wie Wechselkurse, Steuern oder Gebühren nicht automatisch importiert werden können.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für Renault Bank Direkt, Scalable Capital, flatexDEGIRO, C24 Bank und Raiffeisenbank Bankgruppe verbessert.</li>
+          <li xml:lang="de">Verbesserung: Neue Einstellung hinzugefügt, um die Zellenbearbeitung per Doppelklick zu deaktivieren.</li>
+          <li xml:lang="de">Verbesserung: Der CSV-Import unterstützt nun die Datumsformate yyyy.MM.dd und dd-MMM-yyyy.</li>
+          <li xml:lang="de">Verbesserung: Interactive Brokers Flex Query (IBFlex) unterstützt nun den Import mehrerer Konten mit automatischer Kontozuordnung anhand von Kontoalias und Währung sowie die Währungsumrechnung zwischen GBP und GBX.</li>
+          <li xml:lang="de">Verbesserung: Konten und Depots werden nun alphabetisch in Dropdown-Listen für die In-Place-Bearbeitung sortiert.</li>
+          <li xml:lang="de">Verbesserung: Erkennung doppelter Buchungen beim Import verbessert, sodass Umbuchungen mit Ein- und Auszahlungen kontenübergreifend abgeglichen werden.</li>
+          <li xml:lang="de">Fehlerbehebung: Fehler bei der Ermittlung der Währung für Locales behoben, die eine Region statt eines Landes angeben.</li>
+          <li xml:lang="de">Fehlerbehebung: Beim Wechsel der Berichtswährung werden die Zahlen in den gruppierten Konten nun aktualisiert.</li>
+          <li xml:lang="de">Fehlerbehebung: Fehler im Kursdiagramm behoben, wenn die Y-Achse durch Drücken von '0' neu ausgerichtet wird.</li>
+          <li xml:lang="de">Fehlerbehebung: Klassifikations- oder Filternamen mit '@' werden nun korrekt in Menüeinträgen angezeigt.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.81.0" date="2025-12-20">
+      <description>
+        <ul>
+          <li>New: Updated to the Eclipse 2025-12 framework.</li>
+          <li>New: Added a search filter to the Security Performance view.</li>
+          <li>New: Added an option to group trades by taxonomy in the Trades view.</li>
+          <li>New: Added an option for a flat view (disable taxonomy grouping) in the Statement of Assets.</li>
+          <li>New: Added Ford Money, Debitum Investments, and Schelhammer Capital Bank AG PDF importers.</li>
+          <li>New: Added average columns to the Payments view showing monthly, quarterly, or yearly averages.</li>
+          <li>Improvement: The input dialog now presets the transaction date from the last entry.</li>
+          <li>Improvement: CSV import now calculates the exchange rate if not provided for forex gross values.</li>
+          <li>Improvement: Added a CSV import template for Targobank bank account transactions.</li>
+          <li>Improvement: Added an experimental option to enable monitor-specific scaling.</li>
+          <li>Improvement: Extended Interactive Brokers Flex Query (IBFlex) exchange support and improved currency conversion handling.</li>
+          <li>Improvement: Enhanced PDF importers for Suresse Direkt Bank, Schelhammer Capital, Baader Bank, Saxo Bank, comdirect, Deutsche Bank, Consorsbank, Scalable Capital, DKB, easybank, Trade Republic, flatex, DADAT Bank, Deutsche Postbank, Bourse Direct, Tradegate AG, Hypothekarbank Lenzburg, Yuh, and PostFinance.</li>
+          <li>Fix: Fixed dividend rate of return calculations when currencies differ.</li>
+          <li>Fix: Fixed unescaped tooltip labels.</li>
+          <li xml:lang="de">Neu: Aktualisierung auf das Eclipse-Framework 2025-12.</li>
+          <li xml:lang="de">Neu: Suchfilter in der Ansicht „Wertpapier-Performance“ hinzugefügt.</li>
+          <li xml:lang="de">Neu: Option zum Gruppieren von Trades nach Klassifikationen in der Trades-Ansicht hinzugefügt.</li>
+          <li xml:lang="de">Neu: Option für eine flache Ansicht (keine Gruppierung nach einer Klassifikation) in der Vermögensübersicht hinzugefügt.</li>
+          <li xml:lang="de">Neu: PDF-Importer für Ford Money, Debitum Investments und Schelhammer Capital Bank AG hinzugefügt.</li>
+          <li xml:lang="de">Neu: Neue Spalte mit monatlichen, quartalsweisen oder jährlichen Durchschnittswerten in der Ansicht 'Zahlungen'.</li>
+          <li xml:lang="de">Verbesserung: Im Eingabedialog wird das Transaktionsdatum nun mit dem zuletzt verwendeten Datum vorbelegt.</li>
+          <li xml:lang="de">Verbesserung: Beim CSV-Import wird nun der Wechselkurs berechnet, wenn er für den Brutto-Fremdwährungswert nicht angegeben ist.</li>
+          <li xml:lang="de">Verbesserung: CSV-Importvorlage für Targbank-Kontoumsätze hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: Experimentelle Option zur Aktivierung einer monitor-spezifischen Skalierung hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: Unterstützung der Börsen in Interactive Brokers Flex Query (IBFlex) erweitert und die Behandlung der Währungsumrechnung verbessert.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für Suresse Direkt Bank, Schelhammer Capital, Baader Bank, Saxo Bank, comdirect, Deutsche Bank, Consorsbank, Scalable Capital, DKB, easybank, Trade Republic, flatex, DADAT Bank, Deutsche Postbank, Bourse Direct, Tradegate AG, Hypothekarbank Lenzburg, Yuh und PostFinance verbessert.</li>
+          <li xml:lang="de">Fix: Berechnung der Dividendenrendite bei unterschiedlichen Währungen korrigiert.</li>
+          <li xml:lang="de">Fix: Nicht korrekt maskierte Tooltip-Beschriftungen korrigiert.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.80.4" date="2025-11-01">
+      <description>
+          <ul>
+            <li>New: Added Binance USDS-M Futures as an online price feed.</li>
+            <li>New: Added an option to disable automatic price downloads in the “Search for suppliers of historical prices” dialog.</li>
+            <li>Improvement: The generic JSON importer can now be configured with a locale for parsing dates in a specific language.</li>
+            <li>Improvement: Migrated extended ECB feeds (e.g. Euribor and others) to the new ECB Data Portal endpoint.</li>
+            <li>Improvement: Improved PDF importers for Baader Bank, DKB, Bourse Direct, Raiffeisenbank Bankgruppe, Advanzia Bank, Saxo Bank, Sutor Bank, sbroker, Sparkasse, MERKUR PRIVATBANK, Scalable Capital, and Tradegate AG.</li>
+            <li>Fix: Improved handling of PDF parsing errors to prevent crashes.</li>
+            <li xml:lang="de">Neu: Kurslieferant für Binance USDS-M Futures hinzugefügt.</li>
+            <li xml:lang="de">Neu: Option hinzugefügt, um den automatischen Download von Kursen im Dialog zur Suche von Kurslieferanten zu deaktivieren.</li>
+            <li xml:lang="de">Verbesserung: Der generische JSON-Importer kann jetzt mit einem Datumsgebietsschema konfiguriert werden, um Datumswerte in einer bestimmten Sprache einzulesen.</li>
+            <li xml:lang="de">Verbesserung: Der ECB-Kurslieferant für erweiterte Werte wie Euribor wurde auf das neue ECB Data Portal umgestellt.</li>
+            <li xml:lang="de">Verbesserung: PDF-Importer für Baader Bank, DKB, Bourse Direct, Raiffeisenbank Bankgruppe, Advanzia Bank, Saxo Bank, Sutor Bank, sbroker, Sparkasse, MERKUR PRIVATBANK, Scalable Capital und Tradegate AG verbessert.</li>
+            <li xml:lang="de">Fehlerbehebung: Fehler beim Umwandeln von PDF-Dokumenten in Text werden nun besser behandelt.</li>
+          </ul>
+        </description>
+      </release>
+    <release version="0.80.3" date="2025-10-04">
+      <description>
+        <ul>
+          <li>New: Added MEXC Crypto Exchange as an online price feed.</li>
+          <li>Improvement: Enhanced PDF importers for Merkur Privatbank, Tradegate AG, flatex, Hypothekarbank Lenzburg, Trade Republic, Comdirect, DKB, Deutsche Bank, and Bourse Direct.</li>
+          <li>Fix: Resolved a crash when switching the securities view while the table was sorted by certain columns.</li>
+          <li>Fix: Fixed loading of dividend transactions without an associated security.</li>
+          <li>Fix: Improved detection of file types based on file content.</li>
+          <li xml:lang="de">Neu: MEXC Crypto Exchange als Online-Kurslieferant hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für Merkur Privatbank, Tradegate AG, flatex, Hypothekarbank Lenzburg, Trade Republic, Comdirect, DKB, Deutsche Bank und Bourse Direct verbessert.</li>
+          <li xml:lang="de">Fehlerbehebung: Behebt einen Fehler, der beim Wechsel der Wertpapieransicht auftrat, wenn die Tabelle nach bestimmten Spalten sortiert war.</li>
+          <li xml:lang="de">Fehlerbehebung: Behebt ein Problem beim Laden von Dividendenbuchungen ohne zugeordnetes Wertpapier.</li>
+          <li xml:lang="de">Fehlerbehebung: Verbessert die Erkennung von Dateitypen anhand des Dateiinhalts.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.80.2" date="2025-09-27">
+      <description>
+        <ul>
+          <li>Fix: Fixed a java.net.URISyntaxException when path contains spaces.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem wenn ein Pfad Leerzeichen enthält.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.80.1" date="2025-09-27">
+      <description>
+        <ul>
+          <li>Improvement: Reduced the number of login requests through improved handling.</li>
+          <li>Improvement: Added option to recursively sort taxonomies by name, value, or type.</li>
+          <li>Improvement: Added the accelerator Ctrl-E (or Cmd-E) to edit instruments in more views.</li>
+          <li>Improvement: Assign stable colors when multiple instruments are selected in the price chart.</li>
+          <li>Improvement: Enhanced price feed search with exact ticker lookup and bulk exchange updates.</li>
+          <li>Improvement: Set the weight of newly imported classifications to zero when importing taxonomies from JSON.</li>
+          <li>Improvement: Enhanced PDF importers for Scalable Capital and Saxo Bank.</li>
+          <li xml:lang="de">Verbesserung: Login-Anfragen durch verbessertes Handling reduziert.</li>
+          <li xml:lang="de">Verbesserung: Option hinzugefügt, Taxonomien rekursiv nach Name, Wert oder Typ zu sortieren.</li>
+          <li xml:lang="de">Verbesserung: Tastenkürzel Strg-E (bzw. Cmd-E auf macOS) zum Bearbeiten von Wertpapieren in weiteren Ansichten hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: Verwendung von stabile Farben wenn mehrere Wertpapiere im Kursdiagramm ausgewählt werden.</li>
+          <li xml:lang="de">Verbesserung: Kurssuche verbessert mit exakter Tickersuche und Massenänderung des Börsenpatzes.</li>
+          <li xml:lang="de">Verbesserung: Gewichtung neu importierter Klassifikationen werden beim Import von Taxonomien aus JSON auf Null gesetzt.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für Scalable Capital und Saxo Bank verbessert.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.80.0" date="2025-09-21">
+      <description>
+        <ul>
+          <li>New: Widget for monthly savings overview showing transfers to and from accounts.</li>
+          <li>New: In the holdings pie chart, pick any date to display the valuation.</li>
+          <li>New: Context action to generate removal transactions for a given dividend.</li>
+          <li>New: Trading calendar support for Tel Aviv Stock Exchange.</li>
+          <li>New: Catalan translation added.</li>
+          <li>Improvement: CSV import now supports gross amount and exchange rate for account transactions.</li>
+          <li>Improvement: Enhanced IBFlex extractor to include management and advisor fees.</li>
+          <li>Improvement: PDF imports updated for Scalable Capital, ING, Comdirect, Sydbank, Sutor, Trade Republic, Bourse Direct, N26, and added support for new banks: Orange Bank, Nordax Bank, MeDirect Bank, and UmweltBank AG.</li>
+          <li>Fix: Resolved issue where the attribute for logos was ignored when translated.</li>
+          <li xml:lang="de">Neu: Widget zur Übersicht der monatlichen Ersparnisse mit Ein- und Auszahlungen auf Konten.</li>
+          <li xml:lang="de">Neu: Im Kreisdiagramm der Bestände kann nun jedes Datum zur Anzeige der Bewertung ausgewählt werden.</li>
+          <li xml:lang="de">Neu: Kontextaktion zum Erstellen von Stornotransaktionen für eine gewählte Dividendenzahlung</li>
+          <li xml:lang="de">Neu: Unterstützung des Handelkalenders für die Tel Aviver Börse.</li>
+          <li xml:lang="de">Neu: Katalanische Übersetzung hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: CSV-Import unterstützt jetzt Bruttobeträge und Wechselkurse für Kontobuchungen.</li>
+          <li xml:lang="de">Verbesserung: IBFlex-Extraktor erweitert, um Management- und Beratergebühren einzubeziehen.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importe für Scalable Capital, ING, Comdirect, Sydbank, Sutor, Trade Republic, Bourse Direct, N26 aktualisiert und neue Banken hinzugefügt: Orange Bank, Nordax Bank, MeDirect Bank und UmweltBank AG.</li>
+          <li xml:lang="de">Fehlerbehebung: Problem behoben, bei dem das Logo-Attribut bei Übersetzungen ignoriert wurde.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.79.1" date="2025-08-31">
+      <description>
+        <ul>
+          <li>Fix: The new configuration for which instrument prices are updated at startup was not applied.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, bei dem die neue Konfiguration, welche Kurse beim Start aktualisiert werden sollen, nicht angewendet wurde.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.79.0" date="2025-08-30">
+      <description>
+        <ul>
+          <li>New: View for the price update status.</li>
+          <li>New: Configure which instruments should be updated after opening the file and periodically.</li>
+          <li>New: Menu to update only the prices of currently held securities.</li>
+          <li>New: Daily performance bars in the chart now use different colors for gains and losses.</li>
+          <li>New: Savings plans now also support taxes for regular security purchases.</li>
+          <li>New: Bulk import and export of classifications is supported.</li>
+          <li>Improvement: When importing classifications, categories not present in the import can be removed.</li>
+          <li>Improvement: When exporting classifications, the color of the root category is now also exported.</li>
+          <li>Improvement: HTML import now ignores spaces in numbers that previously prevented parsing.</li>
+          <li>Improvement: JSON price provider no longer fails if a price for a day is unreadable.</li>
+          <li>Improvement: PDF imports have been updated for N26, Scalable Capital, Quirin Privatbank, KFintech, Trade Republic, and Flatex.</li>
+          <li>Fix: Wrong exchange rate suggestions for bookings in foreign currencies are corrected.</li>
+          <li>Fix: Corrupted bookings no longer prevent files from opening.</li>
+          <li xml:lang="de">Neu: Neue Ansicht zum Status der Preisaktualisierung.</li>
+          <li xml:lang="de">Neu: Konfiguriere, welche Wertpapiere nach dem Öffnen der Datei und periodisch aktualisiert werden sollen.</li>
+          <li xml:lang="de">Neu: Menü um nur die Kurse der aktuell gehaltenen Wertpapiere zu aktualisieren.</li>
+          <li xml:lang="de">Neu: Das Balkendiagramm der täglichen Performance kann nun positive und negative Werte farblich unterscheiden.</li>
+          <li xml:lang="de">Neu: Sparplan unterstützt jetzt auch Steuern für regelmäßige Wertpapierkäufe.</li>
+          <li xml:lang="de">Neu: Import und Export von mehreren Klassifikationen unterstützt.</li>
+          <li xml:lang="de">Verbesserung: Beim Import von Klassifikationen können nicht vorhandene Kategorien entfernt werden.</li>
+          <li xml:lang="de">Verbesserung: Beim Export von Klassifikationen wird nun auch die Farbe der Wurzelkategorie exportiert.</li>
+          <li xml:lang="de">Verbesserung: HTML-Import ignoriert Leerzeichen in Zahlen, die das Einlesen verhinderten.</li>
+          <li xml:lang="de">Verbesserung: JSON-Kurslieferant bricht nicht mehr ab, wenn ein Kurs für einen Tag nicht lesbar ist.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importe werden für N26, Scalable Capital, Quirin Privatbank, KFintech, Trade Republic und Flatex aktualisiert.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, bei dem bei der Eingabe von Buchungen mit Fremdwährungen ein falscher Wechselkurs vorgeschlagen wurde.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, bei dem eine korrupte Buchung das Öffnen der Datei verhinderte.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.78.1" date="2025-08-06">
+      <description>
+        <ul>
+          <li>Fix: Reverted changes to the sorting heuristic if multiple transactions are on the same day – some with, some without time.</li>
+          <li>Improvement: PDF imports updated for Trade Republic.</li>
+          <li xml:lang="de">Fix: Änderungen an der Sortierlogik zurückgenommen, wenn mehrere Buchungen am selben Tag liegen – einige mit, andere ohne Uhrzeit.</li>
+          <li xml:lang="de">Verbesserung: PDF-Import für Trade Republic aktualisiert.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.78.0" date="2025-08-03">
+      <description>
+        <ul>
+          <li>New: The structures of an taxonomy can now be exported and imported via JSON.</li>
+          <li>Improvement: Moving average can now be selected in the Trades widget.</li>
+          <li>Improvement: Trades widget can use the security's currency to count positive or negative trades.</li>
+          <li>Improvement: CSV export now includes taxes, fees, and quantity for accounts.</li>
+          <li>Improvement: Transactions are exported sorted by date in the CSV export.</li>
+          <li>Improvement: Special formatting of numeric values (e.g. non-breaking spaces) is removed in CSV export.</li>
+          <li>Improvement: Internal rate of return is now calculated for short trades as well.</li>
+          <li>Improvement: PDF imports updated for OnVista, Easybank, Deutsche Bank, PostFinance, Sydbank, KBC Group, Tiger Broker, BBVA, Saxo, Scalable, and Trade Republic.</li>
+          <li>Fix: IRR of a classification was not calculated correctly when a filter was applied and grouped by classification in the statement of assets view.</li>
+          <li>Fix: Resolved an issue where deleted classifications remained visible temporarily.</li>
+          <li>Fix: Resolved an issue with sorting trades when multiple transactions occurred on the same day.</li>
+          <li>Beta: New view for the status of price updates.</li>
+          <li xml:lang="de">Neu: Die Struktur der Klassifizierungen kann nun via JSON exportiert und importiert werden.</li>
+          <li xml:lang="de">Verbesserung: Gleitender Durchschnitt jetzt auch im Trade-Widget auswählbar.</li>
+          <li xml:lang="de">Verbesserung: Trade-Widget kann auch die Währung des Wertpapiers für die Anzahl positiver oder negativer Trades verwenden.</li>
+          <li xml:lang="de">Verbesserung: CSV-Export enthält jetzt Steuern, Gebühren und die Stückzahl für Konten.</li>
+          <li xml:lang="de">Verbesserung: Buchungen werden im CSV-Export nach Datum sortiert.</li>
+          <li xml:lang="de">Verbesserung: Beim CSV-Export wird spezielle Formatierung von Zahlenwerten entfernt (z.B. geschützte Leerzeichen).</li>
+          <li xml:lang="de">Verbesserung: Berechnung des internen Zinsfußes auch für Short-Trades.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importe aktualisiert für OnVista, Easybank, Deutsche Bank, PostFinance, Sydbank, KBC Group, Tiger Broker, BBVA, Saxo, Scalable, Trade Republic.</li>
+          <li xml:lang="de">Fix: IZF der Klassifikation wurde nicht korrekt berechnet, wenn in der Vermögensaufstellung ein Filter aktiv und nach Klassifikationen gruppiert war.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, bei dem gelöschte Klassifizierungen zunächst noch sichtbar blieben.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem bei der Sortierung von Trades, wenn mehrere Buchungen am selben Tag vorhanden waren.</li>
+          <li xml:lang="de">Beta: Neue Ansicht zum Status der Preisaktualisierung.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.77.3" date="2025-06-24">
+      <description>
+        <ul>
+          <li>Improvement: Numeric values are copied to the clipboard without special characters such as non-breaking spaces.</li>
+          <li>Improvement: PDF imports updated for Scalable Capital, Consorsbank, and Flatex.</li>
+          <li xml:lang="de">Verbesserung: Zahlenwerte werden ohne Sonderzeichen wie geschützte Leerzeichen (non-breaking spaces) in die Zwischenablage kopiert.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importe aktualisiert für Scalable Capital, Consorsbank und FlatEx.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.77.2" date="2025-06-22">
+      <description>
+        <ul>
+          <li>New: Support for CoinGecko demo account – allows for a stable rate limit of 30 requests per minute.</li>
+          <li>New: Hold the Alt key (on macOS: Option) and double-click a cell to copy its content to the clipboard.</li>
+          <li>New: New column showing prices in the reporting currency in the assets and securities performance views.</li>
+          <li>New: The Trades view now shows additional columns with metrics excluding taxes and fees. You can also view these metrics in the currency of the security.</li>
+          <li>Improvement: The Java Virtual Machine no longer uses a hardcoded memory limit but relies on its own heuristics – typically one quarter of the physical memory.</li>
+          <li>Improvement: The selected coloring – by category or performance – of the tree map is now saved.</li>
+          <li>Improvement: The last size and position of some dialogs are now remembered.</li>
+          <li>Improvement: Search results can now be filtered by "Commodities" to find prices from edelkurs.de more easily.</li>
+          <li>Improvement: The JSON price feed can now be configured with a time zone for the price data.</li>
+          <li>Improvement: PDF imports updated for GENO Broker, KFintech, Scalable Capital, and Saxo.</li>
+          <li>Fix: Number format in tooltip was incorrect when displaying prices of multiple securities in a chart.</li>
+          <li>Fix: The IBFlex importer incorrectly imported the direction of currency exchanges – e.g., USD to EUR instead of EUR to USD.</li>
+          <li>Fix: The portfolio view could consume excessive memory, leading to out-of-memory errors.</li>
+          <li xml:lang="de">Neu: Unterstützung für den Demo-Account von CoinGecko – damit sind stabilere 30 Abrufe pro Minute möglich.</li>
+          <li xml:lang="de">Neu: Mit gedrückter Alt-Taste (auf macOS: Option) und Doppelklick auf eine Zelle wird deren Inhalt in die Zwischenablage kopiert.</li>
+          <li xml:lang="de">Neu: Neue Spalte mit Kursen in der Berichtswährung in der Vermögensaufstellung und der Wertpapier-Performance.</li>
+          <li xml:lang="de">Neu: Die Trades-Ansicht zeigt nun zusätzliche Spalten mit Kennzahlen ohne Steuern und Gebühren. Zusätzlich kannst du dir die Kennzahlen alternativ in der Währung des Wertpapiers anzeigen lassen.</li>
+          <li xml:lang="de">Verbesserung: Die Java Virtual Machine verwendet jetzt keine hartkodierte Maximalgröße mehr, sondern ihre eigene Heuristik – typischerweise ein Viertel des physischen Speichers.</li>
+          <li xml:lang="de">Verbesserung: Die gewählte Farbgebung der Baumkarte – nach Kategorie oder Performance – wird jetzt gespeichert.</li>
+          <li xml:lang="de">Verbesserung: Die letzte Größe und Position einiger Dialoge werden jetzt gespeichert.</li>
+          <li xml:lang="de">Verbesserung: Suchergebnisse lassen sich nach „Rohstoffen“ filtern, um Kurse von edelkurs.de schneller zu finden.</li>
+          <li xml:lang="de">Verbesserung: Der JSON-Kurslieferant kann jetzt mit einer Zeitzone für die Kursdaten konfiguriert werden.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importe aktualisiert für GENO Broker, KFintech, Scalable Capital und Saxo.</li>
+          <li xml:lang="de">Fix: Das Zahlenformat im Tooltip war fehlerhaft, wenn Kurse mehrerer Wertpapiere im Diagramm angezeigt wurden.</li>
+          <li xml:lang="de">Fix: Der IBFlex-Importer hat die Richtung eines Währungstauschs falsch importiert – z. B. USD nach EUR statt EUR nach USD.</li>
+          <li xml:lang="de">Fix: In der Vermögensaufstellung konnte es zu übermäßigem Speicherverbrauch und Out-of-Memory-Fehlern kommen.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.77.1" date="2025-06-09">
+      <description>
+        <ul>
+          <li>Fix: Resolved an issue where transactions were not shown in the information section of the security list.</li>
+          <li xml:lang="de">Fix: Ein Problem wurde behoben, bei dem Buchungen im Informationsbereich der Wertpapierliste nicht angezeigt wurden.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.77.0" date="2025-06-09">
+      <description>
+        <ul>
+          <li>New: Compare price of different securities in a single chart.</li>
+          <li>New: Widgets for current drawdown and all-time high of your total portfolio.</li>
+          <li>New: Portfolio Performance is now available in Vietnamese.</li>
+          <li>Improvement: Searching amounts under 'All Transactions' is now easier thanks to better handling of decimal separators.</li>
+          <li>Improvement: More stable handling of the new built-in price provider.</li>
+          <li>Improvement: You can now filter search results by price provider.</li>
+          <li>Improvement: Imported transactions are now matched more reliably to the correct accounts and portfolios, even with different currencies.</li>
+          <li>Improvement: IBFlex now imports transfers in different currencies as well.</li>
+          <li>Improvement: PDF importers updated for 1822direkt, VDK Bank, Scalable Capital, Boursobank, Moderna Estonia, Quirin, Swissquote, KBC Group, Bison, OLB, Saxo Bank, Trade Republic, and Baader Bank.</li>
+          <li>Fix: Fixed an issue where CoinGecko prices for the same cryptocurrency were mixed across different fiat currencies.</li>
+          <li>Fix: Corrected a holiday name in the Chilean trading calendar.</li>
+          <li xml:lang="de">Neu: Kurse verschiedener Wertpapiere in einem Diagramm vergleichen.</li>
+          <li xml:lang="de">Neu: Widgets für den aktuellen Drawdown und den Allzeithöchststand des Gesamtportfolios.</li>
+          <li xml:lang="de">Neu: Portfolio Performance ist jetzt auf Vietnamesisch verfügbar.</li>
+          <li xml:lang="de">Verbesserung: Beträge unter 'Alle Buchungen' lassen sich dank besserer Erkennung von Dezimaltrennzeichen einfacher finden.</li>
+          <li xml:lang="de">Verbesserung: Stabilere Handhabung des neuen integrierten Kurslieferanten.</li>
+          <li xml:lang="de">Verbesserung: Suchergebnisse lassen sich jetzt nach Kurslieferant filtern.</li>
+          <li xml:lang="de">Verbesserung: Beim Import werden verschiedene Währungen besser den passenden Konten und Depots zugeordnet.</li>
+          <li xml:lang="de">Verbesserung: IBFlex erkennt jetzt auch Umbuchungen in unterschiedlichen Währungen.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importe aktualisiert für 1822direkt, VDK Bank, Scalable Capital, Boursobank, Moderna Estonia, Quirin, Swissquote, KBC Group, Bison, OLB, Saxo Bank, Trade Republic und Baader Bank.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, bei dem Kurse derselben Kryptowährung von CoinGecko über verschiedene Fiatwährungen vermischt wurden.</li>
+          <li xml:lang="de">Fix: Feiertag im chilenischen Handelskalender korrekt benannt.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.76.3" date="2025-05-18">
+      <description>
+        <ul>
+          <li>Improvement: PDF importer extended for: Scalable Capital, N26, Ebase, OLB</li>
+          <li>Improvement: Further optimizations in handling retrieval limits, especially with Coingecko.</li>
+          <li>Improvement: New log message when prices for securities cannot be retrieved – e.g., due to permanent errors when the server no longer recognizes the instrument.</li>
+          <li>Improvement: Prices are first loaded for securities that have not yet been retrieved in this session or whose last download is outdated.</li>
+          <li>Fix: Resolves an issue with calculating the average entry price when the currency is not Euro and dividends are recorded.</li>
+          <li>Fix: Resolves an issue where the header in the information area for grouped accounts was not updated.</li>
+          <li>Fix: Resolves an issue when creating a new file where the user's locale did not include a country, so no suggestion for the default currency could be made.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer erweitert für: Scalable Capital, N26, Ebase, OLB</li>
+          <li xml:lang="de">Verbesserung: Weitere Optimierungen beim Umgang mit Abruflimits, insbesondere bei Coingecko.</li>
+          <li xml:lang="de">Verbesserung: Neuer Hinweis im Fehlerprotokoll, wenn Kurse für Wertpapiere nicht abgerufen werden können – z. B. bei permanenten Fehlern, wenn der Server das Wertpapier nicht (mehr) kennt.</li>
+          <li xml:lang="de">Verbesserung: Es werden zunächst Kurse von den Wertpapieren geladen, die in dieser Session entweder noch gar nicht geladen wurden oder deren Download älter ist.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem bei der Berechnung des Einstiegspreises nach dem gleitenden Durchschnitt, wenn die Währung nicht Euro ist und Dividenden erfasst sind.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, bei dem die Überschrift im Informationsbereich bei den gruppierten Konten nicht aktualisiert wurde.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, wenn eine neue Datei angelegt wurde und die Locale des Benutzers kein Land enthielt, sodass kein Vorschlag für die Standardwährung gemacht werden konnte.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.76.2" date="2025-05-09">
+      <description>
+        <ul>
+          <li>Fix: Resolved an issue with searching for securities via Yahoo.</li>
+          <li>Fix: Resolved an issue with the automatic conversion from GPX to GBP using the Yahoo quote provider.</li>
+          <li>Fix: Resolved an issue where the Y-axis in the Rebalancing widget could not be hidden.</li>
+          <li>Improvement: Extended PDF importer to support DKB.</li>
+          <li>Improvement: Improved handling of request limits and caching for the integrated quote provider.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem bei der Suche nach Wertpapieren über Yahoo.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem bei der automatischen Umrechnung von GPX in GBP beim Kurslieferanten Yahoo.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, durch das im Rebalancing-Widget die Y-Achse nicht ausgeblendet werden konnte.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer erweitert für: DKB</li>
+          <li xml:lang="de">Verbesserung: Besserer Umgang mit Abruflimits und Caching des integrierten Kurslieferanten.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.76.1" date="2025-05-06">
+      <description>
+        <ul>
+          <li>Experimental fix: Adjusted logic for downloading prices from Yahoo Finance.</li>
+          <li xml:lang="de">Experimenteller Fix: Yahoo Finance als Kurslieferant erneut eingebunden.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.76.0" date="2025-05-01">
+      <description>
+        <ul>
+          <li>New: Treemap coloring can now optionally be based on performance or category.</li>
+          <li>New: Dashboard widgets for rebalancing status – shown as bar or pie charts.</li>
+          <li>Improvement: Cost basis using moving average is now also shown in the trade list.</li>
+          <li>Improvement: Current prices can now also be retrieved with a TwelveData subscription.</li>
+          <li>Improvement: Tooltip for price changes now also shows the annualized change.</li>
+          <li>Improvement: PDF importer extended for: Bison, Saxo Bank, Commerzbank, KBC Group NV, Trade Republic, Consorsbank, Modena Estonia, Crowdestor OÜ, Arkea Direct Bank, TargoBank, Comdirect, Hargreaves Lansdown Asset Management, BSDEX.</li>
+          <li>Fix: Resolved an issue with trade assignment after multiple portfolio transfers of a position.</li>
+          <li>Beta: Price provider for historical prices of European and US stocks (see forum).</li>
+          <li xml:lang="de">Neu: Treemap-Färbung jetzt wahlweise nach Performance oder Kategorie.</li>
+          <li xml:lang="de">Neu: Dashboard-Widgets zum Rebalancing-Status – als Balken- oder Kuchendiagramm.</li>
+          <li xml:lang="de">Verbesserung: Einstandspreis nach gleitendem Durchschnitt nun auch in der Trade-Liste.</li>
+          <li xml:lang="de">Verbesserung: Aktuelle Kurse können jetzt auch mit einem TwelveData-Abo geladen werden.</li>
+          <li xml:lang="de">Verbesserung: Tooltip zur Kursveränderung zeigt nun auch die annualisierte Veränderung.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer erweitert für: Bison, Saxo Bank, Commerzbank, KBC Group NV, Trade Republic, Consorsbank, Modena Estonia, Crowdestor OÜ, Arkea Direct Bank, TargoBank, Comdirect, Hargreaves Lansdown Asset Management, BSDEX.</li>
+          <li xml:lang="de">Fix: Problem bei Trade-Zuordnung nach mehrfachen Depotüberträgen einer Position behoben.</li>
+          <li xml:lang="de">Beta: Kurslieferant für historische Kurse europäischer und amerikanischer Aktien (siehe Forum).</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.75.1" date="2025-04-09">
+      <description>
+        <ul>
+          <li>Fix: Resolves a NumberFormatException when calculating capital gains (division by zero).</li>
+          <li>Fix: Resolves an IndexOutOfBoundsException when paging through the search results for securities.</li>
+          <li>New: PDF import support for E*TRADE Securities LLC.</li>
+          <li xml:lang="de">Fix: Behebt eine NumberFormatException bei der Berechnung von Kursgewinnen (Division durch Null).</li>          
+          <li xml:lang="de">Fix: Behebt eine IndexOutOfBoundsException beim Blättern durch die Suchergebnisse für Wertpapiere.</li>
+          <li xml:lang="de">Neu: PDF-Importer für E*TRADE Securities LLC.</li> 
+        </ul>
+      </description>
+    </release>
+    <release version="0.75.0" date="2025-04-08">
+      <description>
+        <ul>
+          <li>New: Option to use moving average for calculating realized and unrealized capital gains</li>
+          <li>Improvement: New search dialog for instruments</li>
+          <li>Improvement: Dedicated view for “grouped accounts” (also known as filters)</li>
+          <li>New: Turkish translation – thanks to ALGO IT, Alp ŞEBER, and all contributors</li>
+          <li>New: PDF import support for Cetesdirecto, Modena Estonia OÜ, Crédit Mutuel Alliance Fédérale, BSDEX</li>
+          <li>Improvement: Enhanced PDF importers for Arkea Direct Bank, FlatEx, Bourso Bank, Trade Republic, Raisin Bank, Easybank, Swissquote, Postbank, ING Diba</li>
+          <li xml:lang="de">Neu: Gleitender Durchschnitt als alternative Methode zur Berechnung von realisierten und unrealiserten Kursgewinnen</li>
+          <li xml:lang="de">Verbesserung: Neuer Suchdialog für Wertpapiere</li>
+          <li xml:lang="de">Verbesserung: Eigene Ansicht für „gruppierte Konten“ (Filter)</li>
+          <li xml:lang="de">Neu: Türkische Übersetzung - vielen Dank an ALGO IT, Alp ŞEBER, und andere.</li>
+          <li xml:lang="de">Neu: PDF-Importer für Cetesdirecton, Modena Estonia OÜ, Crédit Mutuel Alliance Fédérale, BSDEX.</li>          
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für Arkea Direct Bank, FlatEx, Bourso Bank, Trade Republic, Raisin Bank, Easybank, Swissquote, Postbank, ING Diba </li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.74.2" date="2025-03-09">
+      <description>
+        <ul>
+          <li>Improvement: Instruments in the "Follow-up" widget are now grouped by date and type for better clarity.</li>
+          <li>Improvement: CSV import now also supports time in ISO format yyyy-MM-dd'T'HH:mm.</li>
+          <li>Improvement: The "Balance" column is now color-coded depending on whether the balance is positive or negative (instead of whether the transaction increases or decreases the value).</li>
+          <li>Improvements to the PDF importers for Arkea Direct Bank, Swissquote, DKB, Trade Republic, ING-DiBa, Consorsbank, C24 Bank, ABN AMRO, akf bank, N26, Raiffeisenbank, Audi Bank, Saxo, and PhrozenByte.</li>
+          <li>Fix: Corrected an issue with trade assignment during multiple portfolio transfers of a position.</li>
+          <li xml:lang="de">Verbesserung: Wertpapiere im Widget "Termin erreicht" werden nun zur besseren Übersicht gruppiert.</li>
+          <li xml:lang="de">Verbesserung: CSV Import unterstützt jetzt auch die Uhrzeit mit dem ISO Format yyyy-MM-dd'T'HH:mm.</li>
+          <li xml:lang="de">Verbesserung: Die Spalte "Saldo" wird nun farblich markiert, abhängig davon, ob der Saldo positiv oder negativ ist (statt ob die Buchung den Wert erhöht oder verringert).</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für Arkea Direct Bank, Swissquote, DKB, Trade Republic, ING-DiBa, Consorsbank, C24 Bank, ABN AMRO, akf bank, N26, Raiffeisenbank, Audi Bank, Saxo, PhrozenByte</li>
+          <li xml:lang="de">Fix: Korrigiert ein Problem bei der Zuordnung von Trades bei mehrfachen Depotübertragungen einer Position.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.74.1" date="2025-02-23">
+      <description>
+        <ul>
+          <li>New: Support for the comma as a decimal separator on the Spanish keyboard.</li>
+          <li>Improvements to the PDF importers for Arkea Direct Bank, Targo Bank, FlatEx, C24 Bank, Baader Bank, Bondora Capital, DAB, Trade Republic, Scalable Capital, comdirect, Postfinance, WIR Bank, BigBank.</li>
+          <li>Improvement: Securities events from today are displayed in the "Future Events" period (as the day is not over yet).</li>
+          <li xml:lang="de">Neu: Unterstützung für das Komma als Dezimaltrennzeichen auf der spanischen Tastatur.</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für Arkea Direct Bank, Targo Bank, FlatEx, C24 Bank, Baader Bank, Bondora Capital, DAB, Trade Republic, Scalable Capital, comdirect, Postfinance, WIR Bank, BigBank.</li>
+          <li xml:lang="de">Verbesserung: Wertpapier-Ereignisse vom heutigen Tag werden im Zeitraum "Ereignisse in der Zukunft" angezeigt (der heutige Tag ist noch nicht vorbei)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.74.0" date="2025-01-26">
+      <description>
+        <ul>
+          <li>New: Updated to the latest version of the PDFBox library.</li>
+          <li>New: Added a widget for displaying security events.</li>
+          <li>Improved: Temporary option to disable all markers in price charts.</li>
+          <li>Improved: U.S. trading calendar now includes Jimmy Carter Memorial Day (January 9, 2025).</li>
+          <li>Improved: Enhanced debug information for failed uploads to DivvyDiary.</li>
+          <li>Improved: Display of position counts within classifications in the portfolio overview.</li>
+          <li>Improved: PDF importers updated for Solarisbank, Comdirect, BoursoBank, Easybank, Merkus Privat Bank, DKB, FlatEx, Directa SIM, DekaBank, Saxo, Ebase, Trade Republic, and Scalable Capital.</li>
+          <li>Fixed: Resolved an issue with determining the default currency for new files when no country is selected in the locale.</li>
+          <li xml:lang="de">Neu: Aktualisierung auf die neueste Version der PDFBox-Bibliothek.</li>
+          <li xml:lang="de">Neu: Widget zur Anzeige von Wertpapier-Ereignissen hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: Möglichkeit temporär alle Markierungen in den Kursdiagrammen auszuschalten.</li>
+          <li xml:lang="de">Verbesserung: US-Handelskalender enthält nun den Gedenktag für Jimmy Carter (9. Januar 2025).</li>
+          <li xml:lang="de">Verbesserung: Erweiterte Debug-Informationen bei fehlgeschlagenen Uploads zu DivvyDiary.</li>
+          <li xml:lang="de">Verbesserung: Anzeige der Anzahl von Positionen innerhalb einer Klassifizierung in der Vermögensaufstellung.</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für Solarisbank, Comdirect, BoursoBank, Easybank, Merkus Privat Bank, DKB, FlatEx, Directa SIM, DekaBank, Saxo, Ebase, Trade Republic, Scalable Capital.</li>
+          <li xml:lang="de">Fix: Problem bei der Bestimmung der Standardwährung für neue Dateien behoben, wenn in den Locale-Einstellungen kein Land ausgewählt ist.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.73.0" date="2024-12-30">
+      <description>
+        <ul>
+          <li>New: Updated to Eclipse 2024-12</li>
+          <li>New: Additional derived data series in the assets chart (e.g., invested capital for any classifications, not just the total portfolio).</li>
+          <li>New: New column: Indicator for the price range.</li>
+          <li>New: Purchase value/price now displayed both with and without taxes/fees in the assets overview.</li>
+          <li>New: Reference account balance in the list of securities accounts.</li>
+          <li>New: Sorting options for classifications when editing a security.</li>
+          <li>New: Ctrl-D to duplicate a transaction in tables.</li>
+          <li>New: PDF importer for Ginmon VL Sparen.</li>
+          <li>Improvement: Windows version now supports ARM-based devices.</li>
+          <li>Improvement: Default currency is suggested based on the locale (for new files).</li>
+          <li>Fix: Australian trading calendar now correctly shifts "Australia Day" to the next weekday when it falls on a weekend.</li>
+          <li>Fix: Corrected chart legend labels in some languages.</li>
+          <li>Fix: Resolved issue with GBX/GBP rates from Yahoo Finance.</li>
+          <li>Fix: No more white screen flashes in Dark Theme (macOS tables).</li>
+          <li>Improvements to the PDF importers for DKB, Targo Bank, Hypothekarbank, PostFinance, Swissquote, Baader Bank, Commerzbank, Scalable Capital, ING, Sunrise, Consorsbank, and DADAT.</li>          <li xml:lang="de">Neu: Aktualisierung auf Eclipse 2024-12</li>
+          <li xml:lang="de">Neu: Weitere abgeleitete Datenreihen in der Vermögensaufstellung (z.B. investiertes Kapital für beliebige Klassifikationen, nicht nur Gesamtportfolio).</li>
+          <li xml:lang="de">Neu: Neue Spalte: Indikator für die Kursspanne.</li>
+          <li xml:lang="de">Neu: Einstandswert/-preis jetzt mit und ohne Steuern/Gebühren in der Vermögensaufstellung.</li>
+          <li xml:lang="de">Neu: Kontostand des Referenzkontos in der Depotliste.</li>
+          <li xml:lang="de">Neu: Sortieroptionen für Klassifikationen beim Bearbeiten eines Wertpapiers.</li>
+          <li xml:lang="de">Neu: Ctrl-D zum Duplizieren einer Buchung in Tabellen.</li>
+          <li xml:lang="de">Neu: PDF-Importer für Ginmon VL Sparen.</li>
+          <li xml:lang="de">Verbesserung: Windows-Version für ARM-basierte Rechner.</li>
+          <li xml:lang="de">Verbesserung: Standardwährung wird basierend auf der Locale vorgeschlagen (bei neuen Dateien).</li>          
+          <li xml:lang="de">Fix: Australischer Handelskalender verschiebt „Australien-Tag“ korrekt auf Folgetag (bei Wochenenden).</li>
+          <li xml:lang="de">Fix: Korrekte Beschriftung der Diagrammlegenden in einigen Sprachen.</li>
+          <li xml:lang="de">Fix: Problem mit GBX/GBP-Kursen von Yahoo Finance behoben.</li>
+          <li xml:lang="de">Fix: Tabellen flackern nicht mehr im Dark Theme unter macOS.</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für DKB, Targo Bank, Hypothekarbank, PostFinance, Swissquote, Baader Bank, Commerzbank, Scalable Capital, ING, Sunrise, Consorsbank, DADAT</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.72.2" date="2024-11-30">
+      <description>
+        <ul>
+          <li>Fix: Fixes a problem running Portfolio Performance on Intel macOS.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem mit Java unter macOS auf Intel Prozessoren.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.72.1" date="2024-11-30">
+      <description>
+        <ul>
+          <li>Fix: Fixes an infinite loop for weekly investment plans if the execution date is moved due to holidays.</li>
+          <li xml:lang="de">Fix: Behebt eine Endlosschleife wenn das Ausführungsdatum eines wöchentlichen Sparplans auf einen handelsfreien Tag fällt.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.72.0" date="2024-11-30">
+      <description>
+        <ul>
+          <li>New: Update to Eclipse 2024-09 and Java 21</li>
+          <li>New: Weekly and bi-weekly investment plans.</li>
+          <li>New: New color schemes for heatmaps, which are better suited for people with red-green color blindness, among others.</li>
+          <li>New: Configurable prefix for instrument name in selection lists.</li>
+          <li>New: PDF importer for Audi Bank and Saxo Bank</li>
+          <li>Improvement: DivvyDiary upload now includes all positions, including those already sold.</li>
+          <li>Improvement: Account balance history is displayed in the statement of assets when an account is selected.</li>
+          <li>Improvement: Percentages of 0% are now marked in black (instead of green) in tables.</li>
+          <li>Improvement: In the annual bar chart under "Payments," bars are now always correctly colored.</li>
+          <li>Improvement: Tooltip size in charts no longer depends on the help text (and should fit better).</li>
+          <li>Improvements to PDF importers for Tradegate AG, Trade Republic, 1822direct, Oldenburgische Landesbank, FNZ Bank, Hypothekarbank Lenzburg, PostFinance AG, KBC Group NV, sBroker, Consorsbank, MLP, Hello Bank, 3BankenEDV, EstateGuru, WhiteBox, ING Diba, Barclay, Easybank</li>
+          <li>Fix: Column configuration window for CSV import is now larger and more user-friendly.</li>
+          <li>Fix: Filenames are sanitized for the operating system during bulk export of CSV files.</li>
+          <li>Fix: Resolves an issue in the performance calculation view when opening the context menu without a selection.</li>
+          <li xml:lang="de">Neu: Update auf Eclipse 2024-09 und Java 21</li>
+          <li xml:lang="de">Neu: Wöchentliche und zweiwöchentliche Sparpläne.</li>
+          <li xml:lang="de">Neu: Neue Farbschemata für Heatmaps, die unter anderem besser für Personen mit Rot-Grün-Blindheit geeignet sind.</li>
+          <li xml:lang="de">Neu: Konfigurierbare Prefix für Wertpapiername in Auswahllisten.</li>
+          <li xml:lang="de">Neu: PDF-Importer für Audi Bank und Saxo Bank</li>
+          <li xml:lang="de">Verbesserung: Der Upload auf DivvyDiary enthält jetzt alle Positionen, auch die bereits verkauften.</li>
+          <li xml:lang="de">Verbesserung: In der Vermögensaufstellung wird der Kontosaldenverlauf angezeigt, wenn ein Konto ausgewählt ist.</li>
+          <li xml:lang="de">Verbesserung: Prozentzahlen von 0% werden in Tabellen jetzt schwarz (statt grün) markiert.</li>
+          <li xml:lang="de">Verbesserung: Im jährlichen Balkendiagramm unter "Zahlungen" werden die Balken jetzt immer korrekt eingefärbt.</li>
+          <li xml:lang="de">Verbesserung: Tooltip-Größe in Charts hängt nicht mehr vom Hilfetext ab (sollte besser passen).</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für Tradegate AG, Trade Republic, 1822direct, Oldenburgische Landesbank, FNZ Bank, Hypothekarbank Lenzburg, PostFinance AG, KBC Group NV, sBroker, Consorsbank, MLP, Hello Bank, 3BankenEDV, EstateGuru, WhiteBox, ING Diba, Barclay, Easybank</li>
+          <li xml:lang="de">Fix: Fenster zur Spaltenkonfiguration beim CSV Import jetzt größer und benutzerfreundlicher.</li>
+          <li xml:lang="de">Fix: Dateinamen werden beim Massenexport von CSV-Dateien für das Betriebssystem bereinigt.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem in der Performance-Berechnungsansicht, wenn das Kontextmenü ohne Auswahl geöffnet wird.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.71.2" date="2024-10-03">
+      <description>
+        <ul>
+          <li>New: PDF importer for Estateguru, Alpac Capital, and WitheBox</li>
+          <li>Improvements to the PDF importers for Trade Republic, Baader Bank, Easybank, 1822direkt, AKF Bank, Tiger Broker, DZ Bank, and KDC Bank NV</li>
+          <li>Fix: Resolves an issue where an error in the price query prevented further price retrieval.</li>
+          <li>Fix: The "Delta % Indicator" in the rebalancing view now only applies the absolute change to all classified instruments (5/25 rule).</li>
+          <li xml:lang="de">Neu: PDF-Importer für Estateguru, Alpac Capital und WitheBox</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für Trade Republic, Baader Bank, Easybank, 1822direkt, AKF Bank, Tiger Broker, DZ Bank und KDC Bank NV</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, bei dem ein Fehler bei der Kursabfrage die weitere Abfrage der Kurse verhindert.</li>
+          <li xml:lang="de">Fix: Der "Delta %-Indikator" in der Rebalancing-Ansicht bezieht die absolute Veränderung jetzt nur auf alle klassifizierten Instrumente (5/25 Regel).</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.71.1" date="2024-09-23">
+      <description>
+        <ul>
+          <li>Fix: Resolves an issue when the table is sorted by the column "distance from all-time high".</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, wenn die Tabelle nach der Spalte "Abstand zum All-Time High" sortiert ist.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.71.0" date="2024-09-22">
+      <description>
+        <ul>
+          <li>New: Summary row in the Performance -> Securities view</li>
+          <li>New: PDF importer for KFintech</li>
+          <li>New: Price provider India's First Free Mutual Fund API</li>
+          <li>Improvement: The asset and performance chart remembers if data series are hidden.</li>
+          <li>Improvement: A double-click on the legend shows or hides a data series in the asset and performance chart.</li>
+          <li>Improvement: When multiple securities are selected, the prices for all selected securities can be updated.</li>
+          <li>Improvement: TTWROR and IRR are now displayed in the asset overview for categories and the total portfolio as well.</li>
+          <li>Improvement: The column "Distance to All-Time High" now has a tooltip with details.</li>
+          <li>Improvement: In a dividend booking, the number of shares is pre-filled based on the current portfolio.</li>
+          <li>Improvement: Securities that no longer exist in Portfolio Report are automatically unlinked.</li>
+          <li>Improvements to the PDF importers for AKF Bank, OnVista, Trade Republic, N26, Hypothekarbank Lenzburg, Santander Bank, and V-Bank</li>
+          <li>Fix: Fixed an issue when removing the column that the table was sorted by.</li>
+          <li>Fix: Fixed an issue where the value 'Div%/Year' was not displayed under Performance -> Securities.</li>
+          <li>Fix: The tooltip for area charts in the classification now shows with the correct axis labels.</li>
+          <li xml:lang="de">Neu: Summenzeile in der Ansicht Performance -> Wertpapiere</li>
+          <li xml:lang="de">Neu: PDF-Importer für KFintech</li>
+          <li xml:lang="de">Neu: Kurslieferant India's First Free Mutual Fund API</li>
+          <li xml:lang="de">Verbesserung: Das Vermögens- und Performance-Diagramm merkt sich, ob Datenreihen ausgeblendet sind.</li>
+          <li xml:lang="de">Verbesserung: Ein Doppelklick auf die Legende blendet eine Datenreihe im Vermögens- und Performance-Diagramm ein oder aus.</li>
+          <li xml:lang="de">Verbesserung: Wenn mehrere Wertpapiere ausgewählt sind, können die Kurse für alle ausgewählten Wertpapiere aktualisiert werden.</li>
+          <li xml:lang="de">Verbesserung: TTWROR und IZF in der Vermögensaufstellung werden auch für die Kategorien und das Gesamtportfolio angezeigt.</li>
+          <li xml:lang="de">Verbesserung: Die Spalte "Abstand zum All-Time High" hat jetzt einen Tooltip mit den Details.</li>
+          <li xml:lang="de">Verbesserung: Bei einer Dividendenbuchung wird die Anzahl der Stücke basierend auf dem aktuellen Depot vorbelegt.</li>
+          <li xml:lang="de">Verbesserung: Wertpapiere, die nicht mehr auf Portfolio Report existieren, werden automatisch entkoppelt.</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für AKF Bank, OnVista, Trade Republic, N26, Hypothekarbank Lenzburg, Santanderbank und V-Bank</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, wenn man die Spalte einer Tabelle entfernt, nach der die Tabelle sortiert ist.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, dass der Wert 'Div%/Jahr' unter Performance -> Wertpapiere nicht angezeigt wurde.</li>
+          <li xml:lang="de">Fix: Der Tooltip für Flächendiagramme bei der Klassifizierung wird mit der richtigen Achsenbeschriftung angezeigt.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.70.4" date="2024-08-25">
+      <description>
+        <ul>
+          <li>New: PDF importer for ABN AMRO Group</li>
+          <li>New: Use Ctrl-F (Command-F) to focus the search boxes</li>
+          <li>New: Data series with the accumulated movements in the asset diagram (= value that has flowed into or out of the portfolio through deposits/withdrawals or deliveries/shipments)</li>
+          <li>Improvement: Adjusted colors in light and dark mode for charts in the security accounts view</li>
+          <li>Improvements to the PDF importers for Santander Consumer Bank AG, FFB, and C24 Bank GmbH</li>
+          <li xml:lang="de">Neu: PDF-Importer für die ABN AMRO Group</li>
+          <li xml:lang="de">Neu: Nutze Ctrl-F (Command-F) um die Suchfelder zu aktivieren</li>
+          <li xml:lang="de">Neu: Datenreihe mit den akkumulierten Bewegungen im Vermögensdiagramm (= Wert der in oder aus dem Portfolio durch Einlagen/Entnahmen oder Einlieferungen/Auslieferungen geflossen ist)</li>
+          <li xml:lang="de">Verbesserung: Angepasste Farben im Hell- und Dunkelmodus für Diagramme in der Depotansicht</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für Santander Consumer Bank AG, FFB und C24 Bank GmBH</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.70.3" date="2024-08-05">
       <description>
         <ul>

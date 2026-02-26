@@ -1,0 +1,31 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Kontoauszug
+BestFlex Kontonummer: 12-16305-7274
+Kontoauszug Erstellungsdatum: 01.12.2025
+Kontoinhaber: xpcMzpv FSAYYIWCX
+BestFlex Eröffnungsdatum: 13.11.2025
+Kontostand per 13.11.2025 Kontostand per 30.11.2025 Summe Gutschriften Summe Belastungen Zinserträge Steuern (KeSt bzw. QueSt)
+€ 0,00 € 44.285,44 € 44.290,01 € 4,57 € 18,29 € 4,57
+Buchungsdatum Valutadatum Betrag Saldo Buchungstext Verwendungszweck
+Einzahlung von Konto bK553176205628587457 lautend auf YEsfWAs 
+21.11.2025 21.11.2025 263,22 263,22 XXJ SAjFa
+QESvxnswh
+Einzahlung von Konto mI079617074233785537 lautend auf 
+24.11.2025 24.11.2025 38.000,00 38.263,22 OlY nwhjc
+YtIqsrM IivAHYTVl
+Einzahlung von Konto Lr976088571958963679 lautend auf 
+24.11.2025 24.11.2025 8,50 38.271,72 VOYfxcgsvJX BkOWWv
+xnqYrAv afHFrgoYY
+Einzahlung von Konto UH251100718800015609 lautend auf 
+27.11.2025 27.11.2025 6.000,00 44.271,72 gjGGdY
+wwZyrDs mLpgOlskz
+30.11.2025 30.11.2025 18,29 44.290,01 Zinsgutschrift Habenzinsen
+30.11.2025 30.11.2025 -4,57 44.285,44 Kapitalertragsteuer
+Ihre Einlagen bei der Santander Consumer Bank GmbH sind geschützt durch die Einlagensicherung Austria GmbH (ESA). 
+Alle Ihre Einlagen bei unserem Kreditinstitut werden aufaddiert, und die Gesamtsumme der erstattungsfähigen Einlagen unterliegt der Obergrenze von EUR 100.000,00. Hier finden Sie alle 
+Informationen zur Einlagensicherung.
+Santander Consumer Bank GmbH, Postfach 1234, 7001 Eisenstadt Seite 1
+Santander Consumer Bank GmbH, Firmensitz 1220 Wien, Wagramer Straße 19, FN 62610 z Handelsgericht Wien, UID-Nr.: ATU15350108, santander.at

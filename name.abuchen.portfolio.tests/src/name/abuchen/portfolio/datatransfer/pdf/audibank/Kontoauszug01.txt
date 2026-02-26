@@ -1,0 +1,36 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.2
+-----------------------------------------
+Audi Bank  ·  38093 Braunschweig
+VdmFnXH deSiV
+asddsfsf 243
+13913 xVwIXDvEE Th QfnbVl
+Kontoauszug / Saldenmitteilung Plus Konto online.pur
+Kontonummer: 3363081904 Erstellungsdatum: 26.12.2021
+Kontobezeichnung: YrRBg oHyEpik Kontoauszug Nummer: 000003 / 2021
+Bankleitzahl: 27020001 Seite: 1 / 1
+BIC: AUDFDE21XXX letzter Auszug vom: 25.11.2021
+IBAN: DE57270200013363081904 Ihr Ansprechpartner: Team Anlageberatung
+Telefon-Durchwahl: 0531 212-859601
+Alter Kontostand in EUR: 1.001,29
+lfd. Buchungs- Umsatzinformationen Wertstellung Soll (EUR) Haben (EUR)
+Nr. datum
+Rechnungsabschluss 25.12.2021
+1 23.12.2021 Habenzinsen 25.12.2021 0,83
+2 23.12.2021 Solidaritätszuschlag 25.12.2021 -0,01
+3 23.12.2021 Kirchensteuer 25.12.2021 -0,01
+4 23.12.2021 Abgeltungsteuer 25.12.2021 -0,20
+Neuer Kontostand in EUR: 1.001,90
+Freistellungs- NV Gültig bis Gesamt- Verbleibender Abgeltungsteuer/ Solidaritäts- Kirchen- Kirchensteuer-
+auftrag zinserträge Freibetrag Kapitalertragsteuer zuschlag steuer Betrag
+EUR 0,00 Nein 00.00.0000 EUR 2,02 EUR 0,00 EUR 0,49 EUR 0,02 8,00 % EUR 0,02
+Ihre Freistellungsdaten vom 23.12.2021
+Genehmigung des Rechnungsabschlusses
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit des Rechnungsabschlusses müssen Sie spätestens vor Ablauf von sechs Wochen nach
+dessen Zugang erheben. Sofern Sie Ihre Einwendungen schriftlich oder - falls diese Form vereinbart ist - in Textform geltend machen, genügt die
+Absendung innerhalb der Sechs-Wochen-Frist. Sie können Ihre Einwendungen an die interne Revision der Volkswagen Bank GmbH,
+Gifhorner Str. 57, 38 112 Braunschweig, richten. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung des Rechnungsabschlusses.
+Bitte beachten Sie, dass Zinserträge einkommensteuerpflichtig sind.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können dem "Informationsbogen für den Einleger" entnommen werden. 
+206500
+A  // B  // M

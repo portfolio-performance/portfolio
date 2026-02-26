@@ -5,7 +5,6 @@ package name.abuchen.portfolio.ui.views;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,7 +13,6 @@ import com.google.common.primitives.Doubles;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.views.SecuritiesChart.ChartInterval;
 
 public class BollingerBands
@@ -135,7 +133,7 @@ public class BollingerBands
             datesBollingerBands.add(date);
         }
 
-        Date[] tmpDates = TimelineChart.toJavaUtilDate(datesBollingerBands.toArray(new LocalDate[0]));
+        LocalDate[] tmpDates = datesBollingerBands.toArray(new LocalDate[0]);
 
         this.BollingerBandsLowerBand.setDates(tmpDates);
         this.BollingerBandsLowerBand.setValues(Doubles.toArray(valuesBollingerBandsLowerBands));

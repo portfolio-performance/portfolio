@@ -1,0 +1,44 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.78.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+1/1
+Nous vous prions de trouver ci-dessous votre relevé d'opérations. Sans observation de votre part au
+sujet du présent relevé, nous le considérerons comme ayant obtenu votre accord. Veuillez agréer nos
+salutations distinguées.
+Le 05/08/2025
+Avis d'Opération
+COMPTE N° XXXX PEA MR XXX  XXX
+XXX
+MR XXX XXX 12000 RODEZ RODEZ
+Date Désignation Débit (€) Crédit (€)
+ 05/08/2025  ACHAT COMPTANT  FR0000120271  TOTALENERGIES SE  363,59
+ QUANTITE :  +7
+ COURS :  +51,8  BRUT :  +362,60
+ COURTAGE :  +0,99  TVA :  +0,00
+ Heure Execution: 16:35:33       Lieu: BORSE BERLIN EQUIDUCT TRADING - BERL
+ 05/08/2025  ACHAT ETRANGER  IE00B4BNMY34  ACCENTURE CL.A  216,93
+ QUANTITE :  +1
+ COURS :  +215,85  BRUT :  +215,85
+ COURTAGE :  +1,08  TVA :  +0,00
+ Heure Execution: 16:29:06       Lieu: DEUTSCHE BOERSE AG
+ 05/08/2025  ACHAT COMPTANT  LU1681047236  A.E.ST.50 U.EUR C  275,59
+ QUANTITE :  +2
+ COURS :  +137,3  BRUT :  +274,60
+ COURTAGE :  +0,99  TVA :  +0,00
+ Heure Execution: 16:31:21       Lieu: BORSE BERLIN EQUIDUCT TRADING - BERL
+ 05/08/2025  ACHAT COMPTANT  NL0000395903  WOLTERS KLUWER  265,79
+ QUANTITE :  +2
+ COURS :  +132,4  BRUT :  +264,80
+ COURTAGE :  +0,99  TVA :  +0,00
+ Heure Execution: 16:32:51       Lieu: BORSE BERLIN EQUIDUCT TRADING - BERL
+ 05/08/2025  ACHAT COMPTANT  NL00150001Q9  STELLANTIS  174,18
+ QUANTITE :  +23
+ COURS :  +7,535  BRUT :  +173,31
+ COURTAGE :  +0,87  TVA :  +0,00
+ Heure Execution: 16:37:38       Lieu: BORSE BERLIN EQUIDUCT TRADING - BERL
+ 05/08/2025  INVESTISSEMENT ESPECES  VIRT M XXX XXX  1 240,00
+ 05/08/2025  TAXE TRANSACT FINANCIERES  FR0000120271  TTF  1,45
+Sous réserve de bonne fin / Ce relevé ne constitue pas une facture
+Les montants des colonnes Débit et Crédit sont stipulés TVA Comprise
+Bourse Direct ,  SA au capital de 13.988.845,75 €, R.C.S Paris B 408 790 608, Siège Social : 374 rue Saint-Honoré, 75001 Paris -  Groupe VIEL et Cie

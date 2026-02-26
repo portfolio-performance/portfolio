@@ -6,8 +6,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.function.ToIntFunction;
 
 import org.eclipse.swt.events.PaintEvent;
-import org.swtchart.Chart;
-import org.swtchart.IAxis;
+import org.eclipse.swtchart.Chart;
+import org.eclipse.swtchart.IAxis;
 
 import name.abuchen.portfolio.util.Dates;
 import name.abuchen.portfolio.util.Triple;

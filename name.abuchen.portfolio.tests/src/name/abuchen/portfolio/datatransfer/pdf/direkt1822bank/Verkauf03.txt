@@ -1,0 +1,64 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.2
+-----------------------------------------
+Postfach · 60255 Frankfurt am Main Seite 1 von 2
+Depotnummer 0123456789
+Kundennummer 0123456
+Max Mustermann
+Auftragsnummer 123456/12.00
+Herrn Datum 18.11.2024
+Max Mustermann Ihr Berater 1822direkt
+Musterstraße 123 Telefon 069 94170-0
+01234 Musterstadt Rechnungsnummer W01234-0000123456/12
+Umsatzsteuer-ID DE114104095
+Wertpapier Abrechnung Rücknahme Investmentfonds
+Auftrag vom 14.11.2024 16:42:42 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 11 DJE - ZINS + DIVIDENDE LU0553164731 (A1C7Y8)
+INHABER-ANTEILE PA EUR O.N.
+Handels-/Ausführungsplatz Außerbörslich
+Schlusstag 18.11.2024 Auftraggeber Mustermann, Max
+Ausführungskurs 172,56 EUR Auftragserteilung/ -ort Online-Banking
+Girosammelverwahrung Sammelurkunde
+Kurswert 1.898,16 EUR
+Ermittlung steuerrelevante Erträge
+Veräußerungsverlust (nach Teilfreistellung) 13,22- EUR
+Eingebuchte sonstige negative Kapitalerträge 13,22 EUR
+Ausmachender Betrag 1.898,16 EUR
+Den Gegenwert buchen wir mit Valuta 20.11.2024 zu Gunsten des Kontos 0123456789
+(IBAN DE99 5005 0201 0123 4567 89), BLZ 50050201 (BIC HELADEF1822).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Steuerliche Ausgleichrechnung
+Verrechnete sonstige negative Kapitalerträge 13,22- EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 13,22 EUR
+0123.01234567.0001234OR01
+Seite 2 von 2
+Depotnummer 0123456789
+Kundennummer 0123456
+Auftragsnummer 123456/12.00
+Datum 18.11.2024
+Kapitalertragsteuer 25,00% auf 13,22 EUR 3,31 EUR
+Solidaritätszuschlag 5,50% auf 3,31 EUR 0,18 EUR
+Ausmachender Betrag 3,49 EUR
+Den Gegenwert buchen wir mit Valuta 18.11.2024 zu Gunsten des Kontos 0123456789
+(IBAN DE99 5005 0201 0123 4567 89), BLZ 50050201 (BIC HELADEF1822).
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Initiator der Besprechung war der Kunde.
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verlustverrechnungstöpfe 2024 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 405,28
+Verkauf 0,00 13,22 0,00 0,00 0,00
+Steuerausgleich 0,00 13,22- 0,00 0,00 13,22-
+Nachher 0,00 0,00 0,00 0,00 392,06
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäft Auftragsnr. Ausführ.-tag Whr./St. Nennwert/Stück AS-Kosten Erlös Teilfrei- ant. Ergebnis
+stellung
+Kauf 1234567890 10.10.2024 Stück 6,0000 1.040,26- 1.035,36 0,73 4,17- (D)
+Kauf 1234567891 17.10.2024 Stück 5,0000 873,45- 862,80 1,60 9,05- (D)
+Summe aller Erträge nach Differenzmethode und/oder Ersatzbemessungsgrundlage 13,22-
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0123.01234567.0001234OR01

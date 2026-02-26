@@ -1,17 +1,12 @@
 package fileversions;
 
+import static fileversions.FileHelper.find;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.junit.Test;
@@ -31,12 +26,8 @@ public class ReadingHistoricClientFilesTest
     public static Collection<Object[]> getFiles()
     {
         return Arrays.asList(new Object[][] { // NOSONAR
-                        { "client52", 52 }, { "client53", 53 } });
+                        { "client52", 52 }, { "client53", 53 }, { "client69", 69 } });
     }
-
-    private Path testDir = Paths.get(new File(
-                    ReadingHistoricClientFilesTest.class.getProtectionDomain().getCodeSource().getLocation().getFile())
-                                    .toURI());
 
     private String file;
     private int versionOnDisk;
@@ -63,10 +54,16 @@ public class ReadingHistoricClientFilesTest
         String binaryEncrypted = ClientTestUtilities.toString(binaryEncryptedClient);
         assertThat(binaryEncryptedClient.getFileVersionAfterRead(), is(versionOnDisk));
 
-        Client xmlEncrpytedClient = ClientFactory.load(find(file + ".xml+pwd.portfolio"), "123456".toCharArray(),
-                        new NullProgressMonitor());
-        String xmlEncrpyted = ClientTestUtilities.toString(xmlEncrpytedClient);
-        assertThat(xmlEncrpytedClient.getFileVersionAfterRead(), is(versionOnDisk));
+        String xmlEncrpyted = null;
+        if (versionOnDisk < 60)
+        {
+            // encrypted files where the content is stored as XML are not
+            // supported anymore
+            Client xmlEncrpytedClient = ClientFactory.load(find(file + ".xml+pwd.portfolio"), "123456".toCharArray(),
+                            new NullProgressMonitor());
+            xmlEncrpyted = ClientTestUtilities.toString(xmlEncrpytedClient);
+            assertThat(xmlEncrpytedClient.getFileVersionAfterRead(), is(versionOnDisk));
+        }
 
         if (!xml.equals(binary))
         {
@@ -84,7 +81,7 @@ public class ReadingHistoricClientFilesTest
                             is(xml.substring(pos, Math.min(pos + 100, xml.length()))));
         }
 
-        if (!xml.equals(xmlEncrpyted))
+        if (xmlEncrpyted != null && !xml.equals(xmlEncrpyted))
         {
             int pos = ClientTestUtilities.indexOfDifference(xml, xmlEncrpyted);
             assertThat("encrypted xml is not identical to xml " + pos,
@@ -92,21 +89,5 @@ public class ReadingHistoricClientFilesTest
                             is(xml.substring(pos, Math.min(pos + 100, xml.length()))));
         }
 
-    }
-
-    private File find(String name) throws IOException
-    {
-        // depending on the environment (Eclipse, Maven, Infinitest) the files
-        // can be located in different paths
-
-        try (Stream<Path> fileWalker = Files.walk(testDir, 10))
-        {
-            Optional<Path> fullPath = fileWalker.filter(p -> p.getFileName().toString().equals(name)).findAny();
-
-            if (fullPath.isPresent())
-                return fullPath.get().toFile();
-        }
-
-        throw new IllegalArgumentException("entry with name '" + name + "' not found");
     }
 }

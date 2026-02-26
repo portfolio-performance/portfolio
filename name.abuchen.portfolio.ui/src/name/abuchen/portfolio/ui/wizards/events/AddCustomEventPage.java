@@ -18,7 +18,6 @@ import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.typed.ViewerProperties;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -32,6 +31,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.ui.util.DatePicker;
+import name.abuchen.portfolio.ui.util.SecurityNameLabelProvider;
 import name.abuchen.portfolio.ui.util.SimpleDateTimeDateSelectionProperty;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
@@ -83,14 +83,7 @@ public class AddCustomEventPage extends AbstractWizardPage
         Combo combo = comboSecurity.getCombo();
         combo.setLayoutData(new FormData());
         comboSecurity.setContentProvider(ArrayContentProvider.getInstance());
-        comboSecurity.setLabelProvider(new LabelProvider()
-        {
-            @Override
-            public String getText(Object element)
-            {
-                return ((Security) element).getName();
-            }
-        });
+        comboSecurity.setLabelProvider(new SecurityNameLabelProvider(model.getClient()));
         comboSecurity.setInput(securities);
 
         Label labelDate = new Label(container, SWT.NONE);

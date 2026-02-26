@@ -360,6 +360,12 @@ public class DivvyDiarySearchProvider implements SecuritySearchProvider
             return NAME;
         }
 
+        @Override
+        public String getFeedId()
+        {
+            return null;
+        }
+
         @SuppressWarnings("nls")
         @Override
         public String toString()
@@ -410,7 +416,7 @@ public class DivvyDiarySearchProvider implements SecuritySearchProvider
      *         contain one security or an error message.
      */
     @Override
-    public List<ResultItem> search(String query, Type type) throws IOException
+    public List<ResultItem> search(String query) throws IOException
     {
         if (apiKey == null || apiKey.isBlank())
             return Collections.emptyList();

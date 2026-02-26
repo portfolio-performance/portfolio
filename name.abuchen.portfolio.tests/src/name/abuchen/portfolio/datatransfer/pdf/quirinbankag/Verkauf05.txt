@@ -1,0 +1,44 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.2
+-----------------------------------------
+Verkauf
+Referenz O:003198102:1
+Datum 17.09.2014
+Depot Depotnr.
+Nachname, Vorname
+Herrn
+Vornamen Nachname Betreuer Stangl, Richard
+Straße Abteilung Honorarberater
+PLZ Ort Telefon +49 (0) 911 249 299 10
+E-Mail richard.stangl@quirinbank.de
+ 
+Nominal/Stück Fr.Temp.Inv.Fds-T.China Fd Namens-Anteile A (acc.) o.N.
+ST 340 ISIN LU0052750758 WKN 973909
+Abrechnungskonditionen: Abrechnungswerte:
+Kurs  23,600000 USD Kurswert  8.024,00 USD  6.192,31 EUR
+Ausführungsplatz Fondshandel außerbörslich(FFF) Courtage *  0,00 EUR
+Handelstag/-zeit 15.09.2014 Bank-Provision  0,00 EUR
+Verwahrart Wertpapierrechnung Spesen * -6,50 EUR
+Lagerland CBL-Luxemburg Abwickl.Gebühr *  0,00 EUR
+Zahlungstag 18.09.2014
+Devisenkurs  1,295800
+Akkum. Ertrag  315,08 EUR
+Poolfaktor  1,000000000
+* Fremde Gebühren und Kosten
+Ausmachender Betrag vor Steuer(n)  6.185,81 EUR
+Keine Steuerbescheinigung! Ausmachender Betrag vor Steuer(n)  8.015,58 USD
+Kapitalertragsteuerpflichtiger Betrag  315,08 EUR Kapitalertragsteuer -100,06 USD -77,22 EUR
+Verrechnete sonstige negative Kapitalerträge Solidaritätszuschlag -5,50 USD -4,25 EUR
+Verrechnungstopf Aktien  0,00 EUR Kirchensteuer -8,01 USD -6,18 EUR
+Verrechnungstopf Sonstige 0,00 EUR Steuerbetrag -113,57 USD -87,65 EUR 
+Verrechneter Sparer-Pauschalbetrag  0,00 EUR
+Anrechenbare ausländ. Quellensteuer  0,00 EUR Den Bruttoabrechnungsbetrag und die separate Steuerbuchung werden wir mit 
+Bemessungsgrundlage KESt 315,08 EUR Valuta 18.09.2014 über Konto Kontonr. EUR buchen. 
+ Diesem Geschäft liegt keine Anlageberatung der Bank zugrunde.  
+quirin bank AG Telefon +49 (0) 30 89 021-300 Aufsichtsratsvorsitzender: Vorstand:
+Kurfürstendamm 119 - 10711 Berlin Telefax +49 (0) 30 89 021-321 Holger Timm Karl Matthäus Schmidt, Johannes 
+Postfach  311105 - 10641 Berlin BLZ 10110600 Eismann, Dr. Marcel Morschbach, 
+Gerichtsstand: Berlin USt-Id. DE 1956 61729 Stefan Spannagl
+Handelsregister: Berlin-Charlottenb., HR B 87859 BIC QUBKDEBBXXX
+Internet  www.quirinbank.de
+O10ABR_WPR_E  0000#816767668049#0000026624  VJ9797124   (10) 7.1.8.0.0

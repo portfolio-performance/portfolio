@@ -32,7 +32,7 @@ public class AccountBalancePane implements InformationPanePage
     @Optional
     public void onDiscreedModeChanged(@UIEventTopic(UIConstants.Event.Global.DISCREET_MODE) Object obj)
     {
-        if (chart != null)
+        if (chart != null && !chart.isDisposed())
             chart.redraw();
     }
 

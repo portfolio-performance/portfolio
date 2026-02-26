@@ -26,7 +26,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 
-import name.abuchen.portfolio.datatransfer.csv.CSVExporter;
+import name.abuchen.portfolio.datatransfer.csv.exporter.CSVExporter;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -36,11 +36,12 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
+import name.abuchen.portfolio.online.QuoteFeedException;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dialogs.SecurityPriceDialog;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
-import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
+import name.abuchen.portfolio.ui.jobs.priceupdate.UpdatePricesJob;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.wizards.datatransfer.CSVImportWizard;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportQuotesWizard;
@@ -69,7 +70,7 @@ public class QuotesContextMenu
             @Override
             public void run()
             {
-                new UpdateQuotesJob(owner.getClient(), security).schedule();
+                new UpdatePricesJob(owner.getClient(), security).schedule();
             }
         };
         // enable only if online updates are configured
@@ -89,21 +90,30 @@ public class QuotesContextMenu
                     if (feed == null)
                         return;
 
-                    QuoteFeedData data = feed.getHistoricalQuotes(security, true);
+                    QuoteFeedData data;
+                    try
+                    {
+                        data = feed.getHistoricalQuotes(security, true);
+                    }
+                    catch (QuoteFeedException e)
+                    {
+                        data = QuoteFeedData.withError(e);
+                    }
 
                     PortfolioPlugin.log(data.getErrors());
 
+                    var feedData = data;
                     Display.getDefault().asyncExec(() -> {
 
-                        if (!data.getResponses().isEmpty() || data.getErrors().isEmpty())
+                        if (!feedData.getResponses().isEmpty() || feedData.getErrors().isEmpty())
                         {
-                            new RawResponsesDialog(Display.getDefault().getActiveShell(), data.getResponses()).open();
+                            new RawResponsesDialog(Display.getDefault().getActiveShell(), feedData.getResponses()).open();
                         }
                         else
                         {
                             MultiStatus status = new MultiStatus(PortfolioPlugin.PLUGIN_ID, IStatus.ERROR,
                                             security.getName(), null);
-                            data.getErrors().forEach(e -> status
+                            feedData.getErrors().forEach(e -> status
                                             .add(new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage())));
                             ErrorDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError,
                                             security.getName(), status);

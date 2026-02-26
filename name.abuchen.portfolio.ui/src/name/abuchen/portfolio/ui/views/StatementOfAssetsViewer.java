@@ -40,6 +40,7 @@ import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
@@ -70,6 +71,7 @@ import name.abuchen.portfolio.snapshot.AssetCategory;
 import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.GroupByTaxonomy;
+import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
@@ -78,11 +80,9 @@ import name.abuchen.portfolio.snapshot.filter.ReadOnlyPortfolio;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord.LazyValue;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
-import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dnd.ImportFromFileDropAdapter;
-import name.abuchen.portfolio.ui.dnd.ImportFromURLDropAdapter;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
@@ -90,9 +90,10 @@ import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.AttributeComparator;
 import name.abuchen.portfolio.ui.util.CacheKey;
-import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.ValueColorScheme;
+import name.abuchen.portfolio.ui.util.action.MenuContribution;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.MarkDirtyClientListener;
@@ -113,14 +114,16 @@ import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import name.abuchen.portfolio.ui.views.columns.QuoteRangeColumn;
 import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
 import name.abuchen.portfolio.util.Interval;
-import name.abuchen.portfolio.util.TextUtil;
 
 public class StatementOfAssetsViewer
 {
+    private static final String PREFERENCE_NONE = "@none"; //$NON-NLS-1$
+
     public static final class Model
     {
         private static final String TOP = Model.class.getSimpleName() + "@top"; //$NON-NLS-1$
@@ -128,6 +131,7 @@ public class StatementOfAssetsViewer
 
         private final IPreferenceStore preferences;
 
+        private final Taxonomy taxonomy;
         private final ClientFilter clientFilter;
         private final Client filteredClient;
         private CurrencyConverter converter;
@@ -150,6 +154,8 @@ public class StatementOfAssetsViewer
             this.clientFilter = filter;
             this.filteredClient = filter.filter(client);
             this.converter = converter;
+
+            this.taxonomy = taxonomy;
 
             this.globalInterval = Interval.of(LocalDate.MIN, date);
 
@@ -222,8 +228,13 @@ public class StatementOfAssetsViewer
 
             for (AssetCategory cat : groupByTaxonomy.asList())
             {
+                var isUnassignedCategory = Objects.equals(Classification.UNASSIGNED_ID,
+                                cat.getClassification().getId());
+                var hideCategory = taxonomy == null && isUnassignedCategory;
+
                 Element category = new Element(groupByTaxonomy, cat, sortOrder);
-                answer.add(category);
+                if (!hideCategory)
+                    answer.add(category);
                 totalTop.addChild(category);
                 totalBottom.addChild(category);
                 sortOrder++;
@@ -250,6 +261,7 @@ public class StatementOfAssetsViewer
             if (calculated.contains(key))
                 return;
 
+            // performance for securities
             var snapshot = LazySecurityPerformanceSnapshot.create(filteredClient, converter.with(currencyCode),
                             interval);
 
@@ -258,6 +270,25 @@ public class StatementOfAssetsViewer
 
             elements.stream().filter(Element::isSecurity)
                             .forEach(e -> e.setPerformance(currencyCode, interval, map.get(e.getSecurity())));
+
+            // create (lazily!) the performance index for categories
+
+            elements.stream() //
+                            .filter(Element::isCategory) //
+                            .filter(e -> !Objects.equals(Classification.UNASSIGNED_ID,
+                                            e.getCategory().getClassification().getId()))
+                            .forEach(e -> {
+                                var index = new LazyValue<PerformanceIndex>(() -> PerformanceIndex.forClassification(
+                                                filteredClient, converter.with(currencyCode),
+                                                e.getCategory().getClassification(), interval, new ArrayList<>()));
+                                e.setPerformanceForCategoryTotals(currencyCode, interval, index);
+                            });
+
+            // create (lazily!) the performance index for the total lines
+            var index = new LazyValue<PerformanceIndex>(() -> PerformanceIndex.forClient(filteredClient,
+                            converter.with(currencyCode), interval, new ArrayList<>()));
+            elements.stream().filter(Element::isGroupByTaxonomy)
+                            .forEach(e -> e.setPerformanceForCategoryTotals(currencyCode, interval, index));
 
             calculated.add(key);
         }
@@ -317,7 +348,10 @@ public class StatementOfAssetsViewer
     {
         String taxonomyId = preference.getString(this.getClass().getSimpleName());
 
-        if (taxonomyId != null)
+        if (PREFERENCE_NONE.equals(taxonomyId))
+            return;
+
+        if (taxonomyId != null && !taxonomyId.isBlank())
         {
             for (Taxonomy t : client.getTaxonomies())
             {
@@ -341,16 +375,18 @@ public class StatementOfAssetsViewer
 
         assets = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
         ColumnViewerToolTipSupport.enableFor(assets, ToolTip.NO_RECREATE);
-        ColumnEditingSupport.prepare(assets);
+        ColumnEditingSupport.prepare(owner.getEditorActivationState(), assets);
         CopyPasteSupport.enableFor(assets);
 
-        ImportFromURLDropAdapter.attach(this.assets.getControl(), owner.getPart());
         ImportFromFileDropAdapter.attach(this.assets.getControl(), owner.getPart());
 
         assets.addSelectionChangedListener(event -> {
-            Element element = (Element) ((IStructuredSelection) event.getSelection()).getFirstElement();
-            if (element != null && element.isSecurity())
-                selectionService.setSelection(new SecuritySelection(client, element.getSecurity()));
+            List<Security> securities = event.getStructuredSelection().stream().filter(e -> ((Element) e).isSecurity())
+                            .map(e -> ((Element) e).getSecurity()).toList();
+            if (!securities.isEmpty())
+                selectionService.setSelection(new SecuritySelection(client, securities));
+            else
+                selectionService.setSelection(null);
         });
 
         support = new ShowHideColumnHelper(StatementOfAssetsViewer.class.getName(), client, preference, assets, layout);
@@ -375,8 +411,11 @@ public class StatementOfAssetsViewer
             @Override
             public String getText(Object e)
             {
+                Element el = (Element) e;
                 if (((Element) e).isGroupByTaxonomy())
-                    return Messages.LabelTotalSum;
+                    return Messages.ColumnSum;
+                if (el.isCategory())
+                    return super.getText(el) + " (" + el.getChildren().count() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
                 return super.getText(e);
             }
 
@@ -506,27 +545,15 @@ public class StatementOfAssetsViewer
         column.setSorter(ColumnViewerSorter.create(Element.class, "valuation").wrap(ElementComparator::new)); //$NON-NLS-1$
         support.addColumn(column);
 
+        addPurchaseCostColumns();
+
         ReportingPeriodLabelProvider labelProvider;
 
-        column = new Column("7", Messages.ColumnPurchasePrice, SWT.RIGHT, 60); //$NON-NLS-1$
-        column.setDescription(Messages.ColumnPurchasePrice_Description);
-        labelProvider = new ReportingPeriodLabelProvider(
-                        new ElementValueProvider(LazySecurityPerformanceRecord::getFifoCostPerSharesHeld, null), false);
-        column.setLabelProvider(labelProvider);
-        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
-        column.setVisible(false);
-        support.addColumn(column);
-
-        column = new Column("ppmvavg", Messages.ColumnPurchasePriceMovingAverage, SWT.RIGHT, 60); //$NON-NLS-1$
-        column.setDescription(Messages.ColumnPurchasePriceMovingAverage_Description);
-        labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
-                        LazySecurityPerformanceRecord::getMovingAverageCostPerSharesHeld, null), false);
-        column.setLabelProvider(labelProvider);
-        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
-        column.setVisible(false);
-        support.addColumn(column);
-
+        // cost value - FIFO
         column = new Column("8", Messages.ColumnPurchaseValue, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.ColumnPurchaseValue);
+        column.setHeading(Messages.LabelTaxesAndFeesIncluded);
+        column.setMenuLabel(Messages.ColumnPurchaseValue_MenuLabel);
         column.setDescription(Messages.ColumnPurchaseValue_Description);
         labelProvider = new ReportingPeriodLabelProvider(
                         new ElementValueProvider(LazySecurityPerformanceRecord::getFifoCost, withSum()), false);
@@ -535,7 +562,10 @@ public class StatementOfAssetsViewer
         column.setVisible(false);
         support.addColumn(column);
 
+        // cost value - moving average
         column = new Column("pvmvavg", Messages.ColumnPurchaseValueMovingAverage, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.ColumnPurchaseValue);
+        column.setMenuLabel(Messages.ColumnPurchaseValueMovingAverage_MenuLabel);
         column.setDescription(Messages.ColumnPurchaseValueMovingAverage_Description);
         labelProvider = new ReportingPeriodLabelProvider(
                         new ElementValueProvider(LazySecurityPerformanceRecord::getMovingAverageCost, withSum()),
@@ -577,6 +607,11 @@ public class StatementOfAssetsViewer
         column.getSorter().wrap(ElementComparator::new);
         support.addColumn(column);
 
+        column = new QuoteRangeColumn(LocalDate::now,
+                        owner.getPart().getReportingPeriods().stream().collect(toMutableList()));
+        column.getSorter().wrap(ElementComparator::new);
+        support.addColumn(column);
+
         support.createColumns(isConfigurable);
 
         assets.getTable().setHeaderVisible(true);
@@ -599,13 +634,69 @@ public class StatementOfAssetsViewer
         return container;
     }
 
+    private void addPurchaseCostColumns()
+    {
+        ReportingPeriodLabelProvider labelProvider;
+
+        // cost value per share - FIFO
+        Column column = new Column("7", Messages.ColumnPurchasePrice, SWT.RIGHT, 60); //$NON-NLS-1$
+        column.setHeading(Messages.LabelTaxesAndFeesNotIncluded);
+        column.setGroupLabel(Messages.LabelPurchasePrice);
+        column.setMenuLabel(Messages.ColumnPurchasePrice_MenuLabel);
+        column.setDescription(Messages.ColumnPurchasePrice_Description);
+        labelProvider = new ReportingPeriodLabelProvider(
+                        new ElementValueProvider(LazySecurityPerformanceRecord::getFifoCostPerSharesHeld, null), false);
+        column.setLabelProvider(labelProvider);
+        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        // cost value per share - moving average
+        column = new Column("ppmvavg", Messages.ColumnPurchasePriceMovingAverage, SWT.RIGHT, 60); //$NON-NLS-1$
+        column.setGroupLabel(Messages.LabelPurchasePrice);
+        column.setMenuLabel(Messages.ColumnPurchasePriceMovingAverage_MenuLabel);
+        column.setDescription(Messages.ColumnPurchasePriceMovingAverage_Description);
+        labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
+                        LazySecurityPerformanceRecord::getMovingAverageCostPerSharesHeld, null), false);
+        column.setLabelProvider(labelProvider);
+        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        // cost value per share including fees and taxes - FIFO
+        column = new Column("grossPurchasePriceFIFO", Messages.ColumnGrossPurchasePriceFIFO, SWT.RIGHT, 60); //$NON-NLS-1$
+        column.setHeading(Messages.LabelTaxesAndFeesIncluded);
+        column.setGroupLabel(Messages.LabelPurchasePrice);
+        column.setMenuLabel(Messages.ColumnPurchasePrice_MenuLabel);
+        column.setDescription(Messages.ColumnGrossPurchasePriceFIFO_Description);
+        labelProvider = new ReportingPeriodLabelProvider(
+                        new ElementValueProvider(LazySecurityPerformanceRecord::getGrossFifoCostPerSharesHeld, null),
+                        false);
+        column.setLabelProvider(labelProvider);
+        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        // cost value per share including fees and taxes - moving average
+        column = new Column("grossPurchasePriceMA", Messages.ColumnGrossPurchasePriceMovingAverage, SWT.RIGHT, 60); //$NON-NLS-1$
+        column.setGroupLabel(Messages.LabelPurchasePrice);
+        column.setMenuLabel(Messages.ColumnPurchasePriceMovingAverage_MenuLabel);
+        column.setDescription(Messages.ColumnGrossPurchasePriceMovingAverage_Description);
+        labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
+                        LazySecurityPerformanceRecord::getGrossMovingAverageCostPerSharesHeld, null), false);
+        column.setLabelProvider(labelProvider);
+        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
+        column.setVisible(false);
+        support.addColumn(column);
+    }
+
     private void addPerformanceColumns(List<ReportingPeriod> options)
     {
         ReportingPeriodLabelProvider labelProvider;
 
         Column column = new Column("ttwror", Messages.ColumnTTWROR, SWT.RIGHT, 80); //$NON-NLS-1$
-        labelProvider = new ReportingPeriodLabelProvider(
-                        LazySecurityPerformanceRecord::getTrueTimeWeightedRateOfReturn);
+        labelProvider = new ReportingPeriodLabelProvider(LazySecurityPerformanceRecord::getTrueTimeWeightedRateOfReturn,
+                        true, PerformanceIndex::getFinalAccumulatedPercentage);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnTTWROR_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.LabelTTWROR);
@@ -616,7 +707,8 @@ public class StatementOfAssetsViewer
 
         column = new Column("ttwror_pa", Messages.ColumnTTWRORpa, SWT.RIGHT, 80); //$NON-NLS-1$
         labelProvider = new ReportingPeriodLabelProvider(
-                        LazySecurityPerformanceRecord::getTrueTimeWeightedRateOfReturnAnnualized);
+                        LazySecurityPerformanceRecord::getTrueTimeWeightedRateOfReturnAnnualized, true,
+                        PerformanceIndex::getFinalAccumulatedAnnualizedPercentage);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnTTWRORpa_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.LabelTTWROR_Annualized);
@@ -626,7 +718,8 @@ public class StatementOfAssetsViewer
         support.addColumn(column);
 
         column = new Column("irr", Messages.ColumnIRR, SWT.RIGHT, 80); //$NON-NLS-1$
-        labelProvider = new ReportingPeriodLabelProvider(LazySecurityPerformanceRecord::getIrr);
+        labelProvider = new ReportingPeriodLabelProvider(LazySecurityPerformanceRecord::getIrr, true,
+                        PerformanceIndex::getPerformanceIRR);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnIRRPerformanceOption, options));
         column.setMenuLabel(Messages.ColumnIRR_MenuLabel);
         column.setGroupLabel(Messages.GroupLabelPerformance);
@@ -835,6 +928,57 @@ public class StatementOfAssetsViewer
         column.setVisible(false);
         support.addColumn(column);
 
+        column = new Column("quoteReportingCurrency", Messages.ColumnQuote + Messages.BaseCurrencyCue, SWT.RIGHT, 60); //$NON-NLS-1$
+        column.setGroupLabel(Messages.ColumnForeignCurrencies);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Element element = (Element) e;
+                if (!element.isSecurity())
+                    return null;
+
+                Security security = element.getSecurity();
+                var price = element.getSecurityPosition().getPrice();
+                var converter = model.getCurrencyConverter();
+
+                if (converter.getTermCurrency().equals(security.getCurrencyCode()))
+                {
+                    return Values.Quote.format(security.getCurrencyCode(), price.getValue(), client.getBaseCurrency());
+                }
+                else
+                {
+                    var converted = converter.convert(price.getDate(),
+                                    Quote.of(security.getCurrencyCode(), price.getValue()));
+                    return Values.CalculatedQuote.format(converted.getCurrencyCode(), converted.getAmount(),
+                                    client.getBaseCurrency());
+                }
+            }
+        });
+        column.setComparator(new ElementComparator(new AttributeComparator(e -> {
+            Element element = (Element) e;
+            if (!element.isSecurity())
+                return null;
+
+            Security security = element.getSecurity();
+            var price = element.getSecurityPosition().getPrice();
+            var converter = model.getCurrencyConverter();
+
+            if (converter.getTermCurrency().equals(security.getCurrencyCode()))
+            {
+                return Money.of(element.getSecurity().getCurrencyCode(), price.getValue());
+            }
+            else
+            {
+                var converted = converter.convert(price.getDate(),
+                                Quote.of(security.getCurrencyCode(), price.getValue()));
+                return Money.of(converted.getCurrencyCode(), converted.getAmount());
+            }
+        })));
+        column.setVisible(false);
+        support.addColumn(column);
+
         column = new Column("marketValueBaseCurrency", //$NON-NLS-1$
                         Messages.ColumnMarketValue + Messages.BaseCurrencyCue, SWT.RIGHT, 80);
         column.setDescription(Messages.ColumnMarketValueBaseCurrency);
@@ -932,9 +1076,23 @@ public class StatementOfAssetsViewer
         }
     }
 
+    public void hookKeyListener()
+    {
+        assets.getControl().addKeyListener(KeyListener.keyPressedAdapter(e -> {
+            var element = (Element) assets.getStructuredSelection().getFirstElement();
+            if (element != null && element.isSecurity())
+                new SecurityContextMenu(owner).handleEditKey(e, element.getSecurity());
+        }));
+    }
+
     public TableViewer getTableViewer()
     {
         return assets;
+    }
+
+    public boolean hasModel()
+    {
+        return model != null;
     }
 
     public void showConfigMenu(Shell shell)
@@ -954,14 +1112,20 @@ public class StatementOfAssetsViewer
     public void menuAboutToShow(IMenuManager manager)
     {
         manager.add(new LabelOnly(Messages.LabelTaxonomies));
+
+        var noneAction = new SimpleAction(Messages.LabelUseNoTaxonomy, a -> {
+            taxonomy = null;
+            setInput(model.clientFilter, model.getDate(), model.getCurrencyConverter());
+        });
+        noneAction.setChecked(taxonomy == null);
+        manager.add(noneAction);
+
         for (final Taxonomy t : client.getTaxonomies())
         {
-            Action action = new SimpleAction(TextUtil.tooltip(t.getName()), a -> {
+            manager.add(new MenuContribution(t.getName(), () -> {
                 taxonomy = t;
                 setInput(model.clientFilter, model.getDate(), model.getCurrencyConverter());
-            });
-            action.setChecked(t.equals(taxonomy));
-            manager.add(action);
+            }, t.equals(taxonomy)));
         }
 
         manager.add(new Separator());
@@ -998,6 +1162,7 @@ public class StatementOfAssetsViewer
         {
             this.model = new Model(preference, client, filter, converter, date, taxonomy);
 
+            support.invalidateCache();
             assets.setInput(model.getElements());
             assets.refresh();
         }
@@ -1026,8 +1191,12 @@ public class StatementOfAssetsViewer
 
     private void widgetDisposed()
     {
+        var preferenceKey = this.getClass().getSimpleName();
+
         if (taxonomy != null)
-            preference.setValue(this.getClass().getSimpleName(), taxonomy.getId());
+            preference.setValue(preferenceKey, taxonomy.getId());
+        else
+            preference.setValue(preferenceKey, PREFERENCE_NONE);
 
         if (contextMenu != null)
             contextMenu.dispose();
@@ -1050,6 +1219,7 @@ public class StatementOfAssetsViewer
         private List<Element> children = new ArrayList<>();
 
         private Map<CacheKey, LazySecurityPerformanceRecord> performance = new HashMap<>();
+        private Map<CacheKey, LazyValue<PerformanceIndex>> performanceForCategoryTotals = new HashMap<>();
 
         private Element(GroupByTaxonomy groupByTaxonomy, AssetCategory category, int sortOrder)
         {
@@ -1113,6 +1283,17 @@ public class StatementOfAssetsViewer
         public LazySecurityPerformanceRecord getPerformance(String currencyCode, Interval period)
         {
             return performance.get(new CacheKey(currencyCode, period));
+        }
+
+        public void setPerformanceForCategoryTotals(String currencyCode, Interval period,
+                        LazyValue<PerformanceIndex> index)
+        {
+            performanceForCategoryTotals.put(new CacheKey(currencyCode, period), index);
+        }
+
+        public PerformanceIndex getPerformanceForCategoryTotals(String currencyCode, Interval period)
+        {
+            return performanceForCategoryTotals.get(new CacheKey(currencyCode, period)).get();
         }
 
         public boolean isGroupByTaxonomy()
@@ -1240,14 +1421,24 @@ public class StatementOfAssetsViewer
 
     /* testing */ static class ElementValueProvider
     {
-        private Function<LazySecurityPerformanceRecord, LazyValue<?>> valueProvider;
-        private Function<Stream<Object>, Object> collector;
+        private final Function<LazySecurityPerformanceRecord, LazyValue<?>> valueProvider;
+        private final Function<Stream<Object>, Object> collector;
+        private final Function<PerformanceIndex, ?> valueProviderTotal;
 
         public ElementValueProvider(Function<LazySecurityPerformanceRecord, LazyValue<?>> valueProvider,
                         Function<Stream<Object>, Object> collector)
         {
             this.valueProvider = valueProvider;
             this.collector = collector;
+            this.valueProviderTotal = null;
+        }
+
+        public ElementValueProvider(Function<LazySecurityPerformanceRecord, LazyValue<?>> valueProvider,
+                        Function<Stream<Object>, Object> collector, Function<PerformanceIndex, ?> valueProviderTotal)
+        {
+            this.valueProvider = valueProvider;
+            this.collector = collector;
+            this.valueProviderTotal = valueProviderTotal;
         }
 
         public Object getValue(Element element, String currencyCode, Interval interval)
@@ -1297,17 +1488,22 @@ public class StatementOfAssetsViewer
             }
             else if (element.isCategory())
             {
-                if (collector == null)
-                    return null;
+                if (collector != null)
+                    return collectValue(element.getChildren(), currencyCode, interval);
+                else if (valueProviderTotal != null && !Objects.equals(Classification.UNASSIGNED_ID,
+                                element.getCategory().getClassification().getId()))
+                    return valueProviderTotal.apply(element.getPerformanceForCategoryTotals(currencyCode, interval));
 
-                return collectValue(element.getChildren(), currencyCode, interval);
+                return null;
             }
             else if (element.isGroupByTaxonomy())
             {
-                if (collector == null)
-                    return null;
+                if (collector != null)
+                    return collectValue(element.getChildren().flatMap(Element::getChildren), currencyCode, interval);
+                else if (valueProviderTotal != null)
+                    return valueProviderTotal.apply(element.getPerformanceForCategoryTotals(currencyCode, interval));
 
-                return collectValue(element.getChildren().flatMap(Element::getChildren), currencyCode, interval);
+                return null;
             }
             else
             {
@@ -1339,6 +1535,12 @@ public class StatementOfAssetsViewer
                         Function<Stream<Object>, Object> collector, boolean showUpAndDownArrows)
         {
             this(new ElementValueProvider(valueProvider, collector), null, showUpAndDownArrows);
+        }
+
+        public ReportingPeriodLabelProvider(Function<LazySecurityPerformanceRecord, LazyValue<?>> valueProvider,
+                        boolean showUpAndDownArrows, Function<PerformanceIndex, ?> valueProviderTotal)
+        {
+            this(new ElementValueProvider(valueProvider, null, valueProviderTotal), null, showUpAndDownArrows);
         }
 
         public ReportingPeriodLabelProvider(ElementValueProvider valueProvider, boolean showUpAndDownArrows)
@@ -1419,9 +1621,9 @@ public class StatementOfAssetsViewer
                 doubleValue = d;
 
             if (doubleValue < 0)
-                return Colors.theme().redForeground();
+                return ValueColorScheme.current().negativeForeground();
             else if (doubleValue > 0)
-                return Colors.theme().greenForeground();
+                return ValueColorScheme.current().positiveForeground();
             else
                 return null;
         }
@@ -1445,9 +1647,9 @@ public class StatementOfAssetsViewer
                 doubleValue = d;
 
             if (doubleValue > 0)
-                return Images.GREEN_ARROW.image();
+                return ValueColorScheme.current().upArrow();
             if (doubleValue < 0)
-                return Images.RED_ARROW.image();
+                return ValueColorScheme.current().downArrow();
             return null;
         }
 

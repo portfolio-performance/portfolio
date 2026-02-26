@@ -1,0 +1,26 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.76.3
+System: linux | x86_64 | 21.0.7+2 | Flathub
+-----------------------------------------
+Scalable Capital GmbH • Seitzstraße 8e • 80538 Munich • Germany 
+oVEnp ACLyf
+srtrCNXhVTFF 40 
+35367 dwvfYeZH Date 05.06.2025
+Germany Page 1 / 1
+Contract note 
+for savings plan order 
+Type LIMIT Order ID aYRCKHJ8ZrONSjY 
+Execution 05.06.2025 02:11:02 Exchange ID 99745M39HwT94300 
+Trading venue EIX Country of custody Luxembourg
+Securities account 5202835803 Kind of custody Non-collective safe custody
+Type Security Quantity Price Amount
+Buy iShares MSCI India (Acc) 1.32005 pc. 0.672 EUR 85.65 EUR
+IE00BZCQB185
+Debit 85.65 EUR
+The amount will be settled via the clearing account DE58120700700758909091 (Value: 06.06.2025). 
+Please check the information for accuracy and report any concerns to us immediately.
+To do so, use the Support menu item in the client area. 
+Scalable Capital GmbH HRB 217778 Managing Directors: Supervisory Board: Page 
+Seitzstraße 8e Registry Court: Munich Local Court Erik Podzuweit, Florian Prucker Patrick Olson (Chairman) 
+80538 München Sales tax ID: DE300434774 Martin Krebs, Dirk Franzmeyer, Dirk
+Urmoneit 1 / 1

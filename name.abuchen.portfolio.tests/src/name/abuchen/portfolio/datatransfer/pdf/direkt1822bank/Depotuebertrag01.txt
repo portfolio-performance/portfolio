@@ -1,0 +1,34 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Postfach · 60255 Frankfurt am Main
+Depotnummer 1234567890
+Kundennummer 1234567
+Max Mustermann
+Auftragsnummer 123456/78.00
+Herrn Datum 30.03.2022
+Max Mustermann Ihr Berater 1822direkt
+Muster Str. 9 Telefon 069 94170-0
+12345 Musterstadt , Musterbunde Umsatzsteuer-ID DE123456789
+Depotbuchung - Belastung
+unentgeltlicher Depotübertrag, Gläubigeridentität
+Anschaffungsdaten werden soweit vorhanden und gesetzlich vorgesehen übermittelt.
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 3 XTR.(IE) - MSCI WORLD IE00BJ0KDQ92 (A1XB5U)
+REGISTERED SHARES 1C O.N.
+Wertpapierrechnung Lagerland Irland
+Schlusstag 28.03.2022 Auftrags-Nr. 123456/10.00
+Valuta 30.03.2022 externe Referenz-Nr. IR12345
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 2 LYXOR MSCI EMERG.MKTS U.ETF LU0635178014 (ETF127)
+INH.-AN. I O.N.
+Girosammelverw. mehrere Sammelurkunden - kein
+Stückeausdruck -
+Schlusstag 28.03.2022 Auftrags-Nr. 123456/11.00
+Valuta 30.03.2022 externe Referenz-Nr. KP12345678901234
+Empfängerdaten
+Depotkonto-Inhaber Max Mustermann
+Depotkonto-Nr. 1234567890
+Baader Bank AG
+Die entsprechenden Werte haben wir Ihrem Depotkonto belastet.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+1234.56789012.34567890D12

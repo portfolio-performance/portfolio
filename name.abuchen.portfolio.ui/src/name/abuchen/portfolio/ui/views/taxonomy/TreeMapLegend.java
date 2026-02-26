@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -14,21 +12,14 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 
-import de.engehausen.treemap.IRectangle;
-import de.engehausen.treemap.ITreeModel;
 import de.engehausen.treemap.swt.TreeMap;
-import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.util.Colors;
 
 /* package */class TreeMapLegend extends Composite
 {
     private TaxonomyModel model;
     private TaxonomyNodeRenderer renderer;
-
-    private TaxonomyNode rootItem;
 
     public TreeMapLegend(Composite parent, TreeMap<TaxonomyNode> treeMap, TaxonomyModel model,
                     TaxonomyNodeRenderer renderer)
@@ -41,26 +32,23 @@ import name.abuchen.portfolio.ui.util.Colors;
         setBackground(parent.getBackground());
 
         RowLayout layout = new RowLayout(SWT.HORIZONTAL);
-        layout.wrap = true;
+        layout.wrap = false;
         layout.pack = true;
         layout.justify = false;
         setLayout(layout);
 
-        treeMap.addSelectionChangeListener(
-                        (treeModel, rectangle, label) -> TreeMapLegend.this.selectionChanged(treeModel));
+        treeMap.addSelectionChangeListener((treeModel, rectangle, label) -> setNode(rectangle.getNode()));
     }
 
-    public void setRootItem(TaxonomyNode rootItem)
+    public void setNode(TaxonomyNode node)
     {
-        this.rootItem = rootItem;
-
         for (Control control : this.getChildren())
             control.dispose();
 
         TaxonomyNode root = model.getChartRenderingRootNode();
 
         boolean hasParent = false;
-        List<TaxonomyNode> path = rootItem.getPath();
+        List<TaxonomyNode> path = node.getPath();
         for (int ii = 0; ii < path.size(); ii++)
         {
             TaxonomyNode item = path.get(ii);
@@ -72,29 +60,8 @@ import name.abuchen.portfolio.ui.util.Colors;
             new LegendItem(this, item);
         }
 
-        if (hasParent && !rootItem.getChildren().isEmpty())
-        {
-            Label l = new Label(this, SWT.NONE);
-            l.setText(">>"); //$NON-NLS-1$
-            l.setBackground(this.getBackground());
-        }
-
-        List<TaxonomyNode> children = new ArrayList<>(rootItem.getChildren());
-        Collections.sort(children, (o1, o2) -> Long.compare(o2.getActual().getAmount(), o1.getActual().getAmount()));
-
-        for (TaxonomyNode child : children)
-            new LegendItem(this, child);
-
         pack();
         getParent().layout();
-    }
-
-    private void selectionChanged(ITreeModel<IRectangle<TaxonomyNode>> model)
-    {
-        // find out if root changed (drill-down)
-        TaxonomyNode newRoot = model.getRoot().getNode();
-        if (!newRoot.equals(rootItem))
-            setRootItem(newRoot);
     }
 
     public class LegendItem extends Canvas implements Listener
@@ -135,16 +102,7 @@ import name.abuchen.portfolio.ui.util.Colors;
             Point size = getSize();
             Rectangle r = new Rectangle(0, 0, size.x, size.y);
 
-            renderer.drawRectangle(rootItem, item, e.gc, r);
-
-            String text = item.getName();
-            String info = getInfo();
-
-            GC gc = e.gc;
-            gc.setForeground(Colors.getTextColor(gc.getBackground()));
-            gc.drawString(text, 2, 2, true);
-            Point extent = gc.stringExtent(text);
-            gc.drawString(info, 2, extent.y + 1, true);
+            renderer.drawRectangle(null, item, e.gc, r);
 
             e.gc.setForeground(oldForeground);
             e.gc.setBackground(oldBackground);
@@ -153,23 +111,21 @@ import name.abuchen.portfolio.ui.util.Colors;
         @Override
         public Point computeSize(int wHint, int hHint, boolean changed)
         {
-            String text = item.getName();
-            String info = getInfo();
+            var label = renderer.getLabel(item);
 
             GC gc = new GC(this);
-            Point extentText = gc.stringExtent(text);
-            Point extentInfo = gc.stringExtent(info);
+            var width = 0;
+            var height = 0;
+            for (int ii = 0; ii < label.length; ii++)
+            {
+                Point extent = gc.textExtent(label[ii]);
+                if (extent.x > width)
+                    width = extent.x;
+                height += extent.y;
+            }
             gc.dispose();
 
-            return new Point(Math.max(extentText.x, extentInfo.x) + 4, extentText.y + extentInfo.y + 4);
+            return new Point(width + 4, height + 4);
         }
-
-        private String getInfo()
-        {
-            return String.format("%s (%s%%)", Values.Money.format(item.getActual()), //$NON-NLS-1$
-                            Values.Percent.format((double) item.getActual().getAmount()
-                                            / (double) model.getVirtualRootNode().getActual().getAmount()));
-        }
-
     }
 }

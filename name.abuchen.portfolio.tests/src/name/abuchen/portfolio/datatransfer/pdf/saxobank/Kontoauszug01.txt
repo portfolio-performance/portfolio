@@ -1,0 +1,23 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.2
+-----------------------------------------
+Kontoauszugsbericht
+01-Jan-2024 - 26-Nov-2024
+Generiert um: 27-Nov-2024 05:47:45 17:47:45 (W. Europe Standard Time)
+Saxo Bank CH CH-19958475
+The Circle 38 Switzerland
+8058 Zürich-Flughafen
+Switzerland
+Kunden-ID : 54634954
+Währung : CHF
+Konten : 80000/137620
+Inhaltsverzeichnis
+Kontoauszug, 80000/137620 (Iban:CH4789144258279763327), CHF.......................................................................................................................................................................... 3
+Kontoauszug, 80000/137620 (Iban:CH4789144258279763327), CHF
+Zusammfassung für den
+Barguthaben Start Gutgeschrieben Abgebucht Barguthaben Ende Kontowert
+Zeitraum
+0,00 700,00 0,00 700,00 700,00
+Einstellungsdatum Valuta Event Reiner Barguthaben Kommentar
+Kursunterschied
+26-Nov-2024 26-Nov-2024 DEPOSIT (6980803089, 6083903733) 700,00 700,00

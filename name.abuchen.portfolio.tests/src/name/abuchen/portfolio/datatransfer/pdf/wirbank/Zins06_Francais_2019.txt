@@ -1,0 +1,23 @@
+PDFBox Version: 3.0.6
+-----------------------------------------
+Terzo Vorsorgestiftung der WIR Bank
+Auberg 1
+4002 Basel
+Internet www.viac.ch
+Courriel info@viac.ch
+Téléphone 0800 80 40 40
+Contrat 1.234.567.890 Monsieur
+Portefeuille 1.234.567.890.01 Max Mustermann
+Musterweg 12
+1234 Zürich
+Bâle, 01.12.2019
+Intérêts
+Nous avons crédité le30.11.2019 les intérêts suivants:
+Taux d’intérêt: 0.20%
+Période d’intérêt: novembre
+Intérêts créditeurs: CHF 1.15
+Montant crédité: CHF  1.15
+S. E. & O.
+Meilleures salutations
+Terzo Vorsorgestiftung der WIR Bank
+Avis sans signature

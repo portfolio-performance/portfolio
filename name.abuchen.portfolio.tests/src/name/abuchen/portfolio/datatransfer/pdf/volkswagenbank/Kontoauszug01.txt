@@ -1,0 +1,57 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.1.qualifier
+System: macosx | aarch64 | 21.0.2+13-LTS | Amazon.com Inc.
+-----------------------------------------
+Volkswagen Bank  ·  38093 Braunschweig
+ePmJTndL AJLHw qldBzDuaTnmV
+yDzhnCDJrExkAP. 54
+46955 VMJwpF
+Kontoauszug / Saldenmitteilung Plus Konto TopZins
+Kontonummer: 9584394411 Erstellungsdatum: 11.01.2026
+Kontobezeichnung: KcLFVwQKiICk OwwRbYZU nTNDM Kontoauszug Nummer: 000001 / 2026
+Bankleitzahl: 95987548 Seite: 1 / 2
+BIC: VOWADE2BXXX letzter Auszug vom:
+IBAN: LB05219739101077840903 Ihr Ansprechpartner: Team Anlageberatung
+Telefon-Durchwahl: 0531 212-859501
+Alter Kontostand in EUR: 0,00
+lfd. Buchungs- Umsatzinformationen Wertstellung Soll (EUR) Haben (EUR)
+Nr. datum
+1 06.01.2026 Gutschrift Echtzeit 05.01.2026 50,00
+Uebertrag Tagesgeld
+NOTPROVIDED
+vmcTsTBG KRPgwqKFLeVsY
+BIC yZJdKbS9M54 IBAN Xz03739516068833106475
+2 06.01.2026 Gutschrift Echtzeit 05.01.2026 4.453,30
+Uebertrag Tagesgeld
+NOTPROVIDED
+sxlPLDrd OKBSroTdWJeGp
+BIC yZJdKbS9M54 IBAN lb84238828494514127198
+3 06.01.2026 Telebanking Belastung 07.01.2026 -1,00
+Uebertrag Girokonto
+OfjWXKoY HaObH WPqpZugTtdrZ
+BIC yZJdKbS9M54 IBAN ad52527032676274391405
+4 06.01.2026 Gutschrift Echtzeit 06.01.2026 5.497,70
+Uebertrag Tagesgeld
+NOTPROVIDED
+aPTcBUcy tXgJFTaoYYVzR
+BIC yZJdKbS9M54 IBAN Ov66937974379563676363
+Rechnungsabschluss 10.01.2026
+5 09.01.2026 Habenzinsen 10.01.2026 36,05
+6 09.01.2026 Solidaritätszuschlag 10.01.2026 -0,49
+7 09.01.2026 Abgeltungsteuer 10.01.2026 -9,01
+Neuer Kontostand in EUR: 10.026,55
+206500
+A  // B  // M 
+Kontonummer: 1548681606 Kontoauszug Nummer: 000001 / 2026
+Seite: 2 / 2
+Freistellungs- NV Gültig bis Gesamt- Verbleibender Abgeltungsteuer/ Solidaritäts- Kirchen- Kirchensteuer-
+auftrag zinserträge Freibetrag Kapitalertragsteuer zuschlag steuer Betrag
+EUR 0,00 Nein 00.00.0000 EUR 36,05 EUR 0,00 EUR 9,01 EUR 0,49 0,00 % EUR 0,00
+Ihre Freistellungsdaten vom 09.01.2026
+Genehmigung des Rechnungsabschlusses
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit des Rechnungsabschlusses müssen Sie spätestens vor Ablauf von sechs Wochen nach
+dessen Zugang erheben. Sofern Sie Ihre Einwendungen schriftlich oder - falls diese Form vereinbart ist - in Textform geltend machen, genügt die
+Absendung innerhalb der Sechs-Wochen-Frist. Sie können Ihre Einwendungen an die interne Revision der Volkswagen Bank GmbH,
+Gifhorner Str. 57, 38 112 Braunschweig, richten. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung des Rechnungsabschlusses.
+Bitte beachten Sie, dass Zinserträge einkommensteuerpflichtig sind.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können dem "Informationsbogen für den Einleger" entnommen werden. 

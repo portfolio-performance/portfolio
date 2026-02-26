@@ -1,0 +1,27 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.73.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+DADAT-Bank KONTOAUSZUG
+Schelhammer Capital Bank AG vom 30.07.2024
+90011
+Kundennummer
+Alter Saldo per 30.06.2024 1.896,08
+Summe der Gutschriften 0,00
+Summe der Lastschriften 28,45-
+Schelhammer, PF 1000, A-5021 Salzburg
+Neuer Saldo zu Ihren Gunsten
+BAYAr TnPZt EUR 1.867,63
+eGykORRRd 55
+0888 qsxq
+Konto-Nr.: 1234567890 Bankleitzahl: 12345
+Empfängerhinweis: 
+Datum Buchungstext Wert Betrag
+30.07 Steuern ausschüttungsgl. Erträge Depot    1234567890/20240729-12345678 29.07 28,45-
+ISIN IE33AB1CD551 Y(DR)-XDUI ABCDE 1F                 1.123,00000 STK
+Kurs                      0,000000  Kapitalertragsteuer     -31,05 USD
+DevKurs        1,091300/26.7.2024
+Neuer Saldo zu Ihren Gunsten 1.867,63
+nv11 9612 9702 1282 7487 hPYECxHa 01 0014 1/1
+IBAN BIC Filiale Auszug Blatt/Gesamt
+R0042 60354 Doknr.: EK00-627-0486525489

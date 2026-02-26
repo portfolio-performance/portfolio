@@ -1,0 +1,45 @@
+PDFBox Version: 3.0.5 != 1.8.17
+Portfolio Performance Version: 0.80.3
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Sparkasse Heidelberg · Postfach 101460 · 69004 Heidelberg  
+Depotnummer
+ 906922
+ Kundennummer 6054327230
+ Dr. FJEvcltDJ XymiUN und nWxWboez
+LADiGZS
+Dr. FZIDpRpVG gPGhsD und Auftragsnummer 435080/83.00
+SrGoYsWP iMZFxaV Datum 22.04.2025
+sEgxKE. 3 Ihr Berater Herr vPQDdg OXjFby
+69115 Heidelberg Telefon 06221 511-2613
+Telefax 06221 511-7107
+Rechnungsnummer B36963-7599208349/25
+Umsatzsteuer-ID Pe745581433 
+ 
+Wertpapier Abrechnung Kauf 
+Auftrag vom 21.04.2025 12:35:00 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 8.000 KULR TECHNOLOGY GROUP INC. US50125G1094 (A2QRSQ)
+REGISTERED SHARES DL -,0001 
+Handels-/Ausführungsplatz New-York-ASE (gemäß Weisung)
+Börsensegment XASE
+Limit-Order
+Limit 1,22 USD 
+Schlusstag/-Zeit 21.04.2025 15:30:00 Auftraggeber QYmpiGRh FudoOOF
+Ortszeit 21.04.2025 10:30:00 Auftragserteilung/ -ort Online-Banking
+Ausführungskurs 1,20 USD
+Wertpapierrechnung Lagerland USA
+Devisenkurs (EUR/USD) 1,1438 vom 22.04.2025
+Kurswert 8.393,08- EUR
+Provision 51,97- EUR
+Fremde Auslagen 6,12- EUR
+Ausmachender Betrag 8.451,17- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 22.04.2025 zu Lasten des Kontos 4309137620
+(IBAN Gu79 3494 0872 4604 8477 06), BLZ 67250020 (BIC SOLADES1HDB).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+2308.04222106.0000444OR07

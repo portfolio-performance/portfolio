@@ -52,4 +52,9 @@ public class ColorDefinition implements IColorDefinitionOverridable
     public void setDescription(String description)
     {
     }
+
+    @Override
+    public void setEditable(Boolean editable)
+    {
+    }
 }

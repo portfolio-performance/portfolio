@@ -1,9 +1,9 @@
 package name.abuchen.portfolio.util;
 
 import java.text.Collator;
+import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class TextUtil
@@ -11,6 +11,7 @@ public final class TextUtil
     public static final String PARAGRAPH_BREAK = "\n\n"; //$NON-NLS-1$
 
     public static final char DECIMAL_SEPARATOR = new DecimalFormatSymbols().getDecimalSeparator();
+    public static final char GROUPING_SEPARATOR = new DecimalFormatSymbols().getGroupingSeparator();
 
     private static final String VALID_NUM_CHARACTERS = "0123456789,.'-"; //$NON-NLS-1$
 
@@ -18,6 +19,7 @@ public final class TextUtil
 
     private TextUtil()
     {
+        // utility class, not to be instantiated
     }
 
     /**
@@ -37,13 +39,13 @@ public final class TextUtil
         // sanitizing, simplifying detection, and making it easier for
         // line break manipulation. Add a line break to correctly match a full
         // line
-        String t = normaliseLB(text) + "\n"; //$NON-NLS-1$
+        var t = normaliseLB(text) + "\n"; //$NON-NLS-1$
 
-        StringBuilder wrapped = new StringBuilder();
-        Matcher m = Pattern.compile(".{0,80}[ \\t\\n,\\.]++|.{0,80}+").matcher(t); //$NON-NLS-1$
+        var wrapped = new StringBuilder();
+        var m = Pattern.compile(".{0,80}[ \\t\\n,\\.]++|.{0,80}+").matcher(t); //$NON-NLS-1$
         while (m.find())
         {
-            String fragment = t.substring(m.start(), m.end());
+            var fragment = t.substring(m.start(), m.end());
 
             // Remove a trailing space
             if (fragment.length() > 0 && fragment.charAt(fragment.length() - 1) == ' ')
@@ -134,8 +136,8 @@ public final class TextUtil
         if (value == null)
             return null;
 
-        int len = value.length();
-        int st = 0;
+        var len = value.length();
+        var st = 0;
 
         while ((st < len) && isWhitespace(value.charAt(st)))
         {
@@ -171,9 +173,9 @@ public final class TextUtil
         if (values == null)
             return new String[0];
 
-        String[] answer = new String[values.length];
+        var answer = new String[values.length];
 
-        for (int i = 0; i < values.length; i++)
+        for (var i = 0; i < values.length; i++)
             answer[i] = TextUtil.trim(values[i]);
 
         return answer;
@@ -196,6 +198,15 @@ public final class TextUtil
     }
 
     /**
+     * Removes single (isolated) whitespace characters, but keeps consecutive
+     * whitespace sequences unchanged.
+     */
+    public static String replaceSingleBlank(String input)
+    {
+        return input == null ? null : input.replaceAll("(?<!\\s)\\s(?!\\s)", ""); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    /**
      * Replaces multiple consecutive whitespace characters in the input string
      * with a single space.
      */
@@ -210,8 +221,8 @@ public final class TextUtil
      */
     public static String stripNonNumberCharacters(String value)
     {
-        int start = 0;
-        int len = value.length();
+        var start = 0;
+        var len = value.length();
 
         while ((start < len) && VALID_NUM_CHARACTERS.indexOf(value.charAt(start)) < 0)
             start++;
@@ -230,6 +241,24 @@ public final class TextUtil
         if (input == null || input.isEmpty())
             return input;
         return input.replaceAll("<[^>]*>", ""); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    /**
+     * Removes non-breaking spaces and narrow non-breaking spaces from the input
+     * string that are used in some locales as grouping separator. We sanitize
+     * the formatted number before putting it into the clipboard, so that the
+     * result can be copied to Excel.
+     */
+    public static String sanitizeFormattedNumber(String input)
+    {
+        if (input == null || input.isEmpty())
+            return input;
+
+        return input
+                        // \u00A0 = NO-BREAK SPACE
+                        .replace("\u00A0", "") //$NON-NLS-1$ //$NON-NLS-2$
+                        // \u202F = NARROW NO-BREAK SPACE
+                        .replace("\u202F", ""); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
@@ -256,9 +285,9 @@ public final class TextUtil
         if (camelCase == null)
             return null;
 
-        String[] parts = camelCase.split("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])"); //$NON-NLS-1$
+        var parts = camelCase.split("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])"); //$NON-NLS-1$
 
-        StringBuilder buffer = new StringBuilder();
+        var buffer = new StringBuilder();
         for (String string : parts)
         {
             if (buffer.length() > 0)
@@ -274,22 +303,22 @@ public final class TextUtil
         if (json == null)
             return null;
 
-        final int length = json.length();
-        final int search = 200; // only check the first 200 characters
+        final var length = json.length();
+        final var search = 200; // only check the first 200 characters
 
-        int start = 0;
-        int end = length;
+        var start = 0;
+        var end = length;
 
         for (; start < length && start < search; start++)
         {
-            char c = json.charAt(start);
+            var c = json.charAt(start);
             if (c == '{' || c == '[')
                 break;
         }
 
         for (; end > start && end > length - search; end--)
         {
-            char c = json.charAt(end - 1);
+            var c = json.charAt(end - 1);
             if (c == '}' || c == ']')
                 break;
         }
@@ -314,7 +343,7 @@ public final class TextUtil
         if (text == null)
             return null;
 
-        int textLength = text.length();
+        var textLength = text.length();
 
         return textLength <= maxLength ? text : text.substring(0, maxLength) + "…"; //$NON-NLS-1$
     }
@@ -325,11 +354,19 @@ public final class TextUtil
      */
     public static int compare(String left, String right)
     {
+        if (left == right)
+            return 0;
+        if (left == null)
+            return -1;
+        if (right == null)
+            return 1;
+
         return COLLATOR.compare(left, right);
     }
 
     /**
-     * Concatenates two strings with a specified separator.
+     * Concatenates two strings with a specified separator but only if the first
+     * and second string actually differ.
      */
     public static String concatenate(String first, String second, String separator)
     {
@@ -337,11 +374,91 @@ public final class TextUtil
             return null;
 
         if (first != null && second == null)
-            return first;
+            return trim(first);
 
         if (first != null && first.equals(second))
-            return first;
+            return trim(first);
 
-        return first == null ? second : first + separator + second;
+        return first == null ? trim(second) : trim(first) + separator + trim(second);
+    }
+
+    public static String escapeHtml(String input)
+    {
+        if (input == null)
+            return null;
+        return input.replace("&", "&amp;") //$NON-NLS-1$ //$NON-NLS-2$
+                        .replace("<", "&lt;") //$NON-NLS-1$ //$NON-NLS-2$
+                        .replace(">", "&gt;") //$NON-NLS-1$ //$NON-NLS-2$
+                        .replace("\"", "&quot;") //$NON-NLS-1$ //$NON-NLS-2$
+                        .replace("'", "&#39;"); //$NON-NLS-1$ //$NON-NLS-2$ Ï
+    }
+
+    /**
+     * Determines if a search text matches a numeric value. Supports partial
+     * matches (prefixes), locale-specific formatting, and separators (i.e.
+     * 2,000 = 2000)
+     */
+    public static boolean isNumericSearchMatch(String searchText, double value)
+    {
+        if (searchText == null || searchText.isEmpty())
+            return false;
+
+        // Remove grouping separators from search text
+        var cleanedSearchText = searchText.replace(String.valueOf(GROUPING_SEPARATOR), ""); //$NON-NLS-1$
+
+        // Remove any negative sign from search text for comparison
+        if (cleanedSearchText.startsWith("-")) //$NON-NLS-1$
+            cleanedSearchText = cleanedSearchText.substring(1);
+
+        // Check if the search text is a valid number format
+        if (!isValidNumberFormat(cleanedSearchText, DECIMAL_SEPARATOR))
+            return false;
+
+        // Format the value to a string using the current locale (using absolute
+        // value)
+        var df = new DecimalFormat("#.###"); //$NON-NLS-1$
+        df.setGroupingUsed(false); // Disable grouping
+        var formattedValue = df.format(Math.abs(value));
+
+        // Split both strings into whole and decimal parts
+
+        var searchDecimal = cleanedSearchText.indexOf(DECIMAL_SEPARATOR);
+        var valueDecimal = formattedValue.indexOf(DECIMAL_SEPARATOR);
+
+        var searchWholePart = searchDecimal >= 0 ? cleanedSearchText.substring(0, searchDecimal) : cleanedSearchText;
+        var searchDecimalPart = searchDecimal >= 0 ? cleanedSearchText.substring(searchDecimal + 1) : ""; //$NON-NLS-1$
+
+        var valueWholePart = valueDecimal >= 0 ? formattedValue.substring(0, valueDecimal) : formattedValue;
+        var valueDecimalPart = valueDecimal >= 0 ? formattedValue.substring(valueDecimal + 1) : ""; //$NON-NLS-1$
+
+        // The whole part must be a prefix match
+        if (!valueWholePart.startsWith(searchWholePart))
+            return false;
+
+        // If search has decimal but whole parts have different lengths (e.g.,
+        // "25.0" vs "2500")
+        if (searchDecimal >= 0 && searchWholePart.length() != valueWholePart.length())
+            return false;
+
+        // If search doesn't have a decimal part, it's a match
+        if (searchDecimal < 0)
+            return true;
+
+        // If search has decimal but value doesn't,
+        // Only match if search decimal part is all zeros
+        // Handles i.e. "2601.0" matches value 2601
+        if (valueDecimal < 0)
+            return searchDecimalPart.isEmpty() || searchDecimalPart.matches("0+"); //$NON-NLS-1$
+
+        // Both have decimal parts, check if search decimal part is a prefix of
+        // value decimal part
+        return valueDecimalPart.startsWith(searchDecimalPart);
+    }
+
+    private static boolean isValidNumberFormat(String text, char decimalSeparator)
+    {
+        var decimalSep = Pattern.quote(String.valueOf(decimalSeparator));
+        var pattern = "^-?\\d*(" + decimalSep + "\\d*)?$"; //$NON-NLS-1$ //$NON-NLS-2$
+        return text.matches(pattern);
     }
 }

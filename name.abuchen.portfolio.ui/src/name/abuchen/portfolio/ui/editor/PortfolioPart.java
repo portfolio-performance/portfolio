@@ -167,8 +167,15 @@ public class PortfolioPart implements ClientInputListener
         divider.setData(UIConstants.CSS.CLASS_NAME, "sidebarBorder"); //$NON-NLS-1$
         GridDataFactory.fillDefaults().span(0, 2).hint(1, SWT.DEFAULT).applyTo(divider);
 
-        ClientProgressProvider provider = make(ClientProgressProvider.class, clientInput.getClient(), navigationBar);
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(provider.getControl());
+        var composite = new Composite(navigationBar, SWT.NONE);
+        composite.setData(UIConstants.CSS.CLASS_NAME, "sidebar"); //$NON-NLS-1$
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(composite);
+        
+        var layout = new FillLayout();
+        layout.marginWidth = 10;
+        composite.setLayout(layout);
+
+        make(PriceUpdateProgressControl.class, clientInput, composite, this);
 
         book = new PageBook(sash, SWT.NONE);
 
@@ -508,8 +515,24 @@ public class PortfolioPart implements ClientInputListener
 
     public void activateView(Class<? extends AbstractFinanceView> view, Object parameter)
     {
-        getClientInput().getNavigation().findAll(i -> view.equals(i.getViewClass())).findAny()
-                        .ifPresent(item -> activateView(item, parameter));
+        var items = getClientInput().getNavigation().findAll(i -> view.equals(i.getViewClass())).toList();
+
+        if (items.isEmpty())
+            return;
+
+        // check if we have a matching parameter (e.g. taxonomy, watchlist,
+        // etc.), then activate exactly this item.
+
+        for (var item : items)
+        {
+            if (Objects.equals(item.getParameter(), parameter))
+            {
+                activateView(item, parameter);
+                return;
+            }
+        }
+
+        activateView(items.getFirst(), parameter);
     }
 
     public void activateView(Navigation.Item item)
@@ -571,6 +594,10 @@ public class PortfolioPart implements ClientInputListener
         viewContext.set(AbstractFinanceView.class, underConstruction);
 
         underConstruction.createViewControl(book, hideInformationPane);
+
+        // register a dispose listener when the view is destroyed to also
+        // destroy the context
+        underConstruction.getControl().addDisposeListener(e -> viewContext.dispose());
 
         // explicitly style control after creation because on Windows the styles
         // are not always applied immediately

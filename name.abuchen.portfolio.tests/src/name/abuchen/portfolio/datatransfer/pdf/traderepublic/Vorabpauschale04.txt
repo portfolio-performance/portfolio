@@ -1,0 +1,39 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.74.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+pGrq MLrmhK PwRqAiC SEITE 1 von 1
+VBwZGyBAkjyjlvF 6 DATUM 29.01.2025
+49442 dCTjSXX jQ ToI BMdn DEPOT 2958185103
+VORABPAUSCHALE
+ÜBERSICHT
+Besteuerung der Vorabpauschale gem. § 18 InvStG.
+POSITION ANZAHL
+Core MSCI World USD (Acc) 10 Stück
+IE00B4L5Y983
+VORABPAUSCHALE
+POSITION BETRAG
+Steuerpflichtige Vorabpauschale 9,23 EUR
+STEUERLICHE VERRECHNUNG
+VORHER NACHHER
+Aktienverlusttopf 0,00 EUR 0,00 EUR
+Allgemeiner Verlusttopf 0,00 EUR 0,00 EUR
+Freistellungsauftrag (eingereicht: 0 EUR) 0,00 EUR 0,00 EUR
+Quellensteuertopf 0,00 EUR 0,00 EUR
+ABRECHNUNG
+Kapitalertragssteuer -2.31 EUR
+Solidaritätszuschlag -0.12 EUR
+-2,43 EUR
+BUCHUNG
+VERRECHNUNGSKONTO DATUM DER ZAHLUNG
+DE01100123450123456789 29.01.2025 -2,43 EUR
+Sofern ein Freistellungsauftrag vorliegt, wurde dieser berücksichtigt.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. §4 Nr. 8 UStG um eine umsatzsteuerfreie Leistung. Die Vorabpauschale unterliegt 
+grundsätzlich einem Steuerabzug von 25% (zuzüglich Solidaritätszuschlag und gegebenenfalls Kirchensteuer).
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Direktoren
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke

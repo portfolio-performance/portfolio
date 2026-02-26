@@ -1,0 +1,27 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.72.2
+-----------------------------------------
+Scalable Capital GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+gMbdE BSBVSo
+PIUWUpOPvMUGNZ OXxLwz 66 
+80481 YHbanuVrhilpy Datum 12.12.2024
+Deutschland Seite 1 / 1
+Wertpapierabrechnung 
+für Kundenauftrag 
+Typ LIMIT Order SCALsin78vS5CYz 
+Ausführung 12.12.2024 13:12:51 Geschäft 36581526 
+Ausführungsplatz EIX Lagerland Luxemburg
+Depot 1970027444 Verwahrart Wertpapierrechnung
+Wertpapierabrechnung 
+Typ Wertpapier Anzahl Kurs Betrag
+Kauf Vngrd Fds-ESG Dv.As-Pc Al ETF 3,00 Stk. 6,168 EUR 18,50 EUR
+IE0008T6IUX0
+Ordergebühren +0,99 EUR
+Total 19,49 EUR
+Der Betrag wird mit dem Verrechnungskonto DE168836967200035482353 (Valuta: 16.12.2024) verrechnet. 
+Bitte überprüfen Sie die Informationen auf Richtigkeit und melden Sie etwaige Einwände unverzüglich bei uns.
+Verwenden Sie dafür den Menüpunkt Support im Kundenbereich. 
+Scalable Capital GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Erik Podzuweit, Florian Prucker Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Martin Krebs, Dirk Franzmeyer, Dirk
+Urmoneit 1 / 1

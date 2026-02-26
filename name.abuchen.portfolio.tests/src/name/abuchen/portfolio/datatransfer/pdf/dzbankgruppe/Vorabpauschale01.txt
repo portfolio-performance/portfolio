@@ -1,0 +1,54 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.1
+-----------------------------------------
+VR-Bank Musterort eG · Musterstr. 23 · 12345 Musterort    Seite 1
+Depotnummer
+ 99999999
+ Kundennummer 99999999
+Max Mustermann
+ Abrechnungsnr. 99999999999
+Max Mustermann Datum 12.01.2024
+Musterweg 42
+12345 Musterort
+Vorabpauschale Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 1.000 ISHSIV-EO ULTRASHORT BD U.ETF IE000RHYOR04 (A3DJQJ)
+REG.SHS EUR ACC. ON
+Zahlbarkeitstag 02.01.2024 Vorabpauschale pro St. 0,089153610 EUR
+Bestandsstichtag 29.12.2023 Herkunftsland Irland
+Ex-Tag 02.01.2024
+Geschäftsjahr 01.01.2023 - 31.12.2023
+Steuerpflichtige Vorabpauschale 29,72+ EUR
+Kapitalertragsteuerpflichtiger Ertrag 29,72+ EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 29,72+ EUR
+Kapitalertragsteuer 24,51 % auf 29,72 EUR 7,28- EUR
+Solidaritätszuschlag 5,5 % auf 7,28 EUR 0,40- EUR
+Kirchensteuer 8 % auf 7,28 EUR 0,58- EUR
+Ausmachender Betrag 8,26- EUR
+Lagerstelle CBFI (601617 / 67268)
+Den Betrag buchen wir mit Wertstellung 02.01.2024 zu Lasten des Kontos 999999 (IBAN DE99 9999 9999 9999 9999 99),
+BLZ 999 999 99 (BIC XYXYZYX9XYZ).
+Keine Steuerbescheinigung. 
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2024 ohne Vorjahressaldo Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 0,00
+Ertrag 0,00 0,00 0,00 0,00 29,72
+Nachher 0,00 0,00 0,00 0,00 29,72
+Bitte ggf. Rückseite beachten.
+9999.99999999.99999999X99
+
+Seite 2
+Depotnummer 99999999
+Kundennummer 99999999
+Abrechnungsnr. 99999999999
+Datum 12.01.2024
+Nachrichtlich zur Ermittlung des Bruttowertes zur Vorabpauschale berücksichtigte Anschaffungsgeschäfte.
+Anschaffungen Summe Nominale Anzahl Monat(e) anteiliger Bruttowert
+im zurückliegenden Kalenderjahr
+im Monat
+September 1000,0000 04/12 29,72 €
+Bestand zum 29.12.2023 1000,0000 29,72 €
+9999.99999999.99999999X99

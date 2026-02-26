@@ -1,0 +1,28 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.77.3
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+EQStCJ SOlfP
+oqirha 
+oPIQ WtcreyGVTqp 5 Datum 10.07.2025
+19245 eBi Seite 1 / 1
+Deutschland 
+Wertpapierabrechnung 
+für Sparplanausführung 
+Typ LIMIT Order SCALz2xgFkvDZbm
+Ausführung 10.07.2025 16:39:01 Geschäft 23899P7AGd120250
+Ausführungsplatz EIX Lagerland Deutschland
+Depot 5913051422 Verwahrart Girosammelverwahrung
+Typ Wertpapier Anzahl Kurs Betrag
+Kauf Hermes Intl 0,24321 Stk. 2.467,00 EUR 600,00 EUR
+FR0000052292
+Finanztransaktionssteuer +2,40 EUR 
+Belastung 602,40 EUR
+Der Betrag wird mit dem Verrechnungskonto XXX (Valuta: 14.07.2025) verrechnet. 
+Bitte überprüfen Sie die Informationen auf Richtigkeit und melden Sie etwaige Einwände unverzüglich bei uns.
+Verwenden Sie dafür den Menüpunkt Support im Kundenbereich. 
+Scalable Capital GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Erik Podzuweit, Florian Prucker Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Martin Krebs, Dirk Franzmeyer, Dirk
+Urmoneit 1 / 1

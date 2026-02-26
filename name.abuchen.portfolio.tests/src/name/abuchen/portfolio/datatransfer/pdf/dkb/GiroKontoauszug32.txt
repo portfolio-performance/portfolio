@@ -1,0 +1,61 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.75.2.qualifier
+System: win32 | x86_64 | 21.0.7+6-LTS | Azul Systems, Inc.
+-----------------------------------------
+Deutsche Kreditbank AG
+Herrn Internes Zeichen:
+Max Mustermann 180 41 00
+Zöllmener Str. 3  
+01157 Dresden  
+ 
+ 
+ 
+ 
+ 
+ 
+ 5. Mai 2025
+Kontoauszug 5/2025 Seite 1 von 4
+G  irokonto 1111111111, DE45 1203 0000 1111 1111 11 
+Datum Erläuterung Betrag Soll EUR Betrag Haben EUR
+ Kontostand am 04.04.2025, Auszug Nr.    4               1.111,11
+08.04.2025 Kartenzahlung / Wert: 07.04.2025               -13,20
+HAUSBRAEU.IM.BALLHAUS/DRESDEN/../DE 
+2025-04-05T16:31 Debitk.54 2099-12 Zahl.System VISA 
+Debit
+Deutsche Kreditbank AG Vorsitzender des Aufsichtsrats Telefon 030 120 300 00 BIC: BYLADEM1001 
+Taubenstraße 7 - 9 Stephan Winkelmeier Telefax 030 120 300 01  
+10117 Berlin Vorstand  USt-ID-Nr.: DE137178746 
+ Dr. Sven Deglow (Vorsitzender) info@dkb.de Handelsregister 
+Ein Unternehmen der Tilo Hacke, Jan Walther, www.dkb.de Berlin-Charlottenburg 
+Bayerischen Landesbank Arnulf Keese, Kristina Trink (HRB 34165 B)
+Kontoauszug 5/2025 Seite 4 von 4
+Girokonto 1111111111, DE45 1203 0000 1111 1111 11,  Max Mustermann
+Datum Erläuterung Betrag Soll EUR Betrag Haben EUR
+02.05.2025 Zahlungseingang             2.000,00
+Max Mustermann
+ Kontostand am 02.05.2025 um 18:06 Uhr               1.111,11
+Ihr Dispositionskredit EUR: 2.000,00
+Gesamtumsatzsummen Summe Soll EUR Anzahl Summe Haben EUR Anzahl
+ . -11.111,11 32 11.111,11 8
+Hinweise zum Kontoauszug:
+l Bitte den Kontoauszug prüfen. Nicht autorisierte oder fehlerhaft ausgeführte Aufträge müssen uns unverzüglich angezeigt 
+werden.
+ l Der Kontoauszug am Ende eines Kalenderquartals beinhaltet regelmäßig einen Rechnungsabschluss. Dieser gilt als genehmigt, 
+wenn ihm nicht vor Ablauf von sechs Wochen nach Zugang widersprochen wird. Einwendungen gegen Rechnungsabschlüsse 
+müssen der Deutschen Kreditbank AG in Textform zugehen. Zur Fristwahrung genügt die rechtzeitige Absendung (Nr. 7 Abs. 3 
+der Allgemeinen Geschäftsbedingungen).
+l Der angegebene Kontostand berücksichtigt nicht die Wertstellung der einzelnen Buchungen. Dies bedeutet, dass der genannte 
+Betrag nicht dem für die Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei Verfügungen möglicherweise 
+Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können.
+l Die Gutschrift von Schecks, Lastschriften oder anderen Einzugspapieren vor ihrer Einlösung geschieht unter Vorbehalt 
+(E.v.-Gutschrift). Werden Schecks oder Lastschriften nicht eingelöst oder geht der DKB der Gegenwert nicht zu, so macht sie die 
+Gutschrift gemäß Nr. 23 der AGB rückgängig (Stornobuchung), und zwar auch nach einem zwischenzeitlich erfolgten 
+Rechnungsabschluss.
+l Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen: im 
+"Informationsbogen für Einleger" sowie auf unserer Webseite unter dkb.de/kundenservice/einlagensicherung.
+Deutsche Kreditbank AG Vorsitzender des Aufsichtsrats Telefon 030 120 300 00 BIC: BYLADEM1001 
+Taubenstraße 7 - 9 Stephan Winkelmeier Telefax 030 120 300 01  
+10117 Berlin Vorstand  USt-ID-Nr.: DE137178746 
+ Dr. Sven Deglow (Vorsitzender) info@dkb.de Handelsregister 
+Ein Unternehmen der Tilo Hacke, Jan Walther, www.dkb.de Berlin-Charlottenburg 
+Bayerischen Landesbank Arnulf Keese, Kristina Trink (HRB 34165 B)

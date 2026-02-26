@@ -1,0 +1,52 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.70.3
+-----------------------------------------
+Baader Bank AG   Weihenstephaner Straße 4   85716 Unterschleißheim Scalable Capital GmbH
+T  00800 00 586336*   F  +49 89 5150 2442    service@baaderbank.de Seitzstraße 8e
+80538 München 
+service@scalable.capital
+Seite 1/1
+zXFuI München
+11.07.2024
+lvOMaM opuqStIz
+opuqStIz. 846 TPBASE KMpEDmHy
+38555 aukiYI Stamm-Nr.: 4067803    Portfolio: 1
+Depot-Nr.: 0913985033
+Vorgangs-Nr.: 248513926
+Referenz-Nr.: 454541508
+Wertpapierabrechnung: Kauf
+Auftragsdatum: 11.07.2024 Ausführungsplatz: GETTEX - MM Munich
+Auftragszeit: 13:47:21:00
+Nominale ISIN: IE00B60SX394 WKN: A0RGCS Kurs 
+STK 275 InvescoMI MSCI World ETF EUR 102,995
+Registered Shares Acc o.N
+Auftraggeber: Depotinhaber
+Art der Auftragserteilung: Orderroutingssystem
+Kurswert EUR 28.323,63
+Zu Lasten Konto 4067803009 Valuta: 15.07.2024 EUR 28.323,63
+Die Wertpapiere buchen wir zu Gunsten Ihres Depots.
+Details zur Ausführung:
+Handels- Handels- 
+Nominale Kurs Ausführungsplatz datum uhrzeit 
+STK   275 EUR 102,995 GETTEX - MM Munich 11.07.2024 16:50:57:614
+Verwahrart: Wertpapierrechnung Zeitzone der Handelsuhrzeit: MEZ/MESZ
+Lagerstelle: 1419 MIC des Ausführungsplatzes: MUNC
+Lagerland: Luxemburg
+Für die Ausführung dieses Auftrags gelten die Usancen des jeweiligen Ausführungsplatzes.
+Diese Auftragsbestätigung/Abrechnung wurde von der Baader Bank AG erstellt. Bitte prüfen Sie diese auf Richtigkeit und Vollständigkeit. Etwaige 
+Einwendungen gegen diese Auftragsbestätigung/Abrechnung müssen nach Zugang unverzüglich bei der Baader Bank AG erhoben werden. 
+Dieser Auftrag erfolgte ohne Empfehlung der Bank. Es wurde keine Anlageberatung und keine individuelle Aufklärung durch die Bank erbracht.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Die Aushändigung des Fondsprospektes/Offering Memorandum sowie des aktuellen Rechenschaftsberichtes durch die Bank ist im Rahmen der 
+Kooperation der Bank mit Ihrem Finanzdienstleister nicht erforderlich bzw. wird von diesem übernommen. Sofern Sie einen Fondsprospekt 
+wünschen, wenden Sie sich daher bitte direkt an den Finanzdienstleister.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Dirk Urmoneit, Dirk Franzmeyer • Aufsichtsrat: Patrick Olson (Vorsitzender) • HRB 
+217778, Amtsgericht München • USt-IdNr. DE300434774 • www.scalable.capital
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 121537 • Sitz der 
+Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336* • service@baaderbank.de
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen. WPABRECHNUNG-060.114

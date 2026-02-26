@@ -1,0 +1,12 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.75.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+vDXvxW ogtlz (vDXvxW@ogtlz.xyz)
+01.01.2023 00:00 - 31.12.2023 23:59
+Transaktionshistorie
+ID Typ Ausführung eingehender Betrag eingehendes Asset ausgehender Betrag ausgehendes Asset Transaktionsentgelt Entgeltwährung Sender Empfänger
+529801f1-b186-4c4c-a43d-91d340da2b5d Kauf 02.08.2023 01:25:55 0.00553256 BTC 150.65 EUR 0.53 EUR
+9f7c647e-230d-4423-8bd7-1e631722d3f9 Verkauf 16.02.2023 23:47:54 49.18 EUR 0.032057491 ETH 0.17 EUR
+10.04.2025 08:21
+Seite 2 / 2

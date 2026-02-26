@@ -1,0 +1,49 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.6.qualifier
+-----------------------------------------
+Your contact:
+neon Switzerland AG Mr.
+service@neon-free.ch ZVLtBw pijO VRIsXZ
+Buckhauserstrasse 13
+8048 Zürich
+Zurich, 24 November 2025
+Account/custody account number 180'233'001
+Insured person ZVLtBw pijO VRIsXZ
+IBAN CH93 0076 2011 6238 5295 7
+Currency CHF
+Product neon Offensive 100 Swiss
+Investment strategy neon Offensive 100 Swiss
+Investment account simply3a: Daily statement nr.  2  24.11.2025
+Date Detail Value date Debit Credit Balance
+Balance carried forward  1'000.00
+24.11.2025 Fund buy 24.11.2025  10.00  990.00
+Sc Inv.II Mo.Re.Opp
+Secur.Nr. 1/039,462,806 Secur. Cur CHF
+Unit 0.102347
+Rate 97.707071
+24.11.2025 Fund buy 24.11.2025  480.00  510.00
+Sc Ind EqLar Cap CH
+Secur.Nr. 1/021,580,471 Secur. Cur CHF
+Unit 2.657624
+Rate 180.612432
+Page 1 / 2
+Account-/custody-account-holding bank: Lienhardt & Partner Privatbank Zürich AG
+Zurich, 24 November 2025
+Account/custody account number 180'233'001
+Insured person ZVLtBw pijO VRIsXZ
+IBAN CH93 0076 2011 6238 5295 7
+Currency CHF
+Product neon Offensive 100 Swiss
+Investment strategy neon Offensive 100 Swiss
+Investment account simply3a: Daily statement nr.  2  24.11.2025
+Date Detail Value date Debit Credit Balance
+Carried forward  510.00
+24.11.2025 Fund buy 24.11.2025  120.00  390.00
+Sc Eq S&Mid Caps CH
+Secur.Nr. 1/013,250,189 Secur. Cur CHF
+Unit 0.351181
+Rate 341.704
+Transaction volume  610.00  0.00
+New balance  390.00
+Page 2 / 2
+Account-/custody-account-holding bank: Lienhardt & Partner Privatbank Zürich AG

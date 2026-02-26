@@ -1,0 +1,67 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.1
+-----------------------------------------
+  
+251 Little Falls Drive
+42881 Lake Babcock Dr. Wilmington, DE USA 19808
+Suite 200
+Babcock Ranch, FL 33982
+WEwmc sealS
+Correspondent: TTRM
+Account No: 113328972
+Master Account No: 444397010
+Representative: Alpaca
+Generated Date: 2024-07-12
+ORDER ID: 2e3c4r4a-266d-9385-V0k7-O65kW863h9h0
+SYMBOL: SGOV
+BUY/SELL QTY CURRENCY PRICE GROSSAMOUNT FEES NET AMOUNT Trade Date
+buy 1.079762663 USD 100.448000 -108.46 -108.46 Jul 11, 2024
+TRADE TIME SETTLE DATE ASSET TYPE STATUS CAPACITY S/U/D CUSIP PRIMARYEXCHANGE NOTE
+03:45:50 PM (ET) Jul 12, 2024 Equity executed principal 46436E718 NYSE Arca
+equities
+1/4
+ENTRY TYPE CURRENCY NET AMOUNT DESCRIPTION STATUS
+No Fees found.
+2/4
+DISCLOSURES
+THANK YOU for letting Alpaca Securities LLC serve you (the "Customer", "you", or "your"). Amounts of securities due must be received in Alpaca Securities LLC office on or before the
+settlement date shown.
+1. All orders are received and executed subject to the rules, regulations and customs of the SEC, FINRA and the exchange or market where the order is entered, the provisions of the
+Securities Exchange Act of 1934 and Alpaca Securities LLC, if any.
+2. Securities purchased and securities pledged as margin are or may be hypothecated for the sum due thereon or for a greater sum, under circumstances which will permit the
+commingling thereof with securities of other customers, all without further notice to the Customer.
+3. If shares loaned for a short sale are no longer available, Alpaca, reserves the right to decide, by random selection, which positions will be subject to a buy-in.
+4. Your transaction may represent an average price trade. Upon written request and where available, further details of items herein may be provided including the execution date and
+time, the counterparty, the detailed breakdown of any commissions and fees and the remuneration details, if any, to Alpaca Securities LLC or your broker for directing orders to
+select market participants. To the extent any preferred or other securities mentioned herein have provisions that may cause a call or prepayment, the details and the effect on the
+yield shown here are available upon written request
+5. All transactions on this confirmation are presumed to be unsolicited unless noted otherwise on this trade confirmation.
+6. Any ratings data (which is subject to change) that may be provided, has been obtained from ratings services which Alpaca Securities LLC believes to be reliable, however, there is
+no guarantee of accuracy or completeness.
+7. Failure of Customer to notify Alpaca Securities LLC in writing within five days of the receipt of this document of any concerns constitutes an acceptance of the transaction.
+8. Alpaca does not make recommendations with regard to fractional share trading, whether to use fractional shares at all, or whether to invest in any specific security. A security’s
+eligibility on the list of fractional shares available for trading is not an endorsement of any of the securities, nor is it intended to convey that such stocks have low risk. Fractional share
+transactions are executed either on a principal or riskless principal basis, and can only be bought or sold with market orders during normal market hours.
+9. The default Cost Basis Election or tax relief method used by Alpaca Securities LLC for tax reporting is average price.
+10. The responsibility to cancel an open order resides with Customer. Any transactions which result from the execution of any order which Customer has not instructed to cancel will be
+entered into Customer’s account.
+11. Backup Withholding – If you have not provided us with your correct Social Security Number/Tax ID, under federal law, you may be subject to a 33% backup withholding + $50
+additional charge on certain payments.
+12. If your broker directs any customer order, any payment for order flow received by that broker will be furnished upon written request of the customer.
+13. If your account is holding a short position on the settlement date of the short sale trade, your account will be charged a daily short interest charge for carrying such short settled
+positions. The rate of the charge for carrying a short position varies, accounting for factors including, but not limited to, the security, its borrow demand, market exposure, and the
+concurrent market rate. The charge will be based on the entirety of the net short position and may include a mark-up. The charge is disclosed on your month-end statement. Please
+contact support@alpaca.markets for further information, including a daily report of the short interest charges. Please note that securities on the Easy to Borrow list may also be
+subject to short interest charges even if located at no cost.
+14. Alpaca Securities LLC charges you a transaction fee on certain securities transactions which are subject to fees assessed by self-regulatory organizations, securities exchanges,
+and or government agencies. The fee is based on the value of covered securities transactions. To determine the exact amount of this fee with respect to any transaction, please
+contact support@alpaca.markets.
+15. The U.S. Department of the Treasury and the Internal Revenue Service (IRS) have introduced regulations under Internal Revenue Code, Section 1446(f) regarding publicly traded
+partnership (PTP) securities held by foreign persons (individuals or entities). The regulation requires withholding 10% of gross proceeds from sales of PTP securities and certain
+3/4
+distributions by PTPs. The transactions and related withholding tax will be reported on Form 1042-S, Foreign Person's U.S. Source Income Subject to Withholding. PTP withholding
+tax is separate from the existing 37% withholding for individuals and 30% withholding for entity accounts on payments of U.S. source dividends, interest, and other income related to
+PTP securities. For more information go to Publicly Traded Partnerships | Internal Revenue Service - Alpaca is not responsible for knowing your tax liabilities, as such you should
+consult with a tax advisor for any questions around these regulations.
+Member FINRA, SIPC
+4/4

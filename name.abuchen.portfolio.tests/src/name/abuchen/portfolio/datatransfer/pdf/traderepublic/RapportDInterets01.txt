@@ -1,0 +1,18 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.2
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+Khaoula Meddahi PAGE 1 / 1
+15 RUE DE L'XX XX DATE 01/02/2024
+XXXXX XXXX COMPTE ESPÈCES 0123456789
+RAPPORT D'INTÉRÊTS
+31/01/2024
+SYNTHÈSE
+ACTIFS NATURE DES REVENUS TAUX D'INTÉRÊTS DATE TOTAL
+Espèces Intérêts 4,00% 23/01/2024 - 31/01/2024 0,09 EUR
+COMPTABILISATION
+IBAN DATE D'EFFET TOTAL
+DE21111111111111111111 01/02/2024 0,09 EUR
+Trade Republic Bank GmbH www.traderepublic.com Siège de la Société: Berlin Directeur Général
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin VAT-ID DE307510626 Gernot Mittendorfer

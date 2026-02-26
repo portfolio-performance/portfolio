@@ -1,0 +1,26 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.2.qualifier
+-----------------------------------------
+Kontoauszug
+Max Muster Seite
+Musterstr./2 0001 *
+5432 1 Musterhausen * = letzte Seite
+Kontonummer Gesamtbelastungen Vom Vorheriger
+DE50503260601000130541 0,00 01.06.2019 Saldo 85.224,74
+Kontoart Gesamtgutschriften Bis Neuer Saldo
+Tagesgeldkonto (alle Betra¨ge in EUR) 63,28 28.06.2019 85.288,02
+Der Saldo vom 15.07.2019 Anzahl Belastungen Anzahl Gutschriften
+85.288,02 000 001
+Buchungs- Wert-
+datum stellung von/nach Konto Buchungstext Belastungen Gutschriften
+28.06.2019 01.07.2019 DE5050326060 Ihre Zinsabrechnung 63,28
+1000130541
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entscha¨digungsfa¨hig. Na¨here Informationen ko¨nnen dem ”Informa-
+tionsbogen fu¨r den Einleger” entnommen werden. Sie finden diesen auf der Website von MoneYou unter ’Kundenservice’, ’Downloads’.
+ABN AMRO Bank N.V. Fu¨r weitere Fragen, Informationen sowie Einwendungen steht Ihnen unser
+Frankfurt Branch Kunderservice per E-Mail unter kundenservice@moneyou.de gerne zur Verfu¨gung.
+Mainzer Landstr. 1 Postalisch erreichen Sie uns unter MoneYou/ ABN AMRO Bank N.V.,
+60329 Frankfurt Postfach 10 15 36, 60015 Frankfurt.
+
+```

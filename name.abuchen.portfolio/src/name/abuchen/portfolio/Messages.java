@@ -5,6 +5,7 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS
 {
     private static final String BUNDLE_NAME = "name.abuchen.portfolio.messages"; //$NON-NLS-1$
+
     public static String AttributesAcquisitionFeeColumn;
     public static String AttributesAcquisitionFeeName;
     public static String AttributesAUMColumn;
@@ -78,7 +79,9 @@ public class Messages extends NLS
     public static String CSVFormatMMMDDYYYY;
     public static String CSVFormatYYYYMM;
     public static String CSVFormatYYYYMMDD;
+    public static String CSVFormatYYYYMMDDDot;
     public static String CSVFormatYYYYMMDDSlashes;
+    public static String CSVFormatYYYYMMDDTHHMM;
     public static String CSVImportedSecurityLabel;
     public static String CSVImportGenericColumnLabel;
     public static String CSVImportMissingField;
@@ -124,13 +127,18 @@ public class Messages extends NLS
     public static String IssueTransactionMissingCurrencyCode;
     public static String IssueTransactionWithoutDate;
     public static String LabelAssetAllocation;
+    public static String LabelCloseBrowserWindowAndGoBackToApplication;
+    public static String LabelCommodity;
+    public static String LabelCostMethodFIFO;
+    public static String LabelCostMethodMovingAverage;
+    public static String LabelCostMethodMovingAverageAbbr;
     public static String LabelCreditSuisseHTMLTable;
     public static String LabelCryptocurrency;
     public static String LabelDefaultReferenceAccountName;
     public static String LabelDeposits;
     public static String LabelDifference;
     public static String LabelDKKINTERBANKOFFERED3M;
-    public static String LabelECBStatisticalDataWarehouse;
+    public static String LabelECBDataPortal;
     public static String LabelEONIA;
     public static String LabelError;
     public static String LabelESTR;
@@ -154,6 +162,8 @@ public class Messages extends NLS
     public static String LabelJointPortfolio;
     public static String LabelJPYGBBY10Y;
     public static String LabelJPYLIBOR3M;
+    public static String LabelLoginSuccessful;
+    public static String LabelLoginToRetrieveHistoricalPrices;
     public static String LabelNameReferenceAccountRecovered;
     public static String LabelNoCurrency;
     public static String LabelNoCurrencyDescription;
@@ -166,6 +176,8 @@ public class Messages extends NLS
     public static String LabelReportingPeriodCurrentQuarter;
     public static String LabelReportingPeriodCurrentWeek;
     public static String LabelReportingPeriodFromXtoY;
+    public static String LabelReportingPeriodInTheFuture;
+    public static String LabelReportingPeriodInThePast;
     public static String LabelReportingPeriodLastXDays;
     public static String LabelReportingPeriodLastXTradingDays;
     public static String LabelReportingPeriodMonths;
@@ -211,9 +223,10 @@ public class Messages extends NLS
     public static String LabelTradeCalendarLSE;
     public static String LabelTradeCalendarMICEXRTS;
     public static String LabelTradeCalendarNYSE;
-    public static String LabelTradeCalendarSSE;
     public static String LabelTradeCalendarSix;
+    public static String LabelTradeCalendarSSE;
     public static String LabelTradeCalendarTARGET2;
+    public static String LabelTradeCalendarTLV;
     public static String LabelTradeCalendarTSX;
     public static String LabelTradeCalendarUseDefault;
     public static String LabelTradeCalendarVSE;
@@ -229,7 +242,6 @@ public class Messages extends NLS
     public static String LabelYahooFinance;
     public static String LabelYahooFinanceAdjustedClose;
     public static String MsgAlphaVantageAPIKeyMissing;
-    public static String MsgAlphaVantageRateLimitExceeded;
     public static String MsgCheckConfiguredAndCalculatedGrossValueDoNotMatch;
     public static String MsgCheckDividendsMustHaveASecurity;
     public static String MsgCheckGrossValueUnitForexMismatch;
@@ -246,7 +258,6 @@ public class Messages extends NLS
     public static String MsgCheckUnitForexMismatch;
     public static String MsgCheckUnitForexNotValid;
     public static String MsgCheckUnsupportedCurrency;
-    public static String MsgCoinGeckoRateLimitExceeded;
     public static String MsgDeltaWithoutAssets;
     public static String MsgErrorBaseAndTermCurrencyAreEqualWithInvalidExchangeRate;
     public static String MsgErrorCannotConvertToRequestedCurrency;
@@ -267,6 +278,7 @@ public class Messages extends NLS
     public static String MsgErrorInvestmentPlanMissingSecurityPricesToGenerateTransaction;
     public static String MsgErrorLeewayAPIKeyMissing;
     public static String MsgErrorMissingAPIKey;
+    public static String MsgErrorMissingIdentifierForSecurity;
     public static String MsgErrorMissingKeyValueInJSON;
     public static String MsgErrorMissingOnlineId;
     public static String MsgErrorMissingPathToDateOrClose;
@@ -275,22 +287,27 @@ public class Messages extends NLS
     public static String MsgErrorNoneOfSubSectionsMatched;
     public static String MsgErrorNotAllPatternMatched;
     public static String MsgErrorNotAValidDate;
+    public static String MsgErrorNotAValidTime;
     public static String MsgErrorNumberOfDateAndCloseRecordsDoNotMatch;
-    public static String MsgErrorOrderCancellationUnsupported;
     public static String MsgErrorParseErrorWithGivenPattern;
     public static String MsgErrorQuandlMissingAPIKey;
     public static String MsgErrorQuandlMissingCode;
     public static String MsgErrorSecurityHasMalformedURL;
-    public static String MsgErrorSplitTransactionsNotSupported;
     public static String MsgErrorTradeCollector_MissingHoldingsForSell;
     public static String MsgErrorTradeCollector_MissingHoldingsForTransfer;
     public static String MsgErrorTradeCollector_NoHoldingsForSell;
     public static String MsgErrorTradeCollector_NoHoldingsForTransfer;
-    public static String MsgErrorTransactionTypeNotSupported;
+    public static String MsgErrorTransactionAlternativeDocumentRequired;
+    public static String MsgErrorTransactionMissingExchangeRateIfInForex;
+    public static String MsgErrorTransactionOrderCancellationUnsupported;
+    public static String MsgErrorTransactionSkipIfDetailsMissing;
+    public static String MsgErrorTransactionSplitUnsupported;
+    public static String MsgErrorTransactionTypeNotSupportedOrRequired;
     public static String MsgErrorTwelveDataAPIKeyMissing;
     public static String MsgErrorUnitCurrencyMismatch;
     public static String MsgFileNotFound;
     public static String MsgIncorrectPassword;
+    public static String MsgJSONFormatInvalid;
     public static String MsgKeyLengthNotSupported;
     public static String MsgLoadingExchangeRates;
     public static String MsgMissingFeedURL;
@@ -305,15 +322,25 @@ public class Messages extends NLS
     public static String MsgNotANumber;
     public static String MsgNotAPortfolioFile;
     public static String MsgPasswordMissing;
+    public static String MsgRateLimitExceeded;
     public static String MsgReadingFile;
     public static String MsgUnexpectedHeader;
     public static String MsgUnexpectedValue;
     public static String MsgUnsupportedVersionClientFiled;
     public static String MsgXMLFormatInvalid;
+    public static String OAuthAuthenticationFailedDueToStateMismatch;
+    public static String OAuthCallbackServerNotRunning;
+    public static String OAuthCallbackServerStarted;
+    public static String OAuthErrorGeneratingPKCE;
+    public static String OAuthFailedToRequestAccessToken;
+    public static String OAuthFailedToStartCallbackServer;
+    public static String OAuthNotAuthenticated;
+    public static String OAuthNotConfigured;
+    public static String OAuthOngoingAuthentication;
+    public static String OAuthPortInUse;
     public static String PDFdbMsgCannotDetermineFileType;
     public static String PDFMsgExtracingFiles;
     public static String PDFMsgFileNotSupported;
-    public static String PDFMsgFinTechGroup_DoNotProcess_MissingExchangeRateIfInForex;
     public static String QuoteFeedManual;
     public static String SecurityBasedExchangeRateProvider;
     public static String VINISAppValueCapitalGainsCurrentYear;
@@ -326,12 +353,11 @@ public class Messages extends NLS
     public static String VINISAppValueRealizedCapitalGainsCurrentYear;
     public static String VINISAppValueRealizedCapitalGainsLastYear;
     public static String VINISAppValueRealizedCapitalGainsTotal;
-    public static String VINISAppValueSecuritiesMarket; 
-    public static String VINISAppValueSecuritiesPurchase; 
+    public static String VINISAppValueSecuritiesMarket;
+    public static String VINISAppValueSecuritiesPurchase;
     public static String VINISAppValueTotalAssetsMarket;
     public static String VINISAppValueTotalAssetsPurchase;
 
-  
     static
     {
         // initialize resource bundle

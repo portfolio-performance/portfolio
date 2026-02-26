@@ -1,18 +1,18 @@
 package name.abuchen.portfolio.ui.views;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class ChartLineSeriesAxes
 {
-    private Date[] dates;
+    private LocalDate[] dates;
     private double[] values;
 
-    public Date[] getDates()
+    public LocalDate[] getDates()
     {
         return dates;
     }
 
-    public void setDates(Date[] dates)
+    public void setDates(LocalDate[] dates)
     {
         this.dates = dates;
     }

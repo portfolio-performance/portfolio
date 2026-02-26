@@ -1,0 +1,28 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.4
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+Alexander gezCse LCEYs SEITE 1 von 1
+Hansastr. 47 DATUM 17.11.2025
+18430 CcplsYK an der Czah AUSFÜHRUNG 7c98-a11f
+SPARPLAN fab1-67af
+CRYPTO-WALLET BitGo Deutschland GmbH
+DEPOT 7663588124
+ABRECHNUNG CRYPTO SPARPLAN
+ÜBERSICHT
+Sparplanausführung am 17.11.2025 im außerbörslichen Handel Tradias.
+Der Kontrahent der Transaktion ist Tradias GmbH.
+POSITION ANZAHL DURCHSCHNITTSKURS BETRAG
+Bitcoin (BTC) 0,000294 Stk. 85.014,31 EUR 24,99 EUR
+GESAMT 24,99 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+DE04188883450181294301 2025-11-17 -24,99 EUR
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Die Cryptowerte werden in einer zentralen Wallet bei dem Cryptoverwahrer BitGo Deutschland GmbH verwahrt.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke

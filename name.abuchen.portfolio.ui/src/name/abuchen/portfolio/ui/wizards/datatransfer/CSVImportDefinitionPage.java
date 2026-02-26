@@ -110,6 +110,7 @@ import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.action.MenuContribution;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupportWrapper;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
@@ -406,7 +407,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
 
                 manager.add(new Separator());
                 configManager.getUserSpecificConfigurations().forEach(config -> subMenu
-                                .add(new SimpleAction(config.getLabel(), a -> onConfigDeleted(config))));
+                                .add(new MenuContribution(config.getLabel(), () -> onConfigDeleted(config))));
                 manager.add(new SimpleAction(Messages.CSVConfigExport, a -> onConfigExport()));
                 manager.add(new SimpleAction(Messages.CSVConfigImport, a -> onConfigImport()));
 
@@ -743,7 +744,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         protected ColumnConfigDialog(Client client, Shell parentShell, CSVImporter importer, Column column)
         {
             super(parentShell);
-            setShellStyle(getShellStyle() | SWT.SHEET);
+            setShellStyle(SWT.DIALOG_TRIM | SWT.RESIZE | SWT.SHEET);
 
             this.client = client;
             this.importer = importer;
@@ -786,6 +787,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
             final Composite details = new Composite(composite, SWT.NONE);
             final StackLayout layout = new StackLayout();
             details.setLayout(layout);
+            GridDataFactory.fillDefaults().grab(true, true).applyTo(details);
 
             final Composite emptyArea = new Composite(details, SWT.NONE);
 
@@ -818,11 +820,14 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
             tableViewer.setContentProvider(new KeyMappingContentProvider());
             tableViewer.getTable().setLinesVisible(true);
             tableViewer.getTable().setHeaderVisible(true);
-            GridDataFactory.fillDefaults().grab(false, true).minSize(SWT.DEFAULT, 100).applyTo(tableViewer.getTable());
+            GridDataFactory.fillDefaults().grab(true, true).minSize(SWT.DEFAULT, 100).applyTo(tableViewer.getTable());
 
             TableViewerColumn col = new TableViewerColumn(tableViewer, SWT.NONE);
-            col.getColumn().setText(Messages.CSVImportLabelExpectedValue);
-            col.getColumn().setWidth(100);
+            // the mapping of application values to CSV values is currently used
+            // only for the transaction type. Therefore we can use the more
+            // specific label here.
+            col.getColumn().setText(Messages.LabelTransactions);
+            col.getColumn().setWidth(200);
             col.setLabelProvider(new ColumnLabelProvider()
             {
                 @Override
@@ -833,14 +838,20 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
             });
 
             col = new TableViewerColumn(tableViewer, SWT.NONE);
-            col.getColumn().setText(Messages.CSVImportLabelProvidedValue);
-            col.getColumn().setWidth(100);
+            col.getColumn().setText(Messages.CSVImportLabelMappingCSVValue);
+            col.getColumn().setWidth(200);
             col.setLabelProvider(new ColumnLabelProvider()
             {
                 @Override
                 public String getText(Object element)
                 {
                     return ((KeyMappingContentProvider.Entry<?>) element).getValue();
+                }
+
+                @Override
+                public Image getImage(Object element)
+                {
+                    return Images.EDIT.image();
                 }
             });
 
@@ -913,6 +924,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
             else
             {
                 mappedTo.getCombo().select(0);
+                Display.getDefault().timerExec(100, () -> mappedTo.getCombo().setListVisible(true));
             }
 
             return composite;

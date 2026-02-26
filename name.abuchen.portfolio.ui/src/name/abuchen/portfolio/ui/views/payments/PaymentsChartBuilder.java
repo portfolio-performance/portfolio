@@ -2,7 +2,7 @@ package name.abuchen.portfolio.ui.views.payments;
 
 import java.util.function.Consumer;
 
-import org.swtchart.Chart;
+import org.eclipse.swtchart.Chart;
 
 import name.abuchen.portfolio.ui.util.TabularDataSource;
 

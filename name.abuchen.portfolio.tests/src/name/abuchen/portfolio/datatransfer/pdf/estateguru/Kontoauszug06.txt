@@ -1,0 +1,78 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.2
+-----------------------------------------
+Transaktionsbericht
+ 
+Arne Hildebrandt (Investor) 
+ 
+Anfangssaldo € 3,14
+Zins € 3,14
+Investition € -3,14
+Hauptbetrag € 3,14
+Auszahlung € -3,14
+Einzahlung € 3,14
+Gebühr € -3,14
+Strafe € 3,14
+Entschädigung € 3,14
+Zweitmarkt € 3,14
+Gewinn auf dem Zweitmarkt € 3,14
+Endsaldo € 3,14
+ 
+ 
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#58813469
+28.12.2023, 03:00 29.12.2023, 05:00 Zins Genehmigt Entwicklungskredit - 1.Stufe € 0,46 € 20,91
+(Finnland)
+#15885907
+Überbrückung
+20.12.2023, 16:54 20.12.2023, 16:54 Investition Genehmigt skredit - (€ -50,00) € 17,95
+1.Stufe
+(Estland)
+#7857
+Überbrückung
+15.12.2023, 03:00 18.12.2023, 05:00 Hauptbetrag Genehmigt skredit - € 5,67 € 66,65
+23.Stufe
+(Estland)
+#72936381
+08.12.2023, 03:00 11.12.2023, 05:00 Zins Genehmigt Geschäftskredit - 2.Stufe € 0,48 € 8,29
+(Estland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#7857
+Überbrückung
+06.12.2023, 03:00 08.12.2023, 05:00 Zins Genehmigt skredit - € 0,13 € 7,81
+23.Stufe
+(Estland)
+04.12.2023, 15:16 04.12.2023, 15:16 Auszahlung Genehmigt (€ -273,30) € 1,38
+04.12.2023, 15:16 04.12.2023, 00:00 Abhebegebühr Genehmigt (€ -1,00) € 274,68
+#53231155
+02.12.2023, 12:57 02.12.2023, 12:57 Verkaufsgebühr Genehmigt Entwicklungskredit - 3.Stufe (€ -0,41) € 275,68
+(Estland)
+#53231155
+02.12.2023, 12:57 02.12.2023, 12:57 Zweitmarkt Genehmigt Entwicklungskredit - 3.Stufe € 13,54 € 276,09
+(Estland)
+#77911273
+#5106
+01.11.2023, 00:00 29.11.2023, 05:00 Entschädigung Genehmigt Entwicklungskredit - 3.Stufe € 0,01 € 242,49
+(Finnland)
+#90165650
+03.10.2023, 15:31 03.10.2023, 15:31 Investition Genehmigt Entwicklungskredit - 2.Stufe (€ -50,00) € 29,94
+(Finnland)
+03.10.2023, 09:10 03.10.2023, 09:10 Einzahlung Genehmigt € 30,00 € 79,94
+#3598
+20.09.2023, 19:23 20.09.2023, 19:23 Gewinn auf dem Zweitmarkt Genehmigt Entwicklungskredit - 22.Stufe € 0,27 € 74,60
+(Litauen)
+#3598
+20.09.2023, 19:23 20.09.2023, 19:23 Verkaufsgebühr Genehmigt Entwicklungskredit - 22.Stufe (€ -0,95) € 74,33
+(Litauen)
+#3598
+20.09.2023, 19:23 20.09.2023, 19:23 Zweitmarkt Genehmigt Entwicklungskredit - 22.Stufe € 31,28 € 75,28
+(Litauen)
+#5642
+29.11.2022, 03:00 04.01.2023, 05:00 Strafe Genehmigt Überbrückungskredit € 0,22 € 11,69
+(Finnland)
+03.01.2023, 09:07 03.01.2023, 09:07 Einzahlung Genehmigt € 5,00 € 11,44
+#6164
+15.12.2022, 03:00 03.01.2023, 05:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 1,25 € 6,44
+(Lettland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 10

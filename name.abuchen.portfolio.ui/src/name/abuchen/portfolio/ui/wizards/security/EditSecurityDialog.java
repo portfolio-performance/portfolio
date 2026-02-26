@@ -13,6 +13,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.DialogSettings;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -38,6 +40,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
@@ -51,6 +54,7 @@ public class EditSecurityDialog extends Dialog
     private Label errorMessage;
 
     private final EditSecurityModel model;
+    private final EditSecurityCache cache;
     private final BindingHelper bindings;
 
     private boolean showQuoteConfigurationInitially = false;
@@ -61,6 +65,7 @@ public class EditSecurityDialog extends Dialog
         super(parentShell);
 
         this.model = new EditSecurityModel(client, security);
+        this.cache = new EditSecurityCache();
         this.bindings = new BindingHelper(model)
         {
             @Override
@@ -78,6 +83,13 @@ public class EditSecurityDialog extends Dialog
         };
     }
 
+    @Override
+    protected IDialogSettings getDialogBoundsSettings()
+    {
+        return DialogSettings.getOrCreateSection(PortfolioPlugin.getDefault().getDialogSettings(),
+                        EditSecurityDialog.class.getSimpleName());
+    }
+
     public void setShowQuoteConfigurationInitially(boolean showQuoteConfigurationInitially)
     {
         this.showQuoteConfigurationInitially = showQuoteConfigurationInitially;
@@ -93,11 +105,11 @@ public class EditSecurityDialog extends Dialog
     @Override
     protected Point getInitialSize()
     {
-        Point preferredSize = getShell().computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
+        var preferredSize = super.getInitialSize();
 
-        // create dialog with a minimum size
-        preferredSize.x = Math.min(Math.max(preferredSize.x, 700), 1000);
-        preferredSize.y = Math.min(Math.max(preferredSize.y, 500), 700);
+        // ensure a minimum size regardless of what the user sets
+        preferredSize.x = Math.max(preferredSize.x, 700);
+        preferredSize.y = Math.max(preferredSize.y, 500);
         return preferredSize;
     }
 
@@ -197,8 +209,8 @@ public class EditSecurityDialog extends Dialog
         addPage(new SecurityMasterDataPage(model, bindings), Images.SECURITY.image());
         addPage(new AttributesPage(model, bindings), null);
         addPage(new SecurityTaxonomyPage(model, bindings), null);
-        addPage(new HistoricalQuoteProviderPage(model, bindings), null);
-        addPage(new LatestQuoteProviderPage(model, bindings), null);
+        addPage(new HistoricalQuoteProviderPage(model, cache, bindings), null);
+        addPage(new LatestQuoteProviderPage(model, cache, bindings), null);
 
         tabFolder.setSelection(showQuoteConfigurationInitially ? 3 : 0);
 
@@ -234,13 +246,17 @@ public class EditSecurityDialog extends Dialog
         boolean hasQuotes = !security.getPrices().isEmpty();
 
         boolean feedChanged = !Objects.equals(model.getFeed(), security.getFeed());
+        boolean onlineIdChanged = !Objects.equals(model.getOnlineId(), security.getOnlineId());
         boolean tickerChanged = !Objects.equals(model.getTickerSymbol(), security.getTickerSymbol());
         boolean feedURLChanged = !Objects.equals(model.getFeedURL(), security.getFeedURL());
         boolean currencyChanged = !Objects.equals(model.getCurrencyCode(), security.getCurrencyCode());
 
-        boolean quotesCanChange = feedChanged || tickerChanged || feedURLChanged || currencyChanged;
+        boolean quotesCanChange = feedChanged || onlineIdChanged || tickerChanged || feedURLChanged || currencyChanged;
 
         model.applyChanges();
+
+        if (quotesCanChange)
+            security.getEphemeralData().touchFeedConfigurationChanged();
 
         eventBroker.post(ChangeEventConstants.Security.EDITED, new SecurityChangeEvent(model.getClient(), security));
 

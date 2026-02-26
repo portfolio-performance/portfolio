@@ -70,7 +70,7 @@ public class StakeshopPtyLtdPDFExtractor extends AbstractPDFExtractor
                         // EFFECTIVE PRICE $20.43 TICKER FLT.ASX
                         // @formatter:on
                         .section("tickerSymbol", "currency") //
-                        .match("^EFFECTIVE PRICE \\p{Sc}[\\.,\\d]+ TICKER (?<tickerSymbol>[\\w]{3,4})\\..*$") //
+                        .match("^EFFECTIVE PRICE \\p{Sc}[\\.,\\d]+ TICKER (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\..*$") //
                         .match("^VALUE (?<currency>[\\w]{1}\\p{Sc}).*") //
                         .assign((t, v) -> {
                             v.put("name", v.get("tickerSymbol"));

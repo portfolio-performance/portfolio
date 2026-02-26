@@ -419,6 +419,12 @@ public class SecurityDetailsViewer
                 container.setMinSize(container1.computeSize(SWT.DEFAULT, SWT.DEFAULT));
             }
         });
+
+        // After adding all children, explicitly calculate size and layout
+        // ScrolledComposite's content container. This is again to avoid
+        // artifact when scrollbar covers this container's right edge.
+        container1.setSize(container1.computeSize(SWT.DEFAULT, SWT.DEFAULT, true));
+        container1.layout();
     }
 
     public Control getControl()

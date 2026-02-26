@@ -5,6 +5,15 @@
     padding: 0px;
 }
 
+.MPartStack {
+	swt-unselected-hot-tab-color-background: #383A3D;
+    padding: 0px;
+}
+
+.MPartStack.active {
+	swt-selected-tab-highlight: none;
+}
+
 CTabFolder {
     padding: 0px;
 }
@@ -44,6 +53,7 @@ CTabFolder {
 CustomColors {
 	default-foreground: #EEEEEE;
 	default-background: #302E30;
+	chip-background: #7C8081;
 	warning-background: #6F6345;
 	red-background: #960000;
 	green-background: #004B00;
@@ -53,6 +63,27 @@ CustomColors {
 	gray-foreground: #808080;
 	
 	hyperlink: #6FC5EE;
+}
+
+ValueColorScheme.standard {
+	positive-foreground: #02f500;
+	negative-foreground: #fe2b05;
+	up-arrow: "scheme/standard/dark/up_arrow.svg";
+	down-arrow: "scheme/standard/dark/down_arrow.svg";
+}
+
+ValueColorScheme.blueorange {
+	positive-foreground: #4DA6FF;
+	negative-foreground: #FFB366;
+	up-arrow: "scheme/blueorange/dark/up_arrow.svg";
+	down-arrow: "scheme/blueorange/dark/down_arrow.svg";
+}
+
+ValueColorScheme.asia {
+	positive-foreground: #fe2b05;
+	negative-foreground: #02f500;
+	up-arrow: "scheme/asia/dark/up_arrow.svg";
+	down-arrow: "scheme/asia/dark/down_arrow.svg";
 }
 
 SecuritiesChart {
@@ -70,6 +101,37 @@ SecuritiesChart {
 	non-trading-color: #8c4b31;
 	
 	shares-held-color: #ffaf4d;
+}
+
+SecuritiesChart.blueorange {
+	purchase-event-color: #2D9CFF;
+	sale-event-color: #FF7A00;
+
+	extreme-marker-high-color: #4DA3FF;
+	extreme-marker-low-color: #FF8A50;
+}
+
+SecuritiesChart.asia {
+	quote-area-positive-color: #e25b5a;
+	quote-area-negative-color: #23b0d7;
+
+	purchase-event-color: #ff2b30;
+	sale-event-color: #1fd127;
+
+	extreme-marker-high-color: #A8272A;
+	extreme-marker-low-color: #1aad21;
+}
+
+PortfolioBalanceChart {
+	invested-capital-color: #ffaf4d;
+	absolute-delta-color: #4ddaff;
+	delta-area-positive-color: #23b0d7;
+	delta-area-negative-color: #e25b5a;
+}
+
+PortfolioBalanceChart.asia {
+	delta-area-positive-color: #e25b5a;
+	delta-area-negative-color: #23b0d7;
 }
 
 * {

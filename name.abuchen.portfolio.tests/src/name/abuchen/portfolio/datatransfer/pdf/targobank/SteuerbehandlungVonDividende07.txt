@@ -1,0 +1,51 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.72.2
+-----------------------------------------
+TARGOBANK AG
+Postfach 10 02 30
+47002 Duisburg
+TARGOBANK AG - Postfach 10 02 30 - 47002 Duisburg www.targobank.de
+HERR MAX MUSTERMANN
+FRAU MAXI MUSTERMANN 
+STRASSE 7
+11111 STADT
+Depotnummer 111111111111
+........................................................................................................................................................................................................
+Dividendengutschrift (Steuerbeilage) 19.12.2024
+MAX MUSTERMANN & MAXI MUSTERMANN
+Wertpapier Northrop Grumman Corp. - Registered Shares DL 1
+WKN / ISIN 851915 / US6668071029
+Stück 4
+Ex-Tag 02.12.2024
+Ursprungsland Vereinigte Staaten von Amerika
+Kapitalertragsteuer Solidaritätszuschlag
+25,00 % * 5,50 %
+Transaktionsreferenz INDTBK35424CG007898O00
+Steuerliche Bemessungsgrundlagen - keine Steuerbescheinigung
+Dividendenanteil auf ausländische Dividenden, Veräußerungsgewinne, Stillhalterprämien und 7,89 EUR
+Termingeschäfte (§ 20 Abs. 2 EStG)
+Anrechenbare ausländische Quellensteuer 1,18 EUR
+Erträge/Verluste 7,89 EUR
+Auf- oder Abbau von steuerlichen Verrechnungsmöglichkeiten
+Verlustverrechnung aus Aktienhandel: 0,00 EUR
+Verlustverrechnung aus sonstigen Geschäften: 0,00 EUR
+Nutzung des Sparerpauschbetrages/Freistellungsauftrages 0,00 EUR
+Anrechnung ausländischer Quellensteuer ** - 4,72 EUR
+Bemessungsgrundlage 3,17 EUR
+Kapitalertragsteuer (KESt): 0,79 EUR
+Solidaritätszuschlag auf KESt: 0,04 EUR
+Kirchensteuer auf KESt: 0,00 EUR
+Gesamtsumme Steuern 0,83 EUR
+Belastung Ihres Kontos 1111111111 mit Wertstellung zum 18. Dezember 2024.
+* KESt grundsätzlich 25%. Bei Einbehalt von Kirchensteuer ändert sich der KESt-Satz entsprechend Ihres Kirchensteuersatzes.
+** Quellensteuer multipliziert mit 4 als Ertragsäquivalent
+Dieser Beleg wurde maschinell erstellt und wird nicht unterschrieben. Irrtum vorbehalten.
+Seite 1
+TARGOBANK AG | Vorstand: Isabelle Chevelard (Vorsitzende); Christophe Jéhan (stellv. Vorsitzender); Berthold Rüsing; Maria Topaler; Marco Voosen
+Vorsitzender des Aufsichtsrates:  René Dangel | Sitz der Gesellschaft: Düsseldorf
+Handelsregister Amtsgericht Düsseldorf HRB 83351 | USt-ID-Nr.: DE 811 285 485
+USt-ID-Nr. des umsatzsteuerlichen Organträgers: DE 811 623 326
+KH.20241220.083558.5001.0010.1452 X 0 R
+
+```

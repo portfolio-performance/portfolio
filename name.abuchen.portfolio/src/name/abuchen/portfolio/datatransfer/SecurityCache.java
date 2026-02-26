@@ -86,7 +86,7 @@ public class SecurityCache
         // message is only returned to the user if the other attributes also did
         // not match
         if (idOfAttributeWithDuplicateSecurities >= 0)
-            throw new IllegalArgumentException(MessageFormat.format(MESSAGES.get(idOfAttributeWithDuplicateSecurities),
+            throw new DuplicateSecurityException(MessageFormat.format(MESSAGES.get(idOfAttributeWithDuplicateSecurities),
                             attributes.get(idOfAttributeWithDuplicateSecurities)));
 
         // second: check the name. But: even if the name matches, we also must

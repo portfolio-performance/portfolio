@@ -17,7 +17,10 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.TransactionPair;
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class TransactionSearchField extends ControlContribution
 {
@@ -42,9 +45,15 @@ public class TransactionSearchField extends ControlContribution
         search.setMessage(Messages.LabelSearch);
         search.setSize(300, SWT.DEFAULT);
 
+        // reset filterText when user switch tab
+        search.addDisposeListener(e -> {
+            filterText = null;
+            onRecalculationNeeded.accept(filterText);
+        });
+
         search.addModifyListener(e -> {
             var text = search.getText().trim();
-            if (text.length() == 0)
+            if (text.isEmpty())
             {
                 filterText = null;
                 onRecalculationNeeded.accept(filterText);
@@ -99,12 +108,36 @@ public class TransactionSearchField extends ControlContribution
                 for (Function<TransactionPair<?>, Object> label : searchLabels)
                 {
                     Object l = label.apply(tx);
-                    if (l != null && l.toString().toLowerCase().indexOf(filterText) >= 0)
-                        return true;
+                    if (l == null)
+                        continue;
+
+                    // If this is a numeric field, do a numeric comparison
+                    // to handle formatting differences (commas, periods, etc.)
+                    if (l instanceof Money money) // NOSONAR
+                    {
+                        if (TextUtil.isNumericSearchMatch(filterText, money.getAmount() / Values.Money.divider()))
+                            return true;
+                    }
+                    else if (l instanceof Long number)
+                    {
+                        if (TextUtil.isNumericSearchMatch(filterText, number.doubleValue() / Values.Share.divider()))
+                            return true;
+                    }
+                    else if (l instanceof Number number)
+                    {
+                        if (TextUtil.isNumericSearchMatch(filterText, number.doubleValue()))
+                            return true;
+                    }
+                    else
+                    {
+                        if (l.toString().toLowerCase().indexOf(filterText) >= 0)
+                            return true;
+                    }
                 }
 
                 return false;
             }
         };
     }
+
 }

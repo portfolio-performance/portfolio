@@ -13,6 +13,8 @@ import jakarta.inject.Inject;
 import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.FontDescriptor;
@@ -27,6 +29,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -71,6 +74,7 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
     protected IPreferenceStore preferences;
 
     protected boolean columnsInReverseOrder = false;
+    protected boolean showAverageColumn = false;
 
     protected Font boldFont;
     protected TableColumnLayout tableLayout;
@@ -89,6 +93,12 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
         return this.getClass().getSimpleName() + "-columnsInReverseOrder"; //$NON-NLS-1$
     }
 
+    private String getKeyForShowAverage()
+    {
+        // Separate keys for sub-classes
+        return this.getClass().getSimpleName() + "-showAverages"; //$NON-NLS-1$
+    }
+
     protected void addReverseColumnAction(IMenuManager manager)
     {
         Action action = new SimpleAction(Messages.LabelColumnsInReverseOrder, a -> {
@@ -100,12 +110,52 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
         manager.add(action);
     }
 
+    protected void addAverageColumnAction(IMenuManager manager)
+    {
+        Action action = new SimpleAction(Messages.LabelShowAverage, a -> {
+            showAverageColumn = !showAverageColumn;
+            preferences.setValue(getKeyForShowAverage(), showAverageColumn);
+
+            model.fireUpdateChange();
+        });
+        action.setChecked(showAverageColumn);
+        manager.add(action);
+    }
+
+    protected void addSumColumnAction(IMenuManager manager)
+    {
+        manager.add(new Separator());
+        MenuManager submenu = new MenuManager(Messages.PrefTitlePresentation);
+        manager.add(submenu);
+
+        Action action = new SimpleAction(Messages.LabelTotalsAtTheTop, a -> {
+            model.setHideTotalsAtTheTop(!model.isHideTotalsAtTheTop());
+            preferences.setValue(PaymentsViewInput.TOP, model.isHideTotalsAtTheTop());
+
+            // make sure *all* sum rows are updated (not only from this view)
+            model.fireUpdateChange();
+        });
+        action.setChecked(!model.isHideTotalsAtTheTop());
+        submenu.add(action);
+
+        action = new SimpleAction(Messages.LabelTotalsAtTheBottom, a -> {
+            model.setHideTotalsAtTheBottom(!model.isHideTotalsAtTheBottom());
+            preferences.setValue(PaymentsViewInput.BOTTOM, model.isHideTotalsAtTheBottom());
+
+            // make sure *all* sum rows are updated (not only from this view)
+            model.fireUpdateChange();
+        });
+        action.setChecked(!model.isHideTotalsAtTheBottom());
+        submenu.add(action);
+    }
+
     @Override
     public final Control createControl(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NONE);
 
         columnsInReverseOrder = preferences.getBoolean(getKeyForReverseOrder());
+        showAverageColumn = preferences.getBoolean(getKeyForShowAverage());
 
         tableLayout = new TableColumnLayout();
         container.setLayout(tableLayout);
@@ -149,6 +199,7 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
         model.addUpdateListener(() -> updateColumns(tableViewer, tableLayout));
 
         new ContextMenu(tableViewer.getControl(), this::fillContextMenu).hook();
+        hookKeyListener();
 
         return container;
     }
@@ -229,9 +280,9 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
             PaymentsViewModel.Line line2 = (PaymentsViewModel.Line) o2;
 
             if (line1.getVehicle() == null)
-                return direction == SWT.UP ? 1 : -1;
+                return direction == SWT.UP ^ line1.isHeader() ? 1 : -1;
             if (line2.getVehicle() == null)
-                return direction == SWT.UP ? -1 : 1;
+                return direction == SWT.UP ^ line2.isHeader() ? -1 : 1;
 
             return comparator.compare(line1, line2);
         });
@@ -327,5 +378,21 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
         {
             new SecurityContextMenu(view).menuAboutToShow(manager, security);
         }
+    }
+
+    private void hookKeyListener()
+    {
+        tableViewer.getControl().addKeyListener(KeyListener.keyPressedAdapter(e -> {
+            var selection = tableViewer.getStructuredSelection();
+            if (selection.isEmpty() || selection.size() > 1)
+                return;
+
+            var line = (Line) selection.getFirstElement();
+            var vehicle = line.getVehicle();
+            if (vehicle instanceof Security security)
+            {
+                new SecurityContextMenu(view).handleEditKey(e, security);
+            }
+        }));
     }
 }

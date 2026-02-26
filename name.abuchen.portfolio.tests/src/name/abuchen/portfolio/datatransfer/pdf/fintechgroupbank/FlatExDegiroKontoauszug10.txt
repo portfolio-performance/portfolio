@@ -1,0 +1,160 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.1
+System: linux | x86_64 | 21.0.8+9-Ubuntu-0ubuntu124.04.1 | Ubuntu
+-----------------------------------------
+flatexDEGIRO Bank AG 
+Kundenservice 
+Gadollaplatz 1 
+8010 Graz 
+Tel.: +43 - (0)720 518 777 
+Mail: info@flatex.at
+flatexDEGIRO Bank AG - Gadollaplatz 1 - A-8010 Graz
+Graz, 03.01.2026
+3538554998992795797607
+BlBBS XVLQZkXe 
+cXXHqgvRvQSSqt. 08s/86 
+2717 uOIsZiZa 
+ÖSTERREICH
+Kontoauszug Nr.: 004/2025
+Kontonummer: 62454810814
+dazugehörige IBAN: fV64 9611 4703 0037 1990
+Kontenart: Kontokorrentkonto
+Kontowährung: EUR
+Alter Saldo vom: 30.09.2025 in EUR 4.118,19+
+Buchungsdatum Valuta Buchungstext Betrag in EUR
+01.10. 30.09. Zinsabschluss 01.07.2025 - 30.09.2025 3,39-
+01.10. 02.10. Ausführung ORDER Verkauf US7170811035
+532951422 1.001,76+
+01.10. 02.10. Ausführung ORDER Verkauf XFC000A2YY6X
+302914725 918,33+
+Überweisung
+01.10. 01.10. BIIWATWWXXX
+Mn132692519750748439 3.000,00-
+HEoVS yjYhmWXs
+03.10. 01.10. Dividendenzahlung US6541061031 7,42+
+Überweisung
+Code: SCOR - CreditorReference: Depot -
+JrsDLgAxo - VlqAkUywwS
+07.10. 07.10. qoPYsm1pGTT 1.000,00+
+Iz840881600557395584
+amSuSAVR NLJhT
+KREF: 80037004141-4699551-3110265
+08.10. 09.10. Ausführung ORDER Kauf XFC000A2YY6X
+417070391 3.863,97-
+Überweisung
+08.10. 08.10. BIIWATWWXXX
+If031173443553589854 500,00-
+DSoTN PrTAeVea
+08.10. 10.10. Ausführung ORDER Kauf DE000MM5ABF5
+980999292 661,70-
+09.10. 13.10. Ausführung ORDER Verkauf DE000BASF111
+861849098 870,51+
+flatexDEGIRO Bank AG Niederlassung Österreich | Aktiengesellschaft | Gadollaplatz 1 | 8010 Graz | Landesgericht für Zivilrechtssachen Graz | FN 334642 x | UID ATU 65140956
+Hauptniederlassung: flatexDEGIRO Bank AG | Omniturm | Große Gallusstr. 16-18 | 60312 Frankfurt am Main (Deutschland) | Amtsgericht Frankfurt am Main | HRB 105687
+- Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter | Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+Evgeni Kaplun, Jens Möbitz, Christiane Strubel -
+Seite 1 von 3
+7841389159986165 156774667111
+Buchungsdatum Valuta Buchungstext Betrag in EUR
+Überweisung
+09.10. 09.10. BIIWATWWXXX
+eS100457973588945924 550,00+
+glTIu dkiKeCXN
+09.10. 13.10. Ausführung ORDER Kauf US26740W1099
+617381179 1.355,71-
+10.10. 13.10. Ausführung ORDER Verkauf US2546871060
+532686672 1.850,44+
+13.10. 14.10. Ausführung ORDER Verkauf VGG6564A1057
+359319114 3,56-
+13.10. 14.10. Ausführung ORDER Verkauf VGG6564A1057
+971707571 1.233,78+
+13.10. 14.10. Ausführung ORDER Verkauf VGG6564A1057
+717370235 111,04+
+17.10. 20.10. Ausführung ORDER Verkauf XFC000A2YY6Q
+159400622 3.134,23+
+23.10. 27.10. Ausführung ORDER Kauf US26740W1099
+506369033 1.478,56-
+23.10. 27.10. Ausführung ORDER Kauf US4781601046
+606356247 1.165,81-
+27.10. 29.10. Ausführung ORDER Kauf US26740W1099
+331077886 1.480,91-
+29.10. 31.10. Ausführung ORDER Verkauf DE000MM5ABF5
+123619859 369,91+
+29.10. 31.10. Ausführung ORDER Verkauf AT0000969985
+326713301 708,73+
+03.11. 05.11. Ausführung ORDER Kauf US4781601046
+482907819 1.656,75-
+04.11. 05.11. Ausführung ORDER Verkauf XFC000A2YY6X
+451170076 2.985,25+
+04.11. 05.11. Ausführung ORDER Verkauf XFC000A402FC
+898228365 258,69+
+Überweisung
+Code: SCOR - CreditorReference: QYcahWN -
+HYwEffDIE - QHqfphnaDM
+06.11. 06.11. IbtgDl8nnLJ 1.000,00+
+at281887082404416719
+HOlvABMt GzSHf
+KREF: 22313592072-3933584-2145631
+07.11. 11.11. Ausführung ORDER Verkauf AT0000938204
+093075476 434,11+
+10.11. 12.11. Ausführung ORDER Verkauf DE000MK8G5Q9
+272537588 449,46+
+11.11. 13.11. Ausführung ORDER Kauf US4824801009
+911320283 3.105,15-
+11.11. 13.11. Ausführung ORDER Kauf US0773473006
+113873631 2.688,41-
+14.11. 18.11. Ausführung ORDER Verkauf US69608A1088
+694374725 1.408,27+
+18.11. 20.11. Ausführung ORDER Verkauf US92826C8394
+436238733 2.863,91+
+flatexDEGIRO Bank AG Niederlassung Österreich | Aktiengesellschaft | Gadollaplatz 1 | 8010 Graz | Landesgericht für Zivilrechtssachen Graz | FN 334642 x | UID ATU 65140956
+Hauptniederlassung: flatexDEGIRO Bank AG | Omniturm | Große Gallusstr. 16-18 | 60312 Frankfurt am Main (Deutschland) | Amtsgericht Frankfurt am Main | HRB 105687
+- Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter | Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+Evgeni Kaplun, Jens Möbitz, Christiane Strubel -
+Seite 2 von 3
+6115805428884393 145351387215
+Buchungsdatum Valuta Buchungstext Betrag in EUR
+Überweisung
+27.11. 27.11. BIIWATWWXXX
+kH263779613641675977 4.000,00-
+nEXTy GvbuCOTh
+01.12. 01.12. Dividendenzahlung US92826C8394 4,20+
+02.12. 02.12. Dividendenzahlung US4824801009 3,56+
+09.12. 09.12. Dividendenzahlung US4781601046 13,75+
+Überweisung
+Code: SCOR - CreditorReference: Depot -
+MWZTeEavu - XlMOUHuIfI
+09.12. 09.12. NSmHoq6xxqP 1.000,00+
+vZ423074479485097902
+FTXpRmWj wbFen
+KREF: 34123607559-7622931-2889708
+10.12. 09.12. Dividendenzahlung US4781601046 6,48+
+10.12. 12.12. Ausführung ORDER Verkauf US64110L1061
+883906360 1.708,42+
+13.12. 12.12. Dividendenzahlung US88579Y1010 9,03+
+15.12. 17.12. Ausführung ORDER Kauf US0320951017
+979287406 2.229,15-
+31.12. 31.12. Zinsabschluss 01.10.2025 - 31.12.2025 0,23-
+Neuer Saldo 31.12.2025 Nr. 004/2025 Währung EUR 826,17+
+Der ausgewiesene Kontosaldo kann durch abweichende Wertstellung (Valuta) vom wertmäßigen Kontostand 
+abweichen. Die Wertstellung von Buchungen ist auch relevant für die Berechnung von Zinsen.
+Bei Geldeingängen aus dem Ausland beachten Sie bitte eventuelle Meldungen nach der Außenwirtschaftsverordnung 
+(AWV). Die Deutsche Bundesbank und ihre Filialen erteilen dazu gern die notwendigen Auskünfte.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere 
+Informationen können dem "Informationsbogen für den Einleger" entnommen werden.
+Der Rechnungsabschluss wird Ihnen als separates Dokument zur Verfügung gestellt.
+Beanstandungen gegen Rechnungsabschlüsse sind unverzüglich und schriftlich zu senden an:
+flatexDEGIRO Bank AG 
+Beschwerdemanagement 
+Postfach 100551 
+41405 Neuss. 
+DEUTSCHLAND
+Der Abschlusssaldo gilt als genehmigt, wenn ihm nicht innerhalb von 6 Wochen ab Zugang schriftlich widersprochen 
+wird. Zur Fristwahrung genügt die rechtzeitige Absendung der Einwendung.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+flatexDEGIRO Bank AG Niederlassung Österreich | Aktiengesellschaft | Gadollaplatz 1 | 8010 Graz | Landesgericht für Zivilrechtssachen Graz | FN 334642 x | UID ATU 65140956
+Hauptniederlassung: flatexDEGIRO Bank AG | Omniturm | Große Gallusstr. 16-18 | 60312 Frankfurt am Main (Deutschland) | Amtsgericht Frankfurt am Main | HRB 105687
+- Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter | Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+Evgeni Kaplun, Jens Möbitz, Christiane Strubel -
+Seite 3 von 3
+4988450171171597 284976052557

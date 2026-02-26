@@ -29,7 +29,7 @@ public interface UIConstants
             String SAVED = "file/saved"; //$NON-NLS-1$
             String REMOVED = "file/removed"; //$NON-NLS-1$
         }
-        
+
         interface RecentFiles // NOSONAR
         {
             String UPDATED = "recent/updated"; //$NON-NLS-1$
@@ -87,6 +87,10 @@ public interface UIConstants
         String NEW_DOMAIN_ELEMENT = "name.abuchen.portfolio.ui.command.newDomainElement"; //$NON-NLS-1$
         String IMPORT_CSV = "name.abuchen.portfolio.ui.command.import"; //$NON-NLS-1$
         String PREFERENCES = "org.eclipse.ui.window.preferences"; //$NON-NLS-1$
+        String UPDATE_QUOTES = "name.abuchen.portfolio.ui.command.updatequotes"; //$NON-NLS-1$
+        String MIGRATE_PORTFOLIO_REPORT = "name.abuchen.portfolio.ui.command.tools.migratePortfolioReportHandler"; //$NON-NLS-1$
+        String IMPORT_TAXONOMY = "name.abuchen.portfolio.ui.command.importTaxonomies"; //$NON-NLS-1$
+        String EXPORT_TAXONOMY = "name.abuchen.portfolio.ui.command.exportTaxonomies"; //$NON-NLS-1$
     }
 
     /**
@@ -105,6 +109,16 @@ public interface UIConstants
         String TAG = "name.abuchen.portfolio.ui.param.tag"; //$NON-NLS-1$
         String PAGE = "name.abuchen.portfolio.ui.param.page"; //$NON-NLS-1$
         String TYPE = "name.abuchen.portfolio.ui.param.type"; //$NON-NLS-1$
+        String FILTER = "name.abuchen.portfolio.ui.param.filter"; //$NON-NLS-1$
+        String WATCHLIST = "name.abuchen.portfolio.ui.param.watchlist"; //$NON-NLS-1$
+    }
+
+    /**
+     * Well-known element ids from the application e4xmi file
+     */
+    interface ElementId // NOSONAR
+    {
+        String MENU_ITEM_UPDATE_QUOTES_SELECTED_SECURITIES = "name.abuchen.portfolio.ui.menu.online.updatequotes.selectedsecurities"; //$NON-NLS-1$
     }
 
     interface Preferences // NOSONAR
@@ -138,7 +152,7 @@ public interface UIConstants
         String ALWAYS_DISPLAY_CURRENCY_CODE = "ALWAYS_DISPLAY_CURRENCY_CODE"; //$NON-NLS-1$
 
         /**
-         * Add "p.a." to annualized return rates 
+         * Add "p.a." to annualized return rates
          */
         String DISPLAY_PER_ANNUM = "DISPLAY_PER_ANNUM"; //$NON-NLS-1$
 
@@ -160,6 +174,18 @@ public interface UIConstants
         String UPDATE_QUOTES_AFTER_FILE_OPEN = "UPDATE_QUOTES_AFTER_FILE_OPEN"; //$NON-NLS-1$
 
         /**
+         * Preference key whether to periodically update quotes. It is only
+         * check if quotes are updated after opening the file at all.
+         */
+        String UPDATE_QUOTES_PERIODICALLY = "UPDATE_QUOTES_PERIODICALLY"; //$NON-NLS-1$
+
+        /**
+         * Preference key for the update strategy; see
+         * {@link name.abuchen.portfolio.ui.jobs.priceupdate.PriceUpdateStrategy}
+         */
+        String UPDATE_QUOTES_STRATEGY = "UPDATE_QUOTES_STRATEGY"; //$NON-NLS-1$
+
+        /**
          * Preference key whether to automatically update quotes after opening a
          * data file.
          */
@@ -172,16 +198,35 @@ public interface UIConstants
          */
         String STORE_SETTINGS_NEXT_TO_FILE = "STORE_SETTINGS_NEXT_TO_FILE"; //$NON-NLS-1$
 
-        String ENABLE_EXPERIMENTAL_FEATURES = "ENABLE_EXPERIMENTAL_FEATURES"; //$NON-NLS-1$
+        /**
+         * @deprecated replaced by the flag experiments
+         */
+        @Deprecated(since = "2025")
+        String ENABLE_EXPERIMENTAL_FEATURES = "ENABLE_EXPERIMENTAL_FEATURES"; //$NON-NLS-1$ //NOSONAR
+        
+        /**
+         * Comma-separated list of experimental features that are enabled.
+         * Individual features can be toggled via the Experiments preference
+         * page.
+         */
+        String EXPERIMENTS = "EXPERIMENTS"; //$NON-NLS-1$
 
         /**
-         * Preference key used in 2023 to indicate whether the survey is active.
+         * @deprecated Preference key used in 2023 to indicate whether the survey is active.
          * Do not reuse!
          */
-        @Deprecated
-        String ENABLE_SURVEY_REMINDER = "ENABLE_SURVEY_REMINDER"; //$NON-NLS-1$
+        @Deprecated(since = "2023")
+        String ENABLE_SURVEY_REMINDER = "ENABLE_SURVEY_REMINDER"; //$NON-NLS-1$ //NOSONAR
 
         String ENABLE_SWTCHART_PIECHARTS = "ENABLE_SWTCHART_PIECHARTS"; //$NON-NLS-1$
+
+        /**
+         * Preference key whether to activate in-place editing with a double
+         * click. As described in the Eclipse Platform issue
+         * https://github.com/eclipse-platform/eclipse.platform.ui/issues/1069,
+         * on macOS the UI can freeze on multiple double-clicks.
+         */
+        String DOUBLE_CLICK_CELL_TO_EDIT = "DOUBLE_CLICK_CELL_TO_EDIT"; //$NON-NLS-1$
 
         String ALPHAVANTAGE_API_KEY = "ALPHAVANTAGE_API_KEY"; //$NON-NLS-1$
         String ALPHAVANTAGE_CALL_FREQUENCY_LIMIT = "ALPHAVANTAGE_CALL_FREQUENCY_LIMIT"; //$NON-NLS-1$
@@ -193,7 +238,7 @@ public interface UIConstants
         String LEEWAY_API_KEY = "LEEWAY_API_KEY"; //$NON-NLS-1$
 
         String TWELVEDATA_API_KEY = "TWELVEDATA_API_KEY"; //$NON-NLS-1$
-        
+
         String DIVVYDIARY_API_KEY = "DIVVYDIARY_API_KEY"; //$NON-NLS-1$
 
         String MYDIVIDENDS24_API_KEY = "MYDIVIDENDS24_API_KEY"; //$NON-NLS-1$
@@ -201,9 +246,13 @@ public interface UIConstants
         String EOD_HISTORICAL_DATA_API_KEY = "EOD_HISTORICAL_DATA_API_KEY"; //$NON-NLS-1$
 
         String COINGECKO_API_KEY = "COINGECKO_API_KEY"; //$NON-NLS-1$
-        
-        String PORTFOLIO_REPORT_API_KEY = "PORTFOLIO_REPORT_API_KEY"; //$NON-NLS-1$
-        String PORTFOLIO_REPORT_API_URL = "PORTFOLIO_REPORT_API_URL"; //$NON-NLS-1$
+
+        String COINGECKO_DEMO_API_KEY = "COINGECKO_DEMO_API_KEY"; //$NON-NLS-1$
+
+        @Deprecated(since = "2025-05-09")
+        String PORTFOLIO_REPORT_API_KEY = "PORTFOLIO_REPORT_API_KEY"; //$NON-NLS-1$ //NOSONAR
+        @Deprecated(since = "2025-05-09")
+        String PORTFOLIO_REPORT_API_URL = "PORTFOLIO_REPORT_API_URL"; //$NON-NLS-1$ //NOSONAR
 
         /**
          * Preference key whether to store settings (standard calendar)
@@ -250,6 +299,11 @@ public interface UIConstants
          */
         String CSV_EXPORT_PATH = "CSV_EXPORT_PATH"; //$NON-NLS-1$
 
+        /**
+         * Preference key for value color scheme (green/red or blue/orange)
+         */
+        String VALUE_COLOR_SCHEME = "VALUE_COLOR_SCHEME"; //$NON-NLS-1$
+
     }
 
     interface Theme // NOSONAR
@@ -262,7 +316,7 @@ public interface UIConstants
     {
         String CLASS_NAME = "org.eclipse.e4.ui.css.CssClassName"; //$NON-NLS-1$
         String DISABLE_CSS_STYLING = "org.eclipse.e4.ui.css.disabled"; //$NON-NLS-1$
-        
+
         String HEADING1 = "heading1"; //$NON-NLS-1$
         String HEADING2 = "heading2"; //$NON-NLS-1$
         String KPI = "kpi"; //$NON-NLS-1$

@@ -54,6 +54,7 @@ public class SecurityTest
 
         Security target = source.deepCopy();
         assertThat(target.getUUID(), not(equalTo(source.getUUID())));
+        assertThat(target.getEphemeralData(), not(equalTo(source.getEphemeralData())));
 
         // compare
         for (PropertyDescriptor p : info.getPropertyDescriptors()) // NOSONAR

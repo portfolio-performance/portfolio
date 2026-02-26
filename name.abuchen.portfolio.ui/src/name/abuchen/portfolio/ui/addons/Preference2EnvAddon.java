@@ -21,11 +21,18 @@ import name.abuchen.portfolio.online.impl.TwelveDataQuoteFeed;
 import name.abuchen.portfolio.online.impl.TwelveDataSearchProvider;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.PresetValues;
+import name.abuchen.portfolio.ui.util.ValueColorScheme;
 import name.abuchen.portfolio.util.FormatHelper;
 import name.abuchen.portfolio.util.TradeCalendarManager;
 
 public class Preference2EnvAddon
 {
+    @Inject
+    @Optional
+    public void setValueColorScheme(@Preference(value = UIConstants.Preferences.VALUE_COLOR_SCHEME) String scheme)
+    {
+        ValueColorScheme.initialize(scheme);
+    }
 
     @Inject
     @Optional
@@ -94,9 +101,12 @@ public class Preference2EnvAddon
 
     @Inject
     @Optional
-    public void setCoingeckoApiKey(@Preference(value = UIConstants.Preferences.COINGECKO_API_KEY) String apiKey)
+    public void setCoingeckoApiKey(@Preference(value = UIConstants.Preferences.COINGECKO_API_KEY) String apiKey,
+                    @Preference(value = UIConstants.Preferences.COINGECKO_DEMO_API_KEY) String demoApiKey)
     {
-        Factory.getQuoteFeed(CoinGeckoQuoteFeed.class).setApiKey(apiKey);
+        CoinGeckoQuoteFeed coingeckoFeed = Factory.getQuoteFeed(CoinGeckoQuoteFeed.class);
+        coingeckoFeed.setApiKey(apiKey);
+        coingeckoFeed.setDemoApiKey(demoApiKey);
     }
 
     @Inject

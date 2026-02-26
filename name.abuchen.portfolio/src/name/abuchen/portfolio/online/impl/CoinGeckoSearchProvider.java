@@ -61,9 +61,21 @@ public class CoinGeckoSearchProvider implements SecuritySearchProvider
         }
 
         @Override
+        public String getCurrencyCode()
+        {
+            return "EUR, USD, GBP, AUD, BRL, DKK, NOK, TRY, AED, ARS, BDT, BHD, BMD, CAD, CHF, CLP, CNY, CZK, GEL, HKD, HUF, IDR, ILS, INR, JPY, KRW, KWD, LKR, MMK, MXN, MYR, NGN, NZD, PHP, PKR, PLN, RUB, SAR, SEK, SGD, THB, TWD, UAH, VEF, VND, ZAR, XDR, XAG, XAU"; //$NON-NLS-1$
+        }
+
+        @Override
         public String getSource()
         {
             return "CoinGecko"; //$NON-NLS-1$
+        }
+
+        @Override
+        public String getFeedId()
+        {
+            return CoinGeckoQuoteFeed.ID;
         }
 
         @Override
@@ -85,7 +97,7 @@ public class CoinGeckoSearchProvider implements SecuritySearchProvider
     }
 
     @Override
-    public List<ResultItem> search(String query, Type type) throws IOException
+    public List<ResultItem> search(String query) throws IOException
     {
         CoinGeckoQuoteFeed feed = Factory.getQuoteFeed(CoinGeckoQuoteFeed.class);
 

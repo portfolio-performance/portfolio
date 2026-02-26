@@ -1,0 +1,47 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.73.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Am Marktplatz 10 · 97762 Hammelburg    Seite 1
+Depotnummer
+ 89540578
+ Kundennummer 511351085
+lijfcJ iVzTo luueLtE
+ Abrechnungsnr. 82937342032
+xsoLyF nCbJw lmACnsX Datum 14.01.2025
+YlAGWBokB. 7 Ihr Berater Herr HIs ufsYRtIIzIS
+49057 SOvStiuQ Telefon +53 089 882649-13   
+                                                        
+                                                        
+                                                        
+Vorabpauschale Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 8.300,2084 XTR.(IE)-MSCI WORLD ESG IE00BZ02LR44 (A2AQST)
+REGISTERED SHARES 1C O.N.
+Zahlbarkeitstag 02.01.2025 Vorabpauschale pro St. 0,523967800 EUR
+Bestandsstichtag 31.12.2024 mit Teilfreistellung (Aktien-
+Ex-Tag 02.01.2025 fonds) 0,366777460 EUR
+Geschäftsjahr 01.01.2024 - 31.12.2024 Herkunftsland Irland
+Steuerpflichtige Vorabpauschale 2.371,03+ EUR
+davon steuerfreier Anteil wg. Teilfreistellung 711,31- EUR
+Kapitalertragsteuerpfl. Ertrag nach Teilfreistellung 1.659,72+ EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 1.659,72+ EUR
+Kapitalertragsteuer 25 % auf 1.659,72 EUR 414,93- EUR
+Solidaritätszuschlag 5,5 % auf 414,93 EUR 22,82- EUR
+Ausmachender Betrag 437,75- EUR
+Lagerstelle CBFI (601617 / 67268)
+Den Betrag buchen wir mit Wertstellung 03.01.2025 zu Lasten des Kontos 4648427 (IBAN Ry64 7013 1917 2554 3073 02),
+BLZ 188 214 00 (BIC SljYdFa2K09). 
+Keine Steuerbescheinigung. 
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2025 ohne Vorjahressaldo Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 00002,54
+Ertrag 0,00 0,00 0,00 0,00 0.659,72
+Nachher 0,00 0,00 0,00 0,00 00.222,26
+Bitte ggf. Rückseite beachten.
+6175.99990221.0005662ER99
+```

@@ -1,33 +1,34 @@
-PDFBox Version: 1.8.17
-Portfolio Performance Version: 0.68.4
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.77.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
 -----------------------------------------
-TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
-mxeItB eqxWsjg SEITE 1 von 1
-ZHtjPaIRai 10 DATUM 11.06.2024
-40793 XXIeItint ORDER 55e1-4f5a
-AUSFÜHRUNG b02a-06c8
-DEPOT 04003476912
-WERTPAPIERABRECHNUNG
+TRADE REPUBLIC BANK GMBH, BRANCH AUSTRIA  KÄRNTNER RING 5-7  1010 WIEN, ÖSTERREICH
+kbEhtBF zvIiphrdN SEITE 1 von 1
+ptTnmieRmfVrrjSejE 1 DATUM 02.07.2025
+8625 KxpA AUSFÜHRUNG 0073-f716
+SPARPLAN 85ea-l3Nv
+DEPOT 5305937910
+WERTPAPIERABRECHNUNG SAVEBACK
 ÜBERSICHT
-Market-Order Verkauf am 11.06.2024, um 16:00 Uhr (Europe/Berlin) an der HSBC.
-Der Kontrahent der Transaktion ist HSBC Trinkaus & Burkhardt AG.
-POSITION ANZAHL PREIS BETRAG
-Long @49.99 $ Monster Beverage Open End Turbo 1.000 Stk. 0,15 EUR 150,00 EUR
-ISIN: DE000HG6HZ94
-GESAMT 150,00 EUR
+Ausführung von Saveback am 02.07.2025 an der Lang und Schwarz Exchange.
+Der Kontrahent der Transaktion ist Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION ANZAHL DURCHSCHNITTSKURS BETRAG
+MSCI All Country World Investable Market Unhedged 0,047644 Stk. 221,85 EUR 10,57 EUR
+USD (Acc)
+ISIN: IE00B3YLTY66
+GESAMT 10,57 EUR
 ABRECHNUNG
 POSITION BETRAG
-Fremdkostenzuschlag -1,00 EUR
-Kapitalertragsteuer 0,00 EUR
-Solidaritätszuschlag 0,00 EUR
-GESAMT 149,00 EUR
+Zinssteuer -2,64 EUR
+GESAMT -13,21 EUR
 BUCHUNG
 VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
-DE30501108019083834537 2024-06-13 149,00 EUR
-Long @49.99 $ Monster Beverage Open End Turbo in Girosammelverwahrung in Deutschland
+AT123456789012345678 2025-07-04 -13,21 EUR
+MSCI All Country World Investable Market Unhedged USD (Acc) nicht in Sammelverwahrung
 Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
-Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie Leistung.
-Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
-Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
-10119 Berlin USt-ID DE307510626 Gernot Mittendorfer
-ABRE / 4fda-aca7
+Wird keine Umsatzsteuer ausgewiesen, handelt es sich gemäß § 4 Nr. 8 UStG um eine umsatzsteuerfreie Leistung.
+Trade Republic Bank GmbH, Branch Austria www.traderepublic.com/de-at Sitz der Gesellschaft: Trade Republic Bank GmbH, Geschäftsführer
+Kärntner Ring 5-7 USt-IdNr DE307510626 Brunnenstrasse 19-21, 10119 Berlin, Deutschland Andreas Torner
+1010 Wien, Österreich AG Charlottenburg HRB 244347 B Gernot Mittendorfer
+FN 630983 t Christian Hecker
+Thomas Pischke

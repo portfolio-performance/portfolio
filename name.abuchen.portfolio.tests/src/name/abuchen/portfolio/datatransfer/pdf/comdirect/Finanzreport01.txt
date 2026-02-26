@@ -116,8 +116,6 @@ Finanzreport Nr. 9 per 01.10.2018 - Seite 6
 Kundennummer 102 0000000
 Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
 Valuta Referenz IBAN/BIC Eingang
-31.12.2015 Kontoabschluss Abschluss Zinsen Kto -0,07
-31.12.2015 6BF1600000000000/000 383096500EUR
 28.09.2018 Kontoabschluss Abschluss Zinsen Kto 000000005EUR +0,14
 30.09.2018 1PF18271L0000 von 30.06.2018 bis 30.09.2018
 052/2794 Habenzinsen

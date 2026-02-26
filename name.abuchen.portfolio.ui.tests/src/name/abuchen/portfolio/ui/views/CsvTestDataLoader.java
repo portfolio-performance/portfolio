@@ -13,7 +13,6 @@ import com.google.common.primitives.Doubles;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 
 class CsvTestDataLoader
 {
@@ -48,7 +47,7 @@ class CsvTestDataLoader
             }
         }
         ChartLineSeriesAxes result = new ChartLineSeriesAxes();
-        result.setDates(TimelineChart.toJavaUtilDate(dates.toArray(new LocalDate[0])));
+        result.setDates(dates.toArray(new LocalDate[0]));
         result.setValues(Doubles.toArray(values));
         return result;
     }

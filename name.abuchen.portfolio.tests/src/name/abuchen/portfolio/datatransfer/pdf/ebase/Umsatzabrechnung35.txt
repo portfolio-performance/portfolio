@@ -1,0 +1,129 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.10.e430-v0761
+-----------------------------------------
+finvesto, 80218 München
+Umsatzabrechnung-Nr. 16
+Depot-Nr. 12345678901
+Seite 1 von 3
+Herrn
+Max Mustermann
+Musterstr. 12
+12345 Musterstadt
+02.04.2025
+Umsatzabrechnung für Ihr finvesto Depot bei der FNZ Bank
+für den Zeitraum vom 07.01.2025 bis 01.04.2025
+Vorabpauschale zum Stichtag 31.12.2024 aus Depotposition 12345678901.01
+Vanguard FTSE All-World U.ETF Reg. Shs USD Acc. oN
+Ref. Nr. 0400041153/24012025, Buchungsdatum 24.01.2025
+ISIN Betrag je Anteil
+IE00BK5BQT80 1,718172340 EUR
+Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer
+1,12 EUR 0,06 EUR 0,00 EUR
+Abwicklung über IBAN Institut Zahlungsbetrag
+DE54700130001234567890 FNZ Bank 1,18 EUR
+Sie haben Fragen zur Vorabpauschale? Weitere Informationen finden Sie unter Steuern & Gesetze auf unserer Homepage
+(https://www.fnz.de/faq).
+Kauf 13,29 EUR mit Kursdatum 27.01.2025 in Depotposition 12345678901.01
+Vanguard FTSE All-World U.ETF Reg. Shs USD Acc. oN
+Ref. Nr. 0400000987/27012025, Buchungsdatum 28.01.2025
+ISIN Anteile Abrechnungskurs Devisenkurs Betrag
+IE00BK5BQT80 0,097258 141,800000 USD 1,037709 13,29 EUR
+vermögenswirksame Leistungen
+gezahlte Devisenkursmarge 0,06 EUR bei einem Mittelkurs von 1,042400 EUR/USD (im Devisenkurs enthalten)
+Zahlungsbetrag aus Überweisung 13,29 EUR
+Kauf 13,29 EUR mit Kursdatum 26.02.2025 in Depotposition 12345678901.01
+Vanguard FTSE All-World U.ETF Reg. Shs USD Acc. oN
+Ref. Nr. 0400017713/26022025, Buchungsdatum 27.02.2025
+ISIN Anteile Abrechnungskurs Devisenkurs Betrag
+IE00BK5BQT80 0,096250 144,000000 USD 1,042886 13,29 EUR
+vermögenswirksame Leistungen
+gezahlte Devisenkursmarge 0,06 EUR bei einem Mittelkurs von 1,047600 EUR/USD (im Devisenkurs enthalten)
+Zahlungsbetrag aus Überweisung 13,29 EUR
+Gerne beantworten wir Ihre Fragen unter der Info-Line +49 89 45460-380.
+Das Team der finvesto Anlageberatung erreichen Sie unter +49 89 45460-389.
+Diese Mitteilung wird nicht unterschrieben.
+finvesto - eine Marke Amtsgericht München Kontakt: Vorstand:
+der FNZ Bank SE HRB 289 271 Telefon: +49 89 45460-380 Peter Karst (Vors.), Philip Laucks,
+80218 München USt-ID Nr. DE 813330104 Telefax: +49 89 45460-161 Pamela Schmidt-Fischbach
+Gläubiger-ID: E-Mail: info@finvesto.de Aufsichtsratsvorsitzende:
+DE68ZZZ00000025032 Web: www.finvesto.de Zvezdana Seeger
+Umsatzabrechnung-Nr. 16
+Depot-Nr. 12345678901
+Seite 2 von 3
+Kauf 13,29 EUR mit Kursdatum 31.03.2025 in Depotposition 12345678901.01
+Vanguard FTSE All-World U.ETF Reg. Shs USD Acc. oN
+Ref. Nr. 0400033849/31032025, Buchungsdatum 01.04.2025
+ISIN Anteile Abrechnungskurs Devisenkurs Betrag
+IE00BK5BQT80 0,104955 135,820000 USD 1,075040 13,26 EUR
+vermögenswirksame Leistungen
+gezahlte Devisenkursmarge 0,06 EUR bei einem Mittelkurs von 1,079900 EUR/USD (im Devisenkurs enthalten)
+Belastete Entgelte zzgl. Entgelte
+Summe 0,03 EUR
+Zahlungsbetrag aus Überweisung 13,29 EUR
+Entgelte Betrag offene Forderung belasteter Betrag
+ETF-Transaktionsentgelt 0,03 EUR 0,00 EUR 0,03 EUR
+Summe der belasteten Entgelte 0,03 EUR
+Bestand der Depotpositionen mit Umsatz nach Verbuchung
+Pos. Fonds Anteile Bewertungskurs zum Datum Devisenkurs Bestand
+01 IE00BK5BQT80 4,583363 136,892900 USD 31.03.2025 1,081900 579,93 EUR
+Vanguard FTSE All-World U.ETF Reg. Shs USD Acc. oN
+Verwahrart: Wertpapierrechnung, Lagerland: Großbritannien
+vermögenswirksame Leistungen
+Bis 01.01.2029 sind 4,583363 Anteile gemäß Vermögensbildungsgesetz gesperrt.
+Depotgesamtwert 579,93 EUR
+Für die im Depot verbuchten und hier ausgewiesenen Fondsanteile besteht - soweit nicht abweichend gekennzeichnet - ein Eigentums-
+bzw. eigentumsähnlicher Schutz im Sinne der europäischen Finanzmarktrichtlinie 2014/65 (EU).
+4Wir haben keinen Freistellungsauftrag für Sie vorgemerkt.
+Einzahlungen
+Sofern Sie nicht vom Einzugsverfahren Gebrauch machen, leisten Sie Ihre Zahlungen bitte auf folgendes Treuhandkonto der
+FNZ Bank SE: Commerzbank AG, München, IBAN: DE32 7004 0041 0212 2331 00,
+BIC: COBADEFFXXX.
+Bitte geben Sie bei Überweisungen immer zusätzlich im Verwendungszweck an:
+• Bei Nachkauf eines Fonds, den Sie bereits in Ihrem Investment Depot halten, die 13-stellige Depotpositionsnummer.
+• Bei Kauf eines neuen Fonds, den Sie noch nicht in Ihrem Investment Depot halten, die 11-stellige Depotnummer + ISIN.
+Für Einzahlungen auf verschiedenen Fonds verwenden Sie bitte jeweils separate Überweisungsformulare.
+Prüfung und Einwendungen
+Wir bitten Sie, die vorliegende Abrechnung und die darin aufgeführten Umsätze auf ihre Richtigkeit und Vollständigkeit zu über-
+prüfen. Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Abrechnung erheben Sie bitte unverzüglich nach
+dessen Zugang gegenüber der FNZ Bank SE unter Nennung der Depotnummer und des Datums der Abrechnung. Das Unterlassen der
+rechtzeitigen Einwendung(en) gilt als Genehmigung der Abrechnung(en), gemäß Punkt "Prüfungen und Einwendungen bei Mitteilung-
+en der FNZ Bank" der Allgemeinen Geschäftsbedingungen der FNZ Bank SE für Privatanleger.
+Bitte denken Sie daran, uns frühzeitig über Änderungen Ihrer persönlichen Daten zu informieren.
+Diese Mitteilung wird nicht unterschrieben.
+finvesto - eine Marke Amtsgericht München Kontakt: Vorstand:
+der FNZ Bank SE HRB 289 271 Telefon: +49 89 45460-380 Peter Karst (Vors.), Philip Laucks,
+80218 München USt-ID Nr. DE 813330104 Telefax: +49 89 45460-161 Pamela Schmidt-Fischbach
+Gläubiger-ID: E-Mail: info@finvesto.de Aufsichtsratsvorsitzende:
+DE68ZZZ00000025032 Web: www.finvesto.de Zvezdana Seeger
+Umsatzabrechnung-Nr. 16
+Depot-Nr. 12345678901
+Seite 3 von 3
+Ausführung und Erfüllung von Aufträgen/ Ausschluss von Beratung/ Keine Risikoklassifizierung durch die FNZ Bank
+Die FNZ Bank SE führt Aufträge über den Kauf und/oder Verkauf von Investmentfondsanteilen als Kommissionärin, ggf. unter Ein-
+schaltung eines Zwischenkommissionärs, mit der Kapitalverwaltungs-/Verwaltungsgesellschaft, als am besten geeignete Stelle im Sinne
+des § 33a WpHG aus.
+Die FNZ Bank SE wird gemäß Punkt ”Ausführung und Erfüllung von Aufträgen” der Bedingungen für das Investment Depot für Privat-
+anleger, die Aufträge ggf. unter Einbeziehung eines Zwischenkommissionärs ausschließlich über die jeweilige Kapitalverwaltungs-/
+Verwaltungsgesellschaft als am besten geeignete Stelle zur Beschaffung von Fondsanteilen abwickeln. Ihnen ist bekannt, dass
+durch die FNZ Bank SE keine vorherige Beratung und/oder Angemessenheitsprüfung gemäß Punkt ”Ausschluss von Beratung
+("execution only”)” sowie keine Risikoklassifizierung gemäß Punkt ”keine Risikoklassifizierung durch die FNZ Bank” der Bedingungen
+für das Investment Depot für Privatanleger bei der FNZ Bank, erfolgt.
+Sofern es sich um einen Auftrag zum Kauf von Finanzinstrumenten im beratungsfreien Geschäft (z.B. komplexe Fonds) und außerhalb
+des reinen Ausführungsgeschäft handelt, wird ein Abgleich auf Ihre Kenntnisse und Erfahrungen vollzogen.
+Zurverfügungstellung von Verkaufsunterlagen
+Die FNZ Bank bzw. die Kapitalverwal¦tungs-/Verwaltungsgesellschaft haben dem Kunden für sämtliche Geschäfte die jeweils gültigen
+Verkaufsunterlagen (Wesentliche Anlegerinformationen/Key Investor Document [KID] und aktueller Verkaufsprospekt sowie der
+aktuelle Halbjahres-/Jahresbericht bei den unter das Kapitalanlagegesetzbuch [KAGB] fallenden Fonds) kostenlos rechtzeitig zur
+Verfügung gestellt. Zusätzlich können diese Verkaufsunterlagen auf der Homepage der finvesto (www.finvesto.de) eingesehen
+und heruntergeladen werden. Bitte beachten Sie die Risikohinweise im jeweils aktuellen Verkaufsprospekt Ihres jeweiligen Fonds.
+Hinweis auf den Erhalt und die Gewährung von Zuwendungen sowie den Verzicht auf die Herausgabe der Zuwendungen
+Sie wurden von der FNZ Bank SE ausdrücklich auf den Erhalt und die Gewährung von Zuwendungen sowie den Verzicht auf
+die Herausgabe der Zuwendungen gemäß Punkt "Hinweis auf den Erhalt und die Gewährung von Zuwendungen sowie den Verzicht
+auf die Herausgabe der Zuwendungen" in dem jeweils aktuell gultigen Preis- und Leistungsverzeichnis hingewiesen.
+Diese Mitteilung wird nicht unterschrieben.
+finvesto - eine Marke Amtsgericht München Kontakt: Vorstand:
+der FNZ Bank SE HRB 289 271 Telefon: +49 89 45460-380 Peter Karst (Vors.), Philip Laucks,
+80218 München USt-ID Nr. DE 813330104 Telefax: +49 89 45460-161 Pamela Schmidt-Fischbach
+Gläubiger-ID: E-Mail: info@finvesto.de Aufsichtsratsvorsitzende:
+DE68ZZZ00000025032 Web: www.finvesto.de Zvezdana Seeger
+

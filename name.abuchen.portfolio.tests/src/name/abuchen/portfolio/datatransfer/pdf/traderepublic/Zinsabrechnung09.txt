@@ -1,0 +1,34 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.76.3
+System: macosx | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+zXVlEB zFiFrfJ SEITE 1 von 1
+qYxCgcBLnM 4 DATUM 14.03.2025
+90255 bJKZbDzFJ DEPOT 0740363101
+ZINSZAHLUNG
+ÜBERSICHT
+Zinszahlung mit Ex-Datum07.03.2025.
+POSITION NOMINALE COUPON BETRAG
+Anleihe März 2029 135.14 EUR
+2922.01 EUR 4.625 %
+XS2778370051
+GESAMT 135.14 EUR
+ABRECHNUNG
+POSITION BETRAG
+Zwischensumme 135.14 EUR
+Kapitalertragssteuer -33.04 EUR
+Kirchensteuer -2.97 EUR
+Solidaritätszuschlag -1.81 EUR
+GESAMT 97.32 EUR
+BUCHUNG
+VERRECHNUNGSKONTO DATUM DER ZAHLUNG BETRAG
+DE38100236450440361202 07.03.2025 97.32 EUR
+XS2778370051 im Girosammelverwahrung in Deutschland
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Wird keine Umsatzsteuer ausgewiesen, handelt es sich um eine umsatzsteuerfreie Leistung gemäß § 4 Nr. 8 UStG
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Direktoren
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke

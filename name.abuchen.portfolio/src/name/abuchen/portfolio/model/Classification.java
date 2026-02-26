@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import com.google.protobuf.NullValue;
 
@@ -24,7 +25,7 @@ public class Classification implements Named
 {
     private static final String PORTFOLIO_CLASSIFICATION_KEY = "portfolioClassificationKey"; //$NON-NLS-1$
 
-    public static class Assignment
+    public static class Assignment implements Adaptable
     {
         private InvestmentVehicle investmentVehicle;
         private int weight;
@@ -98,15 +99,27 @@ public class Classification implements Named
             return copy;
         }
 
-        /* protobuf only */ List<PKeyValue> getData()
+        /* protobuf only */ List<PKeyValue> getProtobufData()
         {
             return toProtobuf(data);
         }
 
-        /* protobuf only */ void setData(List<PKeyValue> list)
+        /* protobuf only */ void setProtobufData(List<PKeyValue> list)
         {
             this.data = fromProtobuf(list);
         }
+
+        @Override
+        public <T> T adapt(Class<T> type)
+        {
+            if (type == Named.class || type == Annotated.class)
+                return type.cast(this.getInvestmentVehicle());
+            else if (type == Account.class && this.getInvestmentVehicle() instanceof Account)
+                return type.cast(this.getInvestmentVehicle());
+            else
+                return null;
+        }
+
     }
 
     public static final int ONE_HUNDRED_PERCENT = 100 * Values.Weight.factor();
@@ -164,6 +177,9 @@ public class Classification implements Named
         this(parent, id, name, null);
     }
 
+    /**
+     * Classification key can be edited by the user.
+     */
     public void setKey(String key)
     {
         setData(PORTFOLIO_CLASSIFICATION_KEY, key);
@@ -302,12 +318,20 @@ public class Classification implements Named
         return data.get(key);
     }
 
-    /* protobuf only */ List<PKeyValue> getData()
+    public Stream<Map.Entry<String, Object>> getData()
+    {
+        if (data == null)
+            return Stream.empty();
+        else
+            return data.entrySet().stream();
+    }
+
+    /* protobuf only */ List<PKeyValue> getProtobufData()
     {
         return toProtobuf(data);
     }
 
-    /* protobuf only */ void setData(List<PKeyValue> list)
+    /* protobuf only */ void setProtobufData(List<PKeyValue> list)
     {
         this.data = fromProtobuf(list);
     }

@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.stream.Stream;
 
+import org.apache.hc.client5.http.ClientProtocolException;
 import org.apache.hc.client5.http.HttpResponseException;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
@@ -15,12 +17,17 @@ import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
 import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.cookie.StandardCookieSpec;
-import org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.core5.http.ParseException;
 import org.apache.hc.core5.http.impl.EnglishReasonPhraseCatalog;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.http.message.BasicHeader;
 import org.apache.hc.core5.net.URIBuilder;
@@ -102,16 +109,78 @@ public class WebAccess
     {
         private static final long serialVersionUID = 1L;
         private final int httpErrorCode;
+        private final List<Pair<String, String>> headers;
+        private final String body;
 
-        public WebAccessException(String message, int httpErrorCode)
+        public WebAccessException(String message, int httpErrorCode, List<Pair<String, String>> headers, String body)
         {
             super(message);
             this.httpErrorCode = httpErrorCode;
+            this.headers = headers;
+            this.body = body;
         }
 
         public int getHttpErrorCode()
         {
             return httpErrorCode;
+        }
+
+        public List<String> getHeader(String key)
+        {
+            return headers.stream().filter(p -> p.getKey().equalsIgnoreCase(key)).map(Pair::getValue).toList();
+        }
+
+        public String getBody()
+        {
+            return body;
+        }
+    }
+
+    private static class CustomResponseHandler implements HttpClientResponseHandler<String>
+    {
+        private final String uri;
+
+        public CustomResponseHandler(String uri)
+        {
+            super();
+            this.uri = uri;
+        }
+
+        @Override
+        public String handleResponse(final ClassicHttpResponse response) throws IOException
+        {
+            final HttpEntity entity = response.getEntity();
+            if (response.getCode() >= HttpStatus.SC_REDIRECTION)
+            {
+                String body = null;
+                if (entity != null)
+                {
+                    try
+                    {
+                        body = EntityUtils.toString(entity);
+                    }
+                    catch (final ParseException ignore)
+                    {
+                        // ignore additional exceptions reading the body
+                    }
+                }
+
+                EntityUtils.consume(entity);
+                var headers = Stream.of(response.getHeaders()).map(h -> new Pair<>(h.getName(), h.getValue())).toList();
+                throw new WebAccessException(buildMessage(uri, response.getCode()), response.getCode(), headers, body);
+            }
+
+            if (entity == null)
+                return null;
+
+            try
+            {
+                return EntityUtils.toString(entity);
+            }
+            catch (final ParseException ex)
+            {
+                throw new ClientProtocolException(ex);
+            }
         }
     }
 
@@ -171,6 +240,12 @@ public class WebAccess
         return this;
     }
 
+    public WebAccess addBearer(String bearer)
+    {
+        this.headers.add(new BasicHeader("Authorization", "Bearer " + bearer)); //$NON-NLS-1$ //$NON-NLS-2$
+        return this;
+    }
+
     public WebAccess addUserAgent(String userAgent)
     {
         this.userAgent = userAgent;
@@ -215,11 +290,13 @@ public class WebAccess
 
             URI uri = builder.build();
             HttpUriRequestBase request = function.create(uri);
-            return client.execute(request, new BasicHttpClientResponseHandler());
+
+            return client.execute(request, new CustomResponseHandler(uri.toString()));
         }
         catch (HttpResponseException e)
         {
-            throw new WebAccessException(buildMessage(builder.toString(), e.getStatusCode()), e.getStatusCode());
+            throw new WebAccessException(buildMessage(builder.toString(), e.getStatusCode()), e.getStatusCode(),
+                            new ArrayList<>(), null);
         }
         catch (URISyntaxException e)
         {
@@ -227,7 +304,7 @@ public class WebAccess
         }
     }
 
-    private String buildMessage(String uri, int statusCode)
+    private static String buildMessage(String uri, int statusCode)
     {
         String message = String.valueOf(statusCode);
         try

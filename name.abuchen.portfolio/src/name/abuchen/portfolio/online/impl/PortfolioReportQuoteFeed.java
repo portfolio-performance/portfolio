@@ -3,10 +3,14 @@ package name.abuchen.portfolio.online.impl;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.hc.core5.http.HttpStatus;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -16,9 +20,14 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.FeedConfigurationException;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
+import name.abuchen.portfolio.online.QuoteFeedException;
+import name.abuchen.portfolio.online.RateLimitExceededException;
+import name.abuchen.portfolio.util.TradeCalendarManager;
 import name.abuchen.portfolio.util.WebAccess;
+import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
 public final class PortfolioReportQuoteFeed implements QuoteFeed
 {
@@ -30,7 +39,18 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
 
     public static final String ID = "PORTFOLIO-REPORT"; //$NON-NLS-1$
 
+    /** The date on which Portfolio Report is not available anymore */
+    public static final LocalDate CUTOFF_DATE = LocalDate.of(2025, 11, 20);
+
     private final PageCache<ResponseData> cache = new PageCache<>();
+
+    private void checkCutoffDate() throws FeedConfigurationException
+    {
+        if (!LocalDate.now().isBefore(CUTOFF_DATE))
+        {
+            throw new FeedConfigurationException("Portfolio Report (portfolio-report.net) is no longer available"); //$NON-NLS-1$
+        }
+    }
 
     @Override
     public String getId()
@@ -51,33 +71,74 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public Optional<LatestSecurityPrice> getLatestQuote(Security security)
+    public Optional<LatestSecurityPrice> getLatestQuote(Security security) throws QuoteFeedException
     {
+        checkCutoffDate();
         List<LatestSecurityPrice> prices = getHistoricalQuotes(security, true, LocalDate.now()).getLatestPrices();
         return prices.isEmpty() ? Optional.empty() : Optional.of(prices.get(prices.size() - 1));
     }
 
     @Override
-    public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
+    public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse) throws QuoteFeedException
     {
+        checkCutoffDate();
         LocalDate start = null;
 
         if (!security.getPrices().isEmpty())
-            start = security.getPrices().get(security.getPrices().size() - 1).getDate().plusDays(1);
+        {
+            var lastPriceDate = security.getPrices().get(security.getPrices().size() - 1).getDate();
+
+            // skip the download if
+            // a) the configuration has not changed and we therefore can assume
+            // historical prices have been provided by this feed *and*
+            // b) there cannot be a newer price available on the server
+
+            var configChanged = security.getEphemeralData().getFeedConfigurationChanged();
+            var feedUpdate = security.getEphemeralData().getFeedLastUpdate();
+            var configHasNotChanged = configChanged.isEmpty()
+                            || (feedUpdate.isPresent() && feedUpdate.get().isAfter(configChanged.get()));
+
+            if (configHasNotChanged)
+            {
+                var utcToday = ZonedDateTime.now(ZoneOffset.UTC).toLocalDate();
+
+                // End of day prices are only available the next day.
+                var expectedAvailablePrice = utcToday.minusDays(1);
+
+                // Use Xetra calendar
+                var tradeCalendar = TradeCalendarManager.getInstance("de"); //$NON-NLS-1$
+
+                while (tradeCalendar.isHoliday(expectedAvailablePrice))
+                {
+                    expectedAvailablePrice = expectedAvailablePrice.minusDays(1);
+                }
+
+                if (lastPriceDate.equals(expectedAvailablePrice))
+                {
+                    // skip update b/c server cannot have newer data
+                    return new QuoteFeedData();
+                }
+            }
+            start = lastPriceDate.plusDays(1);
+        }
         else
+        {
             start = LocalDate.of(2000, 1, 1);
+        }
 
         return getHistoricalQuotes(security, collectRawResponse, start);
     }
 
     @Override
-    public QuoteFeedData previewHistoricalQuotes(Security security)
+    public QuoteFeedData previewHistoricalQuotes(Security security) throws QuoteFeedException
     {
+        checkCutoffDate();
         return getHistoricalQuotes(security, true, LocalDate.now().minusMonths(2));
     }
 
     @SuppressWarnings("unchecked")
     private QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse, LocalDate start)
+                    throws QuoteFeedException
     {
         if (security.getOnlineId() == null)
         {
@@ -93,7 +154,7 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
             WebAccess webaccess = new WebAccess("api.portfolio-report.net", //
                             "/securities/uuid/" + security.getOnlineId() + "/prices/" + security.getCurrencyCode())
                                             .addUserAgent("PortfolioPerformance/"
-                                                            + FrameworkUtil.getBundle(PortfolioReportNet.class)
+                                                            + FrameworkUtil.getBundle(PortfolioReportQuoteFeed.class)
                                                                             .getVersion().toString())
                                             .addParameter("from", start.toString());
 
@@ -142,6 +203,19 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
                 }
             });
 
+        }
+        catch (WebAccessException e)
+        {
+            switch (e.getHttpErrorCode())
+            {
+                case HttpStatus.SC_TOO_MANY_REQUESTS:
+                    throw new RateLimitExceededException(Duration.ofMinutes(1),
+                                    MessageFormat.format(Messages.MsgRateLimitExceeded, getName()));
+                case HttpStatus.SC_NOT_FOUND:
+                    throw new FeedConfigurationException();
+                default:
+                    data.addError(e);
+            }
         }
         catch (IOException | URISyntaxException e)
         {

@@ -122,7 +122,7 @@ public class ScopedPreferenceStore extends EventManager implements IPreferenceSt
      * @param context
      *            the scope to store to
      * @param qualifier
-     *            the qualifer used to look up the preference node
+     *            the qualifier used to look up the preference node
      */
     public ScopedPreferenceStore(IScopeContext context, String qualifier)
     {
@@ -341,7 +341,7 @@ public class ScopedPreferenceStore extends EventManager implements IPreferenceSt
     }
 
     /**
-     * Set the search contexts to scopes. When searching for a value the seach
+     * Set the search contexts to scopes. When searching for a value the search
      * will be done in the order of scope contexts and will not search the
      * storeContext unless it is in this list.
      * <p>

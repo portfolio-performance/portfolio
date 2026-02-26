@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
-import org.swtchart.LineStyle;
+import org.eclipse.swtchart.LineStyle;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Adaptable;
@@ -35,9 +35,45 @@ public final class DataSeries implements Adaptable
      */
     public enum ClientDataSeries
     {
-        TOTALS, INVESTED_CAPITAL, ABSOLUTE_INVESTED_CAPITAL, TRANSFERALS, TAXES, TAXES_ACCUMULATED, ABSOLUTE_DELTA, ABSOLUTE_DELTA_ALL_RECORDS, //
-        DIVIDENDS, DIVIDENDS_ACCUMULATED, INTEREST, INTEREST_ACCUMULATED, DELTA_PERCENTAGE, INTEREST_CHARGE, INTEREST_CHARGE_ACCUMULATED, //
-        EARNINGS, EARNINGS_ACCUMULATED, FEES, FEES_ACCUMULATED;
+        TOTALS(Messages.LabelTotalSum), //
+        TRANSFERALS(Messages.LabelTransferals), //
+        TRANSFERALS_ACCUMULATED(Messages.LabelAccumulatedTransferals), //
+        INVESTED_CAPITAL(Messages.LabelInvestedCapital), //
+        ABSOLUTE_INVESTED_CAPITAL(Messages.LabelAbsoluteInvestedCapital), //
+        ABSOLUTE_DELTA(Messages.LabelDelta), //
+        ABSOLUTE_DELTA_ALL_RECORDS(Messages.LabelAbsoluteDelta), //
+        DIVIDENDS(Messages.LabelDividends), //
+        DIVIDENDS_ACCUMULATED(Messages.LabelAccumulatedDividends), //
+        INTEREST(Messages.LabelInterest), //
+        INTEREST_ACCUMULATED(Messages.LabelAccumulatedInterest), //
+        INTEREST_CHARGE(Messages.LabelInterestCharge), //
+        INTEREST_CHARGE_ACCUMULATED(Messages.LabelAccumulatedInterestCharge), //
+        EARNINGS(Messages.LabelEarnings), //
+        EARNINGS_ACCUMULATED(Messages.LabelAccumulatedEarnings), //
+        FEES(Messages.LabelFees), //
+        FEES_ACCUMULATED(Messages.LabelFeesAccumulated), //
+        TAXES(Messages.ColumnTaxes), //
+        TAXES_ACCUMULATED(Messages.LabelAccumulatedTaxes), //
+
+        DELTA_PERCENTAGE(Messages.LabelAggregationDaily);
+
+        private String label;
+
+        private ClientDataSeries(String label)
+        {
+            this.label = label;
+        }
+
+        public String getLabel()
+        {
+            return label;
+        }
+
+        @Override
+        public String toString()
+        {
+            return label;
+        }
     }
 
     /**
@@ -52,6 +88,7 @@ public final class DataSeries implements Adaptable
         ACCOUNT("Account", i -> ((Account) i).getUUID()), //$NON-NLS-1$
         ACCOUNT_PRETAX("Account-PreTax", i -> ((Account) i).getUUID()), //$NON-NLS-1$
         PORTFOLIO("Portfolio", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
+        DERIVED_DATA_SERIES("Derived-", i -> ((DerivedDataSeries) i).getUUID()), //$NON-NLS-1$
         PORTFOLIO_PRETAX("Portfolio-PreTax", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
         PORTFOLIO_PLUS_ACCOUNT("[+]Portfolio", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
         PORTFOLIO_PLUS_ACCOUNT_PRETAX("[+]Portfolio-PreTax", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
@@ -83,6 +120,7 @@ public final class DataSeries implements Adaptable
     private int lineWidth = 2;
 
     private RGB color;
+    private RGB colorNegative;
 
     private boolean showArea;
     private LineStyle lineStyle = LineStyle.SOLID;
@@ -105,6 +143,7 @@ public final class DataSeries implements Adaptable
         this.instance = instance;
         this.label = label;
         this.color = color;
+        this.colorNegative = color;
     }
 
     public Type getType()
@@ -132,22 +171,32 @@ public final class DataSeries implements Adaptable
         this.label = label;
     }
 
-    public String getSearchLabel()
+    /**
+     * The label used in the data series picker dialog.
+     */
+    public String getDialogLabel()
     {
         StringBuilder buf = new StringBuilder();
 
-        buf.append(label);
-
-        if (instance instanceof Classification classification)
+        if (instance instanceof DerivedDataSeries derived)
         {
-            Classification parent = classification.getParent();
-
-            if (parent.getParent() != null)
-                buf.append(" (").append(parent.getPathName(false)).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
+            buf.append(derived.getBaseDataSeries().getDialogLabel());
         }
+        else
+        {
+            buf.append(label);
 
-        if (isBenchmark())
-            buf.append(" ").append(Messages.ChartSeriesBenchmarkSuffix); //$NON-NLS-1$
+            if (instance instanceof Classification classification)
+            {
+                Classification parent = classification.getParent();
+
+                if (parent.getParent() != null)
+                    buf.append(" (").append(parent.getPathName(false)).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+
+            if (isBenchmark())
+                buf.append(" ").append(Messages.ChartSeriesBenchmarkSuffix); //$NON-NLS-1$
+        }
 
         return buf.toString();
     }
@@ -157,9 +206,19 @@ public final class DataSeries implements Adaptable
         this.color = color;
     }
 
+    public void setColorNegative(RGB color)
+    {
+        this.colorNegative = color;
+    }
+
     public RGB getColor()
     {
         return color;
+    }
+
+    public RGB getColorNegative()
+    {
+        return colorNegative;
     }
 
     public boolean isLineChart()
@@ -214,24 +273,18 @@ public final class DataSeries implements Adaptable
 
     public Image getImage()
     {
-        switch (type)
+        switch (instance instanceof DerivedDataSeries derived ? derived.getBaseDataSeries().getType() : type)
         {
-            case SECURITY:
-            case SECURITY_BENCHMARK:
+            case SECURITY, SECURITY_BENCHMARK:
                 return Images.SECURITY.image();
-            case ACCOUNT:
-            case ACCOUNT_PRETAX:
+            case ACCOUNT, ACCOUNT_PRETAX:
                 return Images.ACCOUNT.image();
-            case PORTFOLIO:
-            case PORTFOLIO_PRETAX:
-            case PORTFOLIO_PLUS_ACCOUNT:
-            case PORTFOLIO_PLUS_ACCOUNT_PRETAX:
+            case PORTFOLIO, PORTFOLIO_PRETAX, PORTFOLIO_PLUS_ACCOUNT, PORTFOLIO_PLUS_ACCOUNT_PRETAX:
                 return Images.PORTFOLIO.image();
             case CLASSIFICATION:
                 return Images.CATEGORY.image();
-            case CLIENT_FILTER:
-            case CLIENT_FILTER_PRETAX:
-                return Images.FILTER_OFF.image();
+            case CLIENT_FILTER, CLIENT_FILTER_PRETAX:
+                return Images.GROUPEDACCOUNTS.image();
             default:
                 return null;
         }
@@ -268,6 +321,6 @@ public final class DataSeries implements Adaptable
     @Override
     public String toString()
     {
-        return getSearchLabel() + " [" + getUUID() + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+        return getLabel() + " [" + getUUID() + "]"; //$NON-NLS-1$ //$NON-NLS-2$
     }
 }

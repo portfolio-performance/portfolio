@@ -272,8 +272,8 @@ public class FindependentAGPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<note1>(Depotgeb.hren|Verwaltungsgeb.hren)) [\\w]{3} [\\.'\\d]+$") //
                         .match("^Periode (?<note2>.*)$") //
                         .assign((t, v) -> {
-                            t.setNote(concatenate(t.getNote(), trim(v.get("note1")), " "));
-                            t.setNote(concatenate(t.getNote(), trim(v.get("note2")), " "));
+                            t.setNote(concatenate(t.getNote(), v.get("note1"), " "));
+                            t.setNote(concatenate(t.getNote(), v.get("note2"), " "));
                         })
 
                 .wrap(TransactionItem::new);

@@ -7,6 +7,7 @@ import org.eclipse.swt.graphics.Image;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class CustomEventWizard extends Wizard
@@ -18,6 +19,8 @@ public class CustomEventWizard extends Wizard
     {
         this.stylingEngine = stylingEngine;
         this.model = new CustomEventModel(client, security);
+
+        setDialogSettings(PortfolioPlugin.getDefault().getDialogSettings());
     }
 
     @Override

@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -15,6 +14,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ConfigurationSet;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.action.MenuContribution;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries.UseCase;
 
 public class BasicDataSeriesConfigurator
@@ -89,9 +89,7 @@ public class BasicDataSeriesConfigurator
     {
         for (final DataSeries series : selectedSeries)
         {
-            Action action = new SimpleAction(series.getLabel(), a -> doDeleteSeries(series));
-            action.setChecked(true);
-            manager.add(action);
+            manager.add(new MenuContribution(series.getLabel(), () -> doDeleteSeries(series), true));
         }
 
         manager.add(new Separator());
@@ -100,6 +98,8 @@ public class BasicDataSeriesConfigurator
 
         if (dataSeriesSet.getUseCase() != DataSeries.UseCase.STATEMENT_OF_ASSETS)
             manager.add(new SimpleAction(Messages.ChartSeriesPickerAddBenchmark, a -> doAddSeries(true)));
+        else
+            manager.add(new SimpleAction(Messages.ChartSeriesPickerAddDerivedData, a -> doAddDerivedSeries()));
 
         addCopyFromOtherChartsMenu(manager);
     }
@@ -120,6 +120,33 @@ public class BasicDataSeriesConfigurator
 
         DataSeriesSelectionDialog dialog = new DataSeriesSelectionDialog(Display.getDefault().getActiveShell(), client);
         dialog.setElements(list);
+
+        if (dialog.open() != DataSeriesSelectionDialog.OK)
+            return;
+
+        List<DataSeries> result = dialog.getResult();
+        if (result.isEmpty())
+            return;
+
+        result.forEach(series -> {
+            series.setVisible(true);
+            selectedSeries.add(series);
+        });
+
+        fireUpdate();
+    }
+
+    private void doAddDerivedSeries()
+    {
+        List<DataSeries> list = new ArrayList<>(dataSeriesSet.getAvailableDerivedSeries());
+
+        // remove already selected items
+        for (DataSeries s : selectedSeries)
+            list.remove(s);
+
+        DataSeriesSelectionDialog dialog = new DataSeriesSelectionDialog(Display.getDefault().getActiveShell(), client);
+        dialog.setElementsDerivedData(list);
+        dialog.setExpandTree(false);
 
         if (dialog.open() != DataSeriesSelectionDialog.OK)
             return;
@@ -164,13 +191,13 @@ public class BasicDataSeriesConfigurator
                 if (Objects.equals(currentConfigUUID, config.getUUID()))
                     return;
 
-                menuCopy.add(new SimpleAction(config.getName(), a -> {
+                menuCopy.add(new MenuContribution(config.getName(), () -> {
                     List<DataSeries> list = new DataSeriesSerializer().fromString(dataSeriesSet, config.getData());
                     list.stream().filter(s -> !selectedSeries.contains(s)).forEach(s -> selectedSeries.add(s));
                     fireUpdate();
                 }));
 
-                menuReplace.add(new SimpleAction(config.getName(), a -> {
+                menuReplace.add(new MenuContribution(config.getName(), () -> {
                     List<DataSeries> list = new DataSeriesSerializer().fromString(dataSeriesSet, config.getData());
                     selectedSeries.clear();
                     list.stream().forEach(s -> selectedSeries.add(s));

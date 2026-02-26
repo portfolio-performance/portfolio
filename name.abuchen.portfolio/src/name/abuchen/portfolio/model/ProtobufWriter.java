@@ -2,9 +2,11 @@ package name.abuchen.portfolio.model;
 
 import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
 import static name.abuchen.portfolio.util.ProtobufUtil.asDecimalValue;
+import static name.abuchen.portfolio.util.ProtobufUtil.asLocalDateTime;
 import static name.abuchen.portfolio.util.ProtobufUtil.asTimestamp;
 import static name.abuchen.portfolio.util.ProtobufUtil.asUpdatedAtTimestamp;
 import static name.abuchen.portfolio.util.ProtobufUtil.fromDecimalValue;
+import static name.abuchen.portfolio.util.ProtobufUtil.fromLocalDateTime;
 import static name.abuchen.portfolio.util.ProtobufUtil.fromTimestamp;
 import static name.abuchen.portfolio.util.ProtobufUtil.fromUpdatedAtTimestamp;
 
@@ -21,7 +23,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.google.protobuf.Any;
+
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.AttributeType.Converter;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.ClientFactory.ClientPersister;
@@ -130,6 +135,7 @@ import name.abuchen.portfolio.money.Money;
         loadDashboards(newClient, client);
         loadWatchlists(newClient, client, lookup);
         loadInvestmentPlans(newClient, client, lookup);
+        loadExtensions(newClient, client);
 
         client.getSaveFlags().add(SaveFlag.BINARY);
 
@@ -206,7 +212,13 @@ import name.abuchen.portfolio.money.Money;
                         ((DividendEvent) event).setPaymentDate(LocalDate.ofEpochDay(newEvent.getData(0).getInt64()));
                         ((DividendEvent) event).setAmount(
                                         Money.of(newEvent.getData(1).getString(), newEvent.getData(2).getInt64()));
-                        ((DividendEvent) event).setSource(newEvent.getData(3).getString());
+
+                        // read legacy source, if it exists
+                        if (newEvent.getDataCount() >= 4)
+                        {
+                            ((DividendEvent) event).setSource(newEvent.getData(3).getString());
+                        }
+
                         break;
                     default:
                         throw new UnsupportedOperationException(
@@ -215,6 +227,10 @@ import name.abuchen.portfolio.money.Money;
 
                 event.setDate(LocalDate.ofEpochDay(newEvent.getDate()));
                 event.setDetails(newEvent.getDetails());
+
+                var source = newEvent.getSource();
+                if (!source.isEmpty())
+                    event.setSource(newEvent.getSource());
 
                 security.addEvent(event);
             }
@@ -331,7 +347,14 @@ import name.abuchen.portfolio.money.Money;
                     portfolioTx.setUpdatedAt(fromUpdatedAtTimestamp(newTransaction.getUpdatedAt()));
                     accountTx.setUpdatedAt(fromUpdatedAtTimestamp(newTransaction.getOtherUpdatedAt()));
 
-                    buysell.insert();
+                    try
+                    {
+                        buysell.insert();
+                    }
+                    catch (IllegalArgumentException ignore)
+                    {
+                        PortfolioLog.error(ignore);
+                    }
 
                     break;
 
@@ -415,7 +438,22 @@ import name.abuchen.portfolio.money.Money;
                     sourceATx.setUpdatedAt(fromUpdatedAtTimestamp(newTransaction.getUpdatedAt()));
                     targetATx.setUpdatedAt(fromUpdatedAtTimestamp(newTransaction.getOtherUpdatedAt()));
 
-                    cashTransfer.insert();
+                    try
+                    {
+                        cashTransfer.insert();
+                    }
+                    catch (IllegalArgumentException ignore)
+                    {
+                        // background: due to a bug in previous versions, there
+                        // might be cash transfer transactions which have been
+                        // partially added, e.g. only to the source account.
+                        // Because in protobuf we reconstruct the transactions
+                        // from the source account, we might attempt to add the
+                        // dangling transaction to the target account. This
+                        // should not fail the loading of the entire file.
+
+                        PortfolioLog.error(ignore);
+                    }
 
                     break;
 
@@ -438,7 +476,17 @@ import name.abuchen.portfolio.money.Money;
                 case DIVIDEND:
                     AccountTransaction dividend = new AccountTransaction(newTransaction.getUuid());
                     dividend.setType(AccountTransaction.Type.DIVIDENDS);
-                    loadCommonTransaction(newTransaction, dividend, lookup, true);
+                    if (newTransaction.hasExDate())
+                        dividend.setExDate(fromLocalDateTime(newTransaction.getExDate()));
+                    loadCommonTransaction(newTransaction, dividend, lookup, false);
+
+                    // If the dividend has no instrument, convert it to an
+                    // interest payment. In the past, it was possible to create
+                    // such a transaction.
+
+                    if (dividend.getSecurity() == null)
+                        dividend.setType(AccountTransaction.Type.INTEREST);
+
                     lookup.getAccount(newTransaction.getAccount()).addTransaction(dividend);
 
                     break;
@@ -636,7 +684,7 @@ import name.abuchen.portfolio.money.Money;
                 classification.setWeight(newClassification.getWeight());
                 classification.setRank(newClassification.getRank());
 
-                classification.setData(newClassification.getDataList());
+                classification.setProtobufData(newClassification.getDataList());
 
                 for (PTaxonomy.Assignment newAssignment : newClassification.getAssignmentsList())
                 {
@@ -650,7 +698,7 @@ import name.abuchen.portfolio.money.Money;
                     assignment.setWeight(newAssignment.getWeight());
                     assignment.setRank(newAssignment.getRank());
 
-                    assignment.setData(newAssignment.getDataList());
+                    assignment.setProtobufData(newAssignment.getDataList());
 
                     classification.addAssignment(assignment);
                 }
@@ -680,6 +728,7 @@ import name.abuchen.portfolio.money.Money;
         for (PDashboard newDashboard : newClient.getDashboardsList())
         {
             Dashboard dashboard = new Dashboard();
+            dashboard.setId(newDashboard.getId());
             dashboard.setName(newDashboard.getName());
             dashboard.getConfiguration().putAll(newDashboard.getConfigurationMap());
 
@@ -786,6 +835,26 @@ import name.abuchen.portfolio.money.Money;
         }
     }
 
+    private void loadExtensions(PClient newClient, Client client)
+    {
+        // Load extension data from the Any fields
+        // This preserves third-party extension data during load
+        List<Any> extensions = new ArrayList<>();
+        for (Any extension : newClient.getExtensionsList())
+        {
+            // Store extension data for preservation during save
+            String typeUrl = extension.getTypeUrl();
+            PortfolioLog.info("Loaded extension: " + typeUrl); //$NON-NLS-1$
+
+            // Add extension to the list for storage in Client object
+            extensions.add(extension);
+        }
+
+        // Store all extensions in the Client object for preservation during
+        // save
+        client.setExtensions(extensions);
+    }
+
     @Override
     public void save(Client client, OutputStream output) throws IOException
     {
@@ -805,6 +874,7 @@ import name.abuchen.portfolio.money.Money;
         saveDashboards(client, newClient);
         saveWatchlists(client, newClient);
         saveInvestmentPlans(client, newClient);
+        saveExtensions(client, newClient);
 
         // write signature
         output.write(SIGNATURE);
@@ -873,7 +943,7 @@ import name.abuchen.portfolio.money.Money;
             security.getEvents().forEach(event -> {
                 if (event == null)
                     return;
-                
+
                 PSecurityEvent.Builder newEvent = PSecurityEvent.newBuilder();
 
                 switch (event.getType())
@@ -891,7 +961,8 @@ import name.abuchen.portfolio.money.Money;
                         newEvent.addData(PAnyValue.newBuilder().setInt64(dividendEvent.getPaymentDate().toEpochDay()));
                         newEvent.addData(PAnyValue.newBuilder().setString(dividendEvent.getAmount().getCurrencyCode()));
                         newEvent.addData(PAnyValue.newBuilder().setInt64(dividendEvent.getAmount().getAmount()));
-                        newEvent.addData(PAnyValue.newBuilder().setString(dividendEvent.getSource()));
+                        // Important: the 'source' attribute used to be written
+                        // as 4th element
                         break;
                     default:
                         throw new UnsupportedOperationException();
@@ -900,6 +971,8 @@ import name.abuchen.portfolio.money.Money;
                 newEvent.setDate(event.getDate().toEpochDay());
                 if (event.getDetails() != null)
                     newEvent.setDetails(event.getDetails());
+                if (event.getSource() != null)
+                    newEvent.setSource(event.getSource());
                 newSecurity.addEvents(newEvent);
 
             });
@@ -1057,6 +1130,8 @@ import name.abuchen.portfolio.money.Money;
                 break;
             case DIVIDENDS:
                 newTransaction.setTypeValue(PTransaction.Type.DIVIDEND_VALUE);
+                if (t.getExDate() != null)
+                    newTransaction.setExDate(asLocalDateTime(t.getExDate()));
                 break;
             case FEES:
                 newTransaction.setTypeValue(PTransaction.Type.FEE_VALUE);
@@ -1173,7 +1248,7 @@ import name.abuchen.portfolio.money.Money;
                 newClassification.setRank(classification.getRank());
                 newClassification.setWeight(classification.getWeight());
 
-                newClassification.addAllData(classification.getData());
+                newClassification.addAllData(classification.getProtobufData());
 
                 for (Assignment assignment : classification.getAssignments())
                 {
@@ -1182,7 +1257,7 @@ import name.abuchen.portfolio.money.Money;
                     newAssignment.setWeight(assignment.getWeight());
                     newAssignment.setRank(assignment.getRank());
 
-                    newAssignment.addAllData(assignment.getData());
+                    newAssignment.addAllData(assignment.getProtobufData());
 
                     newClassification.addAssignments(newAssignment);
                 }
@@ -1254,6 +1329,7 @@ import name.abuchen.portfolio.money.Money;
         client.getDashboards().forEach(dashboard -> {
             PDashboard.Builder newDashboard = PDashboard.newBuilder();
 
+            newDashboard.setId(dashboard.getId());
             newDashboard.setName(dashboard.getName());
             newDashboard.putAllConfiguration(dashboard.getConfiguration());
 
@@ -1339,5 +1415,19 @@ import name.abuchen.portfolio.money.Money;
 
             newClient.addPlans(newPlan);
         });
+    }
+
+    private void saveExtensions(Client client, PClient.Builder newClient)
+    {
+        // Save extension data to the Any fields
+        // This preserves third-party extension data during save
+        for (Any extension : client.getExtensions())
+        {
+            // Add each extension to the protobuf builder
+            newClient.addExtensions(extension);
+
+            String typeUrl = extension.getTypeUrl();
+            PortfolioLog.info("Saved extension: " + typeUrl); //$NON-NLS-1$
+        }
     }
 }

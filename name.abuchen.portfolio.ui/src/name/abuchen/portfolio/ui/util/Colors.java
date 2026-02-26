@@ -20,6 +20,7 @@ public final class Colors
     {
         private Color defaultForeground = Colors.BLACK;
         private Color defaultBackground = Colors.WHITE;
+        private Color chipBackground = Colors.WHITE;
         private Color warningBackground = getColor(254, 223, 107); // FEDF6B
         private Color redBackground = Colors.RED;
         private Color greenBackground = Colors.GREEN;
@@ -46,6 +47,16 @@ public final class Colors
         public void setDefaultBackground(RGBA color)
         {
             this.defaultBackground = getColor(color.rgb);
+        }
+
+        public Color chipBackground()
+        {
+            return chipBackground;
+        }
+
+        public void setChipBackground(RGBA color)
+        {
+            this.chipBackground = getColor(color.rgb);
         }
 
         public Color warningBackground()
@@ -127,8 +138,13 @@ public final class Colors
     public static final Color BLACK = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
     public static final Color RED = Display.getDefault().getSystemColor(SWT.COLOR_RED);
     public static final Color GREEN = Display.getDefault().getSystemColor(SWT.COLOR_GREEN);
+    public static final Color YELLOW = Display.getDefault().getSystemColor(SWT.COLOR_YELLOW);
+    public static final Color BLUE = Display.getDefault().getSystemColor(SWT.COLOR_BLUE);
 
     private static final ColorRegistry REGISTRY = new ColorRegistry();
+
+    // use a darker green to improve readability for the green-white-red schema
+    public static final Color HEATMAP_DARK_GREEN = getColor(104, 229, 23); // 68E517
 
     public static final Color ICON_ORANGE = getColor(241, 143, 1); // F18F01
     public static final Color ICON_BLUE = getColor(14, 110, 142); // 0E6E8E
@@ -234,8 +250,26 @@ public final class Colors
         return getColor(ColorConversion.brighter(base.getRGB()));
     }
 
+    public static Color darker(Color base)
+    {
+        return getColor(ColorConversion.darker(base.getRGB()));
+    }
+
+    /**
+     * Interpolates between two RGB colors.
+     *
+     * @param first
+     *            The first color.
+     * @param second
+     *            The second color.
+     * @param factor
+     *            A value between 0 and 1 indicating the blend ratio. Values
+     *            outside this range are clamped to ensure valid RGB results.
+     * @return The interpolated RGB color.
+     */
     public static RGB interpolate(RGB first, RGB second, float factor)
     {
+        factor = Math.max(0, Math.min(factor, 1)); // Clamp factor between 0 and 1
         int red = Math.round(first.red + factor * (second.red - first.red));
         int green = Math.round(first.green + factor * (second.green - first.green));
         int blue = Math.round(first.blue + factor * (second.blue - first.blue));

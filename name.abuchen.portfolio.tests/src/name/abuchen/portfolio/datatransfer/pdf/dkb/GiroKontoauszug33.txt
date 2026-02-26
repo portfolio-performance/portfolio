@@ -1,0 +1,91 @@
+PDFBox Version: 3.0.5 != 1.8.17
+Portfolio Performance Version: 0.78.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Deutsche Kreditbank AG
+Herrn Internes Zeichen:
+HAS QpOTjTRZ 180 44 00
+Hauptstr. 1  
+18771 aomtbr  
+ 
+ 
+ 
+ 
+ 
+ 
+ 5. August 2025
+Kontoauszug 8/2025 Seite 1 von 2
+G  irokonto 1060085683, DE70 7623 3495 5598 5058 83, DKB-Cash u18
+Datum Erläuterung Betrag Soll EUR Betrag Haben EUR
+ Kontostand am 04.07.2025, Auszug Nr.    7                 452,40
+07.07.2025 Zahlungseingang                 1,00
+eBay S.a.r.l. P.6960044392 ZNNCQ3RQAKFRB60
+10.07.2025 Überweisung              -200,00
+tNz avR SSMreiMa DATUM 10.07.2025, 08.43 UHR
+14.07.2025 Überweisung               -65,00
+Qmbct AKhsqgL DATUM 12.07.2025, 18.14 UHR
+14.07.2025Wertpapierabrechnung / Wert: 11.07.2025                 8,90
+Depot 2729698023 Wertpapierertrag 11.07.2025 
+000069245603030 WKN A117ME ALIBABA GR.HLDG 
+SP.ADR 8 ISIN US01609W1027
+14.07.2025Wertpapierabrechnung / Wert: 11.07.2025                 9,84
+Depot 7231984830 Wertpapierertrag 11.07.2025 
+000069245603040 WKN A117ME ALIBABA GR.HLDG 
+SP.ADR 8 ISIN US01609W1027
+14.07.2025 Eingang Echtzeitübw. / Wert: 12.07.2025                65,00
+Max Mustermann
+a5886ceb6d4242c48332c9535e8e797c
+16.07.2025 Berichtigung / Wert: 11.07.2025                -9,84
+Depot 8343054500 Storno Wertpapierertrag 15.07.2025 
+000069245603040 WKN A117ME ALIBABA GR.HLDG 
+SP.ADR 8 ISIN US01609W1027
+16.07.2025Wertpapierabrechnung / Wert: 11.07.2025                 9,65
+Depot 6237982997 Wertpapierertrag 15.07.2025 
+000069648305000 WKN A117ME ALIBABA GR.HLDG 
+SP.ADR 8 ISIN US01609W1027
+28.07.2025 Depotgebühren / Wert: 30.07.2025                -0,06
+Depot 1361530459 Depotgebuehren 01.04.2025 bis 
+30.06.2025 Abrechnung vom 28.07.2025
+01.08.2025 Zahlungseingang                 7,00
+Max Mustermann OIZxWAEzhYX 
+1df29bdfe56d4c25825624b3a06e532c
+01.08.2025 Zahlungseingang                30,00
+Dr. Brinkmann Erstattung
+Deutsche Kreditbank AG Vorsitzender des Aufsichtsrats Telefon 030 120 300 00 BIC: BYLADEM1001 
+Taubenstraße 7 - 9 Stephan Winkelmeier Telefax 030 120 300 01  
+10117 Berlin Vorstand  USt-ID-Nr.: DE137178746 
+ Dr. Sven Deglow (Vorsitzender) info@dkb.de Handelsregister 
+Ein Unternehmen der Tilo Hacke, Jan Walther, www.dkb.de Berlin-Charlottenburg 
+Bayerischen Landesbank Arnulf Keese, Kristina Trink (HRB 34165 B)
+Kontoauszug 8/2025 Seite 2 von 4
+Girokonto 1060085683, DE70 1419 9429 0537 1809 83, 
+DKB-Cash u18, kDz tbC kzygIuMe
+Datum Erläuterung Betrag Soll EUR Betrag Haben EUR
+04.08.2025 Kartenzahlung                -4,99
+NETFLIX.COM/18665797172/../DE 2025-08-04T01:56 
+Debitk.09 2099-12 Zahl.System VISA Debit
+ Kontostand am 04.08.2025 um 18:05 Uhr                 303,90
+Gesamtumsatzsummen Summe Soll EUR Anzahl Summe Haben EUR Anzahl
+ . -279,89 5 131,39 7
+Hinweise zum Kontoauszug:
+l Bitte den Kontoauszug prüfen. Nicht autorisierte oder fehlerhaft ausgeführte Aufträge müssen uns unverzüglich angezeigt 
+  werden.
+l Der Kontoauszug am Ende eines Kalenderquartals beinhaltet regelmäßig einen Rechnungsabschluss. Dieser gilt als genehmigt, 
+wenn ihm nicht vor Ablauf von sechs Wochen nach Zugang widersprochen wird. Einwendungen gegen Rechnungsabschlüsse 
+müssen der Deutschen Kreditbank AG in Textform zugehen. Zur Fristwahrung genügt die rechtzeitige Absendung (Nr. 7 Abs. 3 
+der Allgemeinen Geschäftsbedingungen).
+l Der angegebene Kontostand berücksichtigt nicht die Wertstellung der einzelnen Buchungen. Dies bedeutet, dass der genannte 
+Betrag nicht dem für die Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei Verfügungen möglicherweise 
+Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können.
+l Die Gutschrift von Schecks, Lastschriften oder anderen Einzugspapieren vor ihrer Einlösung geschieht unter Vorbehalt 
+(E.v.-Gutschrift). Werden Schecks oder Lastschriften nicht eingelöst oder geht der DKB der Gegenwert nicht zu, so macht sie die 
+Gutschrift gemäß Nr. 23 der AGB rückgängig (Stornobuchung), und zwar auch nach einem zwischenzeitlich erfolgten 
+Rechnungsabschluss.
+l Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen: im 
+"Informationsbogen für Einleger" sowie auf unserer Webseite unter dkb.de/kundenservice/einlagensicherung.
+Deutsche Kreditbank AG Vorsitzender des Aufsichtsrats Telefon 030 120 300 00 BIC: BYLADEM1001 
+Taubenstraße 7 - 9 Stephan Winkelmeier Telefax 030 120 300 01  
+10117 Berlin Vorstand  USt-ID-Nr.: DE137178746 
+ Dr. Sven Deglow (Vorsitzender) info@dkb.de Handelsregister 
+Ein Unternehmen der Tilo Hacke, Jan Walther, www.dkb.de Berlin-Charlottenburg 
+Bayerischen Landesbank Arnulf Keese, Kristina Trink (HRB 34165 B)

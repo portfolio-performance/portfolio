@@ -9,18 +9,14 @@ import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.swtchart.Chart;
-import org.swtchart.IAxis;
-import org.swtchart.IAxis.Position;
-import org.swtchart.ISeries;
-import org.swtchart.Range;
+import org.eclipse.swtchart.Chart;
+import org.eclipse.swtchart.IAxis;
+import org.eclipse.swtchart.IAxis.Position;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.chart.PlainChart;
-import name.abuchen.portfolio.ui.util.format.AmountNumberFormat;
-import name.abuchen.portfolio.ui.util.format.ThousandsNumberFormat;
 
 public class PaymentsChartTab implements PaymentsTab
 {
@@ -99,17 +95,6 @@ public class PaymentsChartTab implements PaymentsTab
             chart.suspendUpdate(false);
         }
 
-        // if max/min value of range is more than 1000, formatting is #.#k
-        Range r = yAxis.getRange();
-        if (r.lower < -1000.0 || r.upper > 1000.0)
-        {
-            yAxis.getTick().setFormat(new ThousandsNumberFormat());
-        }
-        else
-        {
-            yAxis.getTick().setFormat(new AmountNumberFormat());
-        }
-
         model.addUpdateListener(this::updateChart);
 
         return chart;
@@ -120,7 +105,7 @@ public class PaymentsChartTab implements PaymentsTab
         try
         {
             chart.suspendUpdate(true);
-            for (ISeries s : chart.getSeriesSet().getSeries())
+            for (var s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
 
             chartBuilder.createSeries(chart, model);

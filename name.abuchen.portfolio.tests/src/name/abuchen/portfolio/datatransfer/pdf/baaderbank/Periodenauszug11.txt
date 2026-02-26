@@ -1,0 +1,52 @@
+﻿PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.70.3
+-----------------------------------------
+Baader Bank AG   Weihenstephaner Straße 4   85716 Unterschleißheim Scalable Capital GmbH
+T  00800 00 586336*   F  +49 89 5150 2442    service@baaderbank.de Seitzstraße 8e
+80538 München 
+service@scalable.capital
+Seite 1/1
+Herrn München
+03.08.2024
+MihhuZ GSCFdqMF
+GSCFdqMF. 934 hPibIk FhGWZGzW
+24204 Wtlyxw Stamm-Nr.: 4067803    Portfolio: 1
+Konto-Nr.: 4067803009
+IBAN: DE26 2222 3333 4444 5555 33
+BLZ: 700 331 00
+BIC: BDWBDEMM
+Vorgangs-Nr.: 413353390
+Referenz-Nr.: 986663735
+Perioden-Kontoauszug: EUR-Konto
+Periodenauszugs-Nr. 024007
+Buchungstag Erläuterungen Valuta Belastung Gutschrift
+in EUR in EUR
+Kontostand in EUR am 28.06.2024 89,14
+05.07.2024 Gutschrift 05.07.2024 28.240,00
+dbmEhR ElTrGniH
+DE1111222233334444555
+xRmZJwIzcEB
+Scalable Capital Broker
+End to end Referenz:
+5120a58c8b5c44c0a60bfd91bed663e9
+Vorgangs-Nr.: 961169438
+11.07.2024 Kauf 15.07.2024 28.323,63 -
+INVESCO MSCI WORLD ETF
+ISIN IE00B60SX394
+STK             275
+Vorgangs-Nr.: WWUM 00338565957
+15.07.2024 Ordergebühr 15.07.2024 0,99 -
+ORDERGEBUEHR
+REF:SCALANDnkDU5Lx8
+Vorgangs-Nr.: SCALANDnkDU5Lx8
+Kontostand in EUR am 31.07.2024 4,52
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Dirk Urmoneit, Dirk Franzmeyer • Aufsichtsrat: Patrick Olson (Vorsitzender) • HRB 
+217778, Amtsgericht München • USt-IdNr. DE300434774 • www.scalable.capital
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 121537 • Sitz der 
+Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336* • service@baaderbank.de
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen. KKTKK801-043.041

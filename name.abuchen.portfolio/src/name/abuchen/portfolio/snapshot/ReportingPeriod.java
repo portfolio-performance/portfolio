@@ -14,6 +14,7 @@ import java.time.format.FormatStyle;
 import java.time.temporal.WeekFields;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,6 +22,7 @@ import java.util.stream.Stream;
 import com.google.common.base.Objects;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TradeCalendar;
@@ -45,7 +47,9 @@ public abstract class ReportingPeriod
         YEAR_TO_DATE('X', YearToDate.class), //
         SINCE_X('S', SinceX.class), //
         FROM_X_TO_Y('F', FromXtoY.class), //
-        YEAR_X('Y', YearX.class);
+        YEAR_X('Y', YearX.class), //
+        PAST('G', Past.class), //
+        FUTURE('H', Future.class);
 
         private char code;
 
@@ -72,6 +76,11 @@ public abstract class ReportingPeriod
 
     public static final ReportingPeriod from(String code) throws IOException
     {
+        return tryFrom(code).orElseThrow(() -> new IOException(code));
+    }
+
+    public static final Optional<ReportingPeriod> tryFrom(String code)
+    {
         Type type = CODE2TYPE.get(code.charAt(0));
 
         if (type != null)
@@ -80,24 +89,25 @@ public abstract class ReportingPeriod
             {
                 if (code.length() > 1)
                 {
-                    return type.implementation.getConstructor(String.class).newInstance(code.substring(1));
+                    return Optional.of(type.implementation.getConstructor(String.class).newInstance(code.substring(1)));
                 }
                 else
                 {
-                    return type.implementation.getDeclaredConstructor().newInstance();
+                    return Optional.of(type.implementation.getDeclaredConstructor().newInstance());
                 }
             }
             catch (ReflectiveOperationException | RuntimeException e)
             {
-                throw new IOException(e);
+                PortfolioLog.error(e);
+                return Optional.empty();
             }
         }
 
         // backward compatible
         if (code.charAt(code.length() - 1) == 'Y')
-            return new LastX(Integer.parseInt(code.substring(0, code.length() - 1)), 0);
+            return Optional.of(new LastX(Integer.parseInt(code.substring(0, code.length() - 1)), 0));
 
-        throw new IOException(code);
+        return Optional.empty();
     }
 
     public final Predicate<Transaction> containsTransaction(LocalDate relativeTo)
@@ -839,6 +849,77 @@ public abstract class ReportingPeriod
         public int hashCode()
         {
             return Objects.hashCode(Type.PREVIOUS_YEAR);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            return getClass() == obj.getClass();
+        }
+    }
+
+    public static class Past extends ReportingPeriod
+    {
+        @Override
+        public Interval toInterval(LocalDate relativeTo)
+        {
+            // Assume we're called with relativeTo == today. Then today is not
+            // the past, and as Interval includes the end date, it must be
+            // yesterday.
+            return Interval.of(relativeTo.plusYears(-100), relativeTo.plusDays(-1));
+        }
+
+        @Override
+        public String toString()
+        {
+            return Messages.LabelReportingPeriodInThePast;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hashCode(Type.PAST);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            return getClass() == obj.getClass();
+        }
+    }
+
+    public static class Future extends ReportingPeriod
+    {
+        @Override
+        public Interval toInterval(LocalDate relativeTo)
+        {
+            // Assume we're called with relativeTo == today. In Past
+            // implementation, we exclude it, as today cannot reasonably be
+            // considered "past". But then we have to include today in the
+            // Future, to not lose it altogether. That actually makes good
+            // sense on its own as something an hour from now today *is*
+            // the future.
+            return Interval.of(relativeTo.plusDays(-1), relativeTo.plusYears(100));
+        }
+
+        @Override
+        public String toString()
+        {
+            return Messages.LabelReportingPeriodInTheFuture;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hashCode(Type.FUTURE);
         }
 
         @Override

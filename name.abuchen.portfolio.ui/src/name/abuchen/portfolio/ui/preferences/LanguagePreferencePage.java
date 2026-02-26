@@ -62,7 +62,10 @@ public class LanguagePreferencePage extends PreferencePage
         SLOVAK("sk", "Slovenská"), //$NON-NLS-1$ //$NON-NLS-2$
         POLISH("pl", "Polskie"), //$NON-NLS-1$ //$NON-NLS-2$
         CHINESE("zh", "中文"), //$NON-NLS-1$ //$NON-NLS-2$
-        DANISH("da", "Dansk"); //$NON-NLS-1$ //$NON-NLS-2$
+        DANISH("da", "Dansk"), //$NON-NLS-1$ //$NON-NLS-2$
+        TURKISH("tr", "Türk"), //$NON-NLS-1$ //$NON-NLS-2$
+        VIETNAMESE("vi", "Tiếng Việt"), //$NON-NLS-1$ //$NON-NLS-2$
+        CATALAN("ca", "Català"); //$NON-NLS-1$ //$NON-NLS-2$
 
         private String code;
         private String label;
@@ -138,7 +141,7 @@ public class LanguagePreferencePage extends PreferencePage
                 {
                     countryCombo.getCombo().setEnabled(true);
                     countryCombo.setInput(getCountriesForLanguage(l));
-                    countryCombo.setSelection(new StructuredSelection(new Locale(l.getCode())));
+                    countryCombo.setSelection(new StructuredSelection(Locale.forLanguageTag(l.getCode())));
                 }
                 area.layout();
             }
@@ -217,10 +220,13 @@ public class LanguagePreferencePage extends PreferencePage
             {
                 javaLocale.setText(locale.toString());
 
-                DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(
-                                new Locale("pt").getLanguage().equals(locale.getLanguage()) ? FormatStyle.SHORT //$NON-NLS-1$
-                                                : FormatStyle.MEDIUM,
-                                FormatStyle.SHORT).withLocale(locale);
+                DateTimeFormatter formatter = DateTimeFormatter
+                                .ofLocalizedDateTime(
+                                                Locale.forLanguageTag("pt").getLanguage().equals(locale.getLanguage()) //$NON-NLS-1$
+                                                                ? FormatStyle.SHORT
+                                                                : FormatStyle.MEDIUM,
+                                                FormatStyle.SHORT)
+                                .withLocale(locale);
 
                 sampleDate.setText(formatter.format(LocalDateTime.now()));
 
@@ -250,7 +256,7 @@ public class LanguagePreferencePage extends PreferencePage
                 String[] split = nlValue.split("_"); //$NON-NLS-1$
                 country = split[1];
             }
-            Locale locale = new Locale(language.code, country);
+            Locale locale = Locale.forLanguageTag(language.code + "-" + country); //$NON-NLS-1$
             countryCombo.setSelection(new StructuredSelection(locale));
         }
     }
@@ -290,7 +296,7 @@ public class LanguagePreferencePage extends PreferencePage
         // Remove irrelevant variants
         regions.removeIf(l -> l.getDisplayVariant().length() > 0);
         regions.removeIf(l -> l.getDisplayScript().length() > 0);
-        
+
         Collections.sort(regions, (l1, l2) -> l1.getDisplayCountry().compareTo(l2.getDisplayCountry()));
 
         return regions;

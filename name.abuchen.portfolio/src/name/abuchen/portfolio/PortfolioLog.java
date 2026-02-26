@@ -92,7 +92,10 @@ public class PortfolioLog
      */
     public static void error(String message)
     {
-        log(new Status(IStatus.ERROR, PLUGIN_ID, message));
+        StackWalker walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
+        Class<?> callerClass = walker.getCallerClass();
+
+        log(new Status(IStatus.ERROR, callerClass.getName(), message));
     }
 
     /**
@@ -103,7 +106,10 @@ public class PortfolioLog
      */
     public static void warning(String message)
     {
-        log(new Status(IStatus.WARNING, PLUGIN_ID, message));
+        StackWalker walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
+        Class<?> callerClass = walker.getCallerClass();
+
+        log(new Status(IStatus.WARNING, callerClass.getName(), message));
     }
 
     /**
@@ -114,7 +120,10 @@ public class PortfolioLog
      */
     public static void info(String message)
     {
-        log(new Status(IStatus.INFO, PLUGIN_ID, message));
+        StackWalker walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
+        Class<?> callerClass = walker.getCallerClass();
+
+        log(new Status(IStatus.INFO, callerClass.getName(), message));
     }
 
 }

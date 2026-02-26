@@ -13,7 +13,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.CurrencyToStringConverter;
 import name.abuchen.portfolio.ui.util.NumberVerifyListener;
 import name.abuchen.portfolio.ui.util.StringToCurrencyConverter;
-import name.abuchen.portfolio.ui.util.text.FrenchKeypadSupport;
+import name.abuchen.portfolio.ui.util.text.DecimalKeypadSupport;
 
 public class ValueEditingSupport extends PropertyEditingSupport
 {
@@ -50,7 +50,7 @@ public class ValueEditingSupport extends PropertyEditingSupport
         var text = (Text) textEditor.getControl();
         text.setTextLimit(20);
         text.addVerifyListener(new NumberVerifyListener());
-        FrenchKeypadSupport.configure(text);
+        DecimalKeypadSupport.configure(text);
         return textEditor;
     }
 

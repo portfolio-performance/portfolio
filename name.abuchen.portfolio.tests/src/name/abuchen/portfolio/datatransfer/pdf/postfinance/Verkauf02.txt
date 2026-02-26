@@ -1,0 +1,31 @@
+PDFBox Version: 3.0.5 != 1.8.17
+Portfolio Performance Version: 0.80.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+PostFinance AG 
+Sie werden betreut von 
+Ronja Geiser und Team 
+Telefon +41 58 448 14 14 
+www.postfinance.ch P.P. Post CH AG 
+CH-4808 Zofingen A-PRIORITY 
+Herr 
+gHSVO Tsq aMF ioYth 
+cGsBQDLM YQexADdtEcwe 18 
+4789 wZIMxWTy 
+Transaktionsabrechnung: Rücknahme Seite: 1 / 1 
+E-Vermögensverwaltung Datum: 16.04.2025 
+Depot 47-652916-0 Ort der Ausführung Over-the-Counter 
+Auftrag 21187458 
+Gemäss Ihrem Auftrag haben wir folgende Transaktion vorgenommen: 
+Position Anteile Währung Kurs 
+UBS Index Fund - Bonds CHF 0.074 CHF 961.41 
+ISIN CH0482006191 
+Kurswert in Handelswährung CHF 71.14 
+Total CHF 71.14 
+Der Totalbetrag von  CHF 71.14 wurde Ihrem Konto  Hs67 9280 2693 9259 8731 6 mit Valuta  17.04.2025 gutgeschrie- 
+ben. 
+Bitte prüfen Sie dieses Dokument und benachrichtigen Sie uns bei Unstimmigkeiten innert Monatsfrist. 
+Im Rahmen dieser Transaktion hat PostFinance als Kommissionärin gehandelt. 
+Freundliche Grüsse 
+PostFinance AG 
+01521 DE   000041.00

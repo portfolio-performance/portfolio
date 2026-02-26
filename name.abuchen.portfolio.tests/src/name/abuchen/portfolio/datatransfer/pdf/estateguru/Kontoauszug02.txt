@@ -1,0 +1,31 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.0
+-----------------------------------------
+Transaktionsbericht
+ 
+NAME NAME (Investor) 
+ 
+Anfangssaldo € 106,65
+Zins € 79,18
+Gebühr € -1,55
+Strafe € 1,59
+Entschädigung € 0,04
+Endsaldo € 6,50
+ 
+ 
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#60572767
+21.06.2024, 03:00 21.06.2024, 06:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 0,42 € 6,50
+(Finnland)
+#43684138
+02.05.2024, 03:00 03.05.2024, 06:00 Strafe Genehmigt Entwicklungskredit - 3.Stufe € 0,10 € 36,33
+(Finnland)
+#14605226
+Überbrückung
+10.04.2024, 00:00 11.04.2024, 06:00 Entschädigung Genehmigt skredit - € 0,01 € 53,12
+1.Stufe
+(Estland)
+#31681870
+05.04.2024, 00:34 05.04.2024, 00:34 Vermögensverwaltungsgebühr Genehmigt (€ -0,61) € 63,00
+#14605226
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 7

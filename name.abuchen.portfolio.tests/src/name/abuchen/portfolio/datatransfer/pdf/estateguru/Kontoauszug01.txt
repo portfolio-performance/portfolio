@@ -1,0 +1,18 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.0
+-----------------------------------------
+Transaktionsbericht
+ 
+NAME NAME (Investor) 
+ 
+Anfangssaldo € 72,69
+Auszahlung € -1.584,71
+Einzahlung € 4.100,00
+Endsaldo € 13,74
+ 
+ 
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+25.07.2023, 09:10 25.07.2023, 09:10 Einzahlung Genehmigt € 300,00 € 364,11
+15.01.2021, 12:41 15.01.2021, 12:41 Einzahlung Genehmigt € 1.100,00 € 1.115,71
+02.02.2020, 00:10 03.02.2020, 17:59 Auszahlung Genehmigt (€ -51,70) € 51,72
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co

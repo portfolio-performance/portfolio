@@ -1,0 +1,37 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.2
+-----------------------------------------
+Kauf
+Referenz O:003198103:1
+Datum 15.09.2014
+Depot Depotnr.
+Nachname, Vorname
+Herrn
+Vornamen Nachname Betreuer Stangl, Richard
+Straße Abteilung Honorarberater
+PLZ Ort Telefon +49 (0) 911 249 299 10
+E-Mail richard.stangl@quirinbank.de
+ 
+Nominal/Stück iSh.STOXX Europe 600 U.ETF DE Inhaber-Anteile
+ST 31 ISIN DE0002635307 WKN 263530
+Abrechnungskonditionen: Abrechnungswerte:
+Kurs  34,900000 EUR Kurswert -1.081,90 EUR
+Ausführungsplatz Xetra Courtage *  0,00 EUR
+Handelstag/-zeit 12.09.2014   16:22:33 Bank-Provision  0,00 EUR
+Verwahrart Girosammel-Verwahrung (umsatzsteuerpflichtiges Entgelt)
+Lagerland 099 - CBL - Bundesrepublik Deutschland Mehrwertsteuer (19%) -0,78 EUR
+Zahlungstag 16.09.2014 Spesen * -0,75 EUR
+Devisenkurs 1,000000 Abwickl.Gebühr * -4,12 EUR 
+Poolfaktor  1,000000000
+* Fremde Gebühren und Kosten
+Ausmachender Betrag -1.087,55 EUR
+Den Gesamtbetrag werden wir mit Valuta 16.09.2014 auf Ihrem 
+Konto Kontonr. EUR buchen.
+auf Verkaufsunterlagen verzichtet.  Diesem Geschäft liegt keine Anlageberatung der Bank zugrunde.  
+quirin bank AG Telefon +49 (0) 30 89 021-300 Aufsichtsratsvorsitzender: Vorstand:
+Kurfürstendamm 119 - 10711 Berlin Telefax +49 (0) 30 89 021-321 Holger Timm Karl Matthäus Schmidt, Johannes 
+Postfach 311105 - 10641 Berlin BLZ 10110600 Eismann, Dr. Marcel Morschbach, 
+Gerichtsstand: Berlin USt-Id. DE 1956 61729 Stefan Spannagl
+Handelsregister: Berlin-Charlottenb., HR B 87859 BIC QUBKDEBBXXX
+Internet  www.quirinbank.de
+O10ABR_WPR_E  0000#816767668049#0000026624  VJ9780022   (10) 7.1.8.0.0

@@ -1,0 +1,28 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.4
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+Max Mustermann PAGE 1 from 1
+Musterstrasse 1 DATE 02.05.2024
+12345 12345 EXECUTION ab98-f9b9
+SAVEBACK 3765-0e2e
+SECURITIES ACCOUNT 1234567890
+SECURITIES SETTLEMENT SAVEBACK
+OVERVIEW
+Saveback execution on 02.05.2024 on the Lang & Schwarz Exchange.
+The counterparty to the transaction is Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION QUANTITY AVERAGE RATE AMOUNT
+AIS-Amundi NASDAQ-100 0.016033 Pcs. 185.24 EUR 2.97 EUR
+Namens-Anteile C Cap.EUR o.N.
+ISIN: LU1681038243
+TOTAL 2.97 EUR
+BOOKING
+CLEARING ACCOUNT VALUE DATE AMOUNT
+DE12345600001111222233 06.05.2024 -2.97 EUR
+AIS-Amundi NASDAQ-100 Namens-Anteile C Cap.EUR o.N. in giro collection storage in Germany.
+This statement is generated automatically and therefore not signed.
+If no VAT is shown, it is according to § 4 No. 8 UStG for a sales tax-free service.
+Trade Republic Bank GmbH www.traderepublic.com Headquarters: Berlin Directors
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin VAT-ID DE307510626 Gernot Mittendorfer
+ABRE / 02.05.2024 / 76652895 / f536-07de

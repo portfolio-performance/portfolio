@@ -3,9 +3,9 @@ package name.abuchen.portfolio.ui.util.chart;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-import org.swtchart.Chart;
-import org.swtchart.IAxis;
-import org.swtchart.Range;
+import org.eclipse.swtchart.Chart;
+import org.eclipse.swtchart.IAxis;
+import org.eclipse.swtchart.Range;
 
 public class ZoomMouseWheelListener implements Listener
 {
@@ -14,7 +14,7 @@ public class ZoomMouseWheelListener implements Listener
     public static void attachTo(Chart chart)
     {
         Listener listener = new ZoomMouseWheelListener(chart);
-        chart.getPlotArea().addListener(SWT.MouseWheel, listener);
+        chart.getPlotArea().getControl().addListener(SWT.MouseWheel, listener);
     }
 
     private final Chart chart;

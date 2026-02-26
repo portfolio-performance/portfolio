@@ -1,0 +1,35 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+uETtJe GVBPI
+KFoEDYTa 35 
+86556 yEKXETP Datum 14.09.2025
+Deutschland Seite 1 / 2
+Zinszahlung 
+Berechtigtes Wertpapier Leverage Shares PLC 
+ISIN XS2875106242 
+Berechtigte Anzahl 5,940872 
+Ex Tag 10.09.2025 
+Verrechnungskonto DExxxxxxxxxxxxxxxx (YlqULHEYihA)
+Kontobewegung 
+Buchung Wertstellung Typ Betrag / Stk. Berechtigte Anzahl Gesamt 
+Wechselkurs 
+14.09.2025 12.09.2025 Gutschrift 0,16 USD 5,940872 0,82 EUR 
+USD / EUR 1,1669 
+Gesamtbetrag 0,82 EUR
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV. Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind
+einkommensteuerpflichtig. 
+Ermittlung steuerrelevante Erträge
+Typ Anmerkung Betrag
+Gewinn oder Verlust 0,82 EUR
+Sparerpauschbetrag 0,06 EUR → 0,88 EUR -0,82 EUR
+Scalable Capital GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 1 / 2
+Zinszahlung
+Zu versteuern 0,00 EUR
+Scalable Capital GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 2 / 2

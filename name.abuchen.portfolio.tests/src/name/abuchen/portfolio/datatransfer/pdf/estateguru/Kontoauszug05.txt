@@ -1,0 +1,32 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.2
+-----------------------------------------
+Transaktionsbericht
+ 
+Arne Hildebrandt (Investor) 
+ 
+Anfangssaldo € 3,14
+Zins € v
+Investition € -3,14
+Hauptbetrag € 3,14
+Gebühr € -3,14
+Strafe € 3,14
+Entschädigung € 3,14
+Zweitmarkt € 3,14
+Gewinn auf dem Zweitmarkt € 3,14
+Endsaldo € 3,14
+ 
+ 
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+05.10.2024, 00:29 05.10.2024, 00:29 Vermögensverwaltungsgebühr Genehmigt (€ -0,24) € 369,55
+#87734487
+Überbrückung
+01.10.2024, 03:00 03.10.2024, 06:00 Zins Genehmigt skredit - € 0,59 € 369,79
+1.Stufe
+(Litauen)
+#87734487
+Überbrückung
+01.10.2024, 03:00 03.10.2024, 06:00 Hauptbetrag Genehmigt skredit - € 50,00 € 369,20
+1.Stufe
+(Litauen)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 10

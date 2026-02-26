@@ -8,6 +8,7 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 
 import name.abuchen.portfolio.money.Values;
@@ -109,17 +110,16 @@ class MeasurementTool implements ChartTool
             var buffer = new StringBuilder();
             buffer.append(String.valueOf(ChronoUnit.DAYS.between(start.date(), end.date())));
             buffer.append(" | "); //$NON-NLS-1$
-            buffer.append(chart.getToolTip().getDefaultValueFormat()
-                            .format(end.valueYRightAxis() - start.valueYRightAxis()));
+            buffer.append(chart.getToolTip().getDefaultValueFormat().format(end.valueYAxis() - start.valueYAxis()));
             if (showRelativeChange)
             {
                 buffer.append(" | "); //$NON-NLS-1$
-                buffer.append(Values.PercentWithSign.format(end.valueYRightAxis() / start.valueYRightAxis() - 1));
+                buffer.append(Values.PercentWithSign.format(end.valueYAxis() / start.valueYAxis() - 1));
             }
             var text = buffer.toString();
 
             Point txtExtend = e.gc.textExtent(text);
-            Rectangle plotArea = chart.getPlotArea().getClientArea();
+            Rectangle plotArea = ((Composite) chart.getPlotArea().getControl()).getClientArea();
 
             e.gc.setBackground(Colors.brighter(color));
             e.gc.setForeground(Colors.getTextColor(color));

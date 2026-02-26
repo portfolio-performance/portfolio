@@ -35,10 +35,12 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -206,6 +208,12 @@ public class ClientFactory
 
     private static class PlainWriterZIP implements ClientPersister
     {
+        /**
+         * ZIP format (PK\x03\x04 signature)
+         * https://en.wikipedia.org/wiki/List_of_file_signatures
+         */
+        private static final byte[] SIGNATURE = { 80, 75, 3, 4 };
+
         private ClientPersister body;
 
         public PlainWriterZIP(ClientPersister body)
@@ -481,54 +489,79 @@ public class ClientFactory
         }
     }
 
-    public static Set<SaveFlag> getFlags(File file) throws IOException
+    /* package */ static Set<SaveFlag> getFlags(File file) throws IOException
     {
-        Set<SaveFlag> flags = EnumSet.noneOf(SaveFlag.class);
+        var filename = file.getName().toLowerCase(Locale.US);
 
-        if (file.getName().endsWith(".zip")) //$NON-NLS-1$
+        if (filename.endsWith(".zip")) //$NON-NLS-1$
         {
-            flags.add(SaveFlag.XML);
-            flags.add(SaveFlag.COMPRESSED);
+            return EnumSet.of(SaveFlag.XML, SaveFlag.COMPRESSED);
         }
-        else if (file.getName().endsWith(".portfolio")) //$NON-NLS-1$
+        else if (filename.endsWith(".portfolio")) //$NON-NLS-1$
         {
-            try (InputStream input = new BufferedInputStream(new FileInputStream(file)))
-            {
-                // read signature
-
-                byte[] signature = new byte[Decryptor.SIGNATURE.length];
-                int read = input.read(signature);
-                if (read != Decryptor.SIGNATURE.length)
-                    throw new IOException(
-                                    "tried to read " + Decryptor.SIGNATURE.length + " bytes but only got " + read); //$NON-NLS-1$ //$NON-NLS-2$
-
-                if (Arrays.equals(Decryptor.SIGNATURE, signature))
-                {
-                    flags.add(SaveFlag.ENCRYPTED);
-                }
-                else if (startsWith(new byte[] { 80, 75, 3, 4 }, signature))
-                {
-                    // https://en.wikipedia.org/wiki/List_of_file_signatures
-                    flags.add(SaveFlag.COMPRESSED);
-                }
-            }
+            return getFlagsByContent(file);
         }
-
-        if (flags.isEmpty())
+        else if (filename.endsWith(".xml")) //$NON-NLS-1$
         {
-            flags.add(SaveFlag.XML);
+            var flags = EnumSet.of(SaveFlag.XML);
             try (Reader input = new InputStreamReader(new FileInputStream(file)))
             {
-                char[] buffer = new char[80];
+                char[] buffer = new char[100];
                 input.read(buffer);
                 if (new String(buffer).contains("<client id=")) //$NON-NLS-1$
                 {
                     flags.add(SaveFlag.ID_REFERENCES);
                 }
             }
+            return flags;
         }
 
-        return flags;
+        // fallback: attempt to detect the type of the file based on the file
+        // content. We do not rely on this method only as we are conservative.
+
+        return getFlagsByContent(file);
+    }
+
+    private static Set<SaveFlag> getFlagsByContent(File file) throws IOException
+    {
+        try (var input = new BufferedInputStream(new FileInputStream(file)))
+        {
+            var buffer = new byte[100];
+            int read = input.read(buffer);
+
+            if (read < 0)
+            {
+                // Empty file - default to XML
+                return EnumSet.of(SaveFlag.XML);
+            }
+
+            // Check for encrypted format (9-byte PORTFOLIO signature)
+            if (read >= Decryptor.SIGNATURE.length && startsWith(Decryptor.SIGNATURE, buffer))
+                return EnumSet.of(SaveFlag.ENCRYPTED);
+
+            // Check for ZIP format (PK\x03\x04 signature)
+            if (read >= PlainWriterZIP.SIGNATURE.length && startsWith(PlainWriterZIP.SIGNATURE, buffer))
+                return EnumSet.of(SaveFlag.COMPRESSED);
+
+            // Check for plain XML
+            if (read > 0 && buffer[0] == '<')
+            {
+                var flags = EnumSet.of(SaveFlag.XML);
+
+                // Check for ID_REFERENCES by searching the buffered content
+                // We accept that we might create replacement characters, if the
+                // 100 splits a multi-byte UTF-8 character
+                String bufferContent = new String(buffer, 0, read, StandardCharsets.UTF_8);
+                if (bufferContent.contains("<client id=")) //$NON-NLS-1$
+                {
+                    flags.add(SaveFlag.ID_REFERENCES);
+                }
+
+                return flags;
+            }
+        }
+
+        return EnumSet.of(SaveFlag.XML);
     }
 
     private static boolean startsWith(byte[] expected, byte[] actual)
@@ -692,7 +725,7 @@ public class ClientFactory
                 // also on some other platforms (for example reported for Linux
                 // Mint, locks are not supported on SMB shares)
 
-                PortfolioLog.warning(MessageFormat.format("Failed to aquire lock {0} with message {1}", //$NON-NLS-1$
+                PortfolioLog.warning(MessageFormat.format("Failed to acquire lock {0} with message {1}", //$NON-NLS-1$
                                 file.getAbsolutePath(), e.getMessage()));
             }
 
@@ -899,10 +932,21 @@ public class ClientFactory
                 addInvestmentPlanTypes(client);
             case 61: // NOSONAR
                 removePortfolioReportMarketProperties(client);
-            case 62:
+            case 62: // NOSONAR
                 updateSecurityChartLabelConfiguration(client);
-            case 63:
+            case 63: // NOSONAR
                 fixNullSecurityEvents(client);
+            case 64: // NOSONAR
+                assignDashboardIds(client);
+            case 65: // NOSONAR
+                // moved 'source' field to security event
+            case 66: // NOSONAR
+                removePortfolioReportSyncProperties(client);
+                fixLogoAttributeName(client);
+            case 67: // NOSONAR
+                removeSourceAttributeFromTaxonomy(client);
+            case 68: // NOSONAR
+                // added exDate date field
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -1640,7 +1684,8 @@ public class ClientFactory
 
     private static void fixNullSecurityEvents(Client client)
     {
-        // see https://forum.portfolio-performance.info/t/fehlermeldung-cannot-invoke-name-abuchen-portfolio-model-securityevent-gettype-because-event-is-null/29406
+        // see
+        // https://forum.portfolio-performance.info/t/fehlermeldung-cannot-invoke-name-abuchen-portfolio-model-securityevent-gettype-because-event-is-null/29406
 
         for (Security security : client.getSecurities())
         {
@@ -1700,6 +1745,60 @@ public class ClientFactory
 
         client.setProperty(propertyKey, chartConfig.replace("SHOW_DATA_LABELS", //$NON-NLS-1$
                         "SHOW_DATA_DIVESTMENT_INVESTMENT_LABEL,SHOW_DATA_DIVIDEND_LABEL,SHOW_DATA_EXTREMES_LABEL")); //$NON-NLS-1$
+    }
+
+    private static void assignDashboardIds(Client client)
+    {
+        // dashboards get a unique identifier to reliably identify them in
+        // configuration (say the navigation bar)
+        client.getDashboards().forEach(dashboard -> dashboard.setId(UUID.randomUUID().toString()));
+    }
+
+    private static void removePortfolioReportSyncProperties(Client client)
+    {
+        // the experimental sync feature used to store these two properties
+        client.removeProperty("net.portfolio-report.portfolioId"); //$NON-NLS-1$
+        client.removeProperty("net.portfolio-report.synchronizedAt"); //$NON-NLS-1$
+    }
+
+    private static void fixLogoAttributeName(Client client)
+    {
+        // problem: the logo attribute name got translated, but the lookup
+        // always looks for an attribute with the name 'Logo'.
+
+        // fix: if there exists a logo attribute type with the translated name
+        // and there exists no other attribute with logo, then rename the
+        // attribute
+
+        var types = List.of(Security.class, Account.class, Portfolio.class, InvestmentPlan.class);
+
+        for (var type : types)
+        {
+            var logoAttribute = client.getSettings().getOptionalLogoAttributeType(type);
+            if (logoAttribute.isPresent())
+                continue;
+
+            var translatedAttribute = client.getSettings().getAttributeTypes()
+                            .filter(t -> t.getConverter() instanceof AttributeType.ImageConverter)
+                            .filter(t -> Messages.AttributesLogoColumn.equals(t.getName()))
+                            .filter(t -> t.supports(type)).findFirst();
+
+            if (translatedAttribute.isPresent())
+                translatedAttribute.get().setName("Logo"); //$NON-NLS-1$
+        }
+    }
+
+    private static void removeSourceAttributeFromTaxonomy(Client client)
+    {
+        // the 'source' attribute was used in the past to sync with etf-data.com
+        // (removed in June 2021) and eodhistoricaldata. Both sync do not work
+        // anymore. This cleans up any remaining values.
+
+        // the content used to be in the form of "<domain name>$<name of remote
+        // taxonomy>"
+
+        for (var t : client.getTaxonomies())
+            t.setSource(null);
     }
 
     private static synchronized XStream xstreamReader()

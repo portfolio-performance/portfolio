@@ -21,7 +21,6 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
@@ -245,8 +244,11 @@ public class SecurityListView extends AbstractFinanceView
          */
         private long getSharesHeld(Client client, Security security)
         {
-            // collect all shares and return a value greater 0
-            return Math.max(security.getTransactions(client).stream()
+            // TODO: This calculation is simplistic and may be incorrect.
+            // e.g., if one account has 1 (long) share and another - -1 (short) share,
+            // this calculation returns 0. But it's clear that it's not the case that
+            // we have 0 (i.e. none) shares.
+            return security.getTransactions(client).stream()
                             .filter(t -> t.getTransaction() instanceof PortfolioTransaction) //
                             .map(t -> (PortfolioTransaction) t.getTransaction()) //
                             .mapToLong(t -> {
@@ -261,7 +263,7 @@ public class SecurityListView extends AbstractFinanceView
                                     default:
                                         return 0L;
                                 }
-                            }).sum(), 0);
+                            }).sum();
         }
 
         private boolean isLimitPriceExceeded(Security security)
@@ -492,13 +494,13 @@ public class SecurityListView extends AbstractFinanceView
         securities.getColumnHelper().addListener(() -> updateTitle(getDefaultTitle()));
         securities.getColumnHelper().setToolBarManager(getViewToolBarManager());
 
-        securities.addSelectionChangedListener(event -> setInformationPaneInput(
-                        ((IStructuredSelection) event.getSelection()).getFirstElement()));
-
         securities.addSelectionChangedListener(event -> {
-            Security security = (Security) ((IStructuredSelection) event.getSelection()).getFirstElement();
-            if (security != null)
-                selectionService.setSelection(new SecuritySelection(getClient(), security));
+            var selection = event.getStructuredSelection();
+            @SuppressWarnings("unchecked")
+            var securitySelection = new SecuritySelection(getClient(), selection.toList());
+
+            selectionService.setSelection(selection.isEmpty() ? null : securitySelection);
+            setInformationPaneInput(securitySelection);
         });
 
         securities.addFilter(new ViewerFilter()

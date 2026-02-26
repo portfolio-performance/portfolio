@@ -1,0 +1,226 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.78.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Kontoauszug
+fJLzD 9301448418 EUR
+cSAI DE59101106003079391220
+Stfghjfgh, HPBsAx
+Vermögensverwaltungskonto in EUR
+Datum 31.07.2024
+Herrn Auszug-Nr 1
+BNivlx qoYCG Seite 1 von 5
+sApjIPdRu 4
+05357 Alfghjrf-TLllcWqPEmDNiuYuE Betreuer quirion online
+Telefon +49 (0) 30 89 021 400
+E-Mail info@quirion.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Überweisungsgutschrift Inland 10.07.2024 10.07.2024 2,00 EUR
+Ref.: 499025059
+MydsIc FSZxn DE91500240242836147401
+MdxmGccaesHjD Aufstockung-67117038864210409311937-405 16.07.2024 16.07.2024 25,00 EUR
+Ref.: 500280137
+Wertpapier Kauf, Ref.: 810613137 17.07.2024 19.07.2024 -6,01 EUR
+Amundi Index Solu.-A.PRIME GL. Nam.-Ant.UCI.ETF DR USD Dis.oN
+LU1931974692, ST 0,1796
+Wertpapier Kauf, Ref.: 789323993 17.07.2024 19.07.2024 -5,53 EUR
+SPDR MSCI World UCITS ETF Reg.Shares USD Unhgd Acc. o.N.
+IE00BFY0GT14, ST 0,1584
+Wertpapier Kauf, Ref.: 515457226 17.07.2024 19.07.2024 -4,86 EUR
+Xtr.(IE)MSCI World Value Registered Shares 1C USD o.N.
+IE00BL25JM42, ST 0,116
+Wertpapier Kauf, Ref.: 605189398 17.07.2024 19.07.2024 -4,36 EUR
+iShsIII-MSCI Wld Sm.Ca.UCI.ETF Registered Shares USD(Acc)o.N.
+IE00BF4RFH31, ST 0,6296
+Wertpapier Kauf, Ref.: 500470782 17.07.2024 19.07.2024 -1,67 EUR
+iShs Core MSCI EM IMI U.ETF Registered Shares o.N.
+IE00BKM4GZ66, ST 0,052
+Wertpapier Kauf, Ref.: 500470790 17.07.2024 19.07.2024 -1,20 EUR
+iShsIV-Edge MSCI EM Value F. Registered Shares USD (Acc.)oN
+IE00BG0SKF03, ST 0,0257
+Wertpapier Kauf, Ref.: 500470797 17.07.2024 19.07.2024 -0,56 EUR
+MUL Amundi EUR GovBond 1-3Y UCITS ETF Inh.Anteile Acc
+LU1650487413, ST 0,0046
+Wertpapier Kauf, Ref.: 500470805 17.07.2024 19.07.2024 -0,48 EUR
+SPDR MSCI Emer.Mkts Sm.Cap ETF Registered Shares o.N.
+IE00B48X4842, ST 0,0042
+Wertpapier Kauf, Ref.: 030025354 17.07.2024 19.07.2024 -0,44 EUR
+Xtr.II EUR H.Yield Corp.Bond Inhaber-Anteile 1D o.N.
+LU1109942653, ST 0,0278
+Quirin Privatbank AG
+Postfach 311105 | 10641 Berlin T +49 (0)30 890 21-300 Handelsregister: Vorstand: Karl Matthäus Schmidt
+Kurfürstendamm 119 | 10711 Berlin F +49 (0)30 890 21-301 Berlin Charlottenburg, HRB 87859 Johannes Eismann
+www.quirinprivatbank.de info@quirinprivatbank.de USt-IdNr.: DE195661729 Aufsichtsratsvorsitzender: Holger Timm
+KTO_AUSZ / 78268398 / 20240801 12:23:14
+nHyUFZbKmQc
+CzPOB 6435375213 EUR
+EbvB DE59101106003079391220
+Stfgjl, EdSgTZ
+Vermögensverwaltungskonto in EUR
+Datum 31.07.2024
+Herrn Auszug-Nr 1
+wDEyru Dzrky Seite 2 von 5
+gXzpiVAOl 2
+90111 Alfgfjjorf-LtqambIdbtrjjxgat Betreuer quirion online
+Telefon +49 (0) 30 89 021 400
+E-Mail info@quirion.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Wertpapier Kauf, Ref.: 086981855 17.07.2024 19.07.2024 -0,44 EUR
+SPDR Bloom.Gl.Ag.Bd U.ETF Reg.Shs EUR Hdg UCITS ETF oN
+IE00BF1QPL78, ST 0,0166
+Wertpapier Kauf, Ref.: 496756247 17.07.2024 19.07.2024 -0,41 EUR
+Am.I.S.-AM.IDX EO COR.SRI 0-3Y Act.Nom.UCITS ETF EUR DR
+Ac.oN
+LU2037748774, ST 0,0081
+Wertpapier Kauf, Ref.: 500470826 17.07.2024 19.07.2024 -0,37 EUR
+Amundi I.S.-A.PRIME EURO CORP. Nam.-Ant.UC.ETF DR EUR
+Dis.oN
+LU1931975079, ST 0,02
+Wertpapier Kauf, Ref.: 500470831 17.07.2024 19.07.2024 -0,33 EUR
+InvescoMI2 EUR Gov B 1-3Y ETF Reg. Shs EUR Dis. oN
+IE00BGJWWY63, ST 0,0089
+Wertpapier Verkauf, Ref.: 500904894 19.07.2024 23.07.2024 0,44 EUR
+Xtr.II EUR H.Yield Corp.Bond Inhaber-Anteile 1D o.N.
+LU1109942653, ST -0,0278
+Wertpapier Verkauf, Ref.: 500904906 19.07.2024 23.07.2024 0,56 EUR
+MUL Amundi EUR GovBond 1-3Y UCITS ETF Inh.Anteile Acc
+LU1650487413, ST -0,0046
+Wertpapier Verkauf, Ref.: 500904915 19.07.2024 23.07.2024 0,44 EUR
+SPDR Bloom.Gl.Ag.Bd U.ETF Reg.Shs EUR Hdg UCITS ETF oN
+IE00BF1QPL78, ST -0,0166
+Wertpapier Verkauf, Ref.: 500904924 19.07.2024 23.07.2024 0,37 EUR
+Amundi I.S.-A.PRIME EURO CORP. Nam.-Ant.UC.ETF DR EUR
+Dis.oN
+LU1931975079, ST -0,02
+Wertpapier Verkauf, Ref.: 500904933 19.07.2024 23.07.2024 0,41 EUR
+Am.I.S.-AM.IDX EO COR.SRI 0-3Y Act.Nom.UCITS ETF EUR DR
+Ac.oN
+LU2037748774, ST -0,0081
+Wertpapier Verkauf, Ref.: 500904941 19.07.2024 23.07.2024 0,33 EUR
+InvescoMI2 EUR Gov B 1-3Y ETF Reg. Shs EUR Dis. oN
+IE00BGJWWY63, ST -0,0089
+Quirin Privatbank AG
+Postfach 311105 | 10641 Berlin T +49 (0)30 890 21-300 Handelsregister: Vorstand: Karl Matthäus Schmidt
+Kurfürstendamm 119 | 10711 Berlin F +49 (0)30 890 21-301 Berlin Charlottenburg, HRB 87859 Johannes Eismann
+www.quirinprivatbank.de info@quirinprivatbank.de USt-IdNr.: DE195661729 Aufsichtsratsvorsitzender: Holger Timm
+KTO_AUSZ / 31744433 / 79686694 12:23:14
+Kontoauszug
+Konto 7029119495 EUR
+IBAN DE59101106003079391220
+Sthdghfl, IGMQFm
+Vermögensverwaltungskonto in EUR
+Datum 31.07.2024
+Herrn Auszug-Nr 1
+FIyZAT zQHdQ Seite 3 von 5
+MjGGWtkUJ 2
+10019 Ahhdojrf-UtTgurJxPzxNWJsKV Betreuer quirion online
+Telefon +49 (0) 30 89 021 400
+E-Mail info@quirion.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Wertpapier Kauf, Ref.: 831292531 19.07.2024 23.07.2024 -0,06 EUR
+SPDR MSCI Emer.Mkts Sm.Cap ETF Registered Shares o.N.
+IE00B48X4842, ST 0,0005
+Wertpapier Kauf, Ref.: 500904958 19.07.2024 23.07.2024 -0,22 EUR
+iShs Core MSCI EM IMI U.ETF Registered Shares o.N.
+IE00BKM4GZ66, ST 0,0068
+Wertpapier Kauf, Ref.: 500904963 19.07.2024 23.07.2024 -0,47 EUR
+Xtr.(IE)MSCI World Value Registered Shares 1C USD o.N.
+IE00BL25JM42, ST 0,0114
+Wertpapier Kauf, Ref.: 500904971 19.07.2024 23.07.2024 -0,48 EUR
+iShsIII-MSCI Wld Sm.Ca.UCI.ETF Registered Shares USD(Acc)o.N.
+IE00BF4RFH31, ST 0,0704
+Wertpapier Kauf, Ref.: 500904980 19.07.2024 23.07.2024 -0,15 EUR
+iShsIV-Edge MSCI EM Value F. Registered Shares USD (Acc.)oN
+IE00BG0SKF03, ST 0,0032
+Wertpapier Kauf, Ref.: 500904987 19.07.2024 23.07.2024 -0,72 EUR
+Amundi Index Solu.-A.PRIME GL. Nam.-Ant.UCI.ETF DR USD Dis.oN
+LU1931974692, ST 0,0216
+Wertpapier Kauf, Ref.: 500904994 19.07.2024 23.07.2024 -0,66 EUR
+SPDR MSCI World UCITS ETF Reg.Shares USD Unhgd Acc. o.N.
+IE00BFY0GT14, ST 0,0191
+Überweisungsgutschrift Inland 25.07.2024 25.07.2024 25,00 EUR
+Ref.: 231123912
+HnALBR sAhhK DE91500240242836147401
+Wertpapier Kauf, Ref.: 502262339 26.07.2024 30.07.2024 -6,29 EUR
+Amundi Index Solu.-A.PRIME GL. Nam.-Ant.UCI.ETF DR USD Dis.oN
+LU1931974692, ST 0,1921
+Wertpapier Kauf, Ref.: 502262349 26.07.2024 30.07.2024 -5,77 EUR
+SPDR MSCI World UCITS ETF Reg.Shares USD Unhgd Acc. o.N.
+IE00BFY0GT14, ST 0,169
+Wertpapier Kauf, Ref.: 502262358 26.07.2024 30.07.2024 -5,06 EUR
+Xtr.(IE)MSCI World Value Registered Shares 1C USD o.N.
+IE00BL25JM42, ST 0,1226
+Quirin Privatbank AG
+Postfach 311105 | 10641 Berlin T +49 (0)30 890 21-300 Handelsregister: Vorstand: Karl Matthäus Schmidt
+Kurfürstendamm 119 | 10711 Berlin F +49 (0)30 890 21-301 Berlin Charlottenburg, HRB 87859 Johannes Eismann
+www.quirinprivatbank.de info@quirinprivatbank.de USt-IdNr.: DE195661729 Aufsichtsratsvorsitzender: Holger Timm
+KTO_AUSZ / 72581223 / 20240801 12:23:14
+Kontoauszug
+Konto 6474793841 EUR
+IBAN DE59101106003079391220
+Sto, jlsjBP
+Vermögensverwaltungskonto in EUR
+Datum 31.07.2024
+Herrn Auszug-Nr 1
+kSmwnP PwfzW Seite 4 von 5
+ORFNfPLFS 2
+81247 Aorf-VASgDVBKPLWYWsVZC Betreuer quirion online
+Telefon +49 (0) 30 89 021 400
+E-Mail info@quirion.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Wertpapier Kauf, Ref.: 502262367 26.07.2024 30.07.2024 -4,50 EUR
+iShsIII-MSCI Wld Sm.Ca.UCI.ETF Registered Shares USD(Acc)o.N.
+IE00BF4RFH31, ST 0,6534
+Wertpapier Kauf, Ref.: 502262374 26.07.2024 30.07.2024 -1,76 EUR
+iShs Core MSCI EM IMI U.ETF Registered Shares o.N.
+IE00BKM4GZ66, ST 0,056
+Wertpapier Kauf, Ref.: 502262381 26.07.2024 30.07.2024 -1,26 EUR
+iShsIV-Edge MSCI EM Value F. Registered Shares USD (Acc.)oN
+IE00BG0SKF03, ST 0,0277
+Wertpapier Kauf, Ref.: 502262389 26.07.2024 30.07.2024 -0,50 EUR
+SPDR MSCI Emer.Mkts Sm.Cap ETF Registered Shares o.N.
+IE00B48X4842, ST 0,0045
+Wertpapier Verkauf, Ref.: 502844109 29.07.2024 31.07.2024 0,06 EUR
+Xtr.(IE)MSCI World Value Registered Shares 1C USD o.N.
+IE00BL25JM42, ST -0,0015
+Wertpapier Verkauf, Ref.: 502844116 29.07.2024 31.07.2024 0,08 EUR
+iShsIII-MSCI Wld Sm.Ca.UCI.ETF Registered Shares USD(Acc)o.N.
+IE00BF4RFH31, ST -0,0111
+Wertpapier Verkauf, Ref.: 502844123 29.07.2024 31.07.2024 0,05 EUR
+Amundi Index Solu.-A.PRIME GL. Nam.-Ant.UCI.ETF DR USD Dis.oN
+LU1931974692, ST -0,0015
+Wertpapier Verkauf, Ref.: 502844130 29.07.2024 31.07.2024 0,04 EUR
+SPDR MSCI World UCITS ETF Reg.Shares USD Unhgd Acc. o.N.
+IE00BFY0GT14, ST -0,0011
+letzter Auszug alter Saldo 0,00 EUR
+Umsatz 0,22 EUR
+Limit (in Währung) 0,00 neuer Saldo 0,22 EUR
+Sollzins in % p.a. 0,00
+Überziehungszins in % p.a. 0,00
+Quirin Privatbank AG
+Postfach 311105 | 10641 Berlin T +49 (0)30 890 21-300 Handelsregister: Vorstand: Karl Matthäus Schmidt
+Kurfürstendamm 119 | 10711 Berlin F +49 (0)30 890 21-301 Berlin Charlottenburg, HRB 87859 Johannes Eismann
+www.quirinprivatbank.de info@quirinprivatbank.de USt-IdNr.: DE195661729 Aufsichtsratsvorsitzender: Holger Timm
+KTO_AUSZ / 78268398 / 20240801 12:23:14
+STaOEEqobNt
+Konto 5411037851 EUR
+IBAN DE59101106053079391220
+toll, JPybxI
+Vermögensverwaltungskonto in EUR
+Datum 31.07.2024
+Herrn Auszug-Nr 1
+CoRIuw mXjOt Seite 5 von 5
+WlUfbmSjy 0
+36447 Aldo-jJnYQThZJgAhghWsN Betreuer quirion online
+Telefon +49 (0) 30 89 021 400
+E-Mail info@quirion.de
+Dieser Kontoauszug gilt gleichzeitig als Saldenmitteilung. Etwaige Einwendungen gegen den Kontoauszug sind unverzüglich zu erheben;
+ist der Kontoauszug zusätzlich als Rechnungsabschluss bezeichnet, gilt der Abschlusssaldo als genehmigt, wenn ihm nicht innerhalb von
+sechs Wochen nach Zugang schriftlich widersprochen wird. Zur Fristwahrung genügt die rechtzeitige Absendung.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können dem
+"Informationsbogen für den Einleger" entnommen werden.
+Quirin Privatbank AG
+Postfach 311105 | 10641 Berlin T +49 (0)30 890 21-300 Handelsregister: Vorstand: Karl Matthäus Schmidt
+Kurfürstendamm 119 | 10711 Berlin F +49 (0)30 890 21-301 Berlin Charlottenburg, HRB 87859 Johannes Eismann
+www.quirinprivatbank.de info@quirinprivatbank.de USt-IdNr.: DE195661729 Aufsichtsratsvorsitzender: Holger Timm
+KTO_AUSZ / 78268398 / 20240801 12:23:14

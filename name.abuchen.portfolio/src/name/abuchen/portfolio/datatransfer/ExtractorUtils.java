@@ -15,6 +15,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -27,10 +28,15 @@ import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.util.AdditionalLocales;
 
 @SuppressWarnings("nls")
 public class ExtractorUtils
 {
+    private ExtractorUtils()
+    {
+    }
+
     // Helper method to create case-insensitive DateTimeFormatter instances
     private static DateTimeFormatter createFormatter(String pattern, Locale locale)
     {
@@ -49,10 +55,16 @@ public class ExtractorUtils
                     createFormatter("dd MMM yy", Locale.GERMANY), //
                     createFormatter("d MMM yyyy", Locale.GERMANY), //
                     createFormatter("dd MMM yyyy", Locale.GERMANY), //
+                    createFormatter("d. LLL yyyy", Locale.GERMANY), //
+                    createFormatter("dd. LLL yyyy", Locale.GERMANY), //
                     createFormatter("d-M-yyyy", Locale.GERMANY), //
                     createFormatter("dd-M-yyyy", Locale.GERMANY), //
                     createFormatter("d-MM-yyyy", Locale.GERMANY), //
                     createFormatter("dd-MM-yyyy", Locale.GERMANY), //
+                    createFormatter("d-MMM-yyyy", Locale.GERMANY), //
+                    createFormatter("dd-MMM-yyyy", Locale.GERMANY), //
+                    createFormatter("d-LLL-yyyy", Locale.GERMANY), //
+                    createFormatter("dd-LLL-yyyy", Locale.GERMANY),//
                     createFormatter("d MMMM yy", Locale.GERMANY), //
                     createFormatter("dd MMMM yy", Locale.GERMANY), //
                     createFormatter("d. MMMM yy", Locale.GERMANY), //
@@ -65,10 +77,19 @@ public class ExtractorUtils
                     createFormatter("yyyy-M-dd", Locale.GERMANY), //
                     createFormatter("yyyy-MM-d", Locale.GERMANY), //
                     createFormatter("yyyy-MM-dd", Locale.GERMANY), //
-                    createFormatter("d/MM/yyyy", Locale.GERMANY),
-                    createFormatter("dd/MM/yyyy", Locale.GERMANY),
-                    createFormatter("d/M/yyyy", Locale.GERMANY),
+                    createFormatter("d/MM/yyyy", Locale.GERMANY), //
+                    createFormatter("dd/MM/yyyy", Locale.GERMANY), //
+                    createFormatter("d/M/yyyy", Locale.GERMANY), //
                     createFormatter("dd/M/yyyy", Locale.GERMANY) };
+
+    // Date formatters with case-insensitive support for French
+    private static final DateTimeFormatter[] DATE_FORMATTER_FRENCH = { //
+                    createFormatter("d MMM yyyy", Locale.FRENCH), //
+                    createFormatter("dd MMM yyyy", Locale.FRENCH), //
+                    createFormatter("d MMMM yyyy", Locale.FRENCH), //
+                    createFormatter("dd MMMM yyyy", Locale.FRENCH), //
+                    createFormatter("d MMM. yyyy", Locale.FRENCH), //
+                    createFormatter("dd MMM. yyyy", Locale.FRENCH) };
 
     // Date formatters with case-insensitive support for the United States
     private static final DateTimeFormatter[] DATE_FORMATTER_US = { //
@@ -76,6 +97,8 @@ public class ExtractorUtils
                     createFormatter("dd LLL yyyy", Locale.US), //
                     createFormatter("d LLLL yyyy", Locale.US), //
                     createFormatter("dd LLLL yyyy", Locale.US), //
+                    createFormatter("d-LLL-yyyy", Locale.US), //
+                    createFormatter("dd-LLL-yyyy", Locale.US), //
                     createFormatter("yyyyLLd", Locale.US), //
                     createFormatter("yyyyLLdd", Locale.US), //
                     createFormatter("yyyyLLLd", Locale.US), //
@@ -94,18 +117,57 @@ public class ExtractorUtils
                     createFormatter("LLL dd, yyyy", Locale.US), //
                     createFormatter("LLLL/d/yyyy", Locale.US), //
                     createFormatter("LLLL/dd/yyyy", Locale.US), //
-                    createFormatter("LLLL d, yyyy", Locale.US),
-                    createFormatter("LLLL dd, yyyy", Locale.US), };
+                    createFormatter("LLLL d, yyyy", Locale.US), //
+                    createFormatter("LLLL dd, yyyy", Locale.US), //
+                    };
+
+    // Date formatters with case-insensitive support for Italian (Italy)
+    private static final DateTimeFormatter[] DATE_FORMATTER_ITALY = {
+                    createFormatter("d MMM yyyy", Locale.ITALY),
+                    createFormatter("dd MMM yyyy", Locale.ITALY),
+                    createFormatter("d MMMM yyyy", Locale.ITALY),
+                    createFormatter("dd MMMM yyyy", Locale.ITALY),
+                    createFormatter("d/MM/yyyy", Locale.ITALY),
+                    createFormatter("dd/MM/yyyy", Locale.ITALY)
+            };
 
     // Date formatters with case-insensitive support for Canada
     private static final DateTimeFormatter[] DATE_FORMATTER_CANADA = { //
+                    createFormatter("LLL d, yyyy", Locale.CANADA), //
+                    createFormatter("LLL. d, yyyy", Locale.CANADA), //
                     createFormatter("LLL dd, yyyy", Locale.CANADA), //
-                    createFormatter("LLL d, yyyy", Locale.CANADA)};
+                    createFormatter("LLL. dd, yyyy", Locale.CANADA) };
 
     // Date formatters with case-insensitive support for Canadian French
     private static final DateTimeFormatter[] DATE_FORMATTER_CANADA_FRENCH = { //
                     createFormatter("d LLL yyyy", Locale.CANADA_FRENCH), //
-                    createFormatter("dd LLL yyyy", Locale.CANADA_FRENCH)};
+                    createFormatter("dd LLL yyyy", Locale.CANADA_FRENCH) //
+                    };
+
+    // Date formatters with case-insensitive support for Spanish (Spain)
+    private static final DateTimeFormatter[] DATE_FORMATTER_SPAIN = { //
+                    createFormatter("d/MM/yyyy", AdditionalLocales.SPAIN), //
+                    createFormatter("dd/MM/yyyy", AdditionalLocales.SPAIN), //
+                    createFormatter("d MMM yyyy", AdditionalLocales.SPAIN), //
+                    createFormatter("dd MMM yyyy", AdditionalLocales.SPAIN), //
+                    createFormatter("d MMMM yyyy", AdditionalLocales.SPAIN), //
+                    createFormatter("dd MMMM yyyy", AdditionalLocales.SPAIN), //
+                    };
+
+    // Date formatters with case-insensitive support for Spanish (Mexico)
+    private static final DateTimeFormatter[] DATE_FORMATTER_MEXICO = { //
+                    createFormatter("d MMM yyyy", AdditionalLocales.MEXICO), //
+                    createFormatter("dd MMM yyyy", AdditionalLocales.MEXICO), //
+                    createFormatter("d MMMM yyyy", AdditionalLocales.MEXICO), //
+                    createFormatter("dd MMMM yyyy", AdditionalLocales.MEXICO), //
+                    createFormatter("dd/MM/yy", AdditionalLocales.MEXICO) //
+                    };
+
+                    // Date formatters with case-insensitive support for Belgiun
+    private static final DateTimeFormatter[] DATE_FORMATTER_BELGIAN = { //
+                    createFormatter("d-MMM-yyyy", AdditionalLocales.BELGIAN), //
+                    createFormatter("dd-MMM-yyyy", AdditionalLocales.BELGIAN) //
+                    };
 
     // Date formatters with case-insensitive support for the United Kingdom
     private static final DateTimeFormatter[] DATE_FORMATTER_UK = { //
@@ -113,6 +175,8 @@ public class ExtractorUtils
                     createFormatter("dd LLLL yyyy", Locale.UK), //
                     createFormatter("d LLL yyyy", Locale.UK), //
                     createFormatter("dd LLL yyyy", Locale.UK), //
+                    createFormatter("d-LLL-yyyy", Locale.UK), //
+                    createFormatter("dd-LLL-yyyy", Locale.UK), //
                     createFormatter("LL/d/yyyy", Locale.UK), //
                     createFormatter("LL/dd/yyyy", Locale.UK), //
                     createFormatter("L/d/yyyy", Locale.UK), //
@@ -122,15 +186,21 @@ public class ExtractorUtils
                     createFormatter("LLL/d/yyyy", Locale.UK), //
                     createFormatter("LLL/dd/yyyy", Locale.UK), //
                     createFormatter("LLLL/d/yyyy", Locale.UK), //
-                    createFormatter("LLLL/dd/yyyy", Locale.UK) };
+                    createFormatter("LLLL/dd/yyyy", Locale.UK) //
+                    };
 
     // Map associating locales with their respective date formatters
     private static final Map<Locale, DateTimeFormatter[]> LOCALE2DATE = Map.of( //
                     Locale.GERMANY, DATE_FORMATTER_GERMANY, //
+                    Locale.FRENCH, DATE_FORMATTER_FRENCH, //
+                    Locale.ITALY, DATE_FORMATTER_ITALY, //
                     Locale.US, DATE_FORMATTER_US, //
                     Locale.CANADA, DATE_FORMATTER_CANADA, //
                     Locale.CANADA_FRENCH, DATE_FORMATTER_CANADA_FRENCH, //
-                    Locale.UK, DATE_FORMATTER_UK);
+                    Locale.UK, DATE_FORMATTER_UK, //
+                    AdditionalLocales.SPAIN, DATE_FORMATTER_SPAIN, //
+                    AdditionalLocales.MEXICO, DATE_FORMATTER_MEXICO, //
+                    AdditionalLocales.BELGIAN,DATE_FORMATTER_BELGIAN);
 
     // DateTime formatters with case-insensitive support for various locales
     private static final DateTimeFormatter[] DATE_TIME_FORMATTER = { //
@@ -146,8 +216,12 @@ public class ExtractorUtils
                     createFormatter("dd.MM.yyyy HH.mm.ss", Locale.GERMANY), //
                     createFormatter("d.MM.yyyy H:mm:ss", Locale.GERMANY), //
                     createFormatter("dd.MM.yyyy H:mm:ss", Locale.GERMANY), //
+                    createFormatter("d.MM.yy HH:mm:ss", Locale.GERMANY), //
+                    createFormatter("dd.MM.yy HH:mm:ss", Locale.GERMANY), //
                     createFormatter("d LLL yyyy HH:mm:ss", Locale.GERMANY), //
                     createFormatter("dd LLL yyyy HH:mm:ss", Locale.GERMANY), //
+                    createFormatter("d-LLL-yyyy HH:mm:ss", Locale.GERMANY), //
+                    createFormatter("dd-LLL-yyyy HH:mm:ss", Locale.GERMANY), //
                     createFormatter("d MMMM yyyy HH:mm:ss", Locale.GERMANY), //
                     createFormatter("dd MMMM yyyy HH:mm:ss", Locale.GERMANY), //
                     createFormatter("d. MMMM yyyy HH:mm:ss", Locale.GERMANY), //
@@ -156,6 +230,8 @@ public class ExtractorUtils
                     createFormatter("dd.M.yyyy HH:mm:ss", Locale.GERMANY), //
                     createFormatter("d/MM/yyyy HH:mm:ss", Locale.GERMANY), //
                     createFormatter("dd/MM/yyyy HH:mm:ss", Locale.GERMANY), //
+                    createFormatter("LLL d, yyyy hh:mm:ss a", Locale.US), //
+                    createFormatter("LLL dd, yyyy hh:mm:ss a", Locale.US), //
                     createFormatter("yyyy-LL-d HH:mm:ss", Locale.US), //
                     createFormatter("yyyy-LL-dd HH:mm:ss", Locale.US), //
                     createFormatter("yyyyLLd HHmmss", Locale.US), //
@@ -166,14 +242,21 @@ public class ExtractorUtils
                     createFormatter("dd.LL.yyyy hh:mm:ss a", Locale.UK), //
                     createFormatter("d LLL yyyy HH:mm:ss", Locale.UK), //
                     createFormatter("dd LLL yyyy HH:mm:ss", Locale.UK), //
+                    createFormatter("d-LLL-yyyy HH:mm:ss", Locale.UK), //
+                    createFormatter("dd-LLL-yyyy HH:mm:ss", Locale.UK), //
                     createFormatter("d/LL/yy HH.mm", Locale.UK), //
                     createFormatter("dd/LL/yy HH.mm", Locale.UK), //
-                    createFormatter("d/LL/yy HH.mm", Locale.UK),
-                    createFormatter("dd/LL/yy HH.mm", Locale.UK)};
+                    createFormatter("d/MM/yyyy HH.mm.ss", AdditionalLocales.SPAIN), //
+                    createFormatter("dd/MM/yyyy HH.mm.ss", AdditionalLocales.SPAIN), //
+                    };
 
-    private ExtractorUtils()
-    {
-    }
+    // Time formatters with case-insensitive support for various locales
+    private static final DateTimeFormatter[] TIME_FORMATTER = { //
+                    createFormatter("HH:mm", Locale.GERMANY), //
+                    createFormatter("HH:mm:ss", Locale.GERMANY), //
+                    createFormatter("HH.mm", Locale.UK), //
+                    createFormatter("HH.mm.ss", Locale.UK) //
+                };
 
     public static void checkAndSetGrossUnit(Money gross, Money fxGross, Object transaction, DocumentContext context)
     {
@@ -219,7 +302,7 @@ public class ExtractorUtils
 
         if (rate.isPresent())
         {
-            Money fxTax = rate.get().convert(t.getCurrencyCode(), tax);
+            var fxTax = rate.get().convert(t.getCurrencyCode(), tax);
 
             if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
                 t.addUnit(new Unit(Unit.Type.TAX, fxTax));
@@ -251,7 +334,7 @@ public class ExtractorUtils
 
         if (rate.isPresent())
         {
-            Money fxFee = rate.get().convert(t.getCurrencyCode(), fee);
+            var fxFee = rate.get().convert(t.getCurrencyCode(), fee);
 
             if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
                 t.addUnit(new Unit(Unit.Type.FEE, fxFee));
@@ -262,7 +345,8 @@ public class ExtractorUtils
 
     public static long convertToNumberLong(String value, Values<Long> valueType, String language, String country)
     {
-        DecimalFormat newNumberFormat = (DecimalFormat) NumberFormat.getInstance(new Locale(language, country));
+        var newNumberFormat = (DecimalFormat) NumberFormat
+                        .getInstance(Locale.forLanguageTag(language + "-" + country));
 
         /**
          * @formatter:off
@@ -294,7 +378,7 @@ public class ExtractorUtils
              * 8217?) instead. This is wrong, ASCII 39 was the correct
              * character.
              */
-            DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
+            var decimalFormatSymbols = new DecimalFormatSymbols();
             decimalFormatSymbols.setDecimalSeparator('.');
             decimalFormatSymbols.setGroupingSeparator('\'');
             newNumberFormat.setDecimalFormatSymbols(decimalFormatSymbols);
@@ -334,7 +418,8 @@ public class ExtractorUtils
          */
         value = trim(value).replaceAll("\\s", "");
 
-        DecimalFormat newNumberFormat = (DecimalFormat) NumberFormat.getInstance(new Locale(language, country));
+        var newNumberFormat = (DecimalFormat) NumberFormat
+                        .getInstance(Locale.forLanguageTag(language + "-" + country));
 
         if ("CH".equals(country))
         {
@@ -345,7 +430,7 @@ public class ExtractorUtils
              * 8217?) instead. This is wrong, ASCII 39 was the correct
              * character.
              */
-            DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
+            var decimalFormatSymbols = new DecimalFormatSymbols();
             decimalFormatSymbols.setDecimalSeparator('.');
             decimalFormatSymbols.setGroupingSeparator('\'');
             newNumberFormat.setDecimalFormatSymbols(decimalFormatSymbols);
@@ -372,11 +457,20 @@ public class ExtractorUtils
         // the box anymore
         value = value.replaceAll("(?i)\\bMrz\\b", "Mär");
 
-        Locale[] locales = hints.length > 0 ? hints
-                        : new Locale[] { Locale.GERMANY, Locale.US, Locale.CANADA, Locale.CANADA_FRENCH, Locale.UK };
+        var locales = hints.length > 0 ? hints
+                        : new Locale[] { //
+                                        Locale.GERMANY, Locale.FRENCH, Locale.US, Locale.ITALY, //
+                                        Locale.CANADA, Locale.CANADA_FRENCH, Locale.UK, //
+                                        AdditionalLocales.SPAIN, AdditionalLocales.MEXICO, AdditionalLocales.BELGIAN };
 
         for (Locale l : locales)
         {
+            var formatters = LOCALE2DATE.get(l);
+            if (formatters == null)
+            {
+                continue; // Skip this locale if no formatters are found
+            }
+
             for (DateTimeFormatter formatter : LOCALE2DATE.get(l))
             {
                 try
@@ -395,19 +489,19 @@ public class ExtractorUtils
 
     public static LocalTime asTime(String value)
     {
-        for (DateTimeFormatter formatter : DATE_TIME_FORMATTER)
+        for (DateTimeFormatter formatter : TIME_FORMATTER)
         {
             try
             {
-                return LocalTime.parse(value, formatter).withSecond(0);
+                return LocalTime.parse(value, formatter);
             }
             catch (DateTimeParseException ignore)
             {
-                // continue with next formatter
+             // continue with next formatter
             }
         }
 
-        throw new DateTimeParseException(MessageFormat.format(Messages.MsgErrorNotAValidDate, value), value, 0);
+        throw new DateTimeParseException(MessageFormat.format(Messages.MsgErrorNotAValidTime, value), value, 0);
     }
 
     public static LocalDateTime asDate(String date, String time)
@@ -416,7 +510,7 @@ public class ExtractorUtils
         // the box anymore
         date = date.replaceAll("(?i)\\bMrz\\b", "Mär");
 
-        String value = String.format("%s %s", date, time);
+        var value = String.format("%s %s", date, time);
 
         for (DateTimeFormatter formatter : DATE_TIME_FORMATTER)
         {
@@ -433,6 +527,39 @@ public class ExtractorUtils
         throw new DateTimeParseException(MessageFormat.format(Messages.MsgErrorNotAValidDate, value), value, 0);
     }
 
+    public static String getTickerSymbolForCrypto(String cryptoAssetName)
+    {
+        if (cryptoAssetName == null || cryptoAssetName.isBlank())
+            return "";
+
+        cryptoAssetName = cryptoAssetName.trim().toUpperCase();
+
+        Map<String, String> cryptoTickerMap = new HashMap<>();
+
+        cryptoTickerMap.put("AAVE", "AAVE");
+        cryptoTickerMap.put("AVALANCHE", "AVAX");
+        cryptoTickerMap.put("BITCOIN", "BTC");
+        cryptoTickerMap.put("BITCOIN CASH", "BCH");
+        cryptoTickerMap.put("CARDANO", "ADA");
+        cryptoTickerMap.put("CHAINLINK", "LINK");
+        cryptoTickerMap.put("COMPOUND", "COMP");
+        cryptoTickerMap.put("COSMOS", "ATOM");
+        cryptoTickerMap.put("DOGECOIN", "DOGE");
+        cryptoTickerMap.put("EOS", "EOS");
+        cryptoTickerMap.put("ETHEREUM", "ETH");
+        cryptoTickerMap.put("ETHEREUM CLASSIC", "ETC");
+        cryptoTickerMap.put("LITECOIN", "LTC");
+        cryptoTickerMap.put("POLKADOT", "DOT");
+        cryptoTickerMap.put("POLYGON", "MATIC");
+        cryptoTickerMap.put("RIPPLE", "XRP");
+        cryptoTickerMap.put("SOLANA", "SOL");
+        cryptoTickerMap.put("STELLAR LUMEN", "XLM");
+        cryptoTickerMap.put("TRON", "TRX");
+        cryptoTickerMap.put("UNISWAP", "UNI");
+
+        return cryptoTickerMap.getOrDefault(cryptoAssetName, "");
+    }
+
     public static Consumer<Transaction> fixGrossValue()
     {
         return t -> {
@@ -447,19 +574,19 @@ public class ExtractorUtils
 
             // check if the reported gross value fits to the
             // expected gross value
-            Optional<Unit> actualGross = t.getUnit(Unit.Type.GROSS_VALUE);
+            var actualGross = t.getUnit(Unit.Type.GROSS_VALUE);
 
             if (actualGross.isPresent())
             {
-                Unit grossUnit = actualGross.get();
-                Money expectedGross = t.getGrossValue();
+                var grossUnit = actualGross.get();
+                var expectedGross = t.getGrossValue();
 
                 if (!expectedGross.equals(grossUnit.getAmount()))
                 {
                     // check if it a rounding difference that is acceptable
                     try
                     {
-                        Unit u = new Unit(Unit.Type.GROSS_VALUE, expectedGross, grossUnit.getForex(),
+                        var u = new Unit(Unit.Type.GROSS_VALUE, expectedGross, grossUnit.getForex(),
                                         grossUnit.getExchangeRate());
 
                         t.removeUnit(grossUnit);
@@ -471,7 +598,7 @@ public class ExtractorUtils
                         // recalculate the unit to fix the gross value
                     }
 
-                    Money caculatedGrossValue = Money.of(grossUnit.getForex().getCurrencyCode(),
+                    var caculatedGrossValue = Money.of(grossUnit.getForex().getCurrencyCode(),
                                     BigDecimal.valueOf(expectedGross.getAmount())
                                                     .divide(grossUnit.getExchangeRate(), Values.MC)
                                                     .setScale(0, RoundingMode.HALF_EVEN).longValue());

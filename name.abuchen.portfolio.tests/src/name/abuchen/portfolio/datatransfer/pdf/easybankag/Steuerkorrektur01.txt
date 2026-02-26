@@ -1,0 +1,68 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.73.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+KsBOD
+NzPfTOj bzOqqtYFc
+BbRYegGUKnUXPJISHu 1
+0092 NzTo
+NzTo, den 31.12.2024
+Wir haben für Sie am 31.12.2024 unten angeführtes Geschäft abgerechnet:
+Depot: 99279-241-108
+Verlusttopf Nr.: 674459348557
+Geschäftsart: Steuerkorrektur - Abrechnung Verkauf 47346359-18.12.2024/Nr.1
+Abgang: Stk 57,802
+davon
+KESt-Neubestand mit Anschaffungskosten: Stk 57,802
+Titel: IE00B0M62Q58 iShs-MSCI World UCITS ETF
+Registered Shares USD (Dist)oN
+Kurs: 77,284 EUR
+Verwahrart: WR Wertpapierrechnung
+Positionsdaten: Loco: Düsseldorf
+Steuerkorrektur KESt aus Neubestand: -1,76 EUR
+Zu Lasten IBAN oF94 4801 5892 6067 2199 Valuta 31.12.2024 -1,76 EUR
+Handelsplatz: Lang & Schwarz
+Eingang vorbehalten
+Schlusstag/-zeit: 17.12.2024 17:46:53
+Kassatag: 19.12.2024
+Datum/Uhrzeit Auftragseingang: 17.12.2024 17.46.41
+Verwaltungsgesellschaft: iShares PLC
+KESt-pflichtiges Wertpapier
+Steuerrelevante Hinweise finden Sie auf der Rückseite.
+Seite 1 von 2
+easybank Service Center | www.easybank.at | Wiedner Gürtel 11 | 1100 Wien
+BAWAG P.S.K. Bank für Arbeit und Wirtschaft und Österreichische Postsparkasse Aktiengesellschaft | Handelsgericht Wien | FN 205340x
+GEODRU02 WGEWTGSDR15ABREP2024123109861P31_a/113
+Korrigiertes Geschäft / Abrechnungsnummer 31861061 - 31.12.2024 :
+Hinweis für KESt aus Neubestand mit Anschaffungskosten:
+Steuerrelevanter Anschaffungswert: 4.017,71 EUR
+Steuerrelevanter Veräußerungswert : 4.467,17 EUR
+Steuerpflichtiger Kursgewinn: 449,46 EUR
+Hinweis für den Verlustausgleichstopf:
+Bisheriger Stand KESt aus Verlust: -87,14 EUR
+KESt aus Verlust Storno: 123,60 EUR
+Aktueller Stand KESt bezahlt: 36,46 EUR
+Gutschrift aus Verlustausgleich: 87,14 EUR
+Die Steuerdaten zum korrigierten Geschäft ersetzen die Steuerdaten zum ursprünglichen Geschäft.
+Ursprüngliches Geschäft / Abrechnungsnummer 86501537 - 18.12.2024 /Nr. 1 :
+Hinweis für KESt aus Neubestand mit Anschaffungskosten:
+Steuerrelevanter Anschaffungswert: 4.024,12 EUR
+Steuerrelevanter Veräußerungswert : 4.467,17 EUR
+Steuerpflichtiger Kursgewinn: 443,05 EUR
+Hinweis für den Verlustausgleichstopf:
+Bisheriger Stand KESt aus Verlust: -145,65 EUR
+KESt bezahlt: 121,84 EUR
+Aktueller Stand KESt aus Verlust: -23,81 EUR
+Gutschrift aus Verlustausgleich: 121,84 EUR
+Eine allfällige KESt-Abfuhr erfolgt an das Finanzamt für Großbetriebe.
+Die BAWAG erbringt keine Steuerberatung und übernimmt keine Haftung für eventuelle steuerliche
+Nachteile im Zusammenhang mit Wertpapiertransaktionen und Wertpapierveranlagungen ihrer
+Kunden. Die Besteuerung der Kapitaleinkünfte hängt von den persönlichen Verhältnissen des Anlegers
+ab und kann künftigen Änderungen unterworfen sein. Vor einer Veranlagungsentscheidung sollten Sie
+sich bei Ihrem Steuerberater über die damit verbundenen steuerlichen Konsequenzen und
+Meldepflichten informieren.
+Mit freundlichen Grüßen
+Ihr easybank Service Center
+Dieser Beleg wird von der Bank nicht unterfertigt.
+Seite 2 von 2
+GEODRU02 WGEWTGSDR15ABREP2024123109861P31_a/114

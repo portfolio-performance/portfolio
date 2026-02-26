@@ -1,0 +1,62 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Tagesgeld
+EUR-Konto Kontonummer 1234564500
+Renault Bank direkt - Postfach 269 - 45952 Gladbeck Kontoauszug Nr.   1/2021
+erstellt am 26.02.2021 22:33 Blatt    1 von 1
+IBAN: DE85 3052 0037 1111 2222 00  BIC: RCIDDE3NPAY
+Herrn
+Max Mustermann
+Poststr. 8
+12345 Stadt
+Bu-Tag Wert Vorgang
+alter Kontostand                           0,00 H
+05.02. 05.02. Überweisungsgutschr.                                                       10.000,00 H
+              Max Mustermann
+              Tagesgeld
+26.02. 30.02. Abschluss                                                                       4,72 H
+               0,00000% Habenzins                   2802       0,00H
+               0,50000% Habenzins                   2802       4,72H
+              Abschluss vom 05.02.2021 bis 28.02.2021
+              für Konto 1234564500
+              Rechnung Nr.  1234564500.20210228.001
+              USt. IdNr. - DE 12342244
+              USt.-befreite Finanzdienstleistung
+              > Kapitalertragsteuer          0,68 S
+              > aus         4,72 Habenzins
+              > Solidaritätszuschlag         0,04 S
+26.02. 30.02. Solid.-Zuschlag aus                                                   0,04 S
+              EUR        0,68-KapSt      per 25.02.2021 KT5619994500
+26.02. 30.02. Kapitalertragsteuer aus                                               0,68 S
+              EUR        4,72 Habenzins  per 25.02.2021 KT5619994500
+                                    neuer Kontostand vom 26.02.2021                      10.004,00 H
+3724
+000
+K00264096
+5M Bitte beachten Sie die Hinweise auf der Rückseite!
+Allgemeiner Hinweis:
+Bitte prüfen Sie die vorstehenden Angaben auf ihre Vollständigkeit und Richtigkeit des Saldos und beachten Sie
+dabei die nachfolgenden Anmerkungen. Für die Zinsabrechnung verwenden wir, wie für alle Umsätze, das Datum
+der Wertstellung. Wird keine Wertstellung ausgewiesen, so gilt das Buchungsdatum als Wertstellungsdatum.
+Gegebenenfalls ausgewiesene Bankdienstleistungen sind steuerfrei, sofern nichts Abweichendes angegeben ist.
+Soweit die vorstehende Aufstellung mit dem Hinweis "Rechnungsabschluss" gekennzeichnet ist, haben wir für Ihr
+Konto einen Rechnungsabschluss durchgeführt. Dabei werden die in dem Abrechnungszeitraum ggf. entstandenen
+beiderseitigen Ansprüche (einschließlich Zinsen und Entgelte) verrechnet. Umsätze, die nach dem Erstellungsdatum
+anfallen und sich auf den Abrechnungssaldo des abgelaufenen Abrechnungszeitraums auswirken, werden erst in der
+folgenden Abrechnung berücksichtigt. Korrekturen, die sich auf Zinsen beziehen, werden entsprechend gekennzeichnet.
+Einwendungen gegen Angaben im Kontoauszug oder den ausgewiesenen Saldo sind unverzüglich, spätestens
+jedoch innerhalb von sechs Wochen nach Zugang des Kontoauszugs ausschließlich der Innenrevision der
+Renault Bank direkt (Postfach 269, 45952 Gladbeck) schriftlich zur Kenntnis zu geben. Nach Ablauf dieser Frist gehen
+wir davon aus, dass Sie mit der Vollständigkeit und Richtigkeit der Angaben und des Saldos einverstanden sind.
+Vom Kunden erteilte Einzugsaufträge betreffend Lastschriften von seinem Referenzkonto werden unter dem
+Vorbehalt des Eingangs gutgeschrieben.
+Bitte beachten Sie: Kapitalerträge sind einkommensteuerpflichtig.
+Wichtiger Hinweis zur Einlagensicherung
+Einlagensicherung ist die Bezeichnung für die gesetzlichen und freiwilligen Maßnahmen zum Schutz der
+Einlagen (Guthaben) von Kunden bei Kreditinstituten im Falle der Insolvenz. Die Renault Bank direkt ist dem
+französischen Einlagensicherungsfonds angeschlossen. Die französische Einlagensicherung sichert Einlagen in
+derselben Höhe ab wie die gesetzliche deutsche Einlagensicherung. Bis 100.000 EUR pro Person sind zu 100 
+Prozent abgesichert.
+Nähere Informationen können Sie dem "Informationsbogen für den Einleger" entnehmen. Diesen finden sie auf unserer 
+Website unter dem Menüpunkt: AGB.

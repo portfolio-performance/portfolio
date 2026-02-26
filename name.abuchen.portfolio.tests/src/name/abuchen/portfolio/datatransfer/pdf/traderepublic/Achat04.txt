@@ -1,0 +1,29 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.70.3
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KÖPENICKER STRASSE 40C  10179 BERLIN
+pWlr BIBn oYXIPX iDwDDy PAGE 1 / 1
+629 oWz qOBnjT DATE 24/05/2023
+64242 jGjbKYXL ORDRE f023-fccb
+EXÉCUTION d275-d0b1
+COMPTE-TITRES 0662991001
+RELEVÉ DE TRANSACTION
+RÉCAPITULATIF
+Market-Order Achat le 24/05/2023 à 17:10 (Europe/Berlin) sur la Lang & Schwarz Exchange.
+Le contractant de la transaction est Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION QUANTITÉ PRIX MONTANT
+Tesla Inc. 0,1127 titre(s) 166,86 EUR 18,81 EUR
+Registered Shares DL-,001
+ISIN : US88160R1014
+TOTAL 18,81 EUR
+RÉSERVATION
+COMPTE-ESPÈCES DATE DE VALEUR MONTANT
+DE13502109007011547146 26/05/2023 -18,81 EUR
+Tesla Inc. Registered Shares DL-,001 en garde collective en Allemagne.
+Ce document est généré automatiquement et n'est donc pas signé.
+Si aucune taxe sur le chiffre d'affaires n'est indiquée, il s'agit d'un service non sujet à la taxe sur le chiffre 
+d'affaires (conformément à la réglementation UStG. § 4 n° 8).
+Trade Republic Bank GmbH www.traderepublic.com Siège de la Société: Berlin Directeur Général
+Köpenicker Straße 40c service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10179 Berlin VAT-ID DE307510626 Gernot Mittendorfer
+ABRE / 24/05/2023 / 80204061 / 3608-6500

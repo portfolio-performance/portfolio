@@ -21,7 +21,7 @@ import name.abuchen.portfolio.ui.views.payments.PaymentsViewInput;
 import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel;
 import name.abuchen.portfolio.util.Interval;
 
-public class CostHeatmapWidget extends AbstractMonhtlyHeatmapWidget
+public class CostHeatmapWidget extends AbstractMonthlyHeatmapWidget
 {
     private final PaymentsViewModel.Mode mode;
 

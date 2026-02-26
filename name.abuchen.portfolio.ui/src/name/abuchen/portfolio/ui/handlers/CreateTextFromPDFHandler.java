@@ -26,43 +26,49 @@ import name.abuchen.portfolio.ui.dialogs.DisplayTextDialog;
 
 public class CreateTextFromPDFHandler
 {
+    @SuppressWarnings("nls")
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part,
                     @Named(IServiceConstants.ACTIVE_SHELL) Shell shell) throws IOException
     {
-        FileDialog fileDialog = new FileDialog(shell, SWT.OPEN | SWT.SINGLE);
+        var fileDialog = new FileDialog(shell, SWT.OPEN | SWT.SINGLE);
         fileDialog.setText(Messages.PDFImportDebugTextExtraction);
-        fileDialog.setFilterNames(new String[] { Messages.PDFImportFilterName });
-        fileDialog.setFilterExtensions(new String[] { "*.pdf;*.PDF" }); //$NON-NLS-1$
+        fileDialog.setFilterNames(Messages.PDFImportFilterName);
+        fileDialog.setFilterExtensions("*.pdf;*.PDF"); //$NON-NLS-1$
         fileDialog.open();
 
-        String fileName = fileDialog.getFileName();
+        var fileName = fileDialog.getFileName();
         if (fileName == null || fileName.isEmpty())
             return;
 
         try
         {
-            File file = new File(fileDialog.getFilterPath(), fileName);
-            PDFInputFile inputFile = new PDFInputFile(file);
+            var file = new File(fileDialog.getFilterPath(), fileName);
+            var inputFile = new PDFInputFile(file);
+
+            // create text from PDF
             inputFile.convertPDFtoText();
+            var extractedText = inputFile.getText();
+            var pdfBoxVersion = inputFile.getPDFBoxVersion();
 
-            StringBuilder textBuilder = new StringBuilder();
-            textBuilder.append("```") //$NON-NLS-1$
-                            .append("\n"); //$NON-NLS-1$
-            textBuilder.append("PDFBox Version: ") //$NON-NLS-1$
-                            .append(inputFile.getPDFBoxVersion().toString()) //
-                            .append("\n"); //$NON-NLS-1$
-            textBuilder.append("Portfolio Performance Version: ") //$NON-NLS-1$
+            var textBuilder = new StringBuilder();
+            textBuilder.append("```").append("\n");
+            textBuilder.append("PDFBox Version: ").append(pdfBoxVersion).append("\n");
+            textBuilder.append("Portfolio Performance Version: ")
                             .append(PortfolioPlugin.getDefault().getBundle().getVersion().toString()) //
-                            .append("\n"); //$NON-NLS-1$
-            textBuilder.append("-----------------------------------------\n"); //$NON-NLS-1$
-            textBuilder.append(inputFile.getText().replace("\r", "")) //$NON-NLS-1$ //$NON-NLS-2$
-                            .append("\n"); //$NON-NLS-1$
-            textBuilder.append("```"); //$NON-NLS-1$
+                            .append("\n");
 
-            String text = textBuilder.toString();
+            textBuilder.append("System: ") //
+                            .append(System.getProperty("osgi.os", "unknown")).append(" | ")
+                            .append(System.getProperty("osgi.arch", "unknown")).append(" | ")
+                            .append(System.getProperty("java.vm.version", "unknown")).append(" | ")
+                            .append(System.getProperty("java.vm.vendor", "unknown")).append("\n");
 
-            DisplayTextDialog dialog = new DisplayPDFTextDialog(shell, file, text);
+            textBuilder.append("-----------------------------------------\n");
+            textBuilder.append(extractedText).append("\n");
+            textBuilder.append("```");
+
+            var dialog = new DisplayPDFTextDialog(shell, file, textBuilder.toString());
             dialog.setDialogTitle(Messages.PDFImportDebugTextExtraction);
             dialog.setAdditionalText(Messages.PDFImportDebugInformation);
             dialog.open();
@@ -85,7 +91,7 @@ public class CreateTextFromPDFHandler
         @Override
         protected Text createTextArea(Composite container)
         {
-            Text textArea = super.createTextArea(container);
+            var textArea = super.createTextArea(container);
 
             textArea.addMouseListener(new PDFDebugMouseListener(textArea));
 
@@ -106,7 +112,7 @@ public class CreateTextFromPDFHandler
         @Override
         public void mouseDoubleClick(MouseEvent e)
         {
-            String selectedText = widget.getSelectionText();
+            var selectedText = widget.getSelectionText();
 
             // Check if selectedText is not empty and does not contain forbidden
             // characters or currency codes
@@ -115,24 +121,19 @@ public class CreateTextFromPDFHandler
             {
                 // Generate a new string of random characters to replace the
                 // selected text
-                StringBuilder replacementTextBuilder = new StringBuilder();
+                var replacementTextBuilder = new StringBuilder();
                 for (int i = 0; i < selectedText.length(); i++)
                 {
                     char c = selectedText.charAt(i);
-                    if (Character.isLetter(c))
+                    replacementTextBuilder.append(switch (Character.valueOf(c))
                     {
-                        replacementTextBuilder.append(generateRandomLetter());
-                    }
-                    else if (Character.isDigit(c))
-                    {
-                        replacementTextBuilder.append(generateRandomNumber());
-                    }
-                    else
-                    {
-                        replacementTextBuilder.append(c);
-                    }
+                        case Character ch when Character.isLetter(ch) -> generateRandomLetter();
+                        case Character ch when Character.isDigit(ch) -> generateRandomNumber();
+                        default -> c;
+                    });
+
                 }
-                String replacementText = replacementTextBuilder.toString();
+                var replacementText = replacementTextBuilder.toString();
 
                 // Replace selectedText with replacementText
                 int startIndex = widget.getSelection().x;
@@ -141,13 +142,13 @@ public class CreateTextFromPDFHandler
             }
         }
 
-        /** Check if the selected string contains any forbidden characters */
-        private boolean containsForbiddenCharacters(String string)
+        private boolean containsForbiddenCharacters(String text)
         {
-            return string.matches(".*[\\-\\.,':\\/].*") || string.matches(".*[A-Z]{2}[A-Z0-9]{9}\\d.*"); //$NON-NLS-1$ //$NON-NLS-2$
+            // we don't want to replace special characters and an ISIN
+            return text.matches(".*[\\-\\.,':\\/].*") //$NON-NLS-1$
+                            || text.matches("[A-Z]{2}[A-Z0-9]{9}[0-9]"); //$NON-NLS-1$
         }
 
-        /** Generates a random letter */
         private char generateRandomLetter()
         {
             boolean isUpperCase = random.nextBoolean();

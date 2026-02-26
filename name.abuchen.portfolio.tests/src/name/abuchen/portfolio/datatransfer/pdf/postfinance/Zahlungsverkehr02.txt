@@ -1,0 +1,22 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.2
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 619045 - TRADING
+Herrn BKJGRuD geybK hxqhFfHI
+isxyelgAXQHbHBUf 105
+CH-5943 wGBPkg
+Bern, 31.01.2017
+Zahlungsverkehr - Belastung Unsere Referenz: 119387423 
+Gemäss Ihrem Auftrag haben wir folgende Buchung zu Lasten Ihres Kontos vorgenommen:
+Kontonummer 60357890
+Valutadatum 31.01.2017
+Auszahlung CHF 5'675.50
+Total CHF 5'675.50
+Mitteilung Übertrag aus 225395 CHF
+Verkauf-QrzQgY yxuXdzdH Aktien
+Bitte prüfen Sie dieses Dokument und benachrichtigen Sie uns bei Unstimmigkeiten innert Monatsfrist.
+PostFinance AG, Mingerstrasse 20, 3030 Bern
+Kontaktcenter E-Trading: 0848 800 000 (Mo-Fr: 08.00-22.00 Uhr, ab Festnetz CHF 0.08/Min.)
+Formular ohne Unterschrift S.E. & O.
+MwSt n° CHE-116.302.542

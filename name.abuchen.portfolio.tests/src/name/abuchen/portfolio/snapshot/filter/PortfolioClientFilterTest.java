@@ -128,7 +128,7 @@ public class PortfolioClientFilterTest
         Account account = result.getAccounts().get(0);
 
         // check that the 4 transactions are transformed:
-        // - buy -> removal
+        // - buy -> withdrawal
         // - deposit
         // - dividend -> deposit
         // - transfer must exist
@@ -167,10 +167,10 @@ public class PortfolioClientFilterTest
         Account account = result.getAccounts().get(0);
 
         // check that the 4 transactions are transformed:
-        // - buy -> removal
+        // - buy -> withdrawal
         // - deposit
         // - dividend -> deposit
-        // - transfer -> removal
+        // - transfer -> withdrawal
         assertThat(account.getTransactions().size(), is(4));
         assertThat(account.getTransactions().stream() //
                         .filter(t -> t.getType() == AccountTransaction.Type.REMOVAL) //

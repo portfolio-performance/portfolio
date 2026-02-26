@@ -12,6 +12,7 @@ import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import jakarta.inject.Inject;
 
@@ -38,6 +39,7 @@ import org.eclipse.swt.dnd.DragSourceAdapter;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -352,6 +354,23 @@ import name.abuchen.portfolio.util.TextUtil;
     public void configMenuAboutToShow(IMenuManager manager)
     {
         support.menuAboutToShow(manager);
+
+        manager.add(new Separator());
+
+        MenuManager sorting = new MenuManager(Messages.MenuTaxonomySortTreeBy);
+        sorting.add(new SimpleAction(
+                        String.join(", ", Messages.MenuTaxonomySortByType, Messages.MenuTaxonomySortByName), //$NON-NLS-1$
+                        a -> doSortRecursively(getModel().getClassificationRootNode(), SortCriterion.TYPE,
+                                        SortCriterion.NAME)));
+        sorting.add(new SimpleAction(String.join(", ", Messages.MenuTaxonomySortByType, Messages.ColumnActualValue), //$NON-NLS-1$
+                        a -> doSortRecursively(getModel().getClassificationRootNode(), SortCriterion.TYPE,
+                                        SortCriterion.ACTUAL)));
+        sorting.add(new SimpleAction(Messages.MenuTaxonomySortByName,
+                        a -> doSortRecursively(getModel().getClassificationRootNode(), SortCriterion.NAME)));
+        sorting.add(new SimpleAction(Messages.ColumnActualValue,
+                        a -> doSortRecursively(getModel().getClassificationRootNode(), SortCriterion.ACTUAL)));
+
+        manager.add(sorting);
     }
 
     @Override
@@ -370,7 +389,7 @@ import name.abuchen.portfolio.util.TextUtil;
 
         nodeViewer = new TreeViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
 
-        ColumnEditingSupport.prepare(nodeViewer);
+        ColumnEditingSupport.prepare(view.getEditorActivationState(), nodeViewer);
         ColumnViewerToolTipSupport.enableFor(nodeViewer, ToolTip.NO_RECREATE);
         CopyPasteSupport.enableFor(nodeViewer);
 
@@ -438,13 +457,23 @@ import name.abuchen.portfolio.util.TextUtil;
         nodeViewer.addSelectionChangedListener(event -> {
             TaxonomyNode node = ((TaxonomyNode) ((IStructuredSelection) event.getSelection()).getFirstElement());
             view.setInformationPaneInput(node);
-            if (node != null && node.getBackingSecurity() != null)
-                selectionService.setSelection(new SecuritySelection(getModel().getClient(), node.getBackingSecurity()));
+
+            // use a set because securities can show up multiple times in the
+            // hierarchy of the taxonomy
+            var securities = event.getStructuredSelection().stream()
+                            .filter(e -> ((TaxonomyNode) e).getBackingSecurity() != null)
+                            .map(e -> ((TaxonomyNode) e).getBackingSecurity()).collect(Collectors.toSet());
+            if (!securities.isEmpty())
+                selectionService.setSelection(
+                                new SecuritySelection(getModel().getClient(), new ArrayList<>(securities)));
+            else
+                selectionService.setSelection(null);
         });
 
         nodeViewer.setInput(getModel());
 
         new ContextMenu(nodeViewer.getControl(), this::fillContextMenu).hook();
+        hookKeyListener();
 
         return container;
     }
@@ -788,7 +817,10 @@ import name.abuchen.portfolio.util.TextUtil;
     public void nodeChange(TaxonomyNode node)
     {
         if (!nodeViewer.getTree().isDisposed())
+        {
+            support.invalidateCache();
             nodeViewer.refresh();
+        }
     }
 
     @Override
@@ -864,7 +896,7 @@ import name.abuchen.portfolio.util.TextUtil;
 
             manager.add(sorting);
 
-            if (!node.isRoot())
+            if (!node.isRoot() && !node.getParent().isRoot())
             {
                 manager.add(new Separator(MENU_GROUP_DELETE_ACTIONS));
                 manager.add(new SimpleAction(Messages.MenuTaxonomyClassificationDelete,
@@ -897,6 +929,20 @@ import name.abuchen.portfolio.util.TextUtil;
                 new SecurityContextMenu(this.view).menuAboutToShow(manager, security);
             }
         }
+    }
+
+    private void hookKeyListener()
+    {
+        nodeViewer.getControl().addKeyListener(KeyListener.keyPressedAdapter(e -> {
+            var selection = nodeViewer.getStructuredSelection();
+            if (selection.isEmpty() || selection.size() > 1)
+                return;
+
+            var node = (TaxonomyNode) selection.getFirstElement();
+            var security = node.getBackingSecurity();
+            if (security != null)
+                new SecurityContextMenu(view).handleEditKey(e, security);
+        }));
     }
 
     private void addAvailableAssignments(MenuManager manager, TaxonomyNode targetNode)
@@ -935,7 +981,7 @@ import name.abuchen.portfolio.util.TextUtil;
 
     private void doDeleteClassification(TaxonomyNode node)
     {
-        if (node.isRoot() || node.isUnassignedCategory())
+        if (node.isRoot() || node.isUnassignedCategory() || node.getParent().isRoot())
             return;
 
         node.getParent().removeChild(node);
@@ -1005,7 +1051,33 @@ import name.abuchen.portfolio.util.TextUtil;
         // do not fire model change -> called within modification listener
     }
 
+    /**
+     * Sorts the children of a node and fires an update notification.
+     */
     private void doSort(TaxonomyNode node, SortCriterion... criteria) // NOSONAR
+    {
+        sort(node, false, criteria);
+
+        getModel().markDirty();
+        getModel().fireTaxonomyModelChange(node);
+    }
+
+    /**
+     * Sorts the children of a node recursively and fires an update
+     * notification.
+     */
+    private void doSortRecursively(TaxonomyNode node, SortCriterion... criteria) // NOSONAR
+    {
+        sort(node, true, criteria);
+
+        getModel().markDirty();
+        getModel().fireTaxonomyModelChange(node);
+    }
+
+    /**
+     * Sorts the children of a node, but does not fire update notifications.
+     */
+    private void sort(TaxonomyNode node, boolean recursive, SortCriterion... criteria) // NOSONAR
     {
         Collections.sort(node.getChildren(), (node1, node2) -> { // NOSONAR
             // unassigned category always stays at the end of the list
@@ -1046,7 +1118,13 @@ import name.abuchen.portfolio.util.TextUtil;
         for (TaxonomyNode child : node.getChildren())
             child.setRank(rank++);
 
-        getModel().markDirty();
-        getModel().fireTaxonomyModelChange(node);
+        if (recursive)
+        {
+            for (var child : node.getChildren())
+            {
+                if (child.isClassification())
+                    sort(child, true, criteria);
+            }
+        }
     }
 }

@@ -4,6 +4,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -15,6 +16,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.skippedItem;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -28,6 +30,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
+import name.abuchen.portfolio.datatransfer.Extractor.SkippedItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -41,6 +44,7 @@ public class ExtractorMatchersTest
 {
     private static SecurityItem someSecurity;
     private static TransactionItem someTransactionItem;
+    private static SkippedItem someSkippedItem;
 
     @BeforeClass
     public static void setup()
@@ -65,9 +69,12 @@ public class ExtractorMatchersTest
         tx.setNote("test");
         tx.setShares(Values.Share.factorize(123));
         tx.setDateTime(LocalDateTime.parse("2023-04-30T12:45"));
+        tx.setExDate(LocalDateTime.parse("2023-04-28T00:00"));
         tx.setSecurity(s);
 
         someTransactionItem = new TransactionItem(tx);
+
+        someSkippedItem = new SkippedItem(someTransactionItem, "skip reason");
     }
 
     @Test(expected = AssertionError.class)
@@ -257,6 +264,48 @@ public class ExtractorMatchersTest
     public void testCurrencyCodeSuccess()
     {
         assertThat(List.of(someSecurity), hasItem(security(hasCurrencyCode("USD"))));
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testExDateFailure()
+    {
+        assertThat(List.of(someTransactionItem), hasItem(dividend(hasExDate("2023-01-01"))));
+    }
+
+    @Test
+    public void testExDateSuccess()
+    {
+        assertThat(List.of(someTransactionItem), hasItem(dividend(hasExDate("2023-04-28"))));
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testSkippedItemNotSkipped()
+    {
+        assertThat(List.of(someTransactionItem), hasItem(skippedItem("skip reason")));
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testSkippedItemWrongReasonFailure()
+    {
+        assertThat(List.of(someSkippedItem), hasItem(skippedItem("wrong reason")));
+    }
+
+    @Test
+    public void testSkippedItemReasonSuccess()
+    {
+        assertThat(List.of(someSkippedItem), hasItem(skippedItem("skip reason")));
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testSkippedItemWithInnerMatcherFailure()
+    {
+        assertThat(List.of(someSkippedItem), hasItem(skippedItem("skip reason", dividend(hasAmount("EUR", 999)))));
+    }
+
+    @Test
+    public void testSkippedItemWithInnerMatcherSuccess()
+    {
+        assertThat(List.of(someSkippedItem), hasItem(skippedItem("skip reason", dividend(hasAmount("EUR", 100)))));
     }
 
 }

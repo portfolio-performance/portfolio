@@ -1,0 +1,52 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+IvHxgT wsGrmev jUp KwbUEEMW vvsw beLZxytSwK - 07118471
+Trade Details Report
+Reporting period: 05-dec-2025 - 05-dec-2025
+Generated at: 25-dec-2025 12:02:19 12:02:19 (W. Europe Standard Time)
+PxvLtF nSjxWDY JXG ApzfnrHf nWLX qMcRsRjwcH Saxo Bank A/S BE Branch
+JyOQpIudv(MZN) 77 Italiëlei 124
+4358 KyFdehQM 2000 Antwerpen
+vC fduMVkh
+xRXQCtX
+Saxo Bank A/S BE Branch / Italiëlei 124 / 2000 Antwerpen / Belgium oMrfvm BZHhggm Ruf tRrLKUiH UdWu ubYDvhwOXI Reporting period
+Currency: EUR 05-dec-2025 - 05-dec-2025
+Page 1 of 3 Account(s): AutoInvest 14313/6420745OHu Generated at: 25-dec-2025
+Trade details, EUR
+Reporting period
+05-dec-2025 to 05-dec-2025
+ETF
+Instrument Amundi Core MSCI Japan (Acc) UCITS ETF Trade time 05-dec-2025 12:52:33
+ISIN LU1781541252 Value Date 09-dec-2025
+Symbol LCUJ:xetr Order ID 5073052313
+GOLDMAN SACHS BANK EUROPE SE -
+Exchange Description Trade ID 9047570613
+SYSTEMATIC INTERNALISER (GSEI)
+Primary Exchange Deutsche Börse (Indices & ETFs) Traded Value -38,12 EUR
+Venue Exchange Price 19,0585 EUR
+Order Type Market Order Quantity 2,00
+B/S Buy Spread Costs 0,00 EUR
+Open/Close OPEN Total Trading Costs -0,05 EUR
+Saxo is counterparty No
+Booking amount Amount Conversion cost Booked Amount
+Trade Date Value Date Conversion Rate
+ID EUR EUR EUR
+Share Amount 28048756444 05-dec-2025 09-dec-2025 -38,12 1,000000 0,00 -38,12
+Belgium Stock
+34162407488 05-dec-2025 09-dec-2025 -0,05 1,000000 0,00 -0,05
+Exchange 0.12%
+Saxo Bank A/S BE Branch / Italiëlei 124 / 2000 Antwerpen / Belgium pdrbqp mDRdBTh iqN Ybpjamfc epHT XNTDZwsIry Reporting period
+Currency: EUR 05-dec-2025 - 05-dec-2025
+Page 2 of 3 Account(s): AutoInvest 96705/1949777LzZ Generated at: 25-dec-2025
+Trade details, EUR
+Reporting period
+05-dec-2025 to 05-dec-2025
+Booking amount Amount Conversion cost Booked Amount
+Trade Date Value Date Conversion Rate
+ID EUR EUR EUR
+Net Amount - - - - - 0,00 -38,17
+Saxo Bank A/S BE Branch / Italiëlei 124 / 2000 Antwerpen / Belgium pbGJJJ ihBuSQV bUa xTEcVMNH HGGZ rOYiqVSeCn Reporting period
+Currency: EUR 05-dec-2025 - 05-dec-2025
+Page 3 of 3 Account(s): AutoInvest 28015/1364315eHm Generated at: 25-dec-2025

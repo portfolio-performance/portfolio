@@ -1,0 +1,37 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.2
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+   
+Merkurstraße 2 · 97762 Hammelburg
+Depotnummer 73405290
+ 
+ Kundennummer 240529000
+Max Mustermann
+ Auftragsnummer 292030/42.00
+MaxMustermann Datum 01.10.2025
+Blumenstraße. 53 Rechnungsnummer W06175-0000152995/25
+42289 Wuppertal Umsatzsteuer-ID DE198159260   
+ 
+Wertpapier Abrechnung Kauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 0,625 CANADIAN NATIONAL RAILWAY CO.      CA1363751027 (897879)
+REGISTERED SHARES O.N.             
+Handels-/Ausführungsplatz Außerbörslich
+Schlusstag/-Zeit 01.10.2025 09:36:10 Auftraggeber Max Mustermann
+Ausführungskurs 80,00 EUR Auftragserteilung/ -ort sonstige
+Wertpapierrechnung Lagerland Kanada
+Kurswert 50,00- EUR
+Ausmachender Betrag 50,00- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 03.10.2025 zu Lasten des Kontos 1405290 (IBAN DE95 7013 0800 0001 4052 90),
+BLZ 70130800 (BIC GENODEF1M06).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Ausf. erfolgte über Tradegate
+Ihr Aktiensparplan Nr.    2
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Initiator der Besprechung war der Kunde.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+6175.10011748.0002173OR07

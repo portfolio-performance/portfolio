@@ -1,0 +1,75 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.74.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Baader Bank AG   Weihenstephaner Straße 4   85716 Unterschleißheim Smartbroker AG
+T  00800 00 586336*   F  +49 89 5150 2442    service@baaderbank.de Ritterstraße 11
+10969 Berlin
+Seite 1/2
+Berlin
+hbiqtk ZqvPMxV 05.12.2024
+Günselstr. 81
+AzdgmQ qMfxcOk
+50092 OUtsmME PF 02
+Stamm-Nr.: 3232988    Portfolio: 2
+Depot-Nr.: 1671758833
+Vorgangs-Nr.: 37229865
+Referenz-Nr.: 672527254
+Dividendenabrechnung
+Ex-Tag: 27.09.2024
+Nominale ISIN: JP3481800005 WKN: 857771 Ausschüttung
+STK 0,867 Daikin Industries Ltd. JPY 185,00 p.STK
+Zahlungszeitraum: 01.04.2024 - 31.03.2025 
+Zahltag: 03.12.2024
+Umrechnungskurs: EUR/JPY 158,740
+Bruttobetrag JPY 160,00
+Bruttobetrag EUR 1,01
+Kapitalertragsteuer EUR 0,11 -
+Kirchensteuer EUR 0,02 -
+Quellensteuer EUR 0,16 -
+Zu Gunsten Konto 8387721176 Valuta: 03.12.2024 EUR 0,72
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+smartbrokerplus.de
+Brauchen Sie Unterstützung? Dann kontaktieren Sie bitte den Service von SMARTBROKER+ über das Kontaktformular in der SMARTBROKER+ App.
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 
+121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336*
+service@baaderbank.de DCUP-055.048
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+Dividendenabrechnung
+Fortsetzung: Seite 2/2
+Darstellung der steuerlichen Berechnungsgrundlagen:
+Merkposten / Steuertöpfe vorher Erhöhung/Reduktion nachher
+Kapitalertragsteuer EUR 483,14 EUR 0,25 EUR 483,39
+Kapitalertragsteuer EUR 483,39 EUR 0,14 - EUR 483,25
+Quellensteuer-Anrechnung
+angerechnete QueSt. allg. Erträge EUR 1,65 EUR 0,15 EUR 1,80
+Bemessungsgrundlagen Steuerpflicht brutto Steuerpflicht netto
+ausländische Dividende EUR 1,01 EUR 1,01
+Bemessungsgrundlage zur Kapitalertragsteuer bei 9% Kirchensteuer EUR 1,01 EUR 1,01
+Quellensteuer-Anrechnung bei 9% Kirchensteuer EUR 0,60 - EUR 0,60 -
+Bemessungsgrundlage zur Kapitalertragsteuer bei 9% Kirchensteuer
+Kapitalertragsteuer 24,45 % EUR 0,25 - EUR 0,25 -
+Kirchensteuer 9,00 % EUR 0,03 - EUR 0,03 -
+Solidaritätszuschlag 5,50 % EUR 0,01 - EUR 0,01 -
+Kapitalertragsteuer 24,45 % EUR 0,14 EUR 0,14
+Kirchensteuer 9,00 % EUR 0,01 EUR 0,01
+Solidaritätszuschlag 5,50 % EUR 0,01 EUR 0,01
+Quellensteuer 15,315 % EUR 0,16 - EUR 0,16 -
+rückforderbarer Steuerbetrag EUR 0,01 - EUR 0,01 -
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+smartbrokerplus.de
+Brauchen Sie Unterstützung? Dann kontaktieren Sie bitte den Service von SMARTBROKER+ über das Kontaktformular in der SMARTBROKER+ App.
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 
+121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336*
+service@baaderbank.de DCUP-055.048
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.

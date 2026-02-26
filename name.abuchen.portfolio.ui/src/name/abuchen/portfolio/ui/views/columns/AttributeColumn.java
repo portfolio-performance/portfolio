@@ -29,6 +29,7 @@ import name.abuchen.portfolio.model.LimitPrice;
 import name.abuchen.portfolio.model.LimitPriceSettings;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
@@ -445,6 +446,17 @@ public class AttributeColumn extends Column
 
                 LocalDate value = (LocalDate) attributable.getAttributes().get(attribute);
                 return value == null ? null : String.valueOf(ChronoUnit.DAYS.between(value, LocalDate.now()));
+            }
+
+            @Override
+            public String getToolTipText(Object element)
+            {
+                Attributable attributable = Adaptor.adapt(Attributable.class, element);
+                if (attributable == null)
+                    return null;
+
+                LocalDate value = (LocalDate) attributable.getAttributes().get(attribute);
+                return value == null ? null : Values.Date.format(value);
             }
         });
 

@@ -1,6 +1,7 @@
 <translations>
 	<defaultLanguage identifier="en" poeditor="en" />
 	<languages>
+		<language identifier="ca" poeditor="ca" />
 		<language identifier="cs" poeditor="cs" />
 		<language identifier="da" poeditor="da" />
 		<language identifier="de" poeditor="de" />
@@ -13,6 +14,8 @@
 		<language identifier="pt_BR" poeditor="pt-br" />
 		<language identifier="ru" poeditor="ru" />
 		<language identifier="sk" poeditor="sk" />
+		<language identifier="tr" poeditor="tr" />
+		<language identifier="vi" poeditor="vi" />
 		<language identifier="zh" poeditor="zh-Hans" />
 		<language identifier="zh_TW" poeditor="zh-TW" />
 	</languages>
@@ -99,6 +102,7 @@
 			<excludes>
 				<string>Bundle-Vendor</string>
 				<string>Bundle-Name</string>
+				<string>.*url</string>
 			</excludes>
 		</artifact>
 		<artifact>

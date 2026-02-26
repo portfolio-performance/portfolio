@@ -15,9 +15,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
-import org.swtchart.IBarSeries;
-import org.swtchart.ILineSeries;
-import org.swtchart.ISeries;
 
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
@@ -47,6 +44,7 @@ public class ClientDataSeriesChartWidget extends WidgetDelegate<PerformanceIndex
     private static final Color colorInvestedCapital = Colors.getColor(235, 201, 52); // #EBC934
     private static final Color colorAbsoluteInvestedCapital = Colors.getColor(235, 201, 52); // #EBC934
     private static final Color colorTransferals = Colors.DARK_GRAY;
+    private static final Color colorTransferalsAccumulated = Display.getDefault().getSystemColor(SWT.COLOR_YELLOW);
     private static final Color colorTaxes = Colors.RED;
     private static final Color colorTaxesAccumulated = Colors.RED;
     private static final Color colorAbsoluteDelta = Display.getDefault().getSystemColor(SWT.COLOR_BLUE);
@@ -69,6 +67,7 @@ public class ClientDataSeriesChartWidget extends WidgetDelegate<PerformanceIndex
     {
         TOTALS(Messages.LabelTotalSum), //
         TRANSFERALS(Messages.LabelTransferals), //
+        TRANSFERALS_ACCUMULATED(Messages.LabelAccumulatedTransferals), //
         INVESTED_CAPITAL(Messages.LabelInvestedCapital), //
         ABSOLUTE_INVESTED_CAPITAL(Messages.LabelAbsoluteInvestedCapital), //
         ABSOLUTE_DELTA(Messages.LabelDelta), //
@@ -185,7 +184,7 @@ public class ClientDataSeriesChartWidget extends WidgetDelegate<PerformanceIndex
 
             chart.getTitle().setText(title.getText());
 
-            for (ISeries s : chart.getSeriesSet().getSeries())
+            for (var s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
 
             chart.getAxisSet().getYAxis(0).getTick().setFormat(new ThousandsNumberFormat());
@@ -210,6 +209,13 @@ public class ClientDataSeriesChartWidget extends WidgetDelegate<PerformanceIndex
             {
                 double[] values = toDouble(index.getTransferals(), Values.Amount.divider());
                 addBarSerie(values, index.getDates(), colorTransferals, Messages.LabelTransferals);
+            }
+
+            if (metrics.contains(ClientDataSeriesType.TRANSFERALS_ACCUMULATED))
+            {
+                double[] values = accumulateAndToDouble(index.getTransferals(), Values.Amount.divider());
+                addLineSerie(values, index.getDates(), colorTransferalsAccumulated,
+                                Messages.LabelAccumulatedTransferals, true);
             }
 
             if (metrics.contains(ClientDataSeriesType.TAXES))
@@ -324,7 +330,7 @@ public class ClientDataSeriesChartWidget extends WidgetDelegate<PerformanceIndex
         String lineID = get(DataSeriesConfig.class).getDataSeries().getUUID() + label;
         label = label + " (" + get(DataSeriesConfig.class).getDataSeries().getLabel() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 
-        ILineSeries lineSeries = chart.addDateSeries(lineID, dates, values, color, label);
+        var lineSeries = chart.addDateSeries(lineID, dates, values, color, label);
         lineSeries.enableArea(showarea);
     }
 
@@ -333,7 +339,7 @@ public class ClientDataSeriesChartWidget extends WidgetDelegate<PerformanceIndex
         String lineID = get(DataSeriesConfig.class).getDataSeries().getUUID() + label;
         label = label + " (" + get(DataSeriesConfig.class).getDataSeries().getLabel() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 
-        IBarSeries barSeries = chart.addDateBarSeries(lineID, dates, values, label);
+        var barSeries = chart.addDateBarSeries(lineID, dates, values, label);
         barSeries.setBarColor(color);
     }
 }

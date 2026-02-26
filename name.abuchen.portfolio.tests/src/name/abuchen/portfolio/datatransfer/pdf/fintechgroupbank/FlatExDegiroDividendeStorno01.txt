@@ -1,0 +1,62 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.73.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+flatexDEGIRO Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 9221 7035898
+E-Mail: info@flatex.de
+flatexDEGIRO Bank AG -  Hammfelddamm 4 - 41460 Neuss, Deutschland
+6613798443247893795383
+Herrn
+hQpDcZkXC ZaT
+qkEdrZuqa Str. 6
+53985 jzZpaDn
+             Frankfurt, 09.01.2025
+Storno Ertragsmitteilung - ausschüttender/teilthesaurierender Fonds
+Ihre Depotnummer: 6380718789
+Depotinhaber    : ZaT, qhBRzIOWB
+Nr.1011111111                 ISHARES STOXX EUROPE 600 (DE0002635307/263530)  
+St.             :           105,21    Bruttoausschüttung
+                                      pro Stück          :       0,1900280 EUR
+Extag           :       16.12.2024    Bruttoausschüttung :           19,99 EUR
+Valuta          :       02.01.2025
+                                      Bemessungsgrundlage:            0,00 EUR
+                                     *Einbeh. Steuer     :            0,00 EUR
+Teilfreist.-satz:            30,00 %  Teilfreistellung   :            6,00 EUR
+                                      Endbetrag          :           19,99 EUR
+                                      Steuerkorrektur    :            0,00 EUR
+* Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                    Kapitalertragsteuer  :            0,00 EUR
+                                    Solidaritätszuschlag :            0,00 EUR
+                                    Kirchensteuer        :            0,00 EUR
+  Details dazu inkl. evtl. angerechneter ausländischer Quellensteuer finden
+  Sie im Steuerreport unter der Transaktion-Nr.: 1011111111.
+Die Verrechnung des gebuchten Betrages erfolgt über Ihr Konto Nr.: 1011111111.
+Fondsinformationen:
+steuerpflichtiger Ertrag                                 :           13,99 EUR
+   davon ausländische Erträge mit anrechenb. QSt         :            0,00 EUR
+         ausländische Erträge mit anrechenb. fikt. QSt   :            0,00 EUR
+anrechenbare ausländische Quellensteuer**                :            0,00 EUR
+**  ggf. mit einbeh. Steuer verrechnet und/oder Quellensteuer-Topf zugeführt
+Die  Gutschrift erfolgt  unter Vorbehalt  des  Eingangs.  Einwendungen  müssen
+unverzüglich  nach  Zugang  erhoben  werden.  Die  Unterlassung  rechtzeitiger
+Einwendung gilt als Genehmigung.
+Dieser   Beleg   ist    keine   Steuerbescheinigung.    Kapitalerträge   sind
+einkommensteuerpflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+ Stephan Simmang, Dr. Matthias Heinrich, Steffen Jentsch, Jens Möbitz
+2000004553533400 0113102640000102
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+ Stephan Simmang, Dr. Matthias Heinrich, Steffen Jentsch, Jens Möbitz
+2000004553533400 0113102640000202
+
+```

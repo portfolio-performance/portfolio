@@ -11,7 +11,6 @@ import com.google.common.primitives.Doubles;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.views.SecuritiesChart.ChartInterval;
 
 public class ExponentialMovingAverage
@@ -105,7 +104,7 @@ public class ExponentialMovingAverage
             datesEMA.add(date);
         }
 
-        result.setDates(TimelineChart.toJavaUtilDate(datesEMA.toArray(new LocalDate[0])));
+        result.setDates(datesEMA.toArray(new LocalDate[0]));
         result.setValues(Doubles.toArray(valuesEMA));
     }
 }

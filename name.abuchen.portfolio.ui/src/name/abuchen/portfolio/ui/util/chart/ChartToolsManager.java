@@ -1,8 +1,6 @@
 package name.abuchen.portfolio.ui.util.chart;
 
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -77,22 +75,25 @@ public class ChartToolsManager
         }
     }
 
-    record Spot(int time, LocalDate date, double xCoordinate, double valueYLeftAxis, double valueYRightAxis)
+    record Spot(int time, LocalDate date, double xCoordinate, double valueYAxis, double valueYPercentageAxis)
     {
         public static Spot from(Event e, TimelineChart chart)
         {
             double xCoordinate = chart.getAxisSet().getXAxis(0).getDataCoordinate(e.x);
-            LocalDate date = Instant.ofEpochMilli((long) xCoordinate).atZone(ZoneId.systemDefault()).toLocalDate();
-            double valueYLeftAxis = chart.getAxisSet().getYAxis(2).getDataCoordinate(e.y);
-            double valueYRightAxis = chart.getAxisSet().getYAxis(0).getDataCoordinate(e.y);
+            LocalDate date = LocalDate.ofEpochDay((long) xCoordinate);
 
-            return new Spot(e.time, date, xCoordinate, valueYLeftAxis, valueYRightAxis);
+            double valueYAxis = chart.getAxisSet().getYAxis(0).getDataCoordinate(e.y);
+
+            var percentageAxis = chart.getAxisSet().getYAxis(2);
+            double valueYPercentageAxis = percentageAxis == null ? 0 : percentageAxis.getDataCoordinate(e.y);
+
+            return new Spot(e.time, date, xCoordinate, valueYAxis, valueYPercentageAxis);
         }
 
         public Point toPoint(TimelineChart chart)
         {
             return new Point(chart.getAxisSet().getXAxis(0).getPixelCoordinate(xCoordinate),
-                            chart.getAxisSet().getYAxis(0).getPixelCoordinate(valueYRightAxis));
+                            chart.getAxisSet().getYAxis(0).getPixelCoordinate(valueYAxis));
         }
     }
 
@@ -106,11 +107,11 @@ public class ChartToolsManager
     public ChartToolsManager(TimelineChart chart)
     {
         this.chart = chart;
-        chart.getPlotArea().addListener(SWT.MouseDown, this::onMouseDown);
-        chart.getPlotArea().addListener(SWT.MouseMove, this::onMouseMove);
-        chart.getPlotArea().addListener(SWT.MouseUp, this::onMouseUp);
+        chart.getPlotArea().getControl().addListener(SWT.MouseDown, this::onMouseDown);
+        chart.getPlotArea().getControl().addListener(SWT.MouseMove, this::onMouseMove);
+        chart.getPlotArea().getControl().addListener(SWT.MouseUp, this::onMouseUp);
 
-        chart.getPlotArea().addPaintListener(this::paintControl);
+        chart.getPlotArea().getControl().addPaintListener(this::paintControl);
     }
 
     private void onMouseDown(Event e)

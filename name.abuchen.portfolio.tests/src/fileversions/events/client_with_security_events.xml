@@ -1,0 +1,257 @@
+<client>
+  <version>65</version>
+  <baseCurrency>EUR</baseCurrency>
+  <securities>
+    <security>
+      <uuid>987f74dd-2308-4b6b-a5b8-4918e3a73d95</uuid>
+      <name>Instrument 1</name>
+      <currencyCode>EUR</currencyCode>
+      <prices/>
+      <latest t="2024-08-05" v="10">
+        <high>0</high>
+        <low>0</low>
+        <volume>0</volume>
+      </latest>
+      <attributes>
+        <map/>
+      </attributes>
+      <events>
+        <event>
+          <date>2024-08-24</date>
+          <type>NOTE</type>
+          <details>custom event</details>
+        </event>
+        <event>
+          <date>2024-08-01</date>
+          <type>STOCK_SPLIT</type>
+          <details>10:1</details>
+        </event>
+      </events>
+      <isRetired>false</isRetired>
+      <updatedAt>2024-08-24T05:18:47.263523Z</updatedAt>
+    </security>
+    <security>
+      <uuid>35b3ba7d-20f4-45be-8804-9d5778f40b52</uuid>
+      <onlineId>dc174e30a87c4364923261bffa65ad44</onlineId>
+      <name>Instrument 2</name>
+      <currencyCode>EUR</currencyCode>
+      <isin>DE0007164600</isin>
+      <wkn>716460</wkn>
+      <prices/>
+      <latest t="2024-08-05" v="10">
+        <high>0</high>
+        <low>0</low>
+        <volume>0</volume>
+      </latest>
+      <attributes>
+        <map/>
+      </attributes>
+      <events>
+        <dividendEvent>
+          <date>2024-05-16</date>
+          <type>DIVIDEND_PAYMENT</type>
+          <source>divvydiary.com</source>
+          <paymentDate>2024-05-21</paymentDate>
+          <amount currency="EUR" amount="220"/>
+        </dividendEvent>
+        <dividendEvent>
+          <date>2023-05-12</date>
+          <type>DIVIDEND_PAYMENT</type>
+          <source>divvydiary.com</source>
+          <paymentDate>2023-05-16</paymentDate>
+          <amount currency="EUR" amount="205"/>
+        </dividendEvent>
+        <dividendEvent>
+          <date>2022-05-19</date>
+          <type>DIVIDEND_PAYMENT</type>
+          <source>divvydiary.com</source>
+          <paymentDate>2022-05-23</paymentDate>
+          <amount currency="EUR" amount="245"/>
+        </dividendEvent>
+        <dividendEvent>
+          <date>2021-05-13</date>
+          <type>DIVIDEND_PAYMENT</type>
+          <source>divvydiary.com</source>
+          <paymentDate>2021-05-18</paymentDate>
+          <amount currency="EUR" amount="185"/>
+        </dividendEvent>
+        <dividendEvent>
+          <date>2020-05-21</date>
+          <type>DIVIDEND_PAYMENT</type>
+          <source>divvydiary.com</source>
+          <paymentDate>2020-05-26</paymentDate>
+          <amount currency="EUR" amount="158"/>
+        </dividendEvent>
+        <dividendEvent>
+          <date>2019-05-16</date>
+          <type>DIVIDEND_PAYMENT</type>
+          <source>divvydiary.com</source>
+          <paymentDate>2019-05-20</paymentDate>
+          <amount currency="EUR" amount="150"/>
+        </dividendEvent>
+        <dividendEvent>
+          <date>2018-05-18</date>
+          <type>DIVIDEND_PAYMENT</type>
+          <source>divvydiary.com</source>
+          <paymentDate>2018-05-22</paymentDate>
+          <amount currency="EUR" amount="140"/>
+        </dividendEvent>
+        <dividendEvent>
+          <date>2017-05-11</date>
+          <type>DIVIDEND_PAYMENT</type>
+          <source>divvydiary.com</source>
+          <paymentDate>2017-05-15</paymentDate>
+          <amount currency="EUR" amount="125"/>
+        </dividendEvent>
+        <dividendEvent>
+          <date>2016-05-13</date>
+          <type>DIVIDEND_PAYMENT</type>
+          <source>divvydiary.com</source>
+          <paymentDate>2016-05-13</paymentDate>
+          <amount currency="EUR" amount="115"/>
+        </dividendEvent>
+        <dividendEvent>
+          <date>2015-05-21</date>
+          <type>DIVIDEND_PAYMENT</type>
+          <source>divvydiary.com</source>
+          <paymentDate>2015-05-21</paymentDate>
+          <amount currency="EUR" amount="110"/>
+        </dividendEvent>
+        <dividendEvent>
+          <date>2014-05-22</date>
+          <type>DIVIDEND_PAYMENT</type>
+          <source>divvydiary.com</source>
+          <paymentDate>2014-05-22</paymentDate>
+          <amount currency="EUR" amount="100"/>
+        </dividendEvent>
+        <dividendEvent>
+          <date>2013-06-05</date>
+          <type>DIVIDEND_PAYMENT</type>
+          <source>divvydiary.com</source>
+          <paymentDate>2013-06-05</paymentDate>
+          <amount currency="EUR" amount="85"/>
+        </dividendEvent>
+        <dividendEvent>
+          <date>2012-05-24</date>
+          <type>DIVIDEND_PAYMENT</type>
+          <source>divvydiary.com</source>
+          <paymentDate>2012-05-24</paymentDate>
+          <amount currency="EUR" amount="110"/>
+        </dividendEvent>
+        <dividendEvent>
+          <date>2011-05-26</date>
+          <type>DIVIDEND_PAYMENT</type>
+          <source>divvydiary.com</source>
+          <paymentDate>2011-05-26</paymentDate>
+          <amount currency="EUR" amount="60"/>
+        </dividendEvent>
+        <dividendEvent>
+          <date>2010-06-09</date>
+          <type>DIVIDEND_PAYMENT</type>
+          <source>divvydiary.com</source>
+          <paymentDate>2010-06-09</paymentDate>
+          <amount currency="EUR" amount="50"/>
+        </dividendEvent>
+        <dividendEvent>
+          <date>2009-05-20</date>
+          <type>DIVIDEND_PAYMENT</type>
+          <source>divvydiary.com</source>
+          <paymentDate>2009-05-20</paymentDate>
+          <amount currency="EUR" amount="50"/>
+        </dividendEvent>
+        <dividendEvent>
+          <date>2008-06-04</date>
+          <type>DIVIDEND_PAYMENT</type>
+          <source>divvydiary.com</source>
+          <paymentDate>2008-06-04</paymentDate>
+          <amount currency="EUR" amount="50"/>
+        </dividendEvent>
+        <dividendEvent>
+          <date>2007-05-11</date>
+          <type>DIVIDEND_PAYMENT</type>
+          <source>divvydiary.com</source>
+          <paymentDate>2007-05-11</paymentDate>
+          <amount currency="EUR" amount="46"/>
+        </dividendEvent>
+        <dividendEvent>
+          <date>2006-05-11</date>
+          <type>DIVIDEND_PAYMENT</type>
+          <source>divvydiary.com</source>
+          <paymentDate>2006-05-11</paymentDate>
+          <amount currency="EUR" amount="36"/>
+        </dividendEvent>
+        <dividendEvent>
+          <date>2005-05-13</date>
+          <type>DIVIDEND_PAYMENT</type>
+          <source>divvydiary.com</source>
+          <paymentDate>2005-05-13</paymentDate>
+          <amount currency="EUR" amount="28"/>
+        </dividendEvent>
+        <dividendEvent>
+          <date>2004-05-07</date>
+          <type>DIVIDEND_PAYMENT</type>
+          <source>divvydiary.com</source>
+          <paymentDate>2004-05-07</paymentDate>
+          <amount currency="EUR" amount="20"/>
+        </dividendEvent>
+      </events>
+      <isRetired>false</isRetired>
+      <updatedAt>2024-08-24T05:18:47.263523Z</updatedAt>
+    </security>
+  </securities>
+  <watchlists/>
+  <accounts/>
+  <portfolios/>
+  <plans/>
+  <taxonomies/>
+  <dashboards/>
+  <properties/>
+  <settings>
+    <bookmarks/>
+    <attributeTypes/>
+    <configurationSets>
+      <entry>
+        <string>name.abuchen.portfolio.ui.views.SecuritiesTable</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>a52f65cb-a611-4d79-be43-0b461b16335e</uuid>
+              <name>Standard</name>
+              <data></data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+      <entry>
+        <string>reporting-periods</string>
+        <config-set>
+          <configurations/>
+        </config-set>
+      </entry>
+      <entry>
+        <string>name.abuchen.portfolio.ui.views.StatementOfAssetsViewer</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>42753471-11af-41e2-bcdf-d3f92dbf5295</uuid>
+              <name>Standard</name>
+              <data>{&quot;items&quot;:[{&quot;id&quot;:&quot;0&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;1&quot;,&quot;width&quot;:300},{&quot;id&quot;:&quot;2&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;4&quot;,&quot;width&quot;:60},{&quot;id&quot;:&quot;5&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;6&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;note&quot;,&quot;width&quot;:200}]}</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+      <entry>
+        <string>client-filter-definitions</string>
+        <config-set>
+          <configurations/>
+        </config-set>
+      </entry>
+      <entry>
+        <string>client-filter-selection</string>
+        <config-set>
+          <configurations/>
+        </config-set>
+      </entry>
+    </configurationSets>
+  </settings>
+</client>

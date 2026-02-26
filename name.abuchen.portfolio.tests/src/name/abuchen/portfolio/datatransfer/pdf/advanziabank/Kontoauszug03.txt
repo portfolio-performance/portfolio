@@ -1,0 +1,33 @@
+```
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.4.qualifier
+System: win32 | x86_64 | 21.0.8+9-LTS | Azul Systems, Inc.
+-----------------------------------------
+Munsbach, 4. August 2025
+Kontoauszug Advanziakonto: 132189116
+Valutadatum Buchungstag Beschreibung Betrag (EUR)
+01.07.2025 ALTER SALDO 82.536,92
+03.07.2025 04.07.2025 EINZAHLUNG 190,00
+03.07.2025 04.07.2025 EINZAHLUNG 562,00
+28.07.2025 28.07.2025 AUSZAHLUNG -340,00
+31.07.2025 31.07.2025 ZINSERTRAG 123,66
+31.07.2025 NEUER SALDO 83.072,58
+Der aktuelle Zinssatz auf Ihrem Advanziakonto beträgt 1,51 % p.a. effektiv (1,5000 % nom.).
+Überweisen Sie bitte unter folgenden Angaben:
+Begünstigter: Ihr Vor- und Nachname
+Kreditinstitut: Advanzia Bank S.A.
+IBAN: LU933441321651966167 – BIC: ADVZLULL
+Verwendungszweck: 4895657002494
+Im Allgemeinen sind alle Einleger durch das Luxemburger Einlagensicherungssystem abgesichert. Für bestimmte
+Einlagen gelten Ausnahmen, die auf der Webseite des Fonds de garantie des dépôts (FGDL) aufgeführt sind. Auf
+Anfrage teilt die Advanzia Bank S.A. Ihnen ebenfalls mit, ob bestimmte Produkte unter die Sicherung fallen oder
+nicht.
+Die Jahreszinsbescheinigung finden Sie im Kundenportal unter der Rubrik "Auszüge".
+Bitte beachten Sie, dass unser telefonischer Kundenservice am 15. August 2025 vorübergehend nicht erreichbar
+ist.
+Advanzia Bank S.A.
+Gesetzliche Vertreter: Nishant Fafalia, Kaj Larsen, Patrick Thilges 14, rue Gabriel Lippmann L-5365 Munsbach
+Luxembourg
+RCS Lux: B 109 476 VAT: LU 93621979 advanziakonto.com
+
+```

@@ -12,12 +12,18 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 
+import name.abuchen.portfolio.datatransfer.Extractor.AccountTransferItem;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
+import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.PortfolioTransferItem;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
+import name.abuchen.portfolio.datatransfer.Extractor.SkippedItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
@@ -131,6 +137,50 @@ public class ExtractorMatchers
         }
     }
 
+    private static class TransactionSecurityMatcher extends TypeSafeDiagnosingMatcher<Transaction>
+    {
+        private Matcher<Security>[] properties;
+
+        public TransactionSecurityMatcher(Matcher<Security>[] properties)
+        {
+            this.properties = properties;
+        }
+
+        @Override
+        protected boolean matchesSafely(Transaction transaction, Description mismatchDescription)
+        {
+            var security = transaction.getSecurity();
+            if (security == null)
+            {
+                mismatchDescription.appendText("\n* has no 'security'"); //$NON-NLS-1$
+                return false;
+            }
+
+            for (var property : properties)
+            {
+                if (!property.matches(security))
+                {
+                    mismatchDescription.appendText("\n* a security with "); //$NON-NLS-1$
+                    property.describeMismatch(security, mismatchDescription);
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        @Override
+        public void describeTo(Description description)
+        {
+            description.appendText("security with:"); //$NON-NLS-1$
+            for (var p : properties)
+            {
+                description.appendText("\n   - "); //$NON-NLS-1$
+                p.describeTo(description);
+            }
+        }
+    }
+
     private static class FailureMessageItemMatcher extends TypeSafeDiagnosingMatcher<Extractor.Item>
     {
         private String message;
@@ -177,6 +227,89 @@ public class ExtractorMatchers
     public static Matcher<Extractor.Item> withFailureMessage(String message, Matcher<Extractor.Item> matcher)
     {
         return new FailureMessageItemMatcher(message, matcher);
+    }
+
+    private static class SkippedItemMatcher extends TypeSafeDiagnosingMatcher<Extractor.Item>
+    {
+        private String skipReason;
+        private Matcher<Extractor.Item> matcher;
+
+        public SkippedItemMatcher(String skipReason, Matcher<Extractor.Item> matcher)
+        {
+            this.skipReason = skipReason;
+            this.matcher = matcher;
+        }
+
+        @Override
+        protected boolean matchesSafely(Extractor.Item item, Description mismatchDescription)
+        {
+            if (!item.isSkipped())
+            {
+                mismatchDescription.appendText("\n* item is not skipped"); //$NON-NLS-1$
+                return false;
+            }
+
+            var skipped = (SkippedItem) item;
+            if (!Objects.equals(skipReason, skipped.getSkipReason()))
+            {
+                mismatchDescription.appendText(
+                                MessageFormat.format("\n* skip reason is ''{0}''", skipped.getSkipReason())); //$NON-NLS-1$
+                return false;
+            }
+
+            if (matcher != null)
+            {
+                var original = skipped.getOriginalItem();
+                if (!matcher.matches(original))
+                {
+                    matcher.describeMismatch(original, mismatchDescription);
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        @Override
+        public void describeTo(Description description)
+        {
+            description.appendText(MessageFormat.format("a skipped item with reason ''{0}''", skipReason)); //$NON-NLS-1$
+            if (matcher != null)
+            {
+                description.appendText(" and "); //$NON-NLS-1$
+                matcher.describeTo(description);
+            }
+        }
+    }
+
+    public static Matcher<Extractor.Item> skippedItem(String skipReason)
+    {
+        return new SkippedItemMatcher(skipReason, null);
+    }
+
+    public static Matcher<Extractor.Item> skippedItem(String skipReason, Matcher<Extractor.Item> matcher)
+    {
+        return new SkippedItemMatcher(skipReason, matcher);
+    }
+
+    public static Matcher<Extractor.Item> hasAccount(Account account)
+    {
+        return new PropertyMatcher<>("primary account", account, Item::getAccountPrimary); //$NON-NLS-1$
+    }
+
+    public static Matcher<Extractor.Item> hasSecondaryAccount(Account account)
+    {
+        return new PropertyMatcher<>("secondary account", account, Item::getAccountSecondary); //$NON-NLS-1$
+    }
+
+    public static Matcher<Extractor.Item> hasPortfolio(Portfolio portfolio)
+    {
+        return new PropertyMatcher<>("primary portfolio", portfolio, Item::getPortfolioPrimary); //$NON-NLS-1$
+    }
+
+    public static Matcher<Extractor.Item> hasSecondaryPortfolio(Portfolio portfolio)
+    {
+        return new PropertyMatcher<>("secondary portfolio", portfolio, Item::getPortfolioSecondary); //$NON-NLS-1$
     }
 
     @SafeVarargs
@@ -234,6 +367,28 @@ public class ExtractorMatchers
     }
 
     @SafeVarargs
+    public static Matcher<Extractor.Item> inboundCash(Matcher<Transaction>... properties)
+    {
+        return new ExtractorItemMatcher<Transaction>("cash transfer", //$NON-NLS-1$
+                        item -> item instanceof AccountTransferItem transfer //
+                                        && transfer.getSubject() instanceof AccountTransferEntry entry
+                                                        ? entry.getTargetTransaction()
+                                                        : null, //
+                        properties);
+    }
+
+    @SafeVarargs
+    public static Matcher<Extractor.Item> outboundCash(Matcher<Transaction>... properties)
+    {
+        return new ExtractorItemMatcher<Transaction>("cash transfer", //$NON-NLS-1$
+                        item -> item instanceof AccountTransferItem transfer //
+                                        && transfer.getSubject() instanceof AccountTransferEntry entry
+                                                        ? entry.getSourceTransaction()
+                                                        : null, //
+                        properties);
+    }
+
+    @SafeVarargs
     public static Matcher<Extractor.Item> purchase(Matcher<Transaction>... properties)
     {
         return new ExtractorItemMatcher<Transaction>("purchase", //$NON-NLS-1$
@@ -288,6 +443,12 @@ public class ExtractorMatchers
                         properties);
     }
 
+    @SafeVarargs
+    public static Matcher<Transaction> hasSecurity(Matcher<Security>... properties)
+    {
+        return new TransactionSecurityMatcher(properties);
+    }
+
     public static Matcher<Transaction> hasDate(String dateString)
     {
         LocalDateTime expectecd = dateString.contains("T") //$NON-NLS-1$
@@ -297,6 +458,17 @@ public class ExtractorMatchers
         return new PropertyMatcher<>("date", //$NON-NLS-1$
                         expectecd, //
                         Transaction::getDateTime);
+    }
+
+    public static Matcher<Transaction> hasExDate(String dateString)
+    {
+        var expected = dateString.contains("T") //$NON-NLS-1$
+                        ? LocalDateTime.parse(dateString)
+                        : LocalDate.parse(dateString).atStartOfDay();
+
+        return new PropertyMatcher<>("exDate", //$NON-NLS-1$
+                        expected, //
+                        t -> ((AccountTransaction) t).getExDate());
     }
 
     public static Matcher<Transaction> hasShares(double value)

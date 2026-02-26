@@ -9,6 +9,8 @@ import jakarta.inject.Inject;
 import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.preference.IPreferenceStore;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
@@ -45,6 +47,16 @@ public class DashboardData
 
     private Dashboard dashboard;
 
+    @VisibleForTesting
+    public DashboardData(Client client)
+    {
+        this.client = client;
+        this.preferences = null;
+        this.stylingEngine = null;
+        this.factory = new ExchangeRateProviderFactory(client);
+        this.converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
+    }
+
     @Inject
     public DashboardData(Client client, IPreferenceStore preferences, IStylingEngine stylingEngine,
                     ExchangeRateProviderFactory factory, DataSeriesCache dataSeriesCache)
@@ -63,6 +75,7 @@ public class DashboardData
     {
         return client;
     }
+
     public IPreferenceStore getPreferences()
     {
         return preferences;

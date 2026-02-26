@@ -78,7 +78,7 @@ import name.abuchen.portfolio.ui.util.DesktopAPI;
                         .map(b -> new BookmarkElement(b, security)) //
                         .forEach(answer::add);
 
-        security.getSecurity().getCustomBookmarks()//
+        security.getSecurity().getCustomBookmarks(client) //
                         .map(bm -> new BookmarkElement(bm, security)) //
                         .forEach(answer::add);
 

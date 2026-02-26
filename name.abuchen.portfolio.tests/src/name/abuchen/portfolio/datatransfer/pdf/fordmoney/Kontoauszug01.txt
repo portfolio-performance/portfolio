@@ -1,0 +1,80 @@
+```
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.80.5.qualifier
+System: macosx | aarch64 | 21.0.2+13-LTS | Amazon.com Inc.
+-----------------------------------------
+Ford Bank GmbH
+Postanschrift Ford Money
+Ford Bank GmbH
+Postfach 45 04 08
+50879 Köln
+Telefon +49 (0) 221 - 5000 9810
+E-Mail kontakt@fordmoney.de
+Postfach 45 04 08, 50879 Köln
+Online-Service www.fordmoney.de
+Service-Zeiten Mo - Do 08.00 - 20.00 Uhr
+Fr 08.00 - 18.30 Uhr
+Herrn
+Sa 09.00 - 14.00 Uhr
+ykKUBQSL QbmcSYRXrkzH
+kHOnjdWsHZRpIr. 67
+56332 FYgYQK
+Bankverbindung
+BIC
+LRFSDE31XXX
+Kundennummer Kontonummer Datum IBAN
+8851205548 8550388165 31.10.2024 OX89 1491 7219 9898 8311 58
+Tagesgeld Kontoauszug 10 / 2024
+Buchungs- Valuta- Buchungstext Betrag
+datum datum in EUR
+Alter Saldo vom 30.09.2024 7.645,51
+04.10.2024 04.10.2024 Gutschrift 1.000,00
+Keine Angabe
+CBXXX
+6M3XXX
+DEXXX
+COXXX
+JIedyFzm dUGMHyWFZwKeA
+25.10.2024 25.10.2024 Überweisung -2.000,00
+Uebertrag auf Referenzkonto
+DEXXX
+COXXX
+NoKkaWAkUyVjM,bpztbyPb
+31.10.2024 31.10.2024 Abschluss 85,61
+31.10.2024 31.10.2024 Abschluss 62,73
+31.10.2024 31.10.2024 Kapitalertragssteuer -37,09
+31.10.2024 31.10.2024 Solidaritätszuschlag -2,03
+Neuer Saldo vom 31.10.2024 8.754,73
+Der ausgewiesene Kontosaldo kann durch abweichende Wertstellung (Valuta) vom wertmäßigen Kontostand
+abweichen. Die Wertstellung von Buchungen ist auch relevant für die Berechnung von Zinsen.
+Abschluss für Konto XXX
+Zinsen vom 30.09.2024 bis 31.10.2024 Steuern vom 30.09.2024 bis 31.10.2024
+Habenzinsen Betrag in EUR Steuer Betrag in EUR
+2,65 % p.a. 85,61 Kapitalertragsteuer -37,09
+2,35 % p.a. 62,73 Solidaritätszuschlag -2,03
+Summe 148,34 Kirchensteuer 0,00
+Summe -39,12
+Bitte beachten Sie die nachstehenden Hinweise:
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere
+Informationen können dem „Informationsbogen für den Einleger“ entnommen werden.
+Seite 1 von 2
+Ford Bank GmbH Geschäftsführer: Vorsitzende des Aufsichtsrates: Registergericht Köln, HRB 91249
+Henry-Ford-Straße 1 Thomas Pleuhs, Kai-Uwe Struppek, Eliane Okamura Steuernummer: 217/5731/0282
+50735 Köln Anno Kurth Sitz der Gesellschaft: Köln USt.-Ident.-Nr.: DE316994847
+FMID2002 FMMO1001
+April 2024 März 2024
+Bitte prüfen Sie diesen Kontoauszug auf seine Richtigkeit.
+Einwendungen gegen die Richtigkeit und Vollständigkeit dieser Kontoübersicht mit Rechnungsabschluss sind
+spätestens vor Ablauf von sechs Wochen nach Erhalt gegenüber der Ford Bank GmbH geltend zu machen.
+Nach Ablauf dieser Frist gilt die Kontoübersicht als genehmigt.
+Einwendungen richten Sie bitte schriftlich an die oben genannte Anschrift der Ford Bank GmbH oder
+kontaktieren Sie uns optional über kontakt@fordmoney.de.
+- Dieses Schreiben wurde maschinell erstellt und ist auch ohne Unterschrift wirksam. -
+Seite 2 / 2 zum Schreiben vom 31.10.2024, Kontonummer XXX
+Ford Bank GmbH Geschäftsführer: Vorsitzende des Aufsichtsrates: Registergericht Köln, HRB 91249
+Henry-Ford-Straße 1 Thomas Pleuhs, Kai-Uwe Struppek, Eliane Okamura Steuernummer: 217/5731/0282
+50735 Köln Anno Kurth Sitz der Gesellschaft: Köln USt.-Ident.-Nr.: DE316994847
+FMID2002 FMMO1001
+April 2024 März 2024
+
+```

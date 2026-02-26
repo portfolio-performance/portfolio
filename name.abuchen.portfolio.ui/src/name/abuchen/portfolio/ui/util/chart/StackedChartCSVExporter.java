@@ -10,7 +10,7 @@ import java.text.NumberFormat;
 
 import org.apache.commons.csv.CSVPrinter;
 import org.eclipse.swt.widgets.Shell;
-import org.swtchart.ISeries;
+import org.eclipse.swtchart.ISeries;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
@@ -43,11 +43,11 @@ public class StackedChartCSVExporter extends AbstractCSVExporter
         try (CSVPrinter printer = new CSVPrinter(
                         new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8), STRATEGY))
         {
-            ISeries[] series = stackedchart.getSeriesSet().getSeries();
+            var series = stackedchart.getSeriesSet().getSeries();
 
             // write header
             printer.print(Messages.ColumnDate);
-            for (ISeries s : series)
+            for (var s : series)
                 printer.print(s.getDescription() != null ? s.getDescription() : s.getId());
             printer.println();
 
@@ -80,7 +80,7 @@ public class StackedChartCSVExporter extends AbstractCSVExporter
     {
         private double[] values;
 
-        public DefaultAdapter(ISeries series)
+        public DefaultAdapter(ISeries<?> series)
         {
             this.values = series.getYSeries();
         }

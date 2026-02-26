@@ -31,6 +31,7 @@ public class ColoredLabel extends Canvas // NOSONAR
 
     private Color textColor;
     private Color backdropColor;
+    private Color secondaryTriangleColor;
 
     public ColoredLabel(Composite parent, int style)
     {
@@ -61,6 +62,11 @@ public class ColoredLabel extends Canvas // NOSONAR
         this.backdropColor = color;
     }
 
+    public void setSecondaryTriangleColor(Color color)
+    {
+        this.secondaryTriangleColor = color;
+    }
+
     @Override
     public Point computeSize(int wHint, int hHint, boolean changed)
     {
@@ -84,6 +90,12 @@ public class ColoredLabel extends Canvas // NOSONAR
 
         e.gc.setBackground(background);
         e.gc.fillRectangle(bounds.x, bounds.y, bounds.width, bounds.height);
+
+        if (secondaryTriangleColor != null)
+        {
+            e.gc.setBackground(secondaryTriangleColor);
+            GCUtil.drawBottomRightTriangleOverlay(e.gc, bounds);
+        }
 
         if (text != null)
         {

@@ -1,0 +1,70 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.73.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+ Allgemeine Fragen zu Ihrer
+VISA Card beantwortet Ihnen: 
+Tel. Inland: 01803 / 120 300*, 
+Tel. Ausland: + 49 30 / 330 234 44
+DEUTSCHE KREDITBANK, AKTIENGESELLSCHAFT, TAUBENSTR. 7-9, 10117 BERLIN Fax: 0331 / 290 33 44, E-Mail: info@dkb.de
+Bei Kartenverlust wählen Sie bitte: 
+Tel.: + 49 (0) 1803 / 123 555* 
+*Festnetz 9 ct/Min.; Abweichungen bei Mobilfunk möglich
+Herrn 
+Max Muster 
+Musterstr. 2 
+12345 Musterhausen 
+ 
+ 
+Abrechnung: Februar 2009
+Ihre Abrechnung vom 22.01.2009 bis 20.02.2009 Abrechnungsdatum: 20. Februar 2009
+VISA Card-Nummer: 4907 62XX XXXX 1084
+Seite 1 von 2 Karteninhaber: Max Muster 
+Beleg- Eingang Angabe des Unternehmens / Währung Betrag Kurs Betrag in
+datum Verwendungszweck EUR
+22.01.09 Saldo letzte Abrechnung 20.150,19+
+26.01.09 26.01.09 Auszahlung 18.500,00 -
+03.02.09 03.02.09 Auszahlung 550,00 -
+04.02.09 04.02.09 Auszahlung 300,00 -
+20.02.09 20.02.09 Einzahlung 17.700,00+
+20.02.09 21.02.09 Habenzins auf 29 Tage 11,19+
+Neuer Saldo 18.511,38+
+Sehr geehrter Herr Max Muster,
+bitte prüfen Sie diese Abrechnung/Saldenmitteilung auf ihre Richtigkeit. Etwaige Einwendungen müssen dem Institut innerhalb von 
+4 Wochen nach Zugang dieser Abrechnung/Saldenmitteilung schriftlich mitgeteilt werden. Nach Ablauf dieser Frist gilt der Saldo als
+von Ihnen anerkannt.
+Zinssatz für die Guthabenverzinsung von derzeit 3,80% p.a. ab dem ersten Euro.
+ Allgemeine Fragen zu Ihrer
+VISA Card beantwortet Ihnen: 
+Tel. Inland: 01803 / 120 300*, 
+Tel. Ausland: + 49 30 / 330 234 44
+DEUTSCHE KREDITBANK, AKTIENGESELLSCHAFT, TAUBENSTR. 7-9, 10117 BERLIN Fax: 0331 / 290 33 44, E-Mail: info@dkb.de
+Bei Kartenverlust wählen Sie bitte: 
+Tel.: + 49 (0) 1803 / 123 555* 
+*Festnetz 9 ct/Min.; Abweichungen bei Mobilfunk möglich
+Herrn 
+Max Muster 
+Musterstr. 2 
+12345 Musterhausen 
+ 
+ 
+Abrechnung: Februar 2009
+Ihre Abrechnung vom 22.01.2009 bis 20.02.2009 Abrechnungsdatum: 20. Februar 2009
+VISA Card-Nummer: 4907 62XX XXXX 1084
+Seite 2 von 2 Karteninhaber: Max Muster 
+Das Guthaben wird mit der Hinweis:  weiteren Verwendung der
+Kreditkarte verrechnet Über Zinsen und Gebühren informieren auch der Preisaushang .
+und das Preisverzeichnis, die Sie online unter www.dkb.de
+Das monatliche Kartenlimit Ihrer VISA Card beträgt 100 abrufen können.   
+EUR. Umsatzsteuernummer: DE137178746
+ 
+Kontoverbindung bei Einzahlungen:
+Empfänger: Deutsche Kreditbank AG
+Konto: 1999333
+Bankleitzahl: 12030000
+Kreditinstitut: Deutsche Kreditbank AG
+Verwendungszweck: Ihre 16-stellige VISA Card-Nummer
+ 
+
+```

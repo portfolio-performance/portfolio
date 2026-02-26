@@ -16,26 +16,34 @@ import java.util.stream.Stream;
 import jakarta.inject.Inject;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.e4.ui.services.IStylingEngine;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Display;
 
+import name.abuchen.portfolio.bootstrap.BundleMessages;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.model.TaxonomyJSONExporter;
 import name.abuchen.portfolio.model.TaxonomyTemplate;
 import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.handlers.UpdateQuotesHandler;
 import name.abuchen.portfolio.ui.util.CommandAction;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
+import name.abuchen.portfolio.ui.util.JSONExporterDialog;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.swt.ActiveShell;
 import name.abuchen.portfolio.ui.views.AccountListView;
 import name.abuchen.portfolio.ui.views.AllTransactionsView;
 import name.abuchen.portfolio.ui.views.BrowserTestView;
+import name.abuchen.portfolio.ui.views.GroupedAccountsListView;
 import name.abuchen.portfolio.ui.views.InvestmentPlanListView;
 import name.abuchen.portfolio.ui.views.PerformanceChartView;
 import name.abuchen.portfolio.ui.views.PerformanceView;
@@ -43,6 +51,7 @@ import name.abuchen.portfolio.ui.views.PortfolioListView;
 import name.abuchen.portfolio.ui.views.ReturnsVolatilityChartView;
 import name.abuchen.portfolio.ui.views.SecuritiesPerformanceView;
 import name.abuchen.portfolio.ui.views.SecurityListView;
+import name.abuchen.portfolio.ui.views.SecurityPriceUpdateView;
 import name.abuchen.portfolio.ui.views.StatementOfAssetsHistoryView;
 import name.abuchen.portfolio.ui.views.StatementOfAssetsView;
 import name.abuchen.portfolio.ui.views.currency.CurrencyView;
@@ -52,6 +61,7 @@ import name.abuchen.portfolio.ui.views.payments.PaymentsView;
 import name.abuchen.portfolio.ui.views.settings.SettingsView;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyView;
 import name.abuchen.portfolio.ui.views.trades.TradeDetailsView;
+import name.abuchen.portfolio.ui.wizards.datatransfer.taxonomy.MultiTaxonomyImportWizard;
 
 public final class Navigation
 {
@@ -70,8 +80,8 @@ public final class Navigation
         private String label;
         private Images image;
 
-        private IMenuListener actionMenu;
-        private IMenuListener contextMenu;
+        private MenuListener actionMenu;
+        private MenuListener contextMenu;
 
         private Class<? extends AbstractFinanceView> viewClass;
         private boolean hideInformationPane;
@@ -122,12 +132,12 @@ public final class Navigation
             return image;
         }
 
-        public IMenuListener getActionMenu()
+        public MenuListener getActionMenu()
         {
             return actionMenu;
         }
 
-        public IMenuListener getContextMenu()
+        public MenuListener getContextMenu()
         {
             return contextMenu;
         }
@@ -179,6 +189,12 @@ public final class Navigation
     }
 
     @FunctionalInterface
+    public interface MenuListener
+    {
+        public void menuAboutToShow(PortfolioPart part, IMenuManager manager);
+    }
+
+    @FunctionalInterface
     public interface Listener
     {
         void changed(Item item);
@@ -186,6 +202,9 @@ public final class Navigation
 
     @Inject
     private IEclipseContext context;
+
+    @Inject
+    private IStylingEngine stylingEngine;
 
     private List<Item> roots = new ArrayList<>();
     private List<Listener> listeners = new ArrayList<>();
@@ -322,7 +341,7 @@ public final class Navigation
     private void createGeneralDataSection(Client client)
     {
         Item generalData = new Item(Messages.LabelSecurities);
-        generalData.actionMenu = manager -> {
+        generalData.actionMenu = (part, manager) -> {
 
             manager.add(CommandAction.forCommand(context, DomainElement.WATCHLIST.getPaletteLabel(),
                             UIConstants.Command.NEW_DOMAIN_ELEMENT, UIConstants.Parameter.TYPE,
@@ -378,7 +397,15 @@ public final class Navigation
         Item item = new Item(watchlist.getName(), Images.WATCHLIST, SecurityListView.class);
         item.parameter = watchlist;
 
-        item.contextMenu = manager -> {
+        item.contextMenu = (part, manager) -> {
+
+            manager.add(CommandAction.forCommand(context, Messages.JobLabelUpdateQuotes,
+                            UIConstants.Command.UPDATE_QUOTES, UIConstants.Parameter.FILTER,
+                            UpdateQuotesHandler.FilterType.WATCHLIST.name(), UIConstants.Parameter.WATCHLIST,
+                            watchlist.getName()));
+
+            manager.add(new Separator());
+
             manager.add(new SimpleAction(Messages.WatchlistRename, a -> {
                 String newName = askWatchlistName(watchlist.getName());
                 if (newName != null)
@@ -391,7 +418,10 @@ public final class Navigation
                 }
             }));
 
-            manager.add(new SimpleAction(Messages.WatchlistDelete, a -> client.removeWatchlist(watchlist)));
+            manager.add(new SimpleAction(Messages.WatchlistDelete, a -> {
+                client.removeWatchlist(watchlist);
+                part.activateView(SecurityListView.class, null);
+            }));
 
             manager.add(new Separator());
 
@@ -447,8 +477,8 @@ public final class Navigation
 
         masterData.add(new Item(Messages.LabelAccounts, Images.ACCOUNT, AccountListView.class));
         masterData.add(new Item(Messages.LabelPortfolios, Images.PORTFOLIO, PortfolioListView.class));
+        masterData.add(new Item(Messages.LabelGroupedAccounts, Images.GROUPEDACCOUNTS, GroupedAccountsListView.class));
         masterData.add(new Item(Messages.LabelInvestmentPlans, Images.INVESTMENTPLAN, InvestmentPlanListView.class));
-
         masterData.add(new Item(Messages.LabelAllTransactions, AllTransactionsView.class));
     }
 
@@ -480,7 +510,7 @@ public final class Navigation
         Item section = new Item(Messages.LabelTaxonomies);
         roots.add(section);
 
-        section.actionMenu = manager -> {
+        section.actionMenu = (part, manager) -> {
 
             manager.add(CommandAction.forCommand(context, DomainElement.TAXONOMY.getPaletteLabel(),
                             UIConstants.Command.NEW_DOMAIN_ELEMENT, UIConstants.Parameter.TYPE,
@@ -494,8 +524,21 @@ public final class Navigation
                 manager.add(new SimpleAction(template.getName(), a -> {
                     Taxonomy taxonomy = template.build();
                     client.addTaxonomy(taxonomy);
+                    part.activateView(TaxonomyView.class, taxonomy);
                 }));
             }
+
+            manager.add(new Separator());
+            manager.add(new SimpleAction(BundleMessages.getString(BundleMessages.Label.Command.importTaxonomy),
+                            Images.IMPORT_FILE, action -> {
+                                var wizard = new MultiTaxonomyImportWizard(client, part.getPreferenceStore(),
+                                                stylingEngine);
+                                new WizardDialog(ActiveShell.get(), wizard).open();
+                            }));
+
+            manager.add(new SimpleAction(BundleMessages.getString(BundleMessages.Label.Command.exportTaxonomy),
+                            Images.EXPORT_FILE, action -> new JSONExporterDialog(ActiveShell.get(),
+                                            new TaxonomyJSONExporter.AllTaxonomies(client)).export()));
         };
 
         for (Taxonomy taxonomy : client.getTaxonomies())
@@ -505,7 +548,7 @@ public final class Navigation
 
         // no need to remove the listener as the Navigation object is only a
         // singleton and lives as long as the client (plus: no option to attach
-        // oneself here ot a dispose listener)
+        // oneself here to a dispose listener)
         client.addPropertyChangeListener(Client.Properties.TAXONOMIES, e -> {
             if (e.getNewValue() != null)
             {
@@ -533,7 +576,7 @@ public final class Navigation
         item.hideInformationPane = true;
         item.parameter = taxonomy;
 
-        item.contextMenu = manager -> {
+        item.contextMenu = (part, manager) -> {
             manager.add(new SimpleAction(Messages.MenuTaxonomyRename, a -> {
                 String newName = askTaxonomyName(taxonomy.getName());
                 if (newName != null)
@@ -543,6 +586,8 @@ public final class Navigation
 
                     this.listeners.forEach(l -> l.changed(item));
                     client.touch();
+
+                    part.activateView(TaxonomyView.class, taxonomy);
                 }
             }));
 
@@ -553,12 +598,15 @@ public final class Navigation
                     Taxonomy copy = taxonomy.copy();
                     copy.setName(newName);
                     client.addTaxonomy(copy);
+
+                    part.activateView(TaxonomyView.class, copy);
                 }
             }));
 
             manager.add(new ConfirmAction(Messages.MenuTaxonomyDelete,
                             MessageFormat.format(Messages.MenuTaxonomyDeleteConfirm, taxonomy.getName()), a -> {
                                 client.removeTaxonomy(taxonomy);
+                                part.activateView(StatementOfAssetsView.class, null);
                             }));
 
             manager.add(new Separator());
@@ -608,6 +656,10 @@ public final class Navigation
 
         section.add(new Item(Messages.LabelCurrencies, CurrencyView.class, true));
         section.add(new Item(Messages.LabelSettings, SettingsView.class));
+
+        var progressView = new Item(Messages.LabelPriceUpdateProgress, SecurityPriceUpdateView.class, true);
+        progressView.addTag(Tag.HIDE);
+        section.add(progressView);
 
         if ("yes".equals(System.getProperty("name.abuchen.portfolio.debug"))) //$NON-NLS-1$ //$NON-NLS-2$
             section.add(new Item("Browser Test", BrowserTestView.class)); //$NON-NLS-1$

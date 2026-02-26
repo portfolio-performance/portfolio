@@ -1,0 +1,14 @@
+<FlexQueryResponse queryName="Portfolio_Performance" type="AF">
+<FlexStatements count="1">
+<FlexStatement accountId="UXXXXXXX" fromDate="20190621" toDate="20200619" period="Last365CalendarDays" whenGenerated="20200620;051927">
+<AccountInformation accountId="UXXXXXXX" acctAlias="UXXXXXXX  Max Mustermann" model="Independent" currency="EUR" name="Max Mustermann" accountType="Broker Client" customerType="Individual" accountCapabilities="Cash" dateOpened="20180607" dateFunded="20180611" />
+<CorporateActions>
+<CorporateAction accountId="UXXXXXXX" acctAlias="UXXXXXXX  Max Mustermann" model="Independent" currency="USD" fxRateToBase="0.92531" assetCategory="STK" symbol="JMLP" description="JMLP(US67075E1082) MERGED(Liquidation) FOR USD 1.1047 PER SHARE (JMLP, NUVEEN A-C ENERGY MLP OPP FD, US67075E1082)" conid="147243858" securityID="US67075E1082" securityIDType="ISIN" cusip="67075E108" isin="US67075E1082" listingExchange="VALUE" underlyingConid="" underlyingSymbol="" underlyingSecurityID="" underlyingListingExchange="" issuer="" multiplier="1" strike="" expiry="" putCall="" principalAdjustFactor="" reportDate="20200511" dateTime="20200508;202500" actionDescription="JMLP(US67075E1082) MERGED(Liquidation) FOR USD 1.1047 PER SHARE (JMLP, NUVEEN A-C ENERGY MLP OPP FD, US67075E1082)" amount="-405.4249" proceeds="405.4249" value="-407.37" quantity="-367" fifoPnlRealized="0" mtmPnl="-1.9451" code="" type="TC" />
+</CorporateActions>
+<CashTransactions>
+<CashTransaction accountId="UXXXXXXX" acctAlias="UXXXXXXX  Max Mustermann" model="Independent" currency="USD" fxRateToBase="0.92286" assetCategory="STK" symbol="JMLP" description="JMLP(US67075E1082) CASH DIVIDEND 0.18750000 USD PER SHARE - US TAX" conid="147243858" securityID="US67075E1082" securityIDType="ISIN" cusip="67075E108" isin="US67075E1082" listingExchange="NYSE" underlyingConid="" underlyingSymbol="" underlyingSecurityID="" underlyingListingExchange="" issuer="" multiplier="1" strike="" expiry="" putCall="" principalAdjustFactor="" dateTime="20190515;202000" amount="8.97" type="Withholding Tax" tradeID="" code="" transactionID="12057009986" reportDate="20200217" clientReference="" />
+<CashTransaction accountId="UXXXXXXX" acctAlias="UXXXXXXX  Max Mustermann" model="Independent" currency="USD" fxRateToBase="0.90018" assetCategory="STK" symbol="JMLP" description="JMLP(US67075E1082) CASH DIVIDEND 0.18750000 USD PER SHARE (Ordinary Dividend)" conid="147243858" securityID="67075E108" securityIDType="CUSIP" cusip="67075E108" isin="" listingExchange="NYSE" underlyingConid="" underlyingSymbol="" underlyingSecurityID="" underlyingListingExchange="" issuer="" multiplier="1" strike="" expiry="" putCall="" principalAdjustFactor="" dateTime="20190815;202000" amount="61.13" type="Dividends" tradeID="" code="" transactionID="11136056417" reportDate="20190815" clientReference="" />
+</CashTransactions>
+</FlexStatement>
+</FlexStatements>
+</FlexQueryResponse>

@@ -1,0 +1,37 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.73.0
+System: linux | x86_64 | 21.0.5+2 | Flathub
+-----------------------------------------
+EMPLOYEE STOCK PLAN PURCHASE CONFIRMATION
+Provided by NXP SEMICONDUCTORS, N.V.
+MAX MUSTERMANN Employee ID: 18871611
+rsFsYPDVyFCMyYFzpo
+69/13 1234
+CITY,  AT
+ Purchase Summary
+Account Number 943137980 Shares Purchased to Date in Current Offering
+Company Name (Symbol) NXP SEMICONDUCTORS, Beginning Balance 0.0000
+N.V.(NXPI) Shares Purchased 5.2350
+Plan SSP Total shares Purchased for Offering 5.2350
+Grant Date 02-28-2025 Shares Deposited in STREETNAME to 5.2350
+Purchase Begin Date 09-01-2024 MSSB
+Purchase Date 02-28-2025
+ Purchase Details
+Contributions
+Previous Carry Forward $0.00
+Current Contributions $959.35
+Total Contributions $959.35 Calculation of Shares Purchased
+Grant Date Market Value $215.590000
+Total Price ($959.31) Purchase Value per Share $215.590000
+Amount Refunded ($0.04) Purchase Price per Share
+        (85.000% of $215.590000) $183.250000
+Calculation of Gain Total Price
+Total Value $1,128.61         (Shares Purchased x Purchase Price) $959.313750
+Total Price ($959.31)
+Taxable Gain $169.30
+This information was provided to E*TRADE Securities LLC, a subsidiary of Morgan Stanley, ("E*TRADE") by your company. E*TRADE does not guarantee the accuracy
+or completeness of the information provided by your company. If a sale is associated with these shares, the trade confirmation provided by E*TRADE Securities LLC is
+the only accurate record of the sale transaction.
+The data shown on this statement is based on your company's records. The company reserves the right to make corrections to this data. The purchase shown on this
+statement is subject to the terms of the plan under which the purchase was made.
+03/01/2025 03:25:01 AM ET Page 1 of 1

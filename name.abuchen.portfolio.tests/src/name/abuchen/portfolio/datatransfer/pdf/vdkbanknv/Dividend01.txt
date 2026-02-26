@@ -1,0 +1,26 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.76.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+vdk bank nv
+Sint-Michielsplein 16 | 9000 Gent | T 09 267 32 11 | vdk@vdk.be | vdk.be
+BTW BE 0400.067.788 RPR GENT | FSMA 020230 A | IBAN BE65 8900 0005 5096 | BIC VDSPBE91
+Overzicht transactie voor rekening 834-9216848-07 op 17/01/2024
+ 
+Borderelreferentie: 2024.000123456789 Referentie: D046336-758
+ 
+ 
+Uitbetaling dividend in contanten van BE0003470755
+Ex-datum: 15/01/2024
+Betaaldatum: 17/01/2024
+ 
+ 
+Naam: Solvay NV
+Positie op ex-datum: 100
+Aan: 1,62 EUR
+ 
+ 
+Totaal bedrag: 162,00 EUR
+Belgische roerende voorheffing (30,00%): 48,60 EUR
+Netto bedrag: 113,40 EUR
+Netto afrekening op BE25 5623 1542 4335 door storting van: 113,40 EUR

@@ -87,6 +87,9 @@ public class PaymentsView extends AbstractFinanceView
         model.configure(viewInput.getYear(), viewInput.getMode(), viewInput.isUseGrossValue(),
                         viewInput.isUseConsolidateRetired());
 
+        model.setHideTotalsAtTheTop(preferences.getBoolean(PaymentsViewInput.TOP));
+        model.setHideTotalsAtTheBottom(preferences.getBoolean(PaymentsViewInput.BOTTOM));
+
         model.addUpdateListener(() -> {
             viewInput.setYear(model.getStartYear());
             viewInput.setMode(model.getMode());
@@ -121,7 +124,8 @@ public class PaymentsView extends AbstractFinanceView
     @Override
     protected String getDefaultTitle()
     {
-        return model.getMode().getLabel();
+        return (clientFilterMenu == null || !clientFilterMenu.hasActiveFilter()) ? model.getMode().getLabel()
+                        : model.getMode().getLabel() + " : " + clientFilterMenu.getSelectedItem().getLabel(); //$NON-NLS-1$
     }
 
     @Override
@@ -133,7 +137,7 @@ public class PaymentsView extends AbstractFinanceView
                             new SimpleAction(TextUtil.tooltip(mode.getLabel()), a -> {
                                 model.setMode(mode);
                                 updateIcons(toolBarManager);
-                                updateTitle(model.getMode().getLabel());
+                                updateTitle(getDefaultTitle());
                             }));
             item.setMode(ActionContributionItem.MODE_FORCE_TEXT);
             toolBarManager.add(item);
@@ -159,10 +163,12 @@ public class PaymentsView extends AbstractFinanceView
         toolBar.add(new StartYearSelectionDropDown(model));
 
         DropDown dropDown = new DropDown(Messages.MenuChooseClientFilter,
-                        clientFilterMenu.hasActiveFilter() ? Images.FILTER_ON : Images.FILTER_OFF, SWT.NONE,
-                        clientFilterMenu::menuAboutToShow);
-        clientFilterMenu.addListener(f -> dropDown
-                        .setImage(clientFilterMenu.hasActiveFilter() ? Images.FILTER_ON : Images.FILTER_OFF));
+                        clientFilterMenu.hasActiveFilter() ? Images.GROUPEDACCOUNTS_ON : Images.GROUPEDACCOUNTS,
+                        SWT.NONE, clientFilterMenu::menuAboutToShow);
+        clientFilterMenu.addListener(f -> dropDown.setImage(
+                        clientFilterMenu.hasActiveFilter() ? Images.GROUPEDACCOUNTS_ON : Images.GROUPEDACCOUNTS));
+        clientFilterMenu.addListener(filter -> updateTitle(getDefaultTitle()));
+
         toolBar.add(dropDown);
 
         toolBar.add(new DropDown(Messages.MenuExportData, Images.EXPORT, SWT.NONE, manager -> {

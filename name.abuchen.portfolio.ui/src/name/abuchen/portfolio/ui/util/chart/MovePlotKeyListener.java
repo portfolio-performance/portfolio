@@ -3,8 +3,8 @@ package name.abuchen.portfolio.ui.util.chart;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-import org.swtchart.Chart;
-import org.swtchart.IAxis;
+import org.eclipse.swtchart.Chart;
+import org.eclipse.swtchart.IAxis;
 
 public class MovePlotKeyListener implements Listener
 {
@@ -18,7 +18,7 @@ public class MovePlotKeyListener implements Listener
     public static void attachTo(Chart chart)
     {
         Listener listener = new MovePlotKeyListener(chart);
-        chart.getPlotArea().addListener(SWT.KeyDown, listener);
+        chart.getPlotArea().getControl().addListener(SWT.KeyDown, listener);
     }
 
     @Override

@@ -1,0 +1,53 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+apoBank | 40540 Düsseldorf Filiale Oldenburg
+Telefon +49 441923970
+Telefax +49 4419239780
+filiale.oldenburg@apobank.de
+www.apobank.de
+Zentrale Postanschrift
+oAWM apoBank
+mq. oVPor nHdxGiHTbT 40540 Düsseldorf
+PmQMpnHhtFrl. 71 Ihr(e) Ansprechpartner(in)
+76085 VDsnqeDgfaG enZyBIq jVbmIbN
+PmQMpnHhtFrlPmQMpnHhtFrl
+Telefon +96 1498697827
+Kunden-Nr. Konto-Nr. / IBAN Referenz-Nr. Datum Seite
+7702934 6881113 / 1347237221 23.12.2025 1 / 3
+AB12345678912345678912
+Wertpapierabrechnung
+Depot 944448794
+Transaktion: Verkauf
+Am 23.12.2025 haben wir für Sie folgende Transaktion ausgeführt:
+Schlusstag: 23.12.2025
+Valuta: 25.12.2025
+Wertpapierbezeichnung: iShsII-Global Water UCITS ETF Reg. Shs USD Acc. oN
+ISIN: IE000CFH1JX2
+WKN: A3EZ9W
+Markt/Börse: Off Exchange/OTC
+Nominal / Stück: 0,236
+Ausführungspreis: USD 28,17
+Verwahrart: Wertpapierrechnung
+Lagerland: Vereinigtes Königreich Grossbritannien und Nordirland
+Kurswert: USD 6,65
+Ausmachender Betrag: USD 6,65
+Devisenkurs: EUR/USD 1,18205
+Gutschrift - EUR Privatkonto 3476831 EUR 5,63
+Deutsche Apotheker- und Ärztebank eG Vorsitzender des Aufsichtsrats: Dr. med. dent. Karl-Georg Pochhammer BLZ: 300 606 01 | BIC: DAAEDEDDXXX
+Richard-Oskar-Mattern-Straße 6 Vorstand: Matthias Schellenberg (Vorsitzender), Heiko Drews, Sitz der Bank: Düsseldorf | Ust.-ID: DE119260415
+40547 Düsseldorf Thomas Runge, Dr. Christian Wiermann, Sylvia Wilhelm Eintragung: Amtsgericht Düsseldorf GnR 410
+Kunden-Nr. Konto-Nr. / IBAN Referenz-Nr. Datum Seite
+7160714 7160714 / 3238438466 23.12.2025 2 / 3
+AB12345678912345678912
+Sofern keine Umsatzsteuer ausgewiesen wird, handelt es sich um eine umsatzsteuerbefreite
+Finanzdienstleistung.
+Dieses Dokument ist maschinell erstellt und wird nicht unterschrieben.
+Kunden-Nr. Konto-Nr. / IBAN Referenz-Nr. Datum Seite
+8961513 9034665 / 4641182124 23.12.2025 3 / 3
+AB12345678912345678912
+Steuerliche Informationen -Wertpapierabrechnung
+Steuerlicher Devisenumrechnungskurs EUR/USD 1,18205
+Veräußerungsgewinn /-Verlust vor Teilfreistellung EUR 0,02
+Besitzzeitanteilige akkumulierte Vorabpauschale -0,02

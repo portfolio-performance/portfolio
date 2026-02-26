@@ -18,6 +18,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public final class ImportExtractedItemsWizard extends Wizard
@@ -44,6 +45,7 @@ public final class ImportExtractedItemsWizard extends Wizard
 
         setWindowTitle(Messages.PDFImportWizardTitle);
         setNeedsProgressMonitor(false);
+        setDialogSettings(PortfolioPlugin.getDefault().getDialogSettings());
     }
 
     public void setTarget(Account target)

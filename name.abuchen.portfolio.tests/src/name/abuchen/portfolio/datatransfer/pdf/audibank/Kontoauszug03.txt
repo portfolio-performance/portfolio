@@ -1,0 +1,44 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.2
+-----------------------------------------
+Audi Bank  ·  38093 Braunschweig
+Shtyhwf gkquv
+asdfsfdsafsf 234
+39922 slYdIikUB io JdsIce
+Kontoauszug / Saldenmitteilung Plus Konto online.pur
+Kontonummer: 1742577843 Erstellungsdatum: 27.03.2022
+Kontobezeichnung: VQLqW ewKxfbB Kontoauszug Nummer: 000003 / 2022
+Bankleitzahl: 27020001 Seite: 1 / 1
+BIC: AUDFDE21XXX letzter Auszug vom: 27.02.2022
+IBAN: DE57270200011742577843 Ihr Ansprechpartner: Team Anlageberatung
+Telefon-Durchwahl: 0531 212-859601
+Alter Kontostand in EUR: 1.003,10
+lfd. Buchungs- Umsatzinformationen Wertstellung Soll (EUR) Haben (EUR)
+Nr. datum
+1 11.03.2022 Gutschrift 11.03.2022 500,00
+bekannt sdfasfd
+asdfsadf, CCqLULq
+BIC ziBigYf1Y89 IBAN DE48600908000012345678
+2 18.03.2022 Gutschrift 18.03.2022 500,00
+bekannt asdfdsf
+asdfdsafsfd, ZNAKTDR
+BIC eWLYfwl2C86 IBAN DE48600908000012345678
+Rechnungsabschluss 25.03.2022
+3 25.03.2022 Habenzinsen 25.03.2022 1,13
+4 25.03.2022 Solidaritätszuschlag 25.03.2022 -0,01
+5 25.03.2022 Kirchensteuer 25.03.2022 -0,02
+6 25.03.2022 Abgeltungsteuer 25.03.2022 -0,27
+Neuer Kontostand in EUR: 2.003,93
+Freistellungs- NV Gültig bis Gesamt- Verbleibender Abgeltungsteuer/ Solidaritäts- Kirchen- Kirchensteuer-
+auftrag zinserträge Freibetrag Kapitalertragsteuer zuschlag steuer Betrag
+EUR 0,00 Nein 00.00.0000 EUR 2,79 EUR 0,00 EUR 0,68 EUR 0,03 8,00 % EUR 0,05
+Ihre Freistellungsdaten vom 25.03.2022
+Genehmigung des Rechnungsabschlusses
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit des Rechnungsabschlusses müssen Sie spätestens vor Ablauf von sechs Wochen nach
+dessen Zugang erheben. Sofern Sie Ihre Einwendungen schriftlich oder - falls diese Form vereinbart ist - in Textform geltend machen, genügt die
+Absendung innerhalb der Sechs-Wochen-Frist. Sie können Ihre Einwendungen an die interne Revision der Volkswagen Bank GmbH,
+Gifhorner Str. 57, 38 112 Braunschweig, richten. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung des Rechnungsabschlusses.
+Bitte beachten Sie, dass Zinserträge einkommensteuerpflichtig sind.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können dem "Informationsbogen für den Einleger" entnommen werden. 
+206500
+A  // B  // M

@@ -1,30 +1,31 @@
 PDFBox Version: 1.8.17
-Portfolio Performance Version: 0.68.4
+Portfolio Performance Version: 0.71.2
 -----------------------------------------
 TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
-QiKQAcL sjnfyNV SEITE 1 von 1
-rnQrmrkKJGHQ 58/87 DATUM 27.05.2024
-0033 EKAW ORDER 0e9a-3i77
-AUSFÜHRUNG b53c-j787
-DEPOT 3159893335
+Egal Wer SEITE 1 von 1
+Strasse 10 DATUM 23.10.2024
+12334 Egalwo ORDER 9eb1-48df
+AUSFÜHRUNG bdc4-0272
+DEPOT 12345697
 WERTPAPIERABRECHNUNG
 ÜBERSICHT
-Market-Order BUY am 27.05.2024, um 08:15 Uhr (Europe/Berlin).
+Market-Order Kauf am 23.10.2024, um 21:56 Uhr (Europe/Berlin) an der Lang und Schwarz Exchange.
 Der Kontrahent der Transaktion ist Lang & Schwarz TradeCenter AG & Co. KG.
 POSITION ANZAHL PREIS BETRAG
-Kontron 23 Stk. 20,90 EUR 480,70 EUR
-ISIN: AT0000A0E9W5
-GESAMT 480,70 EUR
+Super Micro Computer 10 Stk. 42,06 EUR 420,60 EUR
+ISIN: US86800U3023
+GESAMT 420,60 EUR
 ABRECHNUNG
 POSITION BETRAG
 Fremdkostenzuschlag -1,00 EUR
-GESAMT -481,70 EUR
+GESAMT -421,60 EUR
 BUCHUNG
 VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
-DE12309876507025401111 2024-05-29 -481,70 EUR
-Kontron in Girosammelverwahrung in Deutschland
+DE231234567812349876 2024-10-25 -421,60 EUR
+Super Micro Computer in Girosammelverwahrung in Deutschland
 Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
 Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie Leistung.
 Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
 Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
 10119 Berlin USt-ID DE307510626 Gernot Mittendorfer
+ABRE / 489c-0e31

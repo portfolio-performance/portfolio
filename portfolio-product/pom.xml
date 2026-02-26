@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>name.abuchen.portfolio</groupId>
 		<artifactId>portfolio-app</artifactId>
-		<version>0.70.4-SNAPSHOT</version>
+		<version>0.81.6-SNAPSHOT</version>
 		<relativePath>../portfolio-app</relativePath>
 	</parent>
 
@@ -17,7 +17,24 @@
 	<properties>
 		<sonar.skip>true</sonar.skip>
 	</properties>
-	
+
+	<!-- 
+
+	phase                 | action 
+	- - - - - - - - - - - | - - - - - - - - - - - -
+	validate              | check if p2.inf files are identical
+	compile               | tycho-p2-publisher-plugin (defined in app/pom.xml)
+	process-classes       | unpack Windows executables, sign, and pack again
+	package               | tycho-p2-director-plugin:materialize-products,
+	                      | fix-info-plist-maven-plugin
+	pre-integration-test  | build and sign macOS dmg, notarize
+	                      | build Windows installer
+	integration-test      | tycho-p2-director-plugin:archive-products
+	post-integration-test | attach artifacts
+	verify                | gpg sign artifacts
+
+	-->
+
 	<build>
 		<plugins>
 			<plugin>
@@ -26,6 +43,129 @@
 					<execution>
 						<id>enforce-versions</id>
 						<phase>none</phase>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>unpack</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>${project.artifactId}</artifactId>
+									<classifier>name.abuchen.portfolio.product.executable.win32.win32.x86_64</classifier>
+									<version>${project.version}</version>
+									<type>zip</type>
+									<outputDirectory>${project.build.directory}/executables/x86_64</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>${project.artifactId}</artifactId>
+									<classifier>name.abuchen.portfolio.product.executable.win32.win32.aarch64</classifier>
+									<version>${project.version}</version>
+									<type>zip</type>
+									<outputDirectory>${project.build.directory}/executables/aarch64</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>${project.artifactId}</artifactId>
+									<classifier>name.abuchen.portfolio.distro.product.executable.win32.win32.x86_64</classifier>
+									<version>${project.version}</version>
+									<type>zip</type>
+									<outputDirectory>${project.build.directory}/executables/distro/x86_64</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>${project.artifactId}</artifactId>
+									<classifier>name.abuchen.portfolio.distro.product.executable.win32.win32.aarch64</classifier>
+									<version>${project.version}</version>
+									<type>zip</type>
+									<outputDirectory>${project.build.directory}/executables/distro/aarch64</outputDirectory>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>3.2.0</version>
+				<executions>
+					<execution>
+						<id>delete-portfolio-cli-executables</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<delete>
+									<fileset dir="${project.build.directory}/executables" includes="**/PortfolioPerformancec.exe"/>
+								</delete>
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>3.6.3</version>
+				<executions>
+					<execution>
+						<id>sign-win-executables</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>${project.basedir}/signing/codesign-win-executables.sh</executable>
+							<workingDirectory>${project.build.directory}/executables</workingDirectory>
+							<arguments>
+								<argument>${jarsigner.providerArg}</argument>
+								<argument>${jarsigner.storepass}</argument>
+								<argument>${jarsigner.alias}</argument>
+							</arguments>
+							<skip>${exesigner.skip}</skip>
+						</configuration>
+					</execution>
+					<execution>
+						<id>sign-installer</id>
+						<phase>integration-test</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>jsign</executable>
+							<workingDirectory>${project.build.directory}/products</workingDirectory>
+							<arguments>
+								<argument>--keystore</argument>
+								<argument>${jarsigner.providerArg}</argument>
+								<argument>--storetype</argument>
+								<argument>PKCS11</argument>
+								<argument>--storepass</argument>
+								<argument>${jarsigner.storepass}</argument>
+								<argument>--alias</argument>
+								<argument>${jarsigner.alias}</argument>
+								<argument>--tsaurl</argument>
+								<argument>http://time.certum.pl/</argument>
+								<argument>--name</argument>
+								<argument>Portfolio Performance</argument>
+								<argument>-url</argument>
+								<argument>https://www.portfolio-performance.info</argument>
+								<argument>PortfolioPerformance-${project.version}-setup.exe</argument>
+							</arguments>
+							<skip>${installer.skip}</skip>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -41,9 +181,55 @@
 						<macosx-bundled>true</macosx-bundled>
 					</profileProperties>
 					<extraArtifactRepositoryProperties>
-						<p2.statsURI>https://api.portfolio-report.net/stats/update</p2.statsURI>
+						<p2.statsURI>https://api.portfolio-performance.info/stats/update</p2.statsURI>
 					</extraArtifactRepositoryProperties>
 				</configuration>
+				<executions>
+					<execution>
+						<id>pack-x86_64</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>archive-repository</goal>
+						</goals>
+						<configuration>
+							<finalName>extraArtifacts/name.abuchen.portfolio.product.executable.win32.win32.x86_64</finalName>
+							<repositoryLocation>${project.build.directory}/executables/x86_64</repositoryLocation>
+						</configuration>
+					</execution>
+					<execution>
+						<id>pack-aarch64</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>archive-repository</goal>
+						</goals>
+						<configuration>
+							<finalName>extraArtifacts/name.abuchen.portfolio.product.executable.win32.win32.aarch64</finalName>
+							<repositoryLocation>${project.build.directory}/executables/aarch64</repositoryLocation>
+						</configuration>
+					</execution>
+					<execution>
+						<id>pack-distro-x86_64</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>archive-repository</goal>
+						</goals>
+						<configuration>
+							<finalName>extraArtifacts/name.abuchen.portfolio.distro.product.executable.win32.win32.x86_64</finalName>
+							<repositoryLocation>${project.build.directory}/executables/distro/x86_64</repositoryLocation>
+						</configuration>
+					</execution>
+					<execution>
+						<id>pack-distro-aarch64</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>archive-repository</goal>
+						</goals>
+						<configuration>
+							<finalName>extraArtifacts/name.abuchen.portfolio.distro.product.executable.win32.win32.aarch64</finalName>
+							<repositoryLocation>${project.build.directory}/executables/distro/aarch64</repositoryLocation>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
@@ -71,6 +257,7 @@
 							</rootFolders>
 						</product>
 					</products>
+					<parallel>true</parallel>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -101,7 +288,7 @@
 						</property>
 						<property>
 							<name>CFBundleGetInfoString</name>
-							<value>Copyright 2012 - 2024 Andreas Buchen. All rights reserved.</value>
+							<value>Copyright 2012 - 2026 Andreas Buchen. All rights reserved.</value>
 						</property>
 						<property>
 							<name>Eclipse</name>
@@ -109,7 +296,7 @@
 						</property>
 						<property>
 							<name>CFBundleLocalizations</name>
-							<value><![CDATA[<array><string>en</string><string>de</string><string>es</string><string>nl</string><string>pt</string><string>pt-BR</string><string>fr</string><string>it</string><string>cs</string><string>ru</string><string>sk</string><string>pl</string><string>zh</string><string>zh_TW</string><string>da</string></array>]]></value>
+							<value><![CDATA[<array><string>en</string><string>de</string><string>es</string><string>nl</string><string>pt</string><string>pt-BR</string><string>fr</string><string>it</string><string>cs</string><string>ru</string><string>sk</string><string>pl</string><string>zh</string><string>zh_TW</string><string>da</string><string>tr</string><string>vi</string><string>ca</string></array>]]></value>
 						</property>
 					</properties>
 				</configuration>
@@ -188,31 +375,9 @@
 						</executions>
 					</plugin>
 					<plugin>
-						<artifactId>maven-resources-plugin</artifactId>
-						<version>3.3.1</version>
-						<executions>
-							<execution>
-								<id>copy-resources</id>
-								<phase>package</phase>
-								<goals>
-									<goal>copy-resources</goal>
-								</goals>
-								<configuration>
-									<outputDirectory>${basedir}/target/config</outputDirectory>
-									<resources>
-										<resource>
-											<directory>src/main/config</directory>
-											<filtering>true</filtering>
-										</resource>
-									</resources>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>exec-maven-plugin</artifactId>
-						<version>3.4.1</version>
+						<version>3.6.3</version>
 						<executions>
 							<execution>
 								<id>check-p2-inf-files</id>
@@ -233,7 +398,7 @@
 							</execution>
 							<execution>
 								<id>sign-macos-distro-x86_64</id>
-								<phase>package</phase>
+								<phase>pre-integration-test</phase>
 								<goals>
 									<goal>exec</goal>
 								</goals>
@@ -249,7 +414,7 @@
 							</execution>
 							<execution>
 								<id>build-dmg-distro-x86_64</id>
-								<phase>package</phase>
+								<phase>pre-integration-test</phase>
 								<goals>
 									<goal>exec</goal>
 								</goals>
@@ -266,7 +431,7 @@
 							</execution>
 							<execution>
 								<id>rename-dmg-x86_64</id>
-								<phase>package</phase>
+								<phase>pre-integration-test</phase>
 								<goals>
 									<goal>exec</goal>
 								</goals>
@@ -282,7 +447,7 @@
 							</execution>
 							<execution>
 								<id>sign-macos-distro-aarch64</id>
-								<phase>package</phase>
+								<phase>pre-integration-test</phase>
 								<goals>
 									<goal>exec</goal>
 								</goals>
@@ -298,7 +463,7 @@
 							</execution>
 							<execution>
 								<id>build-dmg-distro-aarch64</id>
-								<phase>package</phase>
+								<phase>pre-integration-test</phase>
 								<goals>
 									<goal>exec</goal>
 								</goals>
@@ -315,7 +480,7 @@
 							</execution>
 							<execution>
 								<id>rename-dmg-aarch64</id>
-								<phase>package</phase>
+								<phase>pre-integration-test</phase>
 								<goals>
 									<goal>exec</goal>
 								</goals>
@@ -331,7 +496,7 @@
 							</execution>
 							<execution>
 								<id>notarize-aarch64</id>
-								<phase>package</phase>
+								<phase>pre-integration-test</phase>
 								<goals>
 									<goal>exec</goal>
 								</goals>
@@ -355,7 +520,7 @@
 							</execution>
 							<execution>
 								<id>staple-aarch64</id>
-								<phase>package</phase>
+								<phase>pre-integration-test</phase>
 								<goals>
 									<goal>exec</goal>
 								</goals>
@@ -372,7 +537,7 @@
 							</execution>
 							<execution>
 								<id>notarize-x86_64</id>
-								<phase>package</phase>
+								<phase>pre-integration-test</phase>
 								<goals>
 									<goal>exec</goal>
 								</goals>
@@ -396,7 +561,7 @@
 							</execution>
 							<execution>
 								<id>staple-x86_64</id>
-								<phase>package</phase>
+								<phase>pre-integration-test</phase>
 								<goals>
 									<goal>exec</goal>
 								</goals>
@@ -413,7 +578,7 @@
 							</execution>
 							<execution>
 								<id>build-installer</id>
-								<phase>package</phase>
+								<phase>pre-integration-test</phase>
 								<goals>
 									<goal>exec</goal>
 								</goals>
@@ -432,11 +597,11 @@
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>build-helper-maven-plugin</artifactId>
-						<version>3.6.0</version>
+						<version>3.6.1</version>
 						<executions>
 							<execution>
 								<id>attach-dmg</id>
-								<phase>package</phase>
+								<phase>post-integration-test</phase>
 								<goals>
 									<goal>attach-artifact</goal>
 								</goals>
@@ -458,7 +623,7 @@
 							</execution>
 							<execution>
 								<id>attach-exe</id>
-								<phase>package</phase>
+								<phase>post-integration-test</phase>
 								<goals>
 									<goal>attach-artifact</goal>
 								</goals>

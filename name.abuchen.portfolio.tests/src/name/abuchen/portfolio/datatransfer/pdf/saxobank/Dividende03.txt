@@ -1,0 +1,45 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.77.3
+System: linux | x86_64 | 21.0.7+6-Ubuntu-0ubuntu124.04 | Ubuntu
+-----------------------------------------
+CH-46533096 - 58326683
+Corporate Action Detail Report
+Berichtszeitraum: 11-Jul-2025 - 17-Jul-2025
+Generiert um: 02-Aug-2025 01:25:42 13:25:42 (W. Europe Standard Time)
+CH-20104444 Saxo Bank CH
+Switzerland The Circle 38
+8058 Zürich-Flughafen
+Switzerland
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-20104444 Berichtszeitraum
+Währung: CHF 17-Jul-2025 - 17-Jul-2025
+Seite 1 von 3 Konten: AutoInvest 80000/148386 Generiert um: 02-Aug-2025
+Corporate Action Detail, CHF
+Berichtszeitraum
+17-Jul-2025 bis 17-Jul-2025
+Corporate Action
+Event Bardividende Geeignete Menge 75
+Description iShares (CH) Swiss Dividend ETF Dividende pro Aktie 0.26 CHF
+Symbol CHDVD:xswx Umrechnungskurs 1.000000
+ISIN CH0237935637 Kapitalmaßnahmen - Bardividenden 19.50 CHF
+Kapitalmaßnahmen - Quellensteuer -6.83 CHF
+Kapitalmaßnahmen - Quellensteuer (%) 35%
+Transaction description Event Id 9413396
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-20104444 Berichtszeitraum
+Währung: CHF 17-Jul-2025 - 17-Jul-2025
+Seite 2 von 3 Konten: AutoInvest 80000/148386 Generiert um: 02-Aug-2025
+Corporate Action Detail, CHF
+Berichtszeitraum
+17-Jul-2025 bis 17-Jul-2025
+Betrag Gebuchter Betrag
+Buchungsbetrag-ID Ex-Tag Record Date Einstellungsdatum Zahltag Umrechnungskurs
+CHF CHF
+Kapitalmaßnahmen -
+45865563189 15-Jul-2025 16-Jul-2025 - 17-Jul-2025 19.50 1.000000 19.50
+Bardividenden
+Kapitalmaßnahmen -
+45865563190 15-Jul-2025 16-Jul-2025 - 17-Jul-2025 -6.83 1.000000 -6.83
+Quellensteuer
+Nettobetrag - - - - - 12.67 1.000000 12.67
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-20104444 Berichtszeitraum
+Währung: CHF 17-Jul-2025 - 17-Jul-2025
+Seite 3 von 3 Konten: AutoInvest 80000/148386 Generiert um: 02-Aug-2025

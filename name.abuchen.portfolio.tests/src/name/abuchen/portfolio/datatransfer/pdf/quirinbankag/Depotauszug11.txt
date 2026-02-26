@@ -1,0 +1,135 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.77.3
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Kontoauszug
+Konto 8984713182 EUR
+IBAN DE671012345606314265555
+hPTdycDs, ISdffrWXo
+Vermögensverwaltungskonto in EUR
+Datum 30.06.2025
+Herrn Auszug-Nr 6
+MHwJBOWku jNKSFByp Seite 1 von 3
+nTfs-aXWUJXVSvA-Ttg 4
+67937 WXQr MSNKHuoA VTHB BJIFx
+Telefon +49 (0) 9281 82088-13
+E-Mail jens.jugel@quirinprivatbank.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Steueroptimierung 02.06.2025 02.06.2025 58,85 EUR
+Ref.: 610616214
+Erträgnisabrechnung, Ref.: 611899693 04.06.2025 04.06.2025 35,41 EUR
+Vanguard EUR Euroz.Gov.B.U.ETF Registered Shares EUR Dis.oN
+IE00BZ163H91, ST 805,2646
+KEST: EUR -12,03, SOLI: EUR -0,66
+Wertpapier Verkauf, Ref.: 614687808 11.06.2025 13.06.2025 16.823,87 EUR
+Dimensional Fds-Emerg.Mkts Va. Registered Shares EUR Dis.o.N.
+IE00B42THM37, ST -1.453,3036
+KEST: EUR -388,97, SOLI: EUR -21,39
+Wertpapier Kauf, Ref.: 614687922 11.06.2025 13.06.2025 -38.497,21 EUR
+Dimens.Fds-Glbl Core Equity Fd Registered Shs EUR Dis.o.N.
+IE00B3M0BZ05, ST 1.083,763
+Wertpapier Verkauf, Ref.: 614687823 13.06.2025 16.06.2025 18.291,39 EUR
+Robeco C.G.Fds-R.QI.Em.Con.Eq. Actions Nominat. IE EUR o.N.
+LU1233758587, ST -178,3279
+KEST: EUR -207,47, SOLI: EUR -11,41
+Wertpapier Verkauf, Ref.: 614687838 13.06.2025 16.06.2025 767,24 EUR
+MUL Amundi EUR GovBond 1-3Y UCITS ETF Inh.Anteile Acc
+LU1650487413, ST -6,0675
+Wertpapier Verkauf, Ref.: 614687853 13.06.2025 16.06.2025 378,13 EUR
+SPDR Bl.1-3Y.Eu.Go.Bd U.ETF Registered Shares o.N.
+IE00B6YX5F63, ST -7,1805
+Wertpapier Verkauf, Ref.: 614687866 13.06.2025 16.06.2025 12.416,83 EUR
+iShsIII-MSCI Wld Sm.Ca.UCI.ETF Registered Shares USD(Acc)o.N.
+IE00BF4RFH31, ST -1.938,3874
+KEST: EUR -830,92, SOLI: EUR -45,70
+Wertpapier Verkauf, Ref.: 614687879 13.06.2025 16.06.2025 13.345,74 EUR
+Xtr.(IE)MSCI World Value Registered Shares 1C USD o.N.
+IE00BL25JM42, ST -316,0119
+KEST: EUR -480,27, SOLI: EUR -26,41
+Wertpapier Verkauf, Ref.: 614687889 13.06.2025 16.06.2025 297,43 EUR
+iShs EO Govt Bd 1-3yr U.ETF Registered Shares o.N.
+IE00B14X4Q57, ST -2,1008
+Quirin Privatbank AG
+Postfach 311105 | 10641 Berlin T +49 (0)30 890 21-300 Handelsregister: Vorstand: Karl Matthäus Schmidt
+Kurfürstendamm 119 | 10711 Berlin F +49 (0)30 890 21-301 Berlin Charlottenburg, HRB 87859 Johannes Eismann
+www.quirinprivatbank.de info@quirinprivatbank.de USt-IdNr.: DE195661729 Aufsichtsratsvorsitzender: Holger Timm
+KTO_AUSZ / 96023109 / 20250701 15:41:20
+Kontoauszug
+Konto 1925694654 EUR
+IBAN DE671012345606314265555
+kSltApHj, qNYmIqFVl
+Vermögensverwaltungskonto in EUR
+Datum 30.06.2025
+Herrn Auszug-Nr 6
+bBAkqlEQu FbGSLXVp Seite 2 von 3
+tFDK-dAWKfDcKEf-jbW 4
+88197 lOaf Betreuer Jens Jugel
+Telefon +49 (0) 9281 82088-13
+E-Mail jens.jugel@quirinprivatbank.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Wertpapier Verkauf, Ref.: 614687901 13.06.2025 16.06.2025 299,33 EUR
+AIS-Amundi Ind.JPM Gl.GBI Gov. Act.Nom.UCITS ETF DR EUR Hd
+oN
+LU1708330235, ST -6,4513
+Wertpapier Verkauf, Ref.: 614687912 13.06.2025 16.06.2025 4.541,91 EUR
+SPDR MSCI Emer.Mkts Sm.Cap ETF Registered Shares o.N.
+IE00B48X4842, ST -43,0035
+KEST: EUR -121,98, SOLI: EUR -6,70
+Wertpapier Kauf, Ref.: 614687930 13.06.2025 16.06.2025 -5.791,33 EUR
+Rob.C.Gr.Fds-R.QI Gl.De.Co.Eq. Actions Nom. I EUR o.N.
+LU1274520086, ST 28,0779
+Wertpapier Kauf, Ref.: 614687935 13.06.2025 13.06.2025 -375,90 EUR
+Vang.Inv.S.-Global Stk.Ind.Fd Reg.Shs EUR Acc o.N.
+IE00B03HD191, ST 7,4825
+Wertpapier Kauf, Ref.: 614687949 13.06.2025 16.06.2025 -21.242,99 EUR
+iShs Core MSCI EM IMI U.ETF Registered Shs USD (Dist) o.N.
+IE00BD45KH83, ST 4.650,3717
+Steueroptimierung 13.06.2025 13.06.2025 14,24 EUR
+Ref.: 615820948
+Wertpapier Kauf, Ref.: 614687943 16.06.2025 16.06.2025 -2.948,14 EUR
+Assenagon Funds Val.Size Glob. Act. Nom. RS EUR Dis. oN
+LU2146179432, ST 35,995
+Steueroptimierung 16.06.2025 16.06.2025 -7,39 EUR
+Ref.: 616720729
+Erträgnisabrechnung, Ref.: 615194691 25.06.2025 25.06.2025 104,95 EUR
+iShsIV-EO Ultrashort Bd U.ETF Registered Shares o.N.
+IE00BCRY6557, ST 92,3077
+KEST: EUR -35,63, SOLI: EUR -1,95
+Quirin Privatbank AG
+Postfach 311105 | 10641 Berlin T +49 (0)30 890 21-300 Handelsregister: Vorstand: Karl Matthäus Schmidt
+Kurfürstendamm 119 | 10711 Berlin F +49 (0)30 890 21-301 Berlin Charlottenburg, HRB 87859 Johannes Eismann
+www.quirinprivatbank.de info@quirinprivatbank.de USt-IdNr.: DE195661729 Aufsichtsratsvorsitzender: Holger Timm
+KTO_AUSZ / 96023109 / 20250701 15:41:20
+Kontoauszug
+Konto 1305423939 EUR
+IBAN DE671012345606314265555
+tvMIxCBp, CLDQMrhSB
+Vermögensverwaltungskonto in EUR
+Datum 30.06.2025
+Herrn Auszug-Nr 6
+wfQdxAYsc BNPzzvQh Seite 3 von 3
+jGzi-tfPOiysTKh-wvW 4
+47182 gZic Betreuer Jens Jugel
+Telefon +49 (0) 9281 82088-13
+E-Mail jens.jugel@quirinprivatbank.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Vermögensverwaltungshonorar 6314265222, 01.06.2025 - 30.06.2025 30.06.2025 30.06.2025 -469,61 EUR
+Bemessungsgrundlage 571.360,88 EUR
+Betrag inkl. USt: -469,61 EUR (Netto: -394,63 EUR, USt: -74,98
+EUR), enthaltener Transaktionskostenanteil: 216,02 EUR
+Ref.: 620879559
+letzter Auszug 31.05.2025 alter Saldo 4.521,83 EUR
+Umsatz -1.957,25 EUR
+Limit (in Währung) 0,00 neuer Saldo 2.564,58 EUR
+Sollzins in % p.a. 0,00
+Überziehungszins in % p.a. 0,00
+Dieser Kontoauszug gilt gleichzeitig als Saldenmitteilung. Etwaige Einwendungen gegen den Kontoauszug sind unverzüglich zu erheben;
+ist der Kontoauszug zusätzlich als Rechnungsabschluss bezeichnet, gilt der Abschlusssaldo als genehmigt, wenn ihm nicht innerhalb von
+sechs Wochen nach Zugang schriftlich widersprochen wird. Zur Fristwahrung genügt die rechtzeitige Absendung.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können dem
+"Informationsbogen für den Einleger" entnommen werden.
+Quirin Privatbank AG
+Postfach 311105 | 10641 Berlin T +49 (0)30 890 21-300 Handelsregister: Vorstand: Karl Matthäus Schmidt
+Kurfürstendamm 119 | 10711 Berlin F +49 (0)30 890 21-301 Berlin Charlottenburg, HRB 87859 Johannes Eismann
+www.quirinprivatbank.de info@quirinprivatbank.de USt-IdNr.: DE195661729 Aufsichtsratsvorsitzender: Holger Timm
+KTO_AUSZ / 96023109 / 20250701 15:41:20

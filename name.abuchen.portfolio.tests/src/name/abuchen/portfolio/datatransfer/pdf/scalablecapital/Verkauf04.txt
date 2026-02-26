@@ -1,0 +1,52 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.77.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+Huberte Mustermann
+Haaaaaaastraße 99 
+12345 Haar Datum 18.06.2025
+Deutschland Seite 1 / 2
+Wertpapierabrechnung 
+für Kundenauftrag 
+Typ LIMIT Order SCAL1SRff6HgHQD 
+Ausführung 13.06.2025 11:16:30 Geschäft 12345P6DBGU20250 
+Ausführungsplatz EIX Lagerland Deutschland
+Depot 1234567890 Verwahrart Girosammelverwahrung
+Typ Wertpapier Anzahl Kurs Betrag
+Verkauf Prysmian Group 21,00 Stk. 56,02 EUR 1.176,42 EUR
+IT0004176001
+Ordergebühren 0,00 EUR
+Steuern -50,51 EUR
+Gutschrift 1.125,91 EUR
+Der Betrag wird mit dem Verrechnungskonto DE23845780700123456789 (Valuta: 17.06.2025) verrechnet. 
+Bitte überprüfen Sie die Informationen auf Richtigkeit und melden Sie etwaige Einwände unverzüglich bei uns.
+Verwenden Sie dafür den Menüpunkt Support im Kundenbereich. 
+Scalable Capital GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Erik Podzuweit, Florian Prucker Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Martin Krebs, Dirk Franzmeyer, Dirk
+Urmoneit 1 / 2
+Wertpapierabrechnung
+Verkauf 21,00 Stk. Prysmian Group 
+Ermittlung steuerrelevanter Erträge
+Typ Anmerkung Betrag
+Gewinn oder Verlust 192,45 EUR
+Berücksichtigte Ordergebühren -0,98 EUR
+Abgeltungsteuer Bereits bezahlt 0,00 EUR
+Steuerfreie Altbestände 0,00 EUR
+Nichtveranlagungsbescheinigung 0,00 EUR
+Verlusttopf Aktien 0,00 EUR → 0,00 EUR 0,00 EUR
+Verlusttopf allgemein 0,00 EUR → 0,00 EUR 0,00 EUR
+Sparerpauschbetrag 0,00 EUR → 0,00 EUR -0,00 EUR
+Quellensteuertopf 0,00 EUR → 0,00 EUR 0,00 EUR
+Zu versteuern 191,47 EUR
+Gesamt 
+Typ Betrag
+Kapitalertragsteuer 47,87 EUR
+Solidaritätszuschlag 2,64 EUR
+Kirchensteuer 0,00 EUR
+Gesamt 50,51 EUR
+Scalable Capital GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Erik Podzuweit, Florian Prucker Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Martin Krebs, Dirk Franzmeyer, Dirk
+Urmoneit 2 / 2

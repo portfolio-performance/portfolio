@@ -1,0 +1,69 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Deutsche Kreditbank AG
+Herrn Internes Zeichen:
+Max Mustermann 180 41 00
+City Str. 3  
+01111 City  
+ 
+ 
+ 5. Januar 2026
+Kontoauszug 13/2025 Seite 1 von 5
+G  irokonto 1111111111, DE45 1203 0000 1111 1111 11 
+Datum Erläuterung Betrag Soll EUR Betrag Haben EUR
+ Kontostand am 04.12.2025, Auszug Nr.   12               3.136,15
+22.12.2025 Rückbuchung                20,71
+HUK-COBURG UNTERNEHMENSGRUPPE HUK24, 
+HAUSRAT-VERSICHERUNG 111/111 111-M-15 212+ZKLE 
+17.12.25 760/1111-M-15F MA011111 Gläubiger-ID: 
+DE1711111115
+30.12.2025 Abrechnung 30.12.2025 / Wert: 01.01.2026                 0,00
+siehe Anlage Nr. 1
+ Kontostand am 30.12.2025 um 18:02 Uhr                 704,50
+Gesamtumsatzsummen Summe Soll EUR Anzahl Summe Haben EUR Anzahl
+ . -6.161,70 36 3.730,05 7
+Deutsche Kreditbank AG Vorsitzender des Aufsichtsrats Telefon 030 120 300 00 BIC: BYLADEM1001 
+Taubenstraße 7 - 9 Stephan Winkelmeier Telefax 030 120 300 01  
+10117 Berlin Vorstand  USt-ID-Nr.: DE137178746 
+ Dr. Sven Deglow (Vorsitzender) info@dkb.de Handelsregister 
+Ein Unternehmen der Tilo Hacke, Jan Walther, www.dkb.de Berlin-Charlottenburg 
+Bayerischen Landesbank Arnulf Keese, Kristina Trink (HRB 34165 B)
+Kontoauszug 13/2025 Seite 5 von 5
+Girokonto 1111111111, DE45 1203 0000 1111 1111 11,  Max Mustermann
+Rechnungsabschluss: Anlage     1
+Kontostand in EUR am 30.12.2025                                   704,50 +
+                                                            --------------
+Abrechnungszeitraum vom 01.10.2025 bis 31.12.2025
+Abrechnung 31.12.2025                                                0,00+
+Sollzinssätze am 30.12.2025
+ 7,9100 v.H. für eingeräumte Kontoüberziehung
+(aktuell eingeräumte Kontoüberziehung       2.000,00)
+ 7,9100 v.H. für geduldete Kontoüberziehung
+über die eingeräumte Kontoüberziehung hinaus
+  Kontostand/Rechnungsabschluss in EUR am 30.12.2025                704,50 +
+Rechnungsnummer: 11111-BY111-1321659
+Bitte beachten Sie die Hinweise zum Kontoauszug.
+Hinweise zum Kontoauszug:
+l Bitte den Kontoauszug prüfen. Nicht autorisierte oder fehlerhaft ausgeführte Aufträge müssen uns unverzüglich angezeigt 
+werden.
+l Der Kontoauszug am Ende eines Kalenderquartals beinhaltet regelmäßig einen Rechnungsabschluss. Dieser gilt als genehmigt, 
+wenn ihm nicht vor Ablauf von sechs Wochen nach Zugang widersprochen wird. Einwendungen gegen Rechnungsabschlüsse 
+müssen der Deutschen Kreditbank AG in Textform zugehen. Zur Fristwahrung genügt die rechtzeitige Absendung (Nr. 7 Abs. 3 
+der Allgemeinen Geschäftsbedingungen).
+l Der angegebene Kontostand berücksichtigt nicht die Wertstellung der einzelnen Buchungen. Dies bedeutet, dass der genannte 
+Betrag nicht dem für die Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei Verfügungen möglicherweise 
+Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können.
+l Die Gutschrift von Schecks, Lastschriften oder anderen Einzugspapieren vor ihrer Einlösung geschieht unter Vorbehalt 
+(E.v.-Gutschrift). Werden Schecks oder Lastschriften nicht eingelöst oder geht der DKB der Gegenwert nicht zu, so macht sie die 
+Gutschrift gemäß Nr. 23 der AGB rückgängig (Stornobuchung), und zwar auch nach einem zwischenzeitlich erfolgten 
+Rechnungsabschluss.
+l Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen: im 
+"Informationsbogen für Einleger" sowie auf unserer Webseite unter dkb.de/kundenservice/einlagensicherung.
+Deutsche Kreditbank AG Vorsitzender des Aufsichtsrats Telefon 030 120 300 00 BIC: BYLADEM1001 
+Taubenstraße 7 - 9 Stephan Winkelmeier Telefax 030 120 300 01  
+10117 Berlin Vorstand  USt-ID-Nr.: DE137178746 
+ Dr. Sven Deglow (Vorsitzender) info@dkb.de Handelsregister 
+Ein Unternehmen der Tilo Hacke, Jan Walther, www.dkb.de Berlin-Charlottenburg 
+Bayerischen Landesbank Arnulf Keese, Kristina Trink (HRB 34165 B)

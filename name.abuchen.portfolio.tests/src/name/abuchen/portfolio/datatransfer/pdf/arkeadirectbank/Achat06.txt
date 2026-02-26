@@ -1,0 +1,24 @@
+```
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.74.2.qualifier
+System: win32 | x86_64 | 21.0.6+7-LTS | Eclipse Adoptium
+-----------------------------------------
+RESULTAT D'OST O AIzHtcm VzmVcF
+Au 8 octobre 2021 5 grt GpFR ufehu MriRxOnWB
+41901 PrqKU MXl LtVAkGB
+VOTRE COMPTE PEA N° 270217438715 c EMluVRh mdIJRA
+Objet : Souscription avec droits
+Monsieur,
+Nous vous informons que  nous avons procédé à la souscription de 16 titre(s) VEOLIA ENVIRON. (FR0000124141) et contre
+présentation de 84 droit(s) VEOLIA ENVIR.DS 21 (FR0014005GA0).
+Cette opération a été comptabilisée sur votre compte :
+montant net de  : - 363,20 EUR
+Veuillez agréer, Monsieur, l'expression de nos salutations distinguées.
+Le service OST
+Duplicata Internet
+Page 1/1
+Fortuneo est une marque commerciale d'Arkéa Direct Bank. Arkéa Direct Bank, Société Anonyme à Directoire et Conseil de Surveillance
+au capital de 89 198 952 euros. RCS Nanterre 384 288 890. Siège social : Tour Ariane - 5, place de la Pyramide 92088 Paris La Défense.
+Courtier en assurance n°ORIAS 07 008 441. Adresse postale : Fortuneo - Service Clients - TSA41707 - 35917 RENNES CEDEX 9.
+
+```

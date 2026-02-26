@@ -7,7 +7,6 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 
-import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -40,9 +39,10 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
         super(client);
 
         addBankIdentifier("PostFinance");
+        addBankIdentifier("PostFinance AG");
 
         addBuySellTransaction();
-        addSettlementTransaction();
+        addBuySellCryptoTransaction();
         addDividendeTransaction();
         addPaymentTransaction();
         addAnnualFeesTransaction();
@@ -61,117 +61,30 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("B.rsentransaktion: (Kauf|Verkauf)");
+        final var type = new DocumentType("(B.rsentransaktion|Transaktionsabrechnung): (Kauf|Verkauf|Zeichnung|Fondssparplan|R.cknahme)");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^B.rsentransaktion: (Kauf|Verkauf) .*$");
+        var firstRelevantLine = new Block("^(Sie werden betreut|TRANSAKTIONSBELEG).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            var portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                             return portfolioTransaction;
                         })
 
                         // Is type --> "Verkauf" change from BUY to SELL
+                        // Is type --> "Rücknahme" change from BUY to SELL
                         .section("type").optional() //
-                        .match("^B.rsentransaktion: (?<type>(Kauf|Verkauf)) .*$") //
+                        .match("^(B.rsentransaktion|Transaktionsabrechnung): (?<type>(Kauf|Verkauf|Zeichnung|Fondssparplan|R.cknahme)).*$") //
                         .assign((t, v) -> {
-                            if ("Verkauf".equals(v.get("type")))
+                            if ("Verkauf".equals(v.get("type")) || "Rücknahme".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
-                        })
-
-                        // @formatter:off
-                        // UNILEVER DUTCH CERT ISIN: NL0000009355 Amsterdam Euronext
-                        // 60 47.29 EUR 2'837.40
-                        // @formatter:on
-                        .section("name", "isin", "currency") //
-                        .match("^(?<name>.*) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$") //
-                        .match("^[\\.'\\d\\s]+ [\\.,'\\d\\s]+ (?<currency>[\\w]{3}) [\\.'\\d\\s]+.*$") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-
-                        // @formatter:off
-                        // 60 47.29 EUR 2'837.40
-                        // @formatter:on
-                        .section("shares") //
-                        .match("^(?<shares>[\\.'\\d\\s]+) [\\.,'\\d\\s]+ [\\w]{3} [\\.'\\d\\s]+.*$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-
-                        // @formatter:off
-                        // Gemäss Ihrem Kaufauftrag vom 25.09.2018 haben wir folgende Transaktionen vorgenommen:
-                        // Gemäss Ihrem Verkaufsauftrag vom 20.09.2018 haben wirfolgende Transaktionen vorgenommen:
-                        // @formatter:on
-                        .section("date") //
-                        .match("^.* (Kaufauftrag|Verkaufsauftrag) vom (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
-
-                        // @formatter:off
-                        // Zu Ihren Lasten EUR 2'850.24
-                        // Zu Ihren Gunsten CHF 7'467.50
-                        // @formatter:on
-                        .section("currency", "amount") //
-                        .match("^Zu Ihren (Lasten|Gunsten) (?<currency>[\\w]{3}) (?<amount>[\\.'\\d\\s]+).*$") //
-                        .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
-
-                        // @formatter:off
-                        // 55 49.76 EUR 2'736.80
-                        // Wechselkurs 1.08279
-                        // Zu Ihren Lasten CHF 2'968.50
-                        // @formatter:on
-                        .section("baseCurrency", "fxGross", "exchangeRate", "termCurrency").optional() //
-                        .match("^[\\.'\\d\\s]+ [\\.'\\d\\s]+ (?<baseCurrency>[\\w]{3}) (?<fxGross>[\\.'\\d\\s]+).*$") //
-                        .match("^Wechselkurs (?<exchangeRate>[\\.'\\d\\s]+).*$") //
-                        .match("^Zu Ihren (Lasten|Gunsten) (?<termCurrency>[\\w]{3}) [\\.'\\d\\s]+.*$") //
-                        .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
-                            type.getCurrentContext().putType(rate);
-
-                            Money fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
-                            Money gross = rate.convert(rate.getTermCurrency(), fxGross);
-
-                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                        })
-
-                        // @formatter:off
-                        // Börsentransaktion: Kauf Unsere Referenz: 153557048
-                        // @formatter:on
-                        .section("note").optional() //
-                        .match("^B.rsentransaktion: (Kauf|Verkauf) Unsere (?<note>Referenz: .*)$") //
-                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
-
-                        .conclude(ExtractorUtils.fixGrossValueBuySell())
-
-                        .wrap(BuySellEntryItem::new);
-
-        addTaxesSectionsTransaction(pdfTransaction, type);
-        addFeesSectionsTransaction(pdfTransaction, type);
-    }
-
-    private void addSettlementTransaction()
-    {
-        DocumentType type = new DocumentType("Transaktionsabrechnung: (Zeichnung|Fondssparplan)");
-        this.addDocumentTyp(type);
-
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
-
-        Block firstRelevantLine = new Block("^Transaktionsabrechnung: (Zeichnung|Fondssparplan) Seite: .*$");
-        type.addBlock(firstRelevantLine);
-        firstRelevantLine.set(pdfTransaction);
-
-        pdfTransaction //
-
-                        .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
                         })
 
                         .oneOf( //
@@ -182,83 +95,263 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("isin", "name", "currency") //
-                                                        .find("Position Anteile W.hrung Kurs.*") //
-                                                        .match("^(?<name>.*) [\\w]{3} [\\.'\\d\\s]+ (?<currency>[\\w]{3}) [\\.'\\d\\s]+.*$") //
+                                                        .find("Position (Anteile|St.ckzahl) W.hrung Kurs.*") //
+                                                        .match("^(?<name>.*) [A-Z]{3} [\\.'\\d\\s]+ (?<currency>[A-Z]{3}) [\\.'\\d\\s]+.*$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Position Anteile Währung Kurs
-                                        // PF - Global Fund A 1.216 CHF 162.830
-                                        // ISIN CH0014933193
+                                        // Pictet - Japan Index - I JPY 1.441 JPY 23 608.200
+                                        // ISIN LU0188802960
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("isin", "name", "currency") //
+                                                        .find("Position (Anteile|St.ckzahl) W.hrung Kurs.*") //
+                                                        .match("^(?<name>.*) [\\.'\\d\\s]+ (?<currency>[A-Z]{3}) [\\.'\\d\\s]+.*$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // UNILEVER DUTCH CERT ISIN: NL0000009355 Amsterdam Euronext
+                                        // 60 47.29 EUR 2'837.40
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "isin", "currency") //
-                                                        .find("Position Anteile W.hrung Kurs.*") //
-                                                        .match("^(?<name>.*) [\\.'\\d\\s]+ (?<currency>[\\w]{3}) [\\.'\\d\\s]+.*$") //
+                                                        .match("^(?<name>.*) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$") //
+                                                        .match("^[\\.'\\d\\s]+ [\\.,'\\d\\s]+ (?<currency>[A-Z]{3}) [\\.'\\d\\s]+.*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Position Stückzahl Währung Kurs
+                                        // UBS ETF - SXI Real Estate Funds 14.000 CHF 10.0834
+                                        // ISIN CH0105994401
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "currency", "isin") //
+                                                        .find("Position (Anteile|St.ckzahl) W.hrung Kurs.*") //
+                                                        .match("^(?<name>.*) [\\.'\\d\\s]+ (?<currency>[A-Z]{3}) [\\.'\\d\\s]+.*$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         .oneOf( //
+                                        // @formatter:off
+                                        // 60 47.29 EUR 2'837.40
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^(?<shares>[\\.'\\d\\s]+) [\\.,'\\d\\s]+ [A-Z]{3} [\\.'\\d\\s]+.*$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // Position Anteile Währung Kurs
                                         // Pictet - Japan Index - I JPY 1.441 JPY 23 608.200
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .find("Position Anteile W.hrung Kurs.*") //
-                                                        .match("^.* [\\w]{3} (?<shares>[\\.'\\d\\s]+) [\\w]{3} [\\.'\\d\\s]+.*$") //
+                                                        .find("Position (Anteile|St.ckzahl) W.hrung Kurs.*") //
+                                                        .match("^.* [A-Z]{3} (?<shares>[\\.'\\d\\s]+) [A-Z]{3} [\\.'\\d\\s]+.*$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // Position Anteile Währung Kurs
                                         // PF - Global Fund A 1.216 CHF 162.830
+                                        //
+                                        // Position Stückzahl Währung Kurs
+                                        // UBS ETF - SXI Real Estate Funds 14.000 CHF 10.0834
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .find("Position Anteile W.hrung Kurs.*") //
-                                                        .match("^.* (?<shares>[\\.'\\d\\s]+) [\\w]{3} [\\.'\\d\\s]+.*$") //
+                                                        .find("Position (Anteile|St.ckzahl) W.hrung Kurs.*") //
+                                                        .match("^.* (?<shares>[\\.'\\d\\s]+) [A-Z]{3} [\\.'\\d\\s]+.*$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
-                        // @formatter:off
-                        // E-Vermögensverwaltung Datum: 20.12.2021
-                        // Selfservice Fonds Datum: 31.07.2023
-                        // @formatter:on
-                        .section("date") //
-                        .match("^(E\\-Verm.gensverwaltung|Selfservice Fonds) Datum: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Gemäss Ihrem Kaufauftrag vom 25.09.2018 haben wir folgende Transaktionen vorgenommen:
+                                        // Gemäss Ihrem Verkaufsauftrag vom 20.09.2018 haben wirfolgende Transaktionen vorgenommen:
+                                        // @formatter:on
+                                        section -> section.attributes("date") //
+                                                        .match("^.* (Kaufauftrag|Verkaufsauftrag) vom (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // E-Vermögensverwaltung Datum: 20.12.2021
+                                        // Selfservice Fonds Datum: 31.07.2023
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^(E\\-Verm.gensverwaltung|Selfservice Fonds) Datum: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // Bestand Datum: 18.06.2025
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Bestand Datum: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // Transaktionsabrechnung: Rücknahme ganzer Bestand
+                                        // Depot 72-963473-7 Datum: 13.03.2024 Seite: 2 / 2
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .find("Transaktionsabrechnung: R.cknahme ganzer Bestand.*") //
+                                                        .match("^.* Datum: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))))
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Der Totalbetrag von CHF 280.91 wurde Ihrem Konto CH11 0100 0000 1111 1111 1 mit Valuta 21.12.2021 belastet.
+                                        // Der Totalbetrag von  CHF 200.00 wurde Ihrem Konto  CH81 0900 1234 8952 2587 6 mit Valuta  02.08.2023 belastet.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^Der Totalbetrag von[\\s]{1,}(?<currency>[A-Z]{3}) (?<amount>[\\.'\\d\\s]+) .*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }),
+                                        // @formatter:off
+                                        // Zu Ihren Lasten EUR 2'850.24
+                                        // Zu Ihren Gunsten CHF 7'467.50
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^Zu Ihren (Lasten|Gunsten) (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d\\s]+).*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // 55 49.76 EUR 2'736.80
+                                        // Wechselkurs 1.08279
+                                        // Zu Ihren Lasten CHF 2'968.50
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("baseCurrency", "fxGross", "exchangeRate", "termCurrency") //
+                                                        .match("^[\\.'\\d\\s]+ [\\.'\\d\\s]+ (?<baseCurrency>[A-Z]{3}) (?<fxGross>[\\.'\\d\\s]+).*$") //
+                                                        .match("^Wechselkurs (?<exchangeRate>[\\.'\\d\\s]+).*$") //
+                                                        .match("^Zu Ihren (Lasten|Gunsten) (?<termCurrency>[A-Z]{3}) [\\.'\\d\\s]+.*$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            var fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = rate.convert(rate.getTermCurrency(), fxGross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
+                                        // Kurswert in Handelswährung JPY 34 019.00
+                                        // Total in Kontowährung zum Kurs von JPY/CHF 0.0082450 CHF 280.91
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("fxGross", "baseCurrency", "termCurrency", "exchangeRate") //
+                                                        .match("^Kurswert in Handelsw.hrung [A-Z]{3} (?<fxGross>[\\.'\\d\\s]+).*$") //
+                                                        .match("^Total in Kontow.hrung zum Kurs von (?<baseCurrency>[A-Z]{3})\\/(?<termCurrency>[A-Z]{3}) (?<exchangeRate>[\\.'\\d\\s]+) [A-Z]{3} [\\.'\\d\\s]+.*$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            var fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = rate.convert(rate.getTermCurrency(), fxGross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }))
 
                         // @formatter:off
-                        // Der Totalbetrag von CHF 280.91 wurde Ihrem Konto CH11 0100 0000 1111 1111 1 mit Valuta 21.12.2021 belastet.
-                        // Der Totalbetrag von  CHF 200.00 wurde Ihrem Konto  CH81 0900 1234 8952 2587 6 mit Valuta  02.08.2023 belastet.
+                        // Auftrag 10111111
+                        // Depot 71-342453-0 Auftrag 19888922
                         // @formatter:on
-                        .section("currency", "amount") //
-                        .match("^Der Totalbetrag von ([\\s]+)?(?<currency>[\\w]{3}) (?<amount>[\\.'\\d\\s]+) .*$") //
-                        .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        .section("note").optional() //
+                        .match("^.*(?<note>Auftrag .*)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        // @formatter:off
+                        // Börsentransaktion: Kauf Unsere Referenz: 153557048
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^B.rsentransaktion: (Kauf|Verkauf) Unsere Referenz: (?<note>.*)$") //
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), "Ref.-Nr.: " + trim(v.get("note")), " | ")))
+
+                        .conclude(ExtractorUtils.fixGrossValueBuySell())
+
+                        .wrap(BuySellEntryItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addBuySellCryptoTransaction()
+    {
+        final var type = new DocumentType("Krypto");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<BuySellEntry>();
+
+        var firstRelevantLine = new Block("^Krypto .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var portfolioTransaction = new BuySellEntry();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
+                            return portfolioTransaction;
                         })
 
                         // @formatter:off
-                        // Kurswert in Handelswährung JPY 34 019.00
-                        // Total in Kontowährung zum Kurs von JPY/CHF 0.0082450 CHF 280.91
+                        // Bitcoin BTC 0.006124 USD 97 376.126639
                         // @formatter:on
-                        .section("fxGross", "baseCurrency", "termCurrency", "exchangeRate").optional() //
-                        .match("^Kurswert in Handelsw.hrung [\\w]{3} (?<fxGross>[\\.'\\d\\s]+).*$") //
-                        .match("^Total in Kontow.hrung zum Kurs von (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.'\\d\\s]+) [\\w]{3} [\\.'\\d\\s]+.*$") //
+                        .section("name", "tickerSymbol", "currency") //
+                        .match("^(?<name>.*) (?<tickerSymbol>[A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})?) [\\.'\\d]+ (?<currency>[A-Z]{3}) [\\.'\\d]+ [\\.'\\d]+.*$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateCryptoCurrency(v)))
+
+                        // @formatter:off
+                        // Bitcoin BTC 0.006124 USD 97 376.126639
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^.* [A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})? (?<shares>[\\.'\\d]+) [A-Z]{3} [\\.'\\d]+ [\\.'\\d]+.*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // Ihr Auftrag wurde wie folgt am  01.12.2024 ausgeführt:
+                        // @formatter:on
+                        .section("date") //
+                        .match("^Ihr Auftrag wurde wie folgt am[\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) ausgef.hrt:.*$") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Der Totalbetrag von  CHF 538.73 wurde Ihrem Konto  bD93 4072 6753 0009 6042 0 mit Valuta  01.12.2024 belastet.
+                        // @formatter:on
+                        .section("currency", "amount") //
+                        .match("^Der Totalbetrag von[\\s]{1,}(?<currency>[A-Z]{3}) (?<amount>[\\.'\\d]+) wurde Ihrem Konto .*$") //
                         .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+
+                        // @formatter:off
+                        // Kurswert in Handelswährung USD 596.33
+                        // Total in Kontowährung zum Kurs von USD/CHF 0.8949 538.73
+                        // @formatter:on
+                        .section("fxGross", "termCurrency", "baseCurrency", "exchangeRate") //
+                        .match("^Kurswert in Handelsw.hrung [A-Z]{3} (?<fxGross>[\\.'\\d]+).*$") //
+                        .match("^Total in Kontow.hrung zum Kurs von (?<baseCurrency>[A-Z]{3})\\/(?<termCurrency>[A-Z]{3}) (?<exchangeRate>[\\.'\\d]+) [\\.'\\d]+.*$") //
+                        .assign((t, v) -> {
+                            var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
-                            Money gross = rate.convert(rate.getTermCurrency(), fxGross);
+                            var fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
+                            var gross = rate.convert(rate.getTermCurrency(), fxGross);
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
 
                         // @formatter:off
-                        // Auftrag 10111111
+                        // Kryptoportfolio 33-705809-6 Auftrag 37463178
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^(?<note>Auftrag .*)$") //
+                        .match("^Kryptoportfolio [\\d\\-]+ (?<note>Auftrag [\\d]+).*$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         .wrap(BuySellEntryItem::new);
@@ -269,19 +362,19 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(Dividende|Kapitalgewinn)");
+        final var type = new DocumentType("(Dividende|Kapitalgewinn|Aussch.ttung)");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^(Dividende|Kapitalgewinn) Unsere Referenz: .*$");
+        var firstRelevantLine = new Block("^.* (Unsere Referenz:|Referenznummer) .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
                             return accountTransaction;
                         })
@@ -296,7 +389,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                                         .attributes("isin", "name", "currency") //
                                                         .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .match("^(?<name>.*) NKN: [\\d]+ [\\.'\\d\\s]+.*$") //
-                                                        .match("^(Dividende|Kapitalgewinn) [\\.'\\d\\s]+ (?<currency>[\\w]{3}).*$") //
+                                                        .match("^(Dividende|Kapitalgewinn) [\\.'\\d\\s]+ (?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // UBS ETF CH - SLI CHF A ISIN: CH0032912732NKN: 3291273 34
@@ -304,41 +397,85 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "isin", "currency") //
-                                                        .match("^(?<name>.*) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])([\\s]+)?NKN: [\\d]+ [\\.'\\d\\s]+.*$") //
-                                                        .match("^(Dividende|Kapitalgewinn) [\\.'\\d\\s]+ (?<currency>[\\w]{3}).*$") //
+                                                        .match("^(?<name>.*) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])[\\s]*NKN: [\\d]+ [\\.'\\d\\s]+.*$") //
+                                                        .match("^(Dividende|Kapitalgewinn) [\\.'\\d\\s]+ (?<currency>[A-Z]{3}).*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Position Anzahl
+                                        // iShares J.P. Morgan USD EM Bond CHF Hedged ETF 275.000
+                                        // ISIN IE00B9M04V95
+                                        // Ausführung 12.10.2023
+                                        // Ausschüttung CHF 0.0148000
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .find("Position (Anzahl|St.ckzahl).*") //
+                                                        .match("^(?<name>.*) [\\.'\\d]+.*$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .match("^Aussch.ttung (?<currency>[A-Z]{3}) [\\.'\\d]+.*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
-                        // @formatter:off
-                        // Anzahl 60
-                        // @formatter:on
-                        .section("shares") //
-                        .match("^Anzahl (?<shares>[\\.'\\d\\s]+).*$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Anzahl 60
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^Anzahl (?<shares>[\\.'\\d\\s]+).*$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // Position Anzahl
+                                        // iShares J.P. Morgan USD EM Bond CHF Hedged ETF 275.000
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .find("Position (Anzahl|St.ckzahl).*") //
+                                                        .match("^.* (?<shares>[\\.'\\d]+).*$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
-                        // @formatter:off
-                        // Valutadatum 05.06.2019
-                        // @formatter:on
-                        .section("date") //
-                        .match("^Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Valutadatum 05.06.2019
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // Der Totalbetrag von  CHF 4.07 wurde Ihrem Konto  Mt81 2178 7268 7541 8815 5 mit Valuta  25.10.2023 gutgeschrieben .
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match(".* Valuta[\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
                         // @formatter:off
                         // Total EUR 20.93
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Total (?<currency>[\\w]{3}) (?<amount>[\\.'\\d\\s]+).*$") //
+                        .match("^Total (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d\\s]+).*$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
-                        // @formatter:off
-                        // Dividende Unsere Referenz: 169933304
-                        // Kapitalgewinn Unsere Referenz: 149619136
-                        // @formatter:on
-                        .section("note").optional() //
-                        .match("^(Dividende|Kapitalgewinn) Unsere (?<note>Referenz: .*)$") //
-                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Dividende Unsere Referenz: 169933304
+                                        // Kapitalgewinn Unsere Referenz: 149619136
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.* Unsere Referenz: (?<note>.*)$") //
+                                                        .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(v.get("note")))),
+                                        // @formatter:off
+                                        // Depot 84-662894-6 Referenznummer 7790541
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*Referenznummer (?<note>.*)$") //
+                                                        .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(v.get("note")))))
 
                         .wrap(TransactionItem::new);
 
@@ -348,21 +485,29 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
     private void addPaymentTransaction()
     {
-        DocumentType type = new DocumentType("Zahlungsverkehr");
+        final var type = new DocumentType("Zahlungsverkehr");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^Zahlungsverkehr \\- Gutschrift .*$");
+        var firstRelevantLine = new Block("^Zahlungsverkehr \\- (Gutschrift|Belastung).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
                             return accountTransaction;
+                        })
+
+                        // Is type --> "Belastung" change from DEPOSIT to REMOVAL
+                        .section("type").optional() //
+                        .match("^Zahlungsverkehr \\- (?<type>(Gutschrift|Belastung)) .*$") //
+                        .assign((t, v) -> {
+                            if ("Belastung".equals(v.get("type")))
+                                t.setType(AccountTransaction.Type.REMOVAL);
                         })
 
                         // @formatter:off
@@ -376,7 +521,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         // Total CHF 1'200.00
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Total (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
+                        .match("^Total (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -386,27 +531,27 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         // Zahlungsverkehr - Gutschrift Unsere Referenz: 391377700
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^.* (?<note>Referenz: .*)$") //
-                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                        .match("^.* Referenz: (?<note>.*)$") //
+                        .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(v.get("note"))))
 
                         .wrap(TransactionItem::new);
     }
 
     private void addAnnualFeesTransaction()
     {
-        DocumentType type = new DocumentType("Jahresgeb.hr");
+        final var type = new DocumentType("Jahresgeb.hr");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^Jahresgeb.hr Unsere Referenz: .*$");
+        var firstRelevantLine = new Block("^Jahresgeb.hr Unsere Referenz: .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.FEES);
                             return accountTransaction;
                         })
@@ -419,7 +564,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         .section("date", "currency", "amount") //
                         .find("Jahresgeb.hr .*") //
                         .match("^Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .match("^Betrag belastet (?<currency>[\\w]{3}) (?<amount>[\\.'\\d\\s]+).*$") //
+                        .match("^Betrag belastet (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d\\s]+).*$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -430,59 +575,90 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         // Jahresgebühr Unsere Referenz: 161333839
                         // @formatter:on
                         .section("note1", "note2") //
-                        .match("^(?<note1>Jahresgeb.hr) Unsere (?<note2>Referenz: .*)$") //
-                        .assign((t, v) -> t.setNote(concatenate(v.get("note1"), trim(v.get("note2")), " | ")))
+                        .match("^(?<note1>Jahresgeb.hr) Unsere Referenz: (?<note2>.*)$") //
+                        .assign((t, v) -> t.setNote(concatenate(v.get("note1"), "Ref.-Nr.: " + v.get("note2"), " | ")))
 
                         .wrap(TransactionItem::new);
     }
 
     private void addDepotFeesTransaction()
     {
-        DocumentType type = new DocumentType("Depotgeb.hr");
+        final var type = new DocumentType("(Depotgeb.hr|Geb.hrenbelastung)");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^Depotgeb.hr Unsere Referenz: .*$");
+        var firstRelevantLine = new Block("^.* (Unsere Referenz:|Rechnungsnummer) .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.FEES);
                             return accountTransaction;
                         })
 
-                        // @formatter:off
-                        // Depotgebühr Unsere Referenz: 464973467
-                        // Valutadatum 01.01.2024
-                        // Betrag belastet CHF 18.00
-                        // @formatter:on
-                        .section("date", "currency", "amount") //
-                        .find("Depotgeb.hr .*") //
-                        .match("^Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .match("^Betrag belastet (?<currency>[\\w]{3}) (?<amount>[\\.'\\d\\s]+).*$") //
-                        .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Depotgebühr Unsere Referenz: 464973467
+                                        // Valutadatum 01.01.2024
+                                        // Betrag belastet CHF 18.00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "currency", "amount") //
+                                                        .find("Depotgeb.hr .*") //
+                                                        .match("^Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .match("^Betrag belastet (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d\\s]+).*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // Der Totalbetrag von  CHF 16.12 wurde Ihrem Konto  fs90 9946 3107 5727 7006 2 mit Valuta  30.12.2023 belastet.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount", "date") //
+                                                        .match("^.* (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d\\s]+) .* Valuta[\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }))
 
-                        // @formatter:off
-                        // Depotgebühr Unsere Referenz: 464973467
-                        // @formatter:on
-                        .section("note1", "note2") //
-                        .match("^(?<note1>Depotgeb.hr) Unsere (?<note2>Referenz: .*)$") //
-                        .assign((t, v) -> t.setNote(concatenate(v.get("note1"), trim(v.get("note2")), " | ")))
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Depotgebühr Unsere Referenz: 464973467
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note1", "note2") //
+                                                        .match("^(?<note1>Depotgeb.hr) Unsere Referenz: (?<note2>.*)$") //
+                                                        .assign((t, v) -> t.setNote(concatenate(v.get("note1"), "Ref.-Nr.: " + v.get("note2"), " | "))),
+                                        // @formatter:off
+                                        // Depot 82-879012-4 Rechnungsnummer 2705944
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*Rechnungsnummer (?<note>.*)$") //
+                                                        .assign((t, v) -> t.setNote("R-Nr.: " + trim(v.get("note")))))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Abrechnung vom  01.10.2023 bis  31.12.2023 :
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note1", "note2") //
+                                                        .match("^Abrechnung vom[\\s]{1,}(?<note1>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*(?<note2>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //)
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note1") + " - " + v.get("note2"), " | "))))
 
                         .wrap(TransactionItem::new);
     }
 
     private void addInterestTransaction()
     {
-        final DocumentType type = new DocumentType("Zinsabschluss", //
+        final var type = new DocumentType("Zinsabschluss", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // IBAN CH64 0900 0000 1111 2222 1 CHF
@@ -501,16 +677,16 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{6}) (\\-|\\–) ([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{6}) [\\.'\\d\\s]+(%| %) [\\.'\\d\\s]+.*$");
+        var firstRelevantLine = new Block("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{6}) (\\-|\\–) ([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{6}) [\\.'\\d\\s]+(%| %) [\\.'\\d\\s]+.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.INTEREST);
                             return accountTransaction;
                         })
@@ -539,13 +715,13 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             // Split date1 and date2
                                                             // 010117 - 311217 4.00 % 400.00
-                                                            String day1 = v.get("date1").substring(0, 2);
-                                                            String month1 = v.get("date1").substring(2, 4);
-                                                            String date1 = day1 + "." + month1 + "." + v.get("year");
+                                                            var day1 = v.get("date1").substring(0, 2);
+                                                            var month1 = v.get("date1").substring(2, 4);
+                                                            var date1 = day1 + "." + month1 + "." + v.get("year");
 
-                                                            String day2 = v.get("date2").substring(0, 2);
-                                                            String month2 = v.get("date2").substring(2, 4);
-                                                            String date2 = day2 + "." + month2 + "." + v.get("year");
+                                                            var day2 = v.get("date2").substring(0, 2);
+                                                            var month2 = v.get("date2").substring(2, 4);
+                                                            var date2 = day2 + "." + month2 + "." + v.get("year");
 
                                                             t.setDateTime(asDate(date2));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -558,19 +734,19 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
     private void addFeesTransaction()
     {
-        DocumentType type = new DocumentType("Zinsabschluss");
+        final var type = new DocumentType("Zinsabschluss");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^(?i:Geb.hrenausweis) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-|\\–) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*$");
+        var firstRelevantLine = new Block("^(?i:Geb.hrenausweis) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-|\\–) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.FEES);
                             return accountTransaction;
                         })
@@ -585,7 +761,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                         + "(?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
                                         + "(\\-|\\–) " //
                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})).*$") //
-                        .match("^Zusammenstellung der belasteten Kontof.hrungsgeb.hr: (?<currency>[\\w]{3}) (?<amount>[\\.'\\d\\s]+).*$") //
+                        .match("^Zusammenstellung der belasteten Kontof.hrungsgeb.hr: (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d\\s]+).*$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -598,7 +774,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
     private void addTaxesTransaction()
     {
-        final DocumentType type = new DocumentType("Zinsabschluss", //
+        final var type = new DocumentType("Zinsabschluss", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // IBAN CH64 0900 0000 1111 2222 1 CHF
@@ -617,16 +793,16 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^(?i:Verrechnungssteuer) [\\.'\\d\\s]+(%| %) [\\.'\\d\\s]+.*$");
+        var firstRelevantLine = new Block("^(?i:Verrechnungssteuer) [\\.'\\d\\s]+(%| %) [\\.'\\d\\s]+.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.TAXES);
                             return accountTransaction;
                         })
@@ -651,7 +827,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("Kontoauszug", //
+        final var type = new DocumentType("Kontoauszug", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // IBAN CH64 0900 0000 1111 2222 1 CHF
@@ -670,136 +846,140 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
         this.addDocumentTyp(type);
 
-        Block removalBlock = new Block("^.* [\\.'\\d\\s]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}.*$");
+        var removalBlock = new Block("^.* [\\.'\\d\\s]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}.*$");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.REMOVAL);
                             return accountTransaction;
                         })
 
-                        .section("note", "amount", "date").optional() //
-                        .documentContext("currency") //
-                        .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{2} )?" //
-                                        + "(?<note>.BERTRAG) " //
-                                        + "(?<amount>[\\.'\\d\\s]+) " //
-                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}).*$") //
-                        .match("^AUF KONTO .*$") //
-                        .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(v.get("currency"));
+                        .optionalOneOf( //
+                                        section -> section //
+                                                        .attributes("note", "amount", "date") //
+                                                        .documentContext("currency") //
+                                                        .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{2} )?" //
+                                                                        + "(?<note>.BERTRAG) " //
+                                                                        + "(?<amount>[\\.'\\d\\s]+) " //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}).*$") //
+                                                        .match("^AUF KONTO .*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
 
-                            // Formatting some notes
-                            v.put("note", trim(v.get("note")));
+                                                            // Formatting some notes
+                                                            v.put("note", trim(v.get("note")));
 
-                            if ("ÜBERTRAG".equals(v.get("note")))
-                                v.put("note", "Übertrag auf Konto");
+                                                            if ("ÜBERTRAG".equals(v.get("note")))
+                                                                v.put("note", "Übertrag auf Konto");
 
-                            t.setNote(v.get("note"));
-                        })
+                                                            t.setNote(v.get("note"));
+                                                        }),
+                                        section -> section //
+                                                        .attributes("note", "amount", "date") //
+                                                        .documentContext("currency") //
+                                                        .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{2} )?" //
+                                                                        + "(?<note>(AUFTRAG .*LASTSCHRIFT" //
+                                                                        + "|LASTSCHRIFT" //
+                                                                        + "|ESR" //
+                                                                        + "|KAUF\\/DIENSTLEISTUNG(.*\\.[\\d]{4})?" //
+                                                                        + "|GOOGLE PAY KAUF\\/DIENSTLEISTUNG" //
+                                                                        + "|.BERTRAG (AUF|A UF) .*NTO" //
+                                                                        + "|GIRO .*(OST|ANK|ONAL)( \\(SEPA\\))?" //
+                                                                        + "|(KAUF\\/)?ONLINE( S.*|-S.*)(.*\\.[\\d]{4})?" //
+                                                                        + "|BARGELDBEZUG( VOM)?(.*\\.[\\d]{4})?" //
+                                                                        + "|TWINT .*(ENDEN|DIENSTLEISTUNG)( VOM)?" //
+                                                                        + "|E\\-FINANCE .*\\-[\\d]+" //
+                                                                        + "|AUFTRAG DEBIT DIRECT" //
+                                                                        + "|.BERWEISUNG AUF KONTO)) " //
+                                                                        + "(?<amount>[\\.'\\d\\s]+) " //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}).*$")
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
 
-                        .section("note", "amount", "date").optional() //
-                        .documentContext("currency") //
-                        .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{2} )?" //
-                                        + "(?<note>(AUFTRAG .*LASTSCHRIFT" //
-                                        + "|LASTSCHRIFT" //
-                                        + "|ESR" //
-                                        + "|KAUF\\/DIENSTLEISTUNG(.*\\.[\\d]{4})?" //
-                                        + "|.BERTRAG (AUF|A UF) .*NTO" //
-                                        + "|GIRO .*(OST|ANK|ONAL)( \\(SEPA\\))?" //
-                                        + "|(KAUF\\/)?ONLINE( S.*|-S.*)(.*\\.[\\d]{4})?" //
-                                        + "|BARGELDBEZUG( VOM)?(.*\\.[\\d]{4})?" //
-                                        + "|TWINT .*(ENDEN|DIENSTLEISTUNG)" //
-                                        + "|E\\-FINANCE .*\\-[\\d]+" //
-                                        + "|AUFTRAG DEBIT DIRECT" //
-                                        + "|.BERWEISUNG AUF KONTO)) " //
-                                        + "(?<amount>[\\.'\\d\\s]+) " //
-                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}).*$")
-                        .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(v.get("currency"));
+                                                            // Formatting some notes
+                                                            var note = trim(v.get("note"));
 
-                            // Formatting some notes
-                            String note = trim(v.get("note"));
+                                                            if (note.contains("AUFTRAG") && note.contains("LASTSCHRIFT"))
+                                                            {
+                                                                var parts = note.split("AUFTRAG");
+                                                                note = concatenate("Auftrag", stripBlanks(parts[1]).replace("BASISLASTSCHRIFT", "Basislastschrift"), " ");
+                                                            }
+                                                            else if ("LASTSCHRIFT".equals(note))
+                                                                note = "Lastschrift";
+                                                            else if ("ÜBERWEISUNG AUF KONTO".equals(note))
+                                                                note = "Überweisung";
+                                                            else if ("AUFTRAG DEBIT DIRECT".equals(note))
+                                                                note = "Auftrag DEBIT DIRECT";
+                                                            else if ("ONLINE-SHOPPING".equals(note))
+                                                                note = "Online-Shopping";
+                                                            else if ("ESR".equals(note))
+                                                                note = "Oranger Einzahlungsschein";
+                                                            else if (note.contains("ÜBERTRAG") && note.matches("^.*NTO$"))
+                                                                note = "Übertrag auf Konto";
+                                                            else if (note.contains("GIRO"))
+                                                            {
+                                                                if (note.matches("^.* \\(SEPA\\)$"))
+                                                                    note = "Giro Internation (SEPA)";
+                                                                else if (note.matches("^.*OST$"))
+                                                                    note = "Giro Post";
+                                                                else if (note.matches("^.*ANK$"))
+                                                                    note = "Giro Bank";
+                                                                else
+                                                                    note = "";
+                                                            }
+                                                            else if (note.contains("KAUF/ONLINE"))
+                                                            {
+                                                                if (note.matches("^.*\\.[\\d]{4}$"))
+                                                                {
+                                                                    var parts = note.split("OM");
+                                                                    note = concatenate("Kauf/Online Shopping vom", stripBlanks(parts[1]), " ");
+                                                                }
+                                                                else
+                                                                {
+                                                                    note = "Kauf/Online Shopping";
+                                                                }
+                                                            }
+                                                            else if (note.contains("BARGELDBEZUG"))
+                                                            {
+                                                                if (note.matches("^.*\\.[\\d]{4}$"))
+                                                                {
+                                                                    var parts = note.split("OM");
+                                                                    note = concatenate("Bargeldbezug vom", stripBlanks(parts[1]), " ");
+                                                                }
+                                                                else
+                                                                {
+                                                                    note = "Bargeldbezug";
+                                                                }
+                                                            }
+                                                            else if (note.contains("TWINT"))
+                                                            {
+                                                                if (note.matches("^.*ENDEN$"))
+                                                                    note = "TWINT Geld senden";
+                                                                else
+                                                                    note = "TWINT Kauf/Dienstleistung";
+                                                            }
+                                                            else if (note.contains("KAUF/DIENSTLEISTUNG"))
+                                                            {
+                                                                if (note.matches("^.*\\.[\\d]{4}$"))
+                                                                {
+                                                                    var parts = note.split("OM");
+                                                                    note = concatenate("Kauf/Dienstleistung vom", stripBlanks(parts[1]), " ");
+                                                                }
+                                                                else
+                                                                {
+                                                                    note = "Kauf/Dienstleistung";
+                                                                }
+                                                            }
 
-                            if (note.contains("AUFTRAG") && note.contains("LASTSCHRIFT"))
-                            {
-                                String[] parts = note.split("AUFTRAG");
-                                note = concatenate("Auftrag", stripBlanks(parts[1]).replace("BASISLASTSCHRIFT", "Basislastschrift"), " ");
-                            }
-                            else if ("LASTSCHRIFT".equals(note))
-                                note = "Lastschrift";
-                            else if ("ÜBERWEISUNG AUF KONTO".equals(note))
-                                note = "Überweisung";
-                            else if ("AUFTRAG DEBIT DIRECT".equals(note))
-                                note = "Auftrag DEBIT DIRECT";
-                            else if ("ONLINE-SHOPPING".equals(note))
-                                note = "Online-Shopping";
-                            else if ("ESR".equals(note))
-                                note = "Oranger Einzahlungsschein";
-                            else if (note.contains("ÜBERTRAG") && note.matches("^.*NTO$"))
-                                note = "Übertrag auf Konto";
-                            else if (note.contains("GIRO"))
-                            {
-                                if (note.matches("^.* \\(SEPA\\)$"))
-                                    note = "Giro Internation (SEPA)";
-                                else if (note.matches("^.*OST$"))
-                                    note = "Giro Post";
-                                else if (note.matches("^.*ANK$"))
-                                    note = "Giro Bank";
-                                else
-                                    note = "";
-                            }
-                            else if (note.contains("KAUF/ONLINE"))
-                            {
-                                if (note.matches("^.*\\.[\\d]{4}$"))
-                                {
-                                    String[] parts = note.split("OM");
-                                    note = concatenate("Kauf/Online Shopping vom", stripBlanks(parts[1]), " ");
-                                }
-                                else
-                                {
-                                    note = "Kauf/Online Shopping";
-                                }
-                            }
-                            else if (note.contains("BARGELDBEZUG"))
-                            {
-                                if (note.matches("^.*\\.[\\d]{4}$"))
-                                {
-                                    String[] parts = note.split("OM");
-                                    note = concatenate("Bargeldbezug vom", stripBlanks(parts[1]), " ");
-                                }
-                                else
-                                {
-                                    note = "Bargeldbezug";
-                                }
-                            }
-                            else if (note.contains("TWINT"))
-                            {
-                                if (note.matches("^.*ENDEN$"))
-                                    note = "TWINT Geld senden";
-                                else
-                                    note = "TWINT Kauf/Dienstleistung";
-                            }
-                            else if (note.contains("KAUF/DIENSTLEISTUNG"))
-                            {
-                                if (note.matches("^.*\\.[\\d]{4}$"))
-                                {
-                                    String[] parts = note.split("OM");
-                                    note = concatenate("Kauf/Dienstleistung vom", stripBlanks(parts[1]), " ");
-                                }
-                                else
-                                {
-                                    note = "Kauf/Dienstleistung";
-                                }
-                            }
-
-                            t.setNote(note);
-                        })
+                                                            t.setNote(note);
+                                                        })
+                                        )
 
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
@@ -807,12 +987,12 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                             return null;
                         }));
 
-        Block depositBlock = new Block("^.* [\\.'\\d\\s]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}.*$");
+        var depositBlock = new Block("^.* [\\.'\\d\\s]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}.*$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
                             return accountTransaction;
                         })
@@ -830,7 +1010,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(v.get("currency"));
 
                             // Formatting some notes
-                            String note = trim(v.get("note"));
+                            var note = trim(v.get("note"));
 
                             if ("ÜBERTRAG".equals(note))
                                 note = "Übertrag aus Konto";
@@ -841,7 +1021,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         .section("note", "amount", "date").optional() //
                         .documentContext("currency") //
                         .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{2} )?" //
-                                        + "(?<note>(TWINT .*EMPFANGEN" //
+                                        + "(?<note>(TWINT .*EMPFANGEN( VOM)?" //
                                         + "|GIRO (AUSLAND|AUS ONLINE-SIC [\\-\\d]+|AUS KONTO)" //
                                         + "|GUTSCHRIFT VON FREMDBANK [\\-\\d]+" //
                                         + "|GUTSCHRIFT( .*(BANK|PING))?" //
@@ -855,7 +1035,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(v.get("currency"));
 
                             // Formatting some notes
-                            String note = trim(v.get("note"));
+                            var note = trim(v.get("note"));
 
                             if (note.contains("TWINT"))
                                 note = "TWINT Geld empfangen";
@@ -891,18 +1071,32 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                             t.setNote(note);
                         })
 
+                        .section("note", "amount", "date", "iban").optional() //
+                        .documentContext("currency") //
+                        .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{2} )?" //
+                                        + "(?<note>KONTO.BERTRAG( VON)?) " //
+                                        + "(?<amount>[\\.'\\d\\s]+) " //
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}).*$") //
+                        .match("^(?<iban>[A-Z0-9 -]{15,42})$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setNote("Übertrag aus Konto " + trim(v.get("iban")));
+                        })
+
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
                                 return new TransactionItem(t);
                             return null;
                         }));
 
-        Block feesBlock = new Block("^.* [\\.'\\d\\s]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}.*$");
+        var feesBlock = new Block("^.* [\\.'\\d\\s]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}.*$");
         type.addBlock(feesBlock);
         feesBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.FEES);
                             return accountTransaction;
                         })
@@ -911,12 +1105,13 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{2} )?" //
                                         + "(?<note>(PREIS F.*" //
+                                        + "|DEPOTGEB.HREN" //
                                         + "|F.R DIE KONTOF.HRUNG" //
                                         + "|F.R GIRO INTERNATIONAL \\(SEPA\\)" //
                                         + "|GUTHABENGEB.HR F.R [\\d]{2}\\.[\\d]{4}" //
                                         + "|JAHRESPREIS LOGIN" //
                                         + "|.* KONTOAUSZUG PAPIER))" //
-                                        + "([\\s]+)? " //
+                                        + "[\\s]{1,}" //
                                         + "(?<amount>[\\.'\\d\\s]+) " //
                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}).*$") //
                         .assign((t, v) -> {
@@ -925,7 +1120,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(v.get("currency"));
 
                             // Formatting some notes
-                            String note = trim(v.get("note"));
+                            var note = trim(v.get("note"));
 
                             if ("JAHRESPREIS LOGIN".equals(note))
                                 note = "Jahrespreis Login";
@@ -951,9 +1146,12 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
                             if (note.contains("GUTHABENGEBÜHR"))
                             {
-                                String[] parts = note.split("FÜR");
+                                var parts = note.split("FÜR");
                                 note = "Guthabengebühr für " + stripBlanks(parts[1]);
                             }
+
+                            if (note.matches("DEPOTGEB.HREN"))
+                                note = "Depotgebühr";
 
                             t.setNote(note);
                         })
@@ -964,12 +1162,12 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                             return null;
                         }));
 
-        Block interestBlock = new Block("^.* [\\.'\\d\\s]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}.*$");
+        var interestBlock = new Block("^.* [\\.'\\d\\s]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}.*$");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.INTEREST);
                             return accountTransaction;
                         })
@@ -978,7 +1176,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{2} )?" //
                                         + "ZINSABSCHLUSS (?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-|\\–) " //
-                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}))([\\s]+)? " //
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}))[\\s]{1,}" //
                                         + "(?<amount>[\\.'\\d\\s]+) " //
                                         + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}.*$") //
                         .assign((t, v) -> {
@@ -994,17 +1192,17 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         .documentContext("year", "currency") //
                         .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{2} )?" //
                                         + "ZINSABSCHLUSS (?<date1>[\\d]{6}) (\\-|\\–) (?<date2>[\\d]{6})" //
-                                        + "([\\s]+)? " //
+                                        + "[\\s]{1,}" //
                                         + "(?<amount>[\\.'\\d\\s]+) " //
                                         + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}.*$") //
                         .assign((t, v) -> {
                             // Split date1 and date2
-                            String day1 = v.get("date1").substring(0, 2);
-                            String month1 = v.get("date1").substring(2, 4);
-                            String date1 = day1 + "." + month1 + "." + v.get("year");
-                            String day2 = v.get("date2").substring(0, 2);
-                            String month2 = v.get("date2").substring(2, 4);
-                            String date2 = day2 + "." + month2 + "." + v.get("year");
+                            var day1 = v.get("date1").substring(0, 2);
+                            var month1 = v.get("date1").substring(2, 4);
+                            var date1 = day1 + "." + month1 + "." + v.get("year");
+                            var day2 = v.get("date2").substring(0, 2);
+                            var month2 = v.get("date2").substring(2, 4);
+                            var date2 = day2 + "." + month2 + "." + v.get("year");
 
                             t.setDateTime(asDate(date2));
                             t.setAmount(asAmount(v.get("amount")));
@@ -1029,21 +1227,28 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         // Abgabe (Eidg. Stempelsteuer) EUR 4.26
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Abgabe \\(Eidg\\. Stempelsteuer\\) (?<currency>[\\w]{3}) (?<tax>[\\.'\\d\\s]+).*$") //
+                        .match("^Abgabe \\(Eidg\\. Stempelsteuer\\) (?<currency>[A-Z]{3}) (?<tax>[\\.'\\d\\s]+).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Quellensteuer 15.00% (NL) EUR 3.69
                         // @formatter:on
                         .section("currency", "withHoldingTax").optional() //
-                        .match("^Quellensteuer [\\.'\\d\\s]+(%| %) \\(.*\\) (?<currency>[\\w]{3}) (?<withHoldingTax>[\\.'\\d\\s]+).*$") //
+                        .match("^Quellensteuer [\\.'\\d\\s]+(%| %) \\(.*\\) (?<currency>[A-Z]{3}) (?<withHoldingTax>[\\.'\\d\\s]+).*$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                         // @formatter:off
                         // Verrechnungssteuer 35% (CH) CHF 19.75
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Verrechnungssteuer [\\.'\\d\\s]+(%| %) \\(.*\\) (?<currency>[\\w]{3}) (?<tax>[\\.'\\d\\s]+).*$") //
+                        .match("^Verrechnungssteuer [\\.'\\d\\s]+(%| %) \\(.*\\) (?<currency>[A-Z]{3}) (?<tax>[\\.'\\d\\s]+).*$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Umsatzabgabe JPY 51.00
+                        // @formatter:on
+                        .section("currency", "tax").optional() //
+                        .match("^Umsatzabgabe (?<currency>[A-Z]{3}) (?<tax>[\\.'\\d\\s]+).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
@@ -1055,28 +1260,28 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         // Kommission EUR 8.58
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Kommission (?<currency>[\\w]{3}) (?<fee>[\\.'\\d\\s]+).*$") //
+                        .match("^Kommission (?<currency>[A-Z]{3}) (?<fee>[\\.'\\d\\s]+).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Börsengebühren CHF 1.50
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^B.rsengeb.hren (?<currency>[\\w]{3}) (?<fee>[\\.'\\d\\s]+).*$") //
+                        .match("^B.rsengeb.hren (?<currency>[A-Z]{3}) (?<fee>[\\.'\\d\\s]+).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Börsengebühren und sonstige Spesen EUR 0.60
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^B.rsengeb.hren und sonstige Spesen (?<currency>[\\w]{3}) (?<fee>[\\.'\\d\\s]+).*$") //
+                        .match("^B.rsengeb.hren und sonstige Spesen (?<currency>[A-Z]{3}) (?<fee>[\\.'\\d\\s]+).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
-                        // Umsatzabgabe JPY 51.00
+                        // Handelsgebühr USD 5.67
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Umsatzabgabe (?<currency>[\\w]{3}) (?<fee>[\\.'\\d\\s]+).*$") //
+                        .match("^Handelsgeb.hr (?<currency>[A-Z]{3}) (?<fee>[\\.'\\d\\s]+).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 

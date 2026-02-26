@@ -43,7 +43,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
     protected Portfolio portfolio;
     protected Security security;
-    protected LocalDate date = LocalDate.now();
+    protected LocalDate date = PresetValues.getLastTransactionDate();
     protected LocalTime time = PresetValues.getTime();
     protected long shares;
     protected BigDecimal quote = BigDecimal.ONE;
@@ -233,7 +233,9 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         if (t != total)
             return ValidationStatus.error(MessageFormat.format(Messages.MsgIncorrectTotal, Values.Amount.format(t)));
 
-        if (total == 0L && type != PortfolioTransaction.Type.DELIVERY_OUTBOUND)
+        if (total == 0L && type == PortfolioTransaction.Type.SELL)
+            return ValidationStatus.error(Messages.MsgHintUseOutboundDeliveryForZeroTotal);
+        else if (total == 0L && type != PortfolioTransaction.Type.DELIVERY_OUTBOUND)
             return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnTotal));
 
         return ValidationStatus.ok();
@@ -274,8 +276,8 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         firePropertyChange(Properties.inverseExchangeRateCurrencies.name(), oldInverseExchangeRateCurrencies,
                         getInverseExchangeRateCurrencies());
 
-        updateSharesAndQuote();
         updateExchangeRate();
+        updateSharesAndQuote();
     }
 
     protected void updateSharesAndQuote()
@@ -300,7 +302,14 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
                 if (position != null)
                 {
                     setShares(position.getShares());
-                    setTotal(position.calculateValue().getAmount());
+
+                    // the position is in the currency of the instrument,
+                    // therefore trigger setting the gross value
+
+                    setQuote(BigDecimal.valueOf(position.getPrice().getValue())
+                                    .movePointLeft(Values.Quote.precision()));
+                    triggerGrossValue(position.calculateValue().getAmount());
+                    
                     hasPosition = true;
                 }
             }
@@ -342,6 +351,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         }
     }
 
+    @Override
     public LocalDate getDate()
     {
         return date;

@@ -1,0 +1,30 @@
+PDFBox Version: 3.0.5 != 1.8.17
+Portfolio Performance Version: 0.78.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+tSWj wno ydDlc 806145760 Rekeningnummer:
+06 9770313257502
+NXLxVubjp
+8145 RRWjYEZ (O.-VL.)
+Transactiebevestiging
+In overeenstemming met uw instructies hebben wij de verhandeling als volgt uitgevoerd:
+TRANSACTIEDATUM UITVOERINGSPLAATS ORDERTYPE
+18-02-2020 - 09:06:19.000000 (UTC) XOFF N/A
+Status REF. ISIN Naam Hoeveelheid Koers Bedrag
+Verkoop UT0001234508 FR0010135103 CARMIGNAC 1.03 € 667,16 € 687,17
+PATRIMOINE A EUR
+ACC
+Bedrag € 687,17
+MeDirect Commissie € 0,00
+Wisselkosten en belastingen € 2,71
+Totaal € 684,46
+Het totaalbedrag van zal van uw EUR rekening bij MeDirect ingehouden worden. Provisies of kosten worden enkel
+i
+vermeld indien ze van toepassing zijn.
+VRAGEN? We staan voor u klaar!
+?
+Klantendienst: +32 2 887 20 05
+Maandag  Vrijdag 9 u. tot 20 u./Zaterdag 9 u. tot 14 u.
+Email: info@medirect.be
+Website support: https://www.medirect.be/nl-be/contacteer-ons-2/
+MeDirect Bank NV  Keizerinlaan 66, B1000 Brussel – RPR Brussel 0553.851.093

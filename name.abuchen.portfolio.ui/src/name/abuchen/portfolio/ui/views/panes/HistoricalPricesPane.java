@@ -104,7 +104,7 @@ public class HistoricalPricesPane implements InformationPanePage
         container.setLayout(layout);
 
         prices = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI | SWT.VIRTUAL);
-        ColumnEditingSupport.prepare(prices);
+        ColumnEditingSupport.prepare(view.getEditorActivationState(), prices);
         CopyPasteSupport.enableFor(prices);
         ShowHideColumnHelper support = new ShowHideColumnHelper(HistoricalPricesPane.class.getSimpleName(), preferences,
                         prices, layout);

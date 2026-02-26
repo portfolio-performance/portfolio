@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views.dataseries;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,16 +38,18 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swtchart.LineStyle;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
-import org.swtchart.LineStyle;
 
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.swt.GCUtil;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeries.UseCase;
 import name.abuchen.portfolio.util.TextUtil;
 
 /**
@@ -135,6 +138,7 @@ public class DataSeriesChartLegend extends Composite implements ISelectionProvid
 
             addListener(SWT.Paint, this);
             addListener(SWT.Resize, this);
+            addListener(SWT.MouseDoubleClick, this);
 
             MenuManager menuManager = new MenuManager();
             menuManager.setRemoveAllWhenShown(true);
@@ -145,6 +149,9 @@ public class DataSeriesChartLegend extends Composite implements ISelectionProvid
                 setToolTipText(TextUtil.wordwrap(security.toInfoString()));
             else if (series.getInstance() instanceof Classification classification)
                 setToolTipText(classification.getPathName(true));
+            else if (series.getInstance() instanceof DerivedDataSeries derived
+                            && derived.getBaseDataSeries().getInstance() instanceof Classification classification)
+                setToolTipText(derived.getAspect().getLabel() + ": " + classification.getPathName(true)); //$NON-NLS-1$
             else
                 setToolTipText(series.getLabel());
         }
@@ -160,6 +167,10 @@ public class DataSeriesChartLegend extends Composite implements ISelectionProvid
                 case SWT.Resize:
                     redraw();
                     break;
+                case SWT.MouseDoubleClick:
+                    series.setVisible(!series.isVisible());
+                    ((DataSeriesChartLegend) getParent()).configurator.fireUpdate();
+                    break;
                 default:
                     break;
             }
@@ -167,8 +178,14 @@ public class DataSeriesChartLegend extends Composite implements ISelectionProvid
 
         private Color getColor()
         {
-            DataSeriesChartLegend legend = (DataSeriesChartLegend) getParent();
+            var legend = (DataSeriesChartLegend) getParent();
             return legend.resources.createColor(series.getColor());
+        }
+
+        private Color getSecondoryTriangleColor()
+        {
+            var legend = (DataSeriesChartLegend) getParent();
+            return legend.resources.createColor(series.getColorNegative());
         }
 
         private void paintControl(Event e)
@@ -182,6 +199,12 @@ public class DataSeriesChartLegend extends Composite implements ISelectionProvid
 
             gc.setBackground(getColor());
             gc.fillRectangle(r.x, r.y, r.width, r.height);
+
+            if (!getSecondoryTriangleColor().equals(getColor()))
+            {
+                gc.setBackground(getSecondoryTriangleColor());
+                GCUtil.drawBottomRightTriangleOverlay(gc, r);
+            }
 
             gc.setForeground(getForeground());
             gc.drawRectangle(r.x, r.y, r.width - 1, r.height - 1);
@@ -214,7 +237,7 @@ public class DataSeriesChartLegend extends Composite implements ISelectionProvid
         {
             DataSeriesConfigurator configurator = ((DataSeriesChartLegend) getParent()).configurator;
 
-            manager.add(new Action(Messages.ChartSeriesPickerColor)
+            manager.add(new Action(MessageFormat.format(Messages.ChartSeriesPickerColor, "")) //$NON-NLS-1$
             {
                 @Override
                 public void run()
@@ -225,10 +248,49 @@ public class DataSeriesChartLegend extends Composite implements ISelectionProvid
                     if (newColor != null)
                     {
                         series.setColor(newColor);
+                        // the Negative Color of a data series shall be
+                        // equal to the main color, unless the positive or
+                        // negative color is specifically modified, which is not
+                        // the goal of this Action
+                        series.setColorNegative(newColor);
                         configurator.fireUpdate();
                     }
                 }
             });
+
+            if (!series.isLineChart() && configurator.getUseCase().equals(UseCase.PERFORMANCE))
+            {
+                manager.add(new Action(MessageFormat.format(Messages.ChartSeriesPickerColor, " (> 0)")) //$NON-NLS-1$
+                {
+                    @Override
+                    public void run()
+                    {
+                        ColorDialog colorDialog = new ColorDialog(Display.getDefault().getActiveShell());
+                        colorDialog.setRGB(series.getColor());
+                        RGB newColor = colorDialog.open();
+                        if (newColor != null)
+                        {
+                            series.setColor(newColor);
+                            configurator.fireUpdate();
+                        }
+                    }
+                });
+                manager.add(new Action(MessageFormat.format(Messages.ChartSeriesPickerColor, " (< 0)")) //$NON-NLS-1$
+                {
+                    @Override
+                    public void run()
+                    {
+                        ColorDialog colorDialog = new ColorDialog(Display.getDefault().getActiveShell());
+                        colorDialog.setRGB(series.getColorNegative());
+                        RGB newColor = colorDialog.open();
+                        if (newColor != null)
+                        {
+                            series.setColorNegative(newColor);
+                            configurator.fireUpdate();
+                        }
+                    }
+                });
+            }
 
             if (series.isLineChart())
             {

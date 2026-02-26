@@ -3,6 +3,6 @@
 
 @import url("platform:/plugin/name.abuchen.portfolio.ui/css/shared/light.css");
 
-@import url("platform:/plugin/name.abuchen.portfolio.ui/css/shared/win.css");
+@import url("platform:/plugin/name.abuchen.portfolio.ui/css/shared/win/win.css");
 
 @import url("platform:/meta/name.abuchen.portfolio.ui/custom.css");

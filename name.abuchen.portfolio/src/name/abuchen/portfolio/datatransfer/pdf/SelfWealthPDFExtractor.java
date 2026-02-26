@@ -69,7 +69,7 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
                         // 25 UMAX BETA S&P500 YIELDMAX 12.40 $312.50 AUD
                         // @formatter:on
                         .section("tickerSymbol", "name", "currency") //
-                        .match("^[\\.,\\d]+ (?<tickerSymbol>[\\w]{3,4}) (?<name>.*) [\\.,\\d]+ \\p{Sc}[\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                        .match("^[\\.,\\d]+ (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) (?<name>.*) [\\.,\\d]+ \\p{Sc}[\\.,\\d]+ (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off

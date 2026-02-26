@@ -20,8 +20,11 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSkippedItems;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -32,7 +35,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
@@ -51,16 +53,19 @@ public class ZuercherKantonalbankPDFExtractorTest
     @Test
     public void testWertpapierKauf01()
     {
-        ZuercherKantonalbankPDFExtractor extractor = new ZuercherKantonalbankPDFExtractor(new Client());
+        var extractor = new ZuercherKantonalbankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -83,23 +88,26 @@ public class ZuercherKantonalbankPDFExtractorTest
     @Test
     public void testWertpapierKauf01WithSecurityInCHF()
     {
-        Security security = new Security("Registered Shs Glencore PLC", "CHF");
+        var security = new Security("Registered Shs Glencore PLC", "CHF");
         security.setIsin("JE00B4T3BW64");
         security.setWkn("12964057");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ZuercherKantonalbankPDFExtractor extractor = new ZuercherKantonalbankPDFExtractor(client);
+        var extractor = new ZuercherKantonalbankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
@@ -111,8 +119,8 @@ public class ZuercherKantonalbankPDFExtractorTest
                         hasAmount("CHF", 4469.94), hasGrossValue("CHF", 4462.37), //
                         hasTaxes("CHF", 6.68), hasFees("CHF", 0.89), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -120,16 +128,19 @@ public class ZuercherKantonalbankPDFExtractorTest
     @Test
     public void testWertpapierKauf02()
     {
-        ZuercherKantonalbankPDFExtractor extractor = new ZuercherKantonalbankPDFExtractor(new Client());
+        var extractor = new ZuercherKantonalbankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "USD");
 
@@ -152,23 +163,26 @@ public class ZuercherKantonalbankPDFExtractorTest
     @Test
     public void testWertpapierKauf02WithSecurityInUSD()
     {
-        Security security = new Security("Registered Shs Babcock International Group PLC", "USD");
+        var security = new Security("Registered Shs Babcock International Group PLC", "USD");
         security.setIsin("GB0009697037");
         security.setWkn("1142141");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ZuercherKantonalbankPDFExtractor extractor = new ZuercherKantonalbankPDFExtractor(client);
+        var extractor = new ZuercherKantonalbankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "USD");
 
@@ -180,8 +194,8 @@ public class ZuercherKantonalbankPDFExtractorTest
                         hasAmount("USD", 7515.04), hasGrossValue("USD", 7461.23), //
                         hasTaxes("USD", 48.50), hasFees("USD", 5.31), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -189,16 +203,19 @@ public class ZuercherKantonalbankPDFExtractorTest
     @Test
     public void testWertpapierKauf03()
     {
-        ZuercherKantonalbankPDFExtractor extractor = new ZuercherKantonalbankPDFExtractor(new Client());
+        var extractor = new ZuercherKantonalbankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -220,16 +237,19 @@ public class ZuercherKantonalbankPDFExtractorTest
     @Test
     public void testWertpapierKauf04()
     {
-        ZuercherKantonalbankPDFExtractor extractor = new ZuercherKantonalbankPDFExtractor(new Client());
+        var extractor = new ZuercherKantonalbankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -252,23 +272,26 @@ public class ZuercherKantonalbankPDFExtractorTest
     @Test
     public void testWertpapierKauf04WithSecurityInCHF()
     {
-        Security security = new Security("Act Kering SA", "CHF");
+        var security = new Security("Act Kering SA", "CHF");
         security.setIsin("FR0000121485");
         security.setWkn("21591");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ZuercherKantonalbankPDFExtractor extractor = new ZuercherKantonalbankPDFExtractor(client);
+        var extractor = new ZuercherKantonalbankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
@@ -280,8 +303,8 @@ public class ZuercherKantonalbankPDFExtractorTest
                         hasAmount("CHF", 6078.35), hasGrossValue("CHF", 6046.52), //
                         hasTaxes("CHF", 27.21), hasFees("CHF", 4.62), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -289,16 +312,19 @@ public class ZuercherKantonalbankPDFExtractorTest
     @Test
     public void testWertpapierKauf05()
     {
-        ZuercherKantonalbankPDFExtractor extractor = new ZuercherKantonalbankPDFExtractor(new Client());
+        var extractor = new ZuercherKantonalbankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -320,16 +346,19 @@ public class ZuercherKantonalbankPDFExtractorTest
     @Test
     public void testWertpapierKauf06()
     {
-        ZuercherKantonalbankPDFExtractor extractor = new ZuercherKantonalbankPDFExtractor(new Client());
+        var extractor = new ZuercherKantonalbankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -351,16 +380,19 @@ public class ZuercherKantonalbankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf01()
     {
-        ZuercherKantonalbankPDFExtractor extractor = new ZuercherKantonalbankPDFExtractor(new Client());
+        var extractor = new ZuercherKantonalbankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -382,16 +414,19 @@ public class ZuercherKantonalbankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf02()
     {
-        ZuercherKantonalbankPDFExtractor extractor = new ZuercherKantonalbankPDFExtractor(new Client());
+        var extractor = new ZuercherKantonalbankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -414,23 +449,26 @@ public class ZuercherKantonalbankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf02WithSecurityInCHF()
     {
-        Security security = new Security("Act Kering SA", "CHF");
+        var security = new Security("Act Kering SA", "CHF");
         security.setIsin("FR0000121485");
         security.setWkn("21591");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ZuercherKantonalbankPDFExtractor extractor = new ZuercherKantonalbankPDFExtractor(client);
+        var extractor = new ZuercherKantonalbankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
@@ -442,8 +480,8 @@ public class ZuercherKantonalbankPDFExtractorTest
                         hasAmount("CHF", 5831.90), hasGrossValue("CHF", 5845.13), //
                         hasTaxes("CHF", 8.77), hasFees("CHF", 4.46), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -451,16 +489,19 @@ public class ZuercherKantonalbankPDFExtractorTest
     @Test
     public void testDividende01()
     {
-        ZuercherKantonalbankPDFExtractor extractor = new ZuercherKantonalbankPDFExtractor(new Client());
+        var extractor = new ZuercherKantonalbankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -483,23 +524,26 @@ public class ZuercherKantonalbankPDFExtractorTest
     @Test
     public void testDividende01WithSecurityInCHF()
     {
-        Security security = new Security("Registered Shs Babcock International Group PLC", "CHF");
+        var security = new Security("Registered Shs Babcock International Group PLC", "CHF");
         security.setIsin("GB0009697037");
         security.setWkn("1142141");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ZuercherKantonalbankPDFExtractor extractor = new ZuercherKantonalbankPDFExtractor(client);
+        var extractor = new ZuercherKantonalbankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
@@ -511,10 +555,10 @@ public class ZuercherKantonalbankPDFExtractorTest
                         hasAmount("CHF", 37.25), hasGrossValue("CHF", 37.250), //
                         hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode("CHF");
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -522,16 +566,19 @@ public class ZuercherKantonalbankPDFExtractorTest
     @Test
     public void testDividende02()
     {
-        ZuercherKantonalbankPDFExtractor extractor = new ZuercherKantonalbankPDFExtractor(new Client());
+        var extractor = new ZuercherKantonalbankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -554,23 +601,26 @@ public class ZuercherKantonalbankPDFExtractorTest
     @Test
     public void testDividende02WithSecurityInUSD()
     {
-        Security security = new Security("Shs J.P. Morgan Exchange-Traded Fund Trust JPMorgan Equity Premium", "CHF");
+        var security = new Security("Shs J.P. Morgan Exchange-Traded Fund Trust JPMorgan Equity Premium", "CHF");
         security.setIsin("US46641Q3323");
         security.setWkn("52708803");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ZuercherKantonalbankPDFExtractor extractor = new ZuercherKantonalbankPDFExtractor(client);
+        var extractor = new ZuercherKantonalbankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
@@ -582,10 +632,10 @@ public class ZuercherKantonalbankPDFExtractorTest
                         hasAmount("CHF", 74.01), hasGrossValue("CHF", 105.73), //
                         hasTaxes("CHF", 31.72), hasFees("CHF", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode("CHF");
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -593,16 +643,19 @@ public class ZuercherKantonalbankPDFExtractorTest
     @Test
     public void testDividende03()
     {
-        ZuercherKantonalbankPDFExtractor extractor = new ZuercherKantonalbankPDFExtractor(new Client());
+        var extractor = new ZuercherKantonalbankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "USD");
 
@@ -624,23 +677,26 @@ public class ZuercherKantonalbankPDFExtractorTest
     @Test
     public void testDividende03WithSecurityInUSD()
     {
-        Security security = new Security("Shs J.P. Morgan Exchange-Traded Fund Trust JPMorgan Equity Premium", "CHF");
+        var security = new Security("Shs J.P. Morgan Exchange-Traded Fund Trust JPMorgan Equity Premium", "CHF");
         security.setIsin("US46641Q3323");
         security.setWkn("52708803");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ZuercherKantonalbankPDFExtractor extractor = new ZuercherKantonalbankPDFExtractor(client);
+        var extractor = new ZuercherKantonalbankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "USD");
 
@@ -653,10 +709,10 @@ public class ZuercherKantonalbankPDFExtractorTest
                         hasForexGrossValue("CHF", 51.44), //
                         hasTaxes("USD", 18.04), hasFees("USD", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode("USD");
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -664,16 +720,19 @@ public class ZuercherKantonalbankPDFExtractorTest
     @Test
     public void testDividende04()
     {
-        ZuercherKantonalbankPDFExtractor extractor = new ZuercherKantonalbankPDFExtractor(new Client());
+        var extractor = new ZuercherKantonalbankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "USD");
 

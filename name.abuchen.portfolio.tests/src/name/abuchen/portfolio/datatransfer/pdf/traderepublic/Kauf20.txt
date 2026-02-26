@@ -1,0 +1,34 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+TLtAi RHiW UjIcoDijI wjjLTpV SEITE 1 von 1
+sr der OaOFl 84 DATUM 15.10.2025
+09408 NRimwp AUFTRAG 38ac-eee6
+AUSFÜHRUNG 3a9c-1967
+DEPOT 9096880471
+WERTPAPIERABRECHNUNG
+ÜBERSICHT
+Market-Order BUY am 15.10.2025 um 17:48 (Europe/Berlin).
+Der Kontrahent der Transaktion ist Trade Republic Bank GmbH.
+POSITION NOMINALE PREIS BETRAG
+Sept. 2064 1.253,51 USD 92,41 % 996,70 EUR
+ISIN: US68389XCV55
+GESAMT 996,70 EUR
+ABRECHNUNG
+POSITION BETRAG
+Fremdkostenzuschlag -1,00 EUR
+Stückzinsen -3,30 EUR
+GESAMT -1.001,00 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+DE28100123450258976901 2025-10-17 -1.001,00 EUR
+Sept. 2064 nicht in Sammelverwahrung
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Wird keine Umsatzsteuer ausgewiesen, handelt es sich gemäß § 4 Nr. 8 UStG um eine umsatzsteuerfreie Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke

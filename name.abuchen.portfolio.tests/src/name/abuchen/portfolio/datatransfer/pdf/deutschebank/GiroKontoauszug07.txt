@@ -1,0 +1,53 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.2
+-----------------------------------------
+Deutsche Bank AG
+Filiale
+Die Filiale
+Tester Straße 99
+ANREDE 12345 Einort
+VORNAME NACHNAME und Betreuergruppe DVAG
+ANREDE VORNAME NACHNAME Telefon (0911) 123456-0
+STRAßE, Hsnr.
+PLZ ORT 24h-Kundenservice (069) 910-10000
+31. Oktober 2024
+Kontoauszug vom 01.10.2024 bis 31.10.2024
+Kontoinhaber: VORNAME NACHNAME und ANREDE VORNAME NACHNAME
+PAKET
+Auszug Seite von IBAN Alter Saldo per 30.09.2024
+10 1 2 DE00 1111 2222 3333 4444 55 EUR + 0.000,00
+Buchung Valuta Vorgang Soll Haben
+02.10. 03.10. Verwendungszweck/ Kundenreferenz - 44,99
+2024 2024 WERTPAPIER-KAUF FIL/DEPOT-NR:
+123/123456789DWS TOP DIVIDENDE INHABER-AN
+TEILE LD BELEGNR: 0123456789
+02.10. 03.10. Verwendungszweck/ Kundenreferenz - 44,99
+2024 2024 WERTPAPIER-KAUF FIL/DEPOT-NR:
+123/123456789DWS AKT.STRATEGIE DEUTSCH.IN
+HABER-ANTEILE LC BELEGNR: 0123456789
+03.10. 04.10. Verwendungszweck/ Kundenreferenz - 45,00
+2024 2024 WERTPAPIER-KAUF FIL/DEPOT-NR:
+123/123456789CHAMPIONS SELECT DYNAMIC
+INHABER-ANTEILE LC BELEGNR: 0123456789
+03.10. 04.10. Verwendungszweck/ Kundenreferenz - 45,00
+2024 2024 WERTPAPIER-KAUF FIL/DEPOT-NR:
+123/123456789DWS VERMÖGENSBG.FONDS I
+INHABER-ANTEILE LD BELEGNR: 0123456789
+Filialnummer Kontonummer Neuer Saldo
+123 4567890 00
+EUR + 0.000,00
+BIC (SWIFT)
+DEUTDEDB760
+Wichtige Hinweise
+Bitte erheben Sie Einwendungen gegen einzelne Buchungen unverzüglich. Schecks, Wechsel und sonstige Lastschriften schreiben wir unter dem Vorbehalt
+des Eingangs gut. Der angegebene Kontostand berücksichtigt nicht die Wertstellung der Buchungen (siehe oben unter "Valuta").
+Somit können bei Verfügungen1) möglicherweise Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen.
+1) Der Begriff umfasst unter anderem die relevanten Zahlungskontendienste "Bargeldauszahlung" und "Überweisung".
+0000000003 / 06500900 / 20241101
+Auszug Seite von IBAN
+10 2 2 DE00 1111 2222 3333 4444 55
+Die abgerechneten Leistungen sind als Bank- oder Finanzdienstleistungen von der Umsatzsteuer befreit, sofern Umsatzsteuer nicht gesondert
+ausgewiesen ist. Umsatzsteuer ID Nr.: Deutsche Bank AG, 60262 Frankfurt DE114103379
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können dem "Informationsbogen
+für den Einleger" entnommen werden.
+0000000003 / 06500900 / 20241101

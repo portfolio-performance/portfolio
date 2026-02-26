@@ -1,0 +1,27 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.4
+System: linux | x86_64 | 21.0.8+9-Ubuntu-0ubuntu122.04.1 | Ubuntu
+-----------------------------------------
+Scalable Capital GmbH • Seitzstraße 8e • 80538 Munich • Germany 
+MtMfhn oacXG SFIZHDh
+aKhRLgDkFZcgyOs 75 
+20055 tMBzYnk Date 04.08.2025
+Germany Page 1 / 1
+Cash Account Statement 
+Period 01.07.2025 - 31.07.2025 
+Document no. 1404365442 
+Clearing account XXXXXXXXX (DEUTDEFFXXX)
+Balance on 01.07.2025 0.00 EUR 
+Balance on 31.07.2025 0.00 EUR 
+Booking Value date Description Amount 
+03.07.2025 04.07.2025 Direct debit +1,300.00 EUR 
+07.07.2025 09.07.2025 Buy of a financial instrument -975.00 EUR 
+7.46 pcs. Vanguard FTSE All-World (Acc) (IE00BK5BQT80) 
+07.07.2025 09.07.2025 Buy of a financial instrument -325.00 EUR 
+17.67 pcs. Avantis Global Small Cap Value (Acc) (IE0003R87OG3) 
+If you use Credit, the interest rate is 4.24 %. An interest rate of 4.24 % applies for an account overdraft outside of Credit usage. 
+Please check the information for accuracy and report any concerns to us immediately.
+To do so, use the Support menu item in the client area. 
+Scalable Capital GmbH HRB 217778 Managing Directors: Supervisory Board: Page 
+Seitzstraße 8e Registry Court: Munich Local Court Florian Prucker, Martin Krebs, Patrick Olson (Chairman) 
+80538 München Sales tax ID: DE300434774 Dirk Franzmeyer 1 / 1

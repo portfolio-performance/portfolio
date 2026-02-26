@@ -189,7 +189,7 @@ public final class UpdateHelper
         // that a restart is required.
 
         Display.getDefault().asyncExec(() -> MessageDialog.openInformation(Display.getDefault().getActiveShell(),
-                        Messages.LabelInfo, Messages.MsgRestartRequired));
+                        Messages.LabelInfo, Messages.MsgRestartRequiredAfterUpdate));
     }
 
     private NewVersion checkForUpdates(IProgressMonitor monitor) throws CoreException
@@ -215,7 +215,7 @@ public final class UpdateHelper
 
         if (update == null)
         {
-            return new NewVersion(Messages.LabelUnknownVersion);
+            return new NewVersion(Messages.LabelUnknown);
         }
         else
         {

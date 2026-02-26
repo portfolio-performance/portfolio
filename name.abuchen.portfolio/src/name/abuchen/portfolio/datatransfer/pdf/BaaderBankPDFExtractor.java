@@ -7,7 +7,6 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 import java.math.BigDecimal;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -50,7 +49,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        final DocumentType type = new DocumentType("((Wertpapierabrechnung|Transaction Statement): " //
+        final var type = new DocumentType("((Wertpapierabrechnung|Transaction Statement): " //
                         + "(Kauf" //
                         + "|Verkauf" //
                         + "|Purchase" //
@@ -59,19 +58,20 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         + "|Spitzenregulierung" //
                         + "|Gesamtr.ckzahlung" //
                         + "|Ablauf der Optionsfrist" //
-                        + "|Obligatorische Barabfindung)");
+                        + "|Obligatorische Barabfindung" //
+                        + "|Squeeze Out)");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^.*(Vorgangs\\-Nr|Transaction No)\\.: .*$");
+        var firstRelevantLine = new Block("^.*(Vorgangs\\-Nr|Transaction No)\\.: .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            var portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                             return portfolioTransaction;
                         })
@@ -84,7 +84,8 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         + "|Purchase" //
                                         + "|Sale)).*$") //
                         .assign((t, v) -> {
-                            if ("Verkauf".equals(v.get("type")) || "Sale".equals(v.get("type"))) //
+                            if ("Verkauf".equals(v.get("type")) //
+                                            || "Sale".equals(v.get("type"))) //
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
@@ -93,17 +94,20 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // Is type --> "Gesamtrückzahlung" change from BUY to SELL
                         // Is type --> "Ablauf der Optionsfrist" change from BUY to SELL
                         // Is type --> "Obligatorische Barabfindung" change from BUY to SELL
+                        // Is type --> "Squeeze Out" change from BUY to SELL
                         // @formatter:off
                         .section("type").optional() //
                         .match("^(?<type>(Spitzenregulierung" //
                                         + "|Gesamtr.ckzahlung" //
                                         + "|Ablauf der Optionsfrist" //
-                                        + "|Obligatorische Barabfindung)).*$") //
+                                        + "|Obligatorische Barabfindung" //
+                                        + "|Squeeze Out)).*$") //
                         .assign((t, v) -> {
                             if ("Spitzenregulierung".equals(v.get("type")) //
                                             || "Gesamtrückzahlung".equals(v.get("type")) //
                                             || "Ablauf der Optionsfrist".equals(v.get("type")) //
-                                            || "Obligatorische Barabfindung".equals(v.get("type"))) //
+                                            || "Obligatorische Barabfindung".equals(v.get("type")) //
+                                            || "Squeeze Out".equals(v.get("type"))) //
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
@@ -117,7 +121,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("isin", "wkn", "name", "nameContinued", "currency") //
                                                         .match("^(Nominale|Quantity) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6}) (Kurs|Bezugspreis|Barabfindung|Price|R.ckzahlung).*$") //
-                                                        .match("^(STK|Units) [\\.,\\d]+ (?<name>.*) (?<currency>[\\w]{3}) .*$") //
+                                                        .match("^(STK|Units) [\\.,\\d]+ (?<name>.*) (?<currency>[A-Z]{3}) .*$") //
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .assign((t, v) -> {
                                                             if (v.get("nameContinued").endsWith("p.STK"))
@@ -134,8 +138,21 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("isin", "wkn", "currency", "name", "nameContinued") //
                                                         .match("^(Nominale|Quantity) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6}) (Kurs|Bezugspreis|Barabfindung|Price|R.ckzahlung).*$") //
-                                                        .match("^(?<currency>[\\w]{3})[\\s]{1,}[\\.,\\d]+ [\\.,\\d]+ % [\\.,\\d]+ %$") //
+                                                        .match("^(?<currency>[A-Z]{3})[\\s]{1,}[\\.,\\d]+ [\\.,\\d]+ % [\\.,\\d]+ %$") //
                                                         .match("^(?<name>.*)$") //
+                                                        .match("^(?<nameContinued>.*)$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Nominale ISIN: USU5521TAE20 WKN: A2R99N Kurs
+                                        // USD   538,64 4,00 % 89,400160785
+                                        // MSCI Inc. %
+                                        // DL-Notes 2019(19/29) Reg.S
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("isin", "wkn", "currency", "name", "nameContinued") //
+                                                        .match("^(Nominale|Quantity) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6}) (Kurs|Bezugspreis|Barabfindung|Price|R.ckzahlung).*$") //
+                                                        .match("^(?<currency>[A-Z]{3})[\\s]{1,}[\\.,\\d]+ [\\.,\\d]+ % [\\.,\\d]+.*$") //
+                                                        .match("^(?<name>.*) %$") //
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -146,7 +163,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("isin", "wkn", "currency", "name", "nameContinued") //
                                                         .match("^(Nominale|Quantity) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6}) (Kurs|Bezugspreis|Barabfindung|Price|R.ckzahlung).*$") //
-                                                        .match("^(?<currency>[\\w]{3})[\\s]{1,}[\\.,\\d]+ (?<name>.*) [\\.,\\d]+ %$") //
+                                                        .match("^(?<currency>[A-Z]{3})[\\s]{1,}[\\.,\\d]+ (?<name>.*) [\\.,\\d]+ %$") //
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
@@ -167,13 +184,14 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // EUR   1.000,00 15,00 % 97,28 %
                                         // EUR   208.000,00 Bundesrep.Deutschland 100,00 %
+                                        // USD   538,64 4,00 % 89,40016078
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^[\\w]{3}[\\s]{1,}(?<shares>[\\.,\\d]+) .* [\\.,\\d]+ %$") //
+                                                        .match("^[A-Z]{3}[\\s]{1,}(?<shares>[\\.,\\d]+) .* [\\.,\\d]+.*$") //
                                                         .assign((t, v) -> {
                                                             // Percentage quotation, workaround for bonds
-                                                            BigDecimal shares = asBigDecimal(v.get("shares"));
+                                                            var shares = asBigDecimal(v.get("shares"));
                                                             t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
                                                         }))
 
@@ -230,7 +248,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^Zu (Gunsten|Lasten) Konto .* Valuta: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\w]{3} [\\.,\\d]+$") //
+                                                        .match("^Zu (Gunsten|Lasten) Konto .* Valuta: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [A-Z]{3} [\\.,\\d]+$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date")))))
 
                         .oneOf( //
@@ -240,7 +258,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^Zu (Gunsten|Lasten) Konto .* (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^Zu (Gunsten|Lasten) Konto .* (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -251,7 +269,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^Amount (debited|credited) to account [\\d]+ Value: [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^Amount (debited|credited) to account .* Value: [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -263,13 +281,13 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("termCurrency", "baseCurrency", "exchangeRate", "gross") //
-                                                        .match("^Kurswert Umrechnungskurs (?<termCurrency>[\\w]{3})\\/(?<baseCurrency>[\\w]{3}): (?<exchangeRate>[\\.,\\d]+) [\\w]{3} (?<gross>[\\.,\\d]+)$") //
+                                                        .match("^Kurswert Umrechnungskurs (?<termCurrency>[A-Z]{3})\\/(?<baseCurrency>[A-Z]{3}): (?<exchangeRate>[\\.,\\d]+) [A-Z]{3} (?<gross>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                                                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }),
@@ -280,15 +298,15 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "gross") //
-                                                        .match("^(Umrechnungskurs|Exchange Rate): (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$") //
-                                                        .match("^(Bruttobetrag|Gross Amount) [\\w]{3} (?<fxGross>[\\.,\\d]+)$") //
-                                                        .match("^(Bruttobetrag|Gross Amount) [\\w]{3} (?<gross>[\\.,\\d]+)$") //
+                                                        .match("^(Umrechnungskurs|Exchange Rate): (?<baseCurrency>[A-Z]{3})\\/(?<termCurrency>[A-Z]{3}) (?<exchangeRate>[\\.,\\d]+)$") //
+                                                        .match("^(Bruttobetrag|Gross Amount) [A-Z]{3} (?<fxGross>[\\.,\\d]+)$") //
+                                                        .match("^(Bruttobetrag|Gross Amount) [A-Z]{3} (?<gross>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }))
@@ -307,26 +325,27 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>Verh.ltnis: .*)$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         // @formatter:off
                         // Spitzenregulierung KOPIE
                         // Ablauf der Optionsfrist
                         // Obligatorische Barabfindung
+                        // Squeeze Out
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^(?<note>(Spitzenregulierung|Ablauf der Optionsfrist|Obligatorische Barabfindung)).*$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .match("^(?<note>(Spitzenregulierung|Ablauf der Optionsfrist|Obligatorische Barabfindung|Squeeze Out)).*$") //
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         // @formatter:off
                         // Stückzinsen für 54 Tag(e) nächster Zinstermin: 27.09.2023 EUR 9,36
                         // @formatter:on
                         .section("note1", "note2", "note3").optional() //
-                        .match("^(?<note1>St.ckzinsen .* [\\d]+ Tag\\(e\\)).* (?<note3>[\\w]{3}) (?<note2>[\\.,\\d]+)$") //
+                        .match("^(?<note1>St.ckzinsen .* [\\d]+ Tag\\(e\\)).* (?<note3>[A-Z]{3}) (?<note2>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setNote(concatenate(t.getNote(), trim(v.get("note1")), " | "));
-                            t.setNote(concatenate(t.getNote(), trim(v.get("note2")), ": "));
-                            t.setNote(concatenate(t.getNote(), trim(v.get("note3")), " "));
+                            t.setNote(concatenate(t.getNote(), v.get("note1"), " | "));
+                            t.setNote(concatenate(t.getNote(), v.get("note2"), ": "));
+                            t.setNote(concatenate(t.getNote(), v.get("note3"), " "));
                         })
 
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
@@ -339,19 +358,19 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellCryptoTransaction()
     {
-        final DocumentType type = new DocumentType("Abrechnung über den Kauf von Kryptowerten");
+        final var type = new DocumentType("Abrechnung über den Kauf von Kryptowerten");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^.*(Vorgangs\\-Nr|Transaction No)\\.: .*$");
+        var firstRelevantLine = new Block("^.*(Vorgangs\\-Nr|Transaction No)\\.: .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            var portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                             return portfolioTransaction;
                         })
@@ -361,29 +380,29 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // STK 0,0024 Bitcoin EUR 41.981,240
                         // @formatter:on
                         .section("name", "tickerSymbol", "currency") //
-                        .match("^Nominale Kennung: (?<tickerSymbol>[A-Z]+) Kurs$") //
-                        .match("^STK [\\.,\\d]+ (?<name>.*) (?<currency>[\\w]{3}) [\\.,\\d]+$") //
+                        .match("^Nominale Kennung: (?<tickerSymbol>[A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})?) Kurs$") //
+                        .match("^STK [\\.,\\d]+ (?<name>.*) (?<currency>[A-Z]{3}) [\\.,\\d]+$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateCryptoCurrency(v)))
 
                         // @formatter:off
                         // STK 0,0024 Bitcoin EUR 41.981,240
                         // @formatter:on
                         .section("shares") //
-                        .match("^STK (?<shares>[\\.,\\d]+) .* [\\w]{3} [\\.,\\d]+$") //
+                        .match("^STK (?<shares>[\\.,\\d]+) .* [A-Z]{3} [\\.,\\d]+$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
                         // STK 0,0024 EUR 41.981,240 B4C Markets BV 02.01.2024 11:04:16:95
                         // @formatter:on
                         .section("date", "time") //
-                        .match("^STK [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ .* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}).*$") //
+                        .match("^STK [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ .* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}).*$") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                         // @formatter:off
                         // Zu Lasten Konto 1234567890 Valuta: 04.01.2024 EUR 101,75
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Zu Lasten Konto .* Valuta: [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                        .match("^Zu Lasten Konto .* Valuta: [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -404,28 +423,33 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        final DocumentType type = new DocumentType("(Fondsaussch.ttung" //
+        final var type = new DocumentType("(Fondsaussch.ttung" //
                         + "|Ertragsthesaurierung" //
                         + "|Dividendenabrechnung" //
+                        + "|Aussch.ttung" //
                         + "|Aussch.ttung aus" //
                         + "|Wahldividende" //
                         + "|Fund Distribution" //
                         + "|Dividend Statement" //
                         + "|Dividende" //
                         + "|Reklassifizierung" //
-                        + "|Zinsabrechnung)", "(Kontoauszug|Account Statement)");
+                        + "|Zinsabrechnung)", //
+                        "(Kontoauszug" //
+                        + "|Account Statement" //
+                        + "|Transaction Statement" //
+                        + "|Steuerausgleichsrechnung)");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^.*(Seite|Page) 1\\/[\\d]$");
+        var firstRelevantLine = new Block("^.*(Seite|Page) 1\\/[\\d]$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
                             return accountTransaction;
                         })
@@ -437,7 +461,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("type", "sign").optional() //
                         .match("^Nominale ISIN: .* (?<type>(Aussch.ttung|Thesaurierung brutto))$") //
-                        .match("^Zu (?<sign>(Gunsten|Lasten)) Konto [\\d]+ Valuta: [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\w]{3} [\\.,\\d]+$") //
+                        .match("^Zu (?<sign>(Gunsten|Lasten)) Konto [\\d]+ Valuta: [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [A-Z]{3} [\\.,\\d]+$") //
                         .assign((t, v) -> {
                             if ("Thesaurierung brutto".equals(v.get("type")) && "Gunsten".equals(v.get("sign")))
                                 t.setType(AccountTransaction.Type.TAX_REFUND);
@@ -449,6 +473,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Dividendenabrechnung STORNO
                         // Fondsausschüttung STORNO
+                        // Dividende § 27 STORNO
                         //
                         // Fondsausschüttung KOPIE
                         // STORNO
@@ -456,8 +481,11 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // Reklassifizierung
                         // @formatter:on
                         .section("type").optional() //
-                        .match("^((Dividendenabrechnung|Fondsaussch.ttung) )?(?<type>(STORNO|Reklassifizierung))$") //
-                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported))
+                        .match("^((Dividendenabrechnung" //
+                                        + "|Fondsaussch.ttung" //
+                                        + "|Dividende . 27) )?" //
+                                        + "(?<type>(STORNO|Reklassifizierung))$") //
+                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionOrderCancellationUnsupported))
 
                         .oneOf( //
                                         // @formatter:off
@@ -468,7 +496,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("isin", "wkn", "name", "name1", "currency") //
                                                         .match("^(Nominale|Quantity) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6}).*$") //
-                                                        .match("^(STK|Units) [\\.,\\d]+ (?<name>.*) (?<currency>[\\w]{3}) .*$") //
+                                                        .match("^(STK|Units) [\\.,\\d]+ (?<name>.*) (?<currency>[A-Z]{3}) .*$") //
                                                         .match("^(?<name1>.*)$") //
                                                         .assign((t, v) -> {
                                                             if (!v.get("name1").startsWith("Zahlungszeitraum") && !v.get("name1").startsWith("Payment")
@@ -486,7 +514,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("isin", "wkn", "currency", "name", "nameContinued") //
                                                         .match("^(Nominale|Quantity) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6}).*$") //
-                                                        .match("^(?<currency>[\\w]{3})[\\s]{1,}[\\.,\\d]+ [\\.,\\d]+ % [\\.,\\d]+ %$") //
+                                                        .match("^(?<currency>[A-Z]{3})[\\s]{1,}[\\.,\\d]+ [\\.,\\d]+ % [\\.,\\d]+ %$") //
                                                         .match("^(?<name>.*)$") //
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
@@ -509,27 +537,28 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^[\\w]{3}[\\s]{1,}(?<shares>[\\.,\\d]+) [\\.,\\d]+ % [\\.,\\d]+ %$") //
+                                                        .match("^[A-Z]{3}[\\s]{1,}(?<shares>[\\.,\\d]+) [\\.,\\d]+ % [\\.,\\d]+ %$") //
                                                         .assign((t, v) -> {
                                                             // Percentage quotation, workaround for bonds
-                                                            BigDecimal shares = asBigDecimal(v.get("shares"));
+                                                            var shares = asBigDecimal(v.get("shares"));
                                                             t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
                                                         }))
 
                         .oneOf( //
                                         // @formatter:off
                                         // Zu Gunsten Konto 1111111111 Valuta: 06.07.2021 EUR 68,22
+                                        // Zu Gunsten Konto N10560540gQB Valuta: 10.12.2025 EUR 1,94
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^Zu Gunsten Konto [\\d]+ Valuta: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\w]{3} [\\.,\\d]+$") //
+                                                        .match("^Zu Gunsten Konto .* Valuta: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [A-Z]{3} [\\.,\\d]+$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Amount credited to account 1209625007 Value: 2022-02-25 EUR 0.20
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^Amount credited to account [\\d]+ Value: (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) [\\w]{3} [\\.,\\d]+$") //
+                                                        .match("^Amount credited to account .* Value: (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) [A-Z]{3} [\\.,\\d]+$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
                         .oneOf( //
@@ -538,7 +567,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^Zu Gunsten Konto [\\d]+ Valuta: [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^Zu Gunsten Konto .* Valuta: [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -548,7 +577,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^Amount credited to account [\\d]+ Value: [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^Amount credited to account .* Value: [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -562,15 +591,15 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "gross") //
-                                                        .match("^(Umrechnungskurs|Exchange Rate): (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$") //
-                                                        .match("^(Bruttobetrag|Gross Amount) [\\w]{3} (?<fxGross>[\\.,\\d]+)$") //
-                                                        .match("^(Bruttobetrag|Gross Amount) [\\w]{3} (?<gross>[\\.,\\d]+)$") //
+                                                        .match("^(Umrechnungskurs|Exchange Rate): (?<baseCurrency>[A-Z]{3})\\/(?<termCurrency>[A-Z]{3}) (?<exchangeRate>[\\.,\\d]+)$") //
+                                                        .match("^(Bruttobetrag|Gross Amount) [A-Z]{3} (?<fxGross>[\\.,\\d]+)$") //
+                                                        .match("^(Bruttobetrag|Gross Amount) [A-Z]{3} (?<gross>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }),
@@ -580,14 +609,14 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("baseCurrency", "termCurrency", "exchangeRate", "gross") //
-                                                        .match("^(Umrechnungskurs|Exchange Rate): (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$") //
-                                                        .match("^(Bruttobetrag|Gross Amount) [\\w]{3} (?<gross>[\\.,\\d]+)$") //
+                                                        .match("^(Umrechnungskurs|Exchange Rate): (?<baseCurrency>[A-Z]{3})\\/(?<termCurrency>[A-Z]{3}) (?<exchangeRate>[\\.,\\d]+)$") //
+                                                        .match("^(Bruttobetrag|Gross Amount) [A-Z]{3} (?<gross>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            Money gross = Money.of(rate.getTermCurrency(), asAmount(v.get("gross")));
-                                                            Money fxGross = rate.convert(rate.getBaseCurrency(), gross);
+                                                            var gross = Money.of(rate.getTermCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = rate.convert(rate.getBaseCurrency(), gross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }))
@@ -606,7 +635,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                             // the "noTax" flag must be removed.
                             type.getCurrentContext().remove("noTax");
 
-                            TransactionItem item = new TransactionItem(t);
+                            var item = new TransactionItem(t);
 
                             if (ctx.getString(FAILURE) != null)
                                 item.setFailureMessage(ctx.getString(FAILURE));
@@ -620,22 +649,25 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
     private void addAdvanceTaxTransaction()
     {
-        final DocumentType type = new DocumentType("(Vorabpauschale|Advance Lump Sum)", //
+        final var type = new DocumentType("(Vorabpauschale|Advance Lump Sum)", //
                         "(Wertpapierabrechnung" //
                         + "|Steuerausgleichsrechnung" //
-                        + "|Transaction Statement)");
+                        + "|Fusion \\/ Zusammenlegung" //
+                        + "|Transaction Statement" //
+                        + "|Kontoauszug" //
+                        + "|Account Statement)");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^.*(Vorgangs\\-Nr|Transaction No)\\.: .*$");
+        var firstRelevantLine = new Block("^.*(Vorgangs\\-Nr|Transaction No)\\.: .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.TAXES);
                             return accountTransaction;
                         })
@@ -694,7 +726,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^Zu Lasten Konto [\\d]+ Valuta: [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^Zu Lasten Konto .* Valuta: [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -704,7 +736,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^Amount debited to account [\\d]+ Value: [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^Amount debited to account .* Value: [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -714,7 +746,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^Bemessungsgrundlage zur Kapitalertragsteuer [\\w]{3} [\\.,\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^Bemessungsgrundlage zur Kapitalertragsteuer [A-Z]{3} [\\.,\\d]+ (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -733,13 +765,13 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>(Zahlungszeitraum|Payment Period): .*)$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         .wrap(t -> {
-                            TransactionItem item = new TransactionItem(t);
+                            var item = new TransactionItem(t);
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             return item;
                         });
@@ -747,26 +779,26 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
     private void addTaxAdjustmentTransaction()
     {
-        final DocumentType type = new DocumentType("Steuerausgleichsrechnung");
+        final var type = new DocumentType("Steuerausgleichsrechnung");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^.*Seite 1\\/[\\d]$");
+        var firstRelevantLine = new Block("^.*Seite 1\\/[\\d]$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
                             return accountTransaction;
                         })
 
                         // Is type --> "Nachbelastung" change from TAX_REFUND to TAXES
                         .section("type").optional() //
-                        .match("^(?<type>(Erstattung|Nachbelastung)) [\\w]{3} [\\.,\\d]+( \\-)?$") //
+                        .match("^(?<type>(Erstattung|Nachbelastung)) [A-Z]{3} [\\.,\\d]+( \\-)?$") //
                         .assign((t, v) -> {
                             if ("Nachbelastung".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.TAXES);
@@ -786,7 +818,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^Erstattung (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^Erstattung (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -796,7 +828,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^Nachbelastung (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+) \\-$") //
+                                                        .match("^Nachbelastung (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+) \\-$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -830,10 +862,10 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDepotStatementTransaction()
     {
-        final DocumentType type = new DocumentType("(Perioden\\-Kontoauszug" //
+        final var type = new DocumentType("(Perioden\\-Kontoauszug" //
                         + "|Tageskontoauszug" //
                         + "|Periodic Account Statement)", //
-                        "Rechnungsabschluss:", //
+                        "(Rechnungsabschluss|Statement of Interest and Charges):", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // Perioden-Kontoauszug: EUR-Konto KOPIE
@@ -841,7 +873,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         // Periodic Account Statement: EUR Account
                                         // @formatter:on
                                         .section("currency") //
-                                        .match("^(Perioden\\-Kontoauszug|Tageskontoauszug|Periodic Account Statement): (?<currency>[\\w]{3})(\\-Konto| Account).*$") //
+                                        .match("^(Perioden\\-Kontoauszug|Tageskontoauszug|Periodic Account Statement): (?<currency>[A-Z]{3})(\\-Konto| Account).*$") //
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
 
         this.addDocumentTyp(type);
@@ -849,20 +881,21 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 12.04.2018 Lastschrift aktiv 12.04.2018 10.000,00
         // 11.12.2020 Gutschrift 11.12.2020 20,00
+        // 09.01.2025 Ueberweisung 09.01.2025 100,00
         // @formatter:on
-        Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Lastschrift aktiv|Gutschrift) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+$");
+        var depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Lastschrift aktiv|Gutschrift|Ueberweisung) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
                             return accountTransaction;
                         })
 
                         .section("note", "date", "amount") //
                         .documentContext("currency") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>(Lastschrift aktiv|Gutschrift)) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+)$") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>(Lastschrift aktiv|Gutschrift|Ueberweisung)) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(v.get("currency"));
@@ -876,12 +909,12 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         // 2022-02-02 Credit SEPA 2022-02-02 1,000.00
         // 2022-02-03 Direct Debit 2022-02-03 1.00
         // @formatter:on
-        Block depositEnglishBlock = new Block("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (Credit SEPA|Direct Debit) [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} [\\.,\\d]+$");
+        var depositEnglishBlock = new Block("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (Credit SEPA|Direct Debit) [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} [\\.,\\d]+$");
         type.addBlock(depositEnglishBlock);
         depositEnglishBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
                             return accountTransaction;
                         })
@@ -899,22 +932,23 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new));
 
         // @formatter:off
-        // 12.04.2018 Lastschrift aktiv 12.04.2018 10.000,00
+        // 06.07.2018 Lastschrift aktiv 06.07.2018 6,97 -
         // 22.08.2018 SEPA-Ueberweisung 22.08.2018 2.000,00 -
+        // 12.06.2025 Ueberweisung 12.06.2025 1.384,72 -
         // @formatter:on
-        Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Lastschrift aktiv|SEPA\\-Ueberweisung) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ \\-$");
+        var removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Lastschrift aktiv|SEPA\\-Ueberweisung|Ueberweisung) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ \\-$");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.REMOVAL);
                             return accountTransaction;
                         })
 
                         .section("note", "date", "amount") //
                         .documentContext("currency") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>(Lastschrift aktiv|SEPA\\-Ueberweisung)) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) \\-$") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>(Lastschrift aktiv|SEPA\\-Ueberweisung|Ueberweisung)) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) \\-$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(v.get("currency"));
@@ -926,70 +960,150 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
         // @formatter:off
         // 06.07.2018 Transaktionskostenpauschale o. MwSt. 10.07.2018 2,56 -
+        // 15.07.2024 Ordergebühr 15.07.2024 0,99 -
         // @formatter:on
-        Block feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Transaktionskostenpauschale o\\. MwSt\\. [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ \\-$");
+        var feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Transaktionskostenpauschale o\\. MwSt\\.|Ordergeb.hr) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ \\-$");
         type.addBlock(feesBlock);
+        feesBlock.setMaxSize(3);
         feesBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.FEES);
                             return accountTransaction;
                         })
 
-                        .section("note", "date", "amount") //
-                        .documentContext("currency") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>Transaktionskostenpauschale o\\. MwSt\\.) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) \\-$") //
-                        .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setCurrencyCode(v.get("currency"));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setNote(v.get("note"));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // 06.07.2018 Transaktionskostenpauschale o. MwSt. 10.07.2018 2,56 -
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note", "date", "amount") //
+                                                        .documentContext("currency") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>Transaktionskostenpauschale o\\. MwSt\\.) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) \\-$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setNote(v.get("note"));
+                                                        }),
+                                        // @formatter:off
+                                        // 15.07.2024 Ordergebühr 15.07.2024 0,99 -
+                                        // REF:SCALANDnkDU5Lx8
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note1", "date", "amount", "note2") //
+                                                        .documentContext("currency") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note1>Ordergeb.hr) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) \\-$") //
+                                                        .match("^REF:(?<note2>.*)$$")
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setNote(concatenate(v.get("note1"), v.get("note2"), " | Ref.-Nr.: "));
+                                                        }))
 
                         .wrap(TransactionItem::new));
 
         // @formatter:off
         // 2022-05-03 Ordergebühr 2022-05-03 0.99 -
+        // ORDERGEBUEHR
+        // REF:SCAL4Pm2ZTfDF4c
         // @formatter:on
-        Block feesEnglishBlock = new Block("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} Ordergeb.hr [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} [\\.,\\d]+ \\-$");
+        var feesEnglishBlock = new Block("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} Ordergeb.hr [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} [\\.,\\d]+ \\-$");
         type.addBlock(feesEnglishBlock);
+        feesBlock.setMaxSize(3);
         feesEnglishBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.FEES);
                             return accountTransaction;
                         })
 
-                        .section("note", "date", "amount") //
+                        .section("note1", "date", "amount", "note2") //
                         .documentContext("currency") //
-                        .match("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (?<note>Ordergeb.hr) (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) (?<amount>[\\.,\\d]+) \\-$") //
+                        .match("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (?<note1>Ordergeb.hr) (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) (?<amount>[\\.,\\d]+) \\-$") //
+                        .match("^REF:(?<note2>.*)$$")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setNote(v.get("note"));
+                            t.setNote(concatenate(v.get("note1"), v.get("note2"), " | Ref.-Nr.: "));
                         })
 
                         .wrap(TransactionItem::new));
+
+        var interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Rechnungsabschluss [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+( \\-)?$");
+        type.addBlock(interestBlock);
+        interestBlock.setMaxSize(1);
+        interestBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
+                            return accountTransaction;
+                        })
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        //
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note", "date", "amount") //
+                                                        .documentContext("currency") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>Rechnungsabschluss) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) \\-$") //
+                                                        .assign((t, v) -> {
+                                                            t.setType(AccountTransaction.Type.INTEREST_CHARGE);
+
+                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
+
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setNote(v.get("note"));
+                                                        }),
+                                        // @formatter:off
+                                        // 31.12.2024 Rechnungsabschluss 31.12.2024 0,01
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note", "date", "amount") //
+                                                        .documentContext("currency") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>Rechnungsabschluss) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
+
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setNote(v.get("note"));
+                                                        }))
+
+                        .wrap((t, ctx) -> {
+                            var item = new TransactionItem(t);
+
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+
+                            return item;
+                        }));
     }
 
     private void addFeesAssetManagerTransaction()
     {
-        final DocumentType type = new DocumentType("Verg.tung des Verm.gensverwalters");
+        final var type = new DocumentType("Verg.tung des Verm.gensverwalters");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^Rechnung f.r .*$");
+        var firstRelevantLine = new Block("^Rechnung f.r .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.FEES);
                             return accountTransaction;
                         })
@@ -999,7 +1113,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // Rechnungsbetrag 6,48
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Leistungen Betr.ge \\((?<currency>[\\w]{3})\\)$") //
+                        .match("^Leistungen Betr.ge \\((?<currency>[A-Z]{3})\\)$") //
                         .match("^Rechnungsbetrag *(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -1025,70 +1139,109 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>Abrechnungszeitraum .*)$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         .wrap(TransactionItem::new);
     }
 
     private void addInterestTransaction()
     {
-        final DocumentType type = new DocumentType("Zinsberechnung: Betrag in [\\w]{3}", //
+        final var type = new DocumentType("(Zinsberechnung: Betrag in|Statement of Interest and Charges:) [A-Z]{3}", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // Zinsberechnung: Betrag in EUR
+                                        // Calculation of Interest: Amount in EUR
                                         // @formatter:on
                                         .section("currency") //
-                                        .match("^Zinsberechnung: Betrag in (?<currency>[\\w]{3})$") //
+                                        .match("^(Zinsberechnung|Calculation of Interest): (Betrag|Amount) in (?<currency>[A-Z]{3})$") //
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
 
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^.*(Vorgangs\\-Nr|Transaction No)\\.: .*$", "^Die Buchung erfolgt über Konto.*$");
+        var firstRelevantLine = new Block("^.*(Vorgangs\\-Nr|Transaction No)\\.: .*$", "^(Die Buchung erfolgt über Konto|The above amounts are posted to account).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.INTEREST);
                             return accountTransaction;
                         })
 
-                        // @formatter:off
-                        // Zinsberechnung: Betrag in EUR
-                        // Gesamtsumme: 1,46
-                        // @formatter:on
-                        .section("currency", "amount") //
-                        .match("^Zinsberechnung: Betrag in (?<currency>[\\w]{3})$") //
-                        .match("^Gesamtsumme: (?<amount>[\\.,\\d]+)$") //
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Zinsberechnung: Betrag in EUR
+                                        // Gesamtsumme: 1,46
+                                        //
+                                        // Calculation of Interest: Amount in EUR
+                                        // Total Amount: 112.45
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^(Zinsberechnung|Calculation of Interest): (Betrag|Amount) in (?<currency>[A-Z]{3})$") //
+                                                        .match("^(Gesamtsumme|Total Amount): (?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // Zinsberechnung: Betrag in EUR
+                                        // Sollzinsen aus geduldeten Überziehungen (ÜZ) 5,64 -
+                                        // Gesamtsumme: 5,64 -
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^(Zinsberechnung|Calculation of Interest): (Betrag|Amount) in (?<currency>[A-Z]{3})$") //
+                                                        .match("^(Gesamtsumme|Total Amount): (?<amount>[\\.,\\d]+) \\-$") //
+                                                        .assign((t, v) -> {
+                                                            t.setType(AccountTransaction.Type.INTEREST_CHARGE);
 
-                        // @formatter:off
-                        // Abschlussbuchung vom 31.10.2023
-                        // @formatter:on
-                        .section("date") //
-                        .match("^Abschlussbuchung vom (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Abschlussbuchung vom 31.10.2023
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Abschlussbuchung vom (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // Closing Balance as of 2023-06-30
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Closing Balance as of (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
                         // @formatter:off
                         // Vorgangs-Nr.: 12345678
                         // @formatter:on
-                        .section("note").optional() //
+                        .section("note") //
                         .match("^.*(?<note>(Vorgangs\\-Nr|Transaction No)\\.: .*)$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                        // @formatter:off
-                        // für den Zeitraum 30.09.2023 bis 31.10.2023 ergeben sich für das Konto DE12 3456 7891 2345 6789 12
-                        // @formatter:on
-                        .section("note").optional() //
-                        .match("^f.r den Zeitraum (?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // für den Zeitraum 30.09.2023 bis 31.10.2023 ergeben sich für das Konto DE12 3456 7891 2345 6789 12
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^f.r den Zeitraum (?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | "))),
+                                        // @formatter:off
+                                        // For the period from 2023-03-31 to 2023-06-30 following closing entries have been posted for account LN85
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^For the period from (?<note>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} .* [\\d]{4}\\-[\\d]{2}\\-[\\d]{2}).*$") //
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | "))))
 
                         .wrap(TransactionItem::new);
 
@@ -1097,19 +1250,19 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDeliveryInOutBoundTransaction()
     {
-        final DocumentType type = new DocumentType("Kapitalerh.hung gegen Bareinzahlung");
+        final var type = new DocumentType("Kapitalerh.hung gegen Bareinzahlung");
         this.addDocumentTyp(type);
 
-        Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<PortfolioTransaction>();
 
-        Block firstRelevantLine = new Block("^(Einbuchung in Depot|Ausbuchung aus Depot) .* per [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$");
+        var firstRelevantLine = new Block("^(Einbuchung in Depot|Ausbuchung aus Depot) .* per [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            PortfolioTransaction portfolioTransaction = new PortfolioTransaction();
+                            var portfolioTransaction = new PortfolioTransaction();
                             portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
                             return portfolioTransaction;
                         })
@@ -1152,7 +1305,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("isin", "wkn", "name", "currency", "nameContinued") //
                                                         .find(".*Einbuchung in Depot .* per [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*") //
                                                         .match("^Nominale ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6}).*$") //
-                                                        .match("^STK [\\.,\\d]+ (?<name>.*) (?<currency>[\\w]{3}) [\\.,\\d]+ .*$") //
+                                                        .match("^STK [\\.,\\d]+ (?<name>.*) (?<currency>[A-Z]{3}) [\\.,\\d]+ .*$") //
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
@@ -1175,7 +1328,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // Zu Lasten Konto yyyyyyyyyy   Valuta: 09.03.2021 EUR 132,00
                         // @formatter:on
                         .section("currency", "amount").optional()
-                        .match("^Zu (Gunsten|Lasten) Konto .* (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                        .match("^Zu (Gunsten|Lasten) Konto .* (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -1193,20 +1346,29 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
     private void addNonImportableTransaction()
     {
-        final DocumentType type = new DocumentType("(Fusion \\/ Zusammenlegung" //
-                        + "|Depoteinlieferung)"); //
+        final var type = new DocumentType("(Fusion \\/ Zusammenlegung" //
+                        + "|Depoteinlieferung" //
+                        + "|Reverse Split"
+                        + "|Obligatorischer Umtausch)", //
+                        documentContext -> documentContext //
+                                        .section("transaction") //
+                                        .match("^(?<transaction>(Fusion \\/ Zusammenlegung" //
+                                                        + "|Depoteinlieferung" //
+                                                        + "|Reverse Split"
+                                                        + "|Obligatorischer Umtausch))$") //
+                                        .assign((ctx, v) -> ctx.put("transaction", v.get("transaction"))));
         this.addDocumentTyp(type);
 
-        Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<PortfolioTransaction>();
 
-        Block firstRelevantLine = new Block("^.*(Vorgangs\\-Nr|Transaction No)\\.: .*$");
+        var firstRelevantLine = new Block("^.*(Vorgangs\\-Nr|Transaction No)\\.: .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            PortfolioTransaction portfolioTransaction = new PortfolioTransaction();
+                            var portfolioTransaction = new PortfolioTransaction();
                             portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
                             return portfolioTransaction;
                         })
@@ -1220,12 +1382,16 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "isin", "wkn", "shares", "name", "nameContinued") //
+                                                        .documentContext("transaction") //
                                                         .find(".*Ausbuchung aus Depot .* per (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*") //
                                                         .match("^Nominale ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6}).*$") //
                                                         .match("^STK (?<shares>[\\.,\\d]+) (?<name>.*)$") //
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .assign((t, v) -> {
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+                                                            if ("Reverse Split".equals(v.get("transaction")) || "Obligatorischer Umtausch".equals(v.get("transaction")))
+                                                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionSplitUnsupported);
+                                                            else
+                                                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
@@ -1243,12 +1409,17 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "isin", "wkn", "shares", "name", "nameContinued") //
+                                                        .documentContext("transaction") //
                                                         .match("^Nominale ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6}).*$") //
                                                         .match("^STK (?<shares>[\\.,\\d]+) (?<name>.*)$") //
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .find(".*Valuta: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*") //
                                                         .assign((t, v) -> {
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+
+                                                            if ("Reverse Split".equals(v.get("transaction")) || "Obligatorischer Umtausch".equals(v.get("transaction")))
+                                                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionSplitUnsupported);
+                                                            else
+                                                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
@@ -1259,7 +1430,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                                         }))
 
                         .wrap((t, ctx) -> {
-                            TransactionItem item = new TransactionItem(t);
+                            var item = new TransactionItem(t);
 
                             if (ctx.getString(FAILURE) != null)
                                 item.setFailureMessage(ctx.getString(FAILURE));
@@ -1285,7 +1456,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // Span. Finanztransaktionssteuer EUR 1,97
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^.* Finanztransaktionssteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
+                        .match("^.* Finanztransaktionssteuer (?<currency>[A-Z]{3}) (?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("noTax"))
                                 processTaxEntries(t, v, type);
@@ -1295,7 +1466,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // German flat rate tax EUR 0.03 -
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^German flat rate tax (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+) \\-$") //
+                        .match("^German flat rate tax (?<currency>[A-Z]{3}) (?<tax>[\\.,\\d]+) \\-$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("noTax"))
                                 processTaxEntries(t, v, type);
@@ -1305,7 +1476,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // Kapitalertragsteuer EUR 127,73 -
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Kapitalertrags(s)?teuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+) \\-$") //
+                        .match("^Kapitalertrags(s)?teuer (?<currency>[A-Z]{3}) (?<tax>[\\.,\\d]+) \\-$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("noTax"))
                                 processTaxEntries(t, v, type);
@@ -1323,7 +1494,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // Kirchensteuer EUR 11,49 -
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Kirchensteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+) \\-$") //
+                        .match("^Kirchensteuer (?<currency>[A-Z]{3}) (?<tax>[\\.,\\d]+) \\-$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("noTax"))
                                 processTaxEntries(t, v, type);
@@ -1341,7 +1512,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // Solidaritätszuschlag 0,02 -
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Solidarit.tszuschlag (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+) \\-$") //
+                        .match("^Solidarit.tszuschlag (?<currency>[A-Z]{3}) (?<tax>[\\.,\\d]+) \\-$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("noTax"))
                                 processTaxEntries(t, v, type);
@@ -1360,7 +1531,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // US-Quellensteuer EUR 0,17 -
                         // @formatter:on
                         .section("withHoldingTax", "currency").optional() //
-                        .match("^(US\\-)?Quellensteuer (?<currency>[\\w]{3}) (?<withHoldingTax>[\\.,\\d]+) \\-$") //
+                        .match("^(US\\-)?Quellensteuer (?<currency>[A-Z]{3}) (?<withHoldingTax>[\\.,\\d]+) \\-$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("noTax"))
                                 processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
@@ -1370,7 +1541,17 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // US withholding tax EUR 0.14 -
                         // @formatter:on
                         .section("withHoldingTax", "currency").optional() //
-                        .match("^US withholding tax (?<currency>[\\w]{3}) (?<withHoldingTax>[\\.,\\d]+) \\-$") //
+                        .match("^US withholding tax (?<currency>[A-Z]{3}) (?<withHoldingTax>[\\.,\\d]+) \\-$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noTax"))
+                                processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
+                        })
+
+                        // @formatter:off
+                        // Withholding tax EUR 0.52 -
+                        // @formatter:on
+                        .section("withHoldingTax", "currency").optional() //
+                        .match("^Withholding tax (?<currency>[A-Z]{3}) (?<withHoldingTax>[\\.,\\d]+) \\-$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("noTax"))
                                 processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
@@ -1386,7 +1567,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // Provision EUR 0,08 -
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Provision (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
+                        .match("^Provision (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
@@ -1395,46 +1576,46 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // Provision TradersPlace EUR 4,00
                         // @formatter:on
                         .section("currency", "fee").multipleTimes().optional() //
-                        .match("^Provision .* (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
+                        .match("^Provision .* (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Börsengebühren EUR 13,13
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^B.rsengeb.hren (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
+                        .match("^B.rsengeb.hren (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Gebühren extern ADR EUR 2,00
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Geb.hren extern ADR (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
+                        .match("^Geb.hren extern ADR (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Mindermengenzuschlag Finanzen.net EUR 1,00
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Mindermengenzuschlag .* (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
+                        .match("^Mindermengenzuschlag .* (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Stamp HongKong EUR 0,12
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Stamp HongKong (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
+                        .match("^Stamp HongKong (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
     @Override
     protected long asAmount(String value)
     {
-        String language = "de";
-        String country = "DE";
+        var language = "de";
+        var country = "DE";
 
-        int lastDot = value.lastIndexOf(".");
-        int lastComma = value.lastIndexOf(",");
+        var lastDot = value.lastIndexOf(".");
+        var lastComma = value.lastIndexOf(",");
 
         // returns the greater of two int values
         if (Math.max(lastDot, lastComma) == lastDot)
@@ -1449,11 +1630,11 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
     @Override
     protected BigDecimal asExchangeRate(String value)
     {
-        String language = "de";
-        String country = "DE";
+        var language = "de";
+        var country = "DE";
 
-        int lastDot = value.lastIndexOf(".");
-        int lastComma = value.lastIndexOf(",");
+        var lastDot = value.lastIndexOf(".");
+        var lastComma = value.lastIndexOf(",");
 
         // returns the greater of two int values
         if (Math.max(lastDot, lastComma) == lastDot)

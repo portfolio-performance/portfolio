@@ -1,0 +1,38 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.70.3
+-----------------------------------------
+Consorsbank � 90318 Nürnberg
+Depotnummer 234234214
+42342342/00
+Hans Mustermann
+Musterstr. 33
+77111 Musterstadt  Vermerk der Bank 100002
+UEBERTRAG EINGANG 22.04.2022
+Belegnummer: 42342342
+Folg. Positionen haben wir per o.g.Datum Ihrem Bestand gutgeschrieben.
+Bezeichnung WKN
+ATOSS SOFTWARE AG INHABER-AKTIEN O.N. 510440
+Einheit Nennwert Verwahrart
+ST 333,00000 Girosammelverwahrung
+CBF 2126
+Komplette Stücke
+DIE O.G. WERTPAPIERE EMPFINGEN WIR VON:
+4062 CITIBANK PRIV.-KUNDEN AG 234242 2342342
+Hinweis:
+Bitte beachten Sie, dass die Einstandsdaten des obigen Depoteingangs unabhängig von den Wertpapieren übertragen
+werden und deshalb zeitlich verzögert eingepflegt werden können.
+Die Verantwortung für die korrekte Durchführung des Übertrags und die Richtigkeit der übermittelten Daten liegt
+ausschließlich bei der abgebenden Bank. Bitte wenden Sie sich daher bei Reklamationen an das abgebende Kreditinstitut.
+Eine gesetzliche Verpflichtung zur Übermittlung der Daten besteht grundsätzlich nur für Banken mit Sitz in Deutschland.
+Zur Prüfung können Sie auf www.consorsbank.de in der Detailansicht der jeweiligen Wertpapierposition unter dem Reiter
+�Historie� alle hinterlegten Einstandsdaten einsehen.
+Hinweis für Orderabrechnungen und Depotbuchungsanzeigen:
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der
+Allgemeinen Geschäftsbedingungen (AGB Banken).
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an die Consorsbank oder per Fax oder Mail an die
+unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil d�Administration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé

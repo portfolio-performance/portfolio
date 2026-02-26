@@ -6,7 +6,6 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
@@ -29,50 +28,57 @@ public class CrowdestorPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("FLEX STATEMENT");
+        final var type = new DocumentType("FLEX STATEMENT", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Date Goal Type Amount (€) Balance (€)
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("^Date Goal Type Amount \\((?<currency>\\p{Sc})\\) Balance \\(\\p{Sc}\\).*$") //
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
+
         this.addDocumentTyp(type);
 
-        Block block = new Block("^[\\d]{2}.[\\d]{2}.[\\d]{4} .* (Deposit|Profit) .*$");
-        type.addBlock(block);
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
-        pdfTransaction.subject(() -> {
-            AccountTransaction entry = new AccountTransaction();
-            entry.setType(AccountTransaction.Type.INTEREST);
-            return entry;
-        });
+        var firstRelevantLine = new Block("^[\\d]{2}.[\\d]{2}.[\\d]{4} .* (Deposit|Profit) .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.setMaxSize(1);
+        firstRelevantLine.set(pdfTransaction);
 
-        pdfTransaction
-                // 14.07.2022 CRF-6-4911 Deposit +50.00 50.00
-                // 16.07.2022 CRF-6-4911 Profit +0.03 50.03
-                .section("date", "type", "amount")
-                .match("^(?<date>[\\d]{2}.[\\d]{2}.[\\d]{4}) .* (?<type>(Deposit|Profit)) \\+(?<amount>[\\.,\\d]+) [\\.,\\d]+$")
-                .assign((t, v) -> {
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(CurrencyUnit.EUR));
+        pdfTransaction //
 
-                    // Switch transactions if ...
-                    switch (v.get("type"))
-                    {
-                        case "Deposit":
-                            t.setType(AccountTransaction.Type.DEPOSIT);
-                            v.put("note", "Einzahlung");
-                            break;
-                        case "Profit":
-                            t.setType(AccountTransaction.Type.INTEREST);
-                            v.put("note", "Zinsen");
-                            break;
-                        default:
-                            break;
-                    }
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
+                            return accountTransaction;
+                        })
 
-                    t.setNote(v.get("note"));
-                })
+                        // 14.07.2022 CRF-6-4911 Deposit +50.00 50.00
+                        // 16.07.2022 CRF-6-4911 Profit +0.03 50.03
+                        .section("date", "type", "amount") //
+                        .documentContext("currency") //
+                        .match("^(?<date>[\\d]{2}.[\\d]{2}.[\\d]{4}) .* (?<type>(Deposit|Profit)) \\+(?<amount>[\\.,\\d]+) [\\.,\\d]+$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 
-                .wrap(TransactionItem::new);
+                            // Switch transactions if ...
+                            switch (v.get("type"))
+                            {
+                                case "Deposit":
+                                    t.setType(AccountTransaction.Type.DEPOSIT);
+                                    break;
+                                case "Profit":
+                                    t.setType(AccountTransaction.Type.INTEREST);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        })
 
-        block.set(pdfTransaction);
+                        .wrap(TransactionItem::new);
     }
 
     @Override

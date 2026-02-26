@@ -26,7 +26,9 @@ import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.ibflex.IBFlexStatementExtractor;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.editor.FilePathHelper;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportExtractedItemsWizard;
 
@@ -63,11 +65,15 @@ public class ImportIBHandler
         {
             Extractor extractor = new IBFlexStatementExtractor(client);
 
+            PortfolioPart portPart = (PortfolioPart) part.getObject();
+            FilePathHelper helper = new FilePathHelper(portPart, UIConstants.Preferences.CSV_IMPORT_PATH);
+
             FileDialog fileDialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
             fileDialog.setText(extractor.getLabel());
             fileDialog.setFilterNames(
                             new String[] { MessageFormat.format("{0} ({1})", extractor.getLabel(), "*.xml") }); //$NON-NLS-1$ //$NON-NLS-2$
             fileDialog.setFilterExtensions(new String[] { "*.xml;*.XML" }); //$NON-NLS-1$
+            fileDialog.setFilterPath(helper.getPath());
             fileDialog.open();
 
             String[] filenames = fileDialog.getFileNames();
@@ -89,7 +95,7 @@ public class ImportIBHandler
             if (!errors.isEmpty())
                 e.put(files.get(0).getFile(), errors);
 
-            IPreferenceStore preferences = ((PortfolioPart) part.getObject()).getPreferenceStore();
+            IPreferenceStore preferences = portPart.getPreferenceStore();
 
             ImportExtractedItemsWizard wizard = new ImportExtractedItemsWizard(client, preferences, result, e);
             Dialog dialog = new WizardDialog(Display.getDefault().getActiveShell(), wizard);

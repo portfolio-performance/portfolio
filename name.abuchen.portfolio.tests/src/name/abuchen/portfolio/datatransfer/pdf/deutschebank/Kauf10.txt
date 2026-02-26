@@ -1,0 +1,52 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.80.5.qualifier
+System: linux | x86_64 | 21.0.8+9-LTS | Eclipse Adoptium
+-----------------------------------------
+Deutsche Bank AG
+Zentrale Frankfurt
+60262 Frankfurt
+Max Mustermann
+Musterstr. 1 A Erika Musterfrau
+22222 Musterhausen Telefon 123 4567-1234
+24/7-Kundenservice (069) 910-10000
+21. August 2025
+Abrechnung: Kauf von Wertpapieren
+Depotinhaber: Max Mustermann
+Filialnummer Depotnummer Wertpapierbezeichnung Seite
+123 1234567 01 6,875% TÜRKEI, REPUBLIK NT.06 17.M/S 03.36 1/2
+WKN A0GLU5 Nominal USD 5.000,00
+ISIN US900123AY60 Kurs 100,06 %
+Verwahrart Wertpapierrechnung USA/Kanada
+Geschäft Kommissionsgeschäft
+Börse Frankfurt - Deutsche Börse - Frankfurter Wertpapierbörse
+Belegnummer 1234567890 / 123456789 Schlusstag/-zeit MEZ 21.08.2025 / 16:37
+Auftragsart Limitauftrag
+Überschreitung Ihrer persönlichen Risikoklasse/Produktgruppen-Risikoklasse. Produkt ist unangemessen, da Sie die
+Risiken des Finanzinstruments nicht beurteilen können.
+Abrechnung Währung Betrag
+Kurswert USD 5.003,00
+Zinsen für 158 Zinstage USD 150,86
+Provision USD 68,32
+Weitere Provision der Bank bei der börslichen Orderausführung USD 5,22
+Fremde Spesen und Auslagen USD 4,80
+Gesamtbetrag
+USD 5.232,20
+Vorsitzender des Aufsichtsrats: Alexander R. Wynaendts
+Vorstand: Christian Sewing (Vorsitzender), James von Moltke, Fabrizio Campelli, Marcus Chromik, Bernd Leukert, Alexander von zur Mühlen, Laura Padovani, Claudio de Sanctis,
+Rebecca Short
+Deutsche Bank Aktiengesellschaft mit Sitz in Frankfurt am Main; Amtsgericht Frankfurt am Main, HRB Nr. 30 000; Umsatzsteuer-Id.-Nr. DE114103379; www.db.com/de
+TR00000001 20250821 887_000_
+Devisenkurs zur Handelswährung (USD/EUR) 1,1599999
+Belastung
+Buchung auf Kontonummer 1234567 00 mit Wertstellung 25.08.2025 EUR 4.510,52
+Summe der in der Abrechnung enthaltenen Provisionen und Auslagen EUR 67,54
+Informationen zum Steuerabzug
+- keine Steuerbescheinigung - Währung Betrag
+Gezahlte Stückzinsen EUR 1.300,59
+Die Wertpapiere haben wir entsprechend der Abrechnung gebucht. Unser Geschäftsverkehr mit Ihnen wird durch unsere Allgemeinen Geschäftsbedingungen
+und die Sonderbedingungen für Wertpapiergeschäfte geregelt. Bitte überprüfen Sie diese Abrechnung schnellstmöglich und richten Sie etwaige Einwendungen
+in den Geschäftsräumen der Bank oder schriftlich an Deutsche Bank AG, QM - Support, 04082 Leipzig. Andernfalls gilt diese Abrechnung als genehmigt.
+Die unter § 4 Nr. 8 UStG im Inland fallenden Bank- und Finanzdienstleistungen sind von der Umsatzsteuer befreit, sofern Umsatzsteuer nicht gesondert
+ausgewiesen ist. Soweit der Leistungsempfänger umsatzsteuerlicher Unternehmer ist und seinen Sitz in einem anderen EU-Mitgliedstaat hat und die Bank
+und Finanzdienstleistungen nach dortigem Recht umsatzsteuerpflichtig sind, gilt die Steuerschuldnerschaft des Leistungsempfängers. Umsatzsteuer ID Nr.:
+Deutsche Bank AG, 60262 Frankfurt DE114103379

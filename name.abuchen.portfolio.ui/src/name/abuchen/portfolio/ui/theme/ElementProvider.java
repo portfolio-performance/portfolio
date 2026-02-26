@@ -10,11 +10,13 @@ import org.eclipse.e4.ui.internal.css.swt.definition.IFontDefinitionOverridable;
 import org.eclipse.e4.ui.internal.css.swt.definition.IThemesExtension;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Tree;
-import org.swtchart.Chart;
+import org.eclipse.swtchart.Chart;
 import org.w3c.dom.Element;
 
 import name.abuchen.portfolio.ui.editor.Sidebar;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.ValueColorScheme;
+import name.abuchen.portfolio.ui.views.PortfolioBalanceChart;
 import name.abuchen.portfolio.ui.views.SecuritiesChart;
 
 @SuppressWarnings("restriction")
@@ -41,6 +43,10 @@ public class ElementProvider implements IElementProvider
             return new TreeElementAdapter(tree, engine);
         if (element instanceof SecuritiesChart securitiesChart)
             return new SecuritiesChartElementAdapter(securitiesChart, engine);
+        if (element instanceof PortfolioBalanceChart portfolioBalanceChart)
+            return new PortfolioBalanceChartElementAdapter(portfolioBalanceChart, engine);
+        if (element instanceof ValueColorScheme scheme)
+            return new ValueColorSchemeElementAdapter(scheme, engine);
 
         return null;
     }

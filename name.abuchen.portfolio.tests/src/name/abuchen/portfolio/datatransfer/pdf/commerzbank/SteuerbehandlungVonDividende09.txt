@@ -1,0 +1,42 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.74.2
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Kundennr. /BLZ Bezeichnung
+NLHREG LvdemyiO
+12 8368 1
+TpxCalXKbBx 13
+067 394 00 42634 DSvymaulR-iteXx
+abweichend wirtschaftlich Berechtigter
+----
+000 33012
+Frau Datum: 13.03.2025
+kfMldd BXmkBpIN Depotnummer: 5994848 00
+lpMMSDwmlzR wHV. 13
+72708 oqKSwjczW-mdPiP Referenz-Nummer: 0I5t9813ZeI916u2
+Steuerliche Behandlung: Ausländische Dividende vom 13.03.2025
+Stk. 1.500 NOVARTIS NAM. SF 0,49 , WKN / ISIN: 904278 / CH0012005267
+Zu Ihren Gunsten vor Steuern: EUR 3 . 5 5 2 , 8 4
+Steuerbemessungsgrundlage EUR 5 . 4 6 5 , 9 0
+Kapitalertragsteuer EUR - 5 4 6 , 5 9
+(angerechnete ausländische Quellensteuer: EUR 819,89 )
+Solidaritätszuschlag EUR - 3 0 , 0 6
+Kirchensteuer EUR 0 , 0 0
+abgeführte Steuern EUR - 5 7 6 , 6 5
+Zu Ihren Gunsten nach Steuern: EUR 2 . 9 7 6 , 1 9
+Die Gutschrift erfolgt mit Valuta 17.03.2025 auf Konto EUR mit der IBAN DE90 0214 0000 7607 6454 00
+KEINE STEUERBESCHEINIGUNG ...
+Bisher einbehaltene bzw. angerechnete Steuer in EUR (4)
+in 2025 einbehaltene einbehaltener einbehaltene angerechnete
+Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer ausländische Quellensteuer
+vor Ermittlung 999,75 54,92 0,00 197,65
+nach Ermittlung 1.546,34 84,98 0,00 1.017,54
+Verrechnungssalden in EUR (4)
+Gewinne / Verluste sonstige anrechenbare verfügbarer
+in 2025 aus Aktien Gewinne / Verluste ausländische Quellensteuer Freistellungsauftrag
+vor Ermittlung -42.083,83 4.789,49 0,00 0,00
+nach Ermittlung -42.083,83 10.255,39 0,00 0,00
+Commerzbank AG
+Diese Abrechnung ist maschinell erstellt und wird nicht unterschrieben.
+(4) Die ausgewiesenen EUR-Beträge spiegeln den Stand zum Abrechnungszeitpunkt wider.
+KEINE STEUERBESCHEINIGUNG

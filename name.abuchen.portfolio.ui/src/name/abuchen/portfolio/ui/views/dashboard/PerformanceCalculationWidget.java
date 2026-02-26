@@ -178,6 +178,7 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
         addConfig(new ReportingPeriodConfig(this));
         addConfig(new DataSeriesConfig(this, false));
         addConfig(new LayoutConfig(this));
+        addConfig(new CostMethodConfig(this));
     }
 
     @Override
@@ -275,7 +276,8 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
         return () -> {
             PerformanceIndex index = getDashboardData().calculate(get(DataSeriesConfig.class).getDataSeries(),
                             get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now()));
-            return index.getClientPerformanceSnapshot().orElseThrow(IllegalArgumentException::new);
+            boolean useFifo = get(CostMethodConfig.class).getValue().useFifo();
+            return index.getClientPerformanceSnapshot(useFifo).orElseThrow(IllegalArgumentException::new);
         };
     }
 

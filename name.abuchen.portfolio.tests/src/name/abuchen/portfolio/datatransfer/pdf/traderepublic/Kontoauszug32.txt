@@ -1,0 +1,45 @@
+```
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.74.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+VORNAME NACHNAME SEITE 1 von 5
+Straße 1, 12345 DATUM 01 März 2025 - 31 März 2025
+Ort, DE IBAN DE00000000000000000000
+BIC TRBKDEBBXXX
+KONTOÜBERSICHT
+PRODUKT ANFANGSSALDO ZAHLUNGSEINGANG ZAHLUNGSAUSGANG ENDSALDO
+Cashkonto 808,29 € 0,00 € 7,33 € 800,96 €
+UMSATZÜBERSICHT
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+18 
+März SEPA-Lastschrift Sepa Direct Debit transfer to Vodafone West GmbH 7,33 € 800,96 €
+2025
+BARMITTELÜBERSICHT
+Zum 31 März 2025
+TREUHANDKONTEN SALDO
+Deutsche Bank 800,96 €
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Direktoren
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Vorname Hecker
+Thomas Pischke
+Erstellt am 01 Apr. 2025 Seite 4 von 5
+HINWEISE ZUM KONTOAUSZUG
+Bitte überprüfe deinen Kontoauszug, da Einwendungen unverzüglich geltend gemacht/erhoben werden müssen. Bitte beachte, dass der angegebene 
+Kontostand nicht die Wertstellung der einzelnen Buchungen bzw. Transaktionen berücksichtigt, der genannte Betrag bzw. Nennbetrag also nicht dem für 
+die Zinsrechnung maßgeblichen Kontostand entsprechen muss. Ein Rechnungsabschluss gilt als genehmigt, sofern du innerhalb von 6 Wochen keine 
+Einwendungen erhebst. Zur Fristwahrung genügt die rechtzeitige Absendung an den Bereich Internal Audit von Trade Republic. Dieser Kontoauszug gilt 
+im Zusammenhang mit den zugrundeliegenden Verträgen laut angegebener Kontonummer als Rechnung i.S.d. UStG.  Die Guthaben, die bei 
+Treuhandbanken verwahrt werden, sind jeweils bis zu 100.000 € von der Einlagensicherung der Treuhandbank gesichert. Die Anteile an qualifizierten 
+Geldmarktfonds (QMMF) sind für den unwahrscheinlichen Fall einer Insolvenz von Trade Republic geschützt. Weitere Informationen zur Sicherung deiner 
+Gelder findest du unter https://support.traderepublic.com/de-de/3070-How-is-my-money-protected.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Direktoren
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Vorname Hecker
+Thomas Pischke
+Erstellt am 01 Apr. 2025 Seite 5 von 5
+
+```

@@ -1,0 +1,94 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.74.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Deutsche Kreditbank AG
+Herrn Internes Zeichen:
+lCbnKA slWEFF 964 44 00
+RTKaYJF 09  
+55532 mvWAKfNMR  
+ 
+ 
+ 
+ 
+ 
+ 
+ 6. Januar 2025
+Kontoauszug 13/2024 Seite 1 von 2
+G  irokonto 3535435435, OF05 8216 5325 3540 4078 26 
+Datum Erläuterung Betrag Soll EUR Betrag Haben EUR
+ Kontostand am 04.12.2024, Auszug Nr.   12               2.862,11
+06.12.2024Wertpapierabrechnung / Wert: 09.12.2024            -2.701,50
+Depot 5574762593 Wertp.Abrechn. 05.12.2024 
+924292944658768 WKN A1CYW7 Gesch.Art KV INVESCOMI 
+S+P 500 ACC A ISIN IE00B3YCGJ38 Ihr Fondssparplan Preis 
+1138,58000000 EUR Stück 2,3714
+09.12.2024 Kartenzahlung               -10,00
+MMW EWGFGGSDG//G.sdfsdfsfa/DE 2024-12-06T12:15 
+Debitk.0 2028-12
+09.12.2024 Zahlungseingang               500,00
+qMkhjh aZUYIp Einzahlung
+23.12.2024 Kartenzahlung              -390,11
+DR.MED.DFW.F.FDSFD//EFSDFEEF/D E 
+2024-12-20T19:32 Debitk.0 2028-12
+23.12.2024 Zahlungseingang               400,00
+TLRIWF SYzTwa Ausgleich
+30.12.2024 Kartenzahlung              -110,82
+HyUi uqsi DANKE. 41655545//DFEsdfsdf en/DE 
+2024-12-28T18:46 Debitk.0 2028-12 Bargeldausz. 100,00 
+EUR
+30.12.2024 Kartenzahlung                -8,70
+EFEFEF.EFDFE.GMBH...GR/FEFF/../AT 2024-12-29T03:04 
+Debitk.79 2099-12 Zahl.System VISA Debit
+30.12.2024 Abrechnung 30.12.2024 / Wert: 01.01.2025                -0,07
+siehe Anlage Nr. 1
+ Kontostand am 30.12.2024 um 18:05 Uhr                 540,91
+Gesamtumsatzsummen Summe Soll EUR Anzahl Summe Haben EUR Anzahl
+ . -3.221,20 6 900,00 2
+Deutsche Kreditbank AG Vorsitzender des Aufsichtsrats Telefon 030 120 300 00 BIC: BYLADEM1001 
+Taubenstraße 7 - 9 Stephan Winkelmeier Telefax 030 120 300 01  
+10117 Berlin Vorstand  USt-ID-Nr.: DE137178746 
+ Dr. Sven Deglow (Vorsitzender) info@dkb.de Handelsregister 
+Ein Unternehmen der Tilo Hacke, Jan Walther, www.dkb.de Berlin-Charlottenburg 
+Bayerischen Landesbank Arnulf Keese, Kristina Trink (HRB 34165 B)
+Kontoauszug 13/2024 Seite 2 von 2
+Girokonto 53453535, yx77 2467 5819 3578 5236 33,  FQuJGp XuBvVn
+Rechnungsabschluss: Anlage     1
+Kontostand in EUR am 30.12.2024                                   540,98 +
+                                                            --------------
+Abrechnungszeitraum vom 01.10.2024 bis 31.12.2024
+Zinsen für eingeräumte Kontoüberziehung                              0,07-
+ 8,6800 v.H. Kred-Zins  bis 27.11.2024
+                                                            --------------
+Abrechnung 31.12.2024                                                0,07-
+Sollzinssätze am 30.12.2024
+ 8,6800 v.H. für eingeräumte Kontoüberziehung
+  (aktuell eingeräumte Kontoüberziehung         500,00)
+ 8,6800 v.H. für geduldete Kontoüberziehung
+über die eingeräumte Kontoüberziehung hinaus
+Es handelt sich hierbei um eine umsatzsteuerfreie Leistung.
+Kontostand/Rechnungsabschluss in EUR am 30.12.2024                540,91 +
+Rechnungsnummer: 624564535-BY111-63456663563
+Bitte beachten Sie die Hinweise zum Kontoauszug.
+Hinweise zum Kontoauszug:
+l Bitte den Kontoauszug prüfen. Nicht autorisierte oder fehlerhaft ausgeführte Aufträge müssen uns unverzüglich angezeigt 
+werden.
+l Der Kontoauszug am Ende eines Kalenderquartals beinhaltet regelmäßig einen Rechnungsabschluss. Dieser gilt als genehmigt, 
+wenn ihm nicht vor Ablauf von sechs Wochen nach Zugang widersprochen wird. Einwendungen gegen Rechnungsabschlüsse 
+müssen der Deutschen Kreditbank AG in Textform zugehen. Zur Fristwahrung genügt die rechtzeitige Absendung (Nr. 7 Abs. 3 
+der Allgemeinen Geschäftsbedingungen).
+l Der angegebene Kontostand berücksichtigt nicht die Wertstellung der einzelnen Buchungen. Dies bedeutet, dass der genannte 
+Betrag nicht dem für die Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei Verfügungen möglicherweise 
+Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können.
+l Die Gutschrift von Schecks, Lastschriften oder anderen Einzugspapieren vor ihrer Einlösung geschieht unter Vorbehalt 
+(E.v.-Gutschrift). Werden Schecks oder Lastschriften nicht eingelöst oder geht der DKB der Gegenwert nicht zu, so macht sie die 
+Gutschrift gemäß Nr. 23 der AGB rückgängig (Stornobuchung), und zwar auch nach einem zwischenzeitlich erfolgten 
+Rechnungsabschluss.
+l Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen: im 
+"Informationsbogen für Einleger" sowie auf unserer Webseite unter dkb.de/kundenservice/einlagensicherung.
+Deutsche Kreditbank AG Vorsitzender des Aufsichtsrats Telefon 030 120 300 00 BIC: BYLADEM1001 
+Taubenstraße 7 - 9 Stephan Winkelmeier Telefax 030 120 300 01  
+10117 Berlin Vorstand  USt-ID-Nr.: DE137178746 
+ Dr. Sven Deglow (Vorsitzender) info@dkb.de Handelsregister 
+Ein Unternehmen der Tilo Hacke, Jan Walther, www.dkb.de Berlin-Charlottenburg 
+Bayerischen Landesbank Arnulf Keese, Kristina Trink (HRB 34165 B)

@@ -1,0 +1,38 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.80.5.qualifier
+System: linux | x86_64 | 21.0.8+9-LTS | Eclipse Adoptium
+-----------------------------------------
+Deutsche Bank AG 
+Filiale
+Musterhausen
+Paul-Muster-Platz 1
+Herrn 22222 Hamburg
+Max Mustermann Frau Ronja Musterfrau
+Musterstr. 1 A Telefon (010) 3333-2222
+22222 Musterhausen
+24h-Kundenservice (069) 910-10000
+2. Oktober 2025
+Kontoauszug vom 19.09.2025 bis 02.10.2025 
+Kontoinhaber: Max Mustermann
+Auszug Seite von IBAN Alter Saldo per 18.09.2025
+3 1 1 DE12 3456 7890 1234 5678 90 USD + 1.284,05
+Buchung Valuta Vorgang Soll Haben
+02.10. 01.10. Verwendungszweck/ Kundenreferenz + 7,87
+2025 2025 ZINSEN/DIVIDENDEN/ERTRAEGE STK/NOM:
+60 NIKE INC.REGISTERED SHARES CLASS B O.N
+.
+Filialnummer Kontonummer Neuer Saldo
+111 2345678 90 USD + 1.291,92
+BIC (SWIFT)
+DEUTDEDBHAM
+Wichtige Hinweise
+Bitte erheben Sie Einwendungen gegen einzelne Buchungen unverzüglich. Schecks, Wechsel und sonstige Lastschriften schreiben wir unter dem Vorbehalt
+des Eingangs gut. Der angegebene Kontostand berücksichtigt nicht die Wertstellung der Buchungen (siehe oben unter "Valuta").
+Somit können bei Verfügungen1)
+ möglicherweise Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen.
+Die abgerechneten Leistungen sind als Bank- oder Finanzdienstleistungen von der Umsatzsteuer befreit, sofern Umsatzsteuer nicht gesondert
+ausgewiesen ist. Umsatzsteuer ID Nr.: Deutsche Bank AG, 60262 Frankfurt DE114103379
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können dem "Informationsbogen
+für den Einleger" entnommen werden.
+1) Der Begriff umfasst unter anderem die relevanten Zahlungskontendienste "Bargeldauszahlung" und "Überweisung".
+0000000003 / 06500900 / 20251002

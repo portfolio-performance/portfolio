@@ -1,0 +1,262 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.1
+-----------------------------------------
+uCNEJ eRsalZ TVEzqXd eNhu EgKKD DATE 01 sept. 2024 - 29 sept. 2024
+zWlBr QY FV dpIuPl 4, 20717 IBAN DE55402154005012458754
+LW Czblhnyz, FR BIC CITIDEFF
+SYNTHÈSE DU RELEVÉ DE COMPTE
+PRODUIT SOLDE DÉBUT DE PÉRIODE ENTRÉE D'ARGENT SORTIE D'ARGENT SOLDE FIN DE PÉRIODE
+Compte titres 49,79 € 160,45 € 149,96 € 60,28 €
+TRANSACTIONS
+DATE TYPE DESCRIPTION ENTRÉE SORTIE D'ARGENT D'ARGENT SOLDE
+01 sept. Paiement 
+2024 d'intérêts Your interest payment 0,28 € 50,07 €
+02 sept. 
+2024 Commerce Exécution Achat direct XF000BTC0017 N1191026226 0,97 € 49,10 €
+02 sept. 
+2024 Commerce Exécution Achat direct XF000ETH0019 N1191050042 1,00 € 48,10 €
+02 sept. 
+2024 Commerce Savings plan execution FR0014004L86 DASSAULT AVIAT.INH.EO-,80, quantity: 0.005167 1,00 € 47,10 €
+02 sept. 
+2024 Commerce Savings plan execution FR0000120578 SANOFI SA INHABER EO 2, quantity: 0.009633 1,00 € 46,10 €
+02 sept. 
+2024 Commerce Savings plan execution FR0000120644 DANONE S.A. EO -,25, quantity: 0.015862 1,00 € 45,10 €
+02 sept. 
+2024 Commerce Savings plan execution FR0000121220 SODEXO S.A. INH. EO 4, quantity: 0.012360 1,00 € 44,10 €
+02 sept. 
+2024 Commerce Savings plan execution NL0000235190 AIRBUS SE, quantity: 0.007251 1,00 € 43,10 €
+02 sept. 
+2024 Commerce Savings plan execution FR0000052292 HERMES INTERNATIONAL O.N., quantity: 0.000467 1,00 € 42,10 €
+02 sept. 
+2024 Commerce Savings plan execution FR0000121972 SCHNEIDER ELEC. INH. EO 4, quantity: 0.004373 1,00 € 41,10 €
+02 sept. 
+2024 Commerce Savings plan execution FR0000121329 THALES S.A. EO 3, quantity: 0.006648 1,00 € 40,10 €
+02 sept. 
+2024 Commerce Savings plan execution FR0000120693 PERNOD RICARD O.N., quantity: 0.015479 2,01 € 38,09 €
+02 sept. 
+2024 Commerce Savings plan execution FR0000120271 TOTALENERGIES SE EO 2,50, quantity: 0.016028 1,00 € 37,09 €
+02 sept. 
+2024 Commerce Savings plan execution FR0000120073 AIR LIQUIDE INH. EO 5,50, quantity: 0.005943 1,00 € 36,09 €
+02 sept. 
+2024 Commerce Savings plan execution FR0000120404 ACCOR SA INH. EO 3, quantity: 0.026274 1,00 € 35,09 €
+Page 1 7
+Généré le 30 sept. 2024
+Trade Republic Bank GmbH
+DATE TYPE DESCRIPTION ENTRÉE SORTIE D'ARGENT D'ARGENT SOLDE
+02 sept. 
+2024 Commerce Savings plan execution FR0000121667 ESSILORLUXO. INH. EO -,18, quantity: 0.004683 1,00 € 34,09 €
+02 sept. 
+2024 Commerce Savings plan execution FR0000120321 OREAL (L') INH. EO 0,2, quantity: 0.002541 1,00 € 33,09 €
+02 sept. 
+2024 Commerce Savings plan execution FR0000121014 LVMH EO 0,3, quantity: 0.001503 1,00 € 32,09 €
+02 sept. 
+2024 Commerce Savings plan execution FR0000125338 CAPGEMINI SE INH. EO 8, quantity: 0.005356 1,00 € 31,09 €
+02 sept. 
+2024 Virement Paiement accepté: FR7634047446300402044310454 à DE55402154005012458754 100,00 € 131,09 €
+02 sept. 
+2024 Commerce Savings plan execution US0231351067 AMAZON.COM INC. DL-,01, quantity: 0.006209 1,00 € 130,09 €
+02 sept. 
+2024 Commerce Savings plan execution US09247X1019 BLACKROCK CL. A DL -,01, quantity: 0.001223 1,00 € 129,09 €
+02 sept. Commerce Savings plan execution LU1681048804 Amundi Index Solutions - Amundi S&P 500 UCITS 2024 ETF - EUR (C), quantity: 0.010019 1,00 € 128,09 €
+02 sept. 
+2024 Commerce Savings plan execution US0378331005 APPLE INC., quantity: 0.004808 1,00 € 127,09 €
+02 sept. 
+2024 Commerce Savings plan execution US5949181045 MICROSOFT DL-,00000625, quantity: 0.002647 1,00 € 126,09 €
+02 sept. 
+2024 Commerce Savings plan execution US67066G1040 NVIDIA CORP. DL-,001, quantity: 0.009250 1,00 € 125,09 €
+02 sept. 
+2024 Commerce Savings plan execution US92826C8394 VISA, quantity: 0.003992 1,00 € 124,09 €
+03 sept. 
+2024 Gains Cash Dividend for ISIN US92826C8394 0,03 € 124,12 €
+09 sept. 
+2024 Commerce Exécution Achat direct XF000BTC0017 N1195953847 0,97 € 123,15 €
+09 sept. 
+2024 Commerce Exécution Achat direct XF000ETH0019 N1195963629 1,00 € 122,15 €
+09 sept. 
+2024 Commerce Savings plan execution FR0014004L86 DASSAULT AVIAT.INH.EO-,80, quantity: 0.005316 1,00 € 121,15 €
+09 sept. 
+2024 Commerce Savings plan execution FR0000120578 SANOFI SA INHABER EO 2, quantity: 0.009523 1,00 € 120,15 €
+09 sept. 
+2024 Commerce Savings plan execution FR0000120644 DANONE S.A. EO -,25, quantity: 0.015375 1,00 € 119,15 €
+09 sept. 
+2024 Commerce Savings plan execution NL0000235190 AIRBUS SE, quantity: 0.007741 1,00 € 118,15 €
+09 sept. 
+2024 Commerce Savings plan execution FR0000121220 SODEXO S.A. INH. EO 4, quantity: 0.012547 1,00 € 117,15 €
+09 sept. 
+2024 Commerce Savings plan execution FR0000052292 HERMES INTERNATIONAL O.N., quantity: 0.000522 1,00 € 116,15 €
+09 sept. 
+2024 Commerce Savings plan execution FR0000121972 SCHNEIDER ELEC. INH. EO 4, quantity: 0.004579 1,00 € 115,15 €
+Page 2 7
+Généré le 30 sept. 2024
+Trade Republic Bank GmbH
+DATE TYPE DESCRIPTION ENTRÉE SORTIE D'ARGENT D'ARGENT SOLDE
+09 sept. 
+2024 Commerce Savings plan execution FR0000120271 TOTALENERGIES SE EO 2,50, quantity: 0.016567 1,00 € 114,15 €
+09 sept. 
+2024 Commerce Savings plan execution FR0000125338 CAPGEMINI SE INH. EO 8, quantity: 0.005517 1,00 € 113,15 €
+09 sept. 
+2024 Commerce Savings plan execution FR0000121329 THALES S.A. EO 3, quantity: 0.006906 1,00 € 112,15 €
+09 sept. 
+2024 Commerce Savings plan execution FR0000120073 AIR LIQUIDE INH. EO 5,50, quantity: 0.006107 1,00 € 111,15 €
+09 sept. 
+2024 Commerce Savings plan execution FR0000121667 ESSILORLUXO. INH. EO -,18, quantity: 0.004755 1,00 € 110,15 €
+09 sept. 
+2024 Commerce Savings plan execution FR0000120404 ACCOR SA INH. EO 3, quantity: 0.026055 1,00 € 109,15 €
+09 sept. 
+2024 Commerce Savings plan execution FR0000120693 PERNOD RICARD O.N., quantity: 0.016306 2,01 € 107,14 €
+09 sept. 
+2024 Commerce Savings plan execution FR0000121014 LVMH EO 0,3, quantity: 0.001630 1,00 € 106,14 €
+09 sept. 
+2024 Commerce Savings plan execution FR0000120321 OREAL (L') INH. EO 0,2, quantity: 0.002608 1,00 € 105,14 €
+09 sept. 
+2024 Commerce Savings plan execution US0231351067 AMAZON.COM INC. DL-,01, quantity: 0.006311 1,00 € 104,14 €
+09 sept. 
+2024 Commerce Savings plan execution US09247X1019 BLACKROCK CL. A DL -,01, quantity: 0.001262 1,00 € 103,14 €
+09 sept. Savings plan execution LU1681048804 Amundi Index Solutions - Amundi S&P 500 UCITS 
+2024 Commerce ETF - EUR (C), quantity: 0.010328 1,00 € 102,14 €
+09 sept. 
+2024 Commerce Savings plan execution US0378331005 APPLE INC., quantity: 0.005052 1,00 € 101,14 €
+09 sept. 
+2024 Commerce Savings plan execution US5949181045 MICROSOFT DL-,00000625, quantity: 0.002735 1,00 € 100,14 €
+09 sept. 
+2024 Commerce Savings plan execution US67066G1040 NVIDIA CORP. DL-,001, quantity: 0.010571 1,00 € 99,14 €
+09 sept. 
+2024 Commerce Savings plan execution US92826C8394 VISA, quantity: 0.003870 1,00 € 98,14 €
+12 sept. 
+2024 Gains Cash Dividend for ISIN US5949181045 0,03 € 98,17 €
+16 sept. 
+2024 Commerce Exécution Achat direct XF000BTC0017 N1197626420 0,98 € 97,19 €
+16 sept. 
+2024 Commerce Exécution Achat direct XF000ETH0019 N1197657795 1,00 € 96,19 €
+16 sept. 
+2024 Commerce Savings plan execution FR0014004L86 DASSAULT AVIAT.INH.EO-,80, quantity: 0.005227 1,00 € 95,19 €
+16 sept. 
+2024 Commerce Savings plan execution FR0000120578 SANOFI SA INHABER EO 2, quantity: 0.009669 1,00 € 94,19 €
+16 sept. 
+2024 Commerce Savings plan execution FR0000120644 DANONE S.A. EO -,25, quantity: 0.015257 1,00 € 93,19 €
+Page 3 7
+Généré le 30 sept. 2024
+Trade Republic Bank GmbH
+DATE TYPE DESCRIPTION ENTRÉE SORTIE D'ARGENT D'ARGENT SOLDE
+16 sept. 
+2024 Commerce Savings plan execution NL0000235190 AIRBUS SE, quantity: 0.007691 1,00 € 92,19 €
+16 sept. 
+2024 Commerce Savings plan execution FR0000121220 SODEXO S.A. INH. EO 4, quantity: 0.012779 1,00 € 91,19 €
+16 sept. 
+2024 Commerce Savings plan execution FR0000052292 HERMES INTERNATIONAL O.N., quantity: 0.000522 1,00 € 90,19 €
+16 sept. 
+2024 Commerce Savings plan execution FR0000121972 SCHNEIDER ELEC. INH. EO 4, quantity: 0.004381 1,00 € 89,19 €
+16 sept. 
+2024 Commerce Savings plan execution FR0000120271 TOTALENERGIES SE EO 2,50, quantity: 0.016353 1,00 € 88,19 €
+16 sept. 
+2024 Commerce Savings plan execution FR0000125338 CAPGEMINI SE INH. EO 8, quantity: 0.005253 1,00 € 87,19 €
+16 sept. 
+2024 Commerce Savings plan execution FR0000121329 THALES S.A. EO 3, quantity: 0.006749 1,00 € 86,19 €
+16 sept. 
+2024 Commerce Savings plan execution FR0000120073 AIR LIQUIDE INH. EO 5,50, quantity: 0.005879 1,00 € 85,19 €
+16 sept. Commerce Savings plan execution FR0013416716 AMUNDI PHYSICAL GOLD ETC (C), quantity: 2024 0.270489 25,00 € 60,19 €
+16 sept. 
+2024 Commerce Savings plan execution FR0000121667 ESSILORLUXO. INH. EO -,18, quantity: 0.004773 1,00 € 59,19 €
+16 sept. 
+2024 Commerce Savings plan execution FR0000121014 LVMH EO 0,3, quantity: 0.001633 1,00 € 58,19 €
+16 sept. 
+2024 Commerce Savings plan execution FR0000120693 PERNOD RICARD O.N., quantity: 0.015835 2,01 € 56,18 €
+16 sept. 
+2024 Commerce Savings plan execution FR0000120321 OREAL (L') INH. EO 0,2, quantity: 0.002699 1,00 € 55,18 €
+16 sept. 
+2024 Commerce Savings plan execution FR0000120404 ACCOR SA INH. EO 3, quantity: 0.026219 1,00 € 54,18 €
+16 sept. 
+2024 Commerce Savings plan execution US0231351067 AMAZON.COM INC. DL-,01, quantity: 0.006045 1,00 € 53,18 €
+16 sept. 
+2024 Commerce Savings plan execution US09247X1019 BLACKROCK CL. A DL -,01, quantity: 0.001245 1,00 € 52,18 €
+16 sept. Commerce Savings plan execution LU1681048804 Amundi Index Solutions - Amundi S&P 500 UCITS 2024 ETF - EUR (C), quantity: 0.010097 1,00 € 51,18 €
+16 sept. 
+2024 Commerce Savings plan execution US0378331005 APPLE INC., quantity: 0.005139 1,00 € 50,18 €
+16 sept. 
+2024 Commerce Savings plan execution US5949181045 MICROSOFT DL-,00000625, quantity: 0.002588 1,00 € 49,18 €
+16 sept. 
+2024 Commerce Savings plan execution US67066G1040 NVIDIA CORP. DL-,001, quantity: 0.009516 1,00 € 48,18 €
+16 sept. 
+2024 Commerce Savings plan execution US92826C8394 VISA, quantity: 0.003842 1,00 € 47,18 €
+23 sept. 
+2024 Commerce Exécution Achat direct XF000BTC0017 N1201049969 1,00 € 46,18 €
+Page 4 7
+Généré le 30 sept. 2024
+Trade Republic Bank GmbH
+DATE TYPE DESCRIPTION ENTRÉE SORTIE D'ARGENT D'ARGENT SOLDE
+23 sept. 
+2024 Commerce Exécution Achat direct XF000ETH0019 N1201059839 1,00 € 45,18 €
+23 sept. 
+2024 Commerce Savings plan execution FR0000120644 DANONE S.A. EO -,25, quantity: 0.015360 1,00 € 44,18 €
+23 sept. 
+2024 Commerce Savings plan execution FR0000120578 SANOFI SA INHABER EO 2, quantity: 0.009632 1,00 € 43,18 €
+23 sept. 
+2024 Commerce Savings plan execution FR0014004L86 DASSAULT AVIAT.INH.EO-,80, quantity: 0.005260 1,00 € 42,18 €
+23 sept. 
+2024 Commerce Savings plan execution NL0000235190 AIRBUS SE, quantity: 0.007606 1,00 € 41,18 €
+23 sept. 
+2024 Commerce Savings plan execution FR0000121220 SODEXO S.A. INH. EO 4, quantity: 0.012861 1,00 € 40,18 €
+23 sept. 
+2024 Commerce Savings plan execution FR0000052292 HERMES INTERNATIONAL O.N., quantity: 0.000523 1,00 € 39,18 €
+23 sept. 
+2024 Commerce Savings plan execution FR0000120271 TOTALENERGIES SE EO 2,50, quantity: 0.016079 1,00 € 38,18 €
+23 sept. 
+2024 Commerce Savings plan execution FR0000121972 SCHNEIDER ELEC. INH. EO 4, quantity: 0.004257 1,00 € 37,18 €
+23 sept. 
+2024 Commerce Savings plan execution FR0000125338 CAPGEMINI SE INH. EO 8, quantity: 0.005306 1,00 € 36,18 €
+23 sept. 
+2024 Commerce Savings plan execution FR0000120073 AIR LIQUIDE INH. EO 5,50, quantity: 0.005907 1,00 € 35,18 €
+23 sept. 
+2024 Gains Cash Dividend for ISIN US09247X1019 0,11 € 35,29 €
+23 sept. 
+2024 Commerce Savings plan execution FR0000121667 ESSILORLUXO. INH. EO -,18, quantity: 0.004916 1,00 € 34,29 €
+23 sept. Savings plan execution FR0013416716 AMUNDI PHYSICAL GOLD ETC (C), quantity: 
+2024 Commerce 0.266994 25,00 € 9,29 €
+23 sept. 
+2024 Commerce Savings plan execution FR0000120321 OREAL (L') INH. EO 0,2, quantity: 0.002699 1,00 € 8,29 €
+23 sept. 
+2024 Commerce Savings plan execution FR0000120693 PERNOD RICARD O.N., quantity: 0.015835 2,01 € 6,28 €
+23 sept. 
+2024 Commerce Savings plan execution FR0000121329 THALES S.A. EO 3, quantity: 0.006844 1,00 € 5,28 €
+23 sept. 
+2024 Commerce Savings plan execution FR0000121014 LVMH EO 0,3, quantity: 0.001702 1,00 € 4,28 €
+23 sept. 
+2024 Commerce Savings plan execution FR0000120404 ACCOR SA INH. EO 3, quantity: 0.025575 1,00 € 3,28 €
+23 sept. 
+2024 Commerce Savings plan execution US0231351067 AMAZON.COM INC. DL-,01, quantity: 0.005823 1,00 € 2,28 €
+23 sept. 
+2024 Commerce Savings plan execution US09247X1019 BLACKROCK CL. A DL -,01, quantity: 0.001190 1,00 € 1,28 €
+23 sept. 
+2024 Commerce
+Savings plan execution LU1681048804 Amundi Index Solutions - Amundi S&P 500 UCITS 
+ETF - EUR (C), quantity: 0.009928 1,00 € 0,28 €
+Page 5 7
+Généré le 30 sept. 2024
+Trade Republic Bank GmbH
+DATE TYPE DESCRIPTION ENTRÉE SORTIE D'ARGENT D'ARGENT SOLDE
+24 sept. 
+2024 Virement Paiement accepté: FR7634047446300402044310454 à DE55402154005012458754 50,00 € 50,28 €
+28 sept. 
+2024 Virement Card Top up with ****7853 10,00 € 60,28 €
+Page 6 7
+Généré le 30 sept. 2024
+Trade Republic Bank GmbH
+DÉCHARGE DE RESPONSABILITÉ
+Cher client
+Veillez à vérifier les écritures, calculs et le solde de clôture présentés dans le relevé bancaire, qui constitue également votre apurement de compte. 
+L'apurement des comptes est considéré comme accepté si vous ne soulevez aucune objection dans les six semaines suivant sa réception. Les objections 
+concernant les relevés de compte doivent être soumises par écrit à notre équipe d'assistance. Les soldes créditeurs peuvent être considérés comme des 
+dépôts conformément à la loi allemande sur l'assurance des dépôts (Einlagensicherungsgesetz ? EinSiG). De plus amples informations sont disponibles 
+dans la fiche d'information destinée au déposant, qui peut être consultée en même temps que nos conditions générales.
+Trade Republic Bank GmbH
+Brunnenstraße 19-21 Contacts
+Siège de la Société: Berlin
+10119 Berlin www.traderepublic.com
+AG Charlottenburg HRB 244347 B
+Identifiant TVA DE307510626
+Page 7 7
+Généré le 30 sept. 2024
+Trade Republic Bank GmbH
+
+```

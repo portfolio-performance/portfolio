@@ -13,12 +13,14 @@
 .MPartStack {
 	swt-selected-tab-fill: #F5F5F5 #F9FAFA 100% 100%;
 	swt-unselected-tabs-color: #F9FAFA #F9FAFA 100% 100%;
+	swt-unselected-hot-tab-color-background: #E4E6E9;
     padding: 0px;
 }
 
 .MPartStack.active {
 	swt-selected-tab-fill: #E4E6E9 #F9FAFA 100% 100%;
 	swt-unselected-tabs-color: white white 100% 100%;
+	swt-selected-tab-highlight: none;
 }
 
 CTabFolder {
@@ -28,6 +30,7 @@ CTabFolder {
     swt-outer-keyline-color: '#org-eclipse-ui-workbench-ACTIVE_TAB_OUTER_KEYLINE_COLOR';
     swt-unselected-tabs-color: '#org-eclipse-ui-workbench-ACTIVE_UNSELECTED_TABS_COLOR_START' '#org-eclipse-ui-workbench-ACTIVE_UNSELECTED_TABS_COLOR_END' 100% 100%;
     swt-selected-tab-fill: white;
+	swt-selected-tab-highlight: none;
     swt-shadow-visible: false;
 }
 
@@ -81,6 +84,7 @@ CTabItem:selected {
 CustomColors {
 	default-foreground: black;
 	default-background: white;
+	chip-background: #E0E0E0;
 	warning-background: #FEDF6B;
 	red-background: #FE2B05;
 	green-background: #02F500;
@@ -88,6 +92,27 @@ CustomColors {
 	red-foreground: #7f0000;
 	green-foreground: #377500;
 	gray-foreground: #707070;
+}
+
+ValueColorScheme.standard {
+	positive-foreground: #377500;
+	negative-foreground: #7f0000;
+	up-arrow: "scheme/standard/light/up_arrow.svg";
+	down-arrow: "scheme/standard/light/down_arrow.svg";
+}
+
+ValueColorScheme.blueorange {
+	positive-foreground: #0066CC;
+	negative-foreground: #B36E3A;
+	up-arrow: "scheme/blueorange/light/up_arrow.svg";
+	down-arrow: "scheme/blueorange/light/down_arrow.svg";
+}
+
+ValueColorScheme.asia {
+	positive-foreground: #7f0000;
+	negative-foreground: #377500;
+	up-arrow: "scheme/asia/light/up_arrow.svg";
+	down-arrow: "scheme/asia/light/down_arrow.svg";
 }
 
 SecuritiesChart {
@@ -105,6 +130,39 @@ SecuritiesChart {
 	non-trading-color: #FF8959;
 	
 	shares-held-color: #EBC934
+}
+
+SecuritiesChart.blueorange {
+	quote-area-negative-color: #F6A15A;
+
+	purchase-event-color: #1E88E5;
+	sale-event-color: #F4511E;
+
+	extreme-marker-high-color: #0D47A1;
+	extreme-marker-low-color: #BF360C;
+}
+
+SecuritiesChart.asia {
+	quote-area-positive-color: #ed6766;
+	quote-area-negative-color: #8396f2;
+
+	purchase-event-color: #FF2B30;
+	sale-event-color: #1AAD21;
+
+	extreme-marker-high-color: #a30000;
+	extreme-marker-low-color: #377500;
+}
+
+PortfolioBalanceChart {
+	invested-capital-color: #EBC934;
+	absolute-delta-color: #6a58db;
+	delta-area-positive-color: #8396f2;
+	delta-area-negative-color: #ed6766;
+}
+
+PortfolioBalanceChart.asia {
+	delta-area-positive-color: #ed6766;
+	delta-area-negative-color: #8396f2;
 }
 
 * {

@@ -1,0 +1,49 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Schelhammer Capital Bank AG,
+Brandhofg. 24, 8010 Graz (DVR:0043974)
+E-Mail: service@dieplattform.at
+Telefon 0316 80 72 1
+Abrechnung Handel
+22796497-17.3.2025
+Depot-Nr.: 123456789
+xfpknWehR Max, Mag.          
+03/383
+die plattform                      
+Frau
+Mag. DByqhzSWx WIhjwIfSV
+Blumengasse 9
+1234 ABCDEF                                                                                                                                                                                        
+Wir haben für Sie am 17.3.2025 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Verkauf
+Auftrags-Nr.: 08008949-17.3.2025
+Auftragseingang: 17.3.2025-12:56:51
+Abgang: 282,2 Stk
+Titel: LU1940199711  M U L  A m u n d i  MSCI Europe ESG Lea     
+UCITS ETF Inh.Anteile Acc          
+Fondsgesellschaft: Multi Units Luxembourg SICAV
+Kurs: 34,875 EUR 
+Handelsplatz: XETR     Deutsche Börse - Frankfurt Xetra
+Handelszeit: 17.3.2025 um 17:25:52 Uhr
+Verwahrart: WR
+Positionsdaten: Loco: Duesseldorf                        
+Kurswert: 9.841,73 EUR 
+Kapitalertragsteuer: -130,54 EUR 
+Zu Gunsten IBAN AT18 3222 3274 4871 1501 9.711,19 EUR 
+Valuta 19.3.2025
+Schlusstag: 17.3.2025
+Kassatag: 19.3.2025
+Die KESt wird an das Finanzamt Wien 1/23 abgeführt.
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden 
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 282,2 Stk
+steuerlicher Anschaffungswert: 9.367,03 EUR
+steuerlicher Veräußerungswert: 9.841,73 EUR
+steuerpflichtiger Kursgewinn: 474,70 EUR
+HOCHACHTUNGSVOLL
+SCHELHAMMER CAPITAL BANK AG
+17.3.2025 Seite 1
+DVR 0060011 ,HG WIEN ,FN58248i, Irrtum vorbehalten! Dieser Beleg wird von der Bank
+nicht unterschrieben!
+27838 Doknr.: BSG0-045-0000025271

@@ -1,10 +1,11 @@
 package name.abuchen.portfolio.online.impl;
 
-import static name.abuchen.portfolio.util.TextUtil.trim;
-
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -13,6 +14,7 @@ import org.json.simple.JSONValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
+import name.abuchen.portfolio.online.SecurityType;
 import name.abuchen.portfolio.util.Isin;
 import name.abuchen.portfolio.util.WebAccess;
 
@@ -51,22 +53,25 @@ public class LeewaySearchProvider implements SecuritySearchProvider
         private String isin;
         private String currencyCode;
 
+        private List<ResultItem> markets = new ArrayList<>();
+
         @SuppressWarnings("nls")
         public static Result from(JSONObject json)
         {
             // Extract values from the JSON object
-            String tickerSymbol = (String) json.get("Code");
-            String exchange = (String) json.get("Exchange");
-            String name = (String) json.get("Name");
-            String type = (String) json.get("Type");
-            String isin = (String) json.get("ISIN");
-            String currencyCode = (String) json.get("currencyCode");
+            var tickerSymbol = (String) json.get("Code");
+            var exchange = (String) json.get("Exchange");
+            var name = (String) json.get("Name");
+            var type = (String) json.get("Type");
+            var isin = (String) json.get("ISIN");
+            var currencyCode = (String) json.get("currencyCode");
 
-            // Convert the security type using the SecuritySearchProvider instance
-            type = SecuritySearchProvider.convertType(trim(type.toLowerCase()));
+            // Convert the security type using the SecuritySearchProvider
+            // instance
+            type = SecurityType.convertType(type);
 
             // Combine the symbol and exchange codes to create the security ID
-            StringBuilder symbol = new StringBuilder(tickerSymbol);
+            var symbol = new StringBuilder(tickerSymbol);
             symbol.append(".");
             symbol.append(exchange);
 
@@ -86,7 +91,8 @@ public class LeewaySearchProvider implements SecuritySearchProvider
         @Override
         public String getSymbol()
         {
-            return symbol;
+            return markets.isEmpty() ? symbol
+                            : markets.stream().map(e -> e.getSymbol()).distinct().collect(Collectors.joining(", ")); //$NON-NLS-1$
         }
 
         @Override
@@ -122,7 +128,9 @@ public class LeewaySearchProvider implements SecuritySearchProvider
         @Override
         public String getCurrencyCode()
         {
-            return currencyCode;
+            return markets.isEmpty() ? currencyCode
+                            : markets.stream().map(e -> e.getCurrencyCode()).distinct()
+                                            .collect(Collectors.joining(", ")); //$NON-NLS-1$
         }
 
         @Override
@@ -132,15 +140,32 @@ public class LeewaySearchProvider implements SecuritySearchProvider
         }
 
         @Override
+        public String getFeedId()
+        {
+            return LeewayQuoteFeed.ID;
+        }
+
+        @Override
         public boolean hasPrices()
         {
             return true;
         }
 
         @Override
+        public List<ResultItem> getMarkets()
+        {
+            return markets;
+        }
+
+        Result copy()
+        {
+            return new Result(isin, symbol, currencyCode, name, type, exchange);
+        }
+
+        @Override
         public Security create(Client client)
         {
-            Security security = new Security(name, currencyCode);
+            var security = new Security(name, currencyCode);
             security.setTickerSymbol(symbol);
             security.setIsin(isin);
             security.setFeed(LeewayQuoteFeed.ID);
@@ -163,7 +188,7 @@ public class LeewaySearchProvider implements SecuritySearchProvider
     }
 
     @Override
-    public List<ResultItem> search(String query, Type type) throws IOException
+    public List<ResultItem> search(String query) throws IOException
     {
         List<ResultItem> answer = new ArrayList<>();
 
@@ -176,24 +201,55 @@ public class LeewaySearchProvider implements SecuritySearchProvider
     @SuppressWarnings("nls")
     private void addISINSearchPage(List<ResultItem> answer, String query) throws IOException
     {
-        String array = new WebAccess("api.leeway.tech", "/api/v1/public/general/isin/" + query) //
+        var array = new WebAccess("api.leeway.tech", "/api/v1/public/general/isin/" + query) //
                         .addParameter("apitoken", apiKey) //
                         .get();
 
-        extract(answer, array);
+        var result = extract(array);
+
+        // group by ISIN (= return with a list of markets)
+
+        var isin2result = new HashMap<String, Result>();
+
+        for (var item : result)
+        {
+            var isin = item.getIsin();
+            if (isin == null || isin.isBlank())
+            {
+                answer.add(item);
+            }
+            else
+            {
+                var grouped = isin2result.get(isin);
+
+                if (grouped != null)
+                {
+                    grouped.markets.add(item);
+                }
+                else
+                {
+                    grouped = item.copy();
+                    isin2result.put(isin, grouped);
+                    grouped.markets.add(item);
+                    answer.add(grouped);
+                }
+            }
+        }
     }
 
-    void extract(List<ResultItem> answer, String array)
+    private List<Result> extract(String array)
     {
-        JSONArray jsonArray = (JSONArray) JSONValue.parse(array);
+        var jsonArray = (JSONArray) JSONValue.parse(array);
 
         if (jsonArray.isEmpty())
-            return;
+            return Collections.emptyList();
 
+        List<Result> answer = new ArrayList<>();
         for (Object element : jsonArray)
         {
-            JSONObject item = (JSONObject) element;
+            var item = (JSONObject) element;
             answer.add(Result.from(item));
         }
+        return answer;
     }
 }

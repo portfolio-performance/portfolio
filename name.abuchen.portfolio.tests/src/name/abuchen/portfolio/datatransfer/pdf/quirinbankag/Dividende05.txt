@@ -1,0 +1,54 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.2
+-----------------------------------------
+Ertrag aus Investments
+Referenz DZ:1415291
+Datum 17.03.2014
+Depot Depotnr.
+Nachname, Vorname
+Herrn
+Vorname Nachname Betreuer Stangl, Richard
+Straße Abteilung Honorarberater
+PLZ Ort Telefon +49 (0) 911 249 299 10
+E-Mail richard.stangl@quirinbank.de
+ 
+Für aus Ihrem Depot fällig gewordene Erträgnisse erteilen wir nachstehende Abrechnung. 
+Nominal/Stück iSh.STOXX Europe 600 U.ETF DE Inhaber-Anteile
+ST 459 ISIN DE0002635307 WKN 263530
+Abrechnungskonditionen: Abrechnungswerte:
+Ausschüttung 01.05.2013-30.04.2014 Bruttobetrag  51,53 EUR
+Ausschüttung pro Stück  0,112275 EUR
+inländische Dividende  0,0101876 EUR
+ausländ. Dividende inkl. VG  0,0976563 EUR  
+Zinsen 0,0080359 EUR   
+Inländische Mieterträge, VG aus Immobilien  0,00000 EUR  
+Thesaurierung brutto  0,0016933 EUR  
+Extag 17.03.2014  
+Zahlungstag 17.03.2014  
+ 
+ 
+Devisenkurs  1,000000  
+Verwahrart Inland  
+ 
+Keine Steuerbescheinigung! Ausmachender Betrag  vor Steuer  51,53 EUR
+ 
+ 
+ 
+Kapitalertragsteuerpflichtiger Betrag  53,19 EU R Kapitalertragsteuer -10,68 EUR
+ Solidaritätszuschlag -0,59 EUR
+Verrechnete sonstige negative Kapitalerträge  Kirchensteuer -0,86 EUR
+Verrechnungstopf Aktien   0,00 EUR Steuerbetrag -12,13 EUR
+Verrechnungstopf Sonstige   0,00 EUR
+Verrechneter Sparer-Pauschalbetrag   0,00 EUR
+Anrechenbare ausländ. Quellensteuer 9,60 EUR Den Bruttoabrechnungsbetrag und die separate Steuerbuchung werden  -
+Bemessungsgrundlage KESt 43,59 EUR wir über Konto Kontonr. EUR buchen.  
+ 
+ 
+ 
+quirin bank AG Telefon +49 (0) 30 89 021-300 Aufsichtsratsvorsitzender: Vorstand:
+Kurfürstendamm 119 - 10711 Berlin Telefax +49 (0) 30 89 021-321 Holger Timm Karl Matthäus Schmidt, Johannes 
+Postfach 311105 - 10641 Berlin BLZ 10110600 Eismann, Klaus-Gerd Kleversaat, Dr.
+Gerichtsstand: Berlin USt-Id. DE 1956 61729 Marcel Morschbach, Stefan 
+Handelsregister: Berlin-Charlottenb., HR B 87859 BIC QUBKDEBBXXX Spannagl
+Internet www.quirinbank.de
+O10ABR_DIVTH_E  816767668049#0000026624  VJ8609946   (10) 7.1.5.0.0

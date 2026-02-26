@@ -1,22 +1,23 @@
 package name.abuchen.portfolio.ui.util.chart;
 
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Tracker;
-import org.swtchart.Chart;
-import org.swtchart.IAxis;
-import org.swtchart.Range;
+import org.eclipse.swtchart.Chart;
+import org.eclipse.swtchart.IAxis;
+import org.eclipse.swtchart.Range;
+
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 public class ZoomInAreaListener implements Listener
 {
     public static void attachTo(Chart chart)
     {
         Listener listener = new ZoomInAreaListener(chart);
-        chart.getPlotArea().addListener(SWT.MouseDown, listener);
+        chart.getPlotArea().getControl().addListener(SWT.MouseDown, listener);
     }
 
     private final Chart chart;
@@ -31,7 +32,7 @@ public class ZoomInAreaListener implements Listener
     {
         if (event.button == 1 && event.stateMask == SWT.MOD1)
         {
-            Tracker tracker = new Tracker(chart.getPlotArea(), SWT.RESIZE);
+            Tracker tracker = new Tracker((Composite) chart.getPlotArea().getControl(), SWT.RESIZE);
             tracker.setRectangles(new Rectangle[] { new Rectangle(event.x, event.y, 0, 0) });
             if (tracker.open())
             {

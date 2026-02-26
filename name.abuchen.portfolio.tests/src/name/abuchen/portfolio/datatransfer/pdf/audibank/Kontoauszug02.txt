@@ -1,0 +1,47 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.2
+-----------------------------------------
+Audi Bank  ·  38093 Braunschweig
+tNMqKcO JUhnp
+sdfasdfasdsf 234
+18567 LQtjNogxA Ad CfnAxA
+Kontoauszug / Saldenmitteilung Plus Konto online.pur
+Kontonummer: 3986077296 Erstellungsdatum: 27.08.2023
+Kontobezeichnung: cZekd blcuxjc Kontoauszug Nummer: 000008 / 2023
+Bankleitzahl: 27020001 Seite: 1 / 1
+BIC: AUDFDE21XXX letzter Auszug vom: 25.07.2023
+IBAN: DE57270200013986077296 Ihr Ansprechpartner: Team Anlageberatung
+Telefon-Durchwahl: 0531 212-859601
+Alter Kontostand in EUR: 5,00
+lfd. Buchungs- Umsatzinformationen Wertstellung Soll (EUR) Haben (EUR)
+Nr. datum
+1 21.08.2023 Telebanking Belastung 22.08.2023 -1,00
+fxa cj
+LwFWEjF lCuod
+BIC JTAMkGM2R92 IBAN DE00000908000000123456
+2 21.08.2023 Telebanking Belastung 22.08.2023 -1,00
+xJO Sq(4)
+WUOxsWf pyeMW
+BIC yZJdKbS9M54 IBAN DE00000908000000123456
+3 23.08.2023 Belastung 23.08.2023 -1,00
+pCiVnhL wkrvv
+BIC FCntWI3ChPV IBAN DE00000000000000123456
+Rechnungsabschluss 25.08.2023
+4 25.08.2023 Habenzinsen 25.08.2023 1,00
+5 25.08.2023 Solidaritätszuschlag 25.08.2023 -0,01
+6 25.08.2023 Kirchensteuer 25.08.2023 -0,00
+7 25.08.2023 Abgeltungsteuer 25.08.2023 -0,25
+Neuer Kontostand in EUR: 2,74
+Freistellungs- NV Gültig bis Gesamt- Verbleibender Abgeltungsteuer/ Solidaritäts- Kirchen- Kirchensteuer-
+auftrag zinserträge Freibetrag Kapitalertragsteuer zuschlag steuer Betrag
+EUR 0,00 Nein 00.00.0000 EUR 0,00 EUR 0,00 EUR 0,00 EUR 0,00 8,00 % EUR 0,00 
+Ihre Freistellungsdaten vom 25.08.2023
+Genehmigung des Rechnungsabschlusses
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit des Rechnungsabschlusses müssen Sie spätestens vor Ablauf von sechs Wochen nach
+dessen Zugang erheben. Sofern Sie Ihre Einwendungen schriftlich oder - falls diese Form vereinbart ist - in Textform geltend machen, genügt die
+Absendung innerhalb der Sechs-Wochen-Frist. Sie können Ihre Einwendungen an die interne Revision der Volkswagen Bank GmbH,
+Gifhorner Str. 57, 38 112 Braunschweig, richten. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung des Rechnungsabschlusses.
+Bitte beachten Sie, dass Zinserträge einkommensteuerpflichtig sind.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können dem "Informationsbogen für den Einleger" entnommen werden. 
+206500
+A  // B  // M

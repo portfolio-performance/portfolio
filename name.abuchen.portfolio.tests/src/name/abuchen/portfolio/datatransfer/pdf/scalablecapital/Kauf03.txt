@@ -1,0 +1,25 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.79.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital Bank GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+QZRR-QPYVXW JwoQPZV
+nxkKieEHiNy pyLSTf 94 
+65946 FdPoqFCm Datum 16.09.2025
+Deutschland Seite 1 / 1
+Wertpapierabrechnung 
+für Kundenauftrag 
+Typ LIMIT Order SCALTjDbBMvHgJv
+Ausführung 16.09.2025 13:39:04 Geschäft 1024753001
+Ausführungsplatz EIX Lagerland Luxemburg
+Depot 5161231168 Verwahrart Wertpapierrechnung
+Typ Wertpapier Anzahl Kurs Betrag
+Kauf Heico Corp 4,00 Stk. 216,00 EUR 864,00 EUR
+US4228062083
+Belastung 864,00 EUR
+Der Betrag wird mit dem Verrechnungskonto DE98120700700751111111 (Valuta: 18.09.2025) verrechnet. 
+Bitte überprüfen Sie die Informationen auf Richtigkeit und melden Sie etwaige Einwände unverzüglich bei uns.
+Verwenden Sie dafür den Menüpunkt Support im Kundenbereich. 
+Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 1 / 1

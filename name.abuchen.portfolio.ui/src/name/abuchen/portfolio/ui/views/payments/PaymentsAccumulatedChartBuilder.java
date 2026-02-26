@@ -7,17 +7,18 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 
 import org.eclipse.swt.SWT;
-import org.swtchart.Chart;
-import org.swtchart.IAxis;
-import org.swtchart.ILineSeries;
-import org.swtchart.ILineSeries.PlotSymbolType;
-import org.swtchart.ISeries.SeriesType;
+import org.eclipse.swtchart.Chart;
+import org.eclipse.swtchart.IAxis;
+import org.eclipse.swtchart.ILineSeries;
+import org.eclipse.swtchart.ILineSeries.PlotSymbolType;
+import org.eclipse.swtchart.ISeries.SeriesType;
 
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.TabularDataSource;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 import name.abuchen.portfolio.ui.util.format.AmountNumberFormat;
+import name.abuchen.portfolio.ui.util.format.ThousandsNumberFormat;
 
 public class PaymentsAccumulatedChartBuilder implements PaymentsChartBuilder
 {
@@ -42,6 +43,9 @@ public class PaymentsAccumulatedChartBuilder implements PaymentsChartBuilder
         // format symbols returns 13 values as some calendars have 13 months
         xAxis.setCategorySeries(Arrays.copyOfRange(new DateFormatSymbols().getMonths(), 0, 12));
 
+        IAxis yAxis = chart.getAxisSet().getYAxis(0);
+        yAxis.getTick().setFormat(new ThousandsNumberFormat());
+
         TimelineChartToolTip toolTip = new TimelineChartToolTip(chart);
         toolTip.enableCategory(true);
         toolTip.setDefaultValueFormat(new AmountNumberFormat());
@@ -57,8 +61,7 @@ public class PaymentsAccumulatedChartBuilder implements PaymentsChartBuilder
         {
             int year = model.getStartYear() + (index / 12);
 
-            ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
-                            String.valueOf(year));
+            var lineSeries = (ILineSeries<?>) chart.getSeriesSet().createSeries(SeriesType.LINE, String.valueOf(year));
             lineSeries.setDescription(lineSeries.getId());
 
             double[] series = new double[Math.min(12, model.getNoOfMonths() - index)];

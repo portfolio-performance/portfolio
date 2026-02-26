@@ -1,0 +1,38 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.4
+System: linux | x86_64 | 21.0.9+10-Ubuntu-124.04 | Ubuntu
+-----------------------------------------
+Deutsche Bank AG
+24/7-Kundenservice (069) 910-10000
+Max Mustermann 
+Musterstr. 1 A 
+22222 Musterstadt
+24. November 2025
+Ihr Depot Nr. 100 1234567 01 
+Kupongutschrift
+CorpID: IPP0000000829024
+Nominal Währung WKN ISIN
+1.000,000000 EUR A3511H XS2722190795
+4% DEUTSCHE BAHN AG MTN.23 23.11. 43
+Zinsen in % 4,0000000000 Zahlbar 24.11.2025
+Ursprungsland DEUTSCHLAND Ex-Tag 24.11.2025
+Bruttoertrag 40,00 EUR 
+Kapitalertragsteuer (KESt) - 6,20 EUR 
+Solidaritätszuschlag auf KESt - 0,34 EUR
+Gutschrift mit Wert 24.11.2025 33,46 EUR
+Steuerliche Bemessungsgrundlagen zur Kupongutschrift - keine Steuerbescheinigung
+Angerechneter Verlusttopf "Sonstige" 14,28 EUR 
+KESt-pflichtiger Kapitalertrag 25,72 EUR
+Auf die KESt angerechnete ausländische 22,80 EUR
+Quellensteuer
+Vorsitzender des Aufsichtsrats: Alexander R. Wynaendts
+Vorstand: Christian Sewing (Vorsitzender), James von Moltke, Fabrizio Campelli, Marcus Chromik, Bernd Leukert, Alexander von zur Mühlen, Laura Padovani, Claudio de Sanctis, 
+Rebecca Short
+Deutsche Bank Aktiengesellschaft mit Sitz in Frankfurt am Main; Amtsgericht Frankfurt am Main, HRB Nr. 30 000; Umsatzsteuer-Id.-Nr. DE114103379; www.db.com/de 1/2
+TRINCM0001 KUPO 20251122 99999999
+  
+ 
+Wir überweisen den Betrag von 33,45 EUR auf Ihr Konto 1234567 00.
+Kapitalerträge sind einkommensteuerpflichtig!
+Diese Mitteilung wurde maschinell erstellt und wird nicht unterschrieben.
+2/2

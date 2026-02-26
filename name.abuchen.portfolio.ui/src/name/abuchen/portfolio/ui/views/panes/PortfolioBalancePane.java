@@ -7,6 +7,8 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -16,8 +18,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
-import name.abuchen.portfolio.ui.util.format.AmountNumberFormat;
-import name.abuchen.portfolio.ui.util.format.ThousandsNumberFormat;
+import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.views.PortfolioBalanceChart;
 
 public class PortfolioBalancePane implements InformationPanePage
@@ -34,6 +35,7 @@ public class PortfolioBalancePane implements InformationPanePage
     private ExchangeRateProviderFactory factory;
 
     private Portfolio portfolio;
+    private ClientFilterMenu.Item groupedAccount;
     private PortfolioBalanceChart chart;
 
     @Inject
@@ -53,20 +55,29 @@ public class PortfolioBalancePane implements InformationPanePage
     @Override
     public Control createViewControl(Composite parent)
     {
-        chart = new PortfolioBalanceChart(parent, client);
+        Composite container = new Composite(parent, SWT.NONE);
+        container.setLayout(new FillLayout());
+
+        chart = new PortfolioBalanceChart(container, client);
+        stylingEngine.style(chart.getControl());
         stylingEngine.style(chart);
 
-        chart.getAxisSet().getYAxis(0).getTick().setFormat(new ThousandsNumberFormat());
-        chart.getToolTip().setDefaultValueFormat(new AmountNumberFormat());
-
-        return chart;
+        return container;
     }
 
     @Override
     public void setInput(Object input)
     {
-        portfolio = Adaptor.adapt(Portfolio.class, input);
-        chart.updateChart(portfolio, factory);
+        if (input instanceof Portfolio)
+        {
+            portfolio = Adaptor.adapt(Portfolio.class, input);
+            chart.updateChart(portfolio, factory);
+        }
+        else if (input instanceof ClientFilterMenu.Item)
+        {
+            groupedAccount = Adaptor.adapt(ClientFilterMenu.Item.class, input);
+            chart.updateChart(groupedAccount, factory);
+        }
     }
 
     @Override
@@ -74,6 +85,8 @@ public class PortfolioBalancePane implements InformationPanePage
     {
         if (portfolio != null)
             setInput(portfolio);
+        if (groupedAccount != null)
+            setInput(groupedAccount);
     }
 
     @Override

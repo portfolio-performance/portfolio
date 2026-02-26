@@ -101,7 +101,7 @@
           <shares>1000000000</shares>
           <units>
             <unit type="GROSS_VALUE">
-              <!-- wrong gross value will force new calcluation --> 
+              <!-- wrong gross value will force new calculation --> 
               <amount currency="EUR" amount="200"/>
               <forex currency="CHF" amount="200"/>
               <exchangeRate>-1.152</exchangeRate>

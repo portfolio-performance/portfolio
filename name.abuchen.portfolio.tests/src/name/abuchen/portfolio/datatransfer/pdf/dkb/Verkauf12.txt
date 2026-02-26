@@ -1,0 +1,42 @@
+﻿PDFBox Version: 3.0.5 != 1.8.17
+Portfolio Performance Version: 0.80.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+10919 Berlin
+Depotnummer 307049307
+Kundennummer 1413271641
+sQGGHO uRbcgqJ
+Herrn Auftragsnummer 8317071095
+Datum 25.09.2025
+UadTyl LggMYoc
+Rid-dorf-Str. 15
+41572 xJOqZkiEZ
+Einlösung bei Gesamtfälligkeit
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 50 VONTOBEL FINANCIAL PRODUCTS DE000VC5YHF3 (VC5YHF)
+DIZ 26.09.25 TOTAL 48
+Rückzahlungsbetrag / Stück 48,00 EUR Rückzahlungsdatum 26.09.2025
+Fälligkeitstag 26.09.2025
+Bestandsstichtag 25.09.2025
+Rückzahlungsbetrag 2.400,00+ EUR
+Einnahmen Differenzmethode 35,00 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 35,00 EUR
+Kapitalertragsteuer 25 % auf 35,00 EUR 8,75- EUR
+Solidaritätszuschlag 5,5 % auf 8,75 EUR 0,48- EUR
+Ausmachender Betrag 2.390,77+ EUR
+Den Betrag buchen wir zu Gunsten Ihres Kontos 2744774822 (IBAN rs85 0861 0940 1015 5029 35), BLZ 12030000 (BIC
+BYLADEM1001).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Ein Freistellungsauftrag wurde nicht erteilt bzw. ist ausgeschöpft.
+Es wurde keine Steuerbescheinigung erstellt.
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verlustverrechnungstöpfe 2025 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 1.764,24
+Einnahmen 0,00 0,00 0,00 0,00 35,00
+Kapitalrückzahlung
+Nachher 0,00 0,00 0,00 0,00 1.799,24
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0883.09252232.0000201FA02

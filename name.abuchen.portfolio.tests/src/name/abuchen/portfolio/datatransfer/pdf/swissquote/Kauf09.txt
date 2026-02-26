@@ -1,0 +1,39 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.72.2
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 0950311 - TRADING
+IBAN: CH1111111000212241300
+Herrn mPvWQ AeiLRqW
+xNjXWfhLGdRrFgC 633
+CH-6873 wgnl
+Gland, 15.11.2024
+Kauf Unsere Referenz: 699111111 
+Am 15.11.2024 haben wir folgende Transaktionen vorgenommen:
+Titel Börse
+AMAZON COM ORD ISIN: US0231351067 NASDAQ New York 
+NKN: 645156
+Anzahl Preis Betrag
+0.4683 202.57 USD 94.86
+Total USD 94.86
+Abgabe (Eidg. Stempelsteuer) USD 0.14
+Zu Ihren Lasten USD 95.00
+Betrag belastet auf Kontonummer  999999301, Valutadatum 18.11.2024
+Dieser Transaktionsbeleg sowie die aufgeführte Transaktion unterliegen der Vereinbarung über den Handel mit fraktionalen Instrumenten für
+Trading-Konten.
+Bitte beachten Sie, dass Swissquote Bank AG das betreffende Finanzinstrument als Treuhänder hält und Ihnen einen Treuhandanteil im Verhältnis
+zu dem Ihnen zugeteilten Anteil gewährt.
+Wenn Sie mehrere Transaktionen über den Erwerb oder die Veräusserung von Treuhandanteilen eingegangen sind und nach diesen Transaktionen
+Ihre kumulierten Treuhandanteile an einem einzigen Finanzinstrument eine ganze Einheit (oder mehr) ausmachen, wandeln wir Ihre
+Treuhandanteile im Allgemeinen in das Halten einer ganzen Einheit des Finanzinstruments gemäss der Vereinbarung über den Handel mit
+fraktionalen Instrumenten für Trading-Konten.
+Die Angabe einer Börse oder eines anderen Ausführungsplatzes wird nur zu Informationszwecken angegeben und bedeutet nicht, dass Ihr Auftrag
+dort ausgeführt wurde. Zum Zeitpunkt der Ausführung Ihres Auftrags haben wir das betreffende Finanzinstrument möglicherweise noch nicht
+erworben oder veräussert. Die Buchung dieser Transaktion ist gemäss der Vereinbarung über den Handel mit Fraktionalen Instrumenten für
+Trading-Konten für einige Tage möglicherweise vorläufig. Bitte setzen Sie sich mit uns in Verbindung, wenn Sie weitere Informationen dazu
+benötigen.
+Die Angabe einer Börse oder eines anderen Ausführungsplatzes wird nur zu Informationszwecken angegeben und bedeutet nicht, dass Ihr Auftrag 
+Vielen Dank für Ihren Auftrag.
+Swissquote Bank AG, 33 chemin de la Crétaux, CH-1196 Gland  Formular ohne Unterschrift | SE&O.
+Customer Care : 0848 25 88 88 (Aus dem Ausland +41 44 825 88 88)
+MwSt n° CHE-116.310.079 

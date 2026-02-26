@@ -1,0 +1,72 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.77.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Sutor Bank GmbH, Postfach 11 33 37, 20433 Hamburg Kunden-Service: Tel.: 040 - 82 22 31 63
+Fax: 040 - 80 80 13 19
+Mail: info@sutorbank.de
+Service-Zeiten: Mo-Do 8.30 - 17.00 Uhr
+Fr 8.30 - 16.00 Uhr
+Frau Marta Mustermann Depotnummer: 1234567890
+Musterstr. 26
+12345 Musterhausen IBAN: DE14 2023 0800 1234 5678 90
+Hamburg, im Juli 2025
+Depotauszug
+ 
+ 
+Sehr geehrte Frau Mustermann,
+ 
+Sie erhalten heute von uns in der Anlage die Aufstellung über die Kundenfinanzinstrumente per 30.06.2025 zu
+nachfolgendem Vertrag:
+ 
+Raisin Pension Rürup Nr. 1234567890
+ 
+Bitte prüfen Sie die Aufstellung der Umsätze sowie die Salden und Bestände. Sie gelten als von Ihnen
+anerkannt, wenn Sie nicht innerhalb von sechs Wochen unsere Revisionsabteilung über etwaige
+Unstimmigkeiten schriftlich benachrichtigen. Die Aufstellung wird von der Bank nicht unterschrieben, sie
+erfolgt automatisch vorbehaltlich Irrtum.
+ 
+Im Rahmen unserer gesetzlichen Vorgaben weisen wir darauf hin, dass Guthaben als Einlagen nach
+Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig sind. Nähere Informationen entnehmen Sie
+bitte dem "Informationsbogen für den Einleger", der auch auf www.sutorbank.de/agb als PDF hinterlegt ist.
+ 
+Sämtliche in diesem Depotauszug aufgeführten Wertpapiere unterliegen der Richtlinie 2014/65/EU (MiFID II)
+sowie deren ergänzenden Durchführungsmaßnahmen.
+ 
+Überprüfen Sie bitte, ob Ihr oben angegebener Name und Ihre Adresse vollständig, korrekt geschrieben und
+aktuell sind. Änderungen Ihres Namens sowie Ihrer Wohnsitz- und Postadresse teilen Sie uns bitte kurzfristig
+mit, anderenfalls gehen wir von einer Bestätigung der uns bekannten Daten aus.
+ 
+Wir freuen uns auf eine weiterhin erfolgreiche Zusammenarbeit und bedanken uns für Ihr Vertrauen.
+ 
+Mit freundlichen Grüßen
+Ihre SUTOR BANK
+Sutor Bank GmbH, Hermannstrasse 46, 20095 Hamburg | info@sutorbank.de | www.sutorbank.de
+Geschäftsleitung: Robert Freitag, Thomas Meier | Mitglied im Einlagensicherungsfonds des Bundesverbandes deutscher Banken
+USt - IdNr DE155617009 | Amtsgericht Hamburg HRB 178357 | BLZ 202 308 00, BIC MHSBDEHBXXX Seite 0 von 2
+Dies ist ein notwendiges Übel,
+  aber sonst klappt der Seitenumbruch nicht sauber!
+Aufstellung über Kundenfinanzinstrumente per 30.06.2025
+Marta Mustermann
+"Raisin Pension Rürup" Nr. 1234567890/ IBAN: DE14 2023 0800 1234 5678 90
+Investment ISIN Lagerstelle Verwahrart Anlagequote Bestand  Einheit Kurs Währung Kurswert
+Fonds
+Dimensional European Value Fund IE00B1W6CW87 Irland Wertpapierrechnung 32,50 % 793,3261  Anteile 22,2100 EUR 17.619,77 EUR
+x-tr. Portf.Total Ret. UCITS ETF LU0397221945 Irland Wertpapierrechnung 0,00 % 41,6430  Anteile 301,5957 EUR 12.559,35 EUR
+Dimensional Europ.Small Comp. F acc IE0032769055 Irland Wertpapierrechnung 0,00 % 417,4485  Anteile 57,6900 EUR 24.082,60 EUR
+Multi Amundi Nasdaq-100 II UCITS LU1829221024 Deutschland Girosammelverwahrung 0,00 % 192,7621  Anteile 78,3076 EUR 15.094,74 EUR
+iShares Sustainable MSCI EM SRI acc IE00BYVJRP78 Irland Wertpapierrechnung 0,00 % 40,9735  Anteile 8,4304 US$* 294,73 EUR
+iShares Core MSCI Emerging Markets IE00BKM4GZ66 Irland Wertpapierrechnung 0,00 % 624,7759  Anteile 39,2040 US$* 20.899,07 EUR
+iShares Asia Pacific Dividend ETF IE00B14X4T88 Irland Wertpapierrechnung 35,00 % 752,7960  Anteile 24,0659 US$* 15.457,95 EUR
+iShares Edge MSCI Europe Momentum IE00BQN1K786 Irland Wertpapierrechnung 32,50 % 1.324,3915  Anteile 13,2290 EUR 17.520,38 EUR
+* Währungskurs: 1,1720 US$
+Kurswert Gesamt 123.528,59 EUR
+Geldsaldo 0,00 EUR
+Erstellt im Juli 2025 Seite 1 von 2
+Umsätze vom 01.04.2025 bis 30.06.2025 in EUR
+Buchungs- Wertstellung Transaktion Umsatz / Finanz-Instrument Anteile / Gramm W-Kurs Betrag Betrag Kosten KESt KiSt
+datum Handelsplatz ISIN Kurs / Preis Währung (brutto) (netto) SolZ
+22.04.2025 15.04.2025 Kauf Kauf Dimensional European Value Fund 3,2387 -65,00
+außerbörslich IE00B1W6CW87 20,0700 EUR
+Verwendete Abkürzungen: MK = Mischkurs KESt = Kapitalertragssteuer KiSt = Kirchensteuer Seite 2 von 2
+W-Kurs = Währungskurs SolZ = Solidaritätszuschlag

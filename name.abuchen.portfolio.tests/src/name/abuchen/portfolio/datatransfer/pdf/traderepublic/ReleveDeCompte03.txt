@@ -1,0 +1,213 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.1
+-----------------------------------------
+lIfih PHiFix MggcFQm CQQe bgfqO DATE 01 oct. 2023 - 31 déc. 2023
+Qxcza de la pcoLkV 8, 14933 IBAN DE55402154005012458754
+Km Chofenvt, FR BIC DITIDEFF
+SYNTHÈSE DU RELEVÉ DE COMPTE
+PRODUIT SOLDE DÉBUT DE PÉRIODE ENTRÉE D'ARGENT SORTIE D'ARGENT SOLDE FIN DE PÉRIODE
+Compte titres 0,00 € 126,20 € 125,56 € 0,64 €
+TRANSACTIONS
+DATE TYPE DESCRIPTION ENTRÉE SORTIE D'ARGENT D'ARGENT SOLDE
+12 oct. 
+2023 Virement Paiement accepté: FR7640047144300402054310442 à DE55402154005012458754 100,00 € 100,00 €
+16 oct. 
+2023 Commerce Exécution Achat direct XF000BTC0017 C1005335348 1,99 € 98,01 €
+16 oct. Commerce Exécution Transaction Achat direct Achat FR0000121329 THALES S.A. EO 3 2023 7734153320231016 2,00 € 96,01 €
+16 oct. Commerce Exécution Transaction Achat direct Achat FR0000133308 ORANGE INH. EO 4 2023 2170120420231016 KW 1,00 € 95,01 €
+16 oct. Commerce Exécution Transaction Achat direct Achat FR0000052292 HERMES INTERNATIONAL O.N. 2023 4791340520231016 KW 1,00 € 94,01 €
+16 oct. Commerce Exécution Transaction Achat direct Achat FR0000121667 ESSILORLUXO. INH. EO -,18 2023 1348540720231016 KW 1,00 € 93,01 €
+16 oct. Commerce Exécution Transaction Achat direct Achat FR0000120578 SANOFI SA INHABER EO 2 2023 9875751320231016 KW 1,00 € 92,01 €
+16 oct. Commerce Exécution Transaction Achat direct Achat FR0000121485 KERING S.A. INH. EO 4 2023 1822871820231016 KW 1,00 € 91,01 €
+16 oct. Commerce Exécution Transaction Achat direct Achat FR0000120321 L OREAL INH. EO 0,2 2023 5396129020231016 KW 1,00 € 90,01 €
+16 oct. Commerce Exécution Transaction Achat direct Achat FR0000120073 AIR LIQUIDE INH. EO 5,50 2023 9062744920231016 KW 1,00 € 89,01 €
+16 oct. Commerce Exécution Transaction Achat direct Achat NL0000235190 AIRBUS SE 2283355920231016 2023 KW 1,00 € 88,01 €
+16 oct. Commerce Exécution Transaction Achat direct Achat FR0000121972 SCHNEIDER ELEC. INH. EO 4 2023 5528319320231016 KW 1,00 € 87,01 €
+16 oct. Commerce Exécution Transaction Achat direct Achat FR0000121014 LVMH EO 0,3 2023 6991861020231016 KW 1,00 € 86,01 €
+16 oct. 
+2023 Parrainage Remboursement de votre cadeau 25,57 € 111,58 €
+16 oct. Commerce Exécution Transaction Achat direct Achat US0231351067 AMAZON.COM INC. DL-,01 2023 9485791720231016 KW 25,57 € 86,01 €
+Page 1 7
+Généré le 30 sept. 2024
+Trade Republic Bank GmbH
+DATE TYPE DESCRIPTION ENTRÉE SORTIE D'ARGENT D'ARGENT SOLDE
+23 oct. 
+2023 Commerce
+Exécution Transaction Achat direct Achat FR0000052292 HERMES INTERNATIONAL O.N. 
+7341590120231023 KW 1,00 € 85,01 €
+23 oct. Commerce Exécution Transaction Achat direct Achat FR0000133308 ORANGE INH. EO 4 2023 4411840220231023 KW 1,00 € 84,01 €
+23 oct. Commerce Exécution Transaction Achat direct Achat FR0000121667 ESSILORLUXO. INH. EO -,18 2023 3941380220231023 KW 1,00 € 83,01 €
+23 oct. Commerce Exécution Transaction Achat direct Achat FR0000120578 SANOFI SA INHABER EO 2 2023 9755700320231023 KW 1,00 € 82,01 €
+23 oct. Commerce Exécution Transaction Achat direct Achat FR0000121485 KERING S.A. INH. EO 4 2023 5878630520231023 KW 1,00 € 81,01 €
+23 oct. Commerce Exécution Transaction Achat direct Achat FR0000120321 L OREAL INH. EO 0,2 2023 3027990720231023 KW 1,00 € 80,01 €
+23 oct. Commerce Exécution Transaction Achat direct Achat FR0000120073 AIR LIQUIDE INH. EO 5,50 2023 4007886820231023 KW 1,00 € 79,01 €
+23 oct. 
+2023 Commerce
+Exécution Transaction Achat direct Achat NL0000235190 AIRBUS SE 4346737020231023 
+KW 1,00 € 78,01 €
+23 oct. Commerce Exécution Transaction Achat direct Achat FR0000121014 LVMH EO 0,3 2023 4274572520231023 KW 1,00 € 77,01 €
+23 oct. Commerce Exécution Transaction Achat direct Achat FR0000121972 SCHNEIDER ELEC. INH. EO 4 2023 7362883220231023 KW 1,00 € 76,01 €
+01 nov. Paiement 
+2023 d'intérêts Your interest payment 0,18 € 76,19 €
+02 nov. Commerce Exécution Transaction Achat direct Achat FR0000133308 ORANGE INH. EO 4 2023 8208610520231102 KW 1,00 € 75,19 €
+02 nov. Commerce Exécution Transaction Achat direct Achat FR0000121667 ESSILORLUXO. INH. EO -,18 2023 9692181120231102 KW 1,00 € 74,19 €
+02 nov. Commerce Exécution Transaction Achat direct Achat FR0000052292 HERMES INTERNATIONAL O.N. 2023 6088391220231102 KW 1,00 € 73,19 €
+02 nov. Commerce Exécution Transaction Achat direct Achat FR0000120578 SANOFI SA INHABER EO 2 2023 9113901820231102 KW 1,00 € 72,19 €
+02 nov. Commerce Exécution Transaction Achat direct Achat FR0000121485 KERING S.A. INH. EO 4 2023 2980752720231102 KW 1,00 € 71,19 €
+02 nov. Exécution Transaction Achat direct Achat FR0000120321 L OREAL INH. EO 0,2 
+2023 Commerce 4865404420231102 KW 1,00 € 70,19 €
+02 nov. Commerce Exécution Transaction Achat direct Achat FR0000120073 AIR LIQUIDE INH. EO 5,50 2023 6745997320231102 KW 1,00 € 69,19 €
+02 nov. Exécution Transaction Achat direct Achat NL0000235190 AIRBUS SE 9874879420231102 
+2023 Commerce KW 1,00 € 68,19 €
+02 nov. 
+2023 Commerce
+Exécution Transaction Achat direct Achat FR0000121014 LVMH EO 0,3 
+9697733220231102 KW 1,00 € 67,19 €
+02 nov. Commerce Exécution Transaction Achat direct Achat FR0000121972 SCHNEIDER ELEC. INH. EO 4 2023 2622119220231102 KW 1,00 € 66,19 €
+09 nov. Commerce Exécution Transaction Achat direct Achat FR0000133308 ORANGE INH. EO 4 2023 6128790320231109 KW 1,00 € 65,19 €
+Page 2 7
+Généré le 30 sept. 2024
+Trade Republic Bank GmbH
+DATE TYPE DESCRIPTION ENTRÉE SORTIE D'ARGENT D'ARGENT SOLDE
+09 nov. Commerce Exécution Transaction Achat direct Achat FR0000052292 HERMES INTERNATIONAL O.N. 2023 1282180320231109 KW 1,00 € 64,19 €
+09 nov. Commerce Exécution Transaction Achat direct Achat FR0000121667 ESSILORLUXO. INH. EO -,18 2023 6313800420231109 KW 1,00 € 63,19 €
+09 nov. Commerce Exécution Transaction Achat direct Achat FR0000120578 SANOFI SA INHABER EO 2 2023 8107370420231109 KW 1,00 € 62,19 €
+09 nov. Exécution Transaction Achat direct Achat FR0000121485 KERING S.A. INH. EO 4 
+2023 Commerce 7750810720231109 KW 1,00 € 61,19 €
+09 nov. Commerce Exécution Transaction Achat direct Achat FR0000120321 L OREAL INH. EO 0,2 2023 9950210820231109 KW 1,00 € 60,19 €
+09 nov. Commerce Exécution Transaction Achat direct Achat FR0000120073 AIR LIQUIDE INH. EO 5,50 2023 7119856220231109 KW 1,00 € 59,19 €
+09 nov. Exécution Transaction Achat direct Achat NL0000235190 AIRBUS SE 5717546320231109 
+2023 Commerce KW 1,00 € 58,19 €
+09 nov. Exécution Transaction Achat direct Achat FR0000121014 LVMH EO 0,3 
+2023 Commerce 3757957320231109 KW 1,00 € 57,19 €
+09 nov. Commerce Exécution Transaction Achat direct Achat FR0000121972 SCHNEIDER ELEC. INH. EO 4 2023 8690957520231109 KW 1,00 € 56,19 €
+16 nov. 
+2023 Commerce
+Exécution Transaction Achat direct Achat FR0000120578 SANOFI SA INHABER EO 2 
+2511972420231116 KW 1,00 € 55,19 €
+16 nov. Commerce Exécution Transaction Achat direct Achat NL0000235190 AIRBUS SE 7270155420231116 2023 KW 1,00 € 54,19 €
+16 nov. Commerce Exécution Transaction Achat direct Achat FR0000133308 ORANGE INH. EO 4 2023 5939312220231116 KW 1,00 € 53,19 €
+16 nov. Commerce Exécution Transaction Achat direct Achat FR0000052292 HERMES INTERNATIONAL O.N. 2023 3304142620231116 KW 1,00 € 52,19 €
+16 nov. 
+2023 Commerce
+Exécution Transaction Achat direct Achat FR0000121667 ESSILORLUXO. INH. EO -,18 
+1183903020231116 KW 1,00 € 51,19 €
+16 nov. Commerce Exécution Transaction Achat direct Achat FR0000121485 KERING S.A. INH. EO 4 2023 7903033720231116 KW 1,00 € 50,19 €
+16 nov. Exécution Transaction Achat direct Achat FR0000120321 L OREAL INH. EO 0,2 
+2023 Commerce 7958645420231116 KW 1,00 € 49,19 €
+16 nov. Exécution Transaction Achat direct Achat FR0000120073 AIR LIQUIDE INH. EO 5,50 
+2023 Commerce 2298383620231116 KW 1,00 € 48,19 €
+16 nov. Commerce Exécution Transaction Achat direct Achat FR0000121972 SCHNEIDER ELEC. INH. EO 4 2023 8315051820231116 KW 1,00 € 47,19 €
+16 nov. Commerce Exécution Transaction Achat direct Achat FR0000121014 LVMH EO 0,3 2023 9415517020231116 KW 1,00 € 46,19 €
+23 nov. 
+2023 Commerce
+Exécution Transaction Achat direct Achat NL0000235190 AIRBUS SE 3791804320231123 
+KW 1,00 € 45,19 €
+23 nov. Commerce Exécution Transaction Achat direct Achat FR0000121667 ESSILORLUXO. INH. EO -,18 2023 1618172320231123 KW 1,00 € 44,19 €
+23 nov. Commerce Exécution Transaction Achat direct Achat FR0000120321 L OREAL INH. EO 0,2 2023 2130673120231123 KW 1,00 € 43,19 €
+Page 3 7
+Généré le 30 sept. 2024
+Trade Republic Bank GmbH
+DATE TYPE DESCRIPTION ENTRÉE SORTIE D'ARGENT D'ARGENT SOLDE
+23 nov. 
+2023 Commerce
+Exécution Transaction Achat direct Achat FR0000120073 AIR LIQUIDE INH. EO 5,50 
+2810216220231123 KW 1,00 € 42,19 €
+23 nov. Commerce Exécution Transaction Achat direct Achat FR0000121972 SCHNEIDER ELEC. INH. EO 4 2023 5708747120231123 KW 1,00 € 41,19 €
+23 nov. Commerce Exécution Transaction Achat direct Achat FR0000121014 LVMH EO 0,3 2023 6384287120231123 KW 1,00 € 40,19 €
+01 déc. Paiement 
+2023 d'intérêts Your interest payment 0,18 € 40,37 €
+04 déc. Commerce Exécution Transaction Achat direct Achat NL0000235190 AIRBUS SE 9712990220231204 2023 KW 1,00 € 39,37 €
+04 déc. Commerce Exécution Transaction Achat direct Achat FR0000121220 SODEXO S.A. INH. EO 4 2023 5976612920231204 KW 1,00 € 38,37 €
+04 déc. Commerce Exécution Transaction Achat direct Achat FR0000121667 ESSILORLUXO. INH. EO -,18 2023 8211763220231204 KW 1,00 € 37,37 €
+04 déc. Commerce Exécution Transaction Achat direct Achat FR0000120271 TOTALENERGIES SE EO 2,50 2023 2800384020231204 KW 1,00 € 36,37 €
+04 déc. Commerce Exécution Transaction Achat direct Achat FR0000120321 L OREAL INH. EO 0,2 2023 5704206520231204 KW 1,00 € 35,37 €
+04 déc. Commerce Exécution Transaction Achat direct Achat FR0000120404 ACCOR SA INH. EO 3 2023 4454320720231204 KW 1,00 € 34,37 €
+04 déc. Commerce Exécution Transaction Achat direct Achat FR0000125338 CAPGEMINI SE INH. EO 8 2023 2273941820231204 KW 1,00 € 33,37 €
+04 déc. Commerce Exécution Transaction Achat direct Achat FR0000120073 AIR LIQUIDE INH. EO 5,50 2023 6739392520231204 KW 1,00 € 32,37 €
+04 déc. Commerce Exécution Transaction Achat direct Achat FR0000120693 PERNOD RICARD O.N. 2023 4677249820231204 KW 1,00 € 31,37 €
+04 déc. Commerce Exécution Transaction Achat direct Achat FR0000121972 SCHNEIDER ELEC. INH. EO 4 2023 6155940020231204 KW 1,00 € 30,37 €
+04 déc. Commerce Exécution Transaction Achat direct Achat FR0000121014 LVMH EO 0,3 2023 4800720920231204 KW 1,00 € 29,37 €
+04 déc. Commerce Exécution Transaction Achat direct Achat FR0000120644 DANONE S.A. EO -,25 2023 8722602720231204 KW 1,00 € 28,37 €
+06 déc. Gains Exécution d'événement Rendement FR0000133308 ORANGE INH. EO 4 2023 2722931120231206 0,10 € 28,47 €
+06 déc. 
+2023 Gains Exécution d'événement Rendement FR0000121014 LVMH EO 0,3 3292437120231206 0,04 € 28,51 €
+07 déc. Gains Exécution d'événement Rendement FR0000121329 THALES S.A. EO 3 2023 8418972620231207 Bruttoertrag 0,01 € 28,52 €
+11 déc. Exécution Transaction Achat direct Achat FR0000121220 SODEXO S.A. INH. EO 4 
+2023 Commerce 3892032120231211 KW 1,00 € 27,52 €
+11 déc. Commerce Exécution Transaction Achat direct Achat FR0000120644 DANONE S.A. EO -,25 2023 5147543620231211 KW 1,00 € 26,52 €
+11 déc. 
+2023 Commerce
+Exécution Transaction Achat direct Achat NL0000235190 AIRBUS SE 9448564320231211 
+KW 1,00 € 25,52 €
+Page 4 7
+Généré le 30 sept. 2024
+Trade Republic Bank GmbH
+DATE TYPE DESCRIPTION ENTRÉE SORTIE D'ARGENT D'ARGENT SOLDE
+11 déc. 
+2023 Commerce
+Exécution Transaction Achat direct Achat FR0000120271 TOTALENERGIES SE EO 2,50 
+5494802420231211 KW 1,00 € 24,52 €
+11 déc. Commerce Exécution Transaction Achat direct Achat FR0000120404 ACCOR SA INH. EO 3 2023 3558842720231211 KW 1,00 € 23,52 €
+11 déc. Commerce Exécution Transaction Achat direct Achat FR0000121667 ESSILORLUXO. INH. EO -,18 2023 7201922820231211 KW 1,00 € 22,52 €
+11 déc. 
+2023 Commerce
+Exécution Transaction Achat direct Achat FR0000120321 L OREAL INH. EO 0,2 
+3198473120231211 KW 1,00 € 21,52 €
+11 déc. Commerce Exécution Transaction Achat direct Achat FR0000120693 PERNOD RICARD O.N. 2023 6752016720231211 KW 1,00 € 20,52 €
+11 déc. Commerce Exécution Transaction Achat direct Achat FR0000125338 CAPGEMINI SE INH. EO 8 2023 1939337220231211 KW 1,00 € 19,52 €
+11 déc. 
+2023 Commerce
+Exécution Transaction Achat direct Achat FR0000120073 AIR LIQUIDE INH. EO 5,50 
+7616987420231211 KW 1,00 € 18,52 €
+11 déc. Commerce Exécution Transaction Achat direct Achat FR0000121972 SCHNEIDER ELEC. INH. EO 4 2023 1889968220231211 KW 1,00 € 17,52 €
+11 déc. Commerce Exécution Transaction Achat direct Achat FR0000121014 LVMH EO 0,3 2023 1010658320231211 KW 1,00 € 16,52 €
+18 déc. Commerce Exécution Transaction Achat direct Achat NL0000235190 AIRBUS SE 5539064920231218 2023 KW 1,00 € 15,52 €
+18 déc. Commerce Exécution Transaction Achat direct Achat FR0000120644 DANONE S.A. EO -,25 2023 6744027420231218 KW 1,00 € 14,52 €
+18 déc. Commerce Exécution Transaction Achat direct Achat FR0000121667 ESSILORLUXO. INH. EO -,18 2023 5685833120231218 KW 1,00 € 13,52 €
+18 déc. Commerce Exécution Transaction Achat direct Achat FR0000120404 ACCOR SA INH. EO 3 2023 3983416020231218 KW 1,00 € 12,52 €
+18 déc. Exécution Transaction Achat direct Achat FR0000120271 TOTALENERGIES SE EO 2,50 
+2023 Commerce 4708604320231218 KW 1,00 € 11,52 €
+18 déc. Commerce Exécution Transaction Achat direct Achat FR0000120321 L OREAL INH. EO 0,2 2023 7132435920231218 KW 1,00 € 10,52 €
+18 déc. Exécution Transaction Achat direct Achat FR0000120693 PERNOD RICARD O.N. 
+2023 Commerce 4407900020231218 KW 1,00 € 9,52 €
+18 déc. Commerce Exécution Transaction Achat direct Achat FR0000125338 CAPGEMINI SE INH. EO 8 2023 3020491620231218 KW 1,00 € 8,52 €
+18 déc. Commerce Exécution Transaction Achat direct Achat FR0000120073 AIR LIQUIDE INH. EO 5,50 2023 9763232020231218 KW 1,00 € 7,52 €
+18 déc. Commerce Exécution Transaction Achat direct Achat FR0000121972 SCHNEIDER ELEC. INH. EO 4 2023 9526595120231218 KW 1,00 € 6,52 €
+18 déc. Commerce Exécution Transaction Achat direct Achat FR0000121014 LVMH EO 0,3 2023 8803298020231218 KW 1,00 € 5,52 €
+18 déc. Exécution Transaction Achat direct Achat FR0000121220 SODEXO S.A. INH. EO 4 
+2023 Commerce 8734142720231218 KW 1,00 € 4,52 €
+22 déc. Exécution d'événement Rendement FR0000121220 SODEXO S.A. INH. EO 4 
+2023 Gains 6487966920231222 0,07 € 4,59 €
+Page 5 7
+Généré le 30 sept. 2024
+Trade Republic Bank GmbH
+DATE TYPE DESCRIPTION ENTRÉE SORTIE D'ARGENT D'ARGENT SOLDE
+27 déc. Commerce Exécution Transaction Achat direct Achat FR0000121220 SODEXO S.A. INH. EO 4 2023 7710582120231227 KW 1,00 € 3,59 €
+27 déc. Commerce Exécution Transaction Achat direct Achat FR0000120644 DANONE S.A. EO -,25 2023 4276446120231227 KW 1,00 € 2,59 €
+27 déc. Commerce Exécution Transaction Achat direct Achat NL0000235190 AIRBUS SE 6144794620231227 2023 KW 1,00 € 1,59 €
+27 déc. Commerce Exécution Transaction Achat direct Achat FR0000121972 SCHNEIDER ELEC. INH. EO 4 2023 9372409220231227 KW 1,00 € 0,59 €
+29 déc. Paiement 
+2023 d'intérêts Your interest payment 0,05 € 0,64 €
+Page 6 7
+Généré le 30 sept. 2024
+Trade Republic Bank GmbH
+DÉCHARGE DE RESPONSABILITÉ
+Cher client
+Veillez à vérifier les écritures, calculs et le solde de clôture présentés dans le relevé bancaire, qui constitue également votre apurement de compte. 
+L'apurement des comptes est considéré comme accepté si vous ne soulevez aucune objection dans les six semaines suivant sa réception. Les objections 
+concernant les relevés de compte doivent être soumises par écrit à notre équipe d'assistance. Les soldes créditeurs peuvent être considérés comme des 
+dépôts conformément à la loi allemande sur l'assurance des dépôts (Einlagensicherungsgesetz ? EinSiG). De plus amples informations sont disponibles 
+dans la fiche d'information destinée au déposant, qui peut être consultée en même temps que nos conditions générales.
+Trade Republic Bank GmbH
+Brunnenstraße 19-21 Contacts
+Siège de la Société: Berlin
+10119 Berlin www.traderepublic.com
+AG Charlottenburg HRB 244347 B
+Identifiant TVA DE307510626
+Page 7 7
+Généré le 30 sept. 2024
+Trade Republic Bank GmbH
+
+```

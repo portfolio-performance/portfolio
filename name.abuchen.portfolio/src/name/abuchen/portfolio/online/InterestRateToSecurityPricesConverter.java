@@ -156,7 +156,7 @@ public class InterestRateToSecurityPricesConverter
      * Calculates the Macaulay duration in years where we assume the following
      * coupon payments:
      * <p>
-     * - for maturity one year or less: All interest rates are payed at maturity
+     * - for maturity one year or less: All interest rates are paid at maturity
      * - for maturity of two or more years: Interest rates are paid annually
      * (last payment at maturity)
      */

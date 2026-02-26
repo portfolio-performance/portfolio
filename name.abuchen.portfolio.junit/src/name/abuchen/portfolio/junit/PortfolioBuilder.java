@@ -9,9 +9,11 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 public class PortfolioBuilder
 {
@@ -30,25 +32,63 @@ public class PortfolioBuilder
         this.portfolio.setReferenceAccount(referenceAccount);
     }
 
-    public PortfolioBuilder inbound_delivery(Security security, String date, long shares, long amount)
+    public static long amountOf(double amount)
+    {
+        return Values.Amount.factorize(amount);
+    }
+
+    public static long quoteOf(double amount)
+    {
+        return Values.Quote.factorize(amount);
+    }
+
+    public static long sharesOf(double shares)
+    {
+        return Values.Share.factorize(shares);
+    }
+
+    public PortfolioBuilder inbound_delivery(Security security, String date, long shares, long amount) // NOSONAR
     {
         return inbound_delivery(security, date, shares, amount, 0, 0);
     }
 
-    public PortfolioBuilder inbound_delivery(Security security, String date, long shares, long amount, long fees,
+    public PortfolioBuilder inbound_delivery(Security security, String date, long shares, long amount, long fees, // NOSONAR
                     long taxes)
     {
         portfolio.addTransaction(new PortfolioTransaction(AccountBuilder.asDateTime(date), CurrencyUnit.EUR, amount,
-                        security, shares,
-                        Type.DELIVERY_INBOUND, fees, taxes));
+                        security, shares, Type.DELIVERY_INBOUND, fees, taxes));
         return this;
     }
 
-    public PortfolioBuilder outbound_delivery(Security security, String date, long shares, long amount, long fees,
+    public PortfolioBuilder inbound_delivery(Security security, String date, long shares, Transaction.Unit grossValue) // NOSONAR
+    {
+        var tx = new PortfolioTransaction(AccountBuilder.asDateTime(date), //
+                        grossValue.getAmount().getCurrencyCode(), //
+                        grossValue.getAmount().getAmount(), //
+                        security, shares, Type.DELIVERY_INBOUND, 0, 0);
+
+        tx.addUnit(grossValue);
+        portfolio.addTransaction(tx);
+        return this;
+    }
+
+    public PortfolioBuilder outbound_delivery(Security security, String date, long shares, long amount, long fees, // NOSONAR
                     long taxes)
     {
         portfolio.addTransaction(new PortfolioTransaction(AccountBuilder.asDateTime(date), CurrencyUnit.EUR, amount,
                         security, shares, Type.DELIVERY_OUTBOUND, fees, taxes));
+        return this;
+    }
+
+    public PortfolioBuilder outbound_delivery(Security security, String date, long shares, Transaction.Unit grossValue) // NOSONAR
+    {
+        var tx = new PortfolioTransaction(AccountBuilder.asDateTime(date), //
+                        grossValue.getAmount().getCurrencyCode(), //
+                        grossValue.getAmount().getAmount(), //
+                        security, shares, Type.DELIVERY_OUTBOUND, 0, 0);
+
+        tx.addUnit(grossValue);
+        portfolio.addTransaction(tx);
         return this;
     }
 
@@ -60,6 +100,17 @@ public class PortfolioBuilder
         return portfolio;
     }
 
+    public PortfolioBuilder buyPrice(Security security, String date, double shares, double price)
+    {
+        return buyPrice(security, date, shares, price, 0.0, 0.0);
+    }
+
+    // Note that price is per share, but fees/taxes are for entire transaction.
+    public PortfolioBuilder buyPrice(Security security, String date, double shares, double price, double totalFees, double totalTaxes)
+    {
+        return buy(security, date, sharesOf(shares), amountOf(price * shares), amountOf(totalFees), amountOf(totalTaxes));
+    }
+
     public PortfolioBuilder buy(Security security, String date, long shares, long amount)
     {
         return buysell(Type.BUY, security, date, shares, amount, 0, 0);
@@ -68,6 +119,17 @@ public class PortfolioBuilder
     public PortfolioBuilder buy(Security security, String date, long shares, long amount, long fees, long taxes)
     {
         return buysell(Type.BUY, security, date, shares, amount, fees, taxes);
+    }
+
+    public PortfolioBuilder sellPrice(Security security, String date, double shares, double price)
+    {
+        return sellPrice(security, date, shares, price, 0.0, 0.0);
+    }
+
+    // Note that price is per share, but fees/taxes are for entire transaction.
+    public PortfolioBuilder sellPrice(Security security, String date, double shares, double price, double totalFees, double totalTaxes)
+    {
+        return sell(security, date, sharesOf(shares), amountOf(price * shares), amountOf(totalFees), amountOf(totalTaxes));
     }
 
     public PortfolioBuilder sell(Security security, String date, long shares, long amount)

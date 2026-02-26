@@ -232,14 +232,14 @@ public class ZuercherKantonalbankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.* \\/ (?<note>Auftrags\\-Nr\\..*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | "))),
                                         // @formatter:off
                                         // Abwicklungs-Nr. 123
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^(?<note>Auftrags\\-Nr\\..*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))))
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | "))))
 
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
 

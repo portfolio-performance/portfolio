@@ -1,0 +1,32 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.73.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Trade Confirmation
+Generated on the 13 Jan 2025
+Max Mustermann
+Mustermann Allee 6
+Account name Dirk Ackermann
+Hamburg Account number REV-55790082
+24543 Confirmation date 02 Jan 2025
+DE
+Order details
+Symbol Security Name ISIN Type Quantity Unit Price Total Amount Settlement date
+SPPW SPDR MSCI World UCITS ETF (Acc) IE00BFY0GT14 Buy 2.61848651 €38.19 €100 06 Jan 2025
+Fees summary
+Commission €0
+Total Fee charged €0
+Execution details
+Your order may have been executed in multiple fills at various prices, at multiple venues. Details can be obtained upon request via in-app chat.
+Symbol Security Name Type Quantity Unit Price Total Amount Execution time Execution venue
+SPPW SPDR MSCI World UCITS ETF (Acc) Buy 2.6184865147 €38.19 €100 02 Jan 2025 08:10:12 GMT XOFF
+This trade confirmation is provided by Revolut Securities Europe UAB, represented in Switzerland by Revolut (Switzerland) AG ("Revolut", "we", "our") in respect of your order 
+Get help directly In app which Revolut has transmitted to its third party brokers for execution. Unless expressly stated otherwise, the information in this trade confirmation relates to the 
+Scan the QR code transactions arising from the execution of your orders.
+If you want to report any inaccuracy in relation to the information displayed in this trade confirmation, please contact us via the in-app chat. This trade confirmation is 
+subject to our Terms of Business: https://www.revolut.com/en-LT/legal/mifid/
+Revolut Securities Europe UAB is a brokerage firm authorised and regulated by the Bank of Lithuania and represented in Switzerland by Revolut (Switzerland) AG. Revolut 
+Securities Europe UAB is incorporated in the Republic of Lithuania (company number 305799582) and has its registered office at Konstitucijos av. 21B, Vilnius, 08130, the 
+Republic of Lithuania.
+Revolut Securities Europe UAB LEI: 9845001DE7E84FF54124
+* XOFF means that the order was executed outside of the exchange (NYSE or NASDAQ, etc.)

@@ -1,0 +1,49 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+CH-00000000 - 00000000
+Trade Details Report
+Reporting period: 05-Aug-2025 - 05-Aug-2025
+Generated at: 02-Okt-2025 10:37:44 10:37:44 (W. Europe Standard Time)
+CH-00000000 Saxo Bank CH
+Switzerland The Circle 38
+8058 Zürich-Flughafen
+Switzerland
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-00000000 Reporting period
+Currency: CHF 05-Aug-2025 - 05-Aug-2025
+Page 1 of 3 Account(s): AutoInvest 00000/000000 Generated at: 02-Okt-2025
+Trade details, CHF
+Reporting period
+05-Aug-2025 to 05-Aug-2025
+ETF
+Instrument iShares MSCI ACWI USD Acc UCITS ETF Trade time 05-Aug-2025 12:46:23
+ISIN IE00B6R52259 Value Date 07-Aug-2025
+Symbol SSAC_CHF:xswx Order ID 5311227095
+Exchange Description TRADEWEB EUROPE LIMITED (TREU) Trade ID 6358696418
+Primary Exchange SIX Swiss Exchange (ETFs) Traded Value -1.126,53 CHF
+Venue Exchange Price 80,4666 CHF
+Order Type Market Order Quantity 14,00
+B/S Buy Spread Costs 0,00 CHF
+Open/Close OPEN Total Trading Costs -1,69 CHF
+Saxo is counterparty No
+Booking amount Amount Conversion cost Booked Amount
+Trade Date Value Date Conversion Rate
+ID CHF CHF CHF
+Share Amount 46404269826 05-Aug-2025 07-Aug-2025 -1.126,53 1,000000 0,00 -1.126,53
+Swiss Stamp Duty
+46406463093 05-Aug-2025 07-Aug-2025 -1,69 1,000000 0,00 -1,69
+Foreign
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-00000000 Reporting period
+Currency: CHF 05-Aug-2025 - 05-Aug-2025
+Page 2 of 3 Account(s): AutoInvest 00000/000000 Generated at: 02-Okt-2025
+Trade details, CHF
+Reporting period
+05-Aug-2025 to 05-Aug-2025
+Booking amount Amount Conversion cost Booked Amount
+Trade Date Value Date Conversion Rate
+ID CHF CHF CHF
+Net Amount - - - - - 0,00 -1.128,22
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-00000000 Reporting period
+Currency: CHF 05-Aug-2025 - 05-Aug-2025
+Page 3 of 3 Account(s): AutoInvest 00000/000000 Generated at: 02-Okt-2025

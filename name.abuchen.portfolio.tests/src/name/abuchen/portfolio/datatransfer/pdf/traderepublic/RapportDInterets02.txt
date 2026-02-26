@@ -1,0 +1,31 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.79.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH, BRANCH FRANCE  29 RUE DU PONT  92200 NEUILLY-SUR-SEINE
+Jean-MDbLn wvugUjSA AXpPpd WigAbFyC PAGE 1 de 1
+573 PuXDCK rOecMYy biCnJTL EYn E8 DATE 01/02/2025
+34274 Mandelieu-la-YHZmTVO COMPTE ESPÈCES 0769172759
+NUMÉRO D’
+IDENTIFICATION 7263110676064
+FISCALE
+RAPPORT D'INTÉRÊTS
+31/01/2025
+SYNTHÈSE
+ACTIFS NATURE DES REVENUS TAUX D'INTÉRÊT DATE TOTAL
+Espèces Intérêts 3,00% 01/01/2025 - 31/01/2025 0,98 EUR
+Total 0,98 EUR
+FACTURE - INTÉRÊTS
+POSITION MONTANT
+Base fiscale 0,98 EUR
+Prélèvements sociaux -0,16 EUR
+Impôt sur le revenu des personnes physiques -0,13 EUR
+Total 0,69 EUR
+COMPTABILISATION
+IBAN DATE D'EFFET CRÉDIT APRÈS IMPÔTS
+FR7631233123450060926861177 01/02/2025 0,69 EUR
+Trade Republic Bank GmbH, Branch France www.traderepublic.fr Siège sociale: Trade Republic Bank GmbH Directeurs Généraux
+c/o Grant Thornton, 29 Rue du Pont service@traderepublic.com Brunnenstrasse 19-21, 10119 Berlin, Allemagne Andreas Torner
+92200 Neuilly-sur-Seine TVA DE307510626 Registre du commerce du tribunal local de Gernot Mittendorfer
+900 796 855 R.C.S. Nanterre Charlottenburg, HRB 244347 B, Allemagne Christian Hecker
+Thomas Pischke

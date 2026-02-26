@@ -47,7 +47,7 @@ public class HoldingsPieChartBrowser implements IPieChart
     public void refresh(ClientSnapshot snapshot)
     {
         this.snapshot = snapshot;
-        browser.refresh();
+        browser.execute("updateChart();"); //$NON-NLS-1$
     }
 
     private final class LoadDataFunction extends BrowserFunction

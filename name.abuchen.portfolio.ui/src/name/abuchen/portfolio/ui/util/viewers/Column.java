@@ -46,6 +46,16 @@ public class Column
     }
 
     /**
+     * Listener interface for columns that need notification when the cache
+     * should be invalidated.
+     */
+    @FunctionalInterface
+    public interface CacheInvalidationListener
+    {
+        void invalidateCache();
+    }
+
+    /**
      * Uniquely identifies a column to store/load a configuration
      */
     private String id;
@@ -57,6 +67,14 @@ public class Column
     private boolean isRemovable = true;
     private ColumnViewerSorter sorter;
     private Integer defaultSortDirection;
+
+    /**
+     * Constructs a LabelProvider. We need to allow a factory method because
+     * some label provider (such as the StyledCellLabelProvider) cannot be
+     * attached to multiple columns. However, we can create multiple visual
+     * columns out of one column definition, for example for different reporting
+     * periods.
+     */
     private Supplier<CellLabelProvider> labelProvider;
     private ElementOptionFunction<Object> toolTipProvider;
     private Images image;
@@ -65,6 +83,11 @@ public class Column
     private String groupLabel;
     private String menuLabel;
     private String description;
+
+    /**
+     * The heading (which will appear as text just above the menu entry)
+     */
+    private String heading;
 
     private ColumnEditingSupport editingSupport;
 
@@ -197,6 +220,11 @@ public class Column
         this.editingSupport = editingSupport;
     }
 
+    public void setHeading(String heading)
+    {
+        this.heading = heading;
+    }
+
     /* package */String getLabel()
     {
         return label;
@@ -275,6 +303,16 @@ public class Column
     /* package */String getGroupLabel()
     {
         return groupLabel;
+    }
+
+    /* package */boolean hasHeading()
+    {
+        return heading != null;
+    }
+
+    /* package */String getHeading()
+    {
+        return heading;
     }
 
     public ColumnEditingSupport getEditingSupport()

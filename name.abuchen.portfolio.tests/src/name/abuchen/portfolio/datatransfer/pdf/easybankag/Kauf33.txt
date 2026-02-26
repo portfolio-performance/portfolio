@@ -1,0 +1,48 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.77.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Herrn
+fyaJnI IecGLHkr
+GoUTzUWjdshn 86
+9315 RwwnnRhB
+Wien, den 24.08.2021
+Wir haben für Sie am 24.08.2021 unten angeführtes Geschäft abgerechnet:
+Depot: 21938-324-080
+Geschäftsart: Kauf Auftrags-Nr.: 28715469 - 24.08.2021
+Zugang: - Teilausführung Stk 1
+Titel: US02209S1033 Altria Group Inc.
+Registered Shares DL -,333
+Kurs: 41,5 EUR
+Verwahrart: WR Wertpapierrechnung
+Positionsdaten: Loco: Düsseldorf
+Kurswert: -41,50 EUR
+Fremde Börsespesen: -0,69 EUR
+Fremde Settlementspesen: -2,00 EUR
+Eigene Spesen: -8,95 EUR
+Zu Lasten IBAN SH68 2684 3112 5031 0142 Valuta 26.08.2021 -53,14 EUR
+Handelsplatz: XETRA-Frankfurt
+Eingang vorbehalten
+Schlusstag/-zeit: 24.08.2021 09:04:25
+Kassatag: 26.08.2021
+Wertpapier-Risiko: 4_spekulativ
+Limit: 41,500000
+KESt-pflichtiges Wertpapier
+Steuerrelevante Hinweise finden Sie auf der Rückseite.
+Seite 1 von 2
+easybank Service Center | +43 (0) 5 70 05-500 | easy@easybank.at | www.easybank.at | Wiedner Gürtel 11 | 1100 Wien
+BAWAG P.S.K. Bank für Arbeit und Wirtschaft und Österreichische Postsparkasse Aktiengesellschaft | Handelsgericht Wien | FN 205340x
+GEODRU02 WGEWTGSDR15ABREP2021082401209P24_a/271
+Steuerrelevanter Anschaffungswert für den Gesamtbestand: 1.168,93 EUR
+Eine allfällige KESt-Abfuhr erfolgt an das Finanzamt für Großbetriebe.
+Die BAWAG P.S.K. erbringt keine Steuerberatung und übernimmt keine Haftung für eventuelle
+steuerliche Nachteile im Zusammenhang mit Wertpapiertransaktionen und Wertpapierveranlagungen
+ihrer Kunden. Die Besteuerung der Kapitaleinkünfte hängt von den persönlichen Verhältnissen des
+Anlegers ab und kann künftigen Änderungen unterworfen sein. Vor einer Veranlagungsentscheidung
+sollten Sie sich bei Ihrem Steuerberater über die damit verbundenen steuerlichen Konsequenzen und
+Meldepflichten informieren.
+Mit freundlichen Grüßen
+Ihr easybank Service Center
+Dieser Beleg wird von der Bank nicht unterfertigt.
+Seite 2 von 2
+GEODRU02 WGEWTGSDR15ABREP2021082401209P24_a/272

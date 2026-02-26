@@ -50,6 +50,11 @@ public abstract class AbstractFinanceView
     @Inject
     private PortfolioPart part;
 
+    /**
+     * Track editor activation and delay updates until the editor is deactivated
+     */
+    private final EditorActivationState editorActivationState = new EditorActivationState();
+
     private Composite top;
     private InformationPane pane;
 
@@ -74,9 +79,9 @@ public abstract class AbstractFinanceView
     private List<Menu> contextMenus = new ArrayList<>();
 
     protected abstract String getDefaultTitle();
-    
+
     SashLayout sashLayout;
-    
+
     protected String getTitle()
     {
         return titleText;
@@ -98,10 +103,12 @@ public abstract class AbstractFinanceView
 
     public final void onRecalculationNeeded()
     {
-        notifyModelUpdated();
+        editorActivationState.deferUntilNotEditing(() -> {
+            notifyModelUpdated();
 
-        if (pane != null && pane.getControl() != null && !pane.getControl().isDisposed())
-            pane.onRecalculationNeeded();
+            if (pane != null && pane.getControl() != null && !pane.getControl().isDisposed())
+                pane.onRecalculationNeeded();
+        });
     }
 
     /** called when some other view modifies the model */
@@ -138,6 +145,11 @@ public abstract class AbstractFinanceView
     {
         if (pane != null)
             pane.setInput(input);
+    }
+
+    public Optional<InformationPane> getInformationPane()
+    {
+        return Optional.ofNullable(pane);
     }
 
     public Shell getActiveShell()
@@ -188,20 +200,26 @@ public abstract class AbstractFinanceView
 
         notifyViewCreationCompleted();
     }
-    
+
     public void flipPane()
     {
         if (sashLayout != null)
             sashLayout.flip();
     }
-    
+
     public boolean isPaneHidden()
     {
         if (sashLayout == null)
             return false;
-            
+
         return sashLayout.isHidden();
-        
+
+    }
+
+    public void showPane()
+    {
+        if (isPaneHidden())
+            flipPane();
     }
 
     protected abstract Control createBody(Composite parent);
@@ -258,7 +276,7 @@ public abstract class AbstractFinanceView
         return this.viewToolBar;
     }
 
-    protected ToolBarManager getToolBarManager()
+    public ToolBarManager getToolBarManager()
     {
         return this.actionToolBar;
     }
@@ -317,12 +335,17 @@ public abstract class AbstractFinanceView
 
         context.dispose();
     }
+    
+    public final EditorActivationState getEditorActivationState()
+    {
+        return editorActivationState;
+    }
 
     public final Control getControl()
     {
         return top;
     }
-
+    
     public void setFocus()
     {
         getControl().setFocus();

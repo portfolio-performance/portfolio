@@ -1,0 +1,56 @@
+﻿PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.2
+System: linux | x86_64 | 21.0.9 | Flathub
+-----------------------------------------
+10919 Berlin Seite 1
+Depotnummer 983807642
+Kundennummer 9683036780
+qfKLGa xsaQyBMugS und Vfet
+OOUrDuqLWm
+Herrn u.Frau Abrechnungsnr. 51511993430
+pggRvy TStvbndzFl Datum 15.01.2025
+und wAxl WKpQyTXKtz
+In KCp NDGViAyOyb 38
+58828 NijNDziUbwIxI
+Vorabpauschale Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 5 MUL AMUNDI MSCI WORLD INF TECH LU0533033667 (LYX0GP)
+UCITS ETF INH.ANTEILE ACC
+Zahlbarkeitstag 02.01.2025 Vorabpauschale pro St. 9,815390210 EUR
+Bestandsstichtag 31.12.2024 mit Teilfreistellung (Aktien-
+Ex-Tag 02.01.2025 fonds) 6,870773140 EUR
+Geschäftsjahr 01.01.2024 - 31.12.2024 Herkunftsland Luxemburg
+Steuerpflichtige Vorabpauschale 28,63+ EUR
+davon steuerfreier Anteil wg. Teilfreistellung 8,59- EUR
+Kapitalertragsteuerpfl. Ertrag nach Teilfreistellung 20,04+ EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 20,04+ EUR
+Kapitalertragsteuer 25 % auf 20,04 EUR 5,01- EUR
+Solidaritätszuschlag 5,5 % auf 5,01 EUR 0,27- EUR
+Ausmachender Betrag 5,28- EUR
+Lagerstelle Clearstream Banking FFM (849000 / 40030000)
+Den Betrag buchen wir mit Wertstellung 02.01.2025 zu Lasten des Kontos 5321980961 (IBAN DE03 6698 5882 2894 9960
+69), BLZ 679 132 00 (BIC gOkQrDu4577).
+Keine Steuerbescheinigung.
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2025 ohne Vorjahressaldo Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 27,15
+Ertrag 0,00 0,00 0,00 0,00 20,04
+Nachher 0,00 0,00 0,00 0,00 47,19
+Bitte ggf. Rückseite beachten.
+7132.16634179.1799190ER03
+
+Seite 2
+Depotnummer 395915489
+Kundennummer 0862331067
+Abrechnungsnr. 93540358668
+Datum 15.01.2025
+Nachrichtlich zur Ermittlung des Bruttowertes zur Vorabpauschale berücksichtigte Anschaffungsgeschäfte.
+Anschaffungen Summe Nominale Anzahl Monat(e) anteiliger Bruttowert
+im zurückliegenden Kalenderjahr
+im Monat
+Juni 5,0000 07/12 28,63 €
+Bestand zum 31.12.2024 5,0000 28,63 €
+4312.01160107.0745621tY92

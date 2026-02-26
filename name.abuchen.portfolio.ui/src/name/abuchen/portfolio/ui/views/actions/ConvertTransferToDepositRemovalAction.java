@@ -34,7 +34,7 @@ public class ConvertTransferToDepositRemovalAction extends Action
             Account accountFrom = entry.getSourceAccount();
             Account accountTo = entry.getTargetAccount();
 
-            // create deposit and removal transactions with same values as the
+            // create deposit and withdrawal transactions with same values as the
             // transfer entry
             AccountTransaction txDeposit = new AccountTransaction();
             txDeposit.setType(AccountTransaction.Type.DEPOSIT);
@@ -51,7 +51,7 @@ public class ConvertTransferToDepositRemovalAction extends Action
                 tx.setShares(transaction.getShares());
             }
 
-            // add deposit and removal transactions to accounts
+            // add deposit and withdrawal transactions to accounts
             accountFrom.addTransaction(txRemoval);
             accountTo.addTransaction(txDeposit);
 

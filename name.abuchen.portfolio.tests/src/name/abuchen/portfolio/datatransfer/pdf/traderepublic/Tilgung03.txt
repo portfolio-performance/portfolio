@@ -1,0 +1,27 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH, BRANCH AUSTRIA  KÄRNTNER RING 5-7  1010 WIEN, ÖSTERREICH
+ZXFsJj kKQP SEITE 1 von 1
+wRdByBhcIO 93 DATUM 15.09.2025
+4865 gEngKyplj DEPOT 9820367301
+TILGUNG
+ÜBERSICHT
+NR. BUCHUNG WERTPAPIER BETRAG
+Short @19.32 € SMA Solar Technology Open End Turbo
+1 Ausbuchung 500 Stücke
+DE000HT7LYD5
+ABRECHNUNG
+Zwischensumme 0.50 EUR
+0.50 EUR
+BUCHUNG
+VERRECHNUNGSKONTO DATUM DER ZAHLUNG
+AT881900100171972811 15.09.2025 0.50 EUR
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Wird keine Umsatzsteuer ausgewiesen, handelt es sich um eine umsatzsteuerfreie Leistung gemäß § 4 Nr. 8 UStG
+Trade Republic Bank GmbH, Branch Austria www.traderepublic.at Sitz der Gesellschaft: Geschäftsführer
+Kärntner Ring 5-7 USt-IdNr DE307510626 Trade Republic Bank GmbH Andreas Torner
+1010 Wien, Österreich Brunnenstrasse 19-21 Gernot Mittendorfer
+FN 630983 t 10119 Berlin, Deutschland Christian Hecker
+AG Charlottenburg HRB 244347 B Thomas Pischke

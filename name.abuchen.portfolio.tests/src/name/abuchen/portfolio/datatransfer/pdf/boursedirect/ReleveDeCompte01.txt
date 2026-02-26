@@ -1,0 +1,33 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.73.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+1/1
+Nous vous prions de trouver ci-dessous votre relevé d'opérations. Sans observation de votre part au
+sujet du présent relevé, nous le considérerons comme ayant obtenu votre accord. Veuillez agréer nos
+salutations distinguées.
+Le 10/12/2024
+Avis d'Opération
+COMPTE N° 508TI00083468688EUR djr gc IxfSFVF QLCdPcgK
+8834 GzekG BU L'ANCIEN CHEMIN D
+Wl BWMJFza ofQropWL 88150  lpePSYq
+Date Désignation Débit (€) Crédit (€)
+ 10/12/2024  ACHAT COMPTANT  FR0011550185  BNPP S&P500EUR ETF  4 978,30
+ QUANTITE :  +173
+ COURS :  +28,7504  BRUT :  +4 973,82
+ COURTAGE :  +4,48  TVA :  +0,00
+ Heure Execution: 09:04:28       Lieu: EURONEXT - EURONEXT PARIS
+ 10/12/2024  ACHAT COMPTANT  FR0011550193  BNPETF STOXX 600  4 090,80
+ QUANTITE :  +250
+ COURS :  +16,348  BRUT :  +4 087,00
+ COURTAGE :  +3,80  TVA :  +0,00
+ Heure Execution: 09:04:18       Lieu: EURONEXT - EURONEXT PARIS
+ 10/12/2024  ACHAT COMPTANT  FR0013412020  AM.PEA MS.EM M.ACC  886,98
+ QUANTITE :  +37
+ COURS :  +23,921  BRUT :  +885,08
+ COURTAGE :  +1,90  TVA :  +0,00
+ Heure Execution: 09:04:11       Lieu: EURONEXT - EURONEXT PARIS
+ 10/12/2024  INVESTISSEMENT ESPECES  VIRT RxZgWTM sadwj  10 000,00
+Sous réserve de bonne fin / Ce relevé ne constitue pas une EsfDydL
+Les montants des colonnes Débit et Crédit sont stipulés TVA Comprise
+Bourse Direct ,  SA au capital de 13.988.845,75 €, R.C.S Paris B 408 790 608, Siège Social : 374 rue Saint-Honoré, 75001 Paris -  Groupe VIEL et Cie

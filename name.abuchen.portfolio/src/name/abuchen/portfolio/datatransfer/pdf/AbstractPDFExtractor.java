@@ -28,7 +28,6 @@ import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.ParsedData;
-import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.CrossEntry;
 import name.abuchen.portfolio.model.Security;
@@ -40,8 +39,17 @@ import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.online.impl.CoinGeckoSearchProvider;
-import name.abuchen.portfolio.online.impl.PortfolioReportNetSearchProvider;
 
+/**
+ * Abstract base class of bank-specific classes for extraction of purchases,
+ * sales, fees, taxes and other transactions from PDF documents issued by the
+ * bank.
+ * <p>
+ * Implementations have to override {@link #getLabel() getLabel} method,
+ * register one or several identifiers via {@link #addBankIdentifier(String)
+ * addBankIdentifier} and define blocks and sections in order to extract
+ * {@link Transaction} objects.
+ */
 public abstract class AbstractPDFExtractor implements Extractor
 {
     protected static final String FAILURE = "FAILURE"; //$NON-NLS-1$
@@ -69,6 +77,21 @@ public abstract class AbstractPDFExtractor implements Extractor
         this.documentTypes.add(type);
     }
 
+    /**
+     * Adds a new bank identifier to this Extractor.
+     * <p>
+     * In order to have this extractor claim responsibility for a PDF document,
+     * have your class implementation denote a character sequence uniquely
+     * identifying a bank's documents. Like "Best Bank Limited". Such an
+     * identifier will usually be found in the header or footer.
+     * <p>
+     * As bank brand names or legal titles sometimes change over time, multiple
+     * identifiers may need to be registered in order to accept both old and
+     * current files.
+     *
+     * @param identifier
+     *            unique character sequence
+     */
     protected final void addBankIdentifier(String identifier)
     {
         this.bankIdentifier.add(identifier);
@@ -96,7 +119,7 @@ public abstract class AbstractPDFExtractor implements Extractor
             throw new IllegalArgumentException("input file doesn't seem to be a PDF-file but is of type " //$NON-NLS-1$
                             + inputFile.getClass().getName());
 
-        String text = ((PDFInputFile) inputFile).getText();
+        var text = ((PDFInputFile) inputFile).getText();
         results.addAll(extract(inputFile.getFile().getName(), text, errors));
 
         this.securityCache = null;
@@ -110,7 +133,7 @@ public abstract class AbstractPDFExtractor implements Extractor
         {
             checkBankIdentifier(filename, text);
 
-            List<Item> items = parseDocumentTypes(documentTypes, filename, text);
+            var items = parseDocumentTypes(documentTypes, filename, text);
 
             if (items.isEmpty())
             {
@@ -120,7 +143,7 @@ public abstract class AbstractPDFExtractor implements Extractor
 
             for (Item item : items)
             {
-                Annotated subject = item.getSubject();
+                var subject = item.getSubject();
 
                 if (subject instanceof Transaction tx)
                     tx.setSource(filename);
@@ -129,7 +152,16 @@ public abstract class AbstractPDFExtractor implements Extractor
                 else if (subject.getNote() == null || trim(subject.getNote()).length() == 0)
                     item.getSubject().setNote(filename);
                 else
-                    item.getSubject().setNote(concatenate(trim(item.getSubject().getNote()), filename, " | ")); //$NON-NLS-1$
+                    item.getSubject().setNote(concatenate(item.getSubject().getNote(), filename, " | ")); //$NON-NLS-1$
+
+                if (item instanceof Extractor.SkippedItem skipped && skipped.getOriginalItem() != null)
+                {
+                    var originalSubject = skipped.getOriginalItem().getSubject();
+                    if (originalSubject instanceof Transaction tx)
+                        tx.setSource(filename);
+                    else if (originalSubject instanceof CrossEntry entry)
+                        entry.setSource(filename);
+                }
             }
 
             return items;
@@ -144,7 +176,7 @@ public abstract class AbstractPDFExtractor implements Extractor
             // NPE should not block further processing. Print full stack trace
             // to error log to enable further investigation
 
-            IllegalArgumentException error = new IllegalArgumentException("NullPointerException @ " + filename, e); //$NON-NLS-1$
+            var error = new IllegalArgumentException("NullPointerException @ " + filename, e); //$NON-NLS-1$
             PortfolioLog.error(error);
             errors.add(error);
             return Collections.emptyList();
@@ -193,7 +225,7 @@ public abstract class AbstractPDFExtractor implements Extractor
     protected Security getOrCreateCryptoCurrency(Map<String, String> values)
     {
         // enrich values map with name to allow matching by name
-        Optional<ResultItem> coin = lookupCoin(values);
+        var coin = lookupCoin(values);
 
         if (coin.isPresent())
             values.put("name", coin.get().getName()); //$NON-NLS-1$
@@ -219,7 +251,7 @@ public abstract class AbstractPDFExtractor implements Extractor
     {
         try
         {
-            String tickerSymbol = values.get("tickerSymbol").trim(); //$NON-NLS-1$
+            var tickerSymbol = values.get("tickerSymbol").trim(); //$NON-NLS-1$
 
             for (SecuritySearchProvider provider : lookupCryptoProvider())
             {
@@ -239,33 +271,32 @@ public abstract class AbstractPDFExtractor implements Extractor
     @VisibleForTesting
     protected List<SecuritySearchProvider> lookupCryptoProvider()
     {
-        return List.of(Factory.getSearchProvider(PortfolioReportNetSearchProvider.class),
-                        Factory.getSearchProvider(CoinGeckoSearchProvider.class));
+        return List.of(Factory.getSearchProvider(CoinGeckoSearchProvider.class));
     }
 
     private Security getOrCreateSecurity(Map<String, String> values, Supplier<Security> factory)
     {
-        String isin = values.get("isin"); //$NON-NLS-1$
+        var isin = values.get("isin"); //$NON-NLS-1$
         if (isin != null)
             isin = isin.trim();
 
-        String tickerSymbol = values.get("tickerSymbol"); //$NON-NLS-1$
+        var tickerSymbol = values.get("tickerSymbol"); //$NON-NLS-1$
         if (tickerSymbol != null)
             tickerSymbol = tickerSymbol.trim();
 
-        String wkn = values.get("wkn"); //$NON-NLS-1$
+        var wkn = values.get("wkn"); //$NON-NLS-1$
         if (wkn != null)
             wkn = wkn.trim();
 
-        String name = values.get("name"); //$NON-NLS-1$
+        var name = values.get("name"); //$NON-NLS-1$
         if (name != null)
             name = name.trim();
 
-        String nameRowTwo = values.get("nameContinued"); //$NON-NLS-1$
+        var nameRowTwo = values.get("nameContinued"); //$NON-NLS-1$
         if (nameRowTwo != null)
             name = name + " " + nameRowTwo.trim(); //$NON-NLS-1$
 
-        Security security = securityCache.lookup(isin, tickerSymbol, wkn, name, factory);
+        var security = securityCache.lookup(isin, tickerSymbol, wkn, name, factory);
 
         if (security == null)
             throw new IllegalArgumentException("Unable to construct security: " + values.toString()); //$NON-NLS-1$
@@ -296,12 +327,19 @@ public abstract class AbstractPDFExtractor implements Extractor
         if (currency == null)
             return client.getBaseCurrency();
 
-        CurrencyUnit unit = CurrencyUnit.getInstance(currency.trim());
+        var unit = CurrencyUnit.getInstance(currency.trim());
         if (unit != null)
             return unit.getCurrencyCode();
 
         unit = CurrencyUnit.getInstanceBySymbol(currency.trim());
-        return unit == null ? client.getBaseCurrency() : unit.getCurrencyCode();
+        if (unit != null)
+            return unit.getCurrencyCode();
+
+        unit = CurrencyUnit.getInstanceByDisplayName(currency.trim());
+        if (unit != null)
+            return unit.getCurrencyCode();
+
+        return client.getBaseCurrency();
     }
 
     protected long asAmount(String value)
@@ -362,13 +400,13 @@ public abstract class AbstractPDFExtractor implements Extractor
 
     protected void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
     {
-        Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))); //$NON-NLS-1$ //$NON-NLS-2$
+        var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))); //$NON-NLS-1$ //$NON-NLS-2$
         ExtractorUtils.checkAndSetTax(tax, t, type.getCurrentContext());
     }
 
     protected void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
     {
-        Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))); //$NON-NLS-1$ //$NON-NLS-2$
+        var fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))); //$NON-NLS-1$ //$NON-NLS-2$
         ExtractorUtils.checkAndSetFee(fee, t, type.getCurrentContext());
     }
 
@@ -386,7 +424,7 @@ public abstract class AbstractPDFExtractor implements Extractor
      */
     protected void processWithHoldingTaxEntries(Object t, ParsedData data, String taxType, DocumentType type)
     {
-        Money tax = Money.of(asCurrencyCode(data.get("currency")), asAmount(data.get(taxType))); //$NON-NLS-1$
+        var tax = Money.of(asCurrencyCode(data.get("currency")), asAmount(data.get(taxType))); //$NON-NLS-1$
 
         switch (taxType)
         {
@@ -411,4 +449,5 @@ public abstract class AbstractPDFExtractor implements Extractor
                 throw new IllegalArgumentException("Unsupported withholding tax type: " + taxType); //$NON-NLS-1$
         }
     }
+
 }

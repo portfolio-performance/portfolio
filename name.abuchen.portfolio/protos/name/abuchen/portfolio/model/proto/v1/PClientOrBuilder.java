@@ -265,4 +265,48 @@ java.lang.String defaultValue);
    */
   com.google.protobuf.ByteString
       getBaseCurrencyBytes();
+
+  /**
+   * <pre>
+   * Extension data using Any type for maximum flexibility
+   * </pre>
+   *
+   * <code>repeated .google.protobuf.Any extensions = 99;</code>
+   */
+  java.util.List<com.google.protobuf.Any> 
+      getExtensionsList();
+  /**
+   * <pre>
+   * Extension data using Any type for maximum flexibility
+   * </pre>
+   *
+   * <code>repeated .google.protobuf.Any extensions = 99;</code>
+   */
+  com.google.protobuf.Any getExtensions(int index);
+  /**
+   * <pre>
+   * Extension data using Any type for maximum flexibility
+   * </pre>
+   *
+   * <code>repeated .google.protobuf.Any extensions = 99;</code>
+   */
+  int getExtensionsCount();
+  /**
+   * <pre>
+   * Extension data using Any type for maximum flexibility
+   * </pre>
+   *
+   * <code>repeated .google.protobuf.Any extensions = 99;</code>
+   */
+  java.util.List<? extends com.google.protobuf.AnyOrBuilder> 
+      getExtensionsOrBuilderList();
+  /**
+   * <pre>
+   * Extension data using Any type for maximum flexibility
+   * </pre>
+   *
+   * <code>repeated .google.protobuf.Any extensions = 99;</code>
+   */
+  com.google.protobuf.AnyOrBuilder getExtensionsOrBuilder(
+      int index);
 }

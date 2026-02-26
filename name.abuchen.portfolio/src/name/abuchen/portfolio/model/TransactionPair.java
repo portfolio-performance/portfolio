@@ -13,7 +13,7 @@ import name.abuchen.portfolio.money.Values;
 public class TransactionPair<T extends Transaction> implements Adaptable
 {
     /**
-     * Date comparator for transaction pairs. Guarantees a stable sorting. 
+     * Date comparator for transaction pairs. Guarantees a stable sorting.
      */
     public static final Comparator<TransactionPair<?>> BY_DATE = new ByDate();
 
@@ -71,6 +71,16 @@ public class TransactionPair<T extends Transaction> implements Adaptable
             return Optional.empty();
     }
 
+    public boolean isAccountTransaction()
+    {
+        return transaction instanceof AccountTransaction;
+    }
+
+    public boolean isPortfolioTransaction()
+    {
+        return transaction instanceof PortfolioTransaction;
+    }
+
     /**
      * Deletes the transaction from the transaction owner, e.g. the portfolio or
      * account.
@@ -86,6 +96,10 @@ public class TransactionPair<T extends Transaction> implements Adaptable
         if (type == Annotated.class)
             return type.cast(transaction);
         else if (type == Transaction.class)
+            return type.cast(transaction);
+        else if (type == AccountTransaction.class && transaction instanceof AccountTransaction)
+            return type.cast(transaction);
+        else if (type == PortfolioTransaction.class && transaction instanceof PortfolioTransaction)
             return type.cast(transaction);
         else if (type == Named.class)
             return type.cast(transaction.getSecurity());

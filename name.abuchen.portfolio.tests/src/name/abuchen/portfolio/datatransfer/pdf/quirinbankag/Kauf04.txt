@@ -1,0 +1,43 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.2
+-----------------------------------------
+Kauf
+Referenz O:002831939:1
+Datum 07.03.2014
+Depot Depotnr.
+Nachname, Vorname
+Herrn
+Vorname Nachname Betreuer Stangl, Richard
+Straße Abteilung Honorarberater
+PLZ Ort Telefon +49 (0) 911 249 299 10
+E-Mail richard.stangl@quirinbank.de
+ 
+Nominal/Stück Carmignac Patrimoine FCP Act.au Port.A EUR acc o.N.
+ST 0,1318 ISIN FR0010135103 WKN A0DPW0
+Abrechnungskonditionen: Abrechnungswerte:
+Kurs  569,060000 EUR Kurswert -75,00 EUR
+Ausführungsplatz Sparplan Fondshandel FDB Courtage *  0,00 EUR
+Handelstag/-zeit 05.03.2014 Bank-Provision  0,00 EUR
+Verwahrart Wertpapierrechnung Spesen *  0,00 EUR
+Lagerland CBL-Luxemburg Abwickl.Gebühr *  0,00 EUR
+Zahlungstag 10.03.2014
+Devisenkurs  1,000000 Zwischengewinn  0,17 EUR
+Poolfaktor  1,000000000
+* Fremde Gebühren und Kosten
+Ausmachender Betrag  vor Steuer(n) -75,00 EUR
+Keine Steuerbescheinigung!
+Kapitalertragsteuerpflichtiger Betrag  0,00 EUR Kapitalertragsteuer  0,04 EUR
+Verrechnete sonstige negative Kapitalerträge Solidaritätszuschlag  0,00 EUR
+Verrechnungstopf Aktien 0,00 EUR Kirchensteuer  0,01 EUR 
+Verrechnungstopf Sonstige  0,00 EUR Steuerbetrag  0,05 EUR
+Verrechneter Sparer-Pauschalbetrag  0,00 EUR
+Anrechenbare ausländ. Quellensteuer  0,00 EUR Den Bruttoabrechnungsbetrag und die separate Steuerbuchung werden wir mit 
+Bemessungsgrundlage KESt -0,17 EUR Valuta 10.03.2014 über Konto Kontonr. EUR buchen.
+Order aus Ansparplan 
+quirin bank AG Telefon +49 (0) 30 89 021-300 Aufsichtsratsvorsitzender: Vorstand:
+Kurfürstendamm 119 - 10711 Berlin Telefax +49 (0) 30 89 021-321 Holger Timm Karl Matthäus Schmidt, Johannes 
+Postfach 311105 - 10641 Berlin BLZ 10110600 Eismann, Klaus-Gerd Kleversaat, 
+Gerichtsstand: Berlin USt-Id. DE 1956 61729 Dr. Marcel Morschbach, Stefan 
+Handelsregister: Berlin-Charlottenb., HR B 87859 BIC QUBKDEBBXXX Spannagl
+Internet www.quirinbank.de
+O10ABR_WPR_E  0000#816767668049#0000026624  VJ8568776   (10) 7.1.5.0.0

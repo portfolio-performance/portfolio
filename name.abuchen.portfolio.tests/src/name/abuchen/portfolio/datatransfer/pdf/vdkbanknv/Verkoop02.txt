@@ -1,0 +1,31 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.76.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+vdk bank nv
+Sint-Michielsplein 16 | 9000 Gent | T 09 267 32 11 | vdk@vdk.be | vdk.be
+BTW BE 0400.067.788 RPR GENT | FSMA 020230 A | IBAN BE65 8900 0005 5096 | BIC VDSPBE91
+Overzicht transactie voor rekening 902-7449079-02 op 19/07/2024
+ 
+Borderelreferentie: 2024.000123456789 Orderreferentie: 088618
+ 
+ 
+Uitvoering op: 19/07/2024 om 12:44:20
+Afrekendatum: 23/07/2024
+Plaats van uitvoering: BTFE
+Type order: Markt order
+Datum order: 19/07/2024
+ISIN: NO0010786288
+ 
+Je verkoop van: Norwegian Govt 1,750% 17/02/2027
+Nominaal bedrag: 80.000,00 NOK
+Verlopen interest:  602,19 NOK
+Aantal verlopen dagen: 157 / 365
+Koers: 95,554 %
+ 
+Totaal bedrag: 76.443,20 NOK
+Makelaarsloon: 462,27 NOK
+Vaste kosten: 58,48 NOK
+Netto bedrag: 76.524,64 NOK
+Wisselkoers NOK/EUR 11,864688
+Netto afrekening op BE36 3552 0281 7428 door storting van: 6.449,78 EUR

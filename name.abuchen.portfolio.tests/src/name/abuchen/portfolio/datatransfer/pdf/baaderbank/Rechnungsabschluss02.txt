@@ -1,0 +1,88 @@
+```
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.3
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Baader Bank AG   Weihenstephaner Straße 4   85716 Unterschleißheim Smartbroker AG
+T  00800 00 586336*   F  +49 89 5150 2442    service@baaderbank.de Ritterstraße 11
+10969 Berlin
+Seite 1/1
+Berlin
+Abc Defghi 04.07.2025
+Zappelgasse 123
+Abc Defghi
+12345 Hamburg PF 04
+Stamm-Nr.: 1234567    Portfolio: 4
+Konto-Nr.: 1234567890
+IBAN: DE54 7003 3100 1234 5678 90
+BIC: BDWBDEMM
+Vorgangs-Nr.: 123456789
+Referenz-Nr.: 123456789
+Rechnungsabschluss: EUR
+Konto: DE54 7003 3100 1234 5678 90
+Guten Tag Abc Defghi,
+für den Zeitraum 31.03.2025 bis 30.06.2025 ergeben sich für das Konto DE54 7003 3100 1234 5678 90 folgende 
+Abschlussbuchungen:
+Abschlussbuchung vom 30.06.2025
+Zinsberechnung: Betrag in EUR
+Habenzinsen (HZ) (brutto) 55,40
+Gesamtsumme: 55,40
+Die Buchung erfolgt über Konto IBAN DE54 7003 3100 1234 5678 90 mit Valuta 30.06.2025.
+Die detaillierte Zinsberechnung entnehmen Sie bitte der beigefügten Zinsstaffel.
+Viele Grüße
+SMARTBROKER+
+Maßgebliche Umsätze und Salden für diesen Zeitraum entnehmen Sie bitte dem gesonderten Perioden-Kontoauszug.
+Bitte prüfen Sie unseren Rechnungsabschluss. Rechnungsabschlüsse gelten als von Ihnen genehmigt, sofern Sie 
+innerhalb von 6 Wochen nach deren Zugang keine Einwendungen erheben. Wir verweisen auf unsere Allgemeinen Geschäftsbedingungen.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+smartbrokerplus.de
+Brauchen Sie Unterstützung? Dann kontaktieren Sie bitte den Service von SMARTBROKER+ über das Kontaktformular in der SMARTBROKER+ App.
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender), Martin Zoller • Vorsitzender des Aufsichtsrates: Dr. Louis Hagen • Amtsgericht München HRB 121537 • Sitz der 
+Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336* • service@baaderbank.de
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+KKTKK802-040.033
+Smartbroker AG
+Ritterstraße 11
+10969 Berlin
+Seite 1/1
+Berlin
+Abc Defghi 04.07.2025
+Zappelgasse 123
+Abc Defghi
+12345 Hamburg PF 04
+Stamm-Nr.: 1234567    Portfolio: 4
+Konto-Nr.: 1234567890
+IBAN: DE54 7003 3100 1234 5678 90
+BIC: BDWBDEMM
+Vorgangs-Nr.: 123456789
+Referenz-Nr.: 123456789
+Zinsstaffel: EUR
+Konto: DE54 7003 3100 1234 5678 90
+Für den Zeitraum vom 31.03.2025 bis 30.06.2025 ergab sich für Ihr Konto DE54 7003 3100 1234 5678 90 folgende 
+Zinsberechnung:
+Valuta Zinstage Limit Saldo in EUR Zinssatz % Zinsbetrag in EUR
+31.03.2025 1 11.384,72 2,2500 0,71 HZ
+01.04.2025 22 11.384,72 2,2500 15,65 HZ
+23.04.2025 8 11.384,72 2,0000 5,06 HZ
+01.05.2025 31 11.384,72 2,0000 19,61 HZ
+01.06.2025 10 11.384,72 2,0000 6,33 HZ
+11.06.2025 1 11.384,72 1,7500 0,55 HZ
+12.06.2025 5 10.000,00 1,7500 2,43 HZ
+17.06.2025 13 8.000,00 1,7500 5,06 HZ
+Bitte prüfen Sie diese Mitteilung. Etwaige Einwendungen bitten wir unverzüglich zu erheben.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+smartbrokerplus.de
+Brauchen Sie Unterstützung? Dann kontaktieren Sie bitte den Service von SMARTBROKER+ über das Kontaktformular in der SMARTBROKER+ App.
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender), Martin Zoller • Vorsitzender des Aufsichtsrates: Dr. Louis Hagen • Amtsgericht München HRB 121537 • Sitz der 
+Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336* • service@baaderbank.de
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+KKTKK802-040.033
+
+```

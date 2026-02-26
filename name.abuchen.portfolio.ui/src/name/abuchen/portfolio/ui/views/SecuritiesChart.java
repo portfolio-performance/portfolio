@@ -2,22 +2,19 @@ package name.abuchen.portfolio.ui.views;
 
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
@@ -39,22 +36,23 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
-import org.swtchart.IAxis;
-import org.swtchart.IAxis.Position;
-import org.swtchart.ILegend;
-import org.swtchart.ILineSeries;
-import org.swtchart.ILineSeries.PlotSymbolType;
-import org.swtchart.ISeries;
-import org.swtchart.ISeries.SeriesType;
-import org.swtchart.LineStyle;
-import org.swtchart.Range;
+import org.eclipse.swtchart.IAxis;
+import org.eclipse.swtchart.IAxis.Position;
+import org.eclipse.swtchart.ILegend;
+import org.eclipse.swtchart.ILineSeries;
+import org.eclipse.swtchart.ILineSeries.PlotSymbolType;
+import org.eclipse.swtchart.ISeries;
+import org.eclipse.swtchart.ISeries.SeriesType;
+import org.eclipse.swtchart.LineStyle;
 
 import com.google.common.primitives.Doubles;
 
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.LimitPrice;
+import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityEvent;
@@ -64,19 +62,22 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.filter.ClientSecurityFilter;
 import name.abuchen.portfolio.snapshot.filter.ReadOnlyClient;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceIndicator;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
-import name.abuchen.portfolio.ui.util.chart.TimelineChart;
+import name.abuchen.portfolio.ui.util.chart.ChartColorWheel;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
+import name.abuchen.portfolio.ui.util.chart.TimelineSeriesModel;
+import name.abuchen.portfolio.ui.util.format.AxisTickPercentNumberFormat;
+import name.abuchen.portfolio.ui.views.securitychart.PriceTimelineChart;
 import name.abuchen.portfolio.ui.views.securitychart.SharesHeldChartSeries;
 import name.abuchen.portfolio.util.FormatHelper;
 import name.abuchen.portfolio.util.Interval;
@@ -248,13 +249,16 @@ public class SecuritiesChart
         SCALING_LOG(Messages.LabelChartDetailChartScalingLog), //
         CLOSING(Messages.LabelChartDetailChartDevelopmentClosing), //
         PURCHASEPRICE(Messages.LabelChartDetailChartDevelopmentClosingFIFO), //
+        PURCHASEPRICE_MA(Messages.LabelChartDetailChartDevelopmentClosingMovingAverage), //
         INVESTMENT(Messages.LabelChartDetailMarkerInvestments), //
         SHARES_HELD(Messages.ColumnSharesOwned), //
         DIVIDENDS(Messages.LabelChartDetailMarkerDividends), //
         EVENTS(Messages.LabelChartDetailMarkerEvents), //
         EXTREMES(Messages.LabelChartDetailMarkerHighLow), //
-        FIFOPURCHASE(Messages.LabelChartDetailMarkerPurchaseFIFO), //
-        FLOATINGAVGPURCHASE(Messages.LabelChartDetailMarkerPurchaseMovingAverage), //
+        FIFOPURCHASE(MessageFormat.format(Messages.LabelWithQualifier, Messages.ColumnPurchasePrice,
+                        CostMethod.FIFO.getLabel())), //
+        FLOATINGAVGPURCHASE(MessageFormat.format(Messages.LabelWithQualifier, Messages.ColumnPurchasePrice,
+                        CostMethod.MOVING_AVERAGE.getLabel())), //
         BOLLINGERBANDS(Messages.LabelChartDetailIndicatorBollingerBands), //
         MACD(Messages.LabelChartDetailIndicatorMacd), //
         SMA_5DAYS(Messages.LabelChartDetailMovingAverage_5days), //
@@ -386,15 +390,17 @@ public class SecuritiesChart
 
     private static final String PREF_KEY = "security-chart-details"; //$NON-NLS-1$
 
+    private static final int MAX_SECURITIES_BENCHMARK = 10;
+
     private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d LLL"); //$NON-NLS-1$
 
     private Composite container;
 
     private Client client;
     private CurrencyConverter converter;
-    private Security security;
+    private Security[] securities = new Security[0];
 
-    private TimelineChart chart;
+    private PriceTimelineChart chart;
 
     /**
      * Calculates dynamically for each security the interval of security prices
@@ -402,8 +408,21 @@ public class SecuritiesChart
      */
     private IntervalOption intervalOption = IntervalOption.Y2;
 
+    /**
+     * Flag to quickly disable/enable showing additional markings on chart. The
+     * idea is that they are useful, but may make a chart very crowded. So, it's
+     * nice idea to let users with one click see either fully annotated chart,
+     * or pristine price chart.
+     */
+    private boolean showMarkings = true;
+
     private EnumSet<ChartDetails> chartConfig = EnumSet.of(ChartDetails.INVESTMENT, ChartDetails.EVENTS,
                     ChartDetails.SCALING_LINEAR, ChartDetails.SHOW_MAIN_HORIZONTAL_LINES);
+
+    /**
+     * Assign and remember stable colors if multiple instruments are selected.
+     */
+    private ChartColorWheel colorWheel = new ChartColorWheel();
 
     private List<PaintListener> customPaintListeners = new ArrayList<>();
     private List<Transaction> customTooltipEvents = new ArrayList<>();
@@ -411,6 +430,9 @@ public class SecuritiesChart
     private int swtAntialias = SWT.ON;
 
     private MessagePainter messagePainter = new MessagePainter();
+
+    private String investmentMarkerLabelBuy = PortfolioTransaction.Type.BUY.toString();
+    private String investmentMarkerLabelSell = PortfolioTransaction.Type.SELL.toString();
 
     public SecuritiesChart(Composite parent, Client client, CurrencyConverter converter)
     {
@@ -422,13 +444,13 @@ public class SecuritiesChart
         container = new Composite(parent, SWT.NONE);
         container.setLayout(new FillLayout());
 
-        chart = new TimelineChart(container);
+        chart = new PriceTimelineChart(container);
         chart.getTitle().setText("..."); //$NON-NLS-1$
         chart.getTitle().setVisible(false);
 
         chart.addPlotPaintListener(event -> customPaintListeners.forEach(l -> l.paintControl(event)));
         chart.addPlotPaintListener(this.messagePainter);
-        chart.getPlotArea().addDisposeListener(this.messagePainter);
+        chart.getPlotArea().getControl().addDisposeListener(this.messagePainter);
 
         messagePainter.setMessage(Messages.SecuritiesChart_NoDataMessage_NoSecuritySelected);
 
@@ -509,11 +531,6 @@ public class SecuritiesChart
         return this.client;
     }
 
-    public Security getSecurity()
-    {
-        return this.security;
-    }
-
     public int getAntialias()
     {
         return this.swtAntialias;
@@ -529,12 +546,12 @@ public class SecuritiesChart
         toolTip.addSeriesExclude(Messages.LabelChartDetailChartDevelopment + "Positive"); //$NON-NLS-1$
         toolTip.addSeriesExclude(Messages.LabelChartDetailChartDevelopment + "Negative"); //$NON-NLS-1$
         toolTip.addSeriesExclude(Messages.LabelChartDetailChartDevelopment + "Zero"); //$NON-NLS-1$
-        toolTip.addSeriesExclude(Messages.SecurityMenuBuy);
-        toolTip.addSeriesExclude(Messages.SecurityMenuBuy + "1"); //$NON-NLS-1$
-        toolTip.addSeriesExclude(Messages.SecurityMenuBuy + "2"); //$NON-NLS-1$
-        toolTip.addSeriesExclude(Messages.SecurityMenuSell);
-        toolTip.addSeriesExclude(Messages.SecurityMenuSell + "1"); //$NON-NLS-1$
-        toolTip.addSeriesExclude(Messages.SecurityMenuSell + "2"); //$NON-NLS-1$
+        toolTip.addSeriesExclude(investmentMarkerLabelBuy);
+        toolTip.addSeriesExclude(investmentMarkerLabelBuy + "1"); //$NON-NLS-1$
+        toolTip.addSeriesExclude(investmentMarkerLabelBuy + "2"); //$NON-NLS-1$
+        toolTip.addSeriesExclude(investmentMarkerLabelSell);
+        toolTip.addSeriesExclude(investmentMarkerLabelSell + "1"); //$NON-NLS-1$
+        toolTip.addSeriesExclude(investmentMarkerLabelSell + "2"); //$NON-NLS-1$
         toolTip.addSeriesExclude(Messages.LabelChartDetailMarkerDividends);
         toolTip.addSeriesExclude(Messages.LabelChartDetailMarkerDividends + "1"); //$NON-NLS-1$
         toolTip.addSeriesExclude(Messages.LabelChartDetailMarkerDividends + "2"); //$NON-NLS-1$
@@ -557,18 +574,16 @@ public class SecuritiesChart
         }
         toolTip.overrideValueFormat(Messages.LabelChartDetailIndicatorBollingerBandsLower, calculatedFormat);
         toolTip.overrideValueFormat(Messages.LabelChartDetailIndicatorBollingerBandsUpper, calculatedFormat);
-        toolTip.overrideValueFormat(Messages.LabelChartDetailMarkerPurchaseFIFO, calculatedFormat);
-        toolTip.overrideValueFormat(Messages.LabelChartDetailMarkerPurchaseMovingAverage, calculatedFormat);
+        toolTip.overrideValueFormat(MessageFormat.format(Messages.LabelWithQualifier, Messages.ColumnPurchasePrice,
+                        CostMethod.FIFO.getLabel()), calculatedFormat);
+        toolTip.overrideValueFormat(MessageFormat.format(Messages.LabelWithQualifier, Messages.ColumnPurchasePrice,
+                        CostMethod.MOVING_AVERAGE.getLabel()), calculatedFormat);
         toolTip.overrideValueFormat(Messages.LabelChartDetailIndicatorMacd, calculatedFormat);
         toolTip.overrideValueFormat(Messages.LabelChartDetailIndicatorMacdSignal, calculatedFormat);
 
         toolTip.addExtraInfo((composite, focus) -> {
-            if (focus instanceof Date focusDate)
+            if (focus instanceof LocalDate date)
             {
-                Instant instant = focusDate.toInstant();
-                ZonedDateTime zdt = instant.atZone(ZoneId.systemDefault());
-                LocalDate date = zdt.toLocalDate();
-
                 Interval displayInterval = Interval.of(date.minusDays(5), date.plusDays(5));
 
                 customTooltipEvents.stream() //
@@ -583,6 +598,18 @@ public class SecuritiesChart
         });
     }
 
+    private void setupTooltipDisplayCalculatedQuote(String seriesLabel)
+    {
+        TimelineChartToolTip toolTip = chart.getToolTip();
+
+        int precision = FormatHelper.getCalculatedQuoteDisplayPrecision();
+        DecimalFormat calculatedFormat = new DecimalFormat(Values.CalculatedQuote.pattern());
+        calculatedFormat.setMinimumFractionDigits(precision);
+        calculatedFormat.setMaximumFractionDigits(precision);
+
+        toolTip.overrideValueFormat(seriesLabel, calculatedFormat);
+    }
+
     private void addInvestmentTooltip(Composite composite, PortfolioTransaction t)
     {
         Label label = new Label(composite, SWT.NONE);
@@ -591,7 +618,7 @@ public class SecuritiesChart
 
         label = new Label(composite, SWT.NONE);
         label.setText(MessageFormat.format(Messages.LabelToolTipInvestmentDetails, Values.Share.format(t.getShares()),
-                        Values.Quote.format(
+                        Values.CalculatedQuote.format(
                                         t.getGrossPricePerShare(converter.with(t.getSecurity().getCurrencyCode())))));
     }
 
@@ -644,15 +671,16 @@ public class SecuritiesChart
         }
     }
 
-    private void configureSeriesPainter(ILineSeries series, Date[] dates, double[] values, Color color, int lineWidth,
-                    LineStyle lineStyle, boolean enableArea, boolean visibleInLegend)
+    private void configureSeriesPainter(ILineSeries<Integer> series, LocalDate[] dates, double[] values, Color color,
+                    int lineWidth, LineStyle lineStyle, boolean enableArea, boolean visibleInLegend)
     {
         if (lineWidth != 0)
             series.setLineWidth(lineWidth);
+
+        series.setDataModel(new TimelineSeriesModel(dates, values));
+
         series.setLineStyle(lineStyle);
-        series.setXDateSeries(dates);
         series.enableArea(enableArea);
-        series.setYSeries(values);
         series.setAntialias(swtAntialias);
 
         if (color != null)
@@ -685,6 +713,15 @@ public class SecuritiesChart
     public void addButtons(ToolBarManager toolBar)
     {
         chart.getChartToolsManager().addButtons(toolBar);
+
+        SimpleAction actionHideMarkings = new SimpleAction(Messages.LabelHideMarkings, a -> {
+            this.showMarkings = !this.showMarkings;
+            a.setImageDescriptor(this.showMarkings ? Images.HIDDEN.descriptor() : Images.VISIBLE.descriptor());
+            updateChart();
+        });
+        actionHideMarkings.setImageDescriptor(Images.HIDDEN.descriptor());
+        toolBar.add(actionHideMarkings);
+
         toolBar.add(new Separator());
 
         List<Action> viewActions = new ArrayList<>();
@@ -721,6 +758,7 @@ public class SecuritiesChart
         subMenuChartScaling.add(addMenuAction(ChartDetails.SCALING_LOG));
         subMenuChartDevelopment.add(addMenuAction(ChartDetails.CLOSING));
         subMenuChartDevelopment.add(addMenuAction(ChartDetails.PURCHASEPRICE));
+        subMenuChartDevelopment.add(addMenuAction(ChartDetails.PURCHASEPRICE_MA));
         subMenuChartMarker.add(addMenuAction(ChartDetails.INVESTMENT));
         subMenuChartMarker.add(addMenuAction(ChartDetails.SHARES_HELD));
         subMenuChartMarker.add(addMenuAction(ChartDetails.DIVIDENDS));
@@ -786,15 +824,23 @@ public class SecuritiesChart
                     case SCALING_LOG:
                         chartConfig.remove(ChartDetails.SCALING_LINEAR);
                         chartConfig.remove(ChartDetails.PURCHASEPRICE);
+                        chartConfig.remove(ChartDetails.PURCHASEPRICE_MA);
                         chartConfig.remove(ChartDetails.CLOSING);
                         break;
                     case CLOSING:
                         chartConfig.remove(ChartDetails.PURCHASEPRICE);
+                        chartConfig.remove(ChartDetails.PURCHASEPRICE_MA);
                         chartConfig.remove(ChartDetails.SCALING_LOG);
                         break;
                     case PURCHASEPRICE:
                         chartConfig.remove(ChartDetails.CLOSING);
                         chartConfig.remove(ChartDetails.SCALING_LOG);
+                        chartConfig.remove(ChartDetails.PURCHASEPRICE_MA);
+                        break;
+                    case PURCHASEPRICE_MA:
+                        chartConfig.remove(ChartDetails.CLOSING);
+                        chartConfig.remove(ChartDetails.SCALING_LOG);
+                        chartConfig.remove(ChartDetails.PURCHASEPRICE);
                         break;
                     case SHOW_MAIN_HORIZONTAL_LINES:
                         chartConfig.remove(ChartDetails.SHOW_PERCENTAGE_HORIZONTAL_LINES);
@@ -821,10 +867,16 @@ public class SecuritiesChart
         return action;
     }
 
-    public void updateChart(Client client, Security security)
+    public void updateChart(Client client, Security[] securities)
     {
         this.client = client;
-        this.security = security;
+        this.securities = securities;
+
+        // update the tooltip format: for single security we show quotes, for
+        // multiple securities we show percentages
+        chart.getToolTip().setDefaultValueFormat(securities.length <= 1 ? new DecimalFormat(Values.Quote.pattern())
+                        : new DecimalFormat(Values.Percent2.pattern()));
+
         updateChart();
     }
 
@@ -833,196 +885,246 @@ public class SecuritiesChart
         return container;
     }
 
+    private void clearChart()
+    {
+        // delete all line series (quotes + possibly moving average)
+        ISeries<?>[] series = chart.getSeriesSet().getSeries();
+        for (ISeries<?> s : series)
+            chart.getSeriesSet().deleteSeries(s.getId());
+
+        chart.clearMarkerLines();
+        chart.clearNonTradingDayMarker();
+        customPaintListeners.clear();
+        customTooltipEvents.clear();
+        chart.resetAxes();
+        messagePainter.setMessage(null);
+    }
+
+    private String getTitleText()
+    {
+        if (securities.length == 0)
+            return "..."; //$NON-NLS-1$
+
+        return Arrays.stream(securities).map(Named::getName).collect(Collectors.joining(", ")); //$NON-NLS-1$
+    }
+
     private void updateChart()
     {
+        boolean isSingleSecurityMode = securities.length == 1;
+
+        EnumSet<ChartDetails> chartConfigPainting = chartConfig;
+        if (!isSingleSecurityMode)
+        {
+            chartConfigPainting = EnumSet.of(ChartDetails.SCALING_LINEAR);
+        }
+
         chart.setRedraw(false);
         chart.suspendUpdate(true);
 
         try
         {
-            // delete all line series (quotes + possibly moving average)
-            ISeries[] series = chart.getSeriesSet().getSeries();
-            for (ISeries s : series)
-                chart.getSeriesSet().deleteSeries(s.getId());
 
-            chart.clearMarkerLines();
-            chart.clearNonTradingDayMarker();
-            customPaintListeners.clear();
-            customTooltipEvents.clear();
-            chart.resetAxes();
-            chart.getTitle().setText(security == null ? "..." : security.getName()); //$NON-NLS-1$
-            messagePainter.setMessage(null);
+            clearChart();
 
-            if (security == null)
+            chart.getTitle().setText(getTitleText());
+
+            if (securities.length == 0)
             {
                 messagePainter.setMessage(Messages.SecuritiesChart_NoDataMessage_NoSecuritySelected);
                 return;
             }
 
-            List<SecurityPrice> prices = security.getPricesIncludingLatest();
-            if (prices.isEmpty())
-            {
-                messagePainter.setMessage(Messages.SecuritiesChart_NoDataMessage_NoPrices);
-                return;
-            }
+            if (!isSingleSecurityMode)
+                chart.getAxisSet().getYAxis(0).getTick().setFormat(new AxisTickPercentNumberFormat("+#.##%;-#.##%")); //$NON-NLS-1$
+            else
+                chart.getAxisSet().getYAxis(0).getTick().setFormat(null);
 
-            ChartIntervalOrMessage chartIntervalOrMessage = intervalOption.getInterval(client, converter, security);
-            if (chartIntervalOrMessage.getMessage() != null)
-            {
-                messagePainter.setMessage(chartIntervalOrMessage.getMessage());
-                return;
-            }
-
-            // determine the interval to be shown in the chart
-            ChartInterval chartInterval = chartIntervalOrMessage.getInterval();
-            ChartRange range = ChartRange.createFor(prices, chartInterval);
-            if (range == null)
+            if (securities.length > MAX_SECURITIES_BENCHMARK)
             {
                 messagePainter.setMessage(
-                                MessageFormat.format(Messages.SecuritiesChart_NoDataMessage_NoPricesInSelectedPeriod,
-                                                intervalOption.getTooltip()));
+                                MessageFormat.format(Messages.SecuritiesChart_MaxSecuritiesReachedForBenchmarkHint,
+                                                MAX_SECURITIES_BENCHMARK));
                 return;
             }
 
-            // prepare value arrays
-            LocalDate[] dates = new LocalDate[range.size];
-
-            double[] values = new double[range.size];
-            double[] valuesRelative = new double[range.size];
-            double[] valuesRelativePositive = new double[range.size];
-            double[] valuesRelativeNegative = new double[range.size];
-            double[] valuesZeroLine = new double[range.size];
-            Double firstQuote = null;
-
-            // Disable SWT antialias for more than 1000 records due to SWT
-            // performance issue in Drawing
-            swtAntialias = range.size > 1000 ? SWT.OFF : SWT.ON;
-
-            boolean showAreaRelativeToFirstQuote = chartConfig.contains(ChartDetails.CLOSING)
-                            || chartConfig.contains(ChartDetails.PURCHASEPRICE);
-            if (!chartConfig.contains(ChartDetails.PURCHASEPRICE))
+            for (Security security : securities)
             {
-                SecurityPrice p2 = prices.get(range.start);
-                firstQuote = (p2.getValue() / Values.Quote.divider());
-            }
-            else
-            {
-                Optional<Double> purchasePrice = getLatestPurchasePrice();
 
-                if (purchasePrice.isPresent())
-                    firstQuote = purchasePrice.get();
-                else
-                    showAreaRelativeToFirstQuote = false;
-            }
-
-            addChartMarkerBackground(chartInterval, range);
-
-            for (int ii = 0; ii < range.size; ii++)
-            {
-                SecurityPrice p = prices.get(ii + range.start);
-                dates[ii] = p.getDate();
-                values[ii] = p.getValue() / Values.Quote.divider();
-                if (showAreaRelativeToFirstQuote)
+                List<SecurityPrice> prices = security.getPricesIncludingLatest();
+                if (isSingleSecurityMode && prices.isEmpty())
                 {
-                    valuesRelative[ii] = (p.getValue() / Values.Quote.divider()) - firstQuote;
-                    valuesZeroLine[ii] = 0;
-                    if (valuesRelative[ii] >= 0)
+                    messagePainter.setMessage(Messages.SecuritiesChart_NoDataMessage_NoPrices);
+                    return;
+                }
+
+                ChartIntervalOrMessage chartIntervalOrMessage = intervalOption.getInterval(client, converter, security);
+                if (chartIntervalOrMessage.getMessage() != null)
+                {
+                    if (isSingleSecurityMode)
+                        messagePainter.setMessage(chartIntervalOrMessage.getMessage());
+
+                    continue;
+                }
+
+                // determine the interval to be shown in the chart
+                ChartInterval chartInterval = chartIntervalOrMessage.getInterval();
+                ChartRange range = ChartRange.createFor(prices, chartInterval);
+                if (range == null)
+                {
+                    if (isSingleSecurityMode)
                     {
-                        valuesRelativePositive[ii] = valuesRelative[ii];
-                        valuesRelativeNegative[ii] = 0;
+                        messagePainter.setMessage(MessageFormat.format(
+                                        Messages.SecuritiesChart_NoDataMessage_NoPricesInSelectedPeriod,
+                                        intervalOption.getTooltip()));
                     }
+
+                    continue;
+                }
+
+                // prepare value arrays
+                LocalDate[] dates = new LocalDate[range.size];
+
+                double[] values = new double[range.size];
+                double[] valuesRelative = new double[range.size];
+                double[] valuesRelativePositive = new double[range.size];
+                double[] valuesRelativeNegative = new double[range.size];
+                double[] valuesZeroLine = new double[range.size];
+                Double firstQuote = null;
+                Double referenceQuote = (prices.get(range.start).getValue() / Values.Quote.divider());
+
+                // Disable SWT antialias for more than 1000 records due to SWT
+                // performance issue in Drawing
+                swtAntialias = range.size > 1000 ? SWT.OFF : SWT.ON;
+
+                boolean showAreaRelativeToFirstQuote = chartConfigPainting.contains(ChartDetails.CLOSING)
+                                || chartConfigPainting.contains(ChartDetails.PURCHASEPRICE)
+                                || chartConfigPainting.contains(ChartDetails.PURCHASEPRICE_MA);
+
+                CostMethod costMethod = null;
+                if (chartConfigPainting.contains(ChartDetails.PURCHASEPRICE))
+                    costMethod = CostMethod.FIFO;
+                else if (chartConfigPainting.contains(ChartDetails.PURCHASEPRICE_MA))
+                    costMethod = CostMethod.MOVING_AVERAGE;
+
+                if (costMethod != null)
+                {
+                    Optional<Double> purchasePrice = getLatestPurchasePrice(security, costMethod);
+                    if (purchasePrice.isPresent())
+                        firstQuote = purchasePrice.get();
                     else
+                        showAreaRelativeToFirstQuote = false;
+                }
+                else
+                {
+                    firstQuote = referenceQuote;
+                }
+
+                addChartMarkerBackground(chartInterval, range, security, chartConfigPainting);
+
+                for (int ii = 0; ii < range.size; ii++)
+                {
+                    SecurityPrice p = prices.get(ii + range.start);
+                    dates[ii] = p.getDate();
+                    values[ii] = isSingleSecurityMode ? p.getValue() / Values.Quote.divider()
+                                    : ((p.getValue() / Values.Quote.divider() / referenceQuote) - 1);
+                    if (showAreaRelativeToFirstQuote)
                     {
-                        valuesRelativePositive[ii] = 0;
-                        valuesRelativeNegative[ii] = valuesRelative[ii];
+                        valuesRelative[ii] = (p.getValue() / Values.Quote.divider()) - firstQuote;
+                        valuesZeroLine[ii] = 0;
+                        if (valuesRelative[ii] >= 0)
+                        {
+                            valuesRelativePositive[ii] = valuesRelative[ii];
+                            valuesRelativeNegative[ii] = 0;
+                        }
+                        else
+                        {
+                            valuesRelativePositive[ii] = 0;
+                            valuesRelativeNegative[ii] = valuesRelative[ii];
+                        }
                     }
                 }
-            }
 
-            Date[] javaDates = TimelineChart.toJavaUtilDate(dates);
-
-            if (showAreaRelativeToFirstQuote)
-            {
-
-                ILineSeries lineSeries2ndNegative = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
-                                Messages.LabelChartDetailChartDevelopmentClosing + "Negative"); //$NON-NLS-1$
-                lineSeries2ndNegative.setSymbolType(PlotSymbolType.NONE);
-                lineSeries2ndNegative.setYAxisId(1);
-                configureSeriesPainter(lineSeries2ndNegative, javaDates, valuesRelativeNegative, colorQuoteAreaNegative,
-                                1, LineStyle.SOLID, true, false);
-
-                ILineSeries lineSeries2ndPositive = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
-                                Messages.LabelChartDetailChartDevelopmentClosing + "Positive"); //$NON-NLS-1$
-                lineSeries2ndPositive.setSymbolType(PlotSymbolType.NONE);
-                lineSeries2ndPositive.setYAxisId(1);
-                configureSeriesPainter(lineSeries2ndPositive, javaDates, valuesRelativePositive, colorQuoteAreaPositive,
-                                1, LineStyle.SOLID, true, false);
-            }
-
-            ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
-                            Messages.ColumnQuote);
-            lineSeries.setSymbolType(PlotSymbolType.NONE);
-            configureSeriesPainter(lineSeries, javaDates, values, colorQuote, 2, LineStyle.SOLID,
-                            !showAreaRelativeToFirstQuote, false);
-
-            chart.adjustRange();
-
-            addChartMarkerForeground(chartInterval);
-
-            chart.adjustRange();
-
-            IAxis yAxis1st = chart.getAxisSet().getYAxis(0);
-            IAxis yAxis2nd = chart.getAxisSet().getYAxis(1);
-            IAxis yAxis3rd = chart.getAxisSet().getYAxis(2);
-
-            if (firstQuote == null)
-                firstQuote = (prices.get(range.start).getValue() / Values.Quote.divider());
-
-            yAxis2nd.setRange(
-                            new Range(yAxis1st.getRange().lower - firstQuote, yAxis1st.getRange().upper - firstQuote));
-
-            if (firstQuote != 0)
-            {
-                yAxis3rd.setRange(new Range(yAxis1st.getRange().lower / firstQuote - 1,
-                                yAxis1st.getRange().upper / firstQuote - 1));
-            }
-
-            yAxis1st.enableLogScale(chartConfig.contains(ChartDetails.SCALING_LOG));
-            yAxis2nd.enableLogScale(chartConfig.contains(ChartDetails.SCALING_LOG));
-
-            yAxis1st.getTick().setVisible(true);
-            // hide percentage axis in logarithmic mode
-            yAxis3rd.getTick().setVisible(chartConfig.contains(ChartDetails.SHOW_PERCENTAGE_AXIS)
-                            && !chartConfig.contains(ChartDetails.SCALING_LOG));
-
-            // ensure that at least one set of horizontal lines is shown
-            if (!chartConfig.contains(ChartDetails.SHOW_MAIN_HORIZONTAL_LINES)
-                            && !chartConfig.contains(ChartDetails.SHOW_PERCENTAGE_HORIZONTAL_LINES))
-                chartConfig.add(ChartDetails.SHOW_MAIN_HORIZONTAL_LINES);
-
-            if (chartConfig.contains(ChartDetails.SHOW_MAIN_HORIZONTAL_LINES) || !yAxis3rd.getTick().isVisible())
-                yAxis1st.getGrid().setStyle(LineStyle.DOT);
-            else
-                yAxis1st.getGrid().setStyle(LineStyle.NONE);
-
-            if (chartConfig.contains(ChartDetails.SHOW_PERCENTAGE_HORIZONTAL_LINES) && yAxis3rd.getTick().isVisible())
-                yAxis3rd.getGrid().setStyle(LineStyle.DOT);
-            else
-                yAxis3rd.getGrid().setStyle(LineStyle.NONE);
-
-            if (chartConfig.contains(ChartDetails.SHOW_MISSING_TRADING_DAYS))
-            {
-                TradeCalendar tradeCalendar = TradeCalendarManager.getInstance(security);
-                List<LocalDate> calendarDates = new ArrayList<>();
-                for (LocalDate calendarDate = dates[0]; calendarDate
-                                .isBefore(dates[dates.length - 1]); calendarDate = calendarDate.plusDays(1))
-                    calendarDates.add(calendarDate);
-                for (LocalDate pricingDate : dates)
-                    calendarDates.remove(pricingDate);
-                for (LocalDate targetDate : calendarDates)
+                if (showAreaRelativeToFirstQuote)
                 {
-                    if (!tradeCalendar.isHoliday(targetDate))
-                        chart.addNonTradingDayMarker(targetDate, colorNonTradingDay);
+                    @SuppressWarnings("unchecked")
+                    ILineSeries<Integer> lineSeries2ndNegative = (ILineSeries<Integer>) chart.getSeriesSet()
+                                    .createSeries(SeriesType.LINE,
+                                                    Messages.LabelChartDetailChartDevelopmentClosing + "Negative"); //$NON-NLS-1$
+                    lineSeries2ndNegative.setSymbolType(PlotSymbolType.NONE);
+                    lineSeries2ndNegative.setYAxisId(1);
+                    configureSeriesPainter(lineSeries2ndNegative, dates, valuesRelativeNegative, colorQuoteAreaNegative,
+                                    1, LineStyle.SOLID, true, false);
+
+                    @SuppressWarnings("unchecked")
+                    ILineSeries<Integer> lineSeries2ndPositive = (ILineSeries<Integer>) chart.getSeriesSet()
+                                    .createSeries(SeriesType.LINE,
+                                                    Messages.LabelChartDetailChartDevelopmentClosing + "Positive"); //$NON-NLS-1$
+                    lineSeries2ndPositive.setSymbolType(PlotSymbolType.NONE);
+                    lineSeries2ndPositive.setYAxisId(1);
+                    configureSeriesPainter(lineSeries2ndPositive, dates, valuesRelativePositive, colorQuoteAreaPositive,
+                                    1, LineStyle.SOLID, true, false);
+                }
+
+                String seriesIdent = !isSingleSecurityMode ? security.getName() : Messages.ColumnQuote; // $NON-NLS-1$
+                @SuppressWarnings("unchecked")
+                ILineSeries<Integer> lineSeries = (ILineSeries<Integer>) chart.getSeriesSet()
+                                .createSeries(SeriesType.LINE, seriesIdent);
+                lineSeries.setSymbolType(PlotSymbolType.NONE);
+                Color color = isSingleSecurityMode ? colorQuote : new Color(colorWheel.getRGB(security));
+                boolean enableArea = !showAreaRelativeToFirstQuote && isSingleSecurityMode;
+                configureSeriesPainter(lineSeries, dates, values, color, 2, LineStyle.SOLID, enableArea,
+                                !isSingleSecurityMode);
+
+                chart.adjustRange();
+
+                addChartMarkerForeground(chartInterval, security, chartConfigPainting);
+
+                chart.setFirstQuote(firstQuote);
+                chart.adjustRange();
+
+                IAxis yAxis1st = chart.getAxisSet().getYAxis(0);
+                IAxis yAxis2nd = chart.getAxisSet().getYAxis(1);
+                IAxis yAxis3rd = chart.getAxisSet().getYAxis(2);
+
+                yAxis1st.enableLogScale(chartConfigPainting.contains(ChartDetails.SCALING_LOG));
+                yAxis2nd.enableLogScale(chartConfigPainting.contains(ChartDetails.SCALING_LOG));
+
+                yAxis1st.getTick().setVisible(true);
+                // hide percentage axis in logarithmic mode
+                yAxis3rd.getTick().setVisible(chartConfigPainting.contains(ChartDetails.SHOW_PERCENTAGE_AXIS)
+                                && !chartConfigPainting.contains(ChartDetails.SCALING_LOG));
+
+                // ensure that at least one set of horizontal lines is shown
+                if (!chartConfigPainting.contains(ChartDetails.SHOW_MAIN_HORIZONTAL_LINES)
+                                && !chartConfigPainting.contains(ChartDetails.SHOW_PERCENTAGE_HORIZONTAL_LINES))
+                    chartConfigPainting.add(ChartDetails.SHOW_MAIN_HORIZONTAL_LINES);
+
+                if (chartConfigPainting.contains(ChartDetails.SHOW_MAIN_HORIZONTAL_LINES)
+                                || !yAxis3rd.getTick().isVisible())
+                    yAxis1st.getGrid().setStyle(LineStyle.DOT);
+                else
+                    yAxis1st.getGrid().setStyle(LineStyle.NONE);
+
+                if (chartConfigPainting.contains(ChartDetails.SHOW_PERCENTAGE_HORIZONTAL_LINES)
+                                && yAxis3rd.getTick().isVisible())
+                    yAxis3rd.getGrid().setStyle(LineStyle.DOT);
+                else
+                    yAxis3rd.getGrid().setStyle(LineStyle.NONE);
+
+                if (chartConfigPainting.contains(ChartDetails.SHOW_MISSING_TRADING_DAYS))
+                {
+                    TradeCalendar tradeCalendar = TradeCalendarManager.getInstance(security);
+                    List<LocalDate> calendarDates = new ArrayList<>();
+                    for (LocalDate calendarDate = dates[0]; calendarDate
+                                    .isBefore(dates[dates.length - 1]); calendarDate = calendarDate.plusDays(1))
+                        calendarDates.add(calendarDate);
+                    for (LocalDate pricingDate : dates)
+                        calendarDates.remove(pricingDate);
+                    for (LocalDate targetDate : calendarDates)
+                    {
+                        if (!tradeCalendar.isHoliday(targetDate))
+                            chart.addNonTradingDayMarker(targetDate, colorNonTradingDay);
+                    }
                 }
             }
         }
@@ -1034,109 +1136,114 @@ public class SecuritiesChart
         }
     }
 
-    private void addChartMarkerBackground(ChartInterval chartInterval, ChartRange range)
+    private void addChartMarkerBackground(ChartInterval chartInterval, ChartRange range, Security security,
+                    EnumSet<ChartDetails> chartConfig)
     {
         if (chartConfig.contains(ChartDetails.BOLLINGERBANDS))
-            addBollingerBandsMarkerLines(chartInterval, 20, 2);
+            addBollingerBandsMarkerLines(chartInterval, 20, 2, security);
 
         if (chartConfig.contains(ChartDetails.MACD))
-            addMacdMarkerLines(chartInterval, colorMACD);
+            addMacdMarkerLines(chartInterval, colorMACD, security);
 
         if (chartConfig.contains(ChartDetails.SMA_5DAYS))
             addSMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageSMA,
-                            Messages.LabelChartDetailMovingAverage_5days, 5, colorSMA1);
+                            Messages.LabelChartDetailMovingAverage_5days, 5, colorSMA1, security);
 
         if (chartConfig.contains(ChartDetails.SMA_20DAYS))
             addSMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageSMA,
-                            Messages.LabelChartDetailMovingAverage_20days, 20, colorSMA2);
+                            Messages.LabelChartDetailMovingAverage_20days, 20, colorSMA2, security);
 
         if (chartConfig.contains(ChartDetails.SMA_30DAYS))
             addSMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageSMA,
-                            Messages.LabelChartDetailMovingAverage_30days, 30, colorSMA3);
+                            Messages.LabelChartDetailMovingAverage_30days, 30, colorSMA3, security);
 
         if (chartConfig.contains(ChartDetails.SMA_38DAYS))
             addSMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageSMA,
-                            Messages.LabelChartDetailMovingAverage_38days, 38, colorSMA4);
+                            Messages.LabelChartDetailMovingAverage_38days, 38, colorSMA4, security);
 
         if (chartConfig.contains(ChartDetails.SMA_50DAYS))
             addSMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageSMA,
-                            Messages.LabelChartDetailMovingAverage_50days, 50, colorSMA4);
+                            Messages.LabelChartDetailMovingAverage_50days, 50, colorSMA4, security);
 
         if (chartConfig.contains(ChartDetails.SMA_90DAYS))
             addSMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageSMA,
-                            Messages.LabelChartDetailMovingAverage_90days, 90, colorSMA5);
+                            Messages.LabelChartDetailMovingAverage_90days, 90, colorSMA5, security);
 
         if (chartConfig.contains(ChartDetails.SMA_100DAYS))
             addSMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageSMA,
-                            Messages.LabelChartDetailMovingAverage_100days, 100, colorSMA6);
+                            Messages.LabelChartDetailMovingAverage_100days, 100, colorSMA6, security);
 
         if (chartConfig.contains(ChartDetails.SMA_200DAYS))
             addSMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageSMA,
-                            Messages.LabelChartDetailMovingAverage_200days, 200, colorSMA7);
+                            Messages.LabelChartDetailMovingAverage_200days, 200, colorSMA7, security);
 
         if (chartConfig.contains(ChartDetails.EMA_5DAYS))
             addEMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageEMA,
-                            Messages.LabelChartDetailMovingAverage_5days, 5, colorEMA1);
+                            Messages.LabelChartDetailMovingAverage_5days, 5, colorEMA1, security);
 
         if (chartConfig.contains(ChartDetails.EMA_20DAYS))
             addEMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageEMA,
-                            Messages.LabelChartDetailMovingAverage_20days, 20, colorEMA2);
+                            Messages.LabelChartDetailMovingAverage_20days, 20, colorEMA2, security);
 
         if (chartConfig.contains(ChartDetails.EMA_30DAYS))
             addEMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageEMA,
-                            Messages.LabelChartDetailMovingAverage_30days, 30, colorEMA3);
+                            Messages.LabelChartDetailMovingAverage_30days, 30, colorEMA3, security);
 
         if (chartConfig.contains(ChartDetails.EMA_38DAYS))
             addEMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageEMA,
-                            Messages.LabelChartDetailMovingAverage_38days, 38, colorEMA4);
+                            Messages.LabelChartDetailMovingAverage_38days, 38, colorEMA4, security);
 
         if (chartConfig.contains(ChartDetails.EMA_50DAYS))
             addEMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageEMA,
-                            Messages.LabelChartDetailMovingAverage_50days, 50, colorEMA4);
+                            Messages.LabelChartDetailMovingAverage_50days, 50, colorEMA4, security);
 
         if (chartConfig.contains(ChartDetails.EMA_90DAYS))
             addEMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageEMA,
-                            Messages.LabelChartDetailMovingAverage_90days, 90, colorEMA5);
+                            Messages.LabelChartDetailMovingAverage_90days, 90, colorEMA5, security);
 
         if (chartConfig.contains(ChartDetails.EMA_100DAYS))
             addEMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageEMA,
-                            Messages.LabelChartDetailMovingAverage_100days, 100, colorEMA6);
+                            Messages.LabelChartDetailMovingAverage_100days, 100, colorEMA6, security);
 
         if (chartConfig.contains(ChartDetails.EMA_200DAYS))
             addEMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageEMA,
-                            Messages.LabelChartDetailMovingAverage_200days, 200, colorEMA7);
+                            Messages.LabelChartDetailMovingAverage_200days, 200, colorEMA7, security);
 
-        if (chartConfig.contains(ChartDetails.SHOW_LIMITS))
-            addLimitLines(range);
+        if (this.showMarkings && chartConfig.contains(ChartDetails.SHOW_LIMITS))
+            addLimitLines(range, security);
     }
 
-    private void addChartMarkerForeground(ChartInterval chartInterval)
+    private void addChartMarkerForeground(ChartInterval chartInterval, Security security,
+                    EnumSet<ChartDetails> chartConfig)
     {
+        if (!this.showMarkings)
+            return;
+
         if (chartConfig.contains(ChartDetails.FIFOPURCHASE))
-            addFIFOPurchasePrice(chartInterval);
+            addPurchasePrice(chartInterval, security, CostMethod.FIFO);
 
         if (chartConfig.contains(ChartDetails.FLOATINGAVGPURCHASE))
-            addMovingAveragePurchasePrice(chartInterval);
+            addPurchasePrice(chartInterval, security, CostMethod.MOVING_AVERAGE);
 
         if (chartConfig.contains(ChartDetails.INVESTMENT))
-            addInvestmentMarkerLines(chartInterval);
+            addInvestmentMarkerLines(chartInterval, security, chartConfig);
 
         if (chartConfig.contains(ChartDetails.SHARES_HELD))
-            new SharesHeldChartSeries().configure(this, chart, chartInterval);
+            new SharesHeldChartSeries().configure(this, chart, chartInterval, security);
 
         if (chartConfig.contains(ChartDetails.DIVIDENDS))
-            addDividendMarkerLines(chartInterval);
+            addDividendMarkerLines(chartInterval, security, chartConfig);
 
         if (chartConfig.contains(ChartDetails.EVENTS))
-            addEventMarkerLines(chartInterval);
+            addEventMarkerLines(chartInterval, security);
 
         if (chartConfig.contains(ChartDetails.EXTREMES))
-            addExtremesMarkerLines(chartInterval);
+            addExtremesMarkerLines(chartInterval, security, chartConfig);
     }
 
-    private void addLimitLines(ChartRange range)
+    private void addLimitLines(ChartRange range, Security security)
     {
-        this.security.getAttributes().getMap().forEach((key, val) -> {
+        security.getAttributes().getMap().forEach((key, val) -> {
             // null OR not Limit Price --> ignore
             if (val == null || val.getClass() != LimitPrice.class)
                 return;
@@ -1163,13 +1270,14 @@ public class SecuritiesChart
             double[] values = new double[2];
             values[0] = values[1] = limitAttribute.getValue() / Values.Quote.divider();
 
-            ILineSeries lineSeriesLimit = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, lineID);
-            lineSeriesLimit.setXDateSeries(TimelineChart.toJavaUtilDate(dates));
+            @SuppressWarnings("unchecked")
+            ILineSeries<Integer> lineSeriesLimit = (ILineSeries<Integer>) chart.getSeriesSet()
+                            .createSeries(SeriesType.LINE, lineID);
+            lineSeriesLimit.setDataModel(new TimelineSeriesModel(dates, values));
             lineSeriesLimit.setLineWidth(2);
             lineSeriesLimit.setLineStyle(LineStyle.DASH);
             lineSeriesLimit.enableArea(false);
             lineSeriesLimit.setSymbolType(PlotSymbolType.NONE);
-            lineSeriesLimit.setYSeries(values);
             lineSeriesLimit.setAntialias(swtAntialias);
             lineSeriesLimit.setLineColor(Colors.ICON_ORANGE);
             lineSeriesLimit.setYAxisId(0);
@@ -1178,20 +1286,22 @@ public class SecuritiesChart
     }
 
     private void addSMAMarkerLines(ChartInterval chartInterval, String smaSeries, String smaDaysWording, int smaDays,
-                    Color smaColor)
+                    Color smaColor, Security security)
     {
-        ChartLineSeriesAxes smaLines = new SimpleMovingAverage(smaDays, this.security, chartInterval).getSMA();
+        ChartLineSeriesAxes smaLines = new SimpleMovingAverage(smaDays, security, chartInterval).getSMA();
         if (smaLines == null || smaLines.getValues() == null || smaLines.getDates() == null)
             return;
 
         String lineID = smaSeries + " (" + smaDaysWording + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 
-        ILineSeries lineSeriesSMA = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, lineID);
-        lineSeriesSMA.setXDateSeries(smaLines.getDates());
+        @SuppressWarnings("unchecked")
+        ILineSeries<Integer> lineSeriesSMA = (ILineSeries<Integer>) chart.getSeriesSet().createSeries(SeriesType.LINE,
+                        lineID);
+        lineSeriesSMA.setDataModel(new TimelineSeriesModel(smaLines.getDates(), smaLines.getValues()));
+
         lineSeriesSMA.setLineWidth(2);
         lineSeriesSMA.enableArea(false);
         lineSeriesSMA.setSymbolType(PlotSymbolType.NONE);
-        lineSeriesSMA.setYSeries(smaLines.getValues());
         lineSeriesSMA.setAntialias(swtAntialias);
         lineSeriesSMA.setLineColor(smaColor);
         lineSeriesSMA.setYAxisId(0);
@@ -1199,27 +1309,29 @@ public class SecuritiesChart
     }
 
     private void addEMAMarkerLines(ChartInterval chartInterval, String emaSeries, String emaDaysWording, int emaDays,
-                    Color emaColor)
+                    Color emaColor, Security security)
     {
-        ChartLineSeriesAxes emaLines = new ExponentialMovingAverage(emaDays, this.security, chartInterval).getEMA();
+        ChartLineSeriesAxes emaLines = new ExponentialMovingAverage(emaDays, security, chartInterval).getEMA();
         if (emaLines == null || emaLines.getValues() == null || emaLines.getDates() == null)
             return;
 
         String lineID = emaSeries + " (" + emaDaysWording + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 
-        ILineSeries lineSeriesEMA = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, lineID);
-        lineSeriesEMA.setXDateSeries(emaLines.getDates());
+        @SuppressWarnings("unchecked")
+        ILineSeries<Integer> lineSeriesEMA = (ILineSeries<Integer>) chart.getSeriesSet().createSeries(SeriesType.LINE,
+                        lineID);
+        lineSeriesEMA.setDataModel(new TimelineSeriesModel(emaLines.getDates(), emaLines.getValues()));
         lineSeriesEMA.setLineWidth(2);
         lineSeriesEMA.enableArea(false);
         lineSeriesEMA.setSymbolType(PlotSymbolType.NONE);
-        lineSeriesEMA.setYSeries(emaLines.getValues());
         lineSeriesEMA.setAntialias(swtAntialias);
         lineSeriesEMA.setLineColor(emaColor);
         lineSeriesEMA.setYAxisId(0);
         lineSeriesEMA.setVisibleInLegend(true);
     }
 
-    private void addInvestmentMarkerLines(ChartInterval chartInterval)
+    private void addInvestmentMarkerLines(ChartInterval chartInterval, Security security,
+                    EnumSet<ChartDetails> chartConfig)
     {
         List<PortfolioTransaction> purchase = client.getPortfolios().stream().flatMap(p -> p.getTransactions().stream())
                         .filter(t -> t.getSecurity() == security)
@@ -1228,8 +1340,8 @@ public class SecuritiesChart
                         .filter(t -> chartInterval.contains(t.getDateTime())) //
                         .sorted(Transaction.BY_DATE).toList();
 
-        addInvestmentMarkers(purchase, PortfolioTransaction.Type.BUY.toString(), colorEventPurchase,
-                        PlotSymbolType.TRIANGLE);
+        addInvestmentMarkers(purchase, investmentMarkerLabelBuy, colorEventPurchase, PlotSymbolType.TRIANGLE, security,
+                        chartConfig);
 
         List<PortfolioTransaction> sales = client.getPortfolios().stream().flatMap(p -> p.getTransactions().stream())
                         .filter(t -> t.getSecurity() == security)
@@ -1238,12 +1350,12 @@ public class SecuritiesChart
                         .filter(t -> chartInterval.contains(t.getDateTime())) //
                         .sorted(Transaction.BY_DATE).toList();
 
-        addInvestmentMarkers(sales, PortfolioTransaction.Type.SELL.toString(), colorEventSale,
-                        PlotSymbolType.INVERTED_TRIANGLE);
+        addInvestmentMarkers(sales, investmentMarkerLabelSell, colorEventSale, PlotSymbolType.INVERTED_TRIANGLE,
+                        security, chartConfig);
     }
 
     private void addInvestmentMarkers(List<PortfolioTransaction> transactions, String seriesLabel, Color color,
-                    PlotSymbolType symbol)
+                    PlotSymbolType symbol, Security security, EnumSet<ChartDetails> chartConfig)
     {
         if (transactions.isEmpty())
             return;
@@ -1267,16 +1379,17 @@ public class SecuritiesChart
         }
         else
         {
-            Date[] dates = transactions.stream().map(PortfolioTransaction::getDateTime)
-                            .map(d -> Date.from(d.atZone(ZoneId.systemDefault()).toInstant()))
-                            .toArray(size -> new Date[size]);
+            LocalDate[] dates = transactions.stream().map(PortfolioTransaction::getDateTime).map(d -> d.toLocalDate())
+                            .toArray(size -> new LocalDate[size]);
 
             double[] values = transactions.stream().mapToDouble(
                             t -> t.getGrossPricePerShare(converter.with(t.getSecurity().getCurrencyCode())).getAmount()
                                             / Values.Quote.divider())
                             .toArray();
 
-            ILineSeries border = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, seriesLabel + "2"); //$NON-NLS-1$
+            @SuppressWarnings("unchecked")
+            ILineSeries<Integer> border = (ILineSeries<Integer>) chart.getSeriesSet().createSeries(SeriesType.LINE,
+                            seriesLabel + "2"); //$NON-NLS-1$
             border.setYAxisId(0);
             border.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
             border.setSymbolType(symbol);
@@ -1284,7 +1397,8 @@ public class SecuritiesChart
 
             configureSeriesPainter(border, dates, values, null, 0, LineStyle.NONE, false, false);
 
-            ILineSeries background = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
+            @SuppressWarnings("unchecked")
+            ILineSeries<Integer> background = (ILineSeries<Integer>) chart.getSeriesSet().createSeries(SeriesType.LINE,
                             seriesLabel + "1"); //$NON-NLS-1$
             background.setYAxisId(0);
             background.setSymbolType(symbol);
@@ -1292,7 +1406,9 @@ public class SecuritiesChart
             background.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
             configureSeriesPainter(background, dates, values, null, 0, LineStyle.NONE, false, false);
 
-            ILineSeries inner = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, seriesLabel);
+            @SuppressWarnings("unchecked")
+            ILineSeries<Integer> inner = (ILineSeries<Integer>) chart.getSeriesSet().createSeries(SeriesType.LINE,
+                            seriesLabel);
             inner.setYAxisId(0);
             inner.setSymbolType(symbol);
             inner.setSymbolSize(4);
@@ -1317,7 +1433,7 @@ public class SecuritiesChart
                         if (t == null)
                             continue;
 
-                        int x = xAxis.getPixelCoordinate(dates[index].getTime());
+                        int x = xAxis.getPixelCoordinate(dates[index].toEpochDay());
                         int y = yAxis.getPixelCoordinate(values[index]);
 
                         String label = Values.Share.format(t.getType().isPurchase() ? t.getShares() : -t.getShares());
@@ -1344,7 +1460,8 @@ public class SecuritiesChart
         }
     }
 
-    private void addDividendMarkerLines(ChartInterval chartInterval)
+    private void addDividendMarkerLines(ChartInterval chartInterval, Security security,
+                    EnumSet<ChartDetails> chartConfig)
     {
         List<AccountTransaction> dividends = client.getAccounts().stream().flatMap(a -> a.getTransactions().stream()) //
                         .filter(t -> t.getSecurity() == security) //
@@ -1366,9 +1483,8 @@ public class SecuritiesChart
         }
         else
         {
-            Date[] dates = dividends.stream().map(AccountTransaction::getDateTime)
-                            .map(d -> Date.from(d.atZone(ZoneId.systemDefault()).toInstant()))
-                            .toArray(size -> new Date[size]);
+            LocalDate[] dates = dividends.stream().map(AccountTransaction::getDateTime).map(d -> d.toLocalDate())
+                            .toArray(size -> new LocalDate[size]);
 
             IAxis yAxis1st = chart.getAxisSet().getYAxis(0);
 
@@ -1383,7 +1499,8 @@ public class SecuritiesChart
             double[] values = new double[dates.length];
             Arrays.fill(values, yAxis1stAxisPrice);
 
-            ILineSeries border = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
+            @SuppressWarnings("unchecked")
+            ILineSeries<Integer> border = (ILineSeries<Integer>) chart.getSeriesSet().createSeries(SeriesType.LINE,
                             Messages.LabelChartDetailMarkerDividends + "2"); //$NON-NLS-1$
             border.setYAxisId(0);
             border.setSymbolType(PlotSymbolType.SQUARE);
@@ -1391,7 +1508,8 @@ public class SecuritiesChart
             border.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
             configureSeriesPainter(border, dates, values, null, 0, LineStyle.NONE, false, false);
 
-            ILineSeries background = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
+            @SuppressWarnings("unchecked")
+            ILineSeries<Integer> background = (ILineSeries<Integer>) chart.getSeriesSet().createSeries(SeriesType.LINE,
                             Messages.LabelChartDetailMarkerDividends + "1"); //$NON-NLS-1$
             background.setYAxisId(0);
             background.setSymbolType(PlotSymbolType.SQUARE);
@@ -1399,7 +1517,8 @@ public class SecuritiesChart
             background.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
             configureSeriesPainter(background, dates, values, null, 0, LineStyle.NONE, false, false);
 
-            ILineSeries inner = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
+            @SuppressWarnings("unchecked")
+            ILineSeries<Integer> inner = (ILineSeries<Integer>) chart.getSeriesSet().createSeries(SeriesType.LINE,
                             Messages.LabelChartDetailMarkerDividends);
             inner.setYAxisId(0);
             inner.setSymbolType(PlotSymbolType.SQUARE);
@@ -1422,7 +1541,7 @@ public class SecuritiesChart
 
                     for (int index = 0; index < dates.length; index++)
                     {
-                        int x = xAxis.getPixelCoordinate(dates[index].getTime());
+                        int x = xAxis.getPixelCoordinate(dates[index].toEpochDay());
                         int y = yAxis.getPixelCoordinate(values[index]);
 
                         String label = getDividendLabel(dividends.get(index));
@@ -1470,7 +1589,7 @@ public class SecuritiesChart
         }
     }
 
-    private void addEventMarkerLines(ChartInterval chartInterval)
+    private void addEventMarkerLines(ChartInterval chartInterval, Security security)
     {
         security.getEvents().stream() //
                         .filter(e -> chartInterval.contains(e.getDate())) //
@@ -1479,7 +1598,8 @@ public class SecuritiesChart
                                         Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY), e.getDetails()));
     }
 
-    private void addExtremesMarkerLines(ChartInterval chartInterval)
+    private void addExtremesMarkerLines(ChartInterval chartInterval, Security security,
+                    EnumSet<ChartDetails> chartConfig)
     {
         Optional<SecurityPrice> max = security.getPricesIncludingLatest().stream() //
                         .filter(p -> chartInterval.contains(p.getDate())) //
@@ -1490,12 +1610,13 @@ public class SecuritiesChart
                         .min(Comparator.comparing(SecurityPrice::getValue));
 
         max.ifPresent(high -> addExtremeMarker(high, PlotSymbolType.DIAMOND, //
-                        Messages.LabelChartDetailMarkerHigh, colorExtremeMarkerHigh));
+                        Messages.LabelChartDetailMarkerHigh, colorExtremeMarkerHigh, chartConfig));
         min.ifPresent(low -> addExtremeMarker(low, PlotSymbolType.DIAMOND, //
-                        Messages.LabelChartDetailMarkerLow, colorExtremeMarkerLow));
+                        Messages.LabelChartDetailMarkerLow, colorExtremeMarkerLow, chartConfig));
     }
 
-    private void addExtremeMarker(SecurityPrice price, PlotSymbolType plotSymbolType, String seriesLabel, Color color)
+    private void addExtremeMarker(SecurityPrice price, PlotSymbolType plotSymbolType, String seriesLabel, Color color,
+                    EnumSet<ChartDetails> chartConfig)
     {
         LocalDate eventDate = price.getDate();
         double value = price.getValue() / Values.Quote.divider();
@@ -1513,15 +1634,17 @@ public class SecuritiesChart
         else
         {
             String valueFormat = Values.Quote.format(price.getValue());
-            Date zonedDate = Date.from(eventDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+            LocalDate zonedDate = eventDate;
 
-            ILineSeries inner = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, seriesLabel);
+            @SuppressWarnings("unchecked")
+            ILineSeries<Integer> inner = (ILineSeries<Integer>) chart.getSeriesSet().createSeries(SeriesType.LINE,
+                            seriesLabel);
             inner.setYAxisId(0);
             inner.setSymbolType(plotSymbolType);
             inner.setSymbolSize(6);
             inner.setSymbolColor(color);
-            configureSeriesPainter(inner, new Date[] { zonedDate }, new double[] { value }, color, 0, LineStyle.NONE,
-                            false, true);
+            configureSeriesPainter(inner, new LocalDate[] { zonedDate }, new double[] { value }, color, 0,
+                            LineStyle.NONE, false, true);
 
             if (chartConfig.contains(ChartDetails.SHOW_DATA_EXTREMES_LABEL))
             {
@@ -1532,7 +1655,7 @@ public class SecuritiesChart
                     IAxis xAxis = chart.getAxisSet().getXAxis(0);
                     IAxis yAxis = chart.getAxisSet().getYAxis(0);
 
-                    int x = xAxis.getPixelCoordinate(zonedDate.getTime());
+                    int x = xAxis.getPixelCoordinate(zonedDate.toEpochDay());
                     int y = yAxis.getPixelCoordinate(value);
                     Point textExtent = event.gc.textExtent(valueFormat);
                     int labelWidth = textExtent.x;
@@ -1555,57 +1678,65 @@ public class SecuritiesChart
     }
 
     private void addBollingerBandsMarkerLines(ChartInterval chartInterval, int bollingerBandsDays,
-                    double bollingerBandsFactor)
+                    double bollingerBandsFactor, Security security)
     {
-        BollingerBands bands = new BollingerBands(bollingerBandsDays, bollingerBandsFactor, this.security,
-                        chartInterval);
+        BollingerBands bands = new BollingerBands(bollingerBandsDays, bollingerBandsFactor, security, chartInterval);
 
         ChartLineSeriesAxes lowerBand = bands.getLowerBand();
         if (lowerBand == null || lowerBand.getValues() == null || lowerBand.getDates() == null)
             return;
 
-        ILineSeries lineSeriesBollingerBandsLowerBand = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
-                        Messages.LabelChartDetailIndicatorBollingerBandsLower);
-        lineSeriesBollingerBandsLowerBand.setXDateSeries(lowerBand.getDates());
+        @SuppressWarnings("unchecked")
+        ILineSeries<Integer> lineSeriesBollingerBandsLowerBand = (ILineSeries<Integer>) chart.getSeriesSet()
+                        .createSeries(SeriesType.LINE, Messages.LabelChartDetailIndicatorBollingerBandsLower);
+
+        lineSeriesBollingerBandsLowerBand
+                        .setDataModel(new TimelineSeriesModel(lowerBand.getDates(), lowerBand.getValues()));
+
         lineSeriesBollingerBandsLowerBand.setLineStyle(LineStyle.SOLID);
         lineSeriesBollingerBandsLowerBand.setLineWidth(2);
         lineSeriesBollingerBandsLowerBand.setSymbolType(PlotSymbolType.NONE);
-        lineSeriesBollingerBandsLowerBand.setYSeries(lowerBand.getValues());
         lineSeriesBollingerBandsLowerBand.setAntialias(swtAntialias);
         lineSeriesBollingerBandsLowerBand.setLineColor(colorBollingerBands);
         lineSeriesBollingerBandsLowerBand.setYAxisId(0);
         lineSeriesBollingerBandsLowerBand.setVisibleInLegend(false);
 
         ChartLineSeriesAxes middleBand = bands.getMiddleBand();
-        ILineSeries lineSeriesBollingerBandsMiddleBand = (ILineSeries) chart.getSeriesSet()
+        @SuppressWarnings("unchecked")
+        ILineSeries<Integer> lineSeriesBollingerBandsMiddleBand = (ILineSeries<Integer>) chart.getSeriesSet()
                         .createSeries(SeriesType.LINE, Messages.LabelChartDetailIndicatorBollingerBands);
-        lineSeriesBollingerBandsMiddleBand.setXDateSeries(middleBand.getDates());
+
+        lineSeriesBollingerBandsMiddleBand
+                        .setDataModel(new TimelineSeriesModel(middleBand.getDates(), middleBand.getValues()));
+
         lineSeriesBollingerBandsMiddleBand.setLineWidth(2);
         lineSeriesBollingerBandsMiddleBand.setLineStyle(LineStyle.DOT);
         lineSeriesBollingerBandsMiddleBand.setSymbolType(PlotSymbolType.NONE);
-        lineSeriesBollingerBandsMiddleBand.setYSeries(middleBand.getValues());
         lineSeriesBollingerBandsMiddleBand.setAntialias(swtAntialias);
         lineSeriesBollingerBandsMiddleBand.setLineColor(colorBollingerBands);
         lineSeriesBollingerBandsMiddleBand.setYAxisId(0);
         lineSeriesBollingerBandsMiddleBand.setVisibleInLegend(true);
 
         ChartLineSeriesAxes upperBand = bands.getUpperBand();
-        ILineSeries lineSeriesBollingerBandsUpperBand = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
-                        Messages.LabelChartDetailIndicatorBollingerBandsUpper);
-        lineSeriesBollingerBandsUpperBand.setXDateSeries(upperBand.getDates());
+        @SuppressWarnings("unchecked")
+        ILineSeries<Integer> lineSeriesBollingerBandsUpperBand = (ILineSeries<Integer>) chart.getSeriesSet()
+                        .createSeries(SeriesType.LINE, Messages.LabelChartDetailIndicatorBollingerBandsUpper);
+
+        lineSeriesBollingerBandsUpperBand
+                        .setDataModel(new TimelineSeriesModel(upperBand.getDates(), upperBand.getValues()));
+
         lineSeriesBollingerBandsUpperBand.setLineWidth(2);
         lineSeriesBollingerBandsUpperBand.setLineStyle(LineStyle.SOLID);
         lineSeriesBollingerBandsUpperBand.setSymbolType(PlotSymbolType.NONE);
-        lineSeriesBollingerBandsUpperBand.setYSeries(upperBand.getValues());
         lineSeriesBollingerBandsUpperBand.setAntialias(swtAntialias);
         lineSeriesBollingerBandsUpperBand.setLineColor(colorBollingerBands);
         lineSeriesBollingerBandsUpperBand.setYAxisId(0);
         lineSeriesBollingerBandsUpperBand.setVisibleInLegend(false);
     }
 
-    private void addMacdMarkerLines(ChartInterval chartInterval, Color color)
+    private void addMacdMarkerLines(ChartInterval chartInterval, Color color, Security security)
     {
-        MovingAverageConvergenceDivergence macd = new MovingAverageConvergenceDivergence(this.security, chartInterval);
+        MovingAverageConvergenceDivergence macd = new MovingAverageConvergenceDivergence(security, chartInterval);
         var macdLines = macd.getMacdLine();
         var signalLines = macd.getSignalLine();
 
@@ -1629,14 +1760,17 @@ public class SecuritiesChart
 
         if (macdLines.isPresent())
         {
-            ILineSeries lineSeriesMacd = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
-                            Messages.LabelChartDetailIndicatorMacd);
-            lineSeriesMacd.setXDateSeries(macdLines.get().getDates());
+            @SuppressWarnings("unchecked")
+            ILineSeries<Integer> lineSeriesMacd = (ILineSeries<Integer>) chart.getSeriesSet()
+                            .createSeries(SeriesType.LINE, Messages.LabelChartDetailIndicatorMacd);
+
+            lineSeriesMacd.setDataModel(
+                            new TimelineSeriesModel(macdLines.get().getDates(), macdLines.get().getValues()));
+
             lineSeriesMacd.setLineStyle(LineStyle.SOLID);
             lineSeriesMacd.setLineWidth(2);
             lineSeriesMacd.enableArea(false);
             lineSeriesMacd.setSymbolType(PlotSymbolType.NONE);
-            lineSeriesMacd.setYSeries(macdLines.get().getValues());
             lineSeriesMacd.setAntialias(swtAntialias);
             lineSeriesMacd.setLineColor(color);
             lineSeriesMacd.setYAxisId(yAxisId);
@@ -1645,14 +1779,17 @@ public class SecuritiesChart
 
         if (signalLines.isPresent())
         {
-            ILineSeries lineSeriesSignal = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
-                            Messages.LabelChartDetailIndicatorMacdSignal);
-            lineSeriesSignal.setXDateSeries(signalLines.get().getDates());
+            @SuppressWarnings("unchecked")
+            ILineSeries<Integer> lineSeriesSignal = (ILineSeries<Integer>) chart.getSeriesSet()
+                            .createSeries(SeriesType.LINE, Messages.LabelChartDetailIndicatorMacdSignal);
+
+            lineSeriesSignal.setDataModel(
+                            new TimelineSeriesModel(signalLines.get().getDates(), signalLines.get().getValues()));
+
             lineSeriesSignal.setLineStyle(LineStyle.DOT);
             lineSeriesSignal.setLineWidth(2);
             lineSeriesSignal.enableArea(false);
             lineSeriesSignal.setSymbolType(PlotSymbolType.NONE);
-            lineSeriesSignal.setYSeries(signalLines.get().getValues());
             lineSeriesSignal.setAntialias(swtAntialias);
             lineSeriesSignal.setLineColor(color);
             lineSeriesSignal.setYAxisId(yAxisId);
@@ -1660,15 +1797,15 @@ public class SecuritiesChart
         }
     }
 
-    private void addFIFOPurchasePrice(ChartInterval chartInterval)
+    private void addPurchasePrice(ChartInterval chartInterval, Security security, CostMethod costMethod)
     {
         // securities w/o currency (e.g. index) cannot be bought and hence have
         // no purchase price
         if (security.getCurrencyCode() == null)
             return;
 
-        // create a list of dates that are relevant for FIFO purchase price
-        // changes (i.e. all purchase and sell events)
+        // create a list of dates that are relevant for FIFO or moving average
+        // purchase price changes (i.e. all purchase and sell events)
 
         Client filteredClient = new ClientSecurityFilter(security).filter(client);
         CurrencyConverter securityCurrency = converter.with(security.getCurrencyCode());
@@ -1685,8 +1822,22 @@ public class SecuritiesChart
                         .sorted() //
                         .toList();
 
-        // calculate FIFO purchase price for each event - separate lineSeries
-        // per holding period
+        var costMethodLabel = costMethod.getLabel();
+        Color color;
+        switch (costMethod)
+        {
+            case FIFO:
+                color = colorFifoPurchasePrice;
+                break;
+            case MOVING_AVERAGE:
+                color = colorMovingAveragePurchasePrice;
+                break;
+            default:
+                throw new IllegalArgumentException("unsupported cost method: " + costMethod); //$NON-NLS-1$
+        }
+
+        // calculate FIFO or moving average purchase price for each event -
+        // separate lineSeries per holding period
 
         List<Double> values = new ArrayList<>();
         List<LocalDate> dates = new ArrayList<>();
@@ -1694,7 +1845,8 @@ public class SecuritiesChart
 
         for (LocalDate eventDate : candidates)
         {
-            Optional<Double> purchasePrice = getPurchasePrice(filteredClient, securityCurrency, eventDate);
+            Optional<Double> purchasePrice = getPurchasePrice(filteredClient, securityCurrency, eventDate, security,
+                            costMethod);
 
             if (purchasePrice.isPresent())
             {
@@ -1711,8 +1863,8 @@ public class SecuritiesChart
                     dates.add(eventDate);
                     values.add(values.get(values.size() - 1));
 
-                    createFIFOPurchaseLineSeries(values, dates, seriesCounter++);
-
+                    createPriceLineSeries(values, dates, seriesCounter++, color, MessageFormat.format(
+                                    Messages.LabelWithQualifier, Messages.ColumnPurchasePrice, costMethodLabel));
                     values.clear();
                     dates.clear();
                 }
@@ -1725,127 +1877,38 @@ public class SecuritiesChart
         }
 
         // add today if needed
-
-        getPurchasePrice(filteredClient, securityCurrency, chartInterval.getEnd()).ifPresent(price -> {
-            dates.add(chartInterval.getEnd());
-            values.add(price);
-        });
+        getPurchasePrice(filteredClient, securityCurrency, chartInterval.getEnd(), security, costMethod)
+                        .ifPresent(price -> {
+                            dates.add(chartInterval.getEnd());
+                            values.add(price);
+                        });
 
         if (!dates.isEmpty())
-            createFIFOPurchaseLineSeries(values, dates, seriesCounter);
+            createPriceLineSeries(values, dates, seriesCounter, color, MessageFormat.format(Messages.LabelWithQualifier,
+                            Messages.ColumnPurchasePrice, costMethodLabel));
     }
 
-    private void createFIFOPurchaseLineSeries(List<Double> values, List<LocalDate> dates, int seriesCounter)
+    private void createPriceLineSeries(List<Double> values, List<LocalDate> dates, int seriesCounter, Color color,
+                    String label)
     {
-        String label = seriesCounter == 0 ? Messages.LabelChartDetailMarkerPurchaseFIFO
-                        : MessageFormat.format(Messages.LabelChartDetailMarkerPurchaseFIFOHoldingPeriod,
-                                        seriesCounter + 1);
+        if (seriesCounter != 0)
+            label += " " + MessageFormat.format(Messages.LabelChartDetailMarkerPurchasePeriodNo, //$NON-NLS-1$
+                            seriesCounter + 1);
 
-        ILineSeries series = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, label);
+        @SuppressWarnings("unchecked")
+        ILineSeries<Integer> series = (ILineSeries<Integer>) chart.getSeriesSet().createSeries(SeriesType.LINE, label);
 
         series.setSymbolType(PlotSymbolType.NONE);
         series.setYAxisId(0);
         series.enableStep(true);
 
-        configureSeriesPainter(series, TimelineChart.toJavaUtilDate(dates.toArray(new LocalDate[0])),
-                        Doubles.toArray(values), colorFifoPurchasePrice, 2, LineStyle.SOLID, false, seriesCounter == 0);
+        configureSeriesPainter(series, dates.toArray(new LocalDate[0]), Doubles.toArray(values), color, 2,
+                        LineStyle.SOLID, false, seriesCounter == 0);
+
+        setupTooltipDisplayCalculatedQuote(label);
     }
 
-    private void addMovingAveragePurchasePrice(ChartInterval chartInterval)
-    {
-        // securities w/o currency (e.g. index) cannot be bought and hence have
-        // no purchase price
-        if (security.getCurrencyCode() == null)
-            return;
-
-        // create a list of dates that are relevant for floating avg purchase
-        // price
-        // changes (i.e. all purchase and sell events)
-
-        Client filteredClient = new ClientSecurityFilter(security).filter(client);
-        CurrencyConverter securityCurrency = converter.with(security.getCurrencyCode());
-
-        List<LocalDate> candidates = client.getPortfolios().stream() //
-                        .flatMap(p -> p.getTransactions().stream()) //
-                        .filter(t -> t.getSecurity().equals(security))
-                        .filter(t -> !(t.getType() == PortfolioTransaction.Type.TRANSFER_IN
-                                        || t.getType() == PortfolioTransaction.Type.TRANSFER_OUT))
-                        .filter(t -> !t.getDateTime().toLocalDate().isAfter(chartInterval.getEnd()))
-                        .map(t -> chartInterval.contains(t.getDateTime()) ? t.getDateTime().toLocalDate()
-                                        : chartInterval.getStart())
-                        .distinct() //
-                        .sorted() //
-                        .toList();
-
-        // calculate floating avg purchase price for each event - separate
-        // lineSeries
-        // per holding period
-
-        List<Double> values = new ArrayList<>();
-        List<LocalDate> dates = new ArrayList<>();
-        int seriesCounter = 0;
-
-        for (LocalDate eventDate : candidates)
-        {
-            Optional<Double> purchasePrice = getMovingAveragePurchasePrice(filteredClient, securityCurrency, eventDate);
-
-            if (purchasePrice.isPresent())
-            {
-                dates.add(eventDate);
-                values.add(purchasePrice.get());
-            }
-            else
-            {
-                if (!dates.isEmpty())
-                {
-                    // add previous value if the data series ends here (no more
-                    // future events)
-
-                    dates.add(eventDate);
-                    values.add(values.get(values.size() - 1));
-
-                    createMovingAveragePurchaseLineSeries(values, dates, seriesCounter++);
-
-                    values.clear();
-                    dates.clear();
-                }
-                else if (dates.isEmpty())
-                {
-                    // if no holding period exists, then do not add the event at
-                    // all
-                }
-            }
-        }
-
-        // add today if needed
-
-        getMovingAveragePurchasePrice(filteredClient, securityCurrency, chartInterval.getEnd()).ifPresent(price -> {
-            dates.add(chartInterval.getEnd());
-            values.add(price);
-        });
-
-        if (!dates.isEmpty())
-            createMovingAveragePurchaseLineSeries(values, dates, seriesCounter);
-    }
-
-    private void createMovingAveragePurchaseLineSeries(List<Double> values, List<LocalDate> dates, int seriesCounter)
-    {
-        String label = seriesCounter == 0 ? Messages.LabelChartDetailMarkerPurchaseMovingAverage
-                        : MessageFormat.format(Messages.LabelChartDetailMarkerPurchaseMovingAverageHoldingPeriod,
-                                        seriesCounter + 1);
-
-        ILineSeries series = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, label);
-
-        series.setSymbolType(PlotSymbolType.NONE);
-        series.setYAxisId(0);
-        series.enableStep(true);
-
-        configureSeriesPainter(series, TimelineChart.toJavaUtilDate(dates.toArray(new LocalDate[0])),
-                        Doubles.toArray(values), colorMovingAveragePurchasePrice, 2, LineStyle.SOLID, false,
-                        seriesCounter == 0);
-    }
-
-    private Optional<Double> getLatestPurchasePrice()
+    private Optional<Double> getLatestPurchasePrice(Security security, CostMethod costMethod)
     {
         // securities w/o currency (e.g. index) cannot be bought and hence have
         // no purchase price
@@ -1853,29 +1916,34 @@ public class SecuritiesChart
             return Optional.empty();
 
         return getPurchasePrice(new ClientSecurityFilter(security).filter(client),
-                        converter.with(security.getCurrencyCode()), LocalDate.now());
+                        converter.with(security.getCurrencyCode()), LocalDate.now(), security, costMethod);
     }
 
     private Optional<Double> getPurchasePrice(Client filteredClient, CurrencyConverter currencyConverter,
-                    LocalDate date)
+                    LocalDate date, Security security, CostMethod costMethod)
     {
-        return SecurityPerformanceSnapshot
-                        .create(filteredClient, currencyConverter, Interval.of(LocalDate.MIN, date),
-                                        SecurityPerformanceIndicator.Costs.class)
-                        .getRecord(security) //
-                        .filter(r -> !r.getFifoCostPerSharesHeld().isZero()) //
-                        .map(r -> r.getFifoCostPerSharesHeld().getAmount() / Values.Quote.divider());
-    }
+        var r = LazySecurityPerformanceSnapshot
+                        .create(filteredClient, currencyConverter, Interval.of(LocalDate.MIN, date))
+                        .getRecord(security);
 
-    private Optional<Double> getMovingAveragePurchasePrice(Client filteredClient, CurrencyConverter currencyConverter,
-                    LocalDate date)
-    {
-        return SecurityPerformanceSnapshot
-                        .create(filteredClient, currencyConverter, Interval.of(LocalDate.MIN, date),
-                                        SecurityPerformanceIndicator.Costs.class)
-                        .getRecord(security) //
-                        .filter(r -> !r.getFifoCostPerSharesHeld().isZero()) //
-                        .map(r -> r.getMovingAverageCostPerSharesHeld().getAmount() / Values.Quote.divider());
+        if (r.isEmpty())
+            return Optional.empty();
+
+        Quote purchasePricePerShare;
+        switch (costMethod)
+        {
+            case FIFO:
+                purchasePricePerShare = r.get().getFifoCostPerSharesHeld().get();
+                break;
+            case MOVING_AVERAGE:
+                purchasePricePerShare = r.get().getMovingAverageCostPerSharesHeld().get();
+                break;
+            default:
+                throw new IllegalArgumentException("unsupported cost method: " + costMethod); //$NON-NLS-1$
+        }
+
+        return purchasePricePerShare.isZero() ? Optional.empty()
+                        : Optional.of(purchasePricePerShare.getAmount() / Values.Quote.divider());
     }
 
     private static class MessagePainter implements PaintListener, DisposeListener

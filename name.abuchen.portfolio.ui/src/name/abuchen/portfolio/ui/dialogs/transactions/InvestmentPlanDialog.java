@@ -7,7 +7,7 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import jakarta.inject.Inject;
@@ -40,6 +40,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanModel.Properties;
 import name.abuchen.portfolio.ui.util.DatePicker;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
+import name.abuchen.portfolio.ui.util.SecurityNameLabelProvider;
 import name.abuchen.portfolio.ui.util.SimpleDateTimeDateSelectionProperty;
 
 public class InvestmentPlanDialog extends AbstractTransactionDialog
@@ -101,6 +102,7 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
 
             securities = new ComboInput(editArea, Messages.ColumnSecurity);
             securities.value.setInput(including(client.getActiveSecurities(), model().getSecurity()));
+            securities.value.setLabelProvider(new SecurityNameLabelProvider(client));
             securities.bindValue(Properties.security.name(), Messages.MsgMissingSecurity);
             securities.bindCurrency(Properties.securityCurrencyCode.name());
         }
@@ -136,21 +138,13 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
 
         // interval
 
-        List<Integer> available = new ArrayList<>();
-        for (int ii = 1; ii <= 12; ii++)
-            available.add(ii);
+        List<Integer> available = Arrays.stream(InvestmentPlanModel.Intervals.values())
+                        .map(InvestmentPlanModel.Intervals::getInterval).toList();
 
         ComboInput interval = new ComboInput(editArea, Messages.ColumnInterval);
         interval.value.setInput(available);
-        interval.value.setLabelProvider(new LabelProvider()
-        {
-            @Override
-            public String getText(Object element)
-            {
-                int interval = (Integer) element;
-                return MessageFormat.format(Messages.InvestmentPlanIntervalLabel, interval);
-            }
-        });
+        interval.value.setLabelProvider(LabelProvider.createTextProvider(
+                        element -> InvestmentPlanModel.Intervals.get((Integer) element).toString()));
         interval.bindValue(Properties.interval.name(),
                         MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnInterval));
 
@@ -164,16 +158,6 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
             grossAmount.bindCurrency(Properties.transactionCurrencyCode.name());
         }
 
-        // taxes
-
-        Input taxes = null;
-        if (planType == Type.INTEREST)
-        {
-            taxes = new Input(editArea, "- " + Messages.ColumnTaxes); //$NON-NLS-1$
-            taxes.bindValue(Properties.taxes.name(), Messages.ColumnTaxes, Values.Amount, false);
-            taxes.bindCurrency(Properties.transactionCurrencyCode.name());
-        }
-
         // fees
 
         Input fees = null;
@@ -182,6 +166,17 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
             fees = new Input(editArea, "+ " + Messages.ColumnFees); //$NON-NLS-1$
             fees.bindValue(Properties.fees.name(), Messages.ColumnFees, Values.Amount, false);
             fees.bindCurrency(Properties.transactionCurrencyCode.name());
+        }
+
+        // taxes
+
+        Input taxes = null;
+        if (planType == Type.INTEREST || planType == Type.PURCHASE_OR_DELIVERY)
+        {
+            var taxesSign = planType == Type.INTEREST ? "- " : "+ "; //$NON-NLS-1$ //$NON-NLS-2$
+            taxes = new Input(editArea, taxesSign + Messages.ColumnTaxes);
+            taxes.bindValue(Properties.taxes.name(), Messages.ColumnTaxes, Values.Amount, false);
+            taxes.bindCurrency(Properties.transactionCurrencyCode.name());
         }
 
         // amount

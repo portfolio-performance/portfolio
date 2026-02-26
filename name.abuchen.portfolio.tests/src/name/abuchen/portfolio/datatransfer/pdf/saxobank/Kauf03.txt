@@ -1,0 +1,48 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.74.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+CH-19958475 - 19958475
+Bericht zu Trade-Details
+Berichtszeitraum: 05-Feb-2025 - 05-Feb-2025
+Generiert um: 16-Feb-2025 01:12:34 13:12:34 (W. Europe Standard Time)
+CH-19958475 Saxo Bank CH
+Switzerland The Circle 38
+8058 Zürich-Flughafen
+Switzerland
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-19958475 Berichtszeitraum
+Währung: CHF 05-Feb-2025 - 05-Feb-2025
+Seite 1 von 3 Konten: Sparkonto 80000/138521 Generiert um: 16-Feb-2025
+Trade details, CHF
+Berichtszeitraum
+05-Feb-2025 bis 05-Feb-2025
+ETF
+Instrument iShares Core MSCI World UCITS ETF Handelszeit 05-Feb-2025 10:35:00
+ISIN IE00B4L5Y983 Valuta 07-Feb-2025
+Symbol SWDA:xswx Order-ID 5253341230
+Börsenbeschreibung TRADEWEB EUROPE LIMITED (TREU) Trade-ID 6154473459
+Handelsplatz Exchange Gehandelter Wert -23.714,22 USD
+Ordertyp Marktorder Preis 110,8141 USD
+K/V Kauf Menge 214,00
+Eröffnung/Schluss To-Open Spread-Kosten 0,00 CHF
+Saxo is counterparty No Gesamte Trading-Kosten -85,65 CHF
+Buchungsbetrag- Amount Umrechnungskosten Gebuchter Betrag
+Trade-Datum Value Date Umrechnungskurs
+ID USD CHF CHF
+Aktienbetrag 41308584615 05-Feb-2025 07-Feb-2025 -23.714,22 0,904466 -53,48 -21.448,69
+Schweizerische
+Stempelgebühr 41310919192 05-Feb-2025 07-Feb-2025 -35,57 0,904466 -0,08 -32,17
+Ausland
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-19958475 Berichtszeitraum
+Währung: CHF 05-Feb-2025 - 05-Feb-2025
+Seite 2 von 3 Konten: Sparkonto 80000/138521 Generiert um: 16-Feb-2025
+Trade details, CHF
+Berichtszeitraum
+05-Feb-2025 bis 05-Feb-2025
+Buchungsbetrag- Amount Umrechnungskosten Gebuchter Betrag
+Trade-Datum Value Date Umrechnungskurs
+ID USD CHF CHF
+Nettobetrag - - - - - -53,56 -21.480,86
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-19958475 Berichtszeitraum
+Währung: CHF 05-Feb-2025 - 05-Feb-2025
+Seite 3 von 3 Konten: Sparkonto 80000/138521 Generiert um: 16-Feb-2025

@@ -1,0 +1,32 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.73.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+DADAT-Bank KONTOAUSZUG
+Schelhammer Capital Bank AG vom 07.01.2025
+28567
+Kundennummer
+Alter Saldo per 31.12.2024 1.318,34
+Summe der Gutschriften 20.000,00
+Summe der Lastschriften 277,33-
+Schelhammer, PF 1000, A-5021 Salzburg
+Neuer Saldo zu Ihren Gunsten
+ppoDo sTnWu EUR 21.041,01
+tsMRfFPLH 17
+2904 TSBk
+Konto-Nr.: 00523016443 Bankleitzahl: 17660
+Empfängerhinweis: 
+Datum Buchungstext Wert Betrag
+02.01 Einlagen auf diesem Konto sind grundsätzlich 31.12 0,00
+erstattungsfähig. Ihre Sicherungseinrichtung ist
+die Einlagensicherung AUSTRIA Ges.m.b.H.
+Nähere Informationen finden Sie im Informationsbogen
+gem. §37a BWG (Homepage bzw. Filiale)
+07.01 UMBUCHUNG   INTERNET AM 2025-01-03 03.01 20.000,00
+MVYxa UelDv
+07.01 Depotgebührenabrechnung per 31.12.2024  20250104  15078030 31.12 277,33-
+DPNR.:  0407824350            231,11 ZUZüGL.             46,22 UST
+Neuer Saldo zu Ihren Gunsten 21.041,01
+yu12 9622 8492 7639 6500 HLsjssEU 01 0001 1/1
+IBAN BIC Filiale Auszug Blatt/Gesamt
+R0042 27166 Doknr.: EK00-412-2770822466

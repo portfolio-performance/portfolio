@@ -1,0 +1,66 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.70.4
+-----------------------------------------
+Wertpapierabrechnung
+Verkauf (Rücknahme)
+Referenz-Nr 90209279
+Datum 16.08.2022
+Depot 1234567890
+Herrn Mustermann, Max
+Max Mustermann
+Musterstrasse 1
+12345 Musterstadt Telefon +49 - (0) 69 - 1234567890
+E-Mail max.muller@muller.de
+Seite 1 von 2
+Wertpapierbezeichnung Siemens Balanced Inhaber-Anteile
+ISIN DE000A0KEXM6
+WKN A0KEXM
+Ausführungsplatz FH V-Bank AG/RZB
+Verwahrart Wertpapierrechnung
+Lagerland Luxemburg
+Handelstag / Zeit 11.08.2022 08:02:38
+Nominal / Stück 110,0000 ST
+Kurs EUR 20,47
+Kurswert EUR 2.251,70
+Bank-Provision EUR - 20,00
+Courtage * EUR 0,00
+Spesen * EUR 0,00
+Gebühren EUR 0,00
+Ausmachender Betrag EUR 2.231,70
+Der Abrechnungsbetrag wird mit Valuta 16.08.2022 über Ihr Konto 1234567890 EUR gebucht.
+Keine Steuerbescheinigung!
+*Fremde Gebühren und Spesen
+Diese Mitteilung wurde maschinell erstellt und wird von der Bank nicht unterschrieben.
+V-Bank AG Telefon +49 (0)89 740 800-0 Aufsichtsratsvorsitzender: Vorstand:
+Arnulfstr. 58 - 80335 München Telefax +49 (0)89 740 800-222 Jürgen Steffan Lars Hille
+Postfach 310340 - 80103 München USt-Id. DE 255554184 Stefan Lettmeier
+Gerichtsstand: München BIC VBANDEMMXXX Florian Grenzebach
+Amtsgericht München HRB 167737 BLZ 700 123 00
+www.V-Bank.com
+MetaType: STEX / OrderType: SRDPT / Timestamp: 20220816 08:10:23
+Wertpapierabrechnung
+Verkauf (Rücknahme)
+Referenz-Nr 309403277
+Seite 2 von 2
+Steuerliche Informationen
+Veräußerungsgewinn/-verlust vor Teilfreistellung: EUR -179,70
+Ersatzbemessungsgrundlage § 43a Abs. 2 EStG: EUR 0,00
+Besitzzeitanteilige akkumulierte Vorabpauschale vor Teilfreistellung: EUR 0,00
+Zu berücksichtigende Teilfreistellung (im Privatvermögen): EUR 26,95
+Steuerpflichtiger Betrag nach Teilfreistellung im Privatvermögen: EUR -152,75
+Veräußerungsgewinn/-verlust aus der Veräußerungsfiktion § 22 InvStG ab 01.01.2018: EUR 0,00
+Kapitalertragsteuerpflichtiger Betrag: EUR -152,75
+Bemessungsgrundlage für Kapitalertragsteuer: EUR 0,00
+Kapitalertragsteuer: EUR 0,00
+Solidaritätszuschlag: EUR 0,00
+Kirchensteuer: EUR 0,00
+Steuerliche Information für Veranlagungszwecke
+Steuerpfl. Betrag nach Teilfreistellung im Betriebsvermögen (EStG): EUR -125,79
+Steuerpfl. Betrag nach Teilfreistellung im Betriebsvermögen (KStG): EUR -107,82
+V-Bank AG Telefon +49 (0)89 740 800-0 Aufsichtsratsvorsitzender: Vorstand:
+Arnulfstr. 58 - 80335 München Telefax +49 (0)89 740 800-222 Jürgen Steffan Lars Hille
+Postfach 310340 - 80103 München USt-Id. DE 255554184 Stefan Lettmeier
+Gerichtsstand: München BIC VBANDEMMXXX Florian Grenzebach
+Amtsgericht München HRB 167737 BLZ 700 123 00
+www.V-Bank.com
+MetaType: STEX / OrderType: SRDPT / Timestamp: 20220816 08:10:23

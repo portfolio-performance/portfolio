@@ -46,12 +46,12 @@ public class NIBCBankPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        // Handshake for tax refund transaction
-        Map<String, String> context = type.getCurrentContext();
-
         Block firstRelevantLine = new Block("^Wertpapier Abrechnung (Kauf|Verkauf).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
+
+        // Map for tax lost adjustment transaction
+        Map<String, String> context = type.getCurrentContext();
 
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
@@ -76,22 +76,12 @@ public class NIBCBankPDFExtractor extends AbstractPDFExtractor
                         v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
 
                     t.setSecurity(getOrCreateSecurity(v));
-
-                    // Handshake, if there is a tax refund
-                    context.put("name", v.get("name"));
-                    context.put("isin", v.get("isin"));
-                    context.put("wkn", v.get("wkn"));
                 })
 
                 // Stück 13 VANGUARD FTSE ALL-WORLD U.ETF      IE00B3RBWM25 (A1JX52)
                 .section("shares")
                 .match("^St.ck (?<shares>[\\.,\\d]+) .*$")
-                .assign((t, v) -> {
-                    t.setShares(asShares(v.get("shares")));
-
-                    // Handshake, if there is a tax refund
-                    context.put("shares", v.get("shares"));
-                })
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
 
                 // Schlusstag/-Zeit 13.01.2020 11:42:59 Auftraggeber Vornamen Nachnamen
@@ -112,11 +102,24 @@ public class NIBCBankPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<note>(Limit|Stoplimit) .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                .wrap(BuySellEntryItem::new);
+                .wrap(t -> {
+                    BuySellEntryItem item = new BuySellEntryItem(t);
+
+                    // @formatter:off
+                    // Handshake for tax lost adjustment transaction
+                    // Also use number for that is also used to (later) convert it back to a number
+                    // @formatter:on
+                    context.put("name", item.getSecurity().getName());
+                    context.put("isin", item.getSecurity().getIsin());
+                    context.put("wkn", item.getSecurity().getWkn());
+                    context.put("shares", Long.toString(item.getShares()));
+
+                    return item;
+                });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
-        addTaxReturnBlock(context, type);
+        addTaxLostAdjustmentTransaction(context, type);
     }
 
     private void addDividendeTransaction()
@@ -193,7 +196,7 @@ public class NIBCBankPDFExtractor extends AbstractPDFExtractor
         block.set(pdfTransaction);
     }
 
-    private void addTaxReturnBlock(Map<String, String> context, DocumentType type)
+    private void addTaxLostAdjustmentTransaction(Map<String, String> context, DocumentType type)
     {
         Block block = new Block("^Steuerliche Ausgleichrechnung$");
         type.addBlock(block);
@@ -212,11 +215,11 @@ public class NIBCBankPDFExtractor extends AbstractPDFExtractor
                 .match("^Den Gegenwert buchen wir mit Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date")));
+                    t.setShares(Long.parseLong(context.get("shares")));
+                    t.setSecurity(getOrCreateSecurity(context));
+
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
-                    t.setShares(asShares(context.get("shares")));
-
-                    t.setSecurity(getOrCreateSecurity(context));
                 })
 
                 // Verrechnete Aktienverluste 112,10- EUR

@@ -18,7 +18,7 @@ public abstract class AbstractCSVExporter
 {
     protected static final CSVFormat STRATEGY = CSVFormat.DEFAULT.builder() //
                     .setDelimiter(TextUtil.getListSeparatorChar()).setQuote('"').setRecordSeparator("\r\n") //$NON-NLS-1$
-                    .setDuplicateHeaderMode(DuplicateHeaderMode.ALLOW_ALL).build();
+                    .setDuplicateHeaderMode(DuplicateHeaderMode.ALLOW_ALL).get();
 
     protected abstract Shell getShell();
 

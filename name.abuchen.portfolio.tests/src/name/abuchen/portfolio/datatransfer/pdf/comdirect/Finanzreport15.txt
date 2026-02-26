@@ -1,0 +1,148 @@
+PDFBox Version: 3.0.5 != 1.8.17
+Portfolio Performance Version: 0.80.0
+System: linux | x86_64 | 21.0.8+2 | Flathub
+-----------------------------------------
+comdirect bank AG, 25449 Quickborn 123 45 010
+Herrn Telefon: 04106 - 708 25 00
+XXXXXXXXX XXXXX Telefax: 04106 - 708 25 85
+XXXXXXXXXXX. XX E-Mail: www.comdirect.de/kontakt
+XXXXX XXXXXXXX (E-Mail über Kontaktformular)
+Kundennummer: 123 4567890
+Finanzreport Nr. 2 per 01.03.2017
+Sehr geehrter Herr XXXXX,
+ 
+in Ihrem aktuellen Finanzreport finden Sie alle Informationen rund um Ihre Konten und Ihr Depot.
+Für Fragen zum Finanzreport oder unseren Leistungen stehen Ihnen unsere Kundenbetreuer
+telefonisch unter 04106 - 708 25 00 rund um die Uhr gerne zur Verfügung.
+Mit freundlichen Grüßen
+comdirect bank AG
+Aktuelle Informationen:
+Kostenlos kaufen: Kaufen Sie alle DAX-30-Aktien und ausgewählte DAX-ETFs am 16.03.2017 ohne
+Orderentgelte an der Börse Frankfurt. Gültig für alle Orders ab 1.000 Euro. Jetzt informieren unter
+www.comdirect.de/aktion-pro-aktie
+Brokerwahl 2017: Wählen Sie bis 30.03.2017 Ihren Online Broker des Jahres. Und gewinnen Sie mit
+etwas Glück ein Apple MacBook 12“ und andere hochwertige Traumpreise.
+Jetzt abstimmen und gewinnen. Jetzt informieren unter www.brokerwahl.de/wahl
+comdirect bank AG USt-ID: DE 812 279 461
+25449 Quickborn
+Finanzreport Nr. 2 per 01.03.2017 - Seite 2
+Kundennummer 123 4567890
+Kontoübersicht
+Ihre aktuellen Salden IBAN Saldo in
+EUR
+Girokonto DE99 2004 1111 0123 4567 89 +2,01
+Tagesgeld PLUS-Konto DE98 2004 1111 0123 4567 98 +0,00
+Depot +1.191,26
+Gesamtsaldo 01.03.2017 +1.193,27
+Girokonto Dispositionskredit girocard Tages-/Wochenlimit
+EUR 0 EUR 1.000/EUR 2.000
+Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
+Valuta Referenz IBAN/BIC Eingang
+Alter Saldo 01.02.2017 +1,79
+23.02.2017 DTA-glt. Buchung XXXXXXXXX XXXXX Sparplan ETFs Weltportfolio +200,00
+23.02.2017 IR217052I4235026/2 DE98765432109876543210 Lastsch rift
+PBNKDEFFXXX Sparplan 6
+End-to-End-Ref.:
+nicht angegeben
+CORE / Mandatsref.:
+201116195943DE9920041111012
+3456789
+Gläubiger-ID:
+DE54CDB00000065539
+24.02.2017 Wertpapiere ISH.STOX.EUROPE 600 U.ETF -64,97
+27.02.2017 28E1705604538077/2 WPKNR: 263530 ISIN:
+DE0002635307
+27.02.2017 Wertpapiere ISHSVII-CORE S+P500 DLACC -64,87
+27.02.2017 34E1705904447639/2 WPKNR: A0YEDG ISIN:
+IE00B5BMR087
+27.02.2017 Wertpapiere IS EO H.Y.CO.BD U.ETF EOD -24,96
+27.02.2017 34E1705904447879/2 WPKNR: A1C3NE ISIN:
+IE00B66F4759
+27.02.2017 Wertpapiere IS MSCI EM U.ETF USD D -44,98
+27.02.2017 34E1705904449239/2 WPKNR: A0HGWC ISIN:
+IE00B0M63177
+Neuer Saldo 01.03.2017 +2,01
+Tagesgeld PLUS-Konto
+Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
+Valuta Referenz IBAN/BIC Eingang
+Alter Saldo 01.02.2017 +0,00
+Neuer Saldo 01.03.2017 +0,00
+comdirect bank AG USt-ID: DE 812 279 461
+25449 Quickborn
+Finanzreport Nr. 2 per 01.03.2017 - Seite 3
+Kundennummer 123 4567890
+Depot
+Depotbestand EUR EUR EUR
+Bezeichnung Anzahl/Nominal letzter Kurs Währung Kurswert Kaufwert Gewinn/Verlust
+Stückzinsen
+A0HGWC 5,477 34,665 EUR 189,86 177,29 +12,57
+IS MSCI EM U.ETF USD D +0,00
+A0YEDG 1,257 224,359 USD 267,67 255,94 +11,73
+ISHSVII-CORE S+P500 DLACC +0,00
+A1C3NE 0,923 107,469 EUR 99,19 98,30 +0,89
+IS EO H.Y.CO.BD U.ETF EOD +0,00
+263530 7,147 37,190 EUR 265,80 256,08 +9,72
+ISH.STOX.EUROPE 600 U.ETF +0,00
+980500 17,643 20,900 EUR 368,74 1.073,04 -704,30
+CS EUROREAL ANTEILE +0,00
+Gesamtkurswert 1.191,26 1.860,65 -669,39
+Stückzinsen gesamt +0,00
+Gesamtwert 1.191,26
+Die Kaufwerte und damit die Gesamtbewertung in der Depotübersicht stellt lediglich eine vereinfachte Gewinn/Verlust-Rechnung
+dar. Steuerliche Gesichtspunkte werden bei dieser Darstellung nicht berücksichtigt.
+Steuerübersicht1
+Steuerliche Daten EUR
+Gewinne/Verluste aus Aktien (Verrechnungssaldo) +0,00
+Gewinne/Verluste Sonstige (Verrechnungssaldo) -0,80
+Eingereichter Freibetrag 300,00
+In Anspruch genommener Freibetrag 0,00
+Verbleibender Freibetrag 300,00
+Anrechenbare ausländische Quellensteuer 0,00
+Abgeführte Kapitalertragsteuer 0,00
+Abgeführter Solidaritätszuschlag 0,00
+Abgeführte Kirchensteuer 0,00
+Angerechnete ausländische Quellensteuer 0,00
+1 Dies ist keine Steuerbescheinigung.
+comdirect bank AG USt-ID: DE 812 279 461
+25449 Quickborn
+Finanzreport Nr. 2 per 01.03.2017 - Seite 4
+Kundennummer 123 4567890
+Zinsübersicht
+Girokonto
+Zinssatz für die Inanspruchnahme des Dispositionskredites: 8,95 % p. a. (gültig ab: 23.09.2014)
+Zinssatz für geduldete Überziehungen: 13,45 % p. a. (gültig ab: 23.09.2014)
+Verrechnungskonto / Tagesgeld PLUS-Konto / O&F-Konto
+Zinssatz für geduldete Überziehungen: 13,45 % p. a. (gültig ab: 23.09.2014)
+Zinsgleitklausel für variable Sollzinssätze:
+Die Bank wird variable Sollzinssätze entsprechend den Änderungen des Hauptrefinanzierungszinssatzes der Europäischen Zentralbank (nachfolgend
+EZB-Zinssatz) nach folgender Maßgabe anpassen: Sofern am letzten Bankarbeitstag vor dem 15. eines Kalendermonats von der Bank eine Erhöhung des
+EZB-Zinssatzes um mindestens 0,25 Prozentpunkte gegenüber dem EZB-Zinssatz im Monat der letzten Zinsanpassung festgestellt wird, erhöht die Bank den
+variablen Sollzinssatz entsprechend. Die Bank verpflichtet sich dagegen zur Senkung des variablen Sollzinssatzes um die Veränderung des EZB-Zinssatzes,
+wenn der EZB-Zinssatz um mindestens 0,25 Prozentpunkte gesunken ist. Die Zinsanpassungen werden 5 Bankarbeitstage nach dem 15. eines Kalendermonats ohne
+gesonderte Erklärung gegenüber dem Kontoinhaber bei der comdirect bank AG wirksam. Die comdirect bank AG wird den Kontoinhaber in regelmäßigen
+Zeitabständen im Finanzreport unterrichten. Der Kontoinhaber kann die Höhe des EZB-Zinssatzes jederzeit auf der Webseite der comdirect bank AG bzw. in anderen
+öffentlich zugänglichen Medien (insbesondere www.bundesbank.de) einsehen.
+Wichtige Hinweise:
+1. Ihre individuellen Vergünstigungen
+Vergünstigungen Gültigkeit
+Kostenlose Depotführung (5,85 EUR pro Quartal gespart) 01.01.2017 bis 31.03.2017
+Details zu Ihren persönlichen Vergünstigungen können Sie bei www.comdirect.de im Persönlichen Bereich unter Verwaltung >
+Depot & Trading > Vergünstigungen einsehen. Es gilt das aktuelle Preis- und Leistungsverzeichnis.
+2. Einwendungen zu Konto- und Depotbuchungen
+Sollten Sie Fragen oder Einwendungen zu den Konto- und Depotbuchungen haben, bitten wir Sie, uns dies innerhalb sechs
+Wochen nach Erhalt des Finanzreportes unter Angabe Ihrer Kundennummer mitzuteilen. Ihre schriftliche Einwendung richten Sie
+bitte an die comdirect bank AG, Innenrevision, 25449 Quickborn.
+3. Ihre Kontodisposition
+Der Kontostand berücksichtigt nicht die Valuta (Wertstellung) der einzelnen Buchungen. Das bedeutet, dass der angezeigte
+Kontostand nicht dem tatsächlichen Kontoguthaben entsprechen muss und bei Verfügungen möglicherweise Zinsen für die
+Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können. Bitte berücksichtigen Sie bei Ihrer
+Disposition daher ggf. die Wertstellungen der Kontoumsätze der letzten Tage.
+4. Hinweis zur Einlagensicherung
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können
+dem „Informationsbogen für den Einleger“ entnommen werden. Diesen finden Sie unter www.comdirect.de/infobogen
+5. Übersicht Ihrer Kontodaten
+- Girokonto: DE99 2004 1111 0123 4567 89
+- Tagesgeld PLUS-Konto: DE98 2004 1111 0123 4567 98
+BIC: COBADEHDXXX
+comdirect bank AG USt-ID: DE 812 279 461
+25449 Quickborn

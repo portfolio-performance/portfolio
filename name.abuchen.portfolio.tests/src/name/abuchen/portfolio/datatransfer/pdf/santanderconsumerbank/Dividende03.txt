@@ -1,0 +1,54 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.4
+-----------------------------------------
+Santander Consumer Bank AG · Santander-Platz 1 · 41061 Mönchengladbach    Seite 1
+Depotnummer
+  0000 0000000000
+ Kundennummer 000000000
+Karl Mustermann
+ Abrechnungsnr. 00000000000
+Herr Datum 29.06.2023
+Karl Mustermann Ihr Berater Santander Expertenberatung
+Musterstraße 1 Telefon 02161/9060187       
+12345 Musterstadt
+                                                        
+                                                        
+                                                        
+Ausschüttung Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 495 VANGUARD FTSE ALL-WORLD U.ETF IE00B3RBWM25 (A1JX52)
+REGISTERED SHARES USD DIS.ON
+Zahlbarkeitstag 28.06.2023 Ausschüttung pro St. 0,727274000 USD
+Bestandsstichtag 14.06.2023 mit Teilfreistellung (Aktien-
+Ex-Tag 15.06.2023 fonds) 0,509091800 USD
+Geschäftsjahr 01.07.2022 - 30.06.2023 Herkunftsland Irland
+Devisenkurs EUR / USD  1,0977
+Devisenkursdatum 29.06.2023
+Ausschüttung 360,00 USD 327,96+ EUR
+davon steuerfreier Anteil wg. Teilfreistellung 108,00 USD
+Kapitalertragsteuerpfl. Ertrag nach Teilfreistellung 252,00 USD
+Umrechnung in EUR 229,57 EUR
+Verrechneter Sparer-Pauschbetrag 229,57 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+Ausmachender Betrag 327,96+ EUR
+Lagerstelle Clearstream Banking Lux (849133 / 64003)
+Den Betrag buchen wir mit Wertstellung 30.06.2023 zu Gunsten des Kontos 0000000000 (IBAN DE00 0000 0000 0000
+0000 00), BLZ 000 000 00 (BIC XXXXXXXXXXX). 
+Keine Steuerbescheinigung. 
+Bitte ggf. Rückseite beachten.
+0832.06300100.0001415ER03
+Seite 2
+Depotnummer  0000 0000000000
+Kundennummer 000000000
+Abrechnungsnr. 00000000000
+Datum 29.06.2023
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2023 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 260,13 0,00 0,00 0,00
+Ertrag 0,00 0,00 229,57- 0,00 0,00 0,00
+Nachher 0,00 0,00 30,56 0,00 0,00 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0832.06300100.0001416ER03

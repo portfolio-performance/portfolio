@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
-import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ControlContribution;
 import org.eclipse.jface.action.IAction;
@@ -29,18 +29,19 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 
+import name.abuchen.portfolio.bootstrap.BundleMessages;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.model.TaxonomyJSONExporter;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
-import name.abuchen.portfolio.online.TaxonomySource;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
-import name.abuchen.portfolio.ui.util.ClientFilterMenu;
+import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
 import name.abuchen.portfolio.ui.util.DropDown;
-import name.abuchen.portfolio.ui.util.LabelOnly;
+import name.abuchen.portfolio.ui.util.JSONExporterDialog;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodListener;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -50,48 +51,26 @@ import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
 import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
 import name.abuchen.portfolio.ui.views.panes.TradesPane;
 import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
+import name.abuchen.portfolio.ui.wizards.datatransfer.taxonomy.TaxonomyImportDialog;
 
 public class TaxonomyView extends AbstractFinanceView implements PropertyChangeListener, ReportingPeriodListener
 {
     private class FilterDropDown extends DropDown implements IMenuListener
     {
-        private ClientFilterMenu clientFilterMenu;
-
         public FilterDropDown(IPreferenceStore preferenceStore)
         {
             super(Messages.SecurityFilter, Images.FILTER_OFF, SWT.NONE);
             setMenuListener(this);
 
-            this.clientFilterMenu = new ClientFilterMenu(getClient(), getPreferenceStore());
-
-            Consumer<ClientFilter> listener = filter -> {
-                setInformationPaneInput(null);
-                Client filteredClient = filter.filter(getClient());
-                model.updateClientSnapshot(filteredClient);
-            };
-
-            clientFilterMenu.addListener(listener);
-            clientFilterMenu.addListener(filter -> updateIcon());
-
             loadPreselectedFilter(preferenceStore);
 
-            if (clientFilterMenu.hasActiveFilter() || !model.getNodeFilters().isEmpty())
+            if (!model.getNodeFilters().isEmpty())
                 setImage(Images.FILTER_ON);
-
-            // As the taxonomy model is initially calculated in the #init
-            // method, we must recalculate the values if an active filter
-            // exists.
-            clientFilter = clientFilterMenu.getSelectedFilter();
-            if (clientFilterMenu.hasActiveFilter())
-                listener.accept(clientFilterMenu.getSelectedFilter());
         }
 
         private void loadPreselectedFilter(IPreferenceStore preferenceStore)
         {
             String prefix = TaxonomyView.class.getSimpleName() + "-" + taxonomy.getId(); //$NON-NLS-1$
-
-            // client filter
-            clientFilterMenu.trackSelectedFilterConfigurationKey(prefix);
 
             // predicates
             if (preferenceStore.getBoolean(prefix + TaxonomyModel.KEY_FILTER_NON_ZERO))
@@ -110,7 +89,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
         private void updateIcon()
         {
-            boolean hasActiveFilter = clientFilterMenu.hasActiveFilter() || !model.getNodeFilters().isEmpty();
+            boolean hasActiveFilter = !model.getNodeFilters().isEmpty();
             setImage(hasActiveFilter ? Images.FILTER_ON : Images.FILTER_OFF);
         }
 
@@ -122,10 +101,6 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
                 manager.add(buildNodeFilterAction(Messages.FilterValuationNonZero, TaxonomyModel.FILTER_NON_ZERO));
                 manager.add(buildNodeFilterAction(Messages.FilterNotRetired, TaxonomyModel.FILTER_NOT_RETIRED));
             });
-
-            manager.add(new Separator());
-            manager.add(new LabelOnly(Messages.MenuChooseClientFilter));
-            clientFilterMenu.menuAboutToShow(manager);
         }
 
         private Action buildNodeFilterAction(String label, Predicate<TaxonomyNode> predicate)
@@ -158,23 +133,35 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     private String expansionStateDefinition;
     /** preference key: node expansion state in rebalancing viewer */
     private String expansionStateReblancing;
+    /** preference key: coloring strategy in the tree map */
+    private String identifierColoringStrategy;
+    /** preference key: show group heading in the tree map */
+    private String identifierGroupHeading;
+    /** preference key: color schema used in the tree map */
+    private String identifierColorSchema;
+
+    @Inject
+    private IStylingEngine stylingEngine;
 
     private TaxonomyModel model;
     private Taxonomy taxonomy;
-    private ClientFilter clientFilter;
+    private ClientFilterDropDown clientFilterDropDown;
     private ReportingPeriodDropDown reportingPeriodDropDown;
 
     private Composite container;
     private List<Action> viewActions = new ArrayList<>();
 
-    @Inject
-    @Preference(UIConstants.Preferences.ENABLE_EXPERIMENTAL_FEATURES)
-    boolean enableExperimentalFeatures;
-
     @Override
     protected String getDefaultTitle()
     {
-        return taxonomy.getName();
+        var title = new StringBuilder();
+
+        title.append(taxonomy.getName());
+
+        if (clientFilterDropDown.hasActiveFilter())
+            title.append(" : ").append(clientFilterDropDown.getClientFilterMenu().getSelectedItem().getLabel()); //$NON-NLS-1$
+
+        return title.toString();
     }
 
     @Inject
@@ -182,6 +169,25 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
                     ExchangeRateProviderFactory factory)
     {
         this.taxonomy = taxonomy;
+
+        this.model = new TaxonomyModel(factory, getClient(), taxonomy);
+
+        Consumer<ClientFilter> listener = filter -> {
+            setInformationPaneInput(null);
+            Client filteredClient = filter.filter(getClient());
+            setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
+            model.updateClientSnapshot(filteredClient);
+        };
+        this.clientFilterDropDown = new ClientFilterDropDown(getClient(), getPreferenceStore(),
+                        TaxonomyView.class.getSimpleName() + "-" + taxonomy.getId(), listener); //$NON-NLS-1$
+
+        // As the taxonomy model is initially calculated in the
+        // TaxonomyModel#init method, we must recalculate the values if an
+        // active filter exists.
+        if (this.clientFilterDropDown.hasActiveFilter())
+            listener.accept(this.clientFilterDropDown.getSelectedFilter());
+
+        this.clientFilterDropDown.getClientFilterMenu().addListener(filter -> updateTitle(getDefaultTitle()));
 
         this.identifierView = TaxonomyView.class.getSimpleName() + "-VIEW-" + taxonomy.getId(); //$NON-NLS-1$
         this.identifierUnassigned = TaxonomyView.class.getSimpleName() + "-UNASSIGNED-" + taxonomy.getId(); //$NON-NLS-1$
@@ -193,7 +199,11 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         this.expansionStateReblancing = TaxonomyView.class.getSimpleName() + "-EXPANSION-REBALANCE-" //$NON-NLS-1$
                         + taxonomy.getId();
 
-        this.model = new TaxonomyModel(factory, getClient(), taxonomy);
+        this.identifierColoringStrategy = TaxonomyView.class.getSimpleName() + "-COLORINGSTRATEGY-" + taxonomy.getId(); //$NON-NLS-1$
+        this.identifierGroupHeading = TaxonomyView.class.getSimpleName() + "-GROUPHEADING-" //$NON-NLS-1$
+                        + taxonomy.getId();
+        this.identifierColorSchema = TaxonomyView.class.getSimpleName() + "-COLORSCHEMA-" //$NON-NLS-1$
+                        + taxonomy.getId();
 
         IPreferenceStore preferences = getPreferenceStore();
         this.model.setExcludeUnassignedCategoryInCharts(preferences.getBoolean(identifierUnassigned));
@@ -201,6 +211,9 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         this.model.setOrderByTaxonomyInStackChart(preferences.getBoolean(identifierOrderByTaxonomy));
         this.model.setExpansionStateDefinition(preferences.getString(expansionStateDefinition));
         this.model.setExpansionStateRebalancing(preferences.getString(expansionStateReblancing));
+        this.model.setColoringStrategy(preferences.getString(identifierColoringStrategy));
+        this.model.setShowGroupHeadingInTreeMap(preferences.getBoolean(identifierGroupHeading));
+        this.model.setColorSchemaInTreeMap(preferences.getString(identifierColorSchema));
 
         this.taxonomy.addPropertyChangeListener(this);
     }
@@ -208,7 +221,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     @Override
     public void propertyChange(PropertyChangeEvent event)
     {
-        updateTitle(taxonomy.getName());
+        updateTitle(getDefaultTitle());
     }
 
     @Override
@@ -231,6 +244,9 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         preferences.setValue(identifierOrderByTaxonomy, model.isOrderByTaxonomyInStackChart());
         preferences.setValue(expansionStateDefinition, model.getExpansionStateDefinition());
         preferences.setValue(expansionStateReblancing, model.getExpansionStateRebalancing());
+        preferences.setValue(identifierColoringStrategy, model.getColoringStrategy());
+        preferences.setValue(identifierGroupHeading, model.doShowGroupHeadingInTreeMap());
+        preferences.setValue(identifierColorSchema, model.getColorSchemaInTreeMap());
 
         super.dispose();
     }
@@ -247,12 +263,13 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         addView(toolBar, Messages.LabelViewStackedChartActualValue, Images.VIEW_STACKEDCHART_ACTUALVALUE, 6);
         toolBar.add(new Separator());
 
-        addReportingPeriodDropDown(toolBar);
         addSearchButton(toolBar);
-
         toolBar.add(new Separator());
 
+        addReportingPeriodDropDown(toolBar);
+
         toolBar.add(new FilterDropDown(getPreferenceStore()));
+        toolBar.add(clientFilterDropDown);
         addExportButton(toolBar);
         addConfigButton(toolBar);
     }
@@ -272,18 +289,18 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
             {
                 final Text search = new Text(parent, SWT.SEARCH | SWT.ICON_CANCEL);
                 search.setMessage(Messages.LabelSearch);
-                search.setSize(300, SWT.DEFAULT);
 
                 search.addModifyListener(e -> {
-                    String filterText = Pattern.quote(search.getText().trim());
-                    if (filterText.length() == 0)
+                    var filterText = search.getText().trim();
+                    if (filterText.isEmpty())
                     {
                         model.setFilterPattern(null);
                         model.fireTaxonomyModelChange(model.getVirtualRootNode());
                     }
                     else
                     {
-                        Pattern p = Pattern.compile(".*" + filterText + ".*", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$ //$NON-NLS-2$
+                        var p = Pattern.compile(".*" + Pattern.quote(filterText) + ".*", //$NON-NLS-1$ //$NON-NLS-2$
+                                        Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
                         model.setFilterPattern(p);
                         model.fireTaxonomyModelChange(model.getVirtualRootNode());
                     }
@@ -303,33 +320,41 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     private void addExportButton(ToolBarManager toolBar)
     {
         toolBar.add(new DropDown(Messages.MenuExportData, Images.EXPORT, SWT.NONE,
-                        manager -> getCurrentPage().ifPresent(p -> p.exportMenuAboutToShow(manager))));
+                        manager -> getCurrentPage().ifPresent(p -> {
+                            p.exportMenuAboutToShow(manager);
+
+                            manager.add(new Separator());
+
+                            manager.add(new SimpleAction(
+                                            BundleMessages.getString(BundleMessages.Label.Command.importTaxonomy),
+                                            action -> {
+                                                var dialog = new TaxonomyImportDialog(container.getShell(),
+                                                                stylingEngine, getPart().getPreferenceStore(),
+                                                                model.getClient(), model.getTaxonomy());
+                                                if (dialog.open() == TaxonomyImportDialog.DIRTY)
+                                                {
+                                                    // do a complete reload of
+                                                    // the view including
+                                                    // taxonomy model because
+                                                    // there can be structural
+                                                    // changes which are not
+                                                    // reflected in TaxonomyNode
+                                                    // objects.
+
+                                                    model.getClient().markDirty();
+                                                    getPart().activateView(TaxonomyView.class, model.getTaxonomy());
+                                                }
+                                            }));
+
+                            manager.add(new SimpleAction(
+                                            BundleMessages.getString(BundleMessages.Label.Command.exportTaxonomy),
+                                            action -> new JSONExporterDialog(container.getShell(),
+                                                            new TaxonomyJSONExporter(model.getTaxonomy())).export()));
+                        })));
     }
 
     private void addConfigButton(ToolBarManager toolBar)
     {
-        if (enableExperimentalFeatures)
-        {
-            toolBar.add(new DropDown("Sync", Images.CLOUD, SWT.NONE, manager -> {
-
-                String source = taxonomy.getSource();
-
-                for (TaxonomySource ts : TaxonomySource.values())
-                {
-                    Action action = new SimpleAction(ts.getLabel(), a -> {
-                        if (ts.getIdentifier().equals(source))
-                            taxonomy.setSource(null);
-                        else
-                            taxonomy.setSource(ts.getIdentifier());
-
-                        model.getClient().touch();
-                    });
-                    action.setChecked(ts.getIdentifier().equals(source));
-                    manager.add(action);
-                }
-            }));
-        }
-
         toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
                         manager -> getCurrentPage().ifPresent(p -> p.configMenuAboutToShow(manager))));
     }
@@ -343,7 +368,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     @Override
     public void notifyModelUpdated()
     {
-        Client filteredClient = this.clientFilter.filter(getClient());
+        Client filteredClient = this.clientFilterDropDown.getSelectedFilter().filter(getClient());
         setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
         model.updateClientSnapshot(filteredClient);
     }
@@ -362,7 +387,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     {
         LocalResourceManager resources = new LocalResourceManager(JFaceResources.getResources(), parent);
 
-        TaxonomyNodeRenderer renderer = new TaxonomyNodeRenderer(resources);
+        TaxonomyNodeRenderer renderer = new TaxonomyNodeRenderer(model, resources);
 
         container = new Composite(parent, SWT.NONE);
         StackLayout layout = new StackLayout();
@@ -432,9 +457,9 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         for (Control control : container.getChildren())
         {
             Page page = (Page) control.getData();
-            if (page instanceof ReportingPeriodListener)
+            if (page instanceof ReportingPeriodListener listener)
             {
-                ((ReportingPeriodListener)page).reportingPeriodUpdated();
+                listener.reportingPeriodUpdated();
             }
         }
     }

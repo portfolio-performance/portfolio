@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.dnd.DND;
@@ -19,7 +18,6 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.dnd.ImportFromFileDropAdapter;
-import name.abuchen.portfolio.ui.dnd.ImportFromURLDropAdapter;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.editor.Navigation.Item;
 import name.abuchen.portfolio.ui.editor.Navigation.Tag;
@@ -72,13 +70,13 @@ import name.abuchen.portfolio.ui.views.SecurityListView;
             }
 
             @Override
-            public IMenuListener getActionMenu(Navigation.Item item)
+            public Navigation.MenuListener getActionMenu(Navigation.Item item)
             {
                 return item.getActionMenu();
             }
 
             @Override
-            public IMenuListener getContextMenu(Navigation.Item item)
+            public Navigation.MenuListener getContextMenu(Navigation.Item item)
             {
                 return item.getContextMenu();
             }
@@ -86,7 +84,7 @@ import name.abuchen.portfolio.ui.views.SecurityListView;
 
         ScrolledComposite scrolledComposite = new ScrolledComposite(parent, SWT.V_SCROLL);
 
-        sidebar = new Sidebar<>(scrolledComposite, model);
+        sidebar = new Sidebar<>(scrolledComposite, editor, model);
 
         editor.getClientInput().getNavigation().findAll(item -> item.getViewClass() == SecurityListView.class)
                         .forEach(this::setupAllSecuritesAndWatchlistDnD);
@@ -110,8 +108,6 @@ import name.abuchen.portfolio.ui.views.SecurityListView;
         };
         editor.getClientInput().getNavigation().addListener(listener);
         sidebar.addDisposeListener(e -> editor.getClientInput().getNavigation().removeListener(listener));
-
-        ImportFromURLDropAdapter.attach(sidebar, editor);
 
         ImportFromFileDropAdapter.attach(sidebar, editor);
 

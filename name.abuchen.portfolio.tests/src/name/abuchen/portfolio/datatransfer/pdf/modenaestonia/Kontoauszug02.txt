@@ -1,0 +1,20 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.75.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Income statement
+For the period of 2025-02-28 - 2025-04-21 GMT
+ehGRxlwBy YqHpSXf
+Income summary
+Amount
+Total Vault Net Income €153.91
+Total Bond Net Income €0.00
+Total €153.91
+Vault Income
+ID: vault_7U1OluJ7VF1fbD9BlSi79bZ2kB
+Date Source Amount
+2025-04-17 07:00:16 Debt claims buyback €-0.63
+Bond Interest Income
+Date Source Amount
+There is no income for the selected period
+3

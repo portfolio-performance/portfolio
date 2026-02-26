@@ -1,0 +1,56 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.4
+-----------------------------------------
+Santander Consumer Bank AG · Santander-Platz 1 · 41061 Mönchengladbach    Seite 1
+Depotnummer
+  0000 0000000000
+ Kundennummer 000000000
+Karl Mustermann
+ Abrechnungsnr. 00000000000
+Herr Datum 29.06.2023
+Karl Mustermann Ihr Berater Santander Expertenberatung
+Musterstraße 1 Telefon 02161/9060187       
+12345 Musterstadt
+                                                        
+                                                        
+                                                        
+Ausschüttung Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 495 VANGUARD FTSE ALL-WORLD U.ETF IE00B3RBWM25 (A1JX52)
+REGISTERED SHARES USD DIS.ON
+Zahlbarkeitstag 26.06.2024 Ausschüttung pro St. 0,788854000 USD
+Bestandsstichtag 12.06.2024 mit Teilfreistellung (Aktien-
+Ex-Tag 13.06.2024 fonds) 0,552197800 USD
+Geschäftsjahr 01.07.2023 - 30.06.2024 Herkunftsland Irland
+Devisenkurs EUR / USD  1,0754
+Devisenkursdatum 27.06.2024
+Ausschüttung 390,48 USD 363,10+ EUR
+davon steuerfreier Anteil wg. Teilfreistellung 117,14 USD
+Kapitalertragsteuerpfl. Ertrag nach Teilfreistellung 273,34 USD
+Umrechnung in EUR 254,18 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 254,18 EUR
+Kapitalertragsteuer 24,45 % auf 254,18 EUR 62,15- EUR
+Solidaritätszuschlag 5,5 % auf 62,15 EUR 3,41- EUR
+Kirchensteuer 9 % auf 62,15 EUR 5,59- EUR
+Ausmachender Betrag 291,95+ EUR
+Lagerstelle Clearstream Banking Lux (849133 / 64003)
+Den Betrag buchen wir mit Wertstellung 27.06.2024 zu Gunsten des Kontos 0000000000 (IBAN DE00 0000 0000 0000
+0000 00), BLZ 000 000 00 (BIC XXXXXXXXXXX). 
+Keine Steuerbescheinigung. 
+Bitte ggf. Rückseite beachten.
+0832.06280100.0001787ER03
+Seite 2
+Depotnummer  0000 0000000000
+Kundennummer 000000000
+Abrechnungsnr. 00000000000
+Datum 27.06.2024
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2024 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 0,00 3.491,94
+Ertrag 0,00 0,00 0,00 0,00 0,00 254,18
+Nachher 0,00 0,00 0,00 0,00 0,00 3.746,12
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0832.06280100.0001788ER03

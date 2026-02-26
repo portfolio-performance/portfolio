@@ -1,0 +1,56 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.2
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Merkurstraße 2 · 97762 Hammelburg    Seite 1
+Depotnummer
+ 13405290
+ Kundennummer 140529000
+Max Mustermann
+ Abrechnungsnr. 77550511480
+Max Mustermann Datum 02.10.2025
+Blumenstrasse. 53
+42289 Wuppertal
+                                                        
+                                                        
+                                                        
+Ausschüttung Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 3,8506 VANGUARD FTSE ALL-WORLD U.ETF IE00B3RBWM25 (A1JX52)
+REGISTERED SHARES USD DIS.ON
+Zahlbarkeitstag 01.10.2025 Ausschüttung pro St. 0,422745000 USD
+Bestandsstichtag 17.09.2025 mit Teilfreistellung (Aktien-
+Ex-Tag 18.09.2025 fonds) 0,295921500 USD
+Geschäftsjahr 01.07.2024 - 30.06.2025 Herkunftsland Irland
+Devisenkurs EUR / USD  1,1802
+Devisenkursdatum 02.10.2025
+Ausschüttung 1,63 USD 1,38+ EUR
+davon steuerfreier Anteil wg. Teilfreistellung 0,49 USD
+Kapitalertragsteuerpfl. Ertrag nach Teilfreistellung 1,14 USD
+Umrechnung in EUR 0,97 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,97 EUR
+Kapitalertragsteuer 25 % auf 0,97 EUR 0,24- EUR
+Solidaritätszuschlag 5,5 % auf 0,24 EUR 0,01- EUR
+Ausmachender Betrag 1,13+ EUR
+Lagerstelle CBFI (601617 / 67268)
+Den Betrag buchen wir mit Wertstellung 02.10.2025 zu Gunsten des Kontos 1405290 (IBAN DE95 7013 0800 0001 4052
+90), BLZ 701 308 00 (BIC GENODEF1M06). 
+Keine Steuerbescheinigung. 
+Bitte ggf. Rückseite beachten.
+6175.10030104.0001718ER03
+
+Seite 2
+Depotnummer 13405290
+Kundennummer 140529000
+Abrechnungsnr. 77550511480
+Datum 02.10.2025
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2025 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 25,47
+Ertrag 0,00 0,00 0,00 0,00 0,97
+Nachher 0,00 0,00 0,00 0,00 26,44
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+6175.10030104.0001719ER03

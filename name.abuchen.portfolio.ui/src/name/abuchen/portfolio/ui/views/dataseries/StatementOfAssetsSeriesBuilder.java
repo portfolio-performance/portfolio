@@ -4,9 +4,6 @@ import static name.abuchen.portfolio.util.ArraysUtil.accumulateAndToDouble;
 import static name.abuchen.portfolio.util.ArraysUtil.add;
 import static name.abuchen.portfolio.util.ArraysUtil.toDouble;
 
-import org.swtchart.IBarSeries;
-import org.swtchart.ILineSeries;
-
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
@@ -27,13 +24,13 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
 
         PerformanceIndex index = getCache().lookup(series, reportingPeriod);
 
-        if (series.getType() == DataSeries.Type.CLIENT)
+        if (series.getType() == DataSeries.Type.CLIENT || series.getType() == DataSeries.Type.DERIVED_DATA_SERIES)
         {
             addClient(series, index);
         }
         else
         {
-            ILineSeries lineSeries = getChart().addDateSeries(series.getUUID(), index.getDates(),
+            var lineSeries = getChart().addDateSeries(series.getUUID(), index.getDates(),
                             toDouble(index.getTotals(), Values.Amount.divider()), series.getLabel());
             configure(series, lineSeries);
         }
@@ -43,13 +40,17 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
     {
         double[] values;
 
-        switch ((ClientDataSeries) series.getInstance())
+        switch (series.getInstance() instanceof DerivedDataSeries derived ? derived.getAspect()
+                        : (ClientDataSeries) series.getInstance())
         {
             case TOTALS:
                 values = toDouble(clientIndex.getTotals(), Values.Amount.divider());
                 break;
             case TRANSFERALS:
                 values = toDouble(clientIndex.getTransferals(), Values.Amount.divider());
+                break;
+            case TRANSFERALS_ACCUMULATED:
+                values = accumulateAndToDouble(clientIndex.getTransferals(), Values.Amount.divider());
                 break;
             case INVESTED_CAPITAL:
                 values = toDouble(clientIndex.calculateInvestedCapital(), Values.Amount.divider());
@@ -106,13 +107,13 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
 
         if (series.isLineChart())
         {
-            ILineSeries lineSeries = getChart().addDateSeries(series.getUUID(), clientIndex.getDates(), values,
+            var lineSeries = getChart().addDateSeries(series.getUUID(), clientIndex.getDates(), values,
                             series.getLabel());
             configure(series, lineSeries);
         }
         else
         {
-            IBarSeries barSeries = getChart().addDateBarSeries(series.getUUID(), clientIndex.getDates(), values,
+            var barSeries = getChart().addDateBarSeries(series.getUUID(), clientIndex.getDates(), values,
                             series.getLabel());
             configure(series, barSeries);
         }

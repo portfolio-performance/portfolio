@@ -1,0 +1,29 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.74.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH, BRANCH FRANCE  29 RUE DU PONT  92200 NEUILLY-SUR-SEINE
+OybxE qUybn PAGE 1 de 1
+Rue des Fgev 5 DATE 17.02.2025
+30248 OBERHOFFEN-LES-fEGtPuRKmtw EXÉCUTION 7d14-148e
+PLAN D'ÉPARGNE 78c5-4592
+COMPTE-TITRES 0835658302
+CONFIRMATION DE L'INVESTISSEMENT PROGRAMMÉ
+RÉCAPITULATIF
+Exécution de l'investissement programmé le 17/02/2025 sur Lang und Schwarz Exchange.
+La contrepartie de cette opération est Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION QUANTITÉ COURS MOYEN MONTANT
+Berkshire Hathaway (B) 0,216943 460,95 EUR 100,00 EUR
+ISIN : US0846707026
+TOTAL 100,00 EUR
+RÉGLEMENT
+COMPTE-ESPÈCES DATE DE VALEUR MONTANT
+FR7631233123450083565831148 2025-02-19 -100,00 EUR
+Berkshire Hathaway (B) en conservation collective en Allemagne
+Ce document est généré automatiquement et n'est donc pas signé.
+Si aucune taxe n'est indiquée, il s'agit d'un service non sujet à la taxe sur le chiffre d'affaires (conformément à la réglementation UStG. § 4 n° 8).
+Trade Republic Bank GmbH, Branch France www.traderepublic.fr Siège sociale: Trade Republic Bank GmbH Directeurs Généraux
+c/o Connel Speirs, 29 Rue du Pont service@traderepublic.com Brunnenstrasse 19-21, 10119 Berlin, Allemagne Andreas Torner
+92200 Neuilly-sur-Seine TVA DE307510626 Registre du commerce du tribunal local de Gernot Mittendorfer
+900 796 855 R.C.S. Nanterre Charlottenburg, HRB 244347 B, Allemagne Christian Hecker
+Thomas Pischke

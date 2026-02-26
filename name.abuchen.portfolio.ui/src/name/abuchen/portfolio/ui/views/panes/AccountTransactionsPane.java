@@ -56,12 +56,12 @@ import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransferDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
-import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
+import name.abuchen.portfolio.ui.util.ValueColorScheme;
 import name.abuchen.portfolio.ui.util.searchfilter.TransactionFilterDropDown;
 import name.abuchen.portfolio.ui.util.searchfilter.TransactionSearchField;
 import name.abuchen.portfolio.ui.util.viewers.Column;
@@ -71,6 +71,8 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateTimeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateTimeLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.ExDateEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.MoneyColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.TransactionOwnerListEditingSupport;
@@ -79,6 +81,7 @@ import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 import name.abuchen.portfolio.ui.views.AccountContextMenu;
 import name.abuchen.portfolio.ui.views.AccountListView;
 import name.abuchen.portfolio.ui.views.actions.ConvertTransferToDepositRemovalAction;
+import name.abuchen.portfolio.ui.views.actions.CreateRemovalForDividendAction;
 import name.abuchen.portfolio.ui.views.columns.CalculatedQuoteColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
@@ -148,7 +151,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
 
         transactions = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI | SWT.VIRTUAL);
         ColumnViewerToolTipSupport.enableFor(transactions, ToolTip.NO_RECREATE);
-        ColumnEditingSupport.prepare(transactions);
+        ColumnEditingSupport.prepare(view.getEditorActivationState(), transactions);
         CopyPasteSupport.enableFor(transactions);
 
         // needed for virtual tables as otherwise the in-place editing does not
@@ -290,9 +293,10 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
             }
 
             @Override
-            public Color getForeground(Object element)
+            public Color getForeground(Object e)
             {
-                return colorFor((AccountTransaction) element);
+                Money balance = transaction2balance.get(e);
+                return MoneyColorLabelProvider.getForeground(balance);
             }
         });
 
@@ -434,6 +438,27 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
         column.getEditingSupport().addListener(this);
         transactionsColumns.addColumn(column);
 
+        column = new Column("exdate", Messages.ColumnExDate, SWT.None, 80); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                var t = (AccountTransaction) e;
+                return t.getExDate() != null ? Values.Date.format(t.getExDate().toLocalDate()) : null;
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((AccountTransaction) element);
+            }
+        });
+        ColumnViewerSorter.create(e -> ((AccountTransaction) e).getExDate()).attachTo(column);
+        new ExDateEditingSupport().addListener(this).attachTo(column);
+        column.setVisible(false);
+        transactionsColumns.addColumn(column);
+
         column = new Column("source", Messages.ColumnSource, SWT.None, 120); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -449,7 +474,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
                 return colorFor((AccountTransaction) element);
             }
         });
-        ColumnViewerSorter.createIgnoreCase(e -> ((AccountTransaction) e).getSource()).attachTo(column); // $NON-NLS-1$
+        ColumnViewerSorter.createIgnoreCase(e -> ((AccountTransaction) e).getSource()).attachTo(column);
         transactionsColumns.addColumn(column);
 
         transactionsColumns.createColumns(true);
@@ -505,7 +530,8 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
 
     private Color colorFor(AccountTransaction t)
     {
-        return t.getType().isDebit() ? Colors.theme().redForeground() : Colors.theme().greenForeground();
+        return t.getType().isDebit() ? ValueColorScheme.current().negativeForeground()
+                        : ValueColorScheme.current().positiveForeground();
     }
 
     private void hookKeyListener()
@@ -522,6 +548,14 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
 
                     if (account != null && transaction != null)
                         createEditAction(account, transaction).run();
+                }
+                if (e.keyCode == 'd' && e.stateMask == SWT.MOD1)
+                {
+                    AccountTransaction transaction = (AccountTransaction) ((IStructuredSelection) transactions
+                                    .getSelection()).getFirstElement();
+
+                    if (account != null && transaction != null)
+                        createCopyAction(account, transaction).run();
                 }
             }
         });
@@ -541,7 +575,9 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
             action.setAccelerator(SWT.MOD1 | 'E');
             manager.add(action);
 
-            manager.add(createCopyAction(account, transaction));
+            Action duplicateAction = createCopyAction(account, transaction);
+            duplicateAction.setAccelerator(SWT.MOD1 | 'D');
+            manager.add(duplicateAction);
 
             manager.add(new Separator());
         }
@@ -550,7 +586,8 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
 
         if (!selection.isEmpty())
         {
-            fillTransactionsContextMenuList(manager, selection);
+            fillConvertTransferToDepositRemovalAction(manager, selection);
+            fillCreateRemovalForDividendAction(manager, selection);
         }
 
         if (transaction != null)
@@ -578,7 +615,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
         }
     }
 
-    private void fillTransactionsContextMenuList(IMenuManager manager, IStructuredSelection selection)
+    private void fillConvertTransferToDepositRemovalAction(IMenuManager manager, IStructuredSelection selection)
     {
         // create collection with all selected transactions
         Collection<AccountTransaction> accountTxCollection = new ArrayList<>(selection.size());
@@ -597,11 +634,26 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
                             || tx.getType() == AccountTransaction.Type.TRANSFER_OUT;
         }
 
-        // create action to split transfer action into deposit/removal
         if (allTransfer)
         {
+            // create action to split transfer action into deposit/withdrawal
             manager.add(new Separator());
             manager.add(new ConvertTransferToDepositRemovalAction(client, accountTxCollection));
+        }
+    }
+
+    private void fillCreateRemovalForDividendAction(IMenuManager manager, IStructuredSelection selection)
+    {
+        // create collection with all selected transactions
+        var dividendTransactionPairs = selection.stream()
+                        .filter(t -> ((AccountTransaction) t).getType() == AccountTransaction.Type.DIVIDENDS)
+                        .map(t -> new TransactionPair<>(account, (AccountTransaction) t)).toList();
+
+        if (dividendTransactionPairs.size() == selection.size())
+        {
+            // create action to create corresponding remove transaction
+            manager.add(new Separator());
+            manager.add(new CreateRemovalForDividendAction(client, dividendTransactionPairs));
         }
     }
 

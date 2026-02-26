@@ -1,0 +1,26 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.1
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital Bank GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+iMeIXG QJTxr
+aSuAAF 
+iIDV DAeOPgnChYK 5 Datum 16.01.2026
+70812 KuT Seite 1 / 1
+Deutschland 
+Wertpapierabrechnung 
+Sparplan / Automatische Wiederanlage 
+Typ LIMIT Order SCALQCpPumUCcUV
+Ausführung 16.01.2026 11:07:00 Geschäft 2489324001
+Ausführungsplatz EIX Lagerland Deutschland
+Depot 5132275283 Verwahrart Girosammelverwahrung
+Typ Wertpapier Anzahl Kurs Betrag
+Kauf Medtronic 0,585137 Stk. 85,45 EUR 50,00 EUR
+IE00BTN1Y115
+Belastung 50,00 EUR
+Der Betrag wird mit dem Verrechnungskonto RU99110397066270066155 (Valuta: 20.01.2026) verrechnet. 
+Bitte überprüfen Sie die Informationen auf Richtigkeit und melden Sie etwaige Einwände unverzüglich bei uns.
+Verwenden Sie dafür den Menüpunkt Support im Kundenbereich. 
+Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 1 / 1

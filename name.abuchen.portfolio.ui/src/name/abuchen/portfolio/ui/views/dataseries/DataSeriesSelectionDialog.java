@@ -17,7 +17,6 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -34,6 +33,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.LocaleSenstiveViewerComparator;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries.Type;
 
 public class DataSeriesSelectionDialog extends Dialog
@@ -111,6 +111,7 @@ public class DataSeriesSelectionDialog extends Dialog
         }
     }
 
+    private boolean isTreeExpanded = true;
     private boolean isMultiSelection = true;
 
     private Node[] elements;
@@ -133,6 +134,11 @@ public class DataSeriesSelectionDialog extends Dialog
         this.isMultiSelection = isMultiSelection;
     }
 
+    public void setExpandTree(boolean isTreeExpanded)
+    {
+        this.isTreeExpanded = isTreeExpanded;
+    }
+
     public void setElements(List<DataSeries> elements)
     {
         Map<String, Node> type2node = new HashMap<>();
@@ -140,7 +146,7 @@ public class DataSeriesSelectionDialog extends Dialog
 
         for (DataSeries series : elements)
         {
-            Node child = new Node(series.getSearchLabel());
+            Node child = new Node(series.getDialogLabel());
             child.dataSeries = series;
 
             Node parent = type2node.computeIfAbsent(map(series.getType()), Node::new);
@@ -149,6 +155,50 @@ public class DataSeriesSelectionDialog extends Dialog
             {
                 Node group = group2node.computeIfAbsent(series.getGroup(), g -> {
                     Node n = new Node(g.toString());
+                    n.parent = parent;
+                    parent.children.add(n);
+                    return n;
+                });
+                child.parent = group;
+                group.children.add(child);
+            }
+            else
+            {
+                child.parent = parent;
+                parent.children.add(child);
+            }
+        }
+
+        this.elements = type2node.values().toArray(new Node[0]);
+    }
+
+    public void setElementsDerivedData(List<DataSeries> elements)
+    {
+        Map<String, Node> type2node = new HashMap<>();
+        Map<Object, Node> group2node = new HashMap<>();
+
+        for (DataSeries series : elements)
+        {
+            Node child = new Node(series.getDialogLabel());
+            child.dataSeries = series;
+
+            DerivedDataSeries derivedDataSeries = (DerivedDataSeries) series.getInstance();
+
+            String topLevelNodeLabel = derivedDataSeries.getAspect().getLabel();
+            Node gdparent = type2node.computeIfAbsent(topLevelNodeLabel, Node::new);
+
+            String secondLevelNodeLabel = map(derivedDataSeries.getBaseDataSeries().getType());
+            Node parent = group2node.computeIfAbsent(topLevelNodeLabel + "|" + secondLevelNodeLabel, g -> { //$NON-NLS-1$
+                Node n = new Node(secondLevelNodeLabel);
+                n.parent = gdparent;
+                gdparent.children.add(n);
+                return n;
+            });
+
+            if (series.getGroup() != null) // for taxonomy
+            {
+                Node group = group2node.computeIfAbsent(topLevelNodeLabel + "|" + series.getGroup(), g -> { //$NON-NLS-1$
+                    Node n = new Node(series.getGroup().toString());
                     n.parent = parent;
                     parent.children.add(n);
                     return n;
@@ -252,7 +302,7 @@ public class DataSeriesSelectionDialog extends Dialog
         TreeViewerColumn column = new TreeViewerColumn(treeViewer, SWT.None);
         layout.setColumnData(column.getColumn(), new ColumnWeightData(100));
 
-        treeViewer.setLabelProvider(new LabelProvider()
+        var labelProvider = new LabelProvider()
         {
             @Override
             public Image getImage(Object element)
@@ -266,6 +316,15 @@ public class DataSeriesSelectionDialog extends Dialog
                                 || node.dataSeries.getType() == DataSeries.Type.SECURITY_BENCHMARK)
                     return LogoManager.instance().getDefaultColumnImage(node.dataSeries.getInstance(),
                                     client.getSettings());
+
+                if (node.dataSeries.getType() == DataSeries.Type.DERIVED_DATA_SERIES
+                                && ((DerivedDataSeries) node.dataSeries.getInstance()).getBaseDataSeries()
+                                                .getType() == DataSeries.Type.SECURITY)
+                    return LogoManager.instance()
+                                    .getDefaultColumnImage(
+                                                    ((DerivedDataSeries) node.dataSeries.getInstance())
+                                                                    .getBaseDataSeries().getInstance(),
+                                                    client.getSettings());
                 else
                     return node.dataSeries.getImage();
             }
@@ -275,15 +334,18 @@ public class DataSeriesSelectionDialog extends Dialog
             {
                 return ((Node) element).label;
             }
-        });
+        };
+
+        treeViewer.setLabelProvider(labelProvider);
         treeViewer.setContentProvider(new NodeContentProvider());
         treeViewer.addFilter(elementFilter);
         treeViewer.setInput(elements);
-        treeViewer.setComparator(new ViewerComparator());
+        treeViewer.setComparator(new LocaleSenstiveViewerComparator(labelProvider));
 
         hookListener();
 
-        treeViewer.expandAll();
+        if (isTreeExpanded)
+            treeViewer.expandAll();
 
         return composite;
     }

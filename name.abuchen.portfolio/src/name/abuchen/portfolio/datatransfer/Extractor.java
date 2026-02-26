@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer;
 import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -100,6 +101,11 @@ public interface Extractor
         public boolean isFailure()
         {
             return failureMessage != null;
+        }
+
+        public boolean isSkipped()
+        {
+            return this instanceof SkippedItem;
         }
 
         public String getSource()
@@ -235,7 +241,12 @@ public interface Extractor
         @Override
         public Money getAmount()
         {
-            return transaction.getMonetaryAmount();
+            var currencyCode = transaction.getCurrencyCode();
+            var amount = transaction.getAmount();
+
+            // if the transaction is not parsed completely, then the
+            // currency code maybe null
+            return currencyCode != null ? Money.of(currencyCode, amount) : null;
         }
 
         @Override
@@ -275,7 +286,12 @@ public interface Extractor
             {
                 Account account = getAccountPrimary();
                 if (account == null)
-                    account = context.getAccount();
+                    account = context.getAccount(at.getCurrencyCode());
+                if (account == null)
+                    return new Status(Status.Code.ERROR,
+                                    MessageFormat.format(Messages.MsgCheckTransactionCurrencyDoesNotMatchAccount,
+                                                    at.getCurrencyCode(), "?")); //$NON-NLS-1$
+
                 return action.process(at, account);
             }
             else if (transaction instanceof PortfolioTransaction pt)
@@ -283,6 +299,10 @@ public interface Extractor
                 Portfolio portfolio = getPortfolioPrimary();
                 if (portfolio == null)
                     portfolio = context.getPortfolio();
+                if (portfolio == null)
+                    return new Status(Status.Code.ERROR, MessageFormat.format(Messages.CSVImportMissingField,
+                                    Messages.CSVColumn_PortfolioName));
+
                 return action.process(pt, portfolio);
             }
             else
@@ -360,11 +380,18 @@ public interface Extractor
         {
             Account account = getAccountPrimary();
             if (account == null)
-                account = context.getAccount();
+                account = context.getAccount(entry.getAccountTransaction().getCurrencyCode());
+            if (account == null)
+                return new Status(Status.Code.ERROR,
+                                MessageFormat.format(Messages.MsgCheckTransactionCurrencyDoesNotMatchAccount,
+                                                entry.getAccountTransaction().getCurrencyCode(), "?")); //$NON-NLS-1$
 
             Portfolio portfolio = getPortfolioPrimary();
             if (portfolio == null)
                 portfolio = context.getPortfolio();
+            if (portfolio == null)
+                return new Status(Status.Code.ERROR,
+                                MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_PortfolioName));
 
             Status status = action.process(entry, account, portfolio);
 
@@ -442,11 +469,19 @@ public interface Extractor
         {
             Account account = getAccountPrimary();
             if (account == null)
-                account = context.getAccount();
+                account = context.getAccount(entry.getSourceTransaction().getCurrencyCode());
+            if (account == null)
+                return new Status(Status.Code.ERROR,
+                                MessageFormat.format(Messages.MsgCheckTransactionCurrencyDoesNotMatchAccount,
+                                                entry.getSourceTransaction().getCurrencyCode(), "?")); //$NON-NLS-1$
 
             Account accountSecondary = getAccountSecondary();
             if (accountSecondary == null)
-                accountSecondary = context.getSecondaryAccount();
+                accountSecondary = context.getSecondaryAccount(entry.getTargetTransaction().getCurrencyCode());
+            if (accountSecondary == null)
+                return new Status(Status.Code.ERROR,
+                                MessageFormat.format(Messages.MsgCheckTransactionCurrencyDoesNotMatchAccount,
+                                                entry.getTargetTransaction().getCurrencyCode(), "?")); //$NON-NLS-1$
 
             if (isOutbound)
                 return action.process(entry, account, accountSecondary);
@@ -524,10 +559,16 @@ public interface Extractor
             Portfolio portfolio = getPortfolioPrimary();
             if (portfolio == null)
                 portfolio = context.getPortfolio();
+            if (portfolio == null)
+                return new Status(Status.Code.ERROR,
+                                MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_PortfolioName));
 
             Portfolio portfolioSecondary = getPortfolioSecondary();
             if (portfolioSecondary == null)
                 portfolioSecondary = context.getSecondaryPortfolio();
+            if (portfolioSecondary == null)
+                return new Status(Status.Code.ERROR, MessageFormat.format(Messages.CSVImportMissingField,
+                                Messages.CSVColumn_PortfolioName2nd));
 
             return action.process(entry, portfolio, portfolioSecondary);
         }
@@ -643,6 +684,135 @@ public interface Extractor
         {
             return action.process(security, price);
         }
+    }
+
+    /**
+     * An item representing transactions that will be displayed to the user but
+     * otherwise get skipped during further processing steps. A typical reason
+     * for an item to get ignored is lack of information found in the document.
+     */
+    static class SkippedItem extends Item
+    {
+        private String skipReason;
+        private Item originalItem;
+
+        private LocalDateTime dateTime;
+        private Money amount;
+        private String typeInformation;
+        private String source;
+        private Security security;
+        private SkippedSubject subject;
+
+        private class SkippedSubject implements Annotated
+        {
+            private String note;
+
+            @Override
+            public String getNote()
+            {
+                return note;
+            }
+
+            @Override
+            public void setNote(String note)
+            {
+                this.note = note;
+            }
+        }
+
+        /**
+         * Constructs a SkippedItem based on the information found in another
+         * item and assigns a text describing the reason for the skip.
+         *
+         * @param item
+         *            The original item as a data source
+         * @param reason
+         *            Human-readable explanation
+         * @return A new item that will be displayed but otherwise skipped.
+         */
+        public SkippedItem(Item item, String reason)
+        {
+            skipReason = reason;
+            originalItem = item;
+            subject = new SkippedSubject();
+
+            // copy basic data from original item
+            dateTime = item.getDate();
+            amount = item.getAmount();
+            typeInformation = item.getTypeInformation();
+            source = item.getSource();
+            security = item.getSecurity();
+        }
+
+        @Override
+        public Annotated getSubject()
+        {
+            return subject;
+        }
+
+        @Override
+        public Security getSecurity()
+        {
+            return security;
+        }
+
+        @Override
+        public void setSecurity(Security security)
+        {
+            this.security = security;
+        }
+
+        @Override
+        public String getTypeInformation()
+        {
+            return typeInformation;
+        }
+
+        @Override
+        public LocalDateTime getDate()
+        {
+            return dateTime;
+        }
+
+        @Override
+        public Money getAmount()
+        {
+            return amount;
+        }
+
+        @Override
+        public void setNote(String note)
+        {
+            subject.setNote(note);
+        }
+
+        @Override
+        public String getSource()
+        {
+            return source;
+        }
+
+        @Override
+        public Status apply(ImportAction action, Context context)
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        public void setSkipReason(String reason)
+        {
+            skipReason = reason;
+        }
+
+        public String getSkipReason()
+        {
+            return skipReason;
+        }
+
+        public Item getOriginalItem()
+        {
+            return originalItem;
+        }
+
     }
 
     /**

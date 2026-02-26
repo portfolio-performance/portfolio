@@ -1,0 +1,49 @@
+name: PDF Import Issue
+description: Report a problem with the PDF importer
+title: "[PDF] "
+labels: ["pdf"]
+projects: ["portfolio-performance/1"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting this issue!
+
+        **Language:** You can submit PDF import issues in English or German.
+
+        **Debugging Guide:** Follow [this tutorial](https://help.portfolio-performance.info/en/how-to/requesting-new-importer/) to extract text for debugging.
+
+        **Steps:**
+        1. Open Portfolio Performance.
+        2. Click 'File' --> 'Import' --> 'Debug: Create text from PDF...'.
+        3. Select the file you're trying to import.
+        4. Use the built-in anonymization feature to remove personal data (e.g., name, address, deposit number).
+        5. Do **not** anonymize the bank's address, stock names, or dates. Only anonymize amounts if they remain consistent.
+        6. Click "Copy to Clipboard" and paste the anonymized text below.
+
+        **Do NOT upload PDFs to GitHub.** Always use the debug feature instead.
+  - type: input
+    id: bank
+    attributes:
+      label: Affected Bank
+      description: Which bank’s PDFs are you trying to import? If multiple banks are affected, open a separate issue for each.
+    validations:
+      required: true
+  - type: textarea
+    id: pdf-debug
+    attributes:
+      label: Extracted Text from PDF
+      description: "'File' --> 'Import' --> 'Debug: Create text from PDF...'"
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Issue Description
+      description: |
+        Clearly describe the problem. Examples:
+        - The document cannot be read.
+        - Some transactions are missing (which ones?).
+        - Transactions have incorrect amounts (what are they vs. what should they be?).
+        - Any other issue.

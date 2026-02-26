@@ -56,6 +56,7 @@ import org.apache.commons.csv.CSVRecord;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.util.Isin;
@@ -265,8 +266,10 @@ public final class CSVImporter
     public static class DateField extends CSVImporter.Field
     {
         private static final List<FieldFormat> FORMATS = Collections.unmodifiableList(Arrays.asList( //
+                        new DateFieldFormat(Messages.CSVFormatYYYYMMDDTHHMM, "yyyy-MM-dd'T'HH:mm"), //$NON-NLS-1$
                         new DateFieldFormat(Messages.CSVFormatYYYYMMDD, "yyyy-MM-dd"), //$NON-NLS-1$
                         new DateFieldFormat(Messages.CSVFormatYYYYMMDDSlashes, "yyyy/MM/dd"), //$NON-NLS-1$
+                        new DateFieldFormat(Messages.CSVFormatYYYYMMDDDot, "yyyy.MM.dd"), //$NON-NLS-1$
                         new DateFieldFormat(Messages.CSVFormatISO, "yyyyMMdd"), //$NON-NLS-1$
                         new DateFieldFormat(Messages.CSVFormatDDMMYYYY, "dd.MM.yyyy"), //$NON-NLS-1$
                         new DateFieldFormat(Messages.CSVFormatDDMMYY, "dd.MM.yy"), //$NON-NLS-1$
@@ -656,7 +659,22 @@ public final class CSVImporter
         {
             enumMap = new EnumMap<>(enumType);
             for (M element : enumType.getEnumConstants())
-                enumMap.put(element, element.toString());
+            {
+                // super hack: In January 2026 we changed the default label from
+                // "Removal" to the (correct) "Withdrawal". This, however,
+                // breaks the import of all previously exported CSV files. This
+                // change allows to match both - the old and the new label. We
+                // will remove this after some time.
+
+                if (element == AccountTransaction.Type.REMOVAL && "Withdrawal".equals(element.toString())) //$NON-NLS-1$
+                {
+                    enumMap.put(element, "Withdrawal|Removal"); //$NON-NLS-1$
+                }
+                else
+                {
+                    enumMap.put(element, element.toString());
+                }
+            }
         }
 
         public EnumMap<M, String> map() // NOSONAR
@@ -919,7 +937,7 @@ public final class CSVImporter
         Reader reader = new InputStreamReader(stream, encoding);
 
         CSVFormat strategy = CSVFormat.DEFAULT.builder().setDelimiter(delimiter).setQuote('"')
-                        .setRecordSeparator("\r\n").build(); //$NON-NLS-1$
+                        .setRecordSeparator("\r\n").get(); //$NON-NLS-1$
 
         try
         {

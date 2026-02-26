@@ -13,6 +13,7 @@ import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.swt.SWT;
@@ -26,8 +27,11 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
+import name.abuchen.portfolio.online.impl.AMFIIndiaQuoteFeed;
 import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
 import name.abuchen.portfolio.online.impl.BinanceQuoteFeed;
+import name.abuchen.portfolio.online.impl.BinanceFuturesUsdsMarginedQuoteFeed;
+import name.abuchen.portfolio.online.impl.MEXCQuoteFeed;
 import name.abuchen.portfolio.online.impl.BitfinexQuoteFeed;
 import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
 import name.abuchen.portfolio.online.impl.EODHistoricalDataQuoteFeed;
@@ -35,6 +39,8 @@ import name.abuchen.portfolio.online.impl.FinnhubQuoteFeed;
 import name.abuchen.portfolio.online.impl.GenericJSONQuoteFeed;
 import name.abuchen.portfolio.online.impl.KrakenQuoteFeed;
 import name.abuchen.portfolio.online.impl.LeewayQuoteFeed;
+import name.abuchen.portfolio.online.impl.MFAPIQuoteFeed;
+import name.abuchen.portfolio.online.impl.PortfolioPerformanceFeed;
 import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
 import name.abuchen.portfolio.online.impl.TwelveDataQuoteFeed;
@@ -55,9 +61,9 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
     // whether a more recent job has already been started
     private LoadHistoricalQuotes currentJob;
 
-    public HistoricalQuoteProviderPage(final EditSecurityModel model, BindingHelper bindings)
+    public HistoricalQuoteProviderPage(final EditSecurityModel model, EditSecurityCache cache, BindingHelper bindings)
     {
-        super(model, bindings);
+        super(model, cache, bindings);
 
         setTitle(Messages.EditWizardQuoteFeedTitle);
 
@@ -116,6 +122,18 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
     protected String getJSONDateFormatPropertyName()
     {
         return GenericJSONQuoteFeed.DATE_FORMAT_PROPERTY_NAME_HISTORIC;
+    }
+
+    @Override
+    protected String getJSONDateTimezonePropertyName()
+    {
+        return GenericJSONQuoteFeed.DATE_TIMEZONE_PROPERTY_NAME_HISTORIC;
+    }
+
+    @Override
+    protected String getJSONDateLocalePropertyName()
+    {
+        return GenericJSONQuoteFeed.DATE_LOCALE_PROPERTY_NAME_HISTORIC;
     }
 
     @Override
@@ -211,14 +229,22 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
     {
         if (exchange != null)
             return getFeed() + exchange.getId();
+        else if (PortfolioPerformanceFeed.ID.equals(getFeed()))
+            return PortfolioPerformanceFeed.ID + getModel().getTickerSymbol();
         else if (PortfolioReportQuoteFeed.ID.equals(getFeed()))
             return PortfolioReportQuoteFeed.ID + getModel().getCurrencyCode();
         else if (AlphavantageQuoteFeed.ID.equals(getFeed()))
             return AlphavantageQuoteFeed.ID + getModel().getTickerSymbol();
+        else if (AMFIIndiaQuoteFeed.ID.equals(getFeed()))
+            return AMFIIndiaQuoteFeed.ID + getModel().getIsin();
         else if (FinnhubQuoteFeed.ID.equals(getFeed()))
             return FinnhubQuoteFeed.ID + getModel().getTickerSymbol();
         else if (BinanceQuoteFeed.ID.equals(getFeed()))
             return BinanceQuoteFeed.ID + getModel().getTickerSymbol();
+        else if (BinanceFuturesUsdsMarginedQuoteFeed.ID.equals(getFeed()))
+            return BinanceFuturesUsdsMarginedQuoteFeed.ID + getModel().getTickerSymbol();
+        else if (MEXCQuoteFeed.ID.equals(getFeed()))
+            return MEXCQuoteFeed.ID + getModel().getTickerSymbol();
         else if (BitfinexQuoteFeed.ID.equals(getFeed()))
             return BitfinexQuoteFeed.ID + getModel().getTickerSymbol();
         else if (KrakenQuoteFeed.ID.equals(getFeed()))
@@ -232,6 +258,8 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
                             + getModel().getTickerSymbol() //
                             + getModel().getCurrencyCode()
                             + String.valueOf(getModel().getFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID));
+        else if (MFAPIQuoteFeed.ID.equals(getFeed()))
+            return MFAPIQuoteFeed.ID + String.valueOf(getModel().getFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID));
         else if (EODHistoricalDataQuoteFeed.ID.equals(getFeed()))
             return EODHistoricalDataQuoteFeed.ID + getModel().getTickerSymbol();
         else if (QuandlQuoteFeed.ID.equals(getFeed()))
@@ -247,6 +275,10 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
                                             .getFeedProperty(GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME_HISTORIC))
                             + String.valueOf(getModel()
                                             .getFeedProperty(GenericJSONQuoteFeed.DATE_FORMAT_PROPERTY_NAME_HISTORIC))
+                            + String.valueOf(getModel()
+                                            .getFeedProperty(GenericJSONQuoteFeed.DATE_TIMEZONE_PROPERTY_NAME_HISTORIC))
+                            + String.valueOf(getModel()
+                                            .getFeedProperty(GenericJSONQuoteFeed.DATE_LOCALE_PROPERTY_NAME_HISTORIC))
                             + String.valueOf(
                                             getModel().getFeedProperty(GenericJSONQuoteFeed.LOW_PROPERTY_NAME_HISTORIC))
                             + String.valueOf(getModel()
@@ -285,7 +317,8 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
             showRawResponse.setEnabled(false);
 
             Job job = new LoadHistoricalQuotes(feed, exchange, cacheKey);
-            job.setUser(true);
+            job.setUser(false);
+            job.setRule(SingletonRule.getInstance());
             job.schedule(150);
         }
     }
@@ -376,5 +409,31 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
             return Status.OK_STATUS;
         }
 
+    }
+
+    private static class SingletonRule implements ISchedulingRule // NOSONAR
+    {
+        private static final SingletonRule INSTANCE = new SingletonRule();
+
+        private SingletonRule()
+        {
+        }
+
+        public static SingletonRule getInstance()
+        {
+            return INSTANCE;
+        }
+
+        @Override
+        public boolean isConflicting(ISchedulingRule rule)
+        {
+            return rule == this;
+        }
+
+        @Override
+        public boolean contains(ISchedulingRule rule)
+        {
+            return rule == this;
+        }
     }
 }

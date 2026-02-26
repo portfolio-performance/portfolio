@@ -159,8 +159,6 @@ public class UploadToDivvyDiaryHandler
                 }
                 catch (IOException e)
                 {
-                    PortfolioPlugin.log(e);
-
                     Display.getDefault().asyncExec(() -> MessageDialog.openError(ActiveShell.get(), Messages.LabelError,
                                     e.getMessage()));
 

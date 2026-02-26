@@ -1,0 +1,40 @@
+```
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.1.qualifier
+System: linux | x86_64 | 21.0.8+9-LTS | Eclipse Adoptium
+-----------------------------------------
+Ihre Kontodaten
+BIC RCNOATW1
+IBAN AT123456111111111111
+Herrn
+Max Muster MITTEILUNG
+Teststraße 1 Kontonummer 1111111-001-1
+1234 Musterstadt
+Kontoeigner Mustermann Max
+Verfügernummer 1234456
+Wien, am 29.11.2025
+Kunden Service Center
+Tel.: 01 / 7200270
+Kontoauszug Tagesgeld
+Saldo zu Ihren Gunsten in EUR 9,66
+Datum Informationen Referenz Betrag in EUR Valuta Kontostand in EUR
+01.11.2025 Anfangssaldo 9,65
+28.11.2025  Habenzinsen A2511IDQC 0,01 30.11.2025 9,66
+Schlusssaldo in EUR 9,66
+Bitte überprüfen Sie alle Angaben auf Vollständigkeit und Richtigkeit. Wenn vorstehende Aufstellung mit dem Hinweis 
+Schlusssaldo gekennzeichnet ist, wurden die im vertraglich vereinbarten Abrechnungszeitraum entstandenen 
+wechselseitigen Ansprüche (einschließlich Zinsen und Entgelte) verrechnet. Umsätze, die nach dem Abrechnungsdatum 
+entstehen, werden erst in der folgenden Abrechnung berücksichtigt. Einwendungen gegen den Inhalt dieses 
+Kontoauszuges sind längstens binnen 6 Wochen nach Zugang dieses Kontoauszuges an die Bank zu richten. Wenn Sie 
+innerhalb dieser Frist keine Einwendungen gegen den Inhalt dieses Kontoauszuges erheben, anerkennen Sie diesen 
+damit. 
+Wichtiger Hinweis zur Einlagensicherung
+Einlagensicherung ist die Bezeichnung für die gesetzlichen und freiwilligen Maßnahmen zum Schutz der Einlagen 
+(Guthaben) von Kunden bei Kreditinstituten im Falle der Insolvenz. Die Renault Bank direkt ist dem französischen 
+Einlagensicherungsfonds FGDR angeschlossen. Der französische Einlagensicherungsfonds FGDR sichert Einlagen bis 
+100.000 Euro pro Person zu 100 Prozent ab. 
+Nähere Informationen zum FGDR können Sie auf unserer Website unter dem Menüpunkt "Über uns" im Untermenü 
+"Einlagensicherung" entnehmen. 
+Seite 1 von 1
+
+```

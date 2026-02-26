@@ -19,9 +19,6 @@ import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.typed.ViewerProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.resource.FontDescriptor;
-import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -31,7 +28,8 @@ import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -43,9 +41,12 @@ import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityModel.ClassificationLink;
+import name.abuchen.portfolio.ui.wizards.security.EditSecurityModel.SortOrder;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityModel.TaxonomyDesignation;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class SecurityTaxonomyPage extends AbstractPage
 {
@@ -131,7 +132,7 @@ public class SecurityTaxonomyPage extends AbstractPage
         @Override
         public IStatus validate(Integer value)
         {
-            int weight = (Integer) value;
+            int weight = value;
             return weight > 0 ? ValidationStatus.ok()
                             : ValidationStatus.error(Messages.EditWizardMasterDataMsgWeightEqualsZero);
         }
@@ -141,7 +142,6 @@ public class SecurityTaxonomyPage extends AbstractPage
     private final EditSecurityModel model;
     private final BindingHelper bindings;
     private ScrolledComposite scrolledComposite;
-    private Font boldFont;
     private List<ValidationStatusProvider> validators = new ArrayList<>();
 
     public SecurityTaxonomyPage(EditSecurityModel model, BindingHelper bindings)
@@ -154,14 +154,10 @@ public class SecurityTaxonomyPage extends AbstractPage
     @Override
     public void createControl(Composite parent)
     {
-        LocalResourceManager resources = new LocalResourceManager(JFaceResources.getResources(), parent);
-
-        boldFont = resources.create(FontDescriptor.createFrom(parent.getFont()).setStyle(SWT.BOLD));
-
         scrolledComposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
         setControl(scrolledComposite);
         Composite container = new Composite(scrolledComposite, SWT.NULL);
-        GridLayoutFactory.fillDefaults().numColumns(2).margins(5, 5).applyTo(container);
+        GridLayoutFactory.fillDefaults().margins(5, 5).applyTo(container);
 
         scrolledComposite.setContent(container);
         scrolledComposite.setExpandVertical(true);
@@ -182,14 +178,48 @@ public class SecurityTaxonomyPage extends AbstractPage
     private void createTaxonomySection(final Composite taxonomyPicker, final TaxonomyDesignation designation)
     {
         // label
-        Label label = new Label(taxonomyPicker, SWT.NONE);
-        label.setFont(boldFont);
-        label.setText(designation.getTaxonomy().getName());
-
+        Composite heading = new Composite(taxonomyPicker, SWT.NONE);
         boolean isFirst = designation.equals(model.getDesignations().get(0));
+        GridDataFactory.fillDefaults().indent(0, isFirst ? 0 : 20).applyTo(heading);
 
-        GridDataFactory.fillDefaults().grab(true, false).span(2, 1).align(SWT.BEGINNING, SWT.CENTER)
-                        .indent(0, isFirst ? 0 : 20).applyTo(label);
+        GridLayoutFactory.fillDefaults().numColumns(2).applyTo(heading);
+
+        Label label = new Label(heading, SWT.NONE);
+        label.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING1);
+        label.setText(designation.getTaxonomy().getName());
+        GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(label);
+
+        if (designation.getLinks().size() > 1)
+        {
+            Composite sortBlock = new Composite(heading, SWT.NONE);
+            GridDataFactory.fillDefaults().align(SWT.END, SWT.END).grab(true, true).applyTo(sortBlock);
+
+            sortBlock.setLayout(new RowLayout());
+
+            Link option = new Link(sortBlock, SWT.UNDERLINE_LINK);
+            option.setText(designation.getSortOrder() != SortOrder.NATURAL ? "<a>" + Messages.ColumnTaxonomy + "</a>" //$NON-NLS-1$ //$NON-NLS-2$
+                            : "\u25B2 " + Messages.ColumnTaxonomy); //$NON-NLS-1$
+            option.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+                designation.setSortOrder(SortOrder.NATURAL);
+                recreateTaxonomyPicker(taxonomyPicker);
+            }));
+
+            option = new Link(sortBlock, SWT.UNDERLINE_LINK);
+            option.setText(designation.getSortOrder() != SortOrder.NAME ? "<a>" + Messages.ColumnName + "</a>" //$NON-NLS-1$ //$NON-NLS-2$
+                            : "\u25B2 " + Messages.ColumnName); //$NON-NLS-1$
+            option.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+                designation.setSortOrder(SortOrder.NAME);
+                recreateTaxonomyPicker(taxonomyPicker);
+            }));
+
+            option = new Link(sortBlock, SWT.UNDERLINE_LINK);
+            option.setText(designation.getSortOrder() != SortOrder.WEIGHT ? "<a>" + Messages.ColumnWeight + "</a>" //$NON-NLS-1$ //$NON-NLS-2$
+                            : "\u25BC " + Messages.ColumnWeight); //$NON-NLS-1$
+            option.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+                designation.setSortOrder(SortOrder.WEIGHT);
+                recreateTaxonomyPicker(taxonomyPicker);
+            }));
+        }
 
         // drop-down selection block
         addBlock(taxonomyPicker, designation);
@@ -197,7 +227,7 @@ public class SecurityTaxonomyPage extends AbstractPage
         // add button
         Link link = new Link(taxonomyPicker, SWT.UNDERLINE_LINK);
         link.setText(Messages.EditWizardMasterDataLinkNewCategory);
-        GridDataFactory.fillDefaults().span(2, 1).indent(0, 5).align(SWT.BEGINNING, SWT.CENTER).applyTo(link);
+        GridDataFactory.fillDefaults().indent(0, 5).align(SWT.BEGINNING, SWT.CENTER).applyTo(link);
 
         link.addSelectionListener(new SelectionAdapter()
         {
@@ -218,6 +248,45 @@ public class SecurityTaxonomyPage extends AbstractPage
         Label sumOfWeights = null;
         final List<IObservableValue<Integer>> weightObservables = new ArrayList<>();
         final List<IObservableValue<?>> classificationObservables = new ArrayList<>();
+
+        switch (designation.getSortOrder())
+        {
+            case NATURAL:
+                designation.getLinks().sort((r, l) -> {
+                    var right = r.getClassification();
+                    var left = l.getClassification();
+
+                    if (right == null && left == null)
+                        return 0;
+                    if (right == null)
+                        return 1;
+                    if (left == null)
+                        return -1;
+
+                    return designation.getElements().indexOf(right) - designation.getElements().indexOf(left);
+                });
+                break;
+            case NAME:
+                designation.getLinks().sort((r, l) -> {
+                    var right = r.getClassification();
+                    var left = l.getClassification();
+
+                    if (right == null && left == null)
+                        return 0;
+                    if (right == null)
+                        return 1;
+                    if (left == null)
+                        return -1;
+
+                    return TextUtil.compare(right.getName(), left.getName());
+                });
+                break;
+            case WEIGHT:
+                designation.getLinks().sort((firstLink, secondLink) -> Integer.compare(secondLink.getWeight(),
+                                firstLink.getWeight()));
+                break;
+            default:
+        }
 
         if (designation.getLinks().size() == 1
                         && designation.getLinks().get(0).getWeight() == Classification.ONE_HUNDRED_PERCENT)
@@ -246,7 +315,7 @@ public class SecurityTaxonomyPage extends AbstractPage
         Composite block = new Composite(picker, SWT.NONE);
         block.setBackground(picker.getBackground());
         block.setData(link);
-        GridDataFactory.fillDefaults().span(2, 1).applyTo(block);
+        GridDataFactory.fillDefaults().applyTo(block);
         GridLayoutFactory.fillDefaults().numColumns(2).applyTo(block);
 
         addDropDown(block, designation, classificationObservables);
@@ -259,7 +328,7 @@ public class SecurityTaxonomyPage extends AbstractPage
     {
         Composite block = new Composite(picker, SWT.NONE);
         block.setData(link);
-        GridDataFactory.fillDefaults().span(2, 1).applyTo(block);
+        GridDataFactory.fillDefaults().applyTo(block);
         GridLayoutFactory.fillDefaults().numColumns(3).applyTo(block);
 
         addSpinner(block, link, weightObservables);
@@ -381,8 +450,8 @@ public class SecurityTaxonomyPage extends AbstractPage
     private void createTaxonomyPicker(Composite container)
     {
         final Composite taxonomyPicker = new Composite(container, SWT.NONE);
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).span(2, 1).grab(true, false).applyTo(taxonomyPicker);
-        GridLayoutFactory.fillDefaults().numColumns(2).margins(0, 0).spacing(0, 0).applyTo(taxonomyPicker);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(taxonomyPicker);
+        GridLayoutFactory.fillDefaults().margins(0, 0).spacing(0, 0).applyTo(taxonomyPicker);
 
         for (TaxonomyDesignation designation : model.getDesignations())
             createTaxonomySection(taxonomyPicker, designation);

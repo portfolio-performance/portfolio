@@ -1,0 +1,46 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Schelhammer Capital Bank AG,
+Brandhofg. 24, 8010 Graz (DVR:0043974)
+E-Mail: service@dieplattform.at
+Telefon 0316 80 72 1
+Abrechnung Handel
+81702640-8.1.2025
+Depot-Nr.: 123456789
+mbeAUgXXn Max, Mag.          
+03/383
+die plattform                      
+YeMh
+Mag. rCZgLFajJ BAcEUBkTE
+Blumengasse. 9
+0921 HHqL                                                                                                                                                                                        
+Wir haben für Sie am 8.1.2025 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Kauf
+Auftrags-Nr.: 12345678-8.1.2025
+Auftragseingang: 8.1.2025-00:30:00
+Zugang: 5,319 Stk
+Titel: IE00BYPHT736  X t r . ( I E ) - i B oxx EUR Cor.Bd Y.P.     
+Registered Shares 1D o.N.          
+Fondsgesellschaft: Xtrackers (IE) Plc
+Kurs: 15,185916 EUR 
+Handelsplatz: XETR     Deutsche Börse - Frankfurt Xetra
+Handelszeit: 8.1.2025 um 17:30:00 Uhr
+Verwahrart: WR
+Positionsdaten: Loco: Duesseldorf                        
+Kurswert: -80,77 EUR 
+Zu Lasten IBAN AT18 4419 3463 9750 1470 -80,77 EUR 
+Valuta 10.1.2025
+Schlusstag: 8.1.2025
+Kassatag: 10.1.2025
+Bestand nach Buchung:
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden 
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 5,319 Stk
+steuerlicher Anschaffungswert: 80,77 EUR
+HOCHACHTUNGSVOLL
+SCHELHAMMER CAPITAL BANK AG
+8.1.2025 Seite 1
+DVR 0060011 ,HG WIEN ,FN58248i, Irrtum vorbehalten! Dieser Beleg wird von der Bank
+nicht unterschrieben!
+22299 Doknr.: BSG0-045-0000021900

@@ -1,0 +1,40 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.79.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Kundendienst 0848 352 352
+www.fkb.ch
+CHE-108.954.576 MWST
+e-Dokument
+Portfolio Vorsorgestiftung Sparen 3
+Depot dritte Säule 52 33 684.829-44 / CHF Herr  
+IBAN GN37 7963 7586 0115 6100 4 nLN BYrcg
+Ihr Berater oqWL xSGVfwG imaNDURcWqbf 12
+9697 PkHpFxBu
+Auftragsnummer AUF1191526
+Auftragsdatum 03.02.2023
+Finanzdienstleistung Execution only / beratungsfreies
+Geschäft
+Klassifizierung Privatkunde Düdingen, 09.02.2023
+Börsenabrechnung - Emission
+Wir haben für Sie am 07.02.2023 gezeichnet.
+100 Anteile BCF / FKB (CH) Funds - BCF / FKB (CH)
+Active Dynamic (CHF) -AP- Kapitalisation
+Valor: 116358461
+ISIN: CH1163584613
+Börsenplatz: Swiss Fund Data AG
+Menge Ausführung Preis Wrg Betrag
+100 00:00:00 101.42 CHF -10'142.00
+Netto CHF -10'142.00
+Unsere Belastung erfolgt auf das Konto 30 01 472.700-08 Valuta: 10.02.2023
+Die Titel legen wir in das Depot 30 01 684.829-00
+Im Falle des Kaufs oder der Zeichnung von Instrumenten, zu denen ein Basisinformationsblatt (BIB) veröffentlicht wurde,
+ist dieses dem Kunden vor der Ausführung des Auftrags ausgehändigt worden oder kann auf der Website
+www.fkb.ch/bib eingesehen werden. Auf Wunsch kann es auch zur Verfügung gestellt werden.
+Diese Transaktion basiert auf dem Finanzdienstleistungstyp "Execution Only". Die Bank hat weder eine Beratung
+durchgeführt noch eine Eignungs- oder Angemessenheitsprüfung vorgenommen.
+Mit freundlichen Grüssen
+Freiburger Kantonalbank
+Anzeige ohne Unterschrift
+2000101 | 79233887058011 | 7680 Staatsgarantie
+09.02.2023 14:36:33

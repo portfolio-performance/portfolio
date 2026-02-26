@@ -71,7 +71,7 @@ public class FirstradeSecuritiesIncPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("tickerSymbol", "wkn", "name", "currency") //
-                                                        .match("^YOU (BOUGHT|SOLD) (?<tickerSymbol>[A-Z0-9]{3,4}) (?<wkn>[A-Z0-9]{9}) [\\d]{2}\\/[\\d]{2}\\/[\\d]{2} [\\d]{2}\\/[\\d]{2}\\/[\\d]{2} .* [\\.,\\d] (?<currency>\\p{Sc})[\\.,\\d]+$") //
+                                                        .match("^YOU (BOUGHT|SOLD) (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) (?<wkn>[A-Z0-9]{9}) [\\d]{2}\\/[\\d]{2}\\/[\\d]{2} [\\d]{2}\\/[\\d]{2}\\/[\\d]{2} .* [\\.,\\d] (?<currency>\\p{Sc})[\\.,\\d]+$") //
                                                         .match("^(?<name>.*) PRINCIPAL \\p{Sc}[\\.,\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -81,7 +81,7 @@ public class FirstradeSecuritiesIncPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("wkn", "tickerSymbol", "name", "currency") //
                                                         .match("^YOU (BOUGHT|SOLD) (?<wkn>[A-Z0-9]{7}) [\\d]{2}\\/[\\d]{2}\\/[\\d]{2} [\\d]{2}\\/[\\d]{2}\\/[\\d]{2} .* (?<currency>\\p{Sc})[\\.,\\d]+$") //
-                                                        .match("^.* (?<tickerSymbol>[A-Z0-9]{3,4}) [\\d]{2}\\/[\\d]{2}\\/[\\d]{2} [\\d]{1,} (?<name>.*) PRINCIPAL \\p{Sc}[\\.,\\d]+$") //
+                                                        .match("^.* (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) [\\d]{2}\\/[\\d]{2}\\/[\\d]{2} [\\d]{1,} (?<name>.*) PRINCIPAL \\p{Sc}[\\.,\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off

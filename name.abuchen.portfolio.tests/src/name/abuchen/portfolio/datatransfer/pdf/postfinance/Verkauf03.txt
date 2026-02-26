@@ -1,0 +1,33 @@
+PDFBox Version: 3.0.5 != 1.8.17
+Portfolio Performance Version: 0.80.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+PostFinance AG 
+Sie werden betreut von 
+Ronja Geiser und Team ost CH AG 
+Telefon +41 58 448 14 14 
+www.postfinance.ch P.P. P
+CH-4808 Zofingen A-PRIORITY 
+DRRI 
+NxITK ZNM EbM XauSC 
+AeTVRbxX ifQEjnfDaKqt 95 
+2167 WQAjSAvG 
+Transaktionsabrechnung: Rücknahme ganzer  Seite: 1 / 1 
+Bestand Datum: 18.06.2025 
+E-Vermögensverwaltung 
+Depot 93-584811-7 Ort der Ausführung Over-the-Counter 
+Auftrag 21796086 
+Gemäss Ihrem Auftrag haben wir folgende Transaktion vorgenommen: 
+Position Anteile Währung Kurs 
+Pictet - Short-Term Money Market JPY 0.553 JPY 100 152.13 
+ISIN LU0309035367 
+Kurswert in Handelswährung JPY 55 384.00 
+Total JPY 55 384.00 
+Total in Kontowährung zum Kurs von JPY/CHF 0.0056115 CHF 310.79 
+Der Totalbetrag von  CHF 310.79 wurde Ihrem Konto  lX31 7569 1574 2803 1992 6 mit Valuta  20.06.2025 gutgeschrie- 
+ben. 
+Bitte prüfen Sie dieses Dokument und benachrichtigen Sie uns bei Unstimmigkeiten innert Monatsfrist. 
+Im Rahmen dieser Transaktion hat PostFinance als Kommissionärin gehandelt. 
+Freundliche Grüsse 
+PostFinance AG 
+01521 DE   000041.00

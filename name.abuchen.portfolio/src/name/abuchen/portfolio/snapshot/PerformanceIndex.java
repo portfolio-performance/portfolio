@@ -60,7 +60,8 @@ public class PerformanceIndex
 
     private Drawdown drawdown;
     private Volatility volatility;
-    private ClientPerformanceSnapshot performanceSnapshot;
+    private ClientPerformanceSnapshot performanceSnapshotFifo;
+    private ClientPerformanceSnapshot performanceSnapshotMovingAverage;
 
     /* package */ PerformanceIndex(Client client, CurrencyConverter converter, Interval reportInterval)
     {
@@ -255,10 +256,30 @@ public class PerformanceIndex
      */
     public Optional<ClientPerformanceSnapshot> getClientPerformanceSnapshot()
     {
-        if (performanceSnapshot == null)
-            performanceSnapshot = new ClientPerformanceSnapshot(client, converter, reportInterval);
+        return getClientPerformanceSnapshot(true);
+    }
 
-        return Optional.of(performanceSnapshot);
+    /**
+     * Returns the ClientPerformanceSnapshot if available with a choice between
+     * FIFO (useFifo true) or Moving Average (useFifo = false) CapitalGains. The
+     * snapshot is not available for benchmarks and the consumer price indices.
+     */
+    public Optional<ClientPerformanceSnapshot> getClientPerformanceSnapshot(boolean useFifo)
+    {
+        if (useFifo)
+        {
+            if (performanceSnapshotFifo == null)
+                performanceSnapshotFifo = new ClientPerformanceSnapshot(client, converter, reportInterval, true);
+
+            return Optional.of(performanceSnapshotFifo);
+        }
+        else
+        {
+            if (performanceSnapshotMovingAverage == null)
+                performanceSnapshotMovingAverage = new ClientPerformanceSnapshot(client, converter, reportInterval,
+                                false);
+            return Optional.of(performanceSnapshotMovingAverage);
+        }
     }
 
     public double getPerformanceIRR()
@@ -426,7 +447,7 @@ public class PerformanceIndex
     {
         CSVFormat csvformat = CSVFormat.DEFAULT.builder() //
                         .setDelimiter(';').setQuote('"').setRecordSeparator("\r\n") //$NON-NLS-1$
-                        .setDuplicateHeaderMode(DuplicateHeaderMode.ALLOW_ALL).build();
+                        .setDuplicateHeaderMode(DuplicateHeaderMode.ALLOW_ALL).get();
 
         try (CSVPrinter printer = new CSVPrinter(
                         new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8), csvformat))

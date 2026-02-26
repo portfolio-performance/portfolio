@@ -21,11 +21,11 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.swtchart.ILegend;
-import org.swtchart.ILineSeries;
-import org.swtchart.ISeries;
+import org.eclipse.swtchart.ILegend;
 
 import com.google.common.base.Objects;
 
@@ -33,6 +33,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
@@ -41,41 +42,68 @@ import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.filter.ReadOnlyClient;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartCSVExporter;
+import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
+import name.abuchen.portfolio.ui.util.format.AmountNumberFormat;
+import name.abuchen.portfolio.ui.util.format.ThousandsNumberFormat;
 import name.abuchen.portfolio.util.Interval;
 
-public class PortfolioBalanceChart extends TimelineChart // NOSONAR
+public class PortfolioBalanceChart
 {
     private static final String PREF_KEY = "portfolio-chart-details"; //$NON-NLS-1$
 
     private Client client;
     private Portfolio portfolio;
+    private ClientFilterMenu.Item groupedAccount;
+    private Composite container;
+    private TimelineChart chart;
+    private Interval chartInterval;
+    private String portfolioName;
+    private String portfolioUUID;
     private ExchangeRateProviderFactory exchangeRateProviderFactory;
 
     private EnumSet<ChartDetails> chartConfig = EnumSet.of(ChartDetails.ABSOLUTE_INVESTED_CAPITAL,
                     ChartDetails.ABSOLUTE_DELTA);
 
-    private static final Color colorAbsoluteInvestedCapital = Display.getDefault().getSystemColor(SWT.COLOR_GRAY);
-    private static final Color colorAbsoluteDelta = Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY);
+    private Color colorAbsoluteInvestedCapital = Colors.getColor(235, 201, 52); // #EBC934
+    private Color colorAbsoluteDelta = Colors.getColor(90, 114, 226); // #5A72E2
     private static final Color colorTaxesAccumulated = Display.getDefault().getSystemColor(SWT.COLOR_RED);
     private static final Color colorFeesAccumulated = Display.getDefault().getSystemColor(SWT.COLOR_GRAY);
+    private Color colorDeltaAreaPositive = Colors.getColor(90, 114, 226); // #5A72E2
+    private Color colorDeltaAreaNegative = Colors.getColor(226, 91, 90); // #E25B5A
 
     public PortfolioBalanceChart(Composite parent, Client client)
     {
-        super(parent);
         this.client = client;
-
-        getTitle().setVisible(false);
+        container = new Composite(parent, SWT.NONE);
+        container.setLayout(new FillLayout());
+        chart = new TimelineChart(container);
+        chart.getTitle().setVisible(false);
+        chart.getAxisSet().getYAxis(0).getTick().setFormat(new ThousandsNumberFormat());
+        chart.getToolTip().setDefaultValueFormat(new AmountNumberFormat());
 
         readChartConfig(client);
 
-        ILegend legend = getLegend();
+        ILegend legend = chart.getLegend();
         legend.setPosition(SWT.BOTTOM);
         legend.setVisible(true);
+
+        setupTooltip();
+    }
+
+    public Control getControl()
+    {
+        return container;
+    }
+
+    public void redraw()
+    {
+        chart.redraw();
     }
 
     private final void readChartConfig(Client client)
@@ -103,8 +131,34 @@ public class PortfolioBalanceChart extends TimelineChart // NOSONAR
         var isNewPortfolio = !Objects.equal(this.portfolio, portfolio);
 
         this.portfolio = portfolio;
+        this.groupedAccount = null;
         this.exchangeRateProviderFactory = exchangeRateProviderFactory;
-        getTitle().setText(portfolio.getName());
+        this.chartInterval = getInterval(portfolio);
+        this.portfolioName = portfolio.getName();
+        this.portfolioUUID = portfolio.getUUID();
+        chart.getTitle().setText(portfolio.getName());
+
+        // unless we are updating an existing portfolio (for example adding or
+        // removing a data series), we clear the chart as to not show wrong data
+        // series data
+        if (isNewPortfolio)
+            clearChart();
+
+        computeAndUpdateChart();
+    }
+
+    public void updateChart(ClientFilterMenu.Item groupedAccount,
+                    ExchangeRateProviderFactory exchangeRateProviderFactory)
+    {
+        var isNewPortfolio = !Objects.equal(this.groupedAccount, groupedAccount);
+
+        this.portfolio = null;
+        this.groupedAccount = groupedAccount;
+        this.exchangeRateProviderFactory = exchangeRateProviderFactory;
+        this.chartInterval = getInterval(groupedAccount);
+        this.portfolioName = groupedAccount.getLabel();
+        this.portfolioUUID = groupedAccount.getUUIDs();
+        chart.getTitle().setText(groupedAccount.getLabel());
 
         // unless we are updating an existing portfolio (for example adding or
         // removing a data series), we clear the chart as to not show wrong data
@@ -119,16 +173,16 @@ public class PortfolioBalanceChart extends TimelineChart // NOSONAR
     {
         try
         {
-            suspendUpdate(true);
+            chart.suspendUpdate(true);
 
-            for (ISeries s : getSeriesSet().getSeries())
-                getSeriesSet().deleteSeries(s.getId());
+            for (var s : chart.getSeriesSet().getSeries())
+                chart.getSeriesSet().deleteSeries(s.getId());
         }
 
         finally
         {
-            adjustRange();
-            suspendUpdate(false);
+            chart.adjustRange();
+            chart.suspendUpdate(false);
         }
     }
 
@@ -147,10 +201,26 @@ public class PortfolioBalanceChart extends TimelineChart // NOSONAR
 
     private void computeChart()
     {
+        if (chartInterval == null)
+            return;
+
+        CurrencyConverter converter = new CurrencyConverterImpl(exchangeRateProviderFactory, client.getBaseCurrency());
+
+        var warnings = new ArrayList<Exception>();
+
+        var index = portfolio != null
+                        ? PerformanceIndex.forPortfolio(client, converter, portfolio, chartInterval, warnings)
+                        : PerformanceIndex.forClient(groupedAccount.getFilter().filter(client), converter,
+                                        chartInterval, warnings);
+        Display.getDefault().asyncExec(() -> updateChart(index));
+    }
+
+    public Interval getInterval(Portfolio portfolio)
+    {
         List<PortfolioTransaction> tx = portfolio.getTransactions();
 
         if (tx.isEmpty())
-            return;
+            return null;
 
         Collections.sort(tx, Transaction.BY_DATE);
 
@@ -163,23 +233,42 @@ public class PortfolioBalanceChart extends TimelineChart // NOSONAR
         if (now.isBefore(start))
             start = now;
 
-        CurrencyConverter converter = new CurrencyConverterImpl(exchangeRateProviderFactory, client.getBaseCurrency());
+        return Interval.of(start, end);
+    }
 
-        var warnings = new ArrayList<Exception>();
+    public Interval getInterval(ClientFilterMenu.Item groupedAccount)
+    {
+        var filteredClient = groupedAccount.getFilter().filter(client);
+        var tx = filteredClient.getAllTransactions();
 
-        var index = PerformanceIndex.forPortfolio(client, converter, portfolio, Interval.of(start, end), warnings);
+        Collections.sort(tx, TransactionPair.BY_DATE);
 
-        Display.getDefault().asyncExec(() -> updateChart(index));
+        LocalDate now = LocalDate.now();
+        LocalDate start = now;
+        LocalDate end = now;
+
+        if (!tx.isEmpty())
+        {
+            start = tx.getFirst().getTransaction().getDateTime().toLocalDate();
+            end = tx.getLast().getTransaction().getDateTime().toLocalDate();
+        }
+
+        if (now.isAfter(end))
+            end = now;
+        if (now.isBefore(start))
+            start = now;
+
+        return Interval.of(start, end);
     }
 
     private void updateChart(PerformanceIndex index)
     {
         try
         {
-            suspendUpdate(true);
+            chart.suspendUpdate(true);
 
-            for (ISeries s : getSeriesSet().getSeries())
-                getSeriesSet().deleteSeries(s.getId());
+            for (var s : chart.getSeriesSet().getSeries())
+                chart.getSeriesSet().deleteSeries(s.getId());
 
             int days = (int) ChronoUnit.DAYS.between(index.getDates()[0],
                             index.getDates()[index.getDates().length - 1]);
@@ -190,8 +279,8 @@ public class PortfolioBalanceChart extends TimelineChart // NOSONAR
 
             // reverse the order
 
-            ILineSeries lineSeries = addDateSeries(portfolio.getUUID(), index.getDates(),
-                            toDouble(index.getTotals(), Values.Amount.divider()), Colors.CASH, portfolio.getName());
+            var lineSeries = chart.addDateSeries(portfolioUUID, index.getDates(),
+                            toDouble(index.getTotals(), Values.Amount.divider()), Colors.CASH, portfolioName);
             lineSeries.setAntialias(swtAntialias);
 
             if (chartConfig.contains(ChartDetails.ABSOLUTE_INVESTED_CAPITAL))
@@ -209,8 +298,8 @@ public class PortfolioBalanceChart extends TimelineChart // NOSONAR
         }
         finally
         {
-            adjustRange();
-            suspendUpdate(false);
+            chart.adjustRange();
+            chart.suspendUpdate(false);
         }
     }
 
@@ -260,12 +349,12 @@ public class PortfolioBalanceChart extends TimelineChart // NOSONAR
         public void menuAboutToShow(IMenuManager manager)
         {
             manager.add(new SimpleAction(Messages.MenuExportChartData, a -> {
-                TimelineChartCSVExporter exporter = new TimelineChartCSVExporter(PortfolioBalanceChart.this);
-                exporter.export(getTitle().getText() + ".csv"); //$NON-NLS-1$
+                TimelineChartCSVExporter exporter = new TimelineChartCSVExporter(chart);
+                exporter.export(chart.getTitle().getText() + ".csv"); //$NON-NLS-1$
             }));
 
             manager.add(new Separator());
-            PortfolioBalanceChart.this.exportMenuAboutToShow(manager, getTitle().getText());
+            chart.exportMenuAboutToShow(manager, chart.getTitle().getText());
         }
     }
 
@@ -274,7 +363,7 @@ public class PortfolioBalanceChart extends TimelineChart // NOSONAR
         double[] values = toDouble(index.calculateAbsoluteInvestedCapital(), Values.Amount.divider());
         String lineID = Messages.LabelAbsoluteInvestedCapital;
 
-        ILineSeries lineSeries = addDateSeries(lineID, index.getDates(), values, colorAbsoluteInvestedCapital, lineID);
+        var lineSeries = chart.addDateSeries(lineID, index.getDates(), values, colorAbsoluteInvestedCapital, lineID);
         lineSeries.enableArea(true);
         lineSeries.setAntialias(swtAntialias);
     }
@@ -282,9 +371,42 @@ public class PortfolioBalanceChart extends TimelineChart // NOSONAR
     private void addAbsoluteDeltaAllRecords(PerformanceIndex index, int swtAntialias)
     {
         double[] values = toDouble(index.calculateAbsoluteDelta(), Values.Amount.divider());
+
+        double[] valuesRelativePositive = new double[values.length];
+        double[] valuesRelativeNegative = new double[values.length];
+        for (int ii = 0; ii < values.length; ii++)
+        {
+            if (values[ii] >= 0)
+            {
+                valuesRelativePositive[ii] = values[ii];
+                valuesRelativeNegative[ii] = 0;
+            }
+            else
+            {
+                valuesRelativePositive[ii] = 0;
+                valuesRelativeNegative[ii] = values[ii];
+            }
+        }
+        String lineIDNeg = Messages.LabelAbsoluteDelta + "Negative"; //$NON-NLS-1$
+        String lineIDPos = Messages.LabelAbsoluteDelta + "Positive"; //$NON-NLS-1$
+
+        var lineSeries2ndNegative = chart.addDateSeries(lineIDNeg, index.getDates(), valuesRelativeNegative,
+                        colorDeltaAreaNegative, lineIDNeg);
+        lineSeries2ndNegative.setAntialias(swtAntialias);
+        lineSeries2ndNegative.enableArea(true);
+        lineSeries2ndNegative.setVisibleInLegend(false);
+        lineSeries2ndNegative.setLineWidth(1);
+
+        var lineSeries2ndPositive = chart.addDateSeries(lineIDPos, index.getDates(), valuesRelativePositive,
+                        colorDeltaAreaPositive, lineIDPos);
+        lineSeries2ndPositive.setAntialias(swtAntialias);
+        lineSeries2ndPositive.enableArea(true);
+        lineSeries2ndPositive.setVisibleInLegend(false);
+        lineSeries2ndPositive.setLineWidth(1);
+
         String lineID = Messages.LabelAbsoluteDelta;
 
-        ILineSeries lineSeries = addDateSeries(lineID, index.getDates(), values, colorAbsoluteDelta, lineID);
+        var lineSeries = chart.addDateSeries(lineID, index.getDates(), values, colorAbsoluteDelta, lineID);
         lineSeries.setAntialias(swtAntialias);
     }
 
@@ -293,7 +415,7 @@ public class PortfolioBalanceChart extends TimelineChart // NOSONAR
         double[] values = accumulateAndToDouble(index.getTaxes(), Values.Amount.divider());
         String lineID = Messages.LabelAccumulatedTaxes;
 
-        ILineSeries lineSeries = addDateSeries(lineID, index.getDates(), values, colorTaxesAccumulated, lineID);
+        var lineSeries = chart.addDateSeries(lineID, index.getDates(), values, colorTaxesAccumulated, lineID);
         lineSeries.setAntialias(swtAntialias);
     }
 
@@ -302,7 +424,7 @@ public class PortfolioBalanceChart extends TimelineChart // NOSONAR
         double[] values = accumulateAndToDouble(index.getFees(), Values.Amount.divider());
         String lineID = Messages.LabelFeesAccumulated;
 
-        ILineSeries lineSeries = addDateSeries(lineID, index.getDates(), values, colorFeesAccumulated, lineID);
+        var lineSeries = chart.addDateSeries(lineID, index.getDates(), values, colorFeesAccumulated, lineID);
         lineSeries.setAntialias(swtAntialias);
     }
 
@@ -326,4 +448,32 @@ public class PortfolioBalanceChart extends TimelineChart // NOSONAR
             return label;
         }
     }
+
+    private void setupTooltip()
+    {
+        TimelineChartToolTip toolTip = chart.getToolTip();
+        toolTip.addSeriesExclude(Messages.LabelAbsoluteDelta + "Positive"); //$NON-NLS-1$
+        toolTip.addSeriesExclude(Messages.LabelAbsoluteDelta + "Negative"); //$NON-NLS-1$
+    }
+
+    public void setAbsoluteDeltaColor(Color color)
+    {
+        this.colorAbsoluteDelta = color;
+    }
+
+    public void setAbsoluteInvestedCapitalColor(Color color)
+    {
+        this.colorAbsoluteInvestedCapital = color;
+    }
+
+    public void setDeltaAreaNegative(Color color)
+    {
+        this.colorDeltaAreaNegative = color;
+    }
+
+    public void setDeltaAreaPositive(Color color)
+    {
+        this.colorDeltaAreaPositive = color;
+    }
+
 }

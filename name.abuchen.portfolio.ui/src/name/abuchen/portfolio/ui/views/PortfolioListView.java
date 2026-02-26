@@ -2,6 +2,10 @@ package name.abuchen.portfolio.ui.views;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import jakarta.annotation.PostConstruct;
@@ -36,6 +40,7 @@ import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
+import name.abuchen.portfolio.ui.handlers.ImportCSVHandler;
 import name.abuchen.portfolio.ui.handlers.ImportPDFHandler;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.DropDown;
@@ -85,6 +90,7 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
 
     private void setInput()
     {
+        portfolioColumns.invalidateCache();
         portfolios.setInput(isFiltered ? getClient().getActivePortfolios() : getClient().getPortfolios());
     }
 
@@ -152,7 +158,7 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
             manager.add(new Separator());
 
             Portfolio portfolio = (Portfolio) portfolios.getStructuredSelection().getFirstElement();
-            new SecurityContextMenu(PortfolioListView.this).menuAboutToShow(manager, null, portfolio);
+            new SecurityContextMenu(PortfolioListView.this).menuAboutToShow(manager, List.of(), portfolio);
         }));
     }
 
@@ -193,7 +199,7 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
 
         portfolios = new TableViewer(container, SWT.FULL_SELECTION);
 
-        ColumnEditingSupport.prepare(portfolios);
+        ColumnEditingSupport.prepare(getEditorActivationState(), portfolios);
         ColumnViewerToolTipSupport.enableFor(portfolios, ToolTip.NO_RECREATE);
         CopyPasteSupport.enableFor(portfolios);
 
@@ -224,7 +230,9 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
             }
         });
         ColumnViewerSorter.create(Portfolio.class, "referenceAccount").attachTo(column); //$NON-NLS-1$
-        new ListEditingSupport(Portfolio.class, "referenceAccount", getClient().getAccounts()) //$NON-NLS-1$
+        List<Account> modifiableAccountList = new ArrayList<>(getClient().getAccounts());
+        Collections.sort(modifiableAccountList, new Account.ByName());
+        new ListEditingSupport(Portfolio.class, "referenceAccount", modifiableAccountList) //$NON-NLS-1$
                         .addListener(this).attachTo(column);
         portfolioColumns.addColumn(column);
 
@@ -254,6 +262,21 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
 
             return p1.getValue().compareTo(p2.getValue());
         }));
+        portfolioColumns.addColumn(column);
+
+        column = new Column("ref_cash_bal", Messages.ColumnBalanceOfReferenceAccount, SWT.RIGHT, 100); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                Portfolio p = (Portfolio) element;
+                var refAcc = p.getReferenceAccount();
+                return Values.Amount.format((refAcc.getCurrentAmount(LocalDateTime.now().with(LocalTime.MAX))));
+            }
+        });
+        ColumnViewerSorter.create(o -> ((Portfolio) o).getReferenceAccount()
+                        .getCurrentAmount(LocalDateTime.now().with(LocalTime.MAX))).attachTo(column);
         portfolioColumns.addColumn(column);
 
         column = new NoteColumn();
@@ -295,11 +318,16 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
         if (portfolio == null)
             return;
 
-        new SecurityContextMenu(this).menuAboutToShow(manager, null, portfolio);
+        new SecurityContextMenu(this).menuAboutToShow(manager, List.of(), portfolio);
 
         if (!portfolio.isRetired())
         {
             manager.add(new Separator());
+
+            manager.add(new SimpleAction(Messages.AccountMenuImportCSV, a -> ImportCSVHandler.runImport(getPart(),
+                            Display.getDefault().getActiveShell(), getContext(), null, null,
+                            getClient(), portfolio.getReferenceAccount(), portfolio)));
+
             manager.add(new SimpleAction(Messages.AccountMenuImportPDF,
                             a -> ImportPDFHandler.runImport(getPart(), Display.getDefault().getActiveShell(),
                                             getClient(), portfolio.getReferenceAccount(), portfolio)));

@@ -1,0 +1,35 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.4
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRANSACTION NOTIFICATION
+Client: 2624857
+IBAN: CH2008783000272485630
+Mr. NtZrzt UCNAuGw
+RPudrHPVkSr 54
+7171 BEeH
+Gland, 21.10.2025
+Sell Our reference: 533430837 
+In accordance with your sell order of 21.10.2025, we have carried out the following transactions:
+Security Exchange
+Swisscanto Silver ETF-A CHF ISIN: CH0183135976 SIX Swiss Exchange 
+NKN: 18313597
+Quantity Price Amount
+5.0721 108.7 CHF 551.35
+Total CHF 551.35
+Commission CHF 2.75
+Tax (Federal stamp duty) CHF 0.40
+To your credit CHF 548.20
+Amount credited to your account number  162537800, on value date of 22.10.2025
+This notification as well as the transaction are governed by the General Terms and Conditions for Yuh Accounts, the Fractional Trading Agreement
+for Yuh Accounts and the Best Execution Policy for Yuh Accounts.
+Please note that when you enter into transactions on financial instruments, Swissquote Bank Ltd holds these financial instruments in a fiduciary
+capacity and grants you a fiduciary interest. Any booking of financial instruments on your account is a booking of a fiduciary interest according to the
+Fractional Trading Agreement for Yuh Accounts.
+Any mention to an exchange or other execution venue is provided for information purpose only. At the time of execution of your order, we may not
+have acquired or disposed of the relevant financial instrument. The booking of this transaction may remain provisional for a number of days in
+accordance with the Fractional Trading Agreement for Yuh Accounts. Please contact us if you need more information about this.
+Our sincere thanks for your order.
+Yuh banking services are provided by Swissquote Bank Ltd,  Advice without signature | E&OE.
+a bank regulated by the Swiss Financial Market Supervisory Authority (FINMA).
+Swissquote Bank Ltd, Chemin de la Crétaux 33, CH-1196 | Gland Customer Care: +41 44 825 87 89

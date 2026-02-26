@@ -1,0 +1,57 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.78.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+rjxRI
+HoQUpL wajWDBlT
+LYfCWfihfbep 84
+3147 AkuLeNCJ
+Wien, den 09.11.2021
+Wir haben für Sie am 09.11.2021 unten angeführtes Geschäft abgerechnet:
+Depot: 82378-085-641
+Geschäftsart: Kapitalmaßnahme wegen Entflechtung
+Stk 20
+davon
+KESt-Neubestand mit Anschaffungskosten: Stk 20
+Titel: US4592001014 INTL BUSINESS MACHINES CORP.
+Registered Shares DL -,20
+Verwahrart: WR Wertpapierrechnung
+Positionsdaten: Loco: Düsseldorf
+Steuerrelevante Hinweise finden Sie auf der Rückseite.
+Seite 1 von 2
+easybank Service Center | +43 (0) 5 70 05-500 | easy@easybank.at | www.easybank.at | Wiedner Gürtel 11 | 1100 Wien
+BAWAG P.S.K. Bank für Arbeit und Wirtschaft und Österreichische Postsparkasse Aktiengesellschaft | Handelsgericht Wien | FN 205340x
+GEODRU02 WGEWTGSDR15ABREP2021110900187P09_a/372
+Devisenkurs zum Veräußerungswert: 1,15025
+(04.11.2021)
+Hinweis für KESt aus Neubestand mit Anschaffungskosten:
+Steuerrelevanter Anschaffungswert: 1.947,96 EUR
+Geschäftsart: Einbuchung wegen Entflechtung
+Zugang: Stk 4
+davon
+KESt-Neubestand mit Anschaffungskosten: Stk 4
+Titel: US50155Q1004 Kyndryl Holdings Inc.
+Registered Shares DL -,01
+Verwahrart: WR Wertpapierrechnung
+Positionsdaten: Loco: Düsseldorf
+Bezugsverhältnis: 5: 1
+0,00 EUR
+KESt-pflichtiges Wertpapier
+Extag: 04.11.2021
+Record-Tag: 25.10.2021
+Devisenkurs zum Veräußerungswert: 1,15025
+(04.11.2021)
+Hinweis für KESt aus Neubestand mit Anschaffungskosten:
+Steuerrelevanter Anschaffungswert: 85,04 EUR
+Eine allfällige KESt-Abfuhr erfolgt an das Finanzamt für Großbetriebe.
+Die BAWAG P.S.K. erbringt keine Steuerberatung und übernimmt keine Haftung für eventuelle
+steuerliche Nachteile im Zusammenhang mit Wertpapiertransaktionen und Wertpapierveranlagungen
+ihrer Kunden. Die Besteuerung der Kapitaleinkünfte hängt von den persönlichen Verhältnissen des
+Anlegers ab und kann künftigen Änderungen unterworfen sein. Vor einer Veranlagungsentscheidung
+sollten Sie sich bei Ihrem Steuerberater über die damit verbundenen steuerlichen Konsequenzen und
+Meldepflichten informieren.
+Mit freundlichen Grüßen
+Ihr easybank Service Center
+Dieser Beleg wird von der Bank nicht unterfertigt.
+Seite 2 von 2
+GEODRU02 WGEWTGSDR15ABREP2021110900187P09_a/373

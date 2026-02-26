@@ -1,0 +1,53 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.74.0
+System: linux | x86_64 | 21.0.6+7-Ubuntu-120.04.1 | Ubuntu
+-----------------------------------------
+name surname DATUM 01 Nov. 2024 - 31 Jan. 2025
+street, zip IBAN DE12345678901234567890
+city, DE BIC TRBKDEBBXXX
+KONTOÜBERSICHT
+PRODUKT ANFANGSSALDO ZAHLUNGSEINGANG ZAHLUNGSAUSGANG ENDSALDO
+Cashkonto 37.063,75 € 26.271,93 € 45.505,00 € 17.830,68 €
+UMSATZÜBERSICHT
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+01 Nov. 2024 Zinszahlung Your interest payment 104,13 € 37.167,88 €
+04 Nov. 2024 Überweisung Outgoing transfer for name surname 200,00 € 36.967,88 €
+11 Nov. 2024 Überweisung Incoming transfer from name surname 121,50 € 37.089,38 €
+11 Nov. 2024 Überweisung Incoming transfer from name surname 2,00 € 37.091,38 €
+11 Nov. 2024 Überweisung Incoming transfer from name surname 3,00 € 37.094,38 €
+18 Nov. 2024 Überweisung Incoming transfer from name surname 4.000,00 € 41.094,38 €
+18 Nov. 2024 Überweisung Incoming transfer from name surname 150,00 € 41.244,38 €
+19 Nov. 2024 Überweisung Outgoing transfer for name surname 50,00 € 41.194,38 €
+20 Nov. 2024 Überweisung Incoming transfer from name surname 8.000,00 € 49.194,38 €
+21 Nov. 2024 Überweisung Incoming transfer from name surname 984,72 € 50.179,10 €
+22 Nov. 2024 Überweisung Outgoing transfer for name surname 100,00 € 50.079,10 €
+26 Nov. 2024 Überweisung Outgoing transfer for name surname 50,00 € 50.029,10 €
+01 Dez. 2024 Zinszahlung Your interest payment 112,33 € 50.141,43 €
+02 Dez. 2024 Überweisung Outgoing transfer for name surname 750,00 € 49.391,43 €
+10 Dez. 2024 Überweisung Outgoing transfer for name surname 50,00 € 49.341,43 €
+13 Dez. 2024 Überweisung Incoming transfer from name surname 3.400,00 € 52.741,43 €
+18 Dez. 2024 SEPA Echtzeitüberweisung Outgoing transfer for name surname 300,00 € 52.441,43 €
+20 Dez. 2024 SEPA Echtzeitüberweisung Outgoing transfer for name surname 50,00 € 52.391,43 €
+22 Dez. 2024 Überweisung Outgoing transfer for name surname 5.800,00 € 46.591,43 €
+22 Dez. 2024 Überweisung Outgoing transfer for name surname 36.000,00 € 10.591,43 €
+26 Dez. 2024 SEPA Echtzeitüberweisung Outgoing transfer for name surname 65,00 € 10.526,43 €
+Seite 1 von 3
+Erstellt am 02 Feb. 2025
+Trade Republic Bank GmbH
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+...
+Seite 2 von 3
+Erstellt am 02 Feb. 2025
+Trade Republic Bank GmbH
+HAFTUNGSAUSSCHLUSS
+Sehr geehrte Kundin, sehr geehrter Kunde
+Bitte überprüfe unbedingt deine Buchungen, Berechnungen und den Schlusssaldo auf dem Kontoauszug, der gleichzeitig deinen Rechnungsabschluss 
+darstellt. Der Rechnungsabschluss gilt als anerkannt, wenn du innerhalb von sechs Wochen nach Zugang keine Einwendungen erhebst. Einwendungen 
+gegen Kontoauszüge sind schriftlich an uns zu richten. Guthaben sind einlagefähig im Sinne des Einlagensicherungsgesetzes (EinSiG). Weitere 
+Informationen entnehme bitte dem Merkblatt für den Einleger, das zusammen mit unseren Allgemeinen Geschäftsbedingungen eingesehen werden kann.
+Trade Republic Bank GmbH Kontakt Sitz der Gesellschaft: Berlin
+Brunnenstraße 19-21 www.traderepublic.com AG Charlottenburg HRB 244347 B
+10119 Berlin service@traderepublic.com Umsatzsteuer-ID DE307510626
+Seite 3 von 3
+Erstellt am 02 Feb. 2025
+Trade Republic Bank GmbH

@@ -1,0 +1,27 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.1
+-----------------------------------------
+Max Mustermann
+Musterstrasse 1
+12345 Musterstadt
+Deutschland
+31. August 2024
+Gebührenabrechnung für August 2024
+(Nr. 20240830-)
+Sehr geehrter Herr Mustermann,
+für unsere Leistungen wurden im genannten Zeitraum folgende Gebühren zu Lasten des/der
+Kontos/Konten erhoben:
+Konto/ Berechnungsbasis/ Gebühr exkl. Gesamtbetrag
+Depot Gebührensatz exkl. USt./
+USt. USt. (19,00%)
+1234567890 € 1.091,73 € 0,27 € 0,32
+1234567891 0,2941% € 0,05
+1234567892 € 356,78 € 0,09 € 0,11
+1234567893 0,2941% € 0,02
+Freundliche Grüße
+Whitebox GmbH
+Whitebox GmbH | Ingeborg-Krummer-Schroth-Str. 30 | D-79106 Freiburg i. Br. 1/1
+Geschäftsführung: Salome Preiswerk, Dr. Birte Rothkopf
+USt-IdNr.: DE295981539
+Handelsregister: HRB 711681, Amtsgericht Freiburg i. Br.
+Zuständige Aufsichtsbehörde: Bundesanstalt für Finanzdienstleistungsaufsicht

@@ -1,0 +1,52 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.4
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+
+flatexDEGIRO Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 9221 7035898
+E-Mail: info@flatex.de
+flatexDEGIRO Bank AG -  Hammfelddamm 4 - 41460 Neuss, Deutschland
+0102382000005403789880
+mujjMSAoPIi AEu jkTsBi dtbDpHY
+En zYKQTwV 32
+79112 ftcYKWyrP
+Frankfurt, 01.12.2025
+Dividendengutschrift für ausländische Wertpapiere
+Ihre Depotnummer: 1252435510
+Depotinhaber    : pOFRsN IvxQONg, CQwIjyvRWkL AzF
+Nr.4620331518                  VISA INC.               (US92826C8394/A0NC7B)
+St.             :       10,000000      Bruttodividende
+pro Stück       :          0,6700 USD
+Extag           :      12.11.2025      Bruttodividende :            6,70 USD
+Zahlungstag     :      01.12.2025      Bemessungs-
+Valuta          :      01.12.2025      grundlage       :            2,31 EUR
+*Einbeh. Steuer  :            0,61 EUR
+Devisenkurs     :        1,156600
+Quellenst.-satz :           15,00 %    Gez. Quellenst. :            1,01 USD
+Endbetrag       :            4,31 EUR
+
+Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+Kapitalertragsteuer  :            0,58 EUR
+Solidaritätszuschlag :            0,03 EUR
+Kirchensteuer        :            0,00 EUR
+Details dazu inkl. evtl. angerechneter ausländischer Quellensteuer
+finden Sie im Steuerreport unter der Transaktion-Nr. :
+4620331518
+Die Verrechnung des Endbetrages erfolgt über Ihr Konto Nr.: 4921662509
+Anrechenbare Quellensteuer**                  15,00 %  =            1,01 USD
+** nur relevant für Steuerinländer
+Die  Gutschrift erfolgt  unter Vorbehalt  des  Eingangs.  Einwendungen  müssen
+unverzüglich  nach  Zugang  erhoben  werden.  Die  Unterlassung  rechtzeitiger
+Einwendung gilt als Genehmigung.
+Dieser   Beleg   ist    keine   Steuerbescheinigung.    Kapitalerträge   sind
+einkommensteuerpflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter  -  Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+Evgeni Kaplun, Jens Möbitz, Christiane Strubel
+2000005403789880 0113102380000101

@@ -1,0 +1,49 @@
+```
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.4
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+25449 Quickborn
+                                                                                                    
+                                                  
+                                                                      
+                                                                      
+                                                                      
+                   
+                        
+       
+                       
+Depotnr.:    124678906 
+     14567 891 BLZ:         512 345 72
+Herrn                                                           
+Marc Billi                                                
+                                                                
+Berliner Allee 20                                                     
+                             
+74198 Stuttgart                                                 
+26.09.2025
+G u t s c h ri f t fä ll ig e r W e r t p a p i e r -E r tr ä g e                                                                   
+Dividendengutschrift                                                               
+Depotbestand                          Wertpapier-Bezeichnung               WKN/ISIN
+per 11.09.2025                         W a s t e  M a n a g e m e n t  I n c .                  893579
+STK               4,564                R e g i s t e r e d  S h a r e s  D L  - , 0 1        US94106L1098
+                                      Emissionsland: VEREINIGTE STAATEN            
+USD 0,825      Dividende pro Stück für Geschäftsjahr        01.01.25 bis 31.12.25  
+zahlbar ab 26.09.2025                 Quartalsdividende                            
+                         Abrechnung Dividendengutschrift                           
+Bruttobetrag:                     USD               3,77                           
+15,000 % Quellensteuer            USD               0,57 -                         
+Ausmachender Betrag               USD               3,20                           
+    zum Devisenkurs: EUR/USD      1,169300                 EUR               2,74  
+Verrechnung über Konto (IBAN)           Valuta       Zu Ihren Gunsten vor Steuern  
+DE50 1246 1245 8822 1759 51   EUR       30.09.2025         EUR               2,74  
+Information zur steuerlichen Behandlung dieses Geschäftsvorganges und den auf      
+Ihrem Konto gebuchten Endbetrag finden Sie auf der separaten Steuermitteilung      
+(Referenz-Nr. 2SIMFYBBRBI005MQ).                                                   
+Ihre comdirect                                                                     
+                                                                                   
+*Diese Abrechnung wird von der Bank nicht unterschrieben                           
+DD762/11/09
+
+```

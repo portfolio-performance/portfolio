@@ -3,6 +3,7 @@ package name.abuchen.portfolio.model;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.fail;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -133,6 +134,71 @@ public class CrossEntryTest
         accountA.deleteTransaction(pA, client);
         assertThat(accountA.getTransactions().size(), is(0));
         assertThat(accountB.getTransactions().size(), is(0));
+    }
+
+    @Test
+    public void testAccountTransferEntryWithDifferentCurrencies()
+    {
+        Account accountA = client.getAccounts().get(0);
+        Account accountB = client.getAccounts().get(1);
+
+        accountA.setCurrencyCode(CurrencyUnit.EUR);
+        accountB.setCurrencyCode(CurrencyUnit.USD);
+
+        // Verify accounts are empty before attempt
+        assertThat(accountA.getTransactions().size(), is(0));
+        assertThat(accountB.getTransactions().size(), is(0));
+
+        AccountTransferEntry entry = new AccountTransferEntry(accountA, accountB);
+        LocalDateTime date = LocalDateTime.now();
+        entry.setDate(date);
+        entry.setCurrencyCode(CurrencyUnit.EUR);
+        entry.setAmount(1000 * Values.Amount.factor());
+
+        try
+        {
+            entry.insert();
+            fail("Expected IllegalArgumentException due to currency mismatch"); //$NON-NLS-1$
+        }
+        catch (IllegalArgumentException e)
+        {
+            assertThat(accountA.getTransactions().size(), is(0));
+            assertThat(accountB.getTransactions().size(), is(0));
+        }
+    }
+
+    @Test
+    public void testBuySellEntryWithCurrencyMismatch()
+    {
+        Portfolio portfolio = client.getPortfolios().get(0);
+        Account account = client.getAccounts().get(0);
+        Security security = client.getSecurities().get(0);
+
+        account.setCurrencyCode(CurrencyUnit.USD);
+
+        // Verify portfolio and account are empty before attempt
+        assertThat(portfolio.getTransactions().size(), is(0));
+        assertThat(account.getTransactions().size(), is(0));
+
+        BuySellEntry entry = new BuySellEntry(portfolio, account);
+        entry.setCurrencyCode(CurrencyUnit.EUR);
+        LocalDateTime date = LocalDateTime.now();
+        entry.setDate(date);
+        entry.setSecurity(security);
+        entry.setShares(Values.Share.factorize(1));
+        entry.setAmount(Values.Amount.factorize(1000));
+        entry.setType(PortfolioTransaction.Type.BUY);
+
+        try
+        {
+            entry.insert();
+            fail("Expected IllegalArgumentException due to currency mismatch"); //$NON-NLS-1$
+        }
+        catch (IllegalArgumentException e)
+        {
+            assertThat(portfolio.getTransactions().size(), is(0));
+            assertThat(account.getTransactions().size(), is(0));
+        }
     }
 
     @Test

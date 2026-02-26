@@ -1,0 +1,47 @@
+PDFBox Version: 3.0.5 != 1.8.17
+Portfolio Performance Version: 0.80.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Postbank 
+iqCmIzl
+fNZTIYw 1 
+rrHmZXp 752-240 
+sQKd 01439 xNxEoVs
+jKrivJ EciNAyIj kbfrCxcZFfHkt
+InHZoVCOF Str. 216 
+46221 BcsberL 24h-nErPAJzVLMCQt 5918 2647 2835
+29. August 2025
+Kontoauszug vom 01.08.2025 bis 29.08.2025 
+Kontoinhaber: UyfzrX DcMFYVKg
+ezlAoE Seite von IBAN Alter Saldo per 31.07.2025
+8 1 8 Sp29 0723 6285 3105 0302 84 EUR + 3.454,24
+Buchung Valuta Vorgang Soll Haben
+01.08. 01.08. SEPA Überweisung von + 1.100,00
+2025 2025 OaJ Jkxpi qJdAjTazMcpy 
+Verwendungszweck/ Kundenreferenz 
+JOCcu wHLEmTPf mzhNqN 49 
+MOB.213.UE.POS00183683
+01.08. 01.08. SEPA Lastschrifteinzug von - 8,00
+2025 2025 xTe TNAjhXljrZxbODXdiWb AG
+Verwendungszweck/ Kundenreferenz
+0000007200 093000051 iRjrKd PBTf / Beitr 01.08.2025 
+-31.07.2026 / Vers.Tarif ARD MzcigAKet / 
+VG36159518
+Gläubiger-ID DE23G0100000066097
+Mand-ID 08170277945545934466082
+ABWA iDt ZFegQivnZEOGoxEFiXO yzzdKtMiaviIZYiCGm 
+RCUR Wiederholungslastschrift
+01.08. 01.08. SEPA Lastschrifteinzug von - 19,47
+2025 2025 5+6 mynA + XyzAy GmbH 
+Verwendungszweck/ Kundenreferenz 
+KD-Nr. K12539979/ RG-Nr. 166291173773 
+006064270015
+Gläubiger-ID DE07ZZZ00000569718 
+Mand-ID 8965180796438
+RCUR Wiederholungslastschrift
+7312772541 / 85027613 / 76393556
+      
+     
+      
+
+

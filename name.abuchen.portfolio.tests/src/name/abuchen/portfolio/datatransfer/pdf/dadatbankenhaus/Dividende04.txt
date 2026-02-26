@@ -1,0 +1,41 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.2
+-----------------------------------------
+Abrechnung Ereignis
+92276651-25.11.2024
+Depot-Nr.: Depotnummer
+Name             
+01/5020
+DADAT-Bank                         
+Herrn
+Name
+Straße
+PLZ Ort                                                                                                                                                                                                      
+Wir haben für Sie am 25.11.2024 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Ertrag
+400 Stk
+Titel: NO0003054108  M o w i  A S A                           
+Navne-Aksjer NK 7,50               
+Dividende: 1,5 NOK 
+Verwahrart: WR
+Positionsdaten: Loco: München                            
+Zinsen/Dividenden: 600,-- NOK 
+Quellensteuer: -150,-- NOK 
+Auslands-KESt: -75,04 NOK 
+374,96 NOK 
+Devisenkurs: 11,5975 (22.11.2024) 32,34 EUR 
+Zu Gunsten IBAN IBAN 32,34 EUR 
+Valuta 25.11.2024
+Extag: 15.11.2024
+Record-Tag: 18.11.2024
+QUSt pro Stück 25,00 %
+Es wurde Auslands-KESt in der Höhe von +12,5% berücksichtigt.
+Die KESt wird an das Finanzamt Wien 1/23 abgeführt.
+Devisenkurs: 11,5975 (22.11.2024)
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden 
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 400 Stk
+Ertrag: 51,74 EUR
+25.11.2024 Seite 1
+DVR 0060011 ,HG WIEN ,FN58248i, Irrtum vorbehalten! Dieser Beleg wird von der Bank
+nicht unterschrieben!
+01015 Doknr.: BSG0-045-0000000950

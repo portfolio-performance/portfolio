@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Composite;
-import org.swtchart.ISeries;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -34,7 +33,7 @@ public class AccountBalanceChart extends TimelineChart // NOSONAR
         {
             suspendUpdate(true);
 
-            for (ISeries s : getSeriesSet().getSeries())
+            for (var s : getSeriesSet().getSeries())
                 getSeriesSet().deleteSeries(s.getId());
 
             if (account == null)

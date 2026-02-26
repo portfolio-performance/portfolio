@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.wizards.datatransfer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
@@ -19,14 +20,14 @@ public class ExtractedEntry
     private List<Status> status = new ArrayList<>();
 
     /**
-     * If non null, the security dependency tells which other extracted items
+     * If non-null, the security dependency tells which other extracted items
      * represents the security which this extracted items (typically a
      * transactions) requires.
      */
     private ExtractedEntry securityDependency;
 
     /**
-     * If non null, then the security dependency is overwritten by the given
+     * If non-null, then the security dependency is overwritten by the given
      * security.
      */
     private Security securityOverride;
@@ -66,6 +67,11 @@ public class ExtractedEntry
 
     public void addStatus(ImportAction.Status status)
     {
+        // do not add the status if the message is already present
+        if (this.status.stream().anyMatch(
+                        s -> Objects.equals(s.getMessage(), status.getMessage()) && s.getCode() == status.getCode()))
+            return;
+
         this.status.add(status);
         if (status.getCode().isHigherSeverityAs(maxCode))
             maxCode = status.getCode();

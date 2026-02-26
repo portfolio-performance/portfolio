@@ -1,0 +1,29 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.74.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+MWWZoo hKHjGC PAGINA 1 da 1
+UaP xSjPET 17 FuLk 17.02.2025
+84561 oGvoWKHowsDm Veneto ESECUZIONE 2bQ1-76v5
+ywoIa DI ACCUMULO d81c-7o2A
+qGako ZVjgjr 9278926427
+REGOLAMENTO TITOLI ROUND UP
+PANORAMICA
+Esecuzione Round Up il 17.02.2025 su Lang und Schwarz Exchange.
+La controparte dell'operazione è Lang & Schwarz TradeCenter AG & Co. KG.
+POSIZIONE QUANTITÀ PREZZO MEDIO IMPORTO
+Factor MSCI USA Quality ESG EUR Hedged (Acc) 0,100058 42,775 EUR 4,28 EUR
+ISIN: IE00BWT3KN65
+TOTALE 4,28 EUR
+PAGAMENTO
+CONTO DI TRANSITO DATA VALUTA IMPORTO
+D232344sdfas15511452 2025-02-19 -4,28 EUR
+Factor MSCI USA Quality ESG EUR Hedged (Acc) in custodia collettiva in Germania
+Questo rendiconto viene creato automaticamente e quindi non è firmato.
+Se non viene mostrata l'IVA, si tratta di un servizio esente da imposte sulle vendite in conformità con la regolamentazione UStG § 4 n. 8.
+Trade Republic Bank GmbH www.traderepublic.com Sede centrale: Berlin Direttore Generale
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin PARTITA IVA DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke

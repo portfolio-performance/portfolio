@@ -4,8 +4,8 @@ import jakarta.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.css.swt.theme.IThemeEngine;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.preference.PreferenceDialog;
@@ -26,13 +26,15 @@ import name.abuchen.portfolio.ui.preferences.CalendarPreferencePage;
 import name.abuchen.portfolio.ui.preferences.CoingeckoPreferencePage;
 import name.abuchen.portfolio.ui.preferences.DivvyDiaryPreferencePage;
 import name.abuchen.portfolio.ui.preferences.EODHistoricalDataPreferencePage;
+import name.abuchen.portfolio.ui.preferences.ExperimentsPreferencePage;
 import name.abuchen.portfolio.ui.preferences.FinnhubPreferencePage;
 import name.abuchen.portfolio.ui.preferences.FormattingPreferencePage;
 import name.abuchen.portfolio.ui.preferences.GeneralPreferencePage;
+import name.abuchen.portfolio.ui.preferences.HistoricalPricesPreferencePage;
 import name.abuchen.portfolio.ui.preferences.LanguagePreferencePage;
 import name.abuchen.portfolio.ui.preferences.LeewayPreferencePage;
 import name.abuchen.portfolio.ui.preferences.MyDividends24PreferencePage;
-import name.abuchen.portfolio.ui.preferences.PortfolioReportPreferencePage;
+import name.abuchen.portfolio.ui.preferences.PPIDPreferencePage;
 import name.abuchen.portfolio.ui.preferences.PresentationPreferencePage;
 import name.abuchen.portfolio.ui.preferences.PresetsPreferencePage;
 import name.abuchen.portfolio.ui.preferences.ProxyPreferencePage;
@@ -61,22 +63,29 @@ public class OpenPreferenceDialogHandler
 
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
-                    @Preference(UIConstants.Preferences.ENABLE_EXPERIMENTAL_FEATURES) boolean enableExperimentalFeatures,
-                    @Optional @Named(UIConstants.Parameter.PAGE) String page, IThemeEngine themeEngine)
+                    @Named(IServiceConstants.ACTIVE_PART) MPart part,
+                    @Optional @Named(UIConstants.Parameter.PAGE) String page, //
+                    IThemeEngine themeEngine)
     {
+        // the active client
+        var clientInput = MenuHelper.getActiveClientInput(part, false);
+
         PreferenceManager pm = new PreferenceManager('/');
         pm.addToRoot(new PreferenceNode("general", new GeneralPreferencePage())); //$NON-NLS-1$
+        pm.addTo("general", new PreferenceNode("prices", new HistoricalPricesPreferencePage(clientInput))); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("general", new PreferenceNode("presets", new PresetsPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("general", new PreferenceNode("backups", new BackupsPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
 
         pm.addToRoot(new PreferenceNode("presentation", new PresentationPreferencePage())); // NOSONAR //$NON-NLS-1$
         pm.addTo("presentation", new PreferenceNode("language", new LanguagePreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("presentation", new PreferenceNode("theme", new ThemePreferencePage(themeEngine))); //$NON-NLS-1$ //$NON-NLS-2$
-        pm.addTo("presentation", new PreferenceNode("formatting", new FormattingPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
+        pm.addTo("presentation", new PreferenceNode("formatting", //$NON-NLS-1$ //$NON-NLS-2$
+                        new FormattingPreferencePage(clientInput.map(c -> c.getClient()))));
 
         pm.addToRoot(new PreferenceNode("calendar", new CalendarPreferencePage())); //$NON-NLS-1$
 
         pm.addToRoot(new PreferenceNode("api", new APIKeyPreferencePage())); //$NON-NLS-1$
+        pm.addTo("api", new PreferenceNode("pp", new PPIDPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("api", new PreferenceNode("alphavantage", new AlphaVantagePreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("api", new PreferenceNode("coingecko", new CoingeckoPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("api", new PreferenceNode("divvydiary", new DivvyDiaryPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
@@ -85,12 +94,10 @@ public class OpenPreferenceDialogHandler
         pm.addTo("api", new PreferenceNode("leeway", new LeewayPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("api", new PreferenceNode("mydividends24", new MyDividends24PreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("api", new PreferenceNode("twelvedata", new TwelveDataPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
-
-        if (enableExperimentalFeatures)
-            pm.addTo("api", new PreferenceNode("portfolio-report", new PortfolioReportPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("api", new PreferenceNode("quandl", new QuandlPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
 
         pm.addToRoot(new PreferenceNode("proxy", new ProxyPreferencePage())); //$NON-NLS-1$
+        pm.addToRoot(new PreferenceNode("experiments", new ExperimentsPreferencePage())); //$NON-NLS-1$
         if (UpdateHelper.isInAppUpdateEnabled())
             pm.addToRoot(new PreferenceNode("updates", new UpdatePreferencePage())); //$NON-NLS-1$
 

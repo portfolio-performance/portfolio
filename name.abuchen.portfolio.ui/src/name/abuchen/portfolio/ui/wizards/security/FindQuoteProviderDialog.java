@@ -5,13 +5,16 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -22,6 +25,7 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.ToolTip;
@@ -37,35 +41,104 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 
+import com.google.common.base.Objects;
+
 import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityProperty;
+import name.abuchen.portfolio.oauth.OAuthClient;
 import name.abuchen.portfolio.online.Factory;
-import name.abuchen.portfolio.online.SecuritySearchProvider;
+import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
 import name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed;
-import name.abuchen.portfolio.online.impl.PortfolioReportNet;
-import name.abuchen.portfolio.online.impl.PortfolioReportNet.OnlineItem;
+import name.abuchen.portfolio.online.impl.ManualQuoteFeed;
+import name.abuchen.portfolio.online.impl.MarketIdentifierCodes;
+import name.abuchen.portfolio.online.impl.PortfolioPerformanceFeed;
+import name.abuchen.portfolio.online.impl.PortfolioPerformanceSearchProvider;
+import name.abuchen.portfolio.online.impl.PortfolioReportCoins;
 import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
+import name.abuchen.portfolio.ui.jobs.priceupdate.UpdatePricesJob;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ContextMenu;
-import name.abuchen.portfolio.ui.util.LabelOnly;
+import name.abuchen.portfolio.ui.util.LoginButton;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
+import name.abuchen.portfolio.util.Pair;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class FindQuoteProviderDialog extends TitleAreaDialog
 {
+    private static final class UseBuiltInFeedAction extends SimpleAction
+    {
+        private final ResultItem resultItem;
+
+        public UseBuiltInFeedAction(SecurityItem item, ResultItem onlineItem)
+        {
+            super(MessageFormat.format("{0} * {1} * {2}", //$NON-NLS-1$
+                            onlineItem.getCurrencyCode(), //
+                            onlineItem.getSymbol(), //
+                            MarketIdentifierCodes.getLabel(onlineItem.getExchange())), a -> {
+                                item.security.setFeed(PortfolioPerformanceFeed.ID);
+
+                                item.security.setIsin(onlineItem.getIsin());
+                                item.security.setTickerSymbol(onlineItem.getSymbol());
+
+                                // if and only if the label includes the
+                                // characters of a newly imported security (e.g.
+                                // "Imported security: {0}"), then we also
+                                // update the name of the instrument.
+                                // Because we do not know which identifier was
+                                // used to construct the name, we check with
+                                // indexOf.
+
+                                var labelOfNewlyImportedSecurity = MessageFormat
+                                                .format(name.abuchen.portfolio.Messages.CSVImportedSecurityLabel, ""); //$NON-NLS-1$
+                                if (item.security.getName().indexOf(labelOfNewlyImportedSecurity) >= 0)
+                                {
+                                    item.security.setName(onlineItem.getName());
+                                }
+                            });
+
+            this.resultItem = onlineItem;
+        }
+
+        public String getExchange()
+        {
+            return resultItem.getExchange();
+        }
+    }
+
+    private static class DeactivateAction extends SimpleAction
+    {
+        public DeactivateAction(SecurityItem item)
+        {
+            super(Factory.getQuoteFeed(ManualQuoteFeed.class).getName(), a -> {
+                item.security.setFeed(QuoteFeed.MANUAL);
+                item.security.setLatestFeed(null);
+            });
+        }
+    }
+
+    private static class LabelOnly extends Action
+    {
+        public LabelOnly(String text)
+        {
+            super(text);
+            setEnabled(false);
+        }
+    }
+
     private static final class SecurityItem implements Adaptable
     {
         final Security security;
-        final List<Action> actions = new ArrayList<>();
+        final List<Action> actions = new CopyOnWriteArrayList<>();
 
         Action selectedAction;
 
@@ -84,12 +157,12 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
         }
     }
 
-    private static final class CheckPortfolioReportThread implements IRunnableWithProgress
+    private static final class CheckPortfolioPerformanceAPIThread implements IRunnableWithProgress
     {
         private Consumer<SecurityItem> listener;
         private List<SecurityItem> items;
 
-        public CheckPortfolioReportThread(Consumer<SecurityItem> listener, List<SecurityItem> securities)
+        public CheckPortfolioPerformanceAPIThread(Consumer<SecurityItem> listener, List<SecurityItem> securities)
         {
             this.listener = listener;
             this.items = securities;
@@ -100,18 +173,18 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
         {
             monitor.beginTask(Messages.LabelSearchForQuoteFeeds, items.size());
 
+            var coins = new PortfolioReportCoins();
+
             for (SecurityItem item : items) // NOSONAR
             {
                 try
                 {
                     monitor.subTask(item.security.getName());
 
-                    // if the security already has an online id, skip it
-                    if (item.security.getOnlineId() != null)
-                    {
-                        monitor.worked(1);
-                        continue;
-                    }
+                    // Add deactivate action for all instruments, including
+                    // exchange rates. This allows users to disable automatic
+                    // updates for any instrument.
+                    item.actions.add(new DeactivateAction(item));
 
                     // skip exchange rates and indices and well-known provider
                     var wellKnown = Set.of(EurostatHICPQuoteFeed.ID, CoinGeckoQuoteFeed.ID);
@@ -123,21 +196,33 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
                         continue;
                     }
 
+                    // check for crypto currencies on Portfolio Report
+                    if (PortfolioReportQuoteFeed.ID.equals(item.security.getFeed())
+                                    && coins.contains(item.security.getOnlineId()))
+                    {
+                        setupCoinMigration(coins, item);
+
+                        monitor.worked(1);
+                        continue;
+                    }
+
                     // search for ISIN
-                    if (item.security.getIsin() != null && !item.security.getIsin().isEmpty()
-                                    && searchByIdentifier(item, item.security.getIsin(), ResultItem::getIsin))
+                    if (item.security.getIsin() != null && !item.security.getIsin().isEmpty() && searchByIdentifier(
+                                    item, item.security.getIsin(), PortfolioPerformanceSearchProvider.Parameter.ISIN))
                     {
                         monitor.worked(1);
                         continue;
                     }
 
-                    // search by WKN
-                    if (item.security.getWkn() != null && !item.security.getWkn().isEmpty()
-                                    && searchByIdentifier(item, item.security.getWkn(), ResultItem::getWkn))
+                    // search for ticker symbol
+                    if (item.security.getTickerSymbol() != null && !item.security.getTickerSymbol().isEmpty()
+                                    && searchByIdentifier(item, item.security.getTickerSymbol(),
+                                                    PortfolioPerformanceSearchProvider.Parameter.SYMBOL))
                     {
                         monitor.worked(1);
                         continue;
                     }
+
                 }
                 catch (IOException e)
                 {
@@ -157,87 +242,92 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
             monitor.done();
         }
 
-        private boolean searchByIdentifier(SecurityItem item, String identifier, Function<ResultItem, String> property)
-                        throws IOException
+        private void setupCoinMigration(PortfolioReportCoins coins, SecurityItem item)
         {
-            var results = new PortfolioReportNet().search(identifier, SecuritySearchProvider.Type.ALL);
+            var coin = coins.getCoinByOnlineId(item.security.getOnlineId());
 
-            // searching by WKN must be a direct match
-            if (results.size() != 1)
-                return false;
+            var heading = MessageFormat.format("{0} * {1}", //$NON-NLS-1$
+                            coin.getName(), coin.getCoinGeckoCoindId());
+            item.actions.add(new LabelOnly(heading));
 
-            if (!identifier.equals(property.apply(results.get(0))))
-                return false;
+            var label = MessageFormat.format("CoinGecko * {0} * {1} * {2}", //$NON-NLS-1$
+                            item.security.getCurrencyCode(), //
+                            coin.getTickerSymbol().toUpperCase(), //
+                            coin.getCoinGeckoCoindId());
 
-            var onlineItem = (OnlineItem) results.get(0);
-
-            addSecurityInfoAction(item, onlineItem);
-
-            var useAction = addAction(item, onlineItem);
-
-            if (onlineItem.hasPrices())
-                item.selectedAction = useAction;
-
-            Action linkOnlyAction = new SimpleAction(Messages.LabelOnlyLinkToPortfolioReport, a -> {
-                item.security.setOnlineId(onlineItem.getOnlineId());
-                PortfolioReportNet.updateWith(item.security, onlineItem);
+            var action = new SimpleAction(label, a -> {
+                item.security.setFeed(CoinGeckoQuoteFeed.ID);
+                item.security.setTickerSymbol(coin.getTickerSymbol().toUpperCase());
+                item.security.setPropertyValue(SecurityProperty.Type.FEED, CoinGeckoQuoteFeed.COINGECKO_COIN_ID,
+                                coin.getCoinGeckoCoindId());
             });
 
-            if (item.selectedAction == null)
-                item.selectedAction = linkOnlyAction;
-            item.actions.add(linkOnlyAction);
+            item.actions.add(action);
+            item.selectedAction = action;
+
+            listener.accept(item);
+        }
+
+        private boolean searchByIdentifier(SecurityItem item, String identifier,
+                        PortfolioPerformanceSearchProvider.Parameter parameter) throws IOException
+        {
+            var results = new PortfolioPerformanceSearchProvider().search(parameter, identifier);
+
+            if (results.isEmpty())
+                return false;
+
+            for (var result : results)
+            {
+                var markets = (result.getMarkets().isEmpty() ? List.of(result) : result.getMarkets()) //
+                                .stream()
+                                .filter(r -> Objects.equal(item.security.getCurrencyCode(), r.getCurrencyCode()))
+                                .toList();
+
+                if (markets.isEmpty())
+                    continue;
+
+                var proposedMarket = !QuoteFeed.MANUAL.equals(item.security.getFeed())
+                                && !PortfolioPerformanceFeed.ID.equals(item.security.getFeed())
+                                                ? markets.stream()
+                                                                .filter(m -> Objects.equal(m.getSymbol(),
+                                                                                item.security.getTickerSymbol()))
+                                                                .findFirst().orElse(markets.getFirst())
+                                                : null;
+
+                addSecurityInfoAction(item, result);
+
+                for (var market : markets)
+                {
+                    var action = new UseBuiltInFeedAction(item, market);
+                    item.actions.add(action);
+
+                    if (proposedMarket != null && market == proposedMarket)
+                    {
+                        item.selectedAction = action;
+                    }
+                }
+            }
 
             listener.accept(item);
             return true;
         }
 
-        private void addSecurityInfoAction(SecurityItem item, OnlineItem onlineItem)
+        private void addSecurityInfoAction(SecurityItem item, ResultItem onlineItem)
         {
-            var label = MessageFormat.format("{0} * {1} * {2} * {3}", //$NON-NLS-1$
+            var label = MessageFormat.format("{0} * {1}", //$NON-NLS-1$
                             onlineItem.getName(), //
-                            onlineItem.getIsin() != null ? onlineItem.getIsin() : "", //$NON-NLS-1$
-                            onlineItem.getWkn() != null ? onlineItem.getWkn() : "", //$NON-NLS-1$
-                            onlineItem.getSymbol() != null ? onlineItem.getSymbol() : ""); //$NON-NLS-1$
+                            onlineItem.getIsin() != null ? onlineItem.getIsin() : ""); //$NON-NLS-1$
 
             item.actions.add(new LabelOnly(label));
         }
-
-        private Action addAction(SecurityItem item, OnlineItem onlineItem)
-        {
-            var label = MessageFormat.format("{0}, {1}, {2}", //$NON-NLS-1$
-                            new PortfolioReportQuoteFeed().getName(), //
-                            onlineItem.getName(), //
-                            item.security.getCurrencyCode());
-
-            Action action = new SimpleAction(label, onlineItem.hasPrices() ? Images.VIEW_LINECHART : null, a -> {
-                item.security.setOnlineId(onlineItem.getOnlineId());
-                item.security.setFeed(PortfolioReportQuoteFeed.ID);
-
-                // if and only if the label includes the characters of a newly
-                // imported security (e.g. "Imported security: {0}"), then we
-                // also update the name of the instrument. Because we do not
-                // know which identifier was used to construct the name, we
-                // check with indexOf.
-
-                var labelOfNewlyImportedSecurity = MessageFormat
-                                .format(name.abuchen.portfolio.Messages.CSVImportedSecurityLabel, ""); //$NON-NLS-1$
-                if (item.security.getName().indexOf(labelOfNewlyImportedSecurity) >= 0)
-                {
-                    item.security.setName(onlineItem.getName());
-                }
-
-                PortfolioReportNet.updateWith(item.security, onlineItem);
-            });
-
-            item.actions.add(action);
-
-            return action;
-        }
-
     }
+
+    private static final int DO_NOT_CHANGE_ID = 5712;
 
     private final Client client;
     private final List<SecurityItem> securities;
+
+    private TableViewer tableViewer;
 
     public FindQuoteProviderDialog(Shell parentShell, Client client, List<Security> securities)
     {
@@ -254,6 +344,17 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
 
         setTitleImage(Images.BANNER.image());
         setTitle(Messages.LabelSearchForQuoteFeeds);
+
+        var oauthClient = OAuthClient.INSTANCE;
+
+        if (!oauthClient.isAuthenticated())
+            setErrorMessage(Messages.MsgHistoricalPricesRequireSignIn);
+
+        Runnable updateListener = () -> Display.getDefault().asyncExec(() -> setErrorMessage(
+                        oauthClient.isAuthenticated() ? null : Messages.MsgHistoricalPricesRequireSignIn));
+
+        oauthClient.addStatusListener(updateListener);
+        getContents().addDisposeListener(e -> oauthClient.removeStatusListener(updateListener));
     }
 
     @Override
@@ -275,7 +376,7 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
         if (!updatedSecurities.isEmpty())
         {
             client.markDirty();
-            new UpdateQuotesJob(client, updatedSecurities).schedule();
+            new UpdatePricesJob(client, updatedSecurities).schedule();
         }
     }
 
@@ -291,8 +392,8 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
         Point preferredSize = getShell().computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
 
         // create dialog with a minimum size
-        preferredSize.x = Math.min(Math.max(preferredSize.x, 700), 1000);
-        preferredSize.y = Math.min(Math.max(preferredSize.y, 500), 700);
+        preferredSize.x = Math.clamp(preferredSize.x, 700, 1000);
+        preferredSize.y = Math.clamp(preferredSize.y, 500, 700);
         return preferredSize;
     }
 
@@ -310,8 +411,7 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
         TableColumnLayout layout = new TableColumnLayout();
         compositeTable.setLayout(layout);
 
-        TableViewer tableViewer = new TableViewer(compositeTable,
-                        SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.VIRTUAL);
+        tableViewer = new TableViewer(compositeTable, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.VIRTUAL);
         tableViewer.setUseHashlookup(true);
 
         ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
@@ -337,6 +437,32 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
         return area;
     }
 
+    @Override
+    protected void createButtonsForButtonBar(Composite parent)
+    {
+        super.createButtonsForButtonBar(parent);
+
+        ((GridLayout) parent.getLayout()).numColumns++;
+        var button = LoginButton.create(parent);
+        setButtonLayoutData(button);
+
+        createButton(parent, DO_NOT_CHANGE_ID, Messages.MenuDoNotChange, false);
+    }
+
+    @Override
+    protected void buttonPressed(int buttonId)
+    {
+        if (buttonId == DO_NOT_CHANGE_ID)
+        {
+            securities.forEach(s -> s.selectedAction = null);
+            tableViewer.refresh();
+        }
+        else
+        {
+            super.buttonPressed(buttonId);
+        }
+    }
+
     private void setupDirtyListener(TableViewer tableViewer)
     {
         PropertyChangeListener listener = e -> Display.getDefault().asyncExec(() -> tableViewer.refresh(true));
@@ -346,7 +472,7 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
 
     private void triggerJob(TableViewer tableViewer, IProgressMonitor progressMonitor)
     {
-        var job = new CheckPortfolioReportThread(item -> Display.getDefault().asyncExec(() -> {
+        var job = new CheckPortfolioPerformanceAPIThread(item -> Display.getDefault().asyncExec(() -> {
             if (!tableViewer.getTable().isDisposed())
                 tableViewer.refresh();
         }), securities);
@@ -377,6 +503,17 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
         column.getColumn().setText(Messages.ColumnCurrency);
         column.setLabelProvider(
                         ColumnLabelProvider.createTextProvider(e -> ((SecurityItem) e).security.getCurrencyCode()));
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(50, true));
+
+        column = new TableViewerColumn(tableViewer, SWT.NONE);
+        column.getColumn().setText(Messages.ColumnISIN);
+        column.setLabelProvider(ColumnLabelProvider.createTextProvider(e -> ((SecurityItem) e).security.getIsin()));
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(100, true));
+
+        column = new TableViewerColumn(tableViewer, SWT.NONE);
+        column.getColumn().setText(Messages.ColumnTicker);
+        column.setLabelProvider(
+                        ColumnLabelProvider.createTextProvider(e -> ((SecurityItem) e).security.getTickerSymbol()));
         layout.setColumnData(column.getColumn(), new ColumnPixelData(60, true));
 
         column = new TableViewerColumn(tableViewer, SWT.NONE);
@@ -400,9 +537,8 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
                 var selectedAction = ((SecurityItem) e).selectedAction;
 
                 return selectedAction != null ? selectedAction.getText()
-                                : MessageFormat.format("{0,choice,0#|1#1 candidate|1<{0} candidates}", //$NON-NLS-1$
-                                                ((SecurityItem) e).actions.stream().filter(a -> !a.isEnabled())
-                                                                .count());
+                                : MessageFormat.format(Messages.LabelNumberOfCandidates, ((SecurityItem) e).actions
+                                                .stream().filter(a -> !a.isEnabled()).count());
             }
 
             @Override
@@ -433,6 +569,9 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
 
                 for (Action action : item.actions)
                 {
+                    if (action instanceof LabelOnly)
+                        menuManager.add(new Separator());
+
                     SimpleAction menuItem = new SimpleAction(action.getText(), a -> {
                         item.selectedAction = action;
                         tableViewer.refresh(item);
@@ -450,8 +589,69 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
                     tableViewer.refresh();
                 });
                 menuManager.add(noop);
+
+                // Find and select the DeactivateAction for this security
+                // The action will be executed when the dialog is confirmed
+                var deactivate = new SimpleAction(Factory.getQuoteFeed(ManualQuoteFeed.class).getName(), a -> {
+                    for (Object e : selection)
+                    {
+                        var securityItem = (SecurityItem) e;
+                        securityItem.selectedAction = securityItem.actions.stream()
+                                        .filter(DeactivateAction.class::isInstance).findFirst().orElse(null);
+                    }
+                    tableViewer.refresh();
+                });
+                menuManager.add(deactivate);
+
+                menuManager.add(new Separator());
+
+                addAvailableExchanges(tableViewer, menuManager, selection);
             }
 
         }).hook();
+    }
+
+    private void addAvailableExchanges(TableViewer tableViewer, IMenuManager menuManager,
+                    IStructuredSelection selection)
+    {
+        var exchanges = new HashSet<Pair<String, String>>();
+        for (Object item : selection)
+        {
+            var actions = ((SecurityItem) item).actions;
+            for (var action : actions)
+            {
+                if (action instanceof UseBuiltInFeedAction builtIn)
+                {
+                    var exchange = builtIn.getExchange();
+                    if (exchange != null)
+                        exchanges.add(new Pair<>(exchange, MarketIdentifierCodes.getLabel(exchange)));
+                }
+            }
+        }
+
+        if (!exchanges.isEmpty())
+        {
+            menuManager.add(new Separator());
+            menuManager.add(new LabelOnly(Messages.LabelExchange));
+
+            exchanges.stream() //
+                            .sorted((l, r) -> TextUtil.compare(l.getValue(), r.getValue())) //
+                            .forEach(exchange -> menuManager.add(new SimpleAction(exchange.getValue(), a -> {
+                                for (var item : selection)
+                                {
+                                    var securityItem = (SecurityItem) item;
+                                    for (var action : securityItem.actions)
+                                    {
+                                        if (action instanceof UseBuiltInFeedAction builtIn
+                                                        && exchange.getKey().equals(builtIn.getExchange()))
+                                        {
+                                            securityItem.selectedAction = action;
+                                            break;
+                                        }
+                                    }
+                                }
+                                tableViewer.refresh();
+                            })));
+        }
     }
 }

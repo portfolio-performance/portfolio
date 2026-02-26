@@ -20,6 +20,16 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
 
 /* package */final class EditSecurityModel extends BindingHelper.Model
 {
+    public enum SortOrder
+    {
+        /** by natural order, i.e., the order defined by the taxonomy */
+        NATURAL,
+        /** by name */
+        NAME,
+        /** by weight */
+        WEIGHT
+    }
+
     static class TaxonomyDesignation extends BindingHelper.Model
     {
         private Taxonomy taxonomy;
@@ -27,6 +37,8 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         private List<Classification> elements;
 
         private List<ClassificationLink> links = new ArrayList<>();
+
+        private SortOrder sortOrder = SortOrder.NATURAL;
 
         public TaxonomyDesignation(Taxonomy taxonomy, final Security security)
         {
@@ -58,6 +70,16 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         public List<ClassificationLink> getLinks()
         {
             return links;
+        }
+
+        public SortOrder getSortOrder()
+        {
+            return sortOrder;
+        }
+
+        public void setSortOrder(SortOrder sortOrder)
+        {
+            this.sortOrder = sortOrder;
         }
 
         @Override

@@ -1,0 +1,28 @@
+PDFBox Version: 3.0.5 != 1.8.17
+Portfolio Performance Version: 0.79.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+uyyItdI JOxMyMGQvHLH
+LCgEmd BsmwudvSAMC 4 
+98194 GZlwdZU Datum 05.09.2025
+Deutschland Seite 1 / 1
+Wertpapierabrechnung 
+für Kundenauftrag 
+Typ LIMIT Order SCALXmdTbQ7nMxD
+Ausführung 05.09.2025 09:08:10 Geschäft 433054673
+Ausführungsplatz gettex Lagerland Luxemburg
+Depot 9585717820 Verwahrart Wertpapierrechnung
+Typ Wertpapier Anzahl Kurs Betrag
+Kauf Desert Gold Ventures 23,00 Stk. 0,0485 EUR 1,12 EUR
+CA25039N4084
++0,99
+Ordergebühren
+EUR
+Belastung 2,11 EUR
+Der Betrag wird mit dem Verrechnungskonto DE43111110700444444415 (Valuta: 09.09.2025) verrechnet. 
+Bitte überprüfen Sie die Informationen auf Richtigkeit und melden Sie etwaige Einwände unverzüglich bei uns.
+Verwenden Sie dafür den Menüpunkt Support im Kundenbereich. 
+Scalable Capital GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 1 / 1

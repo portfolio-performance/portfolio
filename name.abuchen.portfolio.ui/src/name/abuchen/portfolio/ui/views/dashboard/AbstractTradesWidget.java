@@ -1,11 +1,12 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
+import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import jakarta.inject.Inject;
 
@@ -51,6 +52,11 @@ import name.abuchen.portfolio.util.TextUtil;
         addConfig(new ReportingPeriodConfig(this));
     }
 
+    protected boolean useSecurityCurrency()
+    {
+        return false;
+    }
+
     @Override
     public Composite createControl(Composite parent, DashboardResources resources)
     {
@@ -94,15 +100,13 @@ import name.abuchen.portfolio.util.TextUtil;
     {
         Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now());
         ClientFilter clientFilter = get(ClientFilterConfig.class).getSelectedFilter();
-        CacheKey key = new CacheKey(TradeCollector.class, clientFilter, interval);
+        CacheKey key = new CacheKey(TradeCollector.class, useSecurityCurrency(), clientFilter, interval);
 
         return () -> {
             TradeDetailsView.Input input = (TradeDetailsView.Input) getDashboardData().getCache().computeIfAbsent(key,
                             k -> {
 
                                 Client filteredClient = clientFilter.filter(getClient());
-                                TradeCollector collector = new TradeCollector(filteredClient,
-                                                getDashboardData().getCurrencyConverter());
 
                                 List<Trade> trades = new ArrayList<>();
                                 List<TradeCollectorException> errors = new ArrayList<>();
@@ -110,6 +114,11 @@ import name.abuchen.portfolio.util.TextUtil;
                                 getClient().getSecurities().forEach(s -> {
                                     try
                                     {
+                                        var converter = getDashboardData().getCurrencyConverter();
+                                        if (useSecurityCurrency() && s.getCurrencyCode() != null)
+                                            converter = converter.with(s.getCurrencyCode());
+
+                                        var collector = new TradeCollector(filteredClient, converter);
                                         trades.addAll(collector.collect(s));
                                     }
                                     catch (TradeCollectorException error)
@@ -118,15 +127,15 @@ import name.abuchen.portfolio.util.TextUtil;
                                     }
                                 });
 
-                                return new TradeDetailsView.Input(interval, trades, errors);
+                                return new TradeDetailsView.Input(interval, trades, errors, useSecurityCurrency());
                             });
 
             // filter trades on the *cached* result (which includes all trades)
             // because widgets apply different filter on the result
 
             return new TradeDetailsView.Input(input.getInterval(),
-                            input.getTrades().stream().filter(getFilter(interval)).collect(Collectors.toList()),
-                            input.getErrors());
+                            input.getTrades().stream().filter(getFilter(interval)).collect(toMutableList()),
+                            input.getErrors(), input.useSecurityCurrency());
         };
     }
 

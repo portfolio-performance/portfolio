@@ -1,0 +1,25 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.1
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital Bank GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+Florian cfseEzPBk HtfRvD
+Zur PFQKNOyVJpCsq 15 
+65064 Bad JHpWUhbzyO Datum 16.01.2026
+Deutschland Seite 1 / 1
+Wertpapierabrechnung 
+Sparplan / Automatische Wiederanlage 
+Typ LIMIT Order xuFglxJGCAH3g26
+Ausführung 16.01.2026 11:31:41 Geschäft 70168q1idTj71141
+Ausführungsplatz EIX Lagerland Luxemburg
+Depot 3572315979 Verwahrart Wertpapierrechnung
+Typ Wertpapier Anzahl Kurs Betrag
+Kauf iShares Core MSCI Emerging Markets IMI (Acc) 12,213292 Stk. 40,939 EUR 500,00 EUR
+IE00BKM4GZ66
+Belastung 500,00 EUR
+Der Betrag wird mit dem Verrechnungskonto YW19260183820790148638 (Valuta: 20.01.2026) verrechnet. 
+Bitte überprüfen Sie die Informationen auf Richtigkeit und melden Sie etwaige Einwände unverzüglich bei uns.
+Verwenden Sie dafür den Menüpunkt Support im Kundenbereich. 
+Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 1 / 1

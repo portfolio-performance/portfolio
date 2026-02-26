@@ -1,0 +1,44 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.5
+System: linux | x86_64 | 21.0.9+10-Debian-1gl0 | Debian
+-----------------------------------------
+Scalable Capital Bank GmbH • Seitzstraße 8e • 80538 Munich • Germany 
+CNkDr YItQhWzpgIb
+uFwlNduBvuoYJaBB 33 
+20818 NFSmnDb Date 24.01.2026
+Germany Page 1 / 2
+Preliminary Lump Sum (Vorabpauschale) 
+for SPDR MSCI ACW IM UCITS ETF (IE00B3YLTY66) 
+Entitled quantity 613 Considered year 2025
+Ex day 02.01.2026 Relevant tax year 2026
+Clearing account movement 
+Booking Value date Type Vorabpauschale Taxes 
+24.01.2026 02.01.2026 Tax deduction 596.41 EUR 110.11 EUR 
+Deducted taxes 110.11 EUR
+Acquisitions during the calendar year were recognised with a pro rata advance lump sum in accordance with §18 Section 2 InvStG 2018 (1/12 of the annual value per holding
+month) 
+Find out more in our Financial Terms Glossary and FAQs . 
+The amount is debited from the clearing account DE49120700700759496782. 
+Scalable Capital Bank GmbH HRB 217778 Managing Directors: Supervisory Board: Page 
+Seitzstraße 8e Registry Court: Munich Local Court Florian Prucker, Martin Krebs, Patrick Olson (Chairman) 
+80538 München Sales tax ID: DE300434774 Dirk Franzmeyer 1 / 2
+Preliminary Lump Sum (Vorabpauschale)
+Calculation of tax-relevant income
+Type Note Amount
+Profit or loss 596.41 EUR
+Partial exemption 30 % -178.92 EUR
+To be
+417.49 EUR
+taxed 
+Taxes incurred 
+Type Amount
+Capital gains tax 104.37 EUR
+Solidarity surcharge 5.74 EUR
+Taxes
+110.11 EUR
+incurred 
+Please check the information for accuracy and report any concerns to us immediately.
+To do so, use the Support menu item in the client area. 
+Scalable Capital Bank GmbH HRB 217778 Managing Directors: Supervisory Board: Page 
+Seitzstraße 8e Registry Court: Munich Local Court Florian Prucker, Martin Krebs, Patrick Olson (Chairman) 
+80538 München Sales tax ID: DE300434774 Dirk Franzmeyer 2 / 2

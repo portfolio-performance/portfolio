@@ -1,0 +1,38 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.80.5.qualifier
+System: linux | x86_64 | 21.0.8+9-LTS | Eclipse Adoptium
+-----------------------------------------
+Deutsche Bank AG
+Filiale
+Bankhausen
+Bank-Platz 1
+Herrn 11111 Bankhausen
+Max Mustermann Frau Birgit Bankfrau
+Musterstr 1 A Telefon (111) 1111-1111
+11111 Bankhausen
+24h-Kundenservice (069) 910-10000
+29. August 2025
+Kontoauszug
+Kontoinhaber: Max Mustermann
+Auszug Seite von IBAN Alter Saldo
+1 1 1 DE12 3456 7890 1234 5678 01 EUR + 0,00
+Buchung Valuta Vorgang Soll Haben
+25.08. 25.08. Verwendungszweck/ Kundenreferenz + 34,30
+2025 2025 Buchung Steuererstattung 2025 zu:
+WP1224776431 01569286887 KESt: 32,51 EUR
+SolZ: 1,79 EUR WKN: A0GLU5 TURKEY 06/36
+Filialnummer Kontonummer Neuer Saldo
+100 1234567 01 EUR + 34,30
+BIC (SWIFT)
+DEUTDEDBHAM
+Wichtige Hinweise
+Bitte erheben Sie Einwendungen gegen einzelne Buchungen unverzüglich. Schecks, Wechsel und sonstige Lastschriften schreiben wir unter dem Vorbehalt
+des Eingangs gut. Der angegebene Kontostand berücksichtigt nicht die Wertstellung der Buchungen (siehe oben unter "Valuta").
+Somit können bei Verfügungen1)
+ möglicherweise Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen.
+Die abgerechneten Leistungen sind als Bank- oder Finanzdienstleistungen von der Umsatzsteuer befreit, sofern Umsatzsteuer nicht gesondert
+ausgewiesen ist. Umsatzsteuer ID Nr.: Deutsche Bank AG, 60262 Frankfurt DE114103379
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können dem "Informationsbogen
+für den Einleger" entnommen werden.
+1) Der Begriff umfasst unter anderem die relevanten Zahlungskontendienste "Bargeldauszahlung" und "Überweisung".
+0000000003 / 06600800 / 20250830

@@ -1,0 +1,45 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.77.3
+System: linux | x86_64 | 21.0.7+6-Ubuntu-0ubuntu124.04 | Ubuntu
+-----------------------------------------
+Slagelse
+Schweizerpladsen 1 A
+Sydbank A/S DK-4200 Slagelse
+Receptionen, Peberlyk 4, 6200 Aabenraa
+nAJO SdIXIBgd WILAOwEUjbx Telefon +45 74 37 94 00
+pImnJPLnULA 921 Sydbank A/S
+7608 yM pjtrh XLqUDkbYCBkO CVR-nr. DK 12626509, Aabenraa
+sydbank.dk
+Forretningsnr. 35820456
+Fondskode 1006800
+ISIN-kode DK0010068006
+CPR/CVR-nr. 120176-XXXX
+Valutaudlænding
+2. februar 2024
+Fondsafregning
+Du har den 02.02.24 kl. 10:53:55 (UTC: 09:53:55.688) solgt: Sparinvest Danske Aktier KL A
+Antal stk Fondskurs Kursværdi
+120 217,3000000 26.076,00
+Kurtage
+0,15 % af 26.076,00 39,11-
+(Handelsomkostninger i alt DKK 39,11)
+I alt
+DKK 26.036,89
+Værdipapirerne udtages af depot 992872031289079 med valør 06.02.24.
+Nettobeløbet indsættes på konto 536256424351902 med valør 06.02.24.
+Din markedsordre er gennemført som børshandel på Nasdaq Copenhagen Equities (XCSE). Ordren er
+modtaget den 01.02.24 kl. 20:26.
+Vi har ikke ydet rådgivning i.f.m. ordren.
+Du modtager ikke yderligere meddelelse om registreringen.
+Bestilt via Net-Mobilbank af bruger JAhK omKJZMot qNqWzXUlbso
+Du har pligt til at kontrollere denne notas indhold og straks rette eventuelle spørgsmål til Slagelse, Tlf.: 74 37
+94 00
+Der henvises i øvrigt til regler for værdipapirhandel, ordreudførelsespolitik samt bankens almindelige
+forretningsbetingelser.
+Med venlig hilsen
+Sydbank
+(Denne meddelelse kræver ingen underskrift.)
+Reklamationer vedrørende denne fondsafregning bedes straks rettet til Compliance i Sydbank, Peberlyk 4, 6200 Aabenraa, Tlf. 74 37 37 37 eller
+compliance@sydbank.dk.
+FONVPA/Refnr. 1195520/E
+LEI: GP5DT10VX1QRQUKVBK64

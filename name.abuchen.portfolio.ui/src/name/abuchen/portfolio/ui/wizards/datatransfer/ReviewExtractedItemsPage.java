@@ -3,10 +3,15 @@ package name.abuchen.portfolio.ui.wizards.datatransfer;
 import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -18,6 +23,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -43,7 +49,6 @@ import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
@@ -52,6 +57,7 @@ import org.eclipse.swt.widgets.Table;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
+import name.abuchen.portfolio.datatransfer.Extractor.SkippedItem;
 import name.abuchen.portfolio.datatransfer.ImportAction;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status.Code;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
@@ -82,9 +88,11 @@ import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.action.MenuContribution;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
+import name.abuchen.portfolio.util.Pair;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class ReviewExtractedItemsPage extends AbstractWizardPage implements ImportAction.Context
@@ -121,12 +129,26 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     private TableViewer tableViewer;
     private TableViewer errorTableViewer;
 
+    /**
+     * the composite holding the dropdowns for primary account and portfolio
+     */
+    private Composite primaryContainer;
+
+    /**
+     * the composite holding the dropdowns for secondary account and portfolio
+     */
+    private Composite secondaryContainer;
+
+    private Label lblTransferTo;
+
     private ComboViewer primaryPortfolio;
-    private Label lblSecondaryPortfolio;
     private ComboViewer secondaryPortfolio;
-    private ComboViewer primaryAccount;
-    private Label lblSecondaryAccount;
-    private ComboViewer secondaryAccount;
+
+    /** currency -> source account with label and dropdown */
+    private Map<String, Pair<Label, ComboViewer>> primaryAccounts = new HashMap<>();
+    /** currency -> secondary (target) account with label and dropdown */
+    private Map<String, Pair<Label, ComboViewer>> secondaryAccounts = new HashMap<>();
+
     private Button cbConvertToDelivery;
     private Button cbRemoveDividends;
     private Button cbImportNotesFromSource;
@@ -172,28 +194,52 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         return allEntries;
     }
 
+    private Images getStatusImage(Code code)
+    {
+        return switch (code)
+        {
+            case WARNING -> Images.WARNING;
+            case ERROR -> Images.ERROR;
+            case SKIP -> Images.SKIP;
+            case OK -> Images.OK;
+            default -> throw new IllegalArgumentException();
+        };
+    }
+
     @Override
     public Portfolio getPortfolio()
     {
-        return (Portfolio) ((IStructuredSelection) primaryPortfolio.getSelection()).getFirstElement();
+        if (primaryPortfolio == null || primaryPortfolio.getSelection().isEmpty())
+            return null;
+        return (Portfolio) primaryPortfolio.getStructuredSelection().getFirstElement();
     }
 
     @Override
     public Portfolio getSecondaryPortfolio()
     {
-        return (Portfolio) ((IStructuredSelection) secondaryPortfolio.getSelection()).getFirstElement();
+        if (secondaryPortfolio == null || secondaryPortfolio.getSelection().isEmpty())
+            return null;
+        return (Portfolio) secondaryPortfolio.getStructuredSelection().getFirstElement();
     }
 
     @Override
-    public Account getAccount()
+    public Account getAccount(String currency)
     {
-        return (Account) ((IStructuredSelection) primaryAccount.getSelection()).getFirstElement();
+        var pair = primaryAccounts.get(currency);
+        if (pair == null)
+            return null;
+
+        return (Account) pair.getRight().getStructuredSelection().getFirstElement();
     }
 
     @Override
-    public Account getSecondaryAccount()
+    public Account getSecondaryAccount(String currency)
     {
-        return (Account) ((IStructuredSelection) secondaryAccount.getSelection()).getFirstElement();
+        var pair = secondaryAccounts.get(currency);
+        if (pair == null)
+            return null;
+
+        return (Account) pair.getRight().getStructuredSelection().getFirstElement();
     }
 
     public boolean doConvertToDelivery()
@@ -218,52 +264,25 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         setControl(container);
         container.setLayout(new FormLayout());
 
-        List<Account> accounts = client.getActiveAccounts();
-        if (accounts.isEmpty())
-            accounts = client.getAccounts();
-
-        List<Portfolio> portfolios = client.getActivePortfolios();
-        if (portfolios.isEmpty())
-            portfolios = client.getPortfolios();
-
         Composite targetContainer = new Composite(container, SWT.NONE);
-        GridLayoutFactory.fillDefaults().numColumns(4).applyTo(targetContainer);
+        GridLayoutFactory.fillDefaults().numColumns(3).applyTo(targetContainer);
 
-        Label lblPrimaryAccount = new Label(targetContainer, SWT.NONE);
-        lblPrimaryAccount.setText(Messages.ColumnAccount);
-        Combo cmbAccount = new Combo(targetContainer, SWT.READ_ONLY);
-        primaryAccount = new ComboViewer(cmbAccount);
-        primaryAccount.setContentProvider(ArrayContentProvider.getInstance());
-        primaryAccount.setInput(accounts);
-        primaryAccount.addSelectionChangedListener(e -> checkEntriesAndRefresh(allEntries));
+        primaryContainer = new Composite(targetContainer, SWT.NONE);
+        GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.BEGINNING).applyTo(primaryContainer);
+        GridLayoutFactory.fillDefaults().numColumns(2).applyTo(primaryContainer);
 
-        lblSecondaryAccount = new Label(targetContainer, SWT.NONE);
-        lblSecondaryAccount.setText(Messages.LabelTransferTo);
-        lblSecondaryAccount.setVisible(false);
-        Combo cmbAccountTarget = new Combo(targetContainer, SWT.READ_ONLY);
-        secondaryAccount = new ComboViewer(cmbAccountTarget);
-        secondaryAccount.setContentProvider(ArrayContentProvider.getInstance());
-        secondaryAccount.setInput(accounts);
-        secondaryAccount.getControl().setVisible(false);
+        lblTransferTo = new Label(targetContainer, SWT.NONE);
+        lblTransferTo.setText(Messages.LabelTransferTo);
+        lblTransferTo.setVisible(false);
 
-        Label lblPrimaryPortfolio = new Label(targetContainer, SWT.NONE);
-        lblPrimaryPortfolio.setText(Messages.ColumnPortfolio);
-        Combo cmbPortfolio = new Combo(targetContainer, SWT.READ_ONLY);
-        primaryPortfolio = new ComboViewer(cmbPortfolio);
-        primaryPortfolio.setContentProvider(ArrayContentProvider.getInstance());
-        primaryPortfolio.setInput(portfolios);
-        primaryPortfolio.addSelectionChangedListener(e -> checkEntriesAndRefresh(allEntries));
+        secondaryContainer = new Composite(targetContainer, SWT.NONE);
+        GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.BEGINNING).applyTo(secondaryContainer);
+        GridLayoutFactory.fillDefaults().numColumns(2).applyTo(secondaryContainer);
 
-        lblSecondaryPortfolio = new Label(targetContainer, SWT.NONE);
-        lblSecondaryPortfolio.setText(Messages.LabelTransferTo);
-        lblSecondaryPortfolio.setVisible(false);
-        Combo cmbPortfolioTarget = new Combo(targetContainer, SWT.READ_ONLY);
-        secondaryPortfolio = new ComboViewer(cmbPortfolioTarget);
-        secondaryPortfolio.setContentProvider(ArrayContentProvider.getInstance());
-        secondaryPortfolio.setInput(portfolios);
-        secondaryPortfolio.getControl().setVisible(false);
-
-        preselectDropDowns();
+        // preselect the dropdown even if we do not yet have entries to have a
+        // minimum size and avoid flickering in (most) cases where there is only
+        // one currency
+        populateAccountSelectionContainer(Collections.emptyList());
 
         cbConvertToDelivery = new Button(container, SWT.CHECK);
         cbConvertToDelivery.setText(Messages.LabelConvertBuySellIntoDeliveryTransactions);
@@ -337,18 +356,50 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         // idea: generally one type of document (i.e. from the same bank) will
         // be imported into the same account
 
-        List<Account> activeAccounts = client.getActiveAccounts();
-        if (activeAccounts.isEmpty())
-            activeAccounts.addAll(client.getAccounts());
-        if (!activeAccounts.isEmpty())
+        for (var entry : primaryAccounts.entrySet())
         {
-            String uuid = account != null ? account.getUUID()
-                            : preferences.getString(IMPORT_TARGET_ACCOUNT + extractor.getLabel());
+            var currency = entry.getKey();
+            var combo = entry.getValue().getRight();
+            var list = (List<?>) combo.getInput();
 
-            // do not trigger selection listener (-> do not user #setSelection)
-            primaryAccount.getCombo().select(IntStream.range(0, activeAccounts.size())
-                            .filter(i -> activeAccounts.get(i).getUUID().equals(uuid)).findAny().orElse(0));
-            secondaryAccount.getCombo().select(0);
+            // if the dialog is opened with a pre-selected account, use that if
+            // the currency matches
+
+            if (account != null && Objects.equals(currency, account.getCurrencyCode()))
+            {
+                var index = list.indexOf(account);
+                if (index >= 0)
+                {
+                    // do not trigger a selection (do not use #setSelection)
+                    combo.getCombo().select(index);
+                    continue;
+                }
+            }
+
+            var uuid = preferences.getString(IMPORT_TARGET_ACCOUNT + extractor.getLabel() + currency);
+
+            // previously, the preferences were stored without currency.
+            // Use as fallback for the time being (changed in May 2025)
+            if (uuid.isEmpty())
+                uuid = preferences.getString(IMPORT_TARGET_ACCOUNT + extractor.getLabel());
+
+            var accountUUID = uuid;
+            var index = IntStream.range(0, list.size()) //
+                            .filter(i -> ((Account) list.get(i)).getUUID().equals(accountUUID)) //
+                            .findAny().orElse(0);
+            // do not trigger a selection (do not use #setSelection)
+            combo.getCombo().select(index >= 0 ? index : 0);
+
+        }
+
+        for (var entry : secondaryAccounts.entrySet())
+        {
+            var combo = entry.getValue().getRight();
+            var list = (List<?>) combo.getInput();
+
+            // do not trigger a selection (do not use #setSelection)
+            if (!list.isEmpty())
+                combo.getCombo().select(0);
         }
 
         List<Portfolio> activePortfolios = client.getActivePortfolios();
@@ -358,11 +409,14 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         {
             String uuid = portfolio != null ? portfolio.getUUID()
                             : preferences.getString(IMPORT_TARGET_PORTFOLIO + extractor.getLabel());
-            // do not trigger selection listener (-> do not user #setSelection)
+            // do not trigger a selection (do not use #setSelection)
             primaryPortfolio.getCombo().select(IntStream.range(0, activePortfolios.size())
                             .filter(i -> activePortfolios.get(i).getUUID().equals(uuid)).findAny().orElse(0));
-            secondaryPortfolio.getCombo().select(0);
+
+            if (secondaryPortfolio != null)
+                secondaryPortfolio.getCombo().select(0);
         }
+
     }
 
     private void addColumnsExceptionTable(TableViewer viewer, TableColumnLayout layout)
@@ -397,21 +451,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             @Override
             public Image getImage(ExtractedEntry entry)
             {
-                Images image = null;
-                switch (entry.getMaxCode())
-                {
-                    case WARNING:
-                        image = Images.WARNING;
-                        break;
-                    case ERROR:
-                        image = Images.ERROR;
-                        break;
-                    case OK:
-                        image = Images.OK;
-                        break;
-                    default:
-                }
-                return image != null ? image.image() : null;
+                return getStatusImage(entry.getMaxCode()).image();
             }
 
             @Override
@@ -518,6 +558,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
         column = new TableViewerColumn(viewer, SWT.NONE);
         column.getColumn().setText(Messages.ColumnSecurity);
+        var nameConfig = client.getSecurityNameConfig();
         column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
         {
             @Override
@@ -526,7 +567,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                 Security security = entry.getItem().getSecurity();
                 if (security == null)
                     return null;
-                return entry.getSecurityOverride() != null ? entry.getSecurityOverride().getName() : security.getName();
+                return entry.getSecurityOverride() != null ? entry.getSecurityOverride().getName(nameConfig)
+                                : security.getName(nameConfig);
             }
         });
         layout.setColumnData(column.getColumn(), new ColumnPixelData(250, true));
@@ -620,7 +662,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             // an entry will not be imported if it marked as not to be
             // imported *or* if it has a WARNING code (e.g. is a duplicate)
             atLeastOneNotImported = atLeastOneNotImported
-                            || (!entry.isImported() && (entry.getMaxCode() != Code.ERROR));
+                            || (!entry.isImported() && (entry.getMaxCode() == Code.WARNING));
         }
 
         // provide a hint to the user why the entry is struck out
@@ -630,9 +672,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             entry.getStatus() //
                             .filter(s -> s.getCode() != ImportAction.Status.Code.OK) //
                             .forEach(s -> {
-                                Images image = s.getCode() == ImportAction.Status.Code.WARNING ? //
-                                                Images.WARNING : Images.ERROR;
-                                manager.add(new LabelOnly(s.getMessage(), image.descriptor()));
+                                Images image = getStatusImage(s.getCode());
+                                manager.add(new LabelOnly(s.getMessage(), image));
                             });
         }
 
@@ -694,7 +735,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
         for (T subject : options.get())
         {
-            manager.add(new SimpleAction(subject.getName(), a -> {
+            manager.add(new MenuContribution(subject.getName(), () -> {
                 for (Object element : tableViewer.getStructuredSelection().toList())
                     applier.accept(((ExtractedEntry) element).getItem(), subject);
 
@@ -784,7 +825,17 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     @Override
     public void afterPage()
     {
-        preferences.setValue(IMPORT_TARGET_ACCOUNT + extractor.getLabel(), getAccount().getUUID());
+        for (var entry : primaryAccounts.entrySet())
+        {
+            var currency = entry.getKey();
+            var selectedAccount = entry.getValue().getRight().getStructuredSelection().getFirstElement();
+            if (selectedAccount != null)
+            {
+                preferences.setValue(IMPORT_TARGET_ACCOUNT + extractor.getLabel() + currency,
+                                ((Account) selectedAccount).getUUID());
+            }
+        }
+
         preferences.setValue(IMPORT_TARGET_PORTFOLIO + extractor.getLabel(), getPortfolio().getUUID());
 
         preferences.setValue(IMPORT_CONVERT_BUYSELL_TO_DELIVERY + extractor.getLabel(), doConvertToDelivery());
@@ -808,23 +859,134 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         extractionErrors.addAll(errors);
 
         setupDependencies(entries);
+        populateAccountSelectionContainer(entries);
         checkEntries(entries);
 
         tableViewer.setInput(allEntries);
+    }
 
-        for (ExtractedEntry entry : entries)
+    private void populateAccountSelectionContainer(List<ExtractedEntry> entries)
+    {
+        // first: delete any previously created controls
+
+        var children = primaryContainer.getChildren();
+        for (var child : children)
+            child.dispose();
+
+        children = secondaryContainer.getChildren();
+        for (var child : children)
+            child.dispose();
+
+        primaryPortfolio = null;
+        secondaryPortfolio = null;
+
+        primaryAccounts.clear();
+        secondaryAccounts.clear();
+
+        // collect available accounts and portfolios
+
+        var accounts = client.getActiveAccounts();
+        if (accounts.isEmpty())
+            accounts = client.getAccounts();
+
+        var portfolios = client.getActivePortfolios();
+        if (portfolios.isEmpty())
+            portfolios = client.getPortfolios();
+
+        // second: source container based on used currencies
+
+        var primaryCurrencies = entries.stream().filter(e -> e.getItem().getAmount() != null)
+                        .map(e -> e.getItem().getAmount().getCurrencyCode()).collect(Collectors.toSet());
+
+        // if we have currencies at all, create one item to have at least one
+        // account in order to avoid flickering when updating the dropdowns
+        // later
+        if (primaryCurrencies.isEmpty())
+            primaryCurrencies.add(client.getBaseCurrency());
+
+        for (String currency : primaryCurrencies)
         {
-            if (entry.getItem() instanceof Extractor.AccountTransferItem)
+            var label = new Label(primaryContainer, SWT.NONE);
+            label.setText(currency);
+
+            var accountsByCurrency = accounts.stream().filter(a -> a.getCurrencyCode().equals(currency))
+                            .sorted(new Account.ByName()).toList();
+            if (accountsByCurrency.isEmpty())
             {
-                lblSecondaryAccount.setVisible(true);
-                secondaryAccount.getControl().setVisible(true);
+                var message = new Label(primaryContainer, SWT.NONE);
+                message.setText(MessageFormat.format(Messages.LabelCreateAccountFirst, currency));
             }
-            else if (entry.getItem() instanceof Extractor.PortfolioTransferItem)
+            else
             {
-                lblSecondaryPortfolio.setVisible(true);
-                secondaryPortfolio.getControl().setVisible(true);
+                var dropdown = new ComboViewer(primaryContainer, SWT.READ_ONLY);
+                dropdown.setContentProvider(ArrayContentProvider.getInstance());
+                dropdown.setInput(accountsByCurrency);
+                dropdown.addSelectionChangedListener(e -> checkEntriesAndRefresh(allEntries));
+
+                primaryAccounts.put(currency, new Pair<>(label, dropdown));
             }
         }
+
+        var lblPrimaryPortfolio = new Label(primaryContainer, SWT.NONE);
+        lblPrimaryPortfolio.setText(Messages.ColumnPortfolio);
+        primaryPortfolio = new ComboViewer(primaryContainer, SWT.READ_ONLY);
+        primaryPortfolio.setContentProvider(ArrayContentProvider.getInstance());
+        primaryPortfolio.setInput(portfolios);
+        primaryPortfolio.addSelectionChangedListener(e -> checkEntriesAndRefresh(allEntries));
+
+        // third: target container based on used currencies
+
+        Set<String> secondaryCurrencies = entries.stream().map(e -> {
+            if (e.getItem() instanceof Extractor.AccountTransferItem transfer)
+                return ((AccountTransferEntry) transfer.getSubject()).getTargetTransaction().getCurrencyCode();
+            return null;
+        }).filter(Objects::nonNull).collect(Collectors.toSet());
+
+        for (String currency : secondaryCurrencies)
+        {
+            var label = new Label(secondaryContainer, SWT.NONE);
+            label.setText(currency);
+            List<Account> accountsByCurrency = accounts.stream().filter(a -> a.getCurrencyCode().equals(currency))
+                            .sorted(new Account.ByName()).toList();
+
+            if (accountsByCurrency.isEmpty())
+            {
+                var message = new Label(primaryContainer, SWT.NONE);
+                message.setText(MessageFormat.format(Messages.LabelCreateAccountFirst, currency));
+            }
+            else
+            {
+                var dropdown = new ComboViewer(secondaryContainer, SWT.READ_ONLY);
+                dropdown.setContentProvider(ArrayContentProvider.getInstance());
+                dropdown.setInput(accountsByCurrency);
+                dropdown.addSelectionChangedListener(e -> checkEntriesAndRefresh(allEntries));
+
+                secondaryAccounts.put(currency, new Pair<>(label, dropdown));
+            }
+        }
+
+        var needsSecondaryPortfolio = entries.stream()
+                        .anyMatch(e -> e.getItem() instanceof Extractor.PortfolioTransferItem);
+
+        if (needsSecondaryPortfolio)
+        {
+            var label = new Label(secondaryContainer, SWT.NONE);
+            label.setText(Messages.ColumnPortfolio);
+            secondaryPortfolio = new ComboViewer(secondaryContainer, SWT.READ_ONLY);
+            secondaryPortfolio.setContentProvider(ArrayContentProvider.getInstance());
+            secondaryPortfolio.setInput(portfolios);
+            secondaryPortfolio.addSelectionChangedListener(e -> checkEntriesAndRefresh(allEntries));
+        }
+
+        lblTransferTo.setVisible(!secondaryCurrencies.isEmpty() || needsSecondaryPortfolio);
+
+        // finally: re-layout
+
+        primaryContainer.layout(true);
+        secondaryContainer.layout(true);
+        primaryContainer.getParent().getParent().layout(true);
+
+        preselectDropDowns();
     }
 
     private void checkEntriesAndRefresh(List<ExtractedEntry> entries)
@@ -872,6 +1034,10 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                 entry.addStatus(new ImportAction.Status(Code.ERROR, entry.getItem().getFailureMessage()));
                 allErrors.add(new IOException(entry.getItem().getFailureMessage() + ": " + entry.getItem().toString())); //$NON-NLS-1$
             }
+            else if (entry.getItem().isSkipped())
+            {
+                entry.addStatus(new ImportAction.Status(Code.SKIP, ((SkippedItem) entry.getItem()).getSkipReason()));
+            }
             else
             {
                 for (ImportAction action : actions)
@@ -880,11 +1046,6 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                     {
                         ImportAction.Status actionStatus = entry.getItem().apply(action, this);
                         entry.addStatus(actionStatus);
-                        if (actionStatus.getCode() == ImportAction.Status.Code.ERROR)
-                        {
-                            allErrors.add(new IOException(actionStatus.getMessage() + ": " //$NON-NLS-1$
-                                            + entry.getItem().toString()));
-                        }
                     }
                     catch (Exception e)
                     {
@@ -900,6 +1061,11 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                         PortfolioPlugin.log(e);
                     }
                 }
+
+                entry.getStatus().filter(s -> s.getCode() == ImportAction.Status.Code.ERROR)
+                                .forEach(status -> allErrors
+                                                .add(new IOException(MessageFormat.format(Messages.LabelColonSeparated,
+                                                                status.getMessage(), entry.getItem().toString()))));
             }
         }
 

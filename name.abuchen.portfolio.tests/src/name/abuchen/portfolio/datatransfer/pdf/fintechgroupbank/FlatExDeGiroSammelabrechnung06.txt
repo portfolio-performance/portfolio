@@ -1,0 +1,82 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+flatexDEGIRO Bank AG 
+Kundenservice 
+Gadollaplatz 1 
+8010 Graz 
+Tel.: +43 - (0)720 518 777 
+Mail: info@flatex.at
+flatexDEGIRO Bank AG - Gadollaplatz 1 - A-8010 Graz
+0303502000005449348740
+Max Mustermann 
+Kdffsdfsfsdfsd. 2/1/31 
+1330 Wien 
+ÖSTERREICH
+          Graz, 30.12.2025
+Sammelabrechnung (Wertpapierkauf/-verkauf)
+Ihre Depotnummer: 76776677776
+Depotinhaber: Max Mustermann
+Nr.329393872/1 Verkauf WITR 
+COM.SEC.Z08/UN.IDX (JE00B2NFTL95/A0V6Z0)
+Ordervolumen : 9,00 St. Handelsplatz : gettex
+davon ausgef. : 9,00 St. Schlusstag : 29.12.2025, 08:31 Uhr
+Kurs : 193,6300 EUR Kurswert : 1.742,67 EUR
+Devisenkurs : Provision : 5,90 EUR
+Bew-Faktor : 1,0000 Eigene Spesen :
+Verwahrart : Wertpapierrechnung * Fremde Spesen : 2,74 EUR
+Lagerstelle : Clearstream Lux.
+Lagerland : Großbritannien ** Einbeh. Steuer : 50,07 EUR
+Gewinn/Verlust : 182,07 EUR
+Valuta : 31.12.2025 Endbetrag : 1.683,96 EUR
+*   Enthalten sind folgende Gebühren
+Courtage : 0,00 EUR
+Tradinggebühr : 0,00 EUR
+Regulierung : 2,67 EUR
+Schlussnoten : 0,07 EUR
+Finanztransaktionssteuer : 0,00 EUR
+Sonstige : 0,00 EUR
+** Einbehaltene Kapitalertragsteuer. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.: 4636047412.
+flatexDEGIRO Bank AG Niederlassung Österreich | Aktiengesellschaft | Gadollaplatz 1 | 8010 Graz | Landesgericht für Zivilrechtssachen Graz | FN 334642 x | UID ATU 65140956
+Hauptniederlassung: flatexDEGIRO Bank AG | Omniturm | Große Gallusstr. 16-18 | 60312 Frankfurt am Main (Deutschland) | Amtsgericht Frankfurt am Main | HRB 105687
+- Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter | Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+Evgeni Kaplun, Jens Möbitz, Christiane Strubel -
+Seite 1 von 2
+2000005449348740 035130350000
+Nr.329394651/1 Kauf LEVERAGE SHARES GOLD+ 
+ETP (XS2852999775/A4AH1M)
+Ordervolumen : 150,00 St. Handelsplatz : gettex
+davon ausgef. : 150,00 St. Schlusstag : 29.12.2025, 08:51 Uhr
+Kurs : 13,4960 EUR Kurswert : 2.024,40 EUR
+Devisenkurs : Provision : 5,90 EUR
+Bew-Faktor : 1,0000 Eigene Spesen :
+Verwahrart : Wertpapierrechnung * Fremde Spesen : 2,74 EUR
+Lagerstelle : Clearstream Lux.
+Lagerland : Großbritannien ** Einbeh. Steuer : 0,00 EUR
+Gewinn/Verlust : 0,00 EUR
+Valuta : 31.12.2025 Endbetrag : -2.033,04 EUR
+*   Enthalten sind folgende Gebühren
+Courtage : 0,00 EUR
+Tradinggebühr : 0,00 EUR
+Regulierung : 2,67 EUR
+Schlussnoten : 0,07 EUR
+Finanztransaktionssteuer : 0,00 EUR
+Sonstige : 0,00 EUR
+** Einbehaltene Kapitalertragsteuer. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.: 4666192991.
+Die Verrechnung der Endbeträge erfolgt über Ihr Konto Nr.: 99999999999
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit dem angegebenen Valutatag 
+buchen. Bitte prüfen Sie diese Abrechnung auf Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese 
+Abrechnung müssen unverzüglich nach Zugang bei der Bank erhoben werden. Die Unterlassung rechtzeitiger 
+Einwendung gilt als Genehmigung. Bitte beachten Sie mögliche Hinweise des Emittenten hinsichtlich vorzeitiger 
+Fälligstellung, beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und informieren Sie sich 
+rechtzeitig, welche spezielle Fälligkeitsregelung auf die von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge 
+sind ESt-pflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben. Für weitergehende Fragen wenden Sie sich bitte 
+an Ihr flatex-Service-Team.
+flatexDEGIRO Bank AG Niederlassung Österreich | Aktiengesellschaft | Gadollaplatz 1 | 8010 Graz | Landesgericht für Zivilrechtssachen Graz | FN 334642 x | UID ATU 65140956
+Hauptniederlassung: flatexDEGIRO Bank AG | Omniturm | Große Gallusstr. 16-18 | 60312 Frankfurt am Main (Deutschland) | Amtsgericht Frankfurt am Main | HRB 105687
+- Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter | Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+Evgeni Kaplun, Jens Möbitz, Christiane Strubel -
+Seite 2 von 2
+2000005449348740 035130350000

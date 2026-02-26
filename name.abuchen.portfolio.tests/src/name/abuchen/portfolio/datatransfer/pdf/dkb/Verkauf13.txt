@@ -1,0 +1,53 @@
+﻿PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+10919 Berlin Seite 1 von 2
+Depotnummer 123456789
+Kundennummer 1234567890
+Herr Jeh
+Auftragsnummer CERZ 9504228500
+Herrn Datum 17.11.2025
+Herr Jeh Rückzahlung FREDM00225298000
+Heimatstr. 1
+012345 Heimat
+Einlösung bei Gesamtfälligkeit
+Nominale Wertpapierbezeichnung ISIN (WKN)
+EUR 5.000,00 LB.HESSEN-THÜRINGEN GZ DE000HLB2DM0 (HLB2DM)
+NACHR.ANLEIHE V.15(25)
+Sehr geehrter Herr Jeh,
+Ihr o.g. Wertpapier ist zum 18.11.2025 zur Rückzahlung fällig.
+Rückzahlungskurs 100 % steuerl. Zuordnung 18.11.2025
+Rückzahlungswährung EUR Bestandsstichtag 17.11.2025
+Rückzahlungsbetrag 5.000,00 EUR
+Einnahmen Differenzmethode 90,00 EUR
+Summe der Einnahmen (Bemessungsgrundlage) 90,00 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 90,00 EUR
+Kapitalertragsteuer 25 % auf 90,00 EUR 22,50- EUR
+Solidaritätszuschlag 5,5 % auf -22,50 EUR 1,23- EUR
+Ausmachender Betrag 4.976,27 EUR
+Den Betrag buchen wir mit Valuta 18.11.2025 zu Gunsten des Kontos 1234567890 (IBAN DE95 1203 0000 1234 5678 90),
+BLZ 120 300 00 (BIC BYLADEM1001).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Ein Freistellungsauftrag wurde nicht erteilt bzw. ist ausgeschöpft.
+Es wurde keine Steuerbescheinigung erstellt.
+Mit freundlichen Grüßen
+Deutsche Kreditbank AG
+0883.11172245.0000001FA02
+Seite 2 von 2
+Depotnummer 123456789
+Kundennummer 1234567890
+Auftragsnummer CERZ 9504228500
+Datum 17.11.2025
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2025 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- Pauschbetrag anrechenbare Aktien und Sonstige
+Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 3.554,94
+Einnahmen 0,00 0,00 0,00 0,00 90,00
+Kapitalrückzahlung
+Steuerausgleich 0,00 0,00 0,00 0,00 0,00
+Nachher 0,00 0,00 0,00 0,00 3.644,94
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0883.11172245.0000002FA02

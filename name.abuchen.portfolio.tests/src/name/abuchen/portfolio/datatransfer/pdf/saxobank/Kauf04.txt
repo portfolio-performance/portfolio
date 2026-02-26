@@ -1,0 +1,49 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.75.1
+System: linux | x86_64 | 21.0.6+7-Ubuntu-124.04.1 | Ubuntu
+
+CH-20251111 - 20251111
+Bericht zu Trade-Details
+Berichtszeitraum: 07-Apr-2025 - 07-Apr-2025
+Generiert um: 09-Apr-2025 09:46:15 21:46:15 (W. Europe Standard Time)
+CH-20251111 Saxo Bank CH
+Switzerland The Circle 38
+8058 Zürich-Flughafen
+Switzerland
+Saxo Bank CH / The Circle 38 / 8058 Z ürich-Flughafen / Switzerland CH-2025111111 Berichtszeitraum
+Währung: CHF 07-Apr-2025 - 07-Apr-2025
+Seite 1 von 3 Konten: 80000/xxxxxxx Generiert um: 09-Apr-2025
+Trade details, CHF
+Berichtszeitraum
+07-Apr-2025 bis 07-Apr-2025
+Aktie
+Instrument Alphabet Inc. - A Share Handelszeit 07-Apr-2025 19:00:21
+ISIN US02079K3059 Valuta 08-Apr-2025
+Symbol GOOGL:xnas Order-ID 5555555555
+Börsenbeschreibung LEVEL ATS (LEVL) Trade-ID 6666666666
+Handelsplatz Exchange Gehandelter Wert -2.206,20 USD
+Ordertyp Marktorder Preis 147,08 USD
+K/V Kauf Menge 15,00
+Eröffnung/Schluss To-Open Spread-Kosten 0,00 CHF
+Saxo is counterparty No Gesamte Trading-Kosten -9,10 CHF
+Buchungsbetrag- Amount Umrechnungskosten Gebuchter Betrag
+Trade-Datum Value Date Umrechnungskurs
+ID USD CHF CHF
+Provision 4555555555 07-Apr-2025 08-Apr-2025 -1,77 0,860862 -0,01 -1,52
+Aktienbetrag 4355555555 07-Apr-2025 08-Apr-2025 -2.206,20 0,860862 -4,73 -1.899,23
+Saxo Bank CH / The Circle 38 / 8058 Z ürich-Flughafen / Switzerland CH-11111111 Berichtszeitraum
+Währung: CHF 07-Apr-2025 - 07-Apr-2025
+Seite 2 von 3 Konten: 80000/xxxxxxxx Generiert um: 09-Apr-2025
+Trade details, CHF
+Berichtszeitraum
+07-Apr-2025 bis 07-Apr-2025
+Buchungsbetrag- Amount Umrechnungskosten Gebuchter Betrag
+Trade-Datum Value Date Umrechnungskurs
+ID USD CHF CHF
+Schweizerische
+Stempelgebühr 43014645120 07-Apr-2025 08-Apr-2025 -3,31 0,860862 -0,01 -2,85
+Ausland
+Nettobetrag - - - - - -4,75 -1.903,60
+Saxo Bank CH / The Circle 38 / 8058 Z ürich-Flughafen / Switzerland CH-11111111 Berichtszeitraum
+Währung: CHF 07-Apr-2025 - 07-Apr-2025
+Seite 3 von 3 Konten: 80000/xxxxxxxxx Generiert um: 09-Apr-2025

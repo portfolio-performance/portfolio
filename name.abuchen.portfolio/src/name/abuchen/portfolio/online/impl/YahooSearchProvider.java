@@ -12,6 +12,7 @@ import org.json.simple.JSONValue;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
+import name.abuchen.portfolio.util.OnlineHelper;
 import name.abuchen.portfolio.util.WebAccess;
 
 public class YahooSearchProvider implements SecuritySearchProvider
@@ -23,23 +24,13 @@ public class YahooSearchProvider implements SecuritySearchProvider
     }
 
     @Override
-    public List<ResultItem> search(String query, Type type) throws IOException
+    public List<ResultItem> search(String query) throws IOException
     {
         List<ResultItem> answer = new ArrayList<>();
 
         // search both the HTML page as well as the symbol search
         addSearchPage(answer, query);
         addSymbolSearchResults(answer, query);
-
-        // filter the search result using the German terms as we search the
-        // German Yahoo Finance site
-
-        if (type == Type.SHARE)
-            answer = answer.stream().filter(r -> SecuritySearchProvider.Type.SHARE.toString().equals(r.getType()))
-                            .collect(Collectors.toList());
-        if (type == Type.BOND)
-            answer = answer.stream().filter(r -> SecuritySearchProvider.Type.BOND.toString().equals(r.getType()))
-                            .collect(Collectors.toList());
 
         if (answer.size() >= 10)
         {
@@ -62,6 +53,7 @@ public class YahooSearchProvider implements SecuritySearchProvider
     {
         @SuppressWarnings("nls")
         String html = new WebAccess("query2.finance.yahoo.com", "/v1/finance/lookup") //
+                        .addUserAgent(OnlineHelper.getYahooFinanceUserAgent()) //
                         .addParameter("formatted", "true") //
                         .addParameter("lang", "de-DE").addParameter("region", "DE") //
                         .addParameter("query", query) //

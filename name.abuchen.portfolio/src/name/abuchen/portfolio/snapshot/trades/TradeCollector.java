@@ -28,39 +28,66 @@ public class TradeCollector
     public static final Comparator<TransactionPair<?>> BY_DATE_AND_TYPE = new ByDateAndType();
 
     /**
-     * Sorts transaction by date and then by type whereas inbound types
-     * (purchase, inbound delivery) are sorted before outbound type (sell,
-     * outbound delivery) to make sure that trades closed on the same day are
-     * matched.
+     * Sorts transaction by date and then by type. First come inbound types
+     * (purchase, inbound delivery), then transfers, and finally outbound types
+     * (sell, outbound delivery) to make sure that trades closed on the same day
+     * are matched.<br/>
+     * Transfers are sorted into the middle to ensure that purchases are
+     * processed before transfers (for example if the users purchases and then
+     * transfers on the same day).
      */
-    private static final class ByDateAndType implements Comparator<TransactionPair<?>>, Serializable
+    public static final class ByDateAndType implements Comparator<TransactionPair<?>>, Serializable
     {
         private static final long serialVersionUID = 1L;
 
         @Override
         public int compare(TransactionPair<?> t1, TransactionPair<?> t2)
         {
-            int compareTo = t1.getTransaction().getDateTime().compareTo(t2.getTransaction().getDateTime());
-            if (compareTo != 0)
-                return compareTo;
+            var dt1 = t1.getTransaction().getDateTime();
+            var dt2 = t2.getTransaction().getDateTime();
 
-            boolean first = isInbound(t1);
-            boolean second = isInbound(t2);
+            // the date differs, just sort by date (no need to check types)
+            if (dt1.getYear() != dt2.getYear() || dt1.getMonth() != dt2.getMonth()
+                            || dt1.getDayOfMonth() != dt2.getDayOfMonth())
+                return dt1.compareTo(dt2);
 
-            if (first ^ second)
-                return first ? -1 : 1;
-            else
-                return 0;
+            var hasTime1 = dt1.getHour() != 0 || dt1.getMinute() != 0;
+            var hasTime2 = dt2.getHour() != 0 || dt2.getMinute() != 0;
+
+            // if both transactions have a time, then sort by time
+            if (hasTime1 && hasTime2)
+                return dt1.compareTo(dt2);
+
+            // otherwise sort: inbounds, transfers, outbounds
+            return getSortOrder(t1) - getSortOrder(t2);
         }
 
-        private boolean isInbound(TransactionPair<?> pair)
+        /**
+         * Returns 1 for inbound types (purchase, inbound delivery), 2 for
+         * transfers, and 3 for outbound types
+         */
+        private int getSortOrder(TransactionPair<?> pair)
         {
-            if (pair.getTransaction() instanceof PortfolioTransaction)
-                return ((PortfolioTransaction) pair.getTransaction()).getType().isPurchase();
-            else if (pair.getTransaction() instanceof AccountTransaction)
-                return ((AccountTransaction) pair.getTransaction()).getType().isDebit();
+            if (pair.getTransaction() instanceof PortfolioTransaction tx)
+            {
+                if (tx.getType() == PortfolioTransaction.Type.TRANSFER_IN
+                                || tx.getType() == PortfolioTransaction.Type.TRANSFER_OUT)
+                    return 2;
 
-            return false;
+                return tx.getType().isPurchase() ? 1 : 3;
+            }
+            else if (pair.getTransaction() instanceof AccountTransaction tx)
+            {
+                if (tx.getType() == AccountTransaction.Type.TRANSFER_IN
+                                || tx.getType() == AccountTransaction.Type.TRANSFER_OUT)
+                    return 2;
+
+                return tx.getType().isDebit() ? 1 : 3;
+            }
+            else
+            {
+                throw new IllegalArgumentException(pair.getTransaction().getClass().getName());
+            }
         }
     }
 
@@ -92,18 +119,22 @@ public class TradeCollector
 
             Portfolio portfolio = (Portfolio) txp.getOwner();
             PortfolioTransaction t = (PortfolioTransaction) txp.getTransaction();
+            List<TransactionPair<PortfolioTransaction>> openList = openTransactions.computeIfAbsent(portfolio, p -> new ArrayList<>());
 
             Type type = t.getType();
             switch (type)
             {
-                case BUY:
-                case DELIVERY_INBOUND:
-                    openTransactions.computeIfAbsent(portfolio, p -> new ArrayList<>()).add(pair);
-                    break;
-
-                case SELL:
-                case DELIVERY_OUTBOUND:
-                    trades.add(createNewTradeFromSell(openTransactions, pair));
+                case BUY, DELIVERY_INBOUND:
+                case SELL, DELIVERY_OUTBOUND:
+                    // If fifo is empty or contains the same type of transactions
+                    // as incoming one, add it to the fifo. Otherwise, we create
+                    // a new trade. (Note: it's an invariant that fifo contains
+                    // transaction of the same type (purchase vs !purchase), so
+                    // we test 0th element in fifo).
+                    if (openList.isEmpty() || openList.get(0).getTransaction().getType().isPurchase() == type.isPurchase())
+                        openList.add(pair);
+                    else
+                        trades.add(createNewTrade(openTransactions, pair));
                     break;
 
                 case TRANSFER_IN:
@@ -138,12 +169,12 @@ public class TradeCollector
             trades.add(newTrade);
         }
 
-        trades.forEach(t -> t.calculate(converter));
+        trades.forEach(t -> t.calculate(client, converter));
 
         return trades;
     }
 
-    private Trade createNewTradeFromSell(Map<Portfolio, List<TransactionPair<PortfolioTransaction>>> openTransactions,
+    private Trade createNewTrade(Map<Portfolio, List<TransactionPair<PortfolioTransaction>>> openTransactions,
                     TransactionPair<PortfolioTransaction> pair) throws TradeCollectorException
     {
         Trade newTrade = new Trade(pair.getTransaction().getSecurity(), (Portfolio) pair.getOwner(),
@@ -220,6 +251,9 @@ public class TradeCollector
 
         long sharesToTransfer = pair.getTransaction().getShares();
 
+        // sort positions to get fifo
+        Collections.sort(positions, BY_DATE_AND_TYPE);
+
         for (TransactionPair<PortfolioTransaction> candidate : new ArrayList<>(positions))
         {
             if (sharesToTransfer == 0)
@@ -269,7 +303,7 @@ public class TradeCollector
         PortfolioTransaction t = entry.getPortfolioTransaction();
 
         BuySellEntry copy = new BuySellEntry();
-        copy.setPortfolio(entry.getPortfolio());
+        copy.setPortfolio(portfolio);
         copy.setAccount(entry.getAccount());
 
         copy.setDate(t.getDateTime());

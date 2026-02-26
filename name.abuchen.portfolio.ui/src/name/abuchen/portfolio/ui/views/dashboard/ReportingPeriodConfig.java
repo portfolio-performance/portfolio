@@ -22,13 +22,26 @@ import name.abuchen.portfolio.util.Interval;
 public class ReportingPeriodConfig implements WidgetConfig
 {
     private final WidgetDelegate<?> delegate;
+
+    /**
+     * If true, the special 'in the past' and 'in the future' periods are added
+     * to the selection menu. Those periods cover the last 100 or next 100
+     * years.
+     */
+    private final boolean withPastAndFuturePeriods;
     private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG);
 
     private ReportingPeriod reportingPeriod;
 
     public ReportingPeriodConfig(WidgetDelegate<?> delegate)
     {
+        this(delegate, false);
+    }
+
+    public ReportingPeriodConfig(WidgetDelegate<?> delegate, boolean withPastAndFuturePeriods)
+    {
         this.delegate = delegate;
+        this.withPastAndFuturePeriods = withPastAndFuturePeriods;
 
         String code = delegate.getWidget().getConfiguration().get(Dashboard.Config.REPORTING_PERIOD.name());
 
@@ -74,6 +87,15 @@ public class ReportingPeriodConfig implements WidgetConfig
         subMenu.add(new Separator());
 
         subMenu.add(new SimpleAction(Messages.MenuUseDashboardDefaultReportingPeriod, a -> setReportingPeriod(null)));
+
+        if (withPastAndFuturePeriods)
+        {
+            subMenu.add(new SimpleAction(name.abuchen.portfolio.Messages.LabelReportingPeriodInThePast,
+                            a -> setReportingPeriod(new ReportingPeriod.Past())));
+            subMenu.add(new SimpleAction(name.abuchen.portfolio.Messages.LabelReportingPeriodInTheFuture,
+                            a -> setReportingPeriod(new ReportingPeriod.Future())));
+            subMenu.add(new Separator());
+        }
 
         delegate.getDashboardData().getDefaultReportingPeriods().stream()
                         .forEach(p -> subMenu.add(new SimpleAction(p.toString(), a -> setReportingPeriod(p))));

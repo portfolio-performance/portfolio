@@ -1,0 +1,43 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.79.1
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital Bank GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+IHrYm vrSdPnw evyynbcUV
+mRzzOpWaOK 8 
+04187 snrDRxUetHIGz Datum 17.09.2025
+Deutschland Seite 1 / 2
+Dividende 
+Für 01.01.2025 - 31.12.2025 
+Berechtigtes Wertpapier Nextera Energy Inc. 
+ISIN US65339F1012 
+Berechtigte Anzahl 1,907523 
+Ex Tag 28.08.2025 
+Verrechnungskonto DE11111111111111111111 (DEUTDEFFXXX)
+Kontobewegung 
+Buchung Wertstellung Typ Betrag / Stk. Berechtigte Anzahl Gesamt 
+Wechselkurs 
+16.09.2025 17.09.2025 Gutschrift 0,57 USD 1,907523 0,91 EUR 
+USD / EUR 1,1818 
+Ausländische Quellensteuer -0,14 EUR
+Steuern -0,08 EUR
+Gesamtbetrag 0,69 EUR
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV. Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind
+einkommensteuerpflichtig. 
+Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 1 / 2
+Dividende
+Ermittlung steuerrelevante Erträge
+Typ Betrag
+Gewinn oder Verlust 0,91 EUR
+Verrechnung anrechenbarer Quellensteuer -0,56 EUR
+Zu versteuern 0,35 EUR
+Gesamt 
+Typ Betrag
+Kapitalertragsteuer 0,08 EUR
+Solidaritätszuschlag 0,00 EUR
+Gesamt 0,08 EUR
+Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 2 / 2

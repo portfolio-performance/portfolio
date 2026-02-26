@@ -1,0 +1,45 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.77.1
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+dOGNY DXkzbla LtdMGEgMV
+HEWtrJWJSz 2 
+89489 rpnDXBfMbmoEE Datum 16.06.2025
+Deutschland Seite 1 / 2
+Dividende 
+Für 01.07.2024 - 30.06.2025 
+Berechtigtes Wertpapier Microsoft Corp. 
+ISIN US5949181045 
+Berechtigte Anzahl 0,284285 
+Ex Tag 15.05.2025 
+Verrechnungskonto DE92123456789012345678 (DEUTDEFFXXX)
+Kontobewegung 
+Buchung Wertstellung Typ Betrag / Stk. Berechtigte Anzahl Gesamt 
+Wechselkurs 
+16.06.2025 17.06.2025 Gutschrift 0,83 USD 0,284285 0,20 EUR 
+USD / EUR 1,1587 
+Ausländische Quellensteuer -0,03 EUR
+Steuern -0,02 EUR
+Gesamtbetrag 0,15 EUR
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV. Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind
+einkommensteuerpflichtig. 
+Scalable Capital GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Erik Podzuweit, Florian Prucker Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Martin Krebs, Dirk Franzmeyer, Dirk
+Urmoneit 1 / 2
+Dividende
+Ermittlung steuerrelevante Erträge
+Typ Betrag
+Gewinn oder Verlust 0,20 EUR
+Verrechnung anrechenbarer Quellensteuer -0,12 EUR
+Zu versteuern 0,08 EUR
+Gesamt 
+Typ Betrag
+Kapitalertragsteuer 0,02 EUR
+Solidaritätszuschlag 0,00 EUR
+Gesamt 0,02 EUR
+Scalable Capital GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Erik Podzuweit, Florian Prucker Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Martin Krebs, Dirk Franzmeyer, Dirk
+Urmoneit 2 / 2

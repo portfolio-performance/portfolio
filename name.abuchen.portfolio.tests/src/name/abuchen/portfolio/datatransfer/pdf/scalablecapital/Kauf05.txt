@@ -1,0 +1,26 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital Bank GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+XXX
+XXX
+XXX Datum 30.12.2025
+Deutschland Seite 1 / 1
+Wertpapierabrechnung 
+für Kundenauftrag 
+Typ LIMIT Order SCALJ7ia7RAxG2B
+Ausführung 30.12.2025 10:16:29 Geschäft 2137544001
+Ausführungsplatz EIX Lagerland Deutschland
+Depot XXX Verwahrart Girosammelverwahrung
+Typ Wertpapier Anzahl Kurs Betrag
+Kauf VanEck Morningstar Developed Markets Dividend Leaders (Dist) 163,00 Stk. 47,895 EUR 7.806,89 EUR
+NL0011683594
+Ordergebühren +0,99 EUR
+Belastung 7.807,88 EUR
+Der Betrag wird mit dem Verrechnungskonto XXX (Valuta: 02.01.2026) verrechnet. 
+Bitte überprüfen Sie die Informationen auf Richtigkeit und melden Sie etwaige Einwände unverzüglich bei uns.
+Verwenden Sie dafür den Menüpunkt Support im Kundenbereich. 
+Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 1 / 1

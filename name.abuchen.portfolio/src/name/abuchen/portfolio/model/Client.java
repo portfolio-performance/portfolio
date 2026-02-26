@@ -17,6 +17,8 @@ import java.util.stream.Stream;
 
 import javax.crypto.SecretKey;
 
+import com.google.protobuf.Any;
+
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -29,7 +31,7 @@ public class Client
         String WATCHLISTS = "watchlists"; //$NON-NLS-1$
     }
 
-    public static final int CURRENT_VERSION = 64;
+    public static final int CURRENT_VERSION = 69;
     public static final int VERSION_WITH_CURRENCY_SUPPORT = 29;
     public static final int VERSION_WITH_UNIQUE_FILTER_KEY = 57;
 
@@ -53,7 +55,8 @@ public class Client
     private List<Watchlist> watchlists;
 
     // keep typo -> xstream deserialization
-    @Deprecated
+    @SuppressWarnings("deprecation")
+    @Deprecated(since = "2019")
     /* package */ List<ConsumerPriceIndex> consumerPriceIndeces;
 
     private List<Account> accounts = new ArrayList<>();
@@ -65,10 +68,17 @@ public class Client
     private Map<String, String> properties;
     private ClientSettings settings;
 
+    /**
+     * Extension data for third-party extensions using protobuf Any type. This
+     * preserves unknown extension data during load/save operations.
+     */
+    private transient List<Any> extensions = new ArrayList<>(); // NOSONAR
+
     @Deprecated
     private String industryTaxonomyId;
 
-    @Deprecated
+    @SuppressWarnings("deprecation")
+    @Deprecated(since = "2013")
     private Category rootCategory;
 
     private transient SecretKey secret; // NOSONAR
@@ -106,6 +116,10 @@ public class Client
             settings = new ClientSettings();
         else
             settings.doPostLoadInitialization();
+
+        // Add this missing initialization:
+        if (extensions == null)
+            extensions = new ArrayList<>();
     }
 
     /* package */int getVersion()
@@ -144,6 +158,41 @@ public class Client
         propertyChangeSupport.firePropertyChange("baseCurrency", this.baseCurrency, this.baseCurrency = baseCurrency); //$NON-NLS-1$ //NOSONAR
     }
 
+    /**
+     * Get the list of extension data for third-party extensions.
+     * 
+     * @return unmodifiable list of protobuf Any objects containing extension
+     *         data
+     */
+    public List<Any> getExtensions()
+    {
+        return Collections.unmodifiableList(extensions);
+    }
+
+    /**
+     * Set the list of extension data for third-party extensions.
+     * 
+     * @param extensions
+     *            list of protobuf Any objects containing extension data
+     */
+    public void setExtensions(List<Any> extensions)
+    {
+        this.extensions = new ArrayList<>(extensions != null ? extensions : Collections.emptyList());
+    }
+
+    /**
+     * Add an extension to the client.
+     * 
+     * @param extension
+     *            protobuf Any object containing extension data
+     */
+    public void addExtension(Any extension)
+    {
+        if (extension != null)
+            this.extensions = new ArrayList<>();
+        this.extensions.add(extension);
+    }
+
     public List<InvestmentPlan> getPlans()
     {
         return Collections.unmodifiableList(plans);
@@ -164,6 +213,11 @@ public class Client
         return Collections.unmodifiableList(securities);
     }
 
+    public SecurityNameConfig getSecurityNameConfig()
+    {
+        return new ClientProperties(this).getSecurityNameConfig();
+    }
+
     /**
      * Returns a sorted list of active securities, i.e. securities that are not
      * marked as retired.
@@ -173,7 +227,7 @@ public class Client
         return securities.stream() //
                         .filter(s -> s.getCurrencyCode() != null) //
                         .filter(s -> !s.isRetired()) //
-                        .sorted(new Security.ByName()) //
+                        .sorted(new Security.ByName(getSecurityNameConfig())) //
                         .collect(Collectors.toList());
     }
 
@@ -424,13 +478,19 @@ public class Client
     public String removeProperty(String key)
     {
         String oldValue = properties.remove(key);
-        touch();
+        if (oldValue != null)
+            touch();
         return oldValue;
     }
 
     public String getProperty(String key)
     {
         return properties.get(key);
+    }
+
+    public boolean hasProperty(String key)
+    {
+        return properties.containsKey(key);
     }
 
     /**
@@ -451,7 +511,7 @@ public class Client
         }
     }
 
-    /* package */Map<String, String> getProperties()
+    /* package */ Map<String, String> getProperties()
     {
         return properties;
     }

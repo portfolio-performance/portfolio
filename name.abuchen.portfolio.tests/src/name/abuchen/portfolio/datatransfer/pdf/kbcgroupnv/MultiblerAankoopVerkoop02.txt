@@ -1,0 +1,68 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.75.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+HKECQeyD-nDZRfUy ZRfUy-HKECQeyD
+Overzicht transacties en rekeninguittreksels voor klantnummer 8074012
+05/03/2025
+EUR-REKENING - 135
+Borderel 016789124 Market order
+CEUO
+Uitvoeringsdatum : 05/03/2025 Uitvoeringstijdstip : 12:33:57 Valutadatum : 07/03/2025
+Uw Verkoop van 1.000 ENEL SPA (MI) aan 6,778 EUR 6.778,00 EUR
+Makelaarsloon 2,11 EUR
+Makelaarsloon KBC 25,00 EUR
+Beurstaks 23,72 EUR
+Netto credit 6.727,17 EUR
+Wettelijke fiscale informatie Basisbedrag beurstaks 6.778,00 EUR
+Beurstaks 0,35% 23,72 EUR
+Waardecode IT0003128367
+Borderel 016789126 Market order
+MESI
+Uitvoeringsdatum : 05/03/2025 Uitvoeringstijdstip : 12:33:57 Valutadatum : 07/03/2025
+Uw Verkoop van 520 PROXIMUS SA (BR) aan 6,095 EUR 3.169,40 EUR
+Makelaarsloon 0,00 EUR
+Makelaarsloon KBC 25,00 EUR
+Beurstaks 11,09 EUR
+Netto credit 3.133,31 EUR
+Wettelijke fiscale informatie Basisbedrag beurstaks 3.169,40 EUR
+Beurstaks 0,35% 11,09 EUR
+Waardecode BE0003810273
+Heb je nog vragen ? Gelieve je te richten tot uw vermogensbeheerder
+HKECQeyD-nDZRfUy ZRfUy-HKECQeyD Pagina 1
+1_8_3_9_20_0__________________________________________________________________________________
+KBC BANK NV Documentreferte: 236
+Havenlaan 2, 1080 Brussels, Belgium VAT BE 0462.920.226
+Account N° BE88 4096 5864 0142 - BIC KREDBEBB
+USD-REKENING - 156
+Borderel 016841507 Market order
+Nasdaq
+Uitvoeringsdatum : 05/03/2025 Uitvoeringstijdstip : 15:30:00 Valutadatum : 06/03/2025
+Uw Aankoop van 39 TESLA INC (NY) aan 272,78 USD 10.638,42 USD
+Makelaarsloon 15,95 USD
+Makelaarsloon KBC 26,60 USD
+Beurstaks 37,23 USD
+Netto debit -10.718,20 USD
+Wettelijke fiscale informatie Basisbedrag beurstaks 9.984,95 EUR
+Beurstaks 0,35% 34,94 EUR
+Wisselkoers 1 EUR = 1,065446 USD
+Waardecode US88160R1014
+Borderel 016844337 Market order
+Knight
+Uitvoeringsdatum : 05/03/2025 Uitvoeringstijdstip : 15:30:01 Valutadatum : 06/03/2025
+Uw Verkoop van 36 CRISPR THERAPEUTICS AG (NY) aan 43,62 USD 1.570,32 USD
+Makelaarsloon 0,00 USD
+Makelaarsloon KBC 26,55 USD
+Sec Fee USA 0,05 USD
+Beurstaks 5,50 USD
+Netto credit 1.538,22 USD
+Wettelijke fiscale informatie Basisbedrag beurstaks 1.455,80 EUR
+Beurstaks 0,35% 5,10 EUR
+Wisselkoers 1 EUR = 1,078667 USD
+Waardecode CH0334081137
+Heb je nog vragen ? Gelieve je te richten tot uw vermogensbeheerder
+HKECQeyD-nDZRfUy ZRfUy-HKECQeyD Pagina 2
+4_0_6_2_30_5__________________________________________________________________________________
+KBC BANK NV Documentreferte: 236
+Havenlaan 2, 1080 Brussels, Belgium VAT BE 0462.920.226
+Account N° BE77 4096 5474 0142 - BIC KREDBEBB

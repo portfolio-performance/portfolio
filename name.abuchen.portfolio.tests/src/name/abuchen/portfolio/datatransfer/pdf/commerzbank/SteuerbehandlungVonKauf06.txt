@@ -1,0 +1,45 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.75.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Kundennr. /BLZ Bezeichnung
+hdfX gAsLRhle
+11 3717 0
+lcfoYsCLYoo Str. 9 d
+086 066 00 03071 JkIKroACm
+abweichend wirtschaftlich Berechtigter
+----
+000 60495
+Frau Datum: 13.03.2025
+jJjJ MRaIOcjO Depotnummer: 9535378 00
+HziXLvlllDZ Str. 7N
+09690 mKzAxUZFh Referenz-Nummer: 486s8957oOs3154R
+Steuerliche Behandlung: Wertpapierkauf Nr. 71997803 vom 13.03.2025
+Stk. 70 PEPSICO INC. DL-,0166 , WKN / ISIN: 851995 / US7134481081
+Zu Ihren Lasten vor Steuern: EUR - 9 . 6 4 8 , 1 7 USD - 1 0 . 4 4 7 , 0 4
+Steuerbemessungsgrundlage EUR 0 , 0 0
+Kapitalertragsteuer EUR 0 , 0 0
+Solidaritätszuschlag EUR 0 , 0 0
+Kirchensteuer EUR 0 , 0 0
+abgeführte Steuern EUR 0 , 0 0 USD 0 , 0 0
+Zu Ihren Lasten nach Steuern: USD - 1 0 . 4 4 7 , 0 4
+Umrechnungen zum Devisenkurs 1,082800
+Die Belastung erfolgt mit Valuta 14.03.2025 auf Konto USD 84 93137 01 Bankleitzahl : 300 971 00
+KEINE STEUERBESCHEINIGUNG ...
+Bisher einbehaltene bzw. angerechnete Steuer in EUR (4)
+in 2025 einbehaltene einbehaltener einbehaltene angerechnete
+Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer ausländische Quellensteuer
+vor Ermittlung 1.716,42 94,37 0,00 160,52
+nach Ermittlung 1.716,42 94,37 0,00 160,52
+Verrechnungssalden in EUR (4)
+Gewinne / Verluste sonstige anrechenbare verfügbarer
+in 2025 aus Aktien Gewinne / Verluste ausländische Quellensteuer Freistellungsauftrag
+vor Ermittlung 6.422,08 2.085,65 0,00 0,00
+nach Ermittlung 6.422,08 2.085,65 0,00 0,00
+Sonstige Erläuterungen:
+Bei Fremdwährungsgeschäften werden für die Ermittlung der Steuerbemessungsgrundlage sowohl der Veräußerungserlös
+als auch die Anschaffungskosten in Euro umgerechnet (§ 20 Abs. 4 S. 1 2. Halbsatz EStG).
+Commerzbank AG
+Diese Abrechnung ist maschinell erstellt und wird nicht unterschrieben.
+(4) Die ausgewiesenen EUR-Beträge spiegeln den Stand zum Abrechnungszeitpunkt wider.
+KEINE STEUERBESCHEINIGUNG

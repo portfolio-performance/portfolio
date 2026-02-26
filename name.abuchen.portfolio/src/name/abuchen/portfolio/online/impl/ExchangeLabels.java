@@ -9,6 +9,8 @@ import java.util.ResourceBundle;
 
 public class ExchangeLabels
 {
+    public static final String YAHOO = "yahoo."; //$NON-NLS-1$
+
     private static final String BUNDLE_NAME = "name.abuchen.portfolio.online.impl.exchange-labels"; //$NON-NLS-1$
     private static final ResourceBundle BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 
@@ -23,6 +25,18 @@ public class ExchangeLabels
             // just return key w/o provider prefix
             int p = key.indexOf('.');
             return p >= 0 ? key.substring(p + 1) : key;
+        }
+    }
+
+    public static String getYahoo(String key)
+    {
+        try
+        {
+            return BUNDLE.getString(YAHOO + key);
+        }
+        catch (MissingResourceException e)
+        {
+            return key;
         }
     }
 

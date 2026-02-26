@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.snapshot.security;
 
+import java.lang.ref.WeakReference;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -50,12 +51,43 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
     }
 
     /**
+     * The lazy weak value computes the value only when needed but also keeps
+     * only a weak reference to it.
+     */
+    private static final class LazyWeakValue<V>
+    {
+        private WeakReference<V> reference = new WeakReference<>(null);
+        private final Supplier<V> computeFunction;
+
+        public LazyWeakValue(Supplier<V> computeFunction)
+        {
+            this.computeFunction = computeFunction;
+        }
+
+        public V get()
+        {
+            var answer = reference.get();
+            if (answer != null)
+                return answer;
+
+            answer = computeFunction.get();
+            reference = new WeakReference<>(answer);
+
+            return answer;
+        }
+    }
+
+    /**
      * internal rate of return of security {@link #calculateIRR()}
      */
     private final LazyValue<Double> irr = new LazyValue<>(
                     () -> Calculation.perform(IRRCalculation.class, converter, security, lineItems).getIRR());
 
-    private final LazyValue<PerformanceIndex> performanceIndex = new LazyValue<>(
+    /**
+     * weak reference to the performance index, because it can consume a lot of
+     * memory in particular for large intervals
+     */
+    private final LazyWeakValue<PerformanceIndex> performanceIndex = new LazyWeakValue<>(
                     () -> PerformanceIndex.forInvestment(client, converter, security, interval, new ArrayList<>()));
 
     /**
@@ -119,6 +151,15 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
      */
     private final LazyValue<SecurityPrice> quote = new LazyValue<>(() -> security.getSecurityPrice(interval.getEnd()));
 
+    /**
+     * Quote in term currency, i.e., the reporting currency used to calculate
+     * the record.
+     */
+    private final LazyValue<Quote> quoteInTermCurrency = new LazyValue<>(() -> {
+        var price = quote.get();
+        return converter.convert(price.getDate(), Quote.of(security.getCurrencyCode(), price.getValue()));
+    });
+
     private final LazyValue<CostCalculationResult> costCalculation = new LazyValue<>(
                     () -> Calculation.perform(CostCalculation.class, converter, security, lineItems).getResult());
 
@@ -131,6 +172,12 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
      * moving average cost of shares held
      */
     private final LazyValue<Money> movingAverageCost = new LazyValue<>(() -> costCalculation.get().movingAverageCost());
+
+    /**
+     * moving average cost of shares held without fees or taxes
+     */
+    private final LazyValue<Money> movingAverageCostWithoutTaxesAndFees = new LazyValue<>(
+                    () -> costCalculation.get().netMovingAverageCost());
 
     /**
      * market value - fifo cost of shares held
@@ -190,8 +237,30 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
                         / (double) costs.sharesHeld() * Values.Share.factor() * Values.Quote.factorToMoney()));
     });
 
-    private final LazyValue<DividendCalculationResult> dividendCalculation = new LazyValue<>(
-                    () -> Calculation.perform(DividendCalculation.class, converter, security, lineItems).getResult());
+    /**
+     * cost per shares held including fee
+     */
+    private final LazyValue<Quote> grossFifoCostPerSharesHeld = new LazyValue<>(() -> {
+        var costs = costCalculation.get();
+        return Quote.of(costs.fifoCost().getCurrencyCode(), Math.round(costs.fifoCost().getAmount()
+                        / (double) costs.sharesHeld() * Values.Share.factor() * Values.Quote.factorToMoney()));
+    });
+
+    /**
+     * cost per shares held including fee
+     */
+    private final LazyValue<Quote> grossMovingAverageCostPerSharesHeld = new LazyValue<>(() -> {
+        var costs = costCalculation.get();
+        return Quote.of(costs.movingAverageCost().getCurrencyCode(), Math.round(costs.movingAverageCost().getAmount()
+                        / (double) costs.sharesHeld() * Values.Share.factor() * Values.Quote.factorToMoney()));
+    });
+
+    private final LazyValue<DividendCalculationResult> dividendCalculation = new LazyValue<>(() -> {
+        // ensure cost calculation is done (and has calculated
+        // moving averages)
+        costCalculation.get();
+        return Calculation.perform(DividendCalculation.class, converter, security, lineItems).getResult();
+    });
 
     private final LazyValue<CapitalGainsCalculation> capitalGains = new LazyValue<>(
                     () -> Calculation.perform(CapitalGainsCalculation.class, converter, security, lineItems));
@@ -200,6 +269,15 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
                     () -> capitalGains.get().getRealizedCapitalGains());
     private final LazyValue<CapitalGainsRecord> unrealizedCapitalGains = new LazyValue<>(
                     () -> capitalGains.get().getUnrealizedCapitalGains());
+
+    private final LazyValue<CapitalGainsCalculationMovingAverage> capitalGainsMovingAvg = new LazyValue<>(
+                    () -> Calculation.perform(CapitalGainsCalculationMovingAverage.class, converter, security,
+                                    lineItems));
+
+    private final LazyValue<CapitalGainsRecord> realizedCapitalGainsMovingAvg = new LazyValue<>(
+                    () -> capitalGainsMovingAvg.get().getRealizedCapitalGains());
+    private final LazyValue<CapitalGainsRecord> unrealizedCapitalGainsMovingAvg = new LazyValue<>(
+                    () -> capitalGainsMovingAvg.get().getUnrealizedCapitalGains());
 
     /* package */ LazySecurityPerformanceRecord(Client client, Security security, CurrencyConverter converter,
                     Interval interval)
@@ -252,6 +330,11 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
         return new LazyValue<>(() -> Quote.of(security.getCurrencyCode(), quote.get().getValue()));
     }
 
+    public LazyValue<Quote> getQuoteInTermCurrency()
+    {
+        return quoteInTermCurrency;
+    }
+
     public LazyValue<SecurityPrice> getLatestSecurityPrice()
     {
         return quote;
@@ -265,6 +348,11 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
     public LazyValue<Money> getMovingAverageCost()
     {
         return movingAverageCost;
+    }
+
+    public LazyValue<Money> getMovingAverageCostWithoutTaxesAndFees()
+    {
+        return movingAverageCostWithoutTaxesAndFees;
     }
 
     public LazyValue<Money> getCapitalGainsOnHoldings()
@@ -310,6 +398,16 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
     public LazyValue<Quote> getMovingAverageCostPerSharesHeld()
     {
         return movingAverageCostPerSharesHeld;
+    }
+
+    public LazyValue<Quote> getGrossFifoCostPerSharesHeld()
+    {
+        return grossFifoCostPerSharesHeld;
+    }
+
+    public LazyValue<Quote> getGrossMovingAverageCostPerSharesHeld()
+    {
+        return grossMovingAverageCostPerSharesHeld;
     }
 
     public LazyValue<Money> getSumOfDividends()
@@ -373,6 +471,16 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
     public LazyValue<CapitalGainsRecord> getUnrealizedCapitalGains()
     {
         return unrealizedCapitalGains;
+    }
+
+    public LazyValue<CapitalGainsRecord> getRealizedCapitalGainsMovingAvg()
+    {
+        return realizedCapitalGainsMovingAvg;
+    }
+
+    public LazyValue<CapitalGainsRecord> getUnrealizedCapitalGainsMovingAvg()
+    {
+        return unrealizedCapitalGainsMovingAvg;
     }
 
     @Override

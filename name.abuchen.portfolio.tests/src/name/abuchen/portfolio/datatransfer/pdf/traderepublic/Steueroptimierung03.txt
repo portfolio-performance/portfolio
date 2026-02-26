@@ -1,0 +1,21 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.1
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+QHShXVpc sGOsvIgSA kYYNNT SEITE 1 von 1
+aoOIQlcuVGVdKjq 38 DATUM 28.09.2024
+05105 Talba DEPOT 5710743224
+STEUERLICHE OPTIMIERUNG
+ÜBERSICHT
+Steuerliche Optimierung am 28.09.2024
+ABRECHNUNG
+POSITION BETRAG
+Kapitalertragssteuer -0.26 EUR
+Solidaritätszuschlag -0.01 EUR
+GESAMT -0.27 EUR
+BUCHUNG
+VERRECHNUNGSKONTO DATUM DER ZAHLUNG BETRAG
+DE12345678912345678912 28.09.2024 -0.27 EUR
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin DirektorenBrunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin service@traderepublic.com Umsatzsteuer-ID DE307510626 Gernot Mittendorfer

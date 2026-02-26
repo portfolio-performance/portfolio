@@ -2,7 +2,6 @@ package name.abuchen.portfolio.ui.views;
 
 import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
 
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -10,9 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
@@ -20,7 +17,6 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -60,8 +56,6 @@ import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
-import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
-import name.abuchen.portfolio.online.impl.PortfolioReportNet;
 import name.abuchen.portfolio.snapshot.QuoteQualityMetrics;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Images;
@@ -72,14 +66,14 @@ import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
 import name.abuchen.portfolio.ui.dnd.ImportFromFileDropAdapter;
-import name.abuchen.portfolio.ui.dnd.ImportFromURLDropAdapter;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
-import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
+import name.abuchen.portfolio.ui.jobs.priceupdate.UpdatePricesJob;
 import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ConfirmActionWithSelection;
+import name.abuchen.portfolio.ui.util.ValueColorScheme;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -91,7 +85,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
-import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.ParameterizedColumnLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ReportingPeriodColumnOptions;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
@@ -101,6 +95,7 @@ import name.abuchen.portfolio.ui.views.columns.DistanceFromMovingAverageColumn;
 import name.abuchen.portfolio.ui.views.columns.DividendPaymentColumns;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import name.abuchen.portfolio.ui.views.columns.QuoteRangeColumn;
 import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
@@ -113,55 +108,6 @@ import name.abuchen.portfolio.util.Pair;
 
 public final class SecuritiesTable implements ModificationListener
 {
-    private class LinkToPortfolioReport extends Action
-    {
-        private Security security;
-
-        public LinkToPortfolioReport(Security security)
-        {
-            super(Messages.LabelLinkToPortfolioReportNet);
-            this.security = security;
-        }
-
-        @Override
-        public void run()
-        {
-            InputDialog dlg = new InputDialog(Display.getCurrent().getActiveShell(), Messages.LabelInfo,
-                            "Portfolio Report URL", "https://www.portfolio-report.net/", //$NON-NLS-1$//$NON-NLS-2$
-                            newText -> ImportFromURLDropAdapter.URL_PATTERN.matcher(newText).matches() ? null
-                                            : MessageFormat.format(Messages.DesktopAPIIllegalURL, newText));
-            if (dlg.open() != Window.OK)
-                return;
-
-            String url = dlg.getValue();
-
-            Matcher matcher = ImportFromURLDropAdapter.URL_PATTERN.matcher(url);
-            if (!matcher.matches())
-                return;
-
-            String onlineId = matcher.group(1);
-
-            try
-            {
-                Optional<ResultItem> result = new PortfolioReportNet().getUpdatedValues(onlineId);
-                if (!result.isPresent())
-                {
-                    MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError,
-                                    MessageFormat.format(Messages.MsgErrorNoInvestmentVehicleFoundAtURL, url));
-                }
-                else
-                {
-                    security.setOnlineId(onlineId);
-                    PortfolioReportNet.updateWith(security, result.get());
-                }
-            }
-            catch (IOException e)
-            {
-                MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError, e.getMessage());
-            }
-        }
-    }
-
     private AbstractFinanceView view;
 
     private Watchlist watchlist;
@@ -191,10 +137,9 @@ public final class SecuritiesTable implements ModificationListener
 
         this.securities = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
 
-        ImportFromURLDropAdapter.attach(this.securities.getControl(), view.getPart());
         ImportFromFileDropAdapter.attach(this.securities.getControl(), view.getPart());
 
-        ColumnEditingSupport.prepare(securities);
+        ColumnEditingSupport.prepare(view.getEditorActivationState(), securities);
         ColumnViewerToolTipSupport.enableFor(securities, ToolTip.NO_RECREATE);
         CopyPasteSupport.enableFor(securities);
 
@@ -210,6 +155,8 @@ public final class SecuritiesTable implements ModificationListener
         addQuoteDeltaColumn();
         support.addColumn(new DistanceFromMovingAverageColumn(LocalDate::now));
         support.addColumn(new DistanceFromAllTimeHighColumn(LocalDate::now,
+                        view.getPart().getReportingPeriods().stream().collect(toMutableList())));
+        support.addColumn(new QuoteRangeColumn(LocalDate::now,
                         view.getPart().getReportingPeriods().stream().collect(toMutableList())));
 
         for (Taxonomy taxonomy : getClient().getTaxonomies())
@@ -567,37 +514,16 @@ public final class SecuritiesTable implements ModificationListener
         // reporting periods
         List<ReportingPeriod> options = view.getPart().getReportingPeriods().stream().collect(toMutableList());
 
-        BiFunction<Object, ReportingPeriod, Double> valueProvider = (element, option) -> {
-
-            Interval interval = option.toInterval(LocalDate.now());
-
-            Security security = (Security) element;
-
-            SecurityPrice latest = security.getSecurityPrice(interval.getEnd());
-            SecurityPrice previous = security.getSecurityPrice(interval.getStart());
-
-            if (latest == null || previous == null)
-                return null;
-
-            if (previous.getValue() == 0)
-                return null;
-
-            if (previous.getDate().isAfter(interval.getStart()))
-                return null;
-
-            return Double.valueOf((latest.getValue() - previous.getValue()) / (double) previous.getValue());
-        };
-
         Column column = new Column("delta-w-period", Messages.ColumnQuoteChange, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnQuoteChange_Option, options));
         column.setDescription(Messages.ColumnQuoteChange_Description);
-        column.setLabelProvider(new QuoteReportingPeriodLabelProvider(valueProvider));
+        column.setLabelProvider(() -> new QuoteReportingPeriodLabelProvider());
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
             ReportingPeriod option = (ReportingPeriod) ColumnViewerSorter.SortingContext.getColumnOption();
 
-            Double v1 = valueProvider.apply(o1, option);
-            Double v2 = valueProvider.apply(o2, option);
+            Double v1 = QuoteReportingPeriodLabelProvider.getQuoteChange((Security) o1, option);
+            Double v2 = QuoteReportingPeriodLabelProvider.getQuoteChange((Security) o2, option);
 
             if (v1 == null && v2 == null)
                 return 0;
@@ -790,18 +716,21 @@ public final class SecuritiesTable implements ModificationListener
 
     public void setInput(List<Security> securities)
     {
+        this.support.invalidateCache();
         this.securities.setInput(securities);
         this.watchlist = null;
     }
 
     public void setInput(Watchlist watchlist)
     {
+        this.support.invalidateCache();
         this.securities.setInput(watchlist.getSecurities());
         this.watchlist = watchlist;
     }
 
     public void refresh(Security security)
     {
+        this.support.invalidateCache();
         this.metricsCache.remove(security);
         this.securities.refresh(security, true);
     }
@@ -813,7 +742,10 @@ public final class SecuritiesTable implements ModificationListener
             securities.getControl().setRedraw(false);
 
             if (updateLabels)
+            {
                 metricsCache.clear();
+                support.invalidateCache();
+            }
             securities.refresh(updateLabels);
             securities.setSelection(securities.getSelection());
 
@@ -832,7 +764,7 @@ public final class SecuritiesTable implements ModificationListener
 
     public void updateQuotes(Security security)
     {
-        new UpdateQuotesJob(getClient(), security).schedule();
+        new UpdatePricesJob(getClient(), security).schedule();
     }
 
     public TableViewer getTableViewer()
@@ -922,12 +854,6 @@ public final class SecuritiesTable implements ModificationListener
         if (selection.size() == 1)
         {
             Security security = (Security) selection.getFirstElement();
-            if (security.getOnlineId() == null)
-            {
-                manager.add(new Separator());
-                manager.add(new LinkToPortfolioReport(security));
-            }
-
             manager.add(new Separator());
 
             if (LogoManager.instance().hasCustomLogo(security, getClient().getSettings()))
@@ -945,7 +871,7 @@ public final class SecuritiesTable implements ModificationListener
         {
             manager.add(new SimpleAction(
                             MessageFormat.format(Messages.SecurityMenuUpdateQuotesMultipleSecurities, selection.size()),
-                            a -> new UpdateQuotesJob(getClient(),
+                            a -> new UpdatePricesJob(getClient(),
                                             selection.toList().stream().map(Security.class::cast).toList())
                                                             .schedule()));
 
@@ -1232,51 +1158,124 @@ public final class SecuritiesTable implements ModificationListener
         }
     }
 
-    private static final class QuoteReportingPeriodLabelProvider extends OptionLabelProvider<ReportingPeriod>
+    private static final class QuoteReportingPeriodLabelProvider
+                    extends ParameterizedColumnLabelProvider<ReportingPeriod>
     {
-        private BiFunction<Object, ReportingPeriod, Double> valueProvider;
-
-        public QuoteReportingPeriodLabelProvider(BiFunction<Object, ReportingPeriod, Double> valueProvider)
-        {
-            this.valueProvider = valueProvider;
-        }
 
         @Override
-        public String getText(Object e, ReportingPeriod option)
+        public String getText(Object e)
         {
-            Double value = valueProvider.apply(e, option);
-            if (value == null)
+            Optional<Pair<SecurityPrice, SecurityPrice>> prices = getPrices((Security) e, getOption());
+            if (prices.isEmpty())
                 return null;
 
+            return getTextInternal(prices.get());
+        }
+
+        private static String getTextInternal(Pair<SecurityPrice, SecurityPrice> prices)
+        {
+            Double value = getQuoteChange(prices);
             return String.format("%,.2f %%", value * 100); //$NON-NLS-1$
         }
 
         @Override
-        public Color getForeground(Object e, ReportingPeriod option)
+        public Color getForeground(Object e)
         {
-            Double value = valueProvider.apply(e, option);
+            Double value = getQuoteChange((Security) e, getOption());
             if (value == null)
                 return null;
 
             if (value.doubleValue() < 0)
-                return Colors.theme().redForeground();
+                return ValueColorScheme.current().negativeForeground();
             else if (value.doubleValue() > 0)
-                return Colors.theme().greenForeground();
+                return ValueColorScheme.current().positiveForeground();
             else
                 return null;
         }
 
         @Override
-        public Image getImage(Object element, ReportingPeriod option)
+        public String getToolTipText(Object e)
         {
-            Double value = valueProvider.apply(element, option);
+            Security security = (Security) e;
+
+            Optional<Pair<SecurityPrice, SecurityPrice>> prices = getPrices(security, getOption());
+            if (prices.isEmpty())
+                return null;
+
+            String value = getTextInternal(prices.get());
+            if (value == null)
+                return null;
+
+            Double valuePA = getAnnualizedQuoteChange(prices.get());
+
+            String firstPrice = Values.Quote.format(security.getCurrencyCode(), prices.get().getLeft().getValue());
+            String secondPrice = Values.Quote.format(security.getCurrencyCode(), prices.get().getRight().getValue());
+
+            String firstDate = Values.Date.format(prices.get().getLeft().getDate());
+            String secondDate = Values.Date.format(prices.get().getRight().getDate());
+
+            String stringValuePA = String.format("%,.2f %%", valuePA * 100); //$NON-NLS-1$
+
+            return firstDate + " \u27A4 " + secondDate + "\r\n" // dates //$NON-NLS-1$ //$NON-NLS-2$
+                            + firstPrice + " \u27A4 " + secondPrice + "\r\n" // prices //$NON-NLS-1$ //$NON-NLS-2$
+                            + value + " \u2259 " + stringValuePA + " p.a."; // annualized //$NON-NLS-1$ //$NON-NLS-2$
+        }
+
+        /* package */ static Double getQuoteChange(Security security, ReportingPeriod period)
+        {
+            Optional<Pair<SecurityPrice, SecurityPrice>> prices = getPrices(security, period);
+
+            if (prices.isEmpty())
+                return null;
+
+            return getQuoteChange(prices.get());
+        }
+
+        private static Double getQuoteChange(Pair<SecurityPrice, SecurityPrice> prices)
+        {
+            return Double.valueOf((prices.getRight().getValue() / (double) prices.getLeft().getValue()) - 1);
+        }
+
+        private static Double getAnnualizedQuoteChange(Pair<SecurityPrice, SecurityPrice> prices)
+        {
+            SecurityPrice previous = prices.getLeft();
+            SecurityPrice latest = prices.getRight();
+
+            double totalDays = java.time.temporal.ChronoUnit.DAYS.between(previous.getDate(), latest.getDate());
+            double totalGain = latest.getValue() / (double) previous.getValue();
+            return Double.valueOf(Math.pow(totalGain, 365 / totalDays)) - 1;
+        }
+
+        private static Optional<Pair<SecurityPrice, SecurityPrice>> getPrices(Security security, ReportingPeriod period)
+        {
+            Interval interval = period.toInterval(LocalDate.now());
+
+            SecurityPrice latest = security.getSecurityPrice(interval.getEnd());
+            SecurityPrice previous = security.getSecurityPrice(interval.getStart());
+
+            if (latest == null || previous == null)
+                return Optional.empty();
+
+            if (previous.getValue() == 0)
+                return Optional.empty();
+
+            if (previous.getDate().isAfter(interval.getStart()))
+                return Optional.empty();
+
+            return Optional.of(new Pair<>(previous, latest));
+        }
+
+        @Override
+        public Image getImage(Object e)
+        {
+            Double value = getQuoteChange((Security) e, getOption());
             if (value == null)
                 return null;
 
             if (value.doubleValue() > 0)
-                return Images.GREEN_ARROW.image();
+                return ValueColorScheme.current().upArrow();
             if (value.doubleValue() < 0)
-                return Images.RED_ARROW.image();
+                return ValueColorScheme.current().downArrow();
             return null;
         }
     }

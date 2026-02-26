@@ -1,0 +1,62 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.73.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Herrn
+OmiLkDY MacYiaVMz
+BJqylCveRmaviYWHYM 1
+0472 ZinJ
+Wien, den 09.01.2025
+Wir haben für Sie am 09.01.2025 unten angeführtes Geschäft abgerechnet:
+Depot: 59504-965-208
+Verlusttopf Nr.: 150680691238
+Geschäftsart: Ertrag/Steueranteil
+Bestand: Stk 753,259
+davon
+KESt-Neubestand mit Anschaffungskosten: Stk 753,259
+Titel: IE00BF4RFH31 iShsIII-MSCI Wld Sm.Ca.UCI.ETF
+Registered Shares USD(Acc)o.N.
+Ertrag/Steueranteil pro Stk.: 0,011287 EUR
+Verwahrart: WR Wertpapierrechnung
+Positionsdaten: Loco: Düsseldorf
+KESt aus Neubestand: -8,81 USD
+Auslands-KESt neu: -15,14 USD
+-23,95 USD
+Devisenkurs: 1,0366 (09.01.2025) -23,11 EUR
+Zu Lasten IBAN gW23 6257 9138 2168 9133 Valuta 10.01.2025 -23,11 EUR
+Eingang vorbehalten
+Datum/Uhrzeit Auftragseingang: 09.01.2025 13.28.11
+Verwaltungsgesellschaft: iShares III PLC
+Für ausschüttungsgleiche Erträge von ausländischen Fonds erfolgt eine Belastung in Höhe der zu
+entrichtenden KESt. Neubestand: Steuerliche Anschaffungswerte werden erhöht.
+Extag: 09.01.2025
+Steuerrelevante Hinweise finden Sie auf der Rückseite.
+Seite 1 von 2
+easybank Service Center | www.easybank.at | Wiedner Gürtel 11 | 1100 Wien
+BAWAG P.S.K. Bank für Arbeit und Wirtschaft und Österreichische Postsparkasse Aktiengesellschaft | Handelsgericht Wien | FN 205340x
+GEODRU02 WGEWTGSDR15ABREP2025011009937P09_a/1142
+Hinweis für KESt aus Neubestand mit Anschaffungskosten:
+Steuerrelevanter Anschaffungswert: 4.976,29 EUR
+Anschaffungswertreduzierender Betrag*: 0,00 EUR
+Anschaffungswerterhöhender Betrag**: 109,03 EUR
+Steuerrelevanter Anschaffungswert aktuell: 5.085,32 EUR
+* Das sind unter anderem Ausschüttungen, Einlagenrückzahlungen und sonstige Kapitalmaßnahmen.
+** Entspricht in der Regel den ausschüttungsgleichen Erträgen. Diese unterliegen dem KESt-Abzug.
+Hinweis für den Verlustausgleichstopf:
+Bemessungsgrundlage KESt
+Einkünfteüberhang bisher 470,79 80,08 EUR
+Einkünfte 119,85 23,11 EUR
+Einkünfteüberhang aktuell 590,64 103,19 EUR
+KESt auf Dividende ohne Amtshilfe
+Eine allfällige KESt-Abfuhr erfolgt an das Finanzamt für Großbetriebe.
+Die BAWAG erbringt keine Steuerberatung und übernimmt keine Haftung für eventuelle steuerliche
+Nachteile im Zusammenhang mit Wertpapiertransaktionen und Wertpapierveranlagungen ihrer
+Kunden. Die Besteuerung der Kapitaleinkünfte hängt von den persönlichen Verhältnissen des Anlegers
+ab und kann künftigen Änderungen unterworfen sein. Vor einer Veranlagungsentscheidung sollten Sie
+sich bei Ihrem Steuerberater über die damit verbundenen steuerlichen Konsequenzen und
+Meldepflichten informieren.
+Mit freundlichen Grüßen
+Ihr easybank Service Center
+Dieser Beleg wird von der Bank nicht unterfertigt.
+Seite 2 von 2
+GEODRU02 WGEWTGSDR15ABREP2025011009937P09_a/1143

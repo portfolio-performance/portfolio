@@ -82,6 +82,17 @@ public class ExtractorUtilsDateParserTest
         assertEquals(expected, ExtractorUtils.asDate("2023-04-01", Locale.GERMANY));
 
         // Test valid date strings for each pattern in
+        // DATE_FORMATTER_FRENCH with hints
+        expected = LocalDateTime.of(2024, 7, 1, 0, 0);
+        assertEquals(expected, ExtractorUtils.asDate("01 juil. 2024", Locale.FRENCH));
+
+        expected = LocalDateTime.of(2024, 8, 1, 0, 0);
+        assertEquals(expected, ExtractorUtils.asDate("01 août 2024", Locale.FRENCH));
+
+        expected = LocalDateTime.of(2024, 2, 1, 0, 0);
+        assertEquals(expected, ExtractorUtils.asDate("01 Février 2024", Locale.FRENCH));
+
+        // Test valid date strings for each pattern in
         // DATE_FORMATTER_US with hints
         expected = LocalDateTime.of(2023, 4, 11, 0, 0);
         assertEquals(expected, ExtractorUtils.asDate("11 Apr 2023", Locale.US));
@@ -145,6 +156,7 @@ public class ExtractorUtilsDateParserTest
         assertEquals(expected, ExtractorUtils.asDate("11 APR 2023", Locale.UK));
         assertEquals(expected, ExtractorUtils.asDate("11 April 2023", Locale.UK));
         assertEquals(expected, ExtractorUtils.asDate("11 APRIL 2023", Locale.UK));
+        assertEquals(expected, ExtractorUtils.asDate("11-Apr-2023", Locale.UK));
 
         expected = LocalDateTime.of(2023, 4, 1, 0, 0);
         assertEquals(expected, ExtractorUtils.asDate("4/1/2023", Locale.UK));
@@ -155,6 +167,8 @@ public class ExtractorUtilsDateParserTest
         assertEquals(expected, ExtractorUtils.asDate("01 Apr 2023", Locale.UK));
         assertEquals(expected, ExtractorUtils.asDate("1 APR 2023", Locale.UK));
         assertEquals(expected, ExtractorUtils.asDate("01 APR 2023", Locale.UK));
+        assertEquals(expected, ExtractorUtils.asDate("1-Apr-2023", Locale.UK));
+        assertEquals(expected, ExtractorUtils.asDate("01-Apr-2023", Locale.UK));
     }
 
     @Test(expected = DateTimeParseException.class)
@@ -194,11 +208,20 @@ public class ExtractorUtilsDateParserTest
     @Test
     public void testValidFormats()
     {
-        // Test various valid formats
-        assertEquals(LocalTime.of(13, 15), ExtractorUtils.asTime("11-04-2023 13:15"));
-        assertEquals(LocalTime.of(8, 0), ExtractorUtils.asTime("11/04/2023 08:00:00"));
+        assertEquals(LocalTime.of(13, 15), ExtractorUtils.asTime("13:15:00"));
+        assertEquals(LocalTime.of(8, 0), ExtractorUtils.asTime("08:00:00"));
+        assertEquals(LocalTime.of(8, 0), ExtractorUtils.asTime("08.00.00"));
+        assertEquals(LocalTime.of(8, 0), ExtractorUtils.asTime("08.00"));
     }
 
+    @Test
+    public void testValidFormatsWithDate()
+    {
+        String input = "11-04-2023 13:15:00";
+        String timePart = input.substring(input.indexOf(' ') + 1);
+        assertEquals(LocalTime.of(13, 15), ExtractorUtils.asTime(timePart));
+    }
+    
     @Test(expected = DateTimeParseException.class)
     public void testInvalidFormat()
     {
@@ -218,5 +241,11 @@ public class ExtractorUtilsDateParserTest
     {
         // Test a null value
         ExtractorUtils.asTime(null);
+    }
+
+    @Test(expected = DateTimeParseException.class)
+    public void testAsTimeEmptyString()
+    {
+        ExtractorUtils.asTime("");
     }
 }

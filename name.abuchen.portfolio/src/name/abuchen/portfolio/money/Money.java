@@ -3,6 +3,17 @@ package name.abuchen.portfolio.money;
 import java.text.MessageFormat;
 import java.util.Objects;
 
+/**
+ * A monetary amount, such as 'EUR 2,500.50', combining a currency with an
+ * amount.
+ * <p>
+ * Monetary values are stored as long values in minor currency units (e.g.,
+ * cents for EUR/USD).
+ * <p>
+ * To avoid overflow of long integers, particularly when mathematically
+ * combining different values such as monetary amounts with prices or shares, it
+ * is recommended to manipulate values with the help of the BigDecimal class.
+ */
 public final class Money implements Comparable<Money>
 {
     private final String currencyCode;
@@ -11,22 +22,42 @@ public final class Money implements Comparable<Money>
     private Money(String currencyCode, long amount)
     {
         if (currencyCode == null || currencyCode.isEmpty())
-            throw new NullPointerException();
+            throw new NullPointerException("currencyCode"); //$NON-NLS-1$
 
         this.currencyCode = currencyCode;
         this.amount = amount;
     }
 
+    /**
+     * Creates a new Money object with the specified currency and amount.
+     *
+     * @param currencyCode
+     *            the ISO 4217 currency code, e.g. 'EUR'
+     * @param amount
+     *            the amount in minor currency units (e.g., cents for EUR/USD)
+     * @return the new Money object
+     */
     public static Money of(String currencyCode, long amount)
     {
         return new Money(currencyCode, amount);
     }
 
+    /**
+     * Returns the currency code of this Money value.
+     *
+     * @return the currency code, e.g. 'EUR'
+     */
     public String getCurrencyCode()
     {
         return currencyCode;
     }
 
+    /**
+     * Returns the amount of money in minor currency units (e.g., cents for
+     * EUR/USD).
+     *
+     * @return the amount as a long integer
+     */
     public long getAmount()
     {
         return amount;

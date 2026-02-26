@@ -5,12 +5,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.swtchart.IAxis;
-import org.swtchart.IAxis.Position;
-import org.swtchart.ILineSeries;
-import org.swtchart.ILineSeries.PlotSymbolType;
-import org.swtchart.ISeries.SeriesType;
-import org.swtchart.LineStyle;
+import org.eclipse.swtchart.IAxis;
+import org.eclipse.swtchart.IAxis.Position;
+import org.eclipse.swtchart.ILineSeries;
+import org.eclipse.swtchart.ILineSeries.PlotSymbolType;
+import org.eclipse.swtchart.ISeries.SeriesType;
+import org.eclipse.swtchart.LineStyle;
 
 import com.google.common.primitives.Doubles;
 
@@ -21,6 +21,7 @@ import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
+import name.abuchen.portfolio.ui.util.chart.TimelineSeriesModel;
 import name.abuchen.portfolio.ui.views.SecuritiesChart;
 import name.abuchen.portfolio.ui.views.SecuritiesChart.ChartInterval;
 
@@ -30,10 +31,10 @@ public class SharesHeldChartSeries
     {
     }
 
-    public void configure(SecuritiesChart chart, TimelineChart timelineChart, ChartInterval chartInterval)
+    public void configure(SecuritiesChart chart, TimelineChart timelineChart, ChartInterval chartInterval,
+                    Security security)
     {
         Client client = chart.getClient();
-        Security security = chart.getSecurity();
 
         // securities w/o currency (e.g. index) cannot be bought and hence have
         // no purchase price
@@ -103,7 +104,10 @@ public class SharesHeldChartSeries
             var label = index == 0 ? Messages.ColumnSharesOwned
                             : MessageFormat.format(Messages.ColumnSharesOwnedHoldingPeriod, index + 1);
 
-            var series = (ILineSeries) timelineChart.getSeriesSet().createSeries(SeriesType.LINE, label);
+            @SuppressWarnings("unchecked")
+            var series = (ILineSeries<Integer>) timelineChart.getSeriesSet().createSeries(SeriesType.LINE, label);
+
+            series.setDataModel(new TimelineSeriesModel(d.dates.toArray(new LocalDate[0]), Doubles.toArray(d.values)));
 
             series.setSymbolType(PlotSymbolType.NONE);
             series.setYAxisId(axis.getId());
@@ -113,8 +117,6 @@ public class SharesHeldChartSeries
             series.setLineStyle(LineStyle.SOLID);
             series.enableArea(false);
             series.setAntialias(chart.getAntialias());
-            series.setXDateSeries(TimelineChart.toJavaUtilDate(d.dates.toArray(new LocalDate[0])));
-            series.setYSeries(Doubles.toArray(d.values));
             series.setLineColor(chart.getSharesHeldColor());
             series.setVisibleInLegend(index == 0);
         }

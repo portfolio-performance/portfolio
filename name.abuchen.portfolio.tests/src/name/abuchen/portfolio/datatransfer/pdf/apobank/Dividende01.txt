@@ -1,0 +1,72 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+apoBank | 40540 Düsseldorf Filiale Oldenburg
+Telefon +49 441923970
+Telefax +49 4419239780
+filiale.oldenburg@apobank.de
+www.apobank.de
+Zentrale Postanschrift
+DQqc apoBank
+wJ. YyUsz KXRqNZaPAG 40540 Düsseldorf
+QbIuFNZoZQTP. 06 Ihr(e) Ansprechpartner(in)
+17716 tMjIdoCJZlx xJtObiL eQpjfsB
+PmQMpnHhtFrlPmQMpnHhtFrl
+Telefon +13 6260387046
+Kunden-Nr. Konto-Nr. / IBAN Referenz-Nr. Datum Seite
+7503139 0559322 / 6968008518 27.08.2025 1 / 3
+AB12345678912345678912
+Bardividende
+Depot 097390171
+Wir teilen Ihnen mit, dass wir die folgenden Erträgnisse unter Eingangsvorbehalt abgerechnet haben:
+Wertpapierbezeichnung iShs VII-$ Trsy Bd 3-7yr U.ETF Registered Shs EUR DIS.Hgd
+o.N
+ISIN IE00BGPP6473
+WKN A2PDTT
+Verwahrart Wertpapierrechnung
+Lagerland Vereinigtes Königreich Grossbritannien und
+Nordirland
+Nominal/Stück 0,707 ST
+Währung EUR
+Anspruchsperiode 01-AUG-2025 - 31-JUL-2026
+Ausschüttung EUR 0,0798 pro Stück
+Dividendenart Ordentliche Dividende
+Periodizität Akonto oder Interim
+Zahlungsdatum 27.08.2025
+Ex-Tag 14.08.2025
+Deutsche Apotheker- und Ärztebank eG Vorsitzender des Aufsichtsrats: Dr. med. dent. Karl-Georg Pochhammer BLZ: 300 606 01 | BIC: DAAEDEDDXXX
+Richard-Oskar-Mattern-Straße 6 Vorstand: Matthias Schellenberg (Vorsitzender), Heiko Drews, Sitz der Bank: Düsseldorf | Ust.-ID: DE119260415
+40547 Düsseldorf Thomas Runge, Dr. Christian Wiermann, Sylvia Wilhelm Eintragung: Amtsgericht Düsseldorf GnR 410
+Kunden-Nr. Konto-Nr. / IBAN Referenz-Nr. Datum Seite
+8683915 1254927 / 6838499699 27.08.2025 2 / 3
+AB12345678912345678912
+Bruttobetrag EUR 0,06
+Kapitalertragsteuer EUR -0,02
+Solidaritätszuschlag EUR 0,00
+Kirchensteuer EUR 0,00
+Netto-Betrag EUR 0,04
+Ausmachender Betrag EUR 0,04
+Der Abrechnungsbetrag wird mit Valuta 27.08.2025 über Ihr Konto 7160714 gebucht.
+Die Meldepflicht gemäß Außenwirtschaftsverordnung (AWV) wurde von uns bei Beträgen ab 12.500 EUR
+Gegenwert erfüllt.
+Bitte beachten Sie, dass dieser Beleg keine Steuerbescheinigung darstellt.
+Für Rückfragen wenden Sie sich bitte an Ihren Vermögensbetreuer.
+Dieses Dokument ist maschinell erstellt und wird nicht unterschrieben.
+Kunden-Nr. Konto-Nr. / IBAN Referenz-Nr. Datum Seite
+4383569 5001039 / 1117434024 27.08.2025 3 / 3
+AB12345678912345678912
+Steuerliche Informationen - Bardividende
+Ausschüttungsbetrag EUR 0,06
+Steuerpfl. Betrag nach Teilfreistellung im Privatvermögen EUR 0,06
+Stand allg. Verlustverrechnungstopf vor Veränderung EUR 0,00
+Veränderung allg. Verlustverrechnungstopf EUR 0,00
+Stand allg. Verlustverrechnungstopf nach Veränderung EUR 0,00
+Stand Quellensteuerguthaben vor Veränderung EUR 0,00
+Veränderung Quellensteuerguthaben EUR 0,00
+Stand Quellensteuerguthaben nach Veränderung EUR 0,00
+Bemessungsgrundlage für Kapitalertragsteuer EUR 0,06
+davon zu berücksichtigende Kapitalertragsteuer EUR -0,02
+davon zu berücksichtigender Solidaritätszuschlag EUR 0,00
+davon zu berücksichtigende Kirchensteuer EUR 0,00
+Keine Steuerbescheinigung.

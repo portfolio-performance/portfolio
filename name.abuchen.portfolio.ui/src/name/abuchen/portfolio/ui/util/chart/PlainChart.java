@@ -1,13 +1,22 @@
 package name.abuchen.portfolio.ui.util.chart;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.swtchart.Chart;
+import org.eclipse.swtchart.Chart;
+import org.eclipse.swtchart.internal.PlotArea;
 
 public class PlainChart extends Chart // NOSONAR
 {
+    @SuppressWarnings("restriction")
     public PlainChart(Composite parent, int style)
     {
-        super(parent, style);
+        super(parent, style, null);
+
+        // we must use the secondary constructor that is not creating the
+        // PlotArea because the default constructor adds a mouse move listener
+        // that is redrawing the chart on every mouse move. That leads to janky
+        // UI when the tooltip is shown.
+        new PlotArea(this, SWT.NONE);
     }
 
     @Override
@@ -21,6 +30,6 @@ public class PlainChart extends Chart // NOSONAR
 
         // fix: never force focus on the legend but focus the plot area instead
 
-        return getPlotArea().setFocus();
+        return getPlotArea().getControl().setFocus();
     }
 }

@@ -5,29 +5,32 @@
 
 	<groupId>name.abuchen.portfolio</groupId>
 	<artifactId>portfolio-app</artifactId>
-	<version>0.70.4-SNAPSHOT</version>
+	<version>0.81.6-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Portfolio Performance</name>
 
 	<properties>
-		<tycho-version>4.0.8</tycho-version>
+		<tycho-version>5.0.2</tycho-version>
 		<jarsigner.skip>true</jarsigner.skip>
 		<gpgsigner.skip>true</gpgsigner.skip>
 		<applesigner.skip>true</applesigner.skip>
 		<installer.skip>true</installer.skip>
+		<exesigner.skip>true</exesigner.skip>
 		<sonar.skippedModules>name.abuchen.portfolio.feature</sonar.skippedModules>
 		<sonar.exclusions>**/Messages.java,**/name/abuchen/portfolio/model/proto/**</sonar.exclusions>
 		<sonar.organization>buchen-github</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
 		<argLine>-ea</argLine>
-		<maven.compiler.source>17</maven.compiler.source>
-		<maven.compiler.target>17</maven.compiler.target>
+		<maven.compiler.source>21</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>
 	</properties>
 
 	<modules>
 		<module>../portfolio-target-definition</module>
+		<module>../name.abuchen.portfolio.pdfbox1</module>
+		<module>../name.abuchen.portfolio.pdfbox3</module>
 		<module>../name.abuchen.portfolio</module>
 		<module>../name.abuchen.portfolio.junit</module>
 		<module>../name.abuchen.portfolio.tests</module>
@@ -35,23 +38,57 @@
 		<module>../name.abuchen.portfolio.ui.tests</module>
 		<module>../name.abuchen.portfolio.feature</module>
 		<module>../name.abuchen.portfolio.bootstrap</module>
-		<module>../portfolio-product</module>
 	</modules>
 
 	<repositories>
 		<repository>
 			<id>portfolio-jre</id>
 			<layout>p2</layout>
-			<url>http://portfolio-performance.github.io/bundled-jre/17.0.5</url>
+			<url>http://portfolio-performance.github.io/bundled-jre/21.0.5</url>
 		</repository>
 	</repositories>
+
+	<profiles>
+		<profile>
+			<id>default</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<target-file-name>portfolio-target-definition</target-file-name>
+				<jacoco.skip>false</jacoco.skip>
+				<checkstyle.skip>false</checkstyle.skip>
+				<protobuf.execution.phase>generate-sources</protobuf.execution.phase>
+			</properties>
+			<modules>
+				<module>../portfolio-product</module>
+			</modules>
+		</profile>
+		<profile>
+			<!--
+				local-dev (activate by appending -Plocal-dev to your Maven command line)
+				
+			    The profile can be used for local development, to speed up the build:
+			    * use a target platform without the babel translation bundles
+			    * skip code coverage and checkstyle checks
+			    * skip protobuf generation
+			-->
+			<id>local-dev</id>
+			<properties>
+				<target-file-name>portfolio-target-definition-local-dev</target-file-name>
+				<jacoco.skip>true</jacoco.skip>
+				<checkstyle.skip>true</checkstyle.skip>
+				<protobuf.execution.phase>none</protobuf.execution.phase>
+			</properties>
+		</profile>
+	</profiles>
 
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
-				<version>3.5.0</version>
+				<version>3.6.2</version>
 				<executions>
 					<execution>
 						<id>enforce-versions</id>
@@ -64,7 +101,7 @@
 									<version>3.5.2</version>
 								</requireMavenVersion>
 								<requireJavaVersion>
-									<version>17</version>
+									<version>21</version>
 								</requireJavaVersion>
 							</rules>
 						</configuration>
@@ -82,7 +119,7 @@
 				<artifactId>target-platform-configuration</artifactId>
 				<configuration>
 					<pomDependencies>consider</pomDependencies>
-					<executionEnvironment>JavaSE-17</executionEnvironment>
+					<executionEnvironment>JavaSE-21</executionEnvironment>
 					<exclusions>
 						<exclusion>
 							<groupId>com.google.code.findbugs</groupId>
@@ -94,6 +131,7 @@
 							<groupId>name.abuchen.portfolio</groupId>
 							<artifactId>portfolio-target-definition</artifactId>
 							<version>${project.version}</version>
+							<classifier>${target-file-name}</classifier>
 						</artifact>
 					</target>
 					<environments>
@@ -121,6 +159,11 @@
 							<os>win32</os>
 							<ws>win32</ws>
 							<arch>x86_64</arch>
+						</environment>
+						<environment>
+							<os>win32</os>
+							<ws>win32</ws>
+							<arch>aarch64</arch>
 						</environment>
 					</environments>
 					<filters>
@@ -201,6 +244,21 @@
 						</filter>
 						<filter>
 							<type>eclipse-plugin</type>
+							<id>org.eclipse.equinox.launcher.cocoa.macosx.aarch64.nl_tr</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.equinox.launcher.cocoa.macosx.aarch64.nl_vi</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.equinox.launcher.cocoa.macosx.aarch64.nl_ca</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
 							<id>org.eclipse.equinox.launcher.gtk.linux.aarch64.nl_it</id>
 							<removeAll />
 						</filter>
@@ -271,6 +329,21 @@
 						</filter>
 						<filter>
 							<type>eclipse-plugin</type>
+							<id>org.eclipse.equinox.launcher.gtk.linux.aarch64.nl_tr</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.equinox.launcher.gtk.linux.aarch64.nl_vi</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.equinox.launcher.gtk.linux.aarch64.nl_ca</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
 							<id>org.eclipse.e4.ui.swt.gtk.nl_it</id>
 							<removeAll />
 						</filter>
@@ -319,6 +392,21 @@
 							<id>org.eclipse.e4.ui.swt.gtk.nl_pl</id>
 							<removeAll />
 						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.e4.ui.swt.gtk.nl_tr</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.e4.ui.swt.gtk.nl_vi</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.e4.ui.swt.gtk.nl_ca</id>
+							<removeAll />
+						</filter>
 					</filters>
 				</configuration>
 			</plugin>
@@ -341,7 +429,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.3.1</version>
+					<version>3.4.0</version>
 					<configuration>
 						<encoding>UTF-8</encoding>
 					</configuration>
@@ -349,7 +437,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-dependency-plugin</artifactId>
-					<version>3.7.1</version>
+					<version>3.10.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
@@ -357,6 +445,8 @@
 					<version>${tycho-version}</version>
 					<configuration>
 						<trimStackTrace>false</trimStackTrace>
+						<!-- disable warnings about Mockito -->
+						<argLine>-XX:+EnableDynamicAgentLoading -Djdk.xml.elementAttributeLimit=0</argLine>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -386,11 +476,28 @@
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>tycho-p2-publisher-plugin</artifactId>
 					<version>${tycho-version}</version>
+					<!-- Because we want to modify some files before they appear in the assembly repository,
+					     we first move some of the executions from the default phase into the compile phase
+					     to execute additional actions (sign executables) -->
+					<executions>
+						<execution>
+							<id>default-publish-osgi-ee</id>
+							<phase>compile</phase>
+						</execution>
+						<execution>
+							<id>default-publish-products</id>
+							<phase>compile</phase>
+						</execution>
+						<execution>
+							<id>default-attach-artifacts</id>
+							<phase>compile</phase>
+						</execution>
+					</executions>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jarsigner-plugin</artifactId>
-					<version>3.0.0</version>
+					<version>3.1.0</version>
 					<executions>
 						<execution>
 							<id>sign</id>
@@ -413,7 +520,7 @@
 						<storetype>PKCS11</storetype>
 						<providerClass>sun.security.pkcs11.SunPKCS11</providerClass>
 						<storepass>${jarsigner.storepass}</storepass>
-						<alias>Andreas Buchen</alias>
+						<alias>${jarsigner.alias}</alias>
 						<providerArg>${jarsigner.providerArg}</providerArg>
 						<certchain>${project.basedir}/../portfolio-app/certchain.txt</certchain>
 						<tsa>http://time.certum.pl/</tsa>
@@ -422,12 +529,19 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-gpg-plugin</artifactId>
-					<version>3.2.5</version>
+					<version>3.2.8</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-checkstyle-plugin</artifactId>
-					<version>3.4.0</version>
+					<version>3.6.0</version>
+					<dependencies>
+						<dependency>
+							<groupId>com.puppycrawl.tools</groupId>
+							<artifactId>checkstyle</artifactId>
+							<version>13.2.0</version>
+						</dependency>
+					</dependencies>
 					<executions>
 						<execution>
 							<id>validate</id>
@@ -438,6 +552,7 @@
 								<consoleOutput>true</consoleOutput>
 								<failsOnError>true</failsOnError>
 								<excludes>**/name/abuchen/portfolio/model/proto/v1/*</excludes>
+								<skip>${checkstyle.skip}</skip>
 							</configuration>
 							<goals>
 								<goal>check</goal>
@@ -448,7 +563,7 @@
 				<plugin>
 					<groupId>org.sonarsource.scanner.maven</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>4.0.0.4121</version>
+					<version>5.5.0.6356</version>
 				</plugin>
 				<plugin>
 					<groupId>name.abuchen</groupId>
@@ -458,12 +573,12 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>exec-maven-plugin</artifactId>
-					<version>3.4.1</version>
+					<version>3.6.3</version>
 				</plugin>
 				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>0.8.12</version>
+					<version>0.8.14</version>
 				</plugin>
 				<plugin>
 					<groupId>com.github.os72</groupId>

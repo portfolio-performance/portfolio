@@ -1,0 +1,64 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.74.2
+System: linux | x86_64 | 22+36-2370 | Oracle Corporation
+-----------------------------------------
+Baader Bank AG   Weihenstephaner Straße 4   85716 Unterschleißheim Smartbroker AG
+T  00800 00 586336*   F  +49 89 5150 2442    service@baaderbank.de Ritterstraße 11
+10969 Berlin
+Seite 1/2
+Berlin
+zGsJT ulZDO 13.03.2025
+QfoOnbvuM. 15
+uUKtY trcoL
+08989 cCnNyK Stamm-Nr.: 6099379    Portfolio: 1
+Depot-Nr.: 8731495934
+Vorgangs-Nr.: 94320248
+Referenz-Nr.: 139645120
+Buchungsanzeige
+Squeeze Out
+Ex-Tag: 04.03.2025
+Ausbuchung aus Depot 9273263181 per 04.03.2025
+Nominale ISIN: FR0000035818 WKN: 907928 Barabfindung
+STK 6 Esker S.A. EUR 262,00 p.STK
+Actions Port. EO 2
+Bruttobetrag EUR 1.572,00
+Zu Gunsten Konto 1743545850 Valuta: 04.03.2025 EUR 1.572,00
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+smartbrokerplus.de
+Brauchen Sie Unterstützung? Dann kontaktieren Sie bitte den Service von SMARTBROKER+ über das Kontaktformular in der SMARTBROKER+ App.
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender), Martin Zoller • Vorsitzender des Aufsichtsrates: Dr. Louis Hagen • Amtsgericht 
+München HRB 121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de AUSB-044.048
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+Squeeze Out
+Fortsetzung: Seite 2/2
+Darstellung der steuerlichen Berechnungsgrundlagen:
+Merkposten / Steuertöpfe vorher Erhöhung/Reduktion nachher
+Aktienverlusttopf (AVT) EUR 16,41 EUR 16,41 - EUR 0,00
+Allgemeiner Verlusttopf (VVT) EUR 118,59 EUR 18,59 - EUR 100,00
+Verrechnung Aktiengewinne mit VVT EUR 0,00 EUR 18,59 - EUR 18,59 -
+Bemessungsgrundlagen Steuerpflicht brutto Steuerpflicht netto
+Gewinn / Verlust aus Aktienveräußerungen EUR 35,00 EUR 0,00
+Bemessungsgrundlage zur KESt (Aktiengewinne) EUR 35,00 EUR 0,00
+Ausbuchung
+Stück 6 Esker S.A.
+ISIN: FR0000035818
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäfts-
+Geschäft Nr. Datum Whg./St. Nominal/Stück Anschaff.-kosten ant. Veräußer.-erlös ant. Ergebnis
+WP-Einlief. mit AK 242449913 12.07.2021 STK 6 1.537,00 1.572,00 35,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+smartbrokerplus.de
+Brauchen Sie Unterstützung? Dann kontaktieren Sie bitte den Service von SMARTBROKER+ über das Kontaktformular in der SMARTBROKER+ App.
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender), Martin Zoller • Vorsitzender des Aufsichtsrates: Dr. Louis Hagen • Amtsgericht 
+München HRB 121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de AUSB-044.048
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.

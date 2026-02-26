@@ -24,7 +24,6 @@ import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
-import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.CircularChart;
 import name.abuchen.portfolio.ui.util.chart.CircularChart.RenderLabelsCenteredInPie;
 import name.abuchen.portfolio.ui.util.chart.CircularChart.RenderLabelsOutsidePie;
@@ -80,19 +79,13 @@ public class HoldingsPieChartSWT implements IPieChart
                 Label assetLabel = new Label(data, SWT.NONE);
                 GridDataFactory.fillDefaults().span(2, 1).applyTo(assetLabel);
                 assetLabel.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
-                if (financeView != null) // from view : Statement of Assets
-                {
-                    assetLabel.setText(currentNode.getId());
-                }
-                else // from pane = single portfolio information pane
-                {
-                    assetLabel.setText(snapshot.getPortfolios().get(0).getPortfolio().getName());
-                }
+
+                // account. snapshot must be created with a name
+                assetLabel.setText(snapshot.getSnapshotName());
 
                 Label info = new Label(data, SWT.NONE);
                 GridDataFactory.fillDefaults().span(2, 1).applyTo(info);
                 info.setText(Values.Money.format(snapshot.getMonetaryAssets()));
-
             }
             else
             {
@@ -125,6 +118,8 @@ public class HoldingsPieChartSWT implements IPieChart
         {
             updateChart();
         }
+        else
+            chart.setVisible(false);
 
         return chart;
     }
@@ -134,6 +129,7 @@ public class HoldingsPieChartSWT implements IPieChart
     {
         this.snapshot = snapshot;
         updateChart();
+        chart.setVisible(true);
     }
 
     private void updateChart()
@@ -211,7 +207,7 @@ public class HoldingsPieChartSWT implements IPieChart
         circularSeries = (ICircularSeries<?>) chart.getSeriesSet().createSeries(SeriesType.DOUGHNUT,
                         Messages.LabelStatementOfAssetsHoldings);
         circularSeries.setSeries(labels.toArray(new String[0]), values.stream().mapToDouble(d -> d).toArray());
-        circularSeries.setSliceColor(Colors.WHITE);
+        circularSeries.setSliceColor(chart.getPlotArea().getBackground());
         lastLabels = new ArrayList<>(labels);
         Collections.sort(lastLabels, String.CASE_INSENSITIVE_ORDER);
         return circularSeries;

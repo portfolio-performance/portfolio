@@ -1,0 +1,45 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.78.1
+System: linux | x86_64 | 21.0.8+9-Ubuntu-0ubuntu124.04.1 | Ubuntu
+-----------------------------------------
+Slagelse
+Schweizerpladsen 1 A
+Sydbank A/S DK-4200 Slagelse
+Receptionen, Peberlyk 4, 6200 Aabenraa
+FMUM tnanISEt cEAQVUiFYLB Telefon +45 74 37 94 00
+sUiYOTGDuVp 452 Sydbank A/S
+3258 tU TevCI JPGesHIQtKfE CVR-nr. DK 12626509, Aabenraa
+sydbank.dk
+Forretningsnr. 39253016
+Fondskode 6010520
+ISIN-kode DK0060105203
+CPR/CVR-nr. 013534-XXXX
+Valutaudlænding
+21. august 2025
+Fondsafregning
+Du har den 21.08.25 kl. 09:57:10 (UTC: 07:57:10.597) solgt: Sparinvest Korte Obligationer KL A
+Antal stk Fondskurs Kursværdi
+209 115,8500000 24.212,65
+Kurtage
+Minimum 29,00-
+(Handelsomkostninger i alt DKK 29,00)
+I alt
+DKK 24.183,65
+Værdipapirerne udtages af depot 594798059640699 med valør 25.08.25.
+Nettobeløbet indsættes på konto 632175399274297 med valør 25.08.25.
+Din markedsordre er gennemført som børshandel på Nasdaq Copenhagen Equities (XCSE). Ordren er
+modtaget den 20.08.25 kl. 20:42.
+Vi har ikke ydet rådgivning i.f.m. ordren.
+Du modtager ikke yderligere meddelelse om registreringen.
+Bestilt online af bruger Flqw TVrxiZWc xHVeNwUeeDS
+Du har pligt til at kontrollere denne notas indhold og straks rette eventuelle spørgsmål til Slagelse, Tlf.: 74 37
+94 00
+Der henvises i øvrigt til regler for værdipapirhandel, ordreudførelsespolitik samt bankens almindelige
+forretningsbetingelser.
+Med venlig hilsen
+Sydbank
+(Denne meddelelse kræver ingen underskrift.)
+Reklamationer vedrørende denne fondsafregning bedes straks rettet til Compliance i Sydbank, Peberlyk 4, 6200 Aabenraa, Tlf. 74 37 37 37 eller
+compliance@sydbank.dk.
+FONVPA/Refnr. 1195520/E
+LEI: GP5DT10VX1QRQUKVBK64

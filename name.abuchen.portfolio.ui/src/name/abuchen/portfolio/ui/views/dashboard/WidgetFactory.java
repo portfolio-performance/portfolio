@@ -27,16 +27,22 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.views.dashboard.charts.ClientDataSeriesChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.charts.DrawdownChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.charts.HoldingsChartWidget;
+import name.abuchen.portfolio.ui.views.dashboard.charts.RebalancingChartWidget;
+import name.abuchen.portfolio.ui.views.dashboard.charts.RebalancingTargetChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.charts.TaxonomyChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsByTaxonomyChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsListWidget;
 import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsListWidget.ExpansionSetting;
+
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.CostHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.InvestmentHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.PerformanceHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.YearlyPerformanceHeatmapWidget;
+import name.abuchen.portfolio.ui.views.dashboard.lists.EventListWidget;
+import name.abuchen.portfolio.ui.views.dashboard.lists.FollowUpWidget;
+import name.abuchen.portfolio.ui.views.dashboard.lists.LimitExceededWidget;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel;
 
@@ -124,6 +130,9 @@ public enum WidgetFactory
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
 
+    MONTHLY_PN_TRANSFERS(Messages.LabelMonthlyPNTransfers, Messages.LabelStatementOfAssets,
+                    MonthlyPNTransfersWidget::new),
+
     INVESTED_CAPITAL(Messages.LabelInvestedCapital, Messages.LabelStatementOfAssets, //
                     (widget, data) -> IndicatorWidget.<Money>create(widget, data) //
                                     .with(Values.Money) //
@@ -165,6 +174,85 @@ public enum WidgetFactory
                                                         formatter.format(drawdown.getIntervalOfMaxDrawdown().getEnd()));
                                     }) //
                                     .withColoredValues(false) //
+                                    .build()),
+
+    CURRENT_DRAWDOWN(Messages.LabelCurrentDrawdown, Messages.LabelRiskIndicators, //
+                    (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
+                                    .with(Values.Percent2) //
+                                    .with((ds, period) -> {
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        double[] accumulated = index.getAccumulatedPercentage();
+                                        if (accumulated.length == 0)
+                                            return 0.0;
+
+                                        // Find the high watermark in
+                                        // accumulated performance
+                                        double highWatermark = Double.NEGATIVE_INFINITY;
+                                        for (int i = 0; i < accumulated.length; i++)
+                                        {
+                                            if (accumulated[i] > highWatermark)
+                                                highWatermark = accumulated[i];
+                                        }
+
+                                        // If no positive performance, no
+                                        // drawdown
+                                        if (highWatermark <= 0)
+                                            return 0.0;
+
+                                        // Current accumulated performance
+                                        double currentValue = accumulated[accumulated.length - 1];
+
+                                        // Calculate drawdown as percentage from
+                                        // high watermark
+                                        // This matches how the Drawdown class
+                                        // calculates drawdown in Risk.java
+                                        // Only return a drawdown if current
+                                        // value is less than high watermark
+                                        if (currentValue < highWatermark)
+                                        {
+                                            // Convert accumulated percentages
+                                            // to values relative to 1
+                                            // e.g., 0.25 (25% gain) becomes
+                                            // 1.25
+                                            double peakValue = 1 + highWatermark;
+                                            double currentVal = 1 + currentValue;
+
+                                            // Calculate drawdown using the same
+                                            // formula as in Risk.Drawdown
+                                            return -(peakValue - currentVal) / peakValue;
+                                        }
+                                        else
+                                        {
+                                            return 0.0;
+                                        }
+                                    }) //
+                                    .withTooltip((ds, period) -> {
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        double[] accumulated = index.getAccumulatedPercentage();
+                                        if (accumulated.length == 0)
+                                            return Messages.TooltipCurrentDrawdown;
+
+                                        // Find the high watermark date
+                                        double highWatermark = Double.NEGATIVE_INFINITY;
+                                        int highWatermarkIndex = 0;
+                                        for (int i = 0; i < accumulated.length; i++)
+                                        {
+                                            if (accumulated[i] > highWatermark)
+                                            {
+                                                highWatermark = accumulated[i];
+                                                highWatermarkIndex = i;
+                                            }
+                                        }
+
+                                        DateTimeFormatter formatter = DateTimeFormatter
+                                                        .ofLocalizedDate(FormatStyle.LONG)
+                                                        .withZone(ZoneId.systemDefault());
+
+                                        LocalDate highWatermarkDate = period.getStart().plusDays(highWatermarkIndex);
+                                        return MessageFormat.format(Messages.TooltipCurrentDrawdown,
+                                                        formatter.format(highWatermarkDate));
+                                    }) //
+                                    .withColoredValues(true) //
                                     .build()),
 
     MAXDRAWDOWNDURATION(Messages.LabelMaxDrawdownDuration, Messages.LabelRiskIndicators,
@@ -262,6 +350,8 @@ public enum WidgetFactory
 
     HEATMAP_EARNINGS(Messages.LabelHeatmapEarnings, Messages.LabelEarnings, EarningsHeatmapWidget::new),
 
+    DIVIDEND_EVENT_LIST(Messages.LabelEarningsDividendList, Messages.LabelEarnings, DividendListWidget::new),
+
     EARNINGS_PER_YEAR_CHART(Messages.LabelEarningsPerYear, Messages.LabelEarnings, Images.VIEW_BARCHART,
                     EarningsChartWidget::perYear),
 
@@ -343,6 +433,8 @@ public enum WidgetFactory
 
     FOLLOW_UP(Messages.SecurityListFilterDateReached, Messages.LabelCommon, FollowUpWidget::new),
 
+    EVENT_LIST(Messages.EventListWidgetTitle, Messages.LabelCommon, EventListWidget::new),
+
     LATEST_SECURITY_PRICE(Messages.LabelSecurityLatestPrice, Messages.LabelCommon, //
                     (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
                                     .with(Values.Quote) //
@@ -367,8 +459,6 @@ public enum WidgetFactory
                                                                         .getSecurityPrice(LocalDate.now()).getDate()));
                                     }) //
                                     .build()),
-
-    WEBSITE(Messages.Website, Messages.LabelCommon, BrowserWidget::new),
 
     DISTANCE_TO_ATH(Messages.SecurityListFilterDistanceFromAth, Messages.LabelCommon, //
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
@@ -407,8 +497,57 @@ public enum WidgetFactory
                                     }) //
                                     .build()),
 
+    WEBSITE(Messages.Website, Messages.LabelCommon, BrowserWidget::new),
+
+    REBALANCING_TARGET_CHART(
+                    MessageFormat.format(Messages.LabelColonSeparated, Messages.LabelTaxonomies,
+                                    Messages.ColumnTargetValue),
+                    Messages.LabelStatementOfAssets, Images.VIEW_PIECHART, RebalancingTargetChartWidget::new),
+
+    REBALANCING_CHART(Messages.RebalancingChartActualVsTarget, Messages.LabelStatementOfAssets, Images.VIEW_BARCHART,
+                    RebalancingChartWidget::new),
+
     // typo is API now!!
-    VERTICAL_SPACEER(Messages.LabelVerticalSpacer, Messages.LabelCommon, VerticalSpacerWidget::new);
+    VERTICAL_SPACEER(Messages.LabelVerticalSpacer, Messages.LabelCommon, VerticalSpacerWidget::new),
+
+    ALL_TIME_HIGH(Messages.LabelAllTimeHigh, Messages.LabelStatementOfAssets, //
+                    (widget, data) -> IndicatorWidget.<Money>create(widget, data) //
+                                    .with(Values.Money) //
+                                    .with((ds, period) -> {
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        long[] totals = index.getTotals();
+                                        long maxValue = 0;
+                                        for (long value : totals)
+                                        {
+                                            maxValue = Math.max(maxValue, value);
+                                        }
+                                        return Money.of(index.getCurrency(), maxValue);
+                                    }) //
+                                    .withBenchmarkDataSeries(false) //
+                                    .withTooltip((ds, period) -> {
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        long[] totals = index.getTotals();
+                                        long maxValue = 0;
+                                        int maxIndex = 0;
+
+                                        for (int i = 0; i < totals.length; i++)
+                                        {
+                                            if (totals[i] > maxValue)
+                                            {
+                                                maxValue = totals[i];
+                                                maxIndex = i;
+                                            }
+                                        }
+
+                                        DateTimeFormatter formatter = DateTimeFormatter
+                                                        .ofLocalizedDate(FormatStyle.LONG)
+                                                        .withZone(ZoneId.systemDefault());
+
+                                        LocalDate date = period.getStart().plusDays(maxIndex);
+                                        return MessageFormat.format(Messages.TooltipAllTimeHighWidget,
+                                                        formatter.format(date));
+                                    }) //
+                                    .build());
 
     private String label;
     private String group;

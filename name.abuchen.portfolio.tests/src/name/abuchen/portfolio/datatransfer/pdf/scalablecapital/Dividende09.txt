@@ -1,0 +1,43 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital Bank GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+rgxkqr SKdFrC
+HzkAtcwGtIYtp Str. 4 
+70996 DCCPikX Datum 08.01.2026
+Deutschland Seite 1 / 2
+Kapitalrückzahlung 
+Berechtigtes Wertpapier Garmin Ltd. 
+ISIN CH0114405324 
+Berechtigte Anzahl 6 
+Ex Tag 12.12.2025 
+Verrechnungskonto AO71190858474283218305 (DEUTDEFFXXX)
+Kontobewegung 
+Buchung Wertstellung Typ Betrag / Stk. Berechtigte Anzahl Gesamt 
+Wechselkurs 
+08.01.2026 31.12.2025 Gutschrift 0,90 USD 6 4,58 EUR 
+USD / EUR 1,178 
+Steuern -1,28 EUR
+Gesamtbetrag 3,30 EUR
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV. Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind
+einkommensteuerpflichtig. 
+Ermittlung steuerrelevante Erträge
+Typ Betrag
+Gewinn oder Verlust 4,58 EUR
+Zu versteuern 4,58 EUR
+Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 1 / 2
+Kapitalrückzahlung
+Anfallende Steuern 
+Typ Betrag
+Kapitalertragsteuer 1,13 EUR
+Solidaritätszuschlag 0,06 EUR
+Kirchensteuer 0,09 EUR
+Anfallende
+1,28 EUR
+Steuern 
+Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 2 / 2

@@ -1,0 +1,28 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.74.2
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+Max Mustermann SEITE 1 von 1
+Apfelweg 1 DATUM 24.03.2025
+11111 Pusemuckel AUSFÜHRUNG 5d58-8434
+SPARPLAN 6a76-2917
+CRYPTO-WALLET BitGo Deutschland GmbH
+DEPOT 0000000000
+ABRECHNUNG CRYPTO SPARPLAN
+ÜBERSICHT
+Sparplanausführung am 24.03.2025 im außerbörslichen Handel Bankhaus Scheich.
+Der Kontrahent der Transaktion ist Bankhaus Scheich Wertpapierspezialist AG.
+POSITION ANZAHL DURCHSCHNITTSKURS BETRAG
+XRP (XRP) 4,305443 Stk. 2,322641 EUR 10,00 EUR
+GESAMT 10,00 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+DE11223344556677889900 2025-03-24 -10,00 EUR
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Die Cryptowerte werden in einer zentralen Wallet bei dem Cryptoverwahrer BitGo Deutschland GmbH verwahrt.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Direktoren
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke

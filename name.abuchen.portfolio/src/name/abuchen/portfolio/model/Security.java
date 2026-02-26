@@ -35,12 +35,29 @@ public final class Security implements Attributable, InvestmentVehicle
     {
         private static final long serialVersionUID = 1L;
 
+        private final SecurityNameConfig config;
+
+        public ByName()
+        {
+            this(SecurityNameConfig.NONE);
+        }
+
+        public ByName(SecurityNameConfig config)
+        {
+            this.config = config;
+        }
+
         @Override
         public int compare(Security s1, Security s2)
         {
-            if (s1 == null)
-                return s2 == null ? 0 : -1;
-            return TextUtil.compare(s1.name, s2.name);
+            if (s1 == null && s2 == null)
+                return 0;
+            else if (s1 == null)
+                return -1;
+            else if (s2 == null)
+                return 1;
+
+            return TextUtil.compare(s1.getName(config), s2.getName(config));
         }
     }
 
@@ -75,6 +92,12 @@ public final class Security implements Attributable, InvestmentVehicle
     private List<SecurityProperty> properties;
 
     private boolean isRetired = false;
+
+    /**
+     * Stores ephemeral data related to the current session that is not
+     * persisted.
+     */
+    private transient SecurityEphemeralData data; // NOSONAR
 
     private Instant updatedAt;
 
@@ -149,6 +172,23 @@ public final class Security implements Attributable, InvestmentVehicle
     public String getName()
     {
         return name;
+    }
+
+    public String getName(SecurityNameConfig config)
+    {
+        switch (config)
+        {
+            case NONE:
+                return name;
+            case ISIN:
+                return getIsin() != null ? getIsin() + " (" + name + ")" : name; //$NON-NLS-1$ //$NON-NLS-2$
+            case TICKER_SYMBOL:
+                return getTickerSymbol() != null ? getTickerSymbol() + " (" + name + ")" : name; //$NON-NLS-1$ //$NON-NLS-2$
+            case WKN:
+                return getWkn() != null ? getWkn() + " (" + name + ")" : name; //$NON-NLS-1$ //$NON-NLS-2$
+            default:
+                throw new IllegalArgumentException(config.name());
+        }
     }
 
     @Override
@@ -350,15 +390,16 @@ public final class Security implements Attributable, InvestmentVehicle
      */
     public List<SecurityPrice> getPricesIncludingLatest()
     {
-        if (latest == null)
-            return getPrices();
+        List<SecurityPrice> copy = new ArrayList<>(prices);
 
-        int index = Collections.binarySearch(prices, new SecurityPrice(latest.getDate(), latest.getValue()));
+        if (latest == null)
+            return copy;
+
+        int index = Collections.binarySearch(copy, new SecurityPrice(latest.getDate(), latest.getValue()));
 
         if (index >= 0) // historic quote exists -> use it
-            return getPrices();
+            return copy;
 
-        List<SecurityPrice> copy = new ArrayList<>(prices);
         copy.add(~index, latest);
         return copy;
     }
@@ -755,13 +796,25 @@ public final class Security implements Attributable, InvestmentVehicle
      * 
      * @return list of URLs
      */
-    public Stream<Bookmark> getCustomBookmarks()
+    public Stream<Bookmark> getCustomBookmarks(Client client)
     {
         List<Bookmark> bookmarks = new ArrayList<>();
 
         // extract bookmarks from attributes
-
-        getAttributes().getAllValues().filter(v -> v instanceof Bookmark).forEach(v -> bookmarks.add((Bookmark) v));
+        var myAttributes = getAttributes();
+        client.getSettings().getAttributeTypes() //
+                        .filter(t -> t.getType() == Bookmark.class) //
+                        .forEachOrdered(attributeType -> {
+                            var bookmark = (Bookmark) myAttributes.get(attributeType);
+                            if (bookmark != null)
+                            {
+                                // use attribute type name as label unless the
+                                // user provided a custom label
+                                bookmarks.add(new Bookmark(bookmark.getPattern().equals(bookmark.getLabel())
+                                                ? attributeType.getName()
+                                                : bookmark.getLabel(), bookmark.getPattern()));
+                            }
+                        });
 
         // extract bookmarks from notes
 
@@ -826,6 +879,13 @@ public final class Security implements Attributable, InvestmentVehicle
         }
 
         return false;
+    }
+
+    public SecurityEphemeralData getEphemeralData()
+    {
+        if (data == null)
+            data = new SecurityEphemeralData();
+        return data;
     }
 
     public Instant getUpdatedAt()
@@ -905,4 +965,5 @@ public final class Security implements Attributable, InvestmentVehicle
     {
         return s != null && s.length() > 0;
     }
+
 }

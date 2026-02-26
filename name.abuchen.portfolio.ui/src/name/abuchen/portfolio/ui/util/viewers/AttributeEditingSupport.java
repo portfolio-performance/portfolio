@@ -10,7 +10,7 @@ import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Attributes;
 import name.abuchen.portfolio.ui.util.NumberVerifyListener;
-import name.abuchen.portfolio.ui.util.text.FrenchKeypadSupport;
+import name.abuchen.portfolio.ui.util.text.DecimalKeypadSupport;
 
 public class AttributeEditingSupport extends ColumnEditingSupport
 {
@@ -29,7 +29,7 @@ public class AttributeEditingSupport extends ColumnEditingSupport
             ((Text) textEditor.getControl()).addVerifyListener(new NumberVerifyListener(true));
 
         if (attribute.isNumber() || attribute.getConverter() instanceof AttributeType.LimitPriceConverter)
-            FrenchKeypadSupport.configure((Text) textEditor.getControl());
+            DecimalKeypadSupport.configure((Text) textEditor.getControl());
 
         return textEditor;
     }
@@ -60,7 +60,7 @@ public class AttributeEditingSupport extends ColumnEditingSupport
         Object oldValue = attribs.get(attribute);
 
         // update the value
-        // * if it has non null value and the value actually changed
+        // * if it has non-null value and the value actually changed
         // * or if it is null and previously existed
 
         if ((newValue != null && !newValue.equals(oldValue)) //

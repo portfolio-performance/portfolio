@@ -33,16 +33,16 @@ public class ExtractorUtilsConvertToNumberBigDecimalTest
     public static Collection<Object[]> data()
     {
         return Arrays.asList(new Object[][] { //
-                        { "1 234,56", new Locale("fr", "FR"), new BigDecimal("1234.56") }, //
-                        { "1,234.56", new Locale("en", "US"), new BigDecimal("1234.56") }, //
-                        { "1'234.56", new Locale("de", "CH"), new BigDecimal("1234.56") }, //
-                        { "1.234,56", new Locale("de", "DE"), new BigDecimal("1234.56") }, //
-                        { "1 234.56", new Locale("xh", "ZA"), new BigDecimal("1234.56") }, //
-                        { "0,56", new Locale("fr", "FR"), new BigDecimal("0.56") }, //
-                        { "0.56", new Locale("en", "US"), new BigDecimal("0.56") }, //
-                        { "0.56", new Locale("de", "CH"), new BigDecimal("0.56") }, //
-                        { "0,56", new Locale("de", "DE"), new BigDecimal("0.56") }, //
-                        { "0.56", new Locale("xh", "ZA"), new BigDecimal("0.56") }, //
+                        { "1 234,56", Locale.forLanguageTag("fr-FR"), new BigDecimal("1234.56") }, //
+                        { "1,234.56", Locale.forLanguageTag("en-US"), new BigDecimal("1234.56") }, //
+                        { "1'234.56", Locale.forLanguageTag("de-CH"), new BigDecimal("1234.56") }, //
+                        { "1.234,56", Locale.forLanguageTag("de-DE"), new BigDecimal("1234.56") }, //
+                        { "1 234.56", Locale.forLanguageTag("xh-ZA"), new BigDecimal("1234.56") }, //
+                        { "0,56", Locale.forLanguageTag("fr-FR"), new BigDecimal("0.56") }, //
+                        { "0.56", Locale.forLanguageTag("en-US"), new BigDecimal("0.56") }, //
+                        { "0.56", Locale.forLanguageTag("de-CH"), new BigDecimal("0.56") }, //
+                        { "0,56", Locale.forLanguageTag("de-DE"), new BigDecimal("0.56") }, //
+                        { "0.56", Locale.forLanguageTag("xh-ZA"), new BigDecimal("0.56") }, //
         });
     }
 
@@ -57,8 +57,6 @@ public class ExtractorUtilsConvertToNumberBigDecimalTest
     @Test(expected = IllegalArgumentException.class)
     public void testConvertToNumberBigDecimalWithInvalidInput()
     {
-        String input = "abc";
-        Locale locale = new Locale("de", "DE");
-        ExtractorUtils.convertToNumberBigDecimal(input, Values.Share, locale.getLanguage(), locale.getCountry());
+        ExtractorUtils.convertToNumberBigDecimal("abc", Values.Share, locale.getLanguage(), locale.getCountry());
     }
 }

@@ -1,0 +1,163 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.74.1.qualifier
+System: win32 | x86_64 | 21.0.5+11-LTS | Eclipse Adoptium
+-----------------------------------------
+comdirect, 11111 Stadt 000 00 000
+Herrn Telefon: 00000 - 000 00 00
+Vorname Nachname Telefax: 00000 - 000 00 00
+Strasse 1 E-Mail: www.comdirect.de/kontakt
+11111 Stadt (E-Mail über Kontaktformular)
+Kundennummer: 000 0000000
+Finanzreport Nr. 11 per 02.12.2024 03.12.2024
+Sehr geehrter Herr Nachname,
+in Ihrem aktuellen Finanzreport finden Sie alle Informationen rund um Ihre Kundenverbindung.
+Haben Sie noch Fragen? Alle Informationen zu unseren Produkten und Services finden Sie unter
+www.comdirect.de
+Mit freundlichen Grüßen
+Ihre comdirect
+Aktuelle Informationen:
+comdirect wird 30 – das feiern wir: Sichern Sie sich bis zu 5 x 30 Euro Prämie mit dem Girokonto
+oder 30 Monate Sonderkonditionen3 beim Depot! Jetzt mehr erfahren unter
+www.comdirect.de/aktionen
+Mit dem JuniorDepot feiern wie die Großen! Zum comdirect Geburtstag mit toller Prämie für
+Kids: jetzt eröffnen und mit Wertpapieren für den Nachwuchs vorsorgen. Mehr erfahren unter
+www.comdirect.de/junior-depot
+Bis zu 1.250 Euro Prämie mit cominvest: Partytime für Ihre Geldanlage – bis 15.01.2025 mit
+cominvest in Wertpapiere investieren und bis zu 1.250 Euro comdirect Geburtstagsprämie
+kassieren. Mehr Informationen unter www.comdirect.de/cominvest
+comdirect – eine Marke der Commerzbank AG USt-ID: DE 000 000 000
+11111 Stadt
+Finanzreport Nr. 11 per 02.12.2024 - Seite 2
+Kundennummer 000 0000000
+Kontoübersicht
+Ihre aktuellen Salden IBAN Saldo in
+EUR
+Verrechnungskonto 0000 0000 0000 0000 0000 00 +307,89
+Depot +5.261,73
+Gesamtsaldo 02.12.2024 +5.569,62
+ 
+Verrechnungskonto
+Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
+Valuta Referenz IBAN/BIC Eingang
+Alter Saldo 01.11.2024 +378,70
+04.11.2024 Entgelte Beratungsentgelt cominvest -4,33
+01.11.2024 0A0A0A0A0AA green 10/2024 inkl.
+AA0A0/00000 Transakt.kosten: 4,33 EUR
+(inkl. USt. 0,69 EUR)
+11.11.2024 Steuerverrechnu +33,50
+11.11.2024 ng
+0A0A0A0000AA
+AA0A/00
+20.11.2024 Wertpapiere UBSLFS-MSCI EM S.R. ADL -536,53
+22.11.2024 0A0A0A0A0A0A WPKNR: A110QD ISIN: LU1048313891
+0A0A/0
+20.11.2024 Wertpapiere UBSLFS-MSCI USA SR ADDL +454,50
+22.11.2024 0A0A0A0A0A0A WPKNR: A1JA1S ISIN: LU0629460089
+0AA0/0
+20.11.2024 Wertpapiere AIS-AIME SRIPAB UETFDREOD +464,80
+22.11.2024 0A0A0A0A0AAA WPKNR: A2PTYY ISIN: LU2059756598
+0AA0/0
+20.11.2024 Wertpapiere ISHARES PHYS.MET.O.END ZT -386,01
+22.11.2024 0A0A0A0A0AA0 WPKNR: A1KWPQ ISIN: IE00B4ND3602
+0AA0/0
+27.11.2024 Wertpapiere AIS-IDX EO A.S. UETFDR UH -602,56
+29.11.2024 0A0A0A0A00AA WPKNR: A3DEGS ISIN: LU2439113387
+0AAA/0
+27.11.2024 Wertpapiere UBSLFS-MSCI EM S.R. ADL +535,87
+29.11.2024 0A0A0A0A000A WPKNR: A110QD ISIN: LU1048313891
+000A/0
+27.11.2024 Wertpapiere ISHARES PHYS.MET.O.END ZT +440,82
+29.11.2024 0A0A0A0A000A WPKNR: A1KWPQ ISIN: IE00B4ND3602
+AA00/0
+27.11.2024 Wertpapiere UBSLFS-MSCI USA SR ADDL -466,50
+29.11.2024 0A0A0A0A000AA WPKNR: A1JA1S ISIN: LU0629460089
+0A0/0
+02.12.2024 Entgelte Beratungsentgelt cominvest -4,37
+01.12.2024 0A0A0A0A0A0 green 11/2024 inkl.
+00AAA/00000 Transakt.kosten: 4,37 EUR
+(inkl. USt. 0,70 EUR)
+Neuer Saldo 02.12.2024 +307,89
+comdirect – eine Marke der Commerzbank AG USt-ID: DE 000 000 000
+11111 Stadt
+Finanzreport Nr. 11 per 02.12.2024 - Seite 3
+Kundennummer 000 0000000
+Depot
+Depotbestand EUR EUR EUR
+WKN / Verwahrart Anzahl / Nominal letzter Währung Kurswert Kaufwert Gewinn / Verlust
+Bezeichnung Kurs Stückzinsen
+A1JA1S / Girosammelverwahrung 2,000 245,662 USD 466,86 466,50 +0,36
+UBSLFS-MSCI USA SR ADDL +0,00
+A1KWPQ / Wertpapierrechnung 12,000 48,690 EUR 584,28 485,42 +98,86
+Irland über AKV +0,00
+ISHARES PHYS.MET.O.END ZT
+A2P5C7 / Wertpapierrechnung 12,000 40,004 EUR 480,05 424,90 +55,15
+Irland über AKV +0,00
+X(IE)-DLCOBDSRIPAB 1CDL
+A2QP8C / Girosammelverwahrung 51,000 53,043 EUR 2.705,19 2.559,17 +146,02
+AIS-AMEOC0-1YE EOA +0,00
+A3DEGS / Girosammelverwahrung 22,000 46,607 EUR 1.025,35 998,39 +26,96
+AIS-IDX EO A.S. UETFDR UH +0,00
+Gesamtkurswert 5.261,73 4.934,38 +327,35
+Stückzinsen gesamt +0,00
+Gesamtwert 5.261,73
+Die Kaufwerte und damit die Gesamtbewertung in der Depotübersicht stellt lediglich eine vereinfachte
+Gewinn/Verlust-Rechnung dar. Steuerliche Gesichtspunkte werden bei dieser Darstellung nicht berücksichtigt.
+Steuerübersicht1
+Steuerliche Daten EUR
+Gewinne/Verluste Aktien (Saldo) 0,00
+Verlustverrechnungstopf Aktien 0,00
+Gewinne/Verluste Sonstige (Saldo) 487,13
+Verlustverrechnungstopf Sonstige 0,00
+Eingereichter Freibetrag 1.000,00
+In Anspruch genommener Freibetrag 487,14
+Verbleibender Freibetrag 512,86
+Anrechenbare ausländische Quellensteuer 0,00
+Abgeführte Kapitalertragsteuer 0,01
+Abgeführter Solidaritätszuschlag 0,01
+Abgeführte Kirchensteuer 0,00
+Angerechnete ausländische Quellensteuer 0,00
+1 Dieses ist keine Steuerbescheinigung.
+comdirect – eine Marke der Commerzbank AG USt-ID: DE 000 000 000
+11111 Stadt
+Finanzreport Nr. 11 per 02.12.2024 - Seite 4
+Kundennummer 000 0000000
+Zinsübersicht
+Verrechnungskonto/Tagesgeld PLUS-Konto/O&F-Konto
+Zinssatz für geduldete Überziehungen: 14,40 % p. a. (gültig ab: 22.11.2024)
+Zinsgleitklausel für variable Sollzinssätze:
+comdirect – eine Marke der Commerzbank AG (im Folgenden comdirect genannt) wird variable Sollzinssätze entsprechend den Änderungen des
+Hauptrefinanzierungszinssatzes der Europäischen Zentralbank (nachfolgend EZB-Zinssatz) nach folgender Maßgabe anpassen: Sofern am
+letzten Bankarbeitstag vor dem 15. eines Kalendermonats von comdirect eine Erhöhung des EZB-Zinssatzes um mindestens 0,25 Prozentpunkte
+gegenüber dem EZB-Zinssatz im Monat der letzten Zinsanpassung festgestellt wird, erhöht comdirect den variablen Sollzinssatz entsprechend.
+comdirect verpflichtet sich dagegen zur Senkung des variablen Sollzinssatzes um die Veränderung des EZB-Zinssatzes, wenn der EZB-Zinssatz
+um mindestens 0,25 Prozentpunkte gesunken ist. Die Zinsanpassungen werden 5 Bankarbeitstage nach dem 15. eines Kalendermonats ohne
+gesonderte Erklärung gegenüber dem Kontoinhaber bei comdirect wirksam. comdirect wird den Kontoinhaber in regelmäßigen Zeitabständen im
+Finanzreport unterrichten. Der Kontoinhaber kann die Höhe des EZB-Zinssatzes jederzeit auf der Webseite von comdirect bzw. in anderen
+öffentlich zugänglichen Medien (insbesondere www.bundesbank.de) einsehen.
+Wichtige Hinweise
+1. Ihre individuellen Vergünstigungen
+Vergünstigungen Gültigkeit
+Kostenlose Depotführung (5,85 Euro pro Quartal gespart) 01.10.2024 bis 31.12.2024
+Details zu Ihren persönlichen Vergünstigungen können Sie unter www.comdirect.de im Persönlichen Bereich unter Verwaltung
+> Depot & Trading > Vergünstigungen einsehen. Es gilt das aktuelle Preis- und Leistungsverzeichnis.
+2. Einwendungen zu Konto- und Depotbuchungen
+Sollten Sie Fragen oder Einwendungen zu den Konto- und Depotbuchungen haben, bitten wir Sie, uns dieses innerhalb 6
+Wochen nach Erhalt des Finanzreportes unter Angabe Ihrer Kundennummer in Textform mitzuteilen.
+3. Ihre Kontodisposition
+Der Kontostand berücksichtigt nicht die Valuta (Wertstellung) der einzelnen Buchungen. Das bedeutet, dass der angezeigte
+Kontostand nicht dem tatsächlichen Kontoguthaben entsprechen muss und bei Verfügungen möglicherweise Zinsen für die
+Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können. Bitte berücksichtigen Sie bei Ihrer
+Disposition daher ggf. die Wertstellungen der Kontoumsätze der letzten Tage.
+4. Hinweis zur Einlagensicherung
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen
+können dem "Informationsbogen für den Einleger" entnommen werden. Diesen finden Sie unter www.comdirect.de/infobogen
+5. Information zu Ihren Wertpapieren
+In Ihrem Depot verwahrte Wertpapiere und Kundengelder unterliegen der EU-Richtlinie 2014/65/EU (MIFID II-Richtlinie) und
+ihren Durchführungsbestimmungen.
+6. Hinweis zur standardisierten Zahlungskontenterminologie
+Nachfolgende Begriffe entsprechen den Begriffen der standardisierten Zahlungskontenterminologie: girocard (Debitkarte),
+Bankkarte (Visa-Debitkarte), Visa-Karte (Kreditkarte) und Dispositionskredit (eingeräumte Kontoüberziehung).
+7. Übersicht Ihrer Kontodaten IBAN BIC
+Verrechnungskonto 0000 0000 0000 0000 0000 00 COBADEHD044
+comdirect – eine Marke der Commerzbank AG USt-ID: DE 000 000 000
+11111 Stadt

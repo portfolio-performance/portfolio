@@ -1,0 +1,29 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.3
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+SV-13362381 - 91439787
+Cash Transfer Detail Report
+Berichtszeitraum: 31-Dez-2025 - 31-Dez-2025
+Generiert um: 25-Jan-2026 02:53:56 14:53:56 (W. Europe Standard Time)
+CH-20823335 Saxo Bank CH
+Switzerland The Circle 38
+8058 Zürich-Flughafen
+Switzerland
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-20823335 Berichtszeitraum
+Währung: CHF 31-Dez-2025 - 31-Dez-2025
+Seite 1 von 2 Konten: cuicnAEx 20200/315436 Generiert um: 25-Jan-2026
+Cash Transfer Details, CHF
+Berichtszeitraum
+31-Dez-2025 bis 31-Dez-2025
+Bargeldtransfer
+IBAN us6443199068288766297
+IBAN owner name GuWeepRg HpyGPP
+Deposit Type External
+Amount Gebuchter Betrag
+Event Buchungsbetrag-ID Trade-Datum Value Date Umrechnungskurs Umrechnungskosten
+CHF CHF
+Einlage 50893905564 31-Dez-2025 31-Dez-2025 1.000,00 1,000000 0,00 1.000,00
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-20823335 Berichtszeitraum
+Währung: CHF 31-Dez-2025 - 31-Dez-2025
+Seite 2 von 2 Konten: uWIFMIfr 99716/384427 Generiert um: 25-Jan-2026

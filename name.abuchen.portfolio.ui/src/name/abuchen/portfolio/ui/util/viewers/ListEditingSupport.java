@@ -10,15 +10,15 @@ import org.eclipse.swt.widgets.Composite;
 
 /**
  * Creates a cell editor with a combo box. Options must be a list of non-null
- * values. By default, the user must choose one option. Override the method
- * {@link #canBeNull} in order to add an additional empty element
+ * values. By default, the user must choose one option.
  */
 public class ListEditingSupport extends PropertyEditingSupport
 {
     private ComboBoxCellEditor editor;
     private List<Object> comboBoxItems;
+    private List<String> comboItemsNames;
 
-    public ListEditingSupport(Class<?> subjectType, String attributeName, List<?> options)
+    public ListEditingSupport(Class<?> subjectType, String attributeName, List<?> options, List<String> comboItemsNames)
     {
         super(subjectType, attributeName);
 
@@ -27,11 +27,15 @@ public class ListEditingSupport extends PropertyEditingSupport
                 throw new IllegalArgumentException("option must not be null"); //$NON-NLS-1$
 
         this.comboBoxItems = new ArrayList<>(options);
+        this.comboItemsNames = new ArrayList<>(comboItemsNames);
+
+        if (this.comboBoxItems.size() != this.comboItemsNames.size())
+            throw new IllegalArgumentException("arrays size do not match"); //$NON-NLS-1$
     }
 
-    public boolean canBeNull(Object element) // NOSONAR
+    public ListEditingSupport(Class<?> subjectType, String attributeName, List<?> options)
     {
-        return false;
+        this(subjectType, attributeName, options, options.stream().map(Object::toString).toList());
     }
 
     @Override
@@ -44,26 +48,7 @@ public class ListEditingSupport extends PropertyEditingSupport
     @Override
     public final void prepareEditor(Object element)
     {
-        boolean canBeNull = canBeNull(element);
-
-        if (canBeNull)
-        {
-            if (comboBoxItems.isEmpty() || comboBoxItems.get(0) != null)
-                comboBoxItems.add(0, null);
-        }
-        else
-        {
-            if (!comboBoxItems.isEmpty() && comboBoxItems.get(0) == null)
-                comboBoxItems.remove(0);
-        }
-
-        String[] names = new String[comboBoxItems.size()];
-        int index = 0;
-
-        for (Object item : comboBoxItems)
-            names[index++] = item == null ? "" : item.toString(); //$NON-NLS-1$
-
-        editor.setItems(names);
+        editor.setItems(comboItemsNames.toArray(new String[0]));
     }
 
     @Override

@@ -4,22 +4,17 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
-import name.abuchen.portfolio.ui.util.Colors;
-import name.abuchen.portfolio.ui.util.DesktopAPI;
 import name.abuchen.portfolio.ui.util.SWTHelper;
 import name.abuchen.portfolio.ui.util.swt.ControlDecoration;
 
@@ -27,9 +22,6 @@ public class SecurityMasterDataPage extends AbstractPage
 {
     private final EditSecurityModel model;
     private final BindingHelper bindings;
-
-    private Text isin;
-    private Text wkn;
 
     protected SecurityMasterDataPage(EditSecurityModel model, BindingHelper bindings)
     {
@@ -47,37 +39,6 @@ public class SecurityMasterDataPage extends AbstractPage
         GridLayoutFactory.fillDefaults().numColumns(2).margins(5, 5).applyTo(container);
 
         boolean isExchangeRate = model.getSecurity().isExchangeRate();
-        boolean isSyncedOnline = model.getOnlineId() != null;
-
-        if (isSyncedOnline)
-        {
-            // empty cell
-            new Label(container, SWT.NONE).setText(""); //$NON-NLS-1$
-
-            Composite area = new Composite(container, SWT.NONE);
-            RowLayout layout = new RowLayout();
-            layout.center = true;
-            area.setLayout(layout);
-
-            Link link = new Link(area, SWT.UNDERLINE_LINK);
-            link.setText(Messages.LabelLinkedToPortfolioReport);
-            link.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> DesktopAPI
-                            .browse("https://www.portfolio-report.net/securities/" + model.getOnlineId()))); //$NON-NLS-1$
-
-            Button unlink = new Button(area, SWT.PUSH);
-            unlink.setText(Messages.EditWizardMasterDataUnlink);
-            unlink.setToolTipText(Messages.EditWizardMasterDataUnlink_ToolTip);
-            unlink.setImage(Images.ONLINE.image());
-            unlink.addSelectionListener(SelectionListener.widgetSelectedAdapter(event -> {
-                model.setOnlineId(null);
-                isin.setEditable(true);
-                isin.setBackground(null);
-                wkn.setEditable(true);
-                wkn.setBackground(null);
-                link.setEnabled(false);
-                unlink.setEnabled(false);
-            }));
-        }
 
         Control currencyCode = bindings.bindCurrencyCodeCombo(container, Messages.ColumnCurrency, "currencyCode", //$NON-NLS-1$
                         !isExchangeRate);
@@ -108,24 +69,14 @@ public class SecurityMasterDataPage extends AbstractPage
 
         if (!isExchangeRate)
         {
-            isin = bindings.bindISINInput(container, Messages.ColumnISIN, "isin", 30); //$NON-NLS-1$
-            if (isSyncedOnline)
-            {
-                isin.setEditable(false);
-                isin.setBackground(Colors.SIDEBAR_BACKGROUND_SELECTED);
-            }
+            bindings.bindISINInput(container, Messages.ColumnISIN, "isin", 30); //$NON-NLS-1$
         }
 
         bindings.bindStringInput(container, Messages.ColumnTicker, "tickerSymbol", SWT.NONE, 30); //$NON-NLS-1$
 
         if (!isExchangeRate)
         {
-            wkn = bindings.bindStringInput(container, Messages.ColumnWKN, "wkn", SWT.NONE, 30); //$NON-NLS-1$
-            if (isSyncedOnline)
-            {
-                wkn.setEditable(false);
-                wkn.setBackground(Colors.SIDEBAR_BACKGROUND_SELECTED);
-            }
+            bindings.bindStringInput(container, Messages.ColumnWKN, "wkn", SWT.NONE, 30); //$NON-NLS-1$
 
             ComboViewer calendar = bindings.bindCalendarCombo(container, Messages.LabelSecurityCalendar, "calendar"); //$NON-NLS-1$
             calendar.getCombo().setToolTipText(Messages.LabelSecurityCalendarToolTip);

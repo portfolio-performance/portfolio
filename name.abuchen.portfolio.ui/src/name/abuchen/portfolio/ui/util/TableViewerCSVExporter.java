@@ -21,6 +21,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.DateTimeLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class TableViewerCSVExporter extends AbstractCSVExporter
 {
@@ -69,7 +70,7 @@ public class TableViewerCSVExporter extends AbstractCSVExporter
                 {
                     labelProvider[ii] = LabelProvider.createTextProvider(e -> {
                         Long value = lp.getValue(e);
-                        return value != null ? Values.Share.format(value) : ""; //$NON-NLS-1$
+                        return value != null ? TextUtil.sanitizeFormattedNumber(Values.Share.format(value)) : ""; //$NON-NLS-1$
                     });
                 }
                 else if (p instanceof DateTimeLabelProvider lp)
@@ -106,7 +107,7 @@ public class TableViewerCSVExporter extends AbstractCSVExporter
                     }
                     else
                     {
-                        printer.print(item.getText(ii));
+                        printer.print(TextUtil.sanitizeFormattedNumber(item.getText(ii)));
                     }
                 }
                 printer.println();

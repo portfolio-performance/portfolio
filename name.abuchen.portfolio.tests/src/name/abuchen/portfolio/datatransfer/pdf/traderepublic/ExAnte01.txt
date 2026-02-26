@@ -1,0 +1,42 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.75.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+tuTB fDuQt SEITE 1 von 1
+LA qrutJZAptRHJdd 08 DATUM 08.04.2025
+69053 tDQqwf AUFTRAG 089ebe91
+DEPOT 0606168601
+EX-ANTE KOSTENINFORMATION ZUM WERTPAPIERKAUF
+WERTPAPIER BESTELLUNG / BETRAG WERT
+BYD
+Buy 12 Stk. 464,64 €
+ISIN: CNE100000296
+KOSTEN DES WERTPAPIERKAUFS BETRAG
+Fremdkostenpauschale 1,00 €
+GESAMT 1,00 €
+KOSTEN DES WERTPAPIERVERKAUFS BETRAG
+Fremdkostenpauschale 1,00 €
+Produktkosten 0,00 €
+GESAMT 1,00 €
+Die Gesamtkosten der Wertpapiertransaktion, die du zahlen musst, setzen sich aus den jeweiligen Kosten für den Kauf der Wertpapiere, den Kosten 
+während der Haltedauer und den Kosten für den Verkauf der Wertpapiere zusammen. Bei einer angenommenen Haltedauer von fünf Jahren belaufen sich 
+die geschätzten Gesamtkosten für dich auf 1,00 € und verringern deine Rendite um durchschnittlich 0% pro Jahr. Die tatsächlichen Kosten können 
+abweichen (z.B. bei kürzerer Haltedauer).
+GESAMTKOSTEN FÜR DICH IM ZEITABLAUF UND AUSWIRKUNG AUF DIE RENDITE BETRAG
+Im 1. Jahr 1,00 € / 0,22%
+Ab dem 2. Jahr während der Haltedauer (pro Jahr) 0,00 € / 0,00%
+Im Jahr des Wertpapierverkaufs 1,00 € / 0,22%
+AUFTEILUNG DER GESAMTKOSTEN UND AUSWIRKUNG AUF DIE RENDITE BETRAG
+Servicekosten 2,00 € / 0,43%
+Produktkosten 0,00 € / 0,00%
+Zuwendungen Dritter 0,00 € / 0,00%
+GESAMT 2,00 € / 0,43%
+ZAHLUNGEN VON DRITTEN AN DIE BANK
+Unter der Annahme einer Haltedauer von fünf Jahren wird die Bank voraussichtlich Zuschüsse von Dritten in Höhe von 0,00 € (0% ) erhalten. Die 
+Gesamtkosten für Sie und die Zahlungen von Dritten an die Bank belaufen sich somit auf 2,00 € (0,43% ).
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Direktoren
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke

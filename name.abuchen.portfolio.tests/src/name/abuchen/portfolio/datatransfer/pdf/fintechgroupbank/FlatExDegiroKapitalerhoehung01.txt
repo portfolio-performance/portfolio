@@ -1,0 +1,45 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.0
+-----------------------------------------
+flatexDEGIRO Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+flatexDEGIRO Bank AG -  Hammfelddamm 4 - 41460 Neuss, Deutschland
+0302402000002755262040
+Herrn
+Max Mustermann
+Strasse
+Strasse 7
+99999 Stadt
+    Frankfurt am Main,  25.08.2022
+Kapitalerhöhung / Split
+Kundennummer: 9999999
+Kontonummer : 1009999999
+Depotnummer : 1009999999
+Inhaber     : Max Mustermann
+WKN     ISIN          Wertpapierbezeichnung           Anzahl
+A1CX3T  US88160R1014  TESLA RG                        2,000000
+Sehr geehrter Herr Mustermann,
+aufgrund der Umstellung der Börsennotiz haben wir einen Umtausch mit dem
+Verhältnis 1 zu 3 für den oben genannten Bestand vorgenommen.
+Durch den Umtausch haben wir mit Valuta 29.08.2022 in Ihr Depot eingebucht:
+WKN     ISIN          Wertpapierbezeichnung                        Anzahl
+A1CX3T  US88160R1014  TESLA RG                                    6,000000
+Steuerbetrag                                                          0,00 EUR
+Steuerpflichtiger Ertrag                                              0,00 EUR
+Kapitalertragsteuer                                                   0,00 EUR
+Kirchensteuer                                                         0,00 EUR
+Solidaritätszuschlag                                                  0,00 EUR
+Verrechnung über Ihr Konto: 1009999999 Gutschrift                     0,00 EUR
+Transaktions-Nr.                                                2964199954
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Irrtum vorbehalten.
+______________________________________________________________________________
+                                                                     Seite 1/1
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Muhamad Said Chahrour, Dr. Benon Janos, Jörn Engelmann, Steffen Jentsch
+2000002755262040 0113302400000101

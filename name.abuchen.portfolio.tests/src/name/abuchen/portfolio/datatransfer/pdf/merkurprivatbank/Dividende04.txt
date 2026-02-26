@@ -1,0 +1,60 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.3
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Merkurstraße 2 · 97762 Hammelburg    Seite 1
+Depotnummer
+ 13405290
+ Kundennummer 140529000
+Max Mustermann
+ Abrechnungsnr. 77350300260
+Max Mustermann Datum 30.09.2025
+Blumenstr. 53
+42289 Wuppertal
+                                                        
+                                                        
+                                                         
+Dividendengutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 0,9854 CANADIAN NATIONAL RAILWAY CO. CA1363751027 (897879)
+REGISTERED SHARES O.N.
+Zahlbarkeitstag 29.09.2025 Dividende pro Stück 0,8875 CAD
+Bestandsstichtag 05.09.2025 Herkunftsland Kanada
+Ex-Tag 08.09.2025 Art der Dividende Quartalsdividende
+Geschäftsjahr 01.01.2025 - 31.12.2025
+Devisenkurs EUR / CAD  1,6415
+Devisenkursdatum 30.09.2025
+Dividendengutschrift 0,87 CAD 0,53+ EUR
+Umrechnung in EUR 0,53 EUR
+Einbehaltene Quellensteuer 25 % auf 0,87 CAD 0,13- EUR
+Anrechenbare Quellensteuer 15 % auf 0,53 EUR 0,08 EUR
+Kapitalertragsteuerpflichtige Dividende 0,53 EUR
+Verrechnete anrechenbare ausländische Quellensteuer
+(Verhältnis 100/25) auf 0,08 EUR 0,32 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,21 EUR
+Kapitalertragsteuer 25 % auf 0,21 EUR 0,05- EUR
+Solidaritätszuschlag 5,5 % auf 0,05 EUR 0,01- EUR
+Ausmachender Betrag 0,34+ EUR
+Lagerstelle CBFI (601617 / 67268)
+Den Betrag buchen wir mit Wertstellung 30.09.2025 zu Gunsten des Kontos 1405290 (IBAN DE95 7013 0800 0001 4052
+90), BLZ 701 308 00 (BIC GENODEF1M06). 
+Keine Steuerbescheinigung. 
+Bitte ggf. Rückseite beachten.
+6175.10010104.0000785ER01
+
+Seite 2
+Depotnummer 13405290
+Kundennummer 140529000
+Abrechnungsnr. 77350300260
+Datum 30.09.2025
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2025 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 25,26
+Ertrag 0,08
+0,00 0,00 0,00 0,08- 0,21
+Nachher 0,00 0,00 0,00 0,00 25,47
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+6175.10010104.0000786ER01

@@ -1,0 +1,104 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.70.4
+-----------------------------------------
+Kontoauszug 
+Nr. 12/2023
+01.12.2023 bis 31.12.2023
+Beschreibung Verbuchungsdatum Betrag
+Zinsertrag 01.12.2023 +0,56€
+Zinssatz 2.26%
+Wertstellung 01.12.2023
+Abgeltungssteuer 01.12.2023 -0,14€
+Wertstellung 01.12.2023
+Max Mustermann Kontotyp: Sparkonto Erstellt am
+Musterstraße 123, 01234 Musterstadt IBAN: DE99100110010123456789 01.01.2024
+BIC: NTSBDEB1XXX
+N26 Bank AG | Voltairestraße 8, 10179 Berlin, Deutschland | Eingetragen im Handelsregister des Amtsgerichts Charlottenburg 
+– HRB 247469 B | Vorstand: Maximilian Tayenthal, Thomas Grosse | Vorsitzender des Aufsichtsrates: Marcus W. Mosen | USt-
+ID: DE305957096 | Steueridentifikationsnummer: 27/002/37616 | Zuständige Aufsichtsbehörde: Bundesanstalt für 1/5
+Finanzdienstleistungsaufsicht (BaFin), eingetragen in der Unternehmensdatenbank der BaFin unter der Nr.: 145827 | 
+imprint@n26.com | http://n26.com/de-de
+Zusammenfassung 
+Nr. 12/2023
+01.12.2023 bis 31.12.2023
+Beschreibung Betrag
+Dein alter Kontostand +1.000,00€
+Ausgehende Transaktionen -0,14€
+Einkommende Transaktionen +0,56€
+Gebühren 0,00€
+Steuern -0,14€
+Zinsen +0,56€
+Dein neuer Kontostand +1.000,42€
+Max Mustermann Kontotyp: Sparkonto Erstellt am
+Musterstraße 123, 01234 Musterstadt IBAN: DE99100110010123456789 01.01.2024
+BIC: NTSBDEB1XXX
+N26 Bank AG | Voltairestraße 8, 10179 Berlin, Deutschland | Eingetragen im Handelsregister des Amtsgerichts Charlottenburg 
+– HRB 247469 B | Vorstand: Maximilian Tayenthal, Thomas Grosse | Vorsitzender des Aufsichtsrates: Marcus W. Mosen | USt-
+ID: DE305957096 | Steueridentifikationsnummer: 27/002/37616 | Zuständige Aufsichtsbehörde: Bundesanstalt für 2/5
+Finanzdienstleistungsaufsicht (BaFin), eingetragen in der Unternehmensdatenbank der BaFin unter der Nr.: 145827 | 
+imprint@n26.com | http://n26.com/de-de
+Übersicht zu Gebühren und 
+Zinsen 
+Nr. 12/2023
+01.12.2023 bis 31.12.2023
+Gebühren 0,00€
+Abgeltungssteuer -0,14€
+Gesamt -0,14€
+Zinsertrag +0,56€
+Zinssatz 2.26%
+Gesamt +0,56€
+Max Mustermann Kontotyp: Sparkonto Erstellt am
+Musterstraße 123, 01234 Musterstadt IBAN: DE99100110010123456789 01.01.2024
+BIC: NTSBDEB1XXX
+N26 Bank AG | Voltairestraße 8, 10179 Berlin, Deutschland | Eingetragen im Handelsregister des Amtsgerichts Charlottenburg 
+– HRB 247469 B | Vorstand: Maximilian Tayenthal, Thomas Grosse | Vorsitzender des Aufsichtsrates: Marcus W. Mosen | USt-
+ID: DE305957096 | Steueridentifikationsnummer: 27/002/37616 | Zuständige Aufsichtsbehörde: Bundesanstalt für 3/5
+Finanzdienstleistungsaufsicht (BaFin), eingetragen in der Unternehmensdatenbank der BaFin unter der Nr.: 145827 | 
+imprint@n26.com | http://n26.com/de-de
+Kontoauszug
+01.12.2023 bis 31.12.2023
+Anmerkung
+Unsere Allgemeinen Geschäftsbedingungen sind für unsere gesamte 
+Geschäftsverbindung mit dir gültig. Bitte melde Einwendungen immer direkt 
+nach dem Bekanntwerden. Wenn du Einwendungen nicht rechtzeitig meldest, 
+gilt dies als Zustimmung.
+Es kann zu Abweichungen zwischen deinem Kontoauszug und der Anzeige in 
+deiner App oder dem Onlinebanking kommen, da Transaktionen in Echtzeit 
+dargestellt werden, die tatsächliche Durchführung hingegen 1-2 Tage in 
+Anspruch nehmen kann. Auf dem Kontoauszug werden nur vollständig 
+durchgeführte Transaktionen abgebildet.
+Dein Guthaben ist als Einlagen nach Maßgabe des 
+Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen 
+kannst du dem „Informationsbogen für den Einleger“ auf unserer Webseite 
+entnehmen.
+Max Mustermann Kontotyp: Sparkonto Erstellt am
+Musterstraße 123, 01234 Musterstadt IBAN: DE99100110010123456789 01.01.2024
+BIC: NTSBDEB1XXX
+N26 Bank AG | Voltairestraße 8, 10179 Berlin, Deutschland | Eingetragen im Handelsregister des Amtsgerichts Charlottenburg 
+– HRB 247469 B | Vorstand: Maximilian Tayenthal, Thomas Grosse | Vorsitzender des Aufsichtsrates: Marcus W. Mosen | USt-
+ID: DE305957096 | Steueridentifikationsnummer: 27/002/37616 | Zuständige Aufsichtsbehörde: Bundesanstalt für 4/5
+Finanzdienstleistungsaufsicht (BaFin), eingetragen in der Unternehmensdatenbank der BaFin unter der Nr.: 145827 | 
+imprint@n26.com | http://n26.com/de-de
+Kontoauszug
+01.12.2023 bis 31.12.2023
+Vierteljährlicher Rechnungsabschluss inklusive Saldenmitteilung
+Wir bitten Dich, den Saldo Deines Kontos gemäß Ziffer 11 Absatz 4 unserer 
+Allgemeinen Geschäftsbedingungen zu prüfen und Einwendungen gemäß 
+Ziffer 7 unserer Allgemeinen Geschäftsbedingungen der Revision unserer 
+Bank unverzüglich, spätestens innerhalb von 6 Wochen nach Zugang dieser 
+Belehrung, in Textform (per Email an: balance-audit@n26.com) mitzuteilen. 
+Zur Fristwahrung genügt die rechtzeitige Absendung der Einwendung. 
+Werden innerhalb der Frist keine Einwendungen vorgebracht, so gilt der 
+Saldo wie oben aufgeführt entsprechend unseren Allgemeinen 
+Geschäftsbedingungen als von Dir anerkannt. Du kannst zwar auch nach 
+Fristablauf eine Berichtigung des Rechnungsabschlusses verlangen, musst 
+dann aber beweisen, dass Dein Konto zu Unrecht belastet oder eine Dir 
+zustehende Gutschrift nicht erteilt wurde.
+Max Mustermann Kontotyp: Sparkonto Erstellt am
+Musterstraße 123, 01234 Musterstadt IBAN: DE99100110010123456789 01.01.2024
+BIC: NTSBDEB1XXX
+N26 Bank AG | Voltairestraße 8, 10179 Berlin, Deutschland | Eingetragen im Handelsregister des Amtsgerichts Charlottenburg 
+– HRB 247469 B | Vorstand: Maximilian Tayenthal, Thomas Grosse | Vorsitzender des Aufsichtsrates: Marcus W. Mosen | USt-
+ID: DE305957096 | Steueridentifikationsnummer: 27/002/37616 | Zuständige Aufsichtsbehörde: Bundesanstalt für 5/5
+Finanzdienstleistungsaufsicht (BaFin), eingetragen in der Unternehmensdatenbank der BaFin unter der Nr.: 145827 | 
+imprint@n26.com | http://n26.com/de-de

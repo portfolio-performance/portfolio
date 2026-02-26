@@ -1,0 +1,41 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.2
+-----------------------------------------
+Kontoauszug
+Konto-Nr 6017439440 EUR
+IBAN DE24101106006017439400
+Nachname, Vorname
+Kontokorrentkonto
+Datum 31.01.2012
+Herrn Auszug-Nr  1
+Vorname Nachname Blatt-Nr  1 von  1
+Straße
+PLZ Ort Betreuer Stangl, Richard
+Abteilung Honorarberater
+Telefon +49 (0) 911 249 299 10
+ 
+E-Mail richard.stangl@quirinbank.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Überweisungsauftrag, Ref: UT-0239371469 30.01.2012 30.01.2012 -500,00 EUR
+für: Vorname Nachname
+Kto-Nr: 6017439400EUR    BLZ: DE 10110600
+Gutschrift
+Zins-/Dividendenzahlung, Ref: DZ-0239771929 31.01.2012 25.01.2012 156,00 EUR
+DE0007236101 SIEMENS AG NA
+DZ:865782
+Erträgniszahlung
+Steuerbuchung Abgeltungsteuer, Ref: H-0239773789 31.01.2012 31.01.2012 -1,38 EUR
+DE0007236101 SIEMENS AG NA
+KEST: 1,23 SOLI: 0,06
+KIST: 0,09
+DZ:865782
+letzter Auszug: 30.12.2011 alter Saldo:  917,47 EUR
+Umsatz: -345,38 EUR
+Limit:  0,00 Saldo:  572,09 EUR
+quirin bank AG Telefon +49 (0) 30 89 021-300 Aufsichtsratsvorsitzender: Vorstand:
+Kurfürstendamm 119 - 10711 Berlin Telefax +49 (0) 30 89 021-321 Holger Timm Karl Matthäus Schmidt, Johannes 
+Postfach 311105 - 10641 Berlin BLZ 10110600 Eismann, Klaus-Gerd Kleversaat, 
+Gerichtsstand: Berlin USt-Id. DE 1956 61729 Christian Maria Kreuser, Stefan 
+Handelsregister: Berlin-Charlottenb., HR B 87859 BIC QUBKDEBBXXX Spannagl
+Internet www.quirinbank.de
+KTO_AUSZ  0000#816767668049#0000026624  VJ4717583   (10)  6.8.9.1

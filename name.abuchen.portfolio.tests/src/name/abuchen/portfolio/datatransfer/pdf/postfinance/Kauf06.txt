@@ -1,0 +1,41 @@
+PDFBox Version: 3.0.5 != 1.8.17
+Portfolio Performance Version: 0.80.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+PostFinance AG 
+Sie werden betreut von 
+Ronja Geiser und Team 
+Telefon +41  448 14 14 
+www.postfinance.ch P.P. Post CH AG 
+CH-4808 Zofingen A-PRIORITY 
+hGpu 
+uLm wyJeF 
+RYynK vKx GsWrkLmuhfdg 66 
+EBZySFKq 2493 eOCPGrRX 
+Börsentransaktion: Kauf Seite: 1 / 2 
+E-Vermögensverwaltung Datum: 14.01.2025 
+Depot 71-342453-0 Auftrag 19888922 
+Gemäss Ihrem Auftrag haben wir folgende Transaktion vorgenommen: 
+Position Stückzahl Währung Kurs 
+UBS ETF - SXI Real Estate Funds 14.000 CHF 10.0834 
+ISIN CH0105994401 
+Kurswert in Handelswährung CHF 141.17 
+Umsatzabgabe CHF 0.11 
+Total CHF 141.28 
+Der Totalbetrag von  CHF 141.28 wird Ihrem Konto  mt56 8216 4413 1474 3691 5 mit Valuta  16.01.2025 belastet . 
+0000011111555552222222222 DDDDDEEEEE   000000000000000000002222211111.....0000000000 
+Börsentransaktion: Kauf 
+Depot 60-403046-5 Datum: 14.01.2025 Seite: 2 / 2 
+Ausführungsdetails 
+Abrechnungs-Nr. Ausführungsort Zeit Stückzahl Währung Kurs 
+14415821 TWEM 11:09:36 14.000 CHF 10.0834 
+Durchschnittskurs 14.000 CHF 10.0834 
+Bitte prüfen Sie dieses Dokument und benachrichtigen Sie uns bei Unstimmigkeiten innert Monatsfrist. 
+Im Rahmen dieser Transaktion hat PostFinance als Kommissionärin gehandelt. 
+Der Ort der Ausführung wird nur als Anhaltspunkt angegeben. In einigen Fällen, die der Bank zum Zeitpunkt der Erstellung  
+dieser Benachrichtigung nicht bekannt waren, könnte ein Vermittler (zum Beispiel ein Broker) als Gegenpartei für Ihre Order,  
+zum gleichen Preis, wie Sie an der Börse erhalten hätten, auftreten. Bitte nehmen Sie Kontakt zu uns auf, falls Sie mehr In- 
+formationen zu diesem Thema wünschen. 
+Freundliche Grüsse 
+PostFinance AG 
+01522 DE   000021.00

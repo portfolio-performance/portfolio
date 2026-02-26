@@ -9,6 +9,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.PresetValues;
 import name.abuchen.portfolio.ui.editor.ClientInput;
+import name.abuchen.portfolio.ui.util.ValueColorScheme;
 
 public class PreferencesInitializer extends AbstractPreferenceInitializer
 {
@@ -17,10 +18,7 @@ public class PreferencesInitializer extends AbstractPreferenceInitializer
     {
         IPreferenceStore store = PortfolioPlugin.getDefault().getPreferenceStore();
         store.setDefault(UIConstants.Preferences.AUTO_UPDATE, true);
-        store.setDefault(UIConstants.Preferences.UPDATE_SITE,
-                        Platform.ARCH_X86.equals(Platform.getOSArch())
-                                        ? "https://updates.portfolio-performance.info/portfolio-x86" //$NON-NLS-1$
-                                        : "https://updates.portfolio-performance.info/portfolio"); //$NON-NLS-1$
+        store.setDefault(UIConstants.Preferences.UPDATE_SITE, "https://updates.portfolio-performance.info/portfolio"); //$NON-NLS-1$
         store.setDefault(UIConstants.Preferences.FORMAT_SHARES_DIGITS, 1);
         store.setDefault(UIConstants.Preferences.FORMAT_CALCULATED_QUOTE_DIGITS, 2);
         store.setDefault(UIConstants.Preferences.USE_INDIRECT_QUOTATION, true);
@@ -28,22 +26,25 @@ public class PreferencesInitializer extends AbstractPreferenceInitializer
         store.setDefault(UIConstants.Preferences.DISPLAY_PER_ANNUM, false);
         store.setDefault(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true);
         store.setDefault(UIConstants.Preferences.UPDATE_QUOTES_AFTER_FILE_OPEN, true);
+        store.setDefault(UIConstants.Preferences.UPDATE_QUOTES_PERIODICALLY, true);
         store.setDefault(UIConstants.Preferences.AUTO_SAVE_FILE, 0);
         store.setDefault(UIConstants.Preferences.STORE_SETTINGS_NEXT_TO_FILE, false);
-        store.setDefault(UIConstants.Preferences.ENABLE_EXPERIMENTAL_FEATURES, false);
+        store.setDefault(UIConstants.Preferences.DOUBLE_CLICK_CELL_TO_EDIT, true);
         store.setDefault(UIConstants.Preferences.ENABLE_SWTCHART_PIECHARTS,
                         Platform.getOS().equals(Platform.OS_LINUX) || (Platform.getOS().equals(Platform.OS_MACOSX)
                                         && Platform.getOSArch().equals(Platform.ARCH_X86_64)
                                         && compareOSVersion("13.0") >= 0)); //$NON-NLS-1$
         store.setDefault(UIConstants.Preferences.ALPHAVANTAGE_CALL_FREQUENCY_LIMIT, 5);
         store.setDefault(UIConstants.Preferences.CALENDAR, "default"); //$NON-NLS-1$
-        store.setDefault(UIConstants.Preferences.PORTFOLIO_REPORT_API_URL, "https://api.portfolio-report.net"); //$NON-NLS-1$
         store.setDefault(UIConstants.Preferences.PRESET_VALUE_TIME, PresetValues.TimePreset.MIDNIGHT.name());
 
         // Backup
         store.setDefault(UIConstants.Preferences.BACKUP_MODE, BackupMode.getDefault().name());
         store.setDefault(UIConstants.Preferences.BACKUP_FOLDER_RELATIVE, ClientInput.DEFAULT_RELATIVE_BACKUP_FOLDER);
         store.setDefault(UIConstants.Preferences.BACKUP_FOLDER_ABSOLUTE, ""); //$NON-NLS-1$
+
+        // Value color scheme
+        store.setDefault(UIConstants.Preferences.VALUE_COLOR_SCHEME, ValueColorScheme.STANDARD_SCHEME);
     }
 
     public static int compareOSVersion(String version)

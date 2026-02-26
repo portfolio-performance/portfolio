@@ -19,11 +19,9 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
@@ -50,8 +48,6 @@ import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.online.impl.CoinGeckoSearchProvider;
 import name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed;
-import name.abuchen.portfolio.online.impl.PortfolioReportNet;
-import name.abuchen.portfolio.online.impl.PortfolioReportNetSearchProvider;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
@@ -59,11 +55,12 @@ import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.editor.DomainElement;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
-import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
-import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.jobs.priceupdate.UpdatePricesJob;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
+import name.abuchen.portfolio.ui.views.SecurityListView;
+import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyView;
+import name.abuchen.portfolio.ui.wizards.search.SearchSecurityWizardDialog;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
-import name.abuchen.portfolio.ui.wizards.security.SearchSecurityWizardDialog;
 import name.abuchen.portfolio.util.TradeCalendarManager;
 
 public class NewDomainElementHandler
@@ -98,10 +95,10 @@ public class NewDomainElementHandler
                 portfolioPart.get().getCurrentView().ifPresent(this::createNewConsumerPriceIndex);
                 break;
             case TAXONOMY:
-                createNewTaxonomy(portfolioPart.get().getClient());
+                createNewTaxonomy(portfolioPart.get(), portfolioPart.get().getClient());
                 break;
             case WATCHLIST:
-                createNewWatchlist(portfolioPart.get().getClient());
+                createNewWatchlist(portfolioPart.get(), portfolioPart.get().getClient());
                 break;
             default:
         }
@@ -128,7 +125,7 @@ public class NewDomainElementHandler
         {
             view.getClient().addSecurity(newSecurity);
             view.getClient().markDirty();
-            new UpdateQuotesJob(view.getClient(), newSecurity).schedule();
+            new UpdatePricesJob(view.getClient(), newSecurity).schedule();
 
             postSecurityCreatedEvent(view.getClient(), newSecurity);
         }
@@ -151,12 +148,6 @@ public class NewDomainElementHandler
                     SecuritySearchProvider.ResultItem item = (SecuritySearchProvider.ResultItem) element;
                     return String.format("%s (%s)", item.getSymbol(), item.getName()); //$NON-NLS-1$
                 }
-
-                @Override
-                public Color getBackground(Object element)
-                {
-                    return element instanceof PortfolioReportNet.OnlineItem ? Colors.theme().warningBackground() : null;
-                }
             };
 
             ListSelectionDialog dialog = new ListSelectionDialog(Display.getDefault().getActiveShell(), labelProvider);
@@ -164,19 +155,8 @@ public class NewDomainElementHandler
             dialog.setTitle(Messages.SecurityMenuNewCryptocurrency);
             dialog.setMessage(Messages.SecurityMenuNewCryptocurrencyMessage);
             dialog.setMultiSelection(false);
-            dialog.setViewerComparator(new ViewerComparator()
-            {
-                @Override
-                public int category(Object element)
-                {
-                    return element instanceof PortfolioReportNet.OnlineItem ? 0 : 1;
-                }
-            });
 
             var allCryptos = new ArrayList<ResultItem>();
-
-            // add Portfolio Report cryptos
-            allCryptos.addAll(Factory.getSearchProvider(PortfolioReportNetSearchProvider.class).getCoins());
 
             // add Coingecko unless the crypto already exists. Because the
             // symbol is not unique, we compare symbol and name
@@ -185,7 +165,7 @@ public class NewDomainElementHandler
                             .collect(Collectors.toMap(i -> i.getSymbol(), i -> i, (r, l) -> r));
 
             Factory.getSearchProvider(CoinGeckoSearchProvider.class) //
-                            .search("", SecuritySearchProvider.Type.CRYPTO) //$NON-NLS-1$
+                            .search("") //$NON-NLS-1$
                             .stream().filter(item -> {
                                 var other = existingCryptos.get(item.getSymbol());
                                 return other == null || !other.getName().equals(item.getName());
@@ -245,13 +225,13 @@ public class NewDomainElementHandler
 
                 view.getClient().addSecurity(newSecurity);
                 view.getClient().markDirty();
-                new UpdateQuotesJob(view.getClient(), newSecurity).schedule();
+                new UpdatePricesJob(view.getClient(), newSecurity).schedule();
                 postSecurityCreatedEvent(view.getClient(), newSecurity);
             }
         }
     }
 
-    private void createNewTaxonomy(Client client)
+    private void createNewTaxonomy(PortfolioPart part, Client client)
     {
         TaxonomyCreationDialog dialog = new TaxonomyCreationDialog(Display.getDefault().getActiveShell());
         if (dialog.open() != Window.OK)
@@ -261,25 +241,28 @@ public class NewDomainElementHandler
         if (name == null || name.isEmpty())
             return;
 
+        Taxonomy taxonomy;
+
         final Optional<TaxonomyTemplate> template = dialog.getTemplate();
         if (template.isPresent())
         {
-            Taxonomy taxonomy = template.get().build();
+            taxonomy = template.get().build();
             taxonomy.setName(name);
             taxonomy.getRoot().setName(name);
-            client.addTaxonomy(taxonomy);
-            client.touch();
         }
         else
         {
-            Taxonomy taxonomy = new Taxonomy(name);
+            taxonomy = new Taxonomy(name);
             taxonomy.setRootNode(new Classification(UUID.randomUUID().toString(), name));
-            client.addTaxonomy(taxonomy);
-            client.touch();
         }
+
+        client.addTaxonomy(taxonomy);
+        client.touch();
+
+        part.activateView(TaxonomyView.class, taxonomy);
     }
 
-    private void createNewWatchlist(Client client)
+    private void createNewWatchlist(PortfolioPart part, Client client)
     {
         InputDialog dlg = new InputDialog(Display.getDefault().getActiveShell(), Messages.WatchlistNewLabel,
                         Messages.WatchlistEditDialogMsg, Messages.WatchlistNewLabel, null);
@@ -294,6 +277,8 @@ public class NewDomainElementHandler
         watchlist.setName(name);
         client.addWatchlist(watchlist);
         client.touch();
+
+        part.activateView(SecurityListView.class, watchlist);
     }
 }
 

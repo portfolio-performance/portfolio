@@ -9,8 +9,7 @@ import org.eclipse.swt.graphics.Image;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.Images;
-import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.ValueColorScheme;
 
 public final class MoneyColorLabelProvider extends ColumnLabelProvider
 {
@@ -27,10 +26,16 @@ public final class MoneyColorLabelProvider extends ColumnLabelProvider
     public Color getForeground(Object element)
     {
         Money money = valueProvider.apply(element);
+        return MoneyColorLabelProvider.getForeground(money);
+    }
+
+    public static Color getForeground(Money money)
+    {
         if (money == null || money.isZero())
             return null;
 
-        return money.getAmount() >= 0 ? Colors.theme().greenForeground() : Colors.theme().redForeground();
+        return money.getAmount() >= 0 ? ValueColorScheme.current().positiveForeground()
+                        : ValueColorScheme.current().negativeForeground();
     }
 
     @Override
@@ -40,7 +45,7 @@ public final class MoneyColorLabelProvider extends ColumnLabelProvider
         if (money == null || money.isZero())
             return null;
 
-        return money.getAmount() >= 0 ? Images.GREEN_ARROW.image() : Images.RED_ARROW.image();
+        return money.getAmount() >= 0 ? ValueColorScheme.current().upArrow() : ValueColorScheme.current().downArrow();
     }
 
     @Override

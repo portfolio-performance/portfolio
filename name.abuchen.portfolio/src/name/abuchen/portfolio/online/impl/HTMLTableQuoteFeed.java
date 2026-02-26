@@ -129,6 +129,12 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         {
             String text = value.text().trim();
 
+            // Remove blanks inside the text that would parsing failures.
+            // Because we only parse German, English, Switzerland number
+            // formats, removing the blanks should not be an issue.
+
+            text = TextUtil.stripBlanks(text);
+
             DecimalFormat format = null;
 
             if ("de".equals(languageHint)) //$NON-NLS-1$
@@ -195,6 +201,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
                             DateTimeFormatter.ofPattern("EEEE, MMMM dd, yEEE, MMM dd, y", Locale.ENGLISH), //$NON-NLS-1$
                             DateTimeFormatter.ofPattern("yyyy.MM.dd."), //$NON-NLS-1$
                             DateTimeFormatter.ofPattern("M/d/yyyy"), //$NON-NLS-1$
+                            DateTimeFormatter.ofPattern("dd/MM/yyyy"), //$NON-NLS-1$
             };
         }
 
@@ -259,7 +266,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         public CloseColumn()
         {
             super(new String[] { "Schluss.*", "Schluß.*", "Rücknahmepreis.*", "Close.*", "Zuletzt", ".*[Pp]rice",
-                            "akt. Kurs", "Dernier", "Kurs" });
+                            "akt. Kurs", "Kurs", "Dernier", ".*vl.*", ".*liquidative.*", "[Cc]l[oô]ture" });
         }
 
         public CloseColumn(String[] patterns)
@@ -279,7 +286,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         @SuppressWarnings("nls")
         public HighColumn()
         {
-            super(new String[] { "Hoch.*", "Tageshoch.*", "Max.*", "High.*" });
+            super(new String[] { "Hoch.*", "Tageshoch.*", "Max.*", "High.*", ".*haut.*" });
         }
 
         public HighColumn(String[] patterns)
@@ -302,7 +309,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         @SuppressWarnings("nls")
         public LowColumn()
         {
-            super(new String[] { "Tief.*", "Tagestief.*", "Low.*" });
+            super(new String[] { "Tief.*", "Tagestief.*", "Low.*", ".*bas.*" });
         }
 
         public LowColumn(String[] patterns)
@@ -364,6 +371,19 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     }
 
     @Override
+    public String getGroupingCriterion(Security security)
+    {
+        return getCriterionFrom(security.getFeedURL());
+    }
+
+    @Override
+    public String getLatestGroupingCriterion(Security security)
+    {
+        String latestFeed = security.getLatestFeed();
+        return getCriterionFrom(latestFeed != null && !latestFeed.isEmpty() ? security.getLatestFeedURL() : security.getFeedURL());
+    }
+
+    @Override
     public Optional<String> getHelpURL()
     {
         return Optional.of(
@@ -375,8 +395,9 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     {
         // if latestFeed is null, then the policy is 'use same configuration
         // as historic quotes'
-        String feedURL = security.getLatestFeed() == null ? security.getFeedURL() : security.getLatestFeedURL();
-
+        String latestFeed = security.getLatestFeed();
+        String feedURL = latestFeed != null && !latestFeed.isEmpty() ? security.getLatestFeedURL() : security.getFeedURL();
+        
         QuoteFeedData data = internalGetQuotes(security, feedURL, false, false);
 
         if (!data.getErrors().isEmpty())

@@ -1,0 +1,40 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.73.0
+System: win32 | x86_64 | 23.0.1+11-39 | Oracle Corporation
+-----------------------------------------
+Tradegate AG · Kurfürstendamm 129d · 10711 Berlin
+Datum 14.01.2025
+Herrn Kundennummer 00400731
+knIJT sArBBaBZ IBAN Nj34 6528 0183 7400 8827 87
+T Trading-Depot 00400731.020
+xcJsjBJsGMMAMmA 2 H Order-/Ref.nr. 73385152
+69723 hhGQ E-Mail support@tradegate.direct
+Seite 1 von 2
+Durch steuerlicheVerrechnungen für IhrDepot 00400731.020wurde für denZeitraumvom13.01.2025bis 14.01.2025
+folgender Betrag mit heutiger Valuta auf Ihrem Konto Hb58 7760 0208 8186 7107 11 gebucht.
+Kapitalertragsteuer 0,28
+Solidaritätszuschlag 0,01
+Kirchensteuer 0,02
+Gutgeschriebener Betrag 0,31
+Durch steuerliche Verrechnungen für Ihr Depot 00400731.020 ergeben sich für den Zeitraum vom 13.01.2025, als
+Datum der letzten geldlichen steuerlichen Verrechnung, bis 14.01.2025 folgende Veränderungen in Ihren
+Verlustverrechnungstöpfen / Ihrem Freistellungsauftrag.
+Veränderung Aktienverlustverrechnungstopf durch steuerliche Verrechnungen 0,00
+Buchungstagendsaldo Aktienverlustverrechnungstopf zum 14.01.2025 0,00
+Veränderung allg. Verlustverrechnungstopf durch steuerliche Verrechnungen -1,15
+Buchungstagendsaldo allg. Verlustverrechnungstopf zum 14.01.2025 1.337,25
+Veränderung Quellensteuerguthaben durch steuerliche Verrechnungen 0,00
+Buchungstagendsaldo Quellensteuerguthaben zum 14.01.2025 0,00
+tradegate.direct ein Service der Tradegate AG
+Tradegate AG · Kurfürstendamm 129d · 10711 Berlin
+Telefon: +49 (0)30 515 657 700 · E-Mail: info@tradegate.direct · Internet: www.tradegate.direct
+Handelsregister: Amtsgericht Berlin-Charlottenburg, HRB 71506 B · USt-ID: DE 155 528 522 · BIC: TRDADEBBDIR · BLZ: 103 106 66
+Aufsichtsratsvorsitzender: Frank-Uwe Fricke · Vorstand: Holger Timm (Vorsitzender), Kerstin Timm, Jörg Hartmann, Thorsten Commichau, Klaus-Gerd Kleversaat, Karsten Haesen
+Im Zusammenhang mit dem Einbehalt von Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer haben
+wir eine steuerliche Verrechnung für die nachfolgend aufgeführten und bereits abgerechneten Aufträge vorgenommen.
+Order-/Ref.Nr. Auftrags- Auftragsart Kapitalertrag Steuerliche Berechnungsgrundlagen Steuerliche Verrechnungen Steuerl. BMG KESt Solz KiSt
+datum Aktien VVT Allg. VVT FSA QSt. VVT nach Verr.
+Angaben zumWertpapier Berechnungskomponente alt Veränderung neu alt alt alt alt vorher vorher vorher vorher
+neu neu neu neu nachher nachher nachher nachher
+22796873 13.01.2025 Verkauf 1,15 Optimierung VVT/FSA 0,00 0,00 0,00 0,00 1,15 0,28 0,01 0,02
+IR0076101155 hUlhVD ETF MSCI USA YdOvj MwwuIgo au oYDRXjc o.N. 0,00 -1,15 0,00 0,00 0,00 0,00 0,00 0,00

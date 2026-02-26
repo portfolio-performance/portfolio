@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -30,6 +31,8 @@ import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.views.actions.ConvertBuySellToDeliveryAction;
 import name.abuchen.portfolio.ui.views.actions.ConvertDeliveryToBuySellAction;
+import name.abuchen.portfolio.ui.views.actions.ConvertTransferToDepositRemovalAction;
+import name.abuchen.portfolio.ui.views.actions.CreateRemovalForDividendAction;
 
 public class TransactionContextMenu
 {
@@ -44,7 +47,7 @@ public class TransactionContextMenu
     {
         if (selection.isEmpty() && fullContextMenu)
         {
-            new SecurityContextMenu(owner).menuAboutToShow(manager, null, null);
+            new SecurityContextMenu(owner).menuAboutToShow(manager, List.of(), null);
         }
 
         if (selection.size() == 1)
@@ -60,7 +63,12 @@ public class TransactionContextMenu
         if (!selection.isEmpty())
         {
             if (fullContextMenu)
+            {
+                fillContextMenuAccountTxList(manager, selection);
                 fillContextMenuPortfolioTxList(manager, selection);
+            }
+
+            manager.add(new Separator());
 
             manager.add(new SimpleAction(Messages.MenuTransactionDelete, a -> {
                 for (Object tx : selection.toArray())
@@ -82,6 +90,45 @@ public class TransactionContextMenu
             tx.withAccountTransaction().ifPresent(t -> createEditAccountTransactionAction(t).run());
             tx.withPortfolioTransaction().ifPresent(t -> createEditPortfolioTransactionAction(t).run());
         }
+        if (e.keyCode == 'd' && e.stateMask == SWT.MOD1)
+        {
+            if (selection.isEmpty())
+                return;
+
+            TransactionPair<?> tx = (TransactionPair<?>) selection.getFirstElement();
+            tx.withAccountTransaction().ifPresent(t -> createCopyAccountTransactionAction(t).run());
+            tx.withPortfolioTransaction().ifPresent(t -> createCopyPortfolioTransactionAction(t).run());
+        }
+    }
+
+    private void fillContextMenuAccountTxList(IMenuManager manager, IStructuredSelection selection)
+    {
+        @SuppressWarnings("unchecked")
+        var accountTxPairs = selection.stream() //
+                        .filter(p -> ((TransactionPair<?>) p).isAccountTransaction())
+                        .map(p -> ((TransactionPair<AccountTransaction>) p)) //
+                        .toList();
+
+        if (accountTxPairs.size() != selection.size())
+            return;
+
+        var transfers = accountTxPairs.stream()
+                        .filter(p -> p.getTransaction().getType() == AccountTransaction.Type.TRANSFER_IN
+                                        || p.getTransaction().getType() == AccountTransaction.Type.TRANSFER_OUT)
+                        .map(p -> p.getTransaction()).toList();
+
+        if (transfers.size() == accountTxPairs.size())
+        {
+            manager.add(new ConvertTransferToDepositRemovalAction(owner.getClient(), transfers));
+        }
+
+        var dividends = accountTxPairs.stream()
+                        .filter(p -> p.getTransaction().getType() == AccountTransaction.Type.DIVIDENDS).toList();
+
+        if (dividends.size() == accountTxPairs.size())
+        {
+            manager.add(new CreateRemovalForDividendAction(owner.getClient(), dividends));
+        }
     }
 
     private void fillContextMenuPortfolioTxList(IMenuManager manager, IStructuredSelection selection)
@@ -94,7 +141,7 @@ public class TransactionContextMenu
             foo.withPortfolioTransaction().ifPresent(txCollection::add);
         }
 
-        if (txCollection.isEmpty())
+        if (txCollection.size() != selection.size())
             return;
 
         boolean allBuyOrSellType = true;
@@ -114,13 +161,11 @@ public class TransactionContextMenu
         if (allBuyOrSellType)
         {
             manager.add(new ConvertBuySellToDeliveryAction(owner.getClient(), txCollection));
-            manager.add(new Separator());
         }
 
         if (allDelivery)
         {
             manager.add(new ConvertDeliveryToBuySellAction(owner.getClient(), txCollection));
-            manager.add(new Separator());
         }
     }
 
@@ -131,7 +176,9 @@ public class TransactionContextMenu
         action.setAccelerator(SWT.MOD1 | 'E');
         manager.add(action);
 
-        manager.add(createCopyAccountTransactionAction(tx));
+        Action duplicateAction = createCopyAccountTransactionAction(tx);
+        duplicateAction.setAccelerator(SWT.MOD1 | 'D');
+        manager.add(duplicateAction);
 
         if (fullContextMenu)
         {
@@ -150,12 +197,15 @@ public class TransactionContextMenu
         editAction.setAccelerator(SWT.MOD1 | 'E');
         manager.add(editAction);
 
-        manager.add(createCopyPortfolioTransactionAction(tx));
+        Action duplicateAction = createCopyPortfolioTransactionAction(tx);
+        duplicateAction.setAccelerator(SWT.MOD1 | 'D');
+        manager.add(duplicateAction);
 
         manager.add(new Separator());
 
         if (fullContextMenu)
-            new SecurityContextMenu(owner).menuAboutToShow(manager, ptx.getSecurity(), (Portfolio) tx.getOwner());
+            new SecurityContextMenu(owner).withoutAccelerator() //
+                            .menuAboutToShow(manager, ptx.getSecurity(), (Portfolio) tx.getOwner());
         else
             manager.add(new BookmarkMenu(owner.getPart(), ptx.getSecurity()));
     }

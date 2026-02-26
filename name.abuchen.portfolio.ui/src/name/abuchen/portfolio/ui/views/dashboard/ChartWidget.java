@@ -19,7 +19,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
-import org.swtchart.ISeries;
 
 import com.google.common.collect.Lists;
 
@@ -33,8 +32,10 @@ import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.action.MenuContribution;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.format.AmountNumberFormat;
+import name.abuchen.portfolio.ui.util.format.AxisTickPercentNumberFormat;
 import name.abuchen.portfolio.ui.util.format.ThousandsNumberFormat;
 import name.abuchen.portfolio.ui.views.ChartViewConfig;
 import name.abuchen.portfolio.ui.views.PerformanceChartView;
@@ -80,17 +81,13 @@ public class ChartWidget extends WidgetDelegate<Object>
 
             MenuManager subMenu = new MenuManager(Messages.ClientEditorLabelChart);
 
-            this.configSet.getConfigurations().forEach(c -> {
-                SimpleAction action = new SimpleAction(c.getName(), a -> {
-                    config = c;
-                    delegate.getWidget().getConfiguration().put(Dashboard.Config.CONFIG_UUID.name(), c.getUUID());
+            this.configSet.getConfigurations().forEach(c -> subMenu.add(new MenuContribution(c.getName(), () -> {
+                config = c;
+                delegate.getWidget().getConfiguration().put(Dashboard.Config.CONFIG_UUID.name(), c.getUUID());
 
-                    delegate.update();
-                    delegate.getClient().touch();
-                });
-                action.setChecked(c.equals(config));
-                subMenu.add(action);
-            });
+                delegate.update();
+                delegate.getClient().touch();
+            }, c.equals(config))));
 
             manager.add(subMenu);
         }
@@ -228,7 +225,7 @@ public class ChartWidget extends WidgetDelegate<Object>
 
         getDashboardData().getStylingEngine().style(chart);
 
-        HoverButton.build(title, container, chart, chart.getPlotArea()).withListener(new HyperlinkAdapter()
+        HoverButton.build(title, container, chart, chart.getPlotArea().getControl()).withListener(new HyperlinkAdapter()
         {
             @Override
             public void linkActivated(HyperlinkEvent e)
@@ -287,7 +284,7 @@ public class ChartWidget extends WidgetDelegate<Object>
 
             chart.getTitle().setText(title.getText());
 
-            for (ISeries s : chart.getSeriesSet().getSeries())
+            for (var s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
 
             List<DataSeries> series = Lists.reverse(
@@ -296,7 +293,7 @@ public class ChartWidget extends WidgetDelegate<Object>
             if (useCase == DataSeries.UseCase.STATEMENT_OF_ASSETS)
                 chart.getAxisSet().getYAxis(0).getTick().setFormat(new ThousandsNumberFormat());
             else
-                chart.getAxisSet().getYAxis(0).getTick().setFormat(new DecimalFormat("0.#%")); //$NON-NLS-1$
+                chart.getAxisSet().getYAxis(0).getTick().setFormat(new AxisTickPercentNumberFormat("0.#%")); //$NON-NLS-1$
 
             chart.getAxisSet().getYAxis(0).getTick().setVisible(get(ChartShowYAxisConfig.class).getIsShowYAxis());
 

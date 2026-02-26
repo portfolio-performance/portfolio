@@ -124,8 +124,10 @@ public class BuySellEntry implements CrossEntry, Annotated
     @Override
     public void insert()
     {
-        portfolio.addTransaction(portfolioTransaction);
+        // add first the account transaction which might fail due to
+        // a currency mismatch
         account.addTransaction(accountTransaction);
+        portfolio.addTransaction(portfolioTransaction);
     }
 
     @Override

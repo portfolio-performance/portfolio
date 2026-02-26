@@ -1,0 +1,106 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.1
+System: linux | x86_64 | 21.0.9 | Flathub
+-----------------------------------------
+flatexDEGIRO Bank AG 
+Kundenservice 
+Gadollaplatz 1 
+8010 Graz 
+Tel.: +43 - (0)720 518 777 
+Mail: info@flatex.at
+flatexDEGIRO Bank AG - Gadollaplatz 1 - A-8010 Graz
+4554210689408880971981
+tcxA RIxdzPrta 
+Hauptstraße 619T 
+5643 gnLqfGMKW 
+ÖSTERREICH
+          Graz, 15.01.2026
+Sammelabrechnung (Wertpapierkauf/-verkauf)
+Ihre Depotnummer: 00736270528
+Depotinhaber: KrKu HwrNttVou
+Nr.305523697/1 Kauf VANECK BITCOIN ETN (DE000A28M8D0/A28M8D)
+Ordervolumen : 80,00 St. Handelsplatz : Tradegate
+davon ausgef. : 80,00 St. Schlusstag : 14.01.2026, 09:56 Uhr
+Kurs : 43,1459 EUR Kurswert : 3.451,67 EUR
+Devisenkurs : Provision : 5,90 EUR
+Bew-Faktor : 1,0000 Eigene Spesen :
+Verwahrart : GS-Verwahrung * Fremde Spesen : 0,85 EUR
+Lagerstelle : Clearstream Nat.
+Lagerland : CEU-Deutschland ** Einbeh. Steuer : 0,00 EUR
+Gewinn/Verlust : 0,00 EUR
+Valuta : 16.01.2026 Endbetrag : -3.458,42 EUR
+*   Enthalten sind folgende Gebühren
+Courtage : 0,00 EUR
+Tradinggebühr : 0,00 EUR
+Regulierung : 0,78 EUR
+Schlussnoten : 0,07 EUR
+Finanztransaktionssteuer : 0,00 EUR
+Sonstige : 0,00 EUR
+** Einbehaltene Kapitalertragsteuer. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.: 4713456485.
+flatexDEGIRO Bank AG Niederlassung Österreich | Aktiengesellschaft | Gadollaplatz 1 | 8010 Graz | Landesgericht für Zivilrechtssachen Graz | FN 334642 x | UID ATU 65140956
+Hauptniederlassung: flatexDEGIRO Bank AG | Omniturm | Große Gallusstr. 16-18 | 60312 Frankfurt am Main (Deutschland) | Amtsgericht Frankfurt am Main | HRB 105687
+- Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter | Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+Evgeni Kaplun, Jens Möbitz, Christiane Strubel -
+Seite 1 von 3
+2000005587856550 035130350000
+Nr.305557206/1 Verkauf META PLATFORMS INC. A (US30303M1027/A1JWVX)
+Ordervolumen : 27,00 St. Handelsplatz : Tradegate
+davon ausgef. : 27,00 St. Schlusstag : 14.01.2026, 18:00 Uhr
+Kurs : 530,5000 EUR Kurswert : 14.323,50 EUR
+Devisenkurs : Provision : 19,90 EUR
+Bew-Faktor : 1,0000 Eigene Spesen :
+Verwahrart : GS-Verwahrung * Fremde Spesen : 0,85 EUR
+Lagerstelle : Clearstream Nat.
+Lagerland : USA ** Einbeh. Steuer : -230,67 EUR
+Gewinn/Verlust : -838,80 EUR
+Valuta : 16.01.2026 Endbetrag : 14.533,42 EUR
+*   Enthalten sind folgende Gebühren
+Courtage : 0,00 EUR
+Tradinggebühr : 0,00 EUR
+Regulierung : 0,78 EUR
+Schlussnoten : 0,07 EUR
+Finanztransaktionssteuer : 0,00 EUR
+Sonstige : 0,00 EUR
+** Einbehaltene Kapitalertragsteuer. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.: 4714408398.
+Nr.305557955/1 Kauf SILVER47 EXPLORATION 
+CORP (CA8277191059/A408EQ)
+Ordervolumen : 608,00 St. Handelsplatz : Tradegate
+davon ausgef. : 608,00 St. Schlusstag : 14.01.2026, 18:11 Uhr
+Kurs : 0,5800 EUR Kurswert : 352,64 EUR
+Devisenkurs : Provision : 5,90 EUR
+Bew-Faktor : 1,0000 Eigene Spesen :
+Verwahrart : Wertpapierrechnung * Fremde Spesen : 2,51 EUR
+Lagerstelle : Clearstream Lux.
+Lagerland : Canada ** Einbeh. Steuer : 0,00 EUR
+Gewinn/Verlust : 0,00 EUR
+Valuta : 16.01.2026 Endbetrag : -361,05 EUR
+*   Enthalten sind folgende Gebühren
+Courtage : 0,00 EUR
+Tradinggebühr : 0,00 EUR
+Regulierung : 2,44 EUR
+Schlussnoten : 0,07 EUR
+flatexDEGIRO Bank AG Niederlassung Österreich | Aktiengesellschaft | Gadollaplatz 1 | 8010 Graz | Landesgericht für Zivilrechtssachen Graz | FN 334642 x | UID ATU 65140956
+Hauptniederlassung: flatexDEGIRO Bank AG | Omniturm | Große Gallusstr. 16-18 | 60312 Frankfurt am Main (Deutschland) | Amtsgericht Frankfurt am Main | HRB 105687
+- Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter | Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+Evgeni Kaplun, Jens Möbitz, Christiane Strubel -
+Seite 2 von 3
+2000005587856550 035130350000
+Finanztransaktionssteuer : 0,00 EUR
+Sonstige : 0,00 EUR
+** Einbehaltene Kapitalertragsteuer. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.: 4714426142.
+Die Verrechnung der Endbeträge erfolgt über Ihr Konto Nr.: 31006750165
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit dem angegebenen Valutatag 
+buchen. Bitte prüfen Sie diese Abrechnung auf Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese 
+Abrechnung müssen unverzüglich nach Zugang bei der Bank erhoben werden. Die Unterlassung rechtzeitiger 
+Einwendung gilt als Genehmigung. Bitte beachten Sie mögliche Hinweise des Emittenten hinsichtlich vorzeitiger 
+Fälligstellung, beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und informieren Sie sich 
+rechtzeitig, welche spezielle Fälligkeitsregelung auf die von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge 
+sind ESt-pflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben. Für weitergehende Fragen wenden Sie sich bitte 
+an Ihr flatex-Service-Team.
+flatexDEGIRO Bank AG Niederlassung Österreich | Aktiengesellschaft | Gadollaplatz 1 | 8010 Graz | Landesgericht für Zivilrechtssachen Graz | FN 334642 x | UID ATU 65140956
+Hauptniederlassung: flatexDEGIRO Bank AG | Omniturm | Große Gallusstr. 16-18 | 60312 Frankfurt am Main (Deutschland) | Amtsgericht Frankfurt am Main | HRB 105687
+- Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter | Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+Evgeni Kaplun, Jens Möbitz, Christiane Strubel -
+Seite 3 von 3
+2000005587856550 035130350000

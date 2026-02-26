@@ -62,7 +62,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
             Pattern pCurrency = Pattern.compile("^.* Canada Conversion rate \\p{Sc}[\\.,\\d]+ [\\w]{3} = \\p{Sc}[\\.,\\d]+ (?<currency>[\\w]{3})$");
             Pattern pDividendTaxTransactions = Pattern.compile("^(?<month>[\\w]{3,4}) "
                             + "(?<day>[\\d]{2}) "
-                            + "(?<tickerSymbol>[A-Z]{3,4})"
+                            + "(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)"
                             + "[\\W]{1,3}.*: .* tax .* \\([\\.,\\d]+ [\\w]{3}, .* "
                             + "(?<currency>[\\w]{3})"
                             + " .([\\.,\\d]+\\))? .* "
@@ -191,7 +191,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                                 + ".* "
                                 + "(?<type>(Bought|Sold)) "
                                 + "[\\.,\\d]+ of "
-                                + "(?<tickerSymbol>[A-Z]{3,4}) "
+                                + "(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) "
                                 + "[\\W]{1,3} "
                                 + "(?<name>.*) "
                                 + "for "
@@ -250,7 +250,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                                         .attributes("month", "day", "tickerSymbol", "name", "shares", "fxCurrency", "amount", "currency", "exchangeRate")
                                         .match("^(?<month>[\\w]{3,4}) "
                                                         + "(?<day>[\\d]{2}) "
-                                                        + "(?<tickerSymbol>[A-Z]{3,4})"
+                                                        + "(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)"
                                                         + "[\\W]{1,3}(?<name>.*): .* "
                                                         + "(?<shares>[\\.,\\d]+) "
                                                         + "shares, .* [\\.,\\d]+ "
@@ -291,7 +291,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                                         .attributes("month", "day", "tickerSymbol", "name", "shares", "fxCurrency", "currency", "amount", "exchangeRate")
                                         .match("^(?<month>[\\w]{3,4}) "
                                                         + "(?<day>[\\d]{2}) "
-                                                        + "(?<tickerSymbol>[A-Z]{3,4})"
+                                                        + "(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)"
                                                         + "[\\W]{1,3}"
                                                         + "(?<name>.*)"
                                                         + ": .* "
@@ -337,7 +337,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                                         .attributes("month", "day", "tickerSymbol", "name", "shares", "fxCurrency", "currency", "exchangeRate", "amount")
                                         .match("^(?<month>[\\w]{3,4}) "
                                                         + "(?<day>[\\d]{2}) "
-                                                        + "(?<tickerSymbol>[A-Z]{3,4})"
+                                                        + "(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)"
                                                         + "[\\W]{1,3}"
                                                         + "(?<name>.*)"
                                                         + ": .* "
@@ -384,7 +384,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                                         .attributes("month", "day", "tickerSymbol", "name", "shares", "amount")
                                         .match("^(?<month>[\\w]{3,4}) "
                                                         + "(?<day>[\\d]{2}) "
-                                                        + "(?<tickerSymbol>[A-Z]{3,4})"
+                                                        + "(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)"
                                                         + "[\\W]{1,3}(?<name>.*)"
                                                         + ": .* "
                                                         + "(?<shares>[\\.,\\d]+) "

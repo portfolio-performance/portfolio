@@ -1,0 +1,28 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.77.3
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+OtGK uclqwIRTh - 20305991
+Cash Transfer Detail Report
+Reporting period: 20-Jun-2025 - 20-Jun-2025
+Generated at: 01-Jul-2025 07:23:20 19:23:20 (GMT+01)
+hfRB RBDZxTiDh
+QQjpLRJH 14a 21
+03-821 mfzpxrJv
+Poland
+Saxo Bank / Philip Heymans Alle 15 / 2900 Hellerup / Denmark OYog rDIgQpWKc Reporting period
+/ Phone No.: +45 39 77 40 00 / Fax No.: +45 39 77 42 00 / Email: info@saxobank.com Currency: EUR 20-Jun-2025 - 20-Jun-2025
+Page 1 of 2 Account(s): EUR 734742OARc Generated at: 01-Jul-2025
+Cash Transfer Details, EUR
+Reporting period
+20-Jun-2025 to 20-Jun-2025
+Cash Transfer
+IBAN DE12100110012622249680
+IBAN owner name ZiMh AxYCInGsm
+Amount Booked Amount
+Event Booking amount ID Trade Date Value Date Conversion Rate Conversion cost
+EUR EUR
+Deposit 45108148786 20-Jun-2025 20-Jun-2025 10,00 1,000000 0,00 10,00
+Saxo Bank / Philip Heymans Alle 15 / 2900 Hellerup / Denmark Dirk Ackermann Reporting period
+/ Phone No.: +45 39 77 40 00 / Fax No.: +45 39 77 42 00 / Email: info@saxobank.com Currency: EUR 20-Jun-2025 - 20-Jun-2025
+Page 2 of 2 Account(s): EUR 923975INET Generated at: 01-Jul-2025

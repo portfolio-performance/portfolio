@@ -1,0 +1,26 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital Bank GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+VrBsal hWeut
+UUYWIU 
+BFpn BfFXKdtncRT 5 Datum 06.01.2026
+17574 Awf Seite 1 / 1
+feCtiuAFNww 
+Wertpapierabrechnung 
+für Sparplanausführung 
+Typ LIMIT Order SCALwDS3fsFjX2E
+Ausführung 02.01.2026 11:53:21 Geschäft 2163525001
+Ausführungsplatz EIX Lagerland Luxemburg
+Depot 0594097540 Verwahrart Wertpapierrechnung
+Typ Wertpapier Anzahl Kurs Betrag
+Kauf WisdomTree Global Quality Dividend Growth (Dist) 2,996254 Stk. 33,375 EUR 100,00 EUR
+IE00BZ56RN96
+Belastung 100,00 EUR
+Der Betrag wird mit dem Verrechnungskonto XXXXXXXXXX (Valuta: 06.01.2026) verrechnet. 
+Bitte überprüfen Sie die Informationen auf Richtigkeit und melden Sie etwaige Einwände unverzüglich bei uns.
+Verwenden Sie dafür den Menüpunkt Support im Kundenbereich. 
+Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 1 / 1

@@ -1,0 +1,27 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.6.qualifier
+-----------------------------------------
+Your contact:
+neon Switzerland AG Mr.
+service@neon-free.ch WTaCxW qBHx UnQcCD
+Buckhauserstrasse 49
+8048 Zürich
+Zurich, 8 January 2026
+Account/custody account number 123'456'789
+Insured person WTaCxW qBHx UnQcCD
+IBAN CH93 0076 2011 6238 5295 7
+Currency CHF
+Product neon Offensive 100 Swiss
+Investment strategy neon Offensive 100 Swiss
+Investment account simply3a: Daily statement nr.  1  08.01.2026
+Date Detail Value date Debit Credit Balance
+Balance carried forward  0.00
+08.01.2026 Deposit 06.01.2026  6'258.00  6'258.00
+WTaCxW qBHx UnQcCD
+Buckhauserstrasse 49
+8048 Zuerich
+CH
+ca5c58b0be5c44c3a2ebb282bf67d206
+Transaction volume  0.00  6'258.00
+New balance  6'258.00
+Account-/custody-account-holding bank: Lienhardt & Partner Privatbank Zürich AG

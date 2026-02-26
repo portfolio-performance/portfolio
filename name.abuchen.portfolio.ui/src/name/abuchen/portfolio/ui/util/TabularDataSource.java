@@ -20,6 +20,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -401,6 +402,7 @@ public class TabularDataSource implements Named
         tableViewer.setInput(data);
 
         hookContextMenu(owner, tableViewer);
+        hookKeyListener(owner, tableViewer);
 
         // make sure widths are stored against exactly the source that was used
         // to create the table -> cannot use instance variable
@@ -481,5 +483,14 @@ public class TabularDataSource implements Named
         tableViewer.getTable().setData(ContextMenu.DEFAULT_MENU, contextMenu);
 
         tableViewer.getTable().addDisposeListener(e -> contextMenu.dispose());
+    }
+
+    private void hookKeyListener(AbstractFinanceView owner, TableViewer tableViewer)
+    {
+        tableViewer.getControl().addKeyListener(KeyListener.keyPressedAdapter(e -> {
+            var selection = ((IStructuredSelection) tableViewer.getSelection()).getFirstElement();
+            if (selection instanceof Object[] row && row[0] instanceof Security security)
+                new SecurityContextMenu(owner).handleEditKey(e, security);
+        }));
     }
 }

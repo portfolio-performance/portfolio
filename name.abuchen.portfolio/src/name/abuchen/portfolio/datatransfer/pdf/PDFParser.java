@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -22,7 +23,9 @@ import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.DocumentContext;
+import name.abuchen.portfolio.datatransfer.DuplicateSecurityException;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
+import name.abuchen.portfolio.datatransfer.Extractor.SkippedItem;
 import name.abuchen.portfolio.datatransfer.ImportAction;
 import name.abuchen.portfolio.datatransfer.ImportAction.Context;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
@@ -32,6 +35,14 @@ import name.abuchen.portfolio.model.TypedMap;
 
 /* package */ final class PDFParser
 {
+    /**
+     * This class handles the parsing of the individual types of documents as
+     * issued by a particular bank.
+     * <p>
+     * Keyword patterns for positive and negative matches will be provided
+     * through the constructors. Blocks of data to be parsed can be defined via
+     * calls to {@link #addBlock(Block) addBlock}.
+     */
     /* package */ static class DocumentType
     {
         private List<Pattern> mustInclude = new ArrayList<>();
@@ -120,7 +131,7 @@ import name.abuchen.portfolio.model.TypedMap;
 
         /**
          * Gets the current context for this parse run.
-         * 
+         *
          * @return current context map
          */
         public DocumentContext getCurrentContext()
@@ -130,7 +141,10 @@ import name.abuchen.portfolio.model.TypedMap;
 
         public void parse(String filename, List<Item> items, String text)
         {
-            String[] lines = text.split("\\r?\\n"); //$NON-NLS-1$
+            // strip all carriage returns (as the CreateTextFromPDFHandle does
+            // as well) and split into lines
+
+            var lines = text.replace("\r", "").split("\\n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
             // reset context and parse it from this file
             context.clear();
@@ -142,7 +156,7 @@ import name.abuchen.portfolio.model.TypedMap;
 
         /**
          * Parses the current context.
-         * 
+         *
          * @param context
          *            context map
          * @param lines
@@ -169,9 +183,8 @@ import name.abuchen.portfolio.model.TypedMap;
             {
                 var items = new ArrayList<Item>();
 
-                for (int ii = 0; ii < contextRanges.length; ii++)
+                for (Block block : contextRanges)
                 {
-                    var block = contextRanges[ii];
                     block.parse(filename, context, items, lines);
                 }
 
@@ -180,24 +193,123 @@ import name.abuchen.portfolio.model.TypedMap;
         }
     }
 
-    /* package */static class Block
+    /**
+     * Represents a continuous section of lines within a document, defined by
+     * inclusive start and end line numbers.
+     */
+    /* package */ record LineSpan(int startLineNo, int endLineNo)
+    {
+    }
+
+    /**
+     * Defines how a document's lines are split into blocks. The default
+     * implementation uses regex patterns to identify block boundaries.
+     */
+    @FunctionalInterface
+    /* package */interface SplittingStrategy
+    {
+        List<LineSpan> split(String[] lines);
+    }
+
+    private static class PatternSplittingStrategy implements SplittingStrategy
     {
         private Pattern startsWith;
         private Pattern endsWith;
+
+        public PatternSplittingStrategy(String startsWith, String endsWith)
+        {
+            this.startsWith = Pattern.compile(Objects.requireNonNull(startsWith));
+
+            if (endsWith != null)
+                this.endsWith = Pattern.compile(endsWith);
+        }
+
+        @Override
+        public List<LineSpan> split(String[] lines)
+        {
+            // first: find the start of the blocks
+            var blockStarts = new ArrayList<Integer>();
+
+            for (var ii = 0; ii < lines.length; ii++)
+            {
+                var matcher = startsWith.matcher(lines[ii]);
+                if (matcher.matches())
+                    blockStarts.add(ii);
+            }
+
+            // second: convert to line spans including using the end block
+            // pattern
+            var spans = new ArrayList<LineSpan>();
+            for (var ii = 0; ii < blockStarts.size(); ii++)
+            {
+                int startLine = blockStarts.get(ii);
+                var endLine = ii + 1 < blockStarts.size() ? blockStarts.get(ii + 1) - 1 : lines.length - 1;
+
+                // if an "endsWith" pattern exists, check if the block might end
+                // earlier
+
+                if (endsWith != null)
+                {
+                    endLine = findBlockEnd(lines, startLine, endLine);
+                    if (endLine == -1)
+                        continue;
+                    spans.add(new LineSpan(startLine, endLine));
+                }
+                else
+                {
+                    spans.add(new LineSpan(startLine, endLine));
+                }
+            }
+
+            return spans;
+        }
+
+        private int findBlockEnd(String[] lines, int startLine, int endLine)
+        {
+            for (var lineNo = startLine; lineNo <= endLine; lineNo++)
+            {
+                var matcher = endsWith.matcher(lines[lineNo]);
+                if (matcher.matches())
+                    return lineNo;
+            }
+
+            return -1;
+        }
+    }
+
+    /**
+     * A Block defines a possibly-repeated region containing Sections of
+     * information to be parsed. The start of a Block will be denoted through a
+     * regular expression. The parser will search for occurrences of the Block
+     * line-by-line until the end of the document is reached.
+     */
+    /* package */static class Block
+    {
+        private final SplittingStrategy strategy;
         private int maxSize = -1;
         private Transaction<?> transaction;
 
+        /**
+         * Creates a block that represents the whole file.
+         */
+        public Block()
+        {
+            this(lines -> List.of(new LineSpan(0, lines.length - 1)));
+        }
+
         public Block(String startsWith)
         {
-            this(startsWith, null);
+            this(Objects.requireNonNull(startsWith), null);
         }
 
         public Block(String startsWith, String endsWith)
         {
-            this.startsWith = Pattern.compile(startsWith);
+            this(new PatternSplittingStrategy(startsWith, endsWith));
+        }
 
-            if (endsWith != null)
-                this.endsWith = Pattern.compile(endsWith);
+        public Block(SplittingStrategy strategy)
+        {
+            this.strategy = strategy;
         }
 
         /**
@@ -218,7 +330,7 @@ import name.abuchen.portfolio.model.TypedMap;
 
         public Block asRange(Consumer<Section<Map<String, Object>>> builder)
         {
-            Transaction<Map<String, Object>> tx = new Transaction<>();
+            var tx = new Transaction<Map<String, Object>>();
             tx.subject(() -> new HashMap<String, Object>());
             tx.wrap((t, c) -> new RangeItem(t));
 
@@ -240,29 +352,12 @@ import name.abuchen.portfolio.model.TypedMap;
 
         public void parse(String filename, DocumentContext documentContext, List<Item> items, String[] lines)
         {
-            List<Integer> blocks = new ArrayList<>();
+            var blocks = strategy.split(lines);
 
-            for (int ii = 0; ii < lines.length; ii++)
+            for (var block : blocks)
             {
-                Matcher matcher = startsWith.matcher(lines[ii]);
-                if (matcher.matches())
-                    blocks.add(ii);
-            }
-
-            for (int ii = 0; ii < blocks.size(); ii++)
-            {
-                int startLine = blocks.get(ii);
-                int endLine = ii + 1 < blocks.size() ? blocks.get(ii + 1) - 1 : lines.length - 1;
-
-                // if an "endsWith" pattern exists, check if the block might end
-                // earlier
-
-                if (endsWith != null)
-                {
-                    endLine = findBlockEnd(lines, startLine, endLine);
-                    if (endLine == -1)
-                        continue;
-                }
+                var startLine = block.startLineNo();
+                var endLine = block.endLineNo();
 
                 if (maxSize >= 0)
                 {
@@ -274,17 +369,33 @@ import name.abuchen.portfolio.model.TypedMap;
                 transaction.parse(filename, documentContext, items, lines, startLine, endLine);
             }
         }
+    }
 
-        private int findBlockEnd(String[] lines, int startLine, int endLine)
+    /* package */ static class TransactionContext extends TypedMap
+    {
+        private static final long serialVersionUID = 1L;
+
+        private String failureReason;
+        private String skipReason;
+
+        public String getFailureReason()
         {
-            for (int lineNo = startLine; lineNo <= endLine; lineNo++)
-            {
-                Matcher matcher = endsWith.matcher(lines[lineNo]);
-                if (matcher.matches())
-                    return lineNo;
-            }
+            return failureReason;
+        }
 
-            return -1;
+        public void markAsFailure(String reason)
+        {
+            this.failureReason = reason;
+        }
+
+        public String getSkipReason()
+        {
+            return skipReason;
+        }
+
+        public void skipTransaction(String reason)
+        {
+            this.skipReason = reason;
         }
     }
 
@@ -303,7 +414,7 @@ import name.abuchen.portfolio.model.TypedMap;
 
         public Section<T> section(String... attributes)
         {
-            Section<T> section = new Section<>(this, attributes);
+            var section = new Section<>(this, attributes);
             sections.add(section);
             return section;
         }
@@ -338,12 +449,12 @@ import name.abuchen.portfolio.model.TypedMap;
             List<Section<T>> subSections = new ArrayList<>();
             for (Function<Section<T>, Transaction<T>> function : alternatives)
             {
-                Section<T> s = new Section<>(this, null);
+                var s = new Section<>(this, null);
                 function.apply(s);
                 subSections.add(s);
             }
 
-            sections.add(new Section<T>(this, null)
+            sections.add(new Section<>(this, null)
             {
                 @Override
                 /* package */ List<String> getIds()
@@ -353,7 +464,7 @@ import name.abuchen.portfolio.model.TypedMap;
 
                 @Override
                 public void parse(String filename, DocumentContext documentContext, String[] lines, int lineNo,
-                                int lineNoEnd, TypedMap ctx, T target)
+                                int lineNoEnd, TransactionContext ctx, T target)
                 {
                     List<String> errors = new ArrayList<>();
 
@@ -365,6 +476,10 @@ import name.abuchen.portfolio.model.TypedMap;
 
                             // if parsing was successful, then return
                             return;
+                        }
+                        catch (DuplicateSecurityException e)
+                        {
+                            throw e;
                         }
                         catch (IllegalArgumentException ignore)
                         {
@@ -417,9 +532,9 @@ import name.abuchen.portfolio.model.TypedMap;
         public void parse(String filename, DocumentContext documentContext, List<Item> items, String[] lines,
                         int lineNoStart, int lineNoEnd)
         {
-            TypedMap txContext = new TypedMap();
+            var txContext = new TransactionContext();
 
-            T target = supplier.get();
+            var target = supplier.get();
 
             for (Section<T> section : sections)
                 section.parse(filename, documentContext, lines, lineNoStart, lineNoEnd, txContext, target);
@@ -430,9 +545,21 @@ import name.abuchen.portfolio.model.TypedMap;
             if (wrapper == null)
                 throw new IllegalArgumentException("Wrapping function missing"); //$NON-NLS-1$
 
-            Item item = wrapper.apply(target, txContext);
+            var item = wrapper.apply(target, txContext);
             if (item != null)
+            {
+                // propagate failure marked on the context to the item
+                var failureReason = txContext.getFailureReason();
+                if (failureReason != null && item.getFailureMessage() == null)
+                    item.setFailureMessage(failureReason);
+
+                // if a skip reason was given, create a skipped item if needed
+                var skipReason = txContext.getSkipReason();
+                if (skipReason != null && !(item instanceof SkippedItem))
+                    item = new SkippedItem(item, skipReason);
+
                 items.add(item);
+            }
         }
     }
 
@@ -442,10 +569,10 @@ import name.abuchen.portfolio.model.TypedMap;
         private final int startLineNumber;
         private final int endLineNumber;
         private final String fileName;
-        private final TypedMap txContext;
+        private final TransactionContext txContext;
 
         private ParsedData(Map<String, String> base, int startLineNumber, int endLineNumber, String fileName,
-                        TypedMap txContext)
+                        TransactionContext txContext)
         {
             this.base = base;
             this.startLineNumber = startLineNumber;
@@ -474,9 +601,19 @@ import name.abuchen.portfolio.model.TypedMap;
          * as one transaction is parsed. It can be used to exchange data between
          * sections.
          */
-        public TypedMap getTransactionContext()
+        public TransactionContext getTransactionContext()
         {
             return txContext;
+        }
+
+        public void skipTransaction(String reason)
+        {
+            txContext.skipTransaction(reason);
+        }
+
+        public void markAsFailure(String reason)
+        {
+            txContext.markAsFailure(reason);
         }
 
         @Override
@@ -562,6 +699,8 @@ import name.abuchen.portfolio.model.TypedMap;
         private String[] attributes;
         /** attributes mixed in from the document context */
         private String[] documentAttributes;
+        /** attributes mixed in from the document context optionally */
+        private String[] documentAttributesOptionally;
         /** attributes mixed in from the document matched in the given range */
         private String[] rangeAttributes;
 
@@ -594,6 +733,12 @@ import name.abuchen.portfolio.model.TypedMap;
         public Section<T> documentContext(String... documentAttributes)
         {
             this.documentAttributes = documentAttributes;
+            return this;
+        }
+
+        public Section<T> documentContextOptionally(String... documentAttributesOptionally)
+        {
+            this.documentAttributesOptionally = documentAttributesOptionally;
             return this;
         }
 
@@ -634,19 +779,19 @@ import name.abuchen.portfolio.model.TypedMap;
         }
 
         public void parse(String filename, DocumentContext documentContext, String[] lines, int lineNo, int lineNoEnd,
-                        TypedMap txContext, T target)
+                        TransactionContext txContext, T target)
         {
             if (assignment == null)
                 throw new IllegalArgumentException("Assignment function missing"); //$NON-NLS-1$
 
             Map<String, String> values = new HashMap<>();
 
-            int patternNo = 0;
-            boolean sectionFoundAtLeastOnce = false;
-            for (int ii = lineNo; ii <= lineNoEnd; ii++)
+            var patternNo = 0;
+            var sectionFoundAtLeastOnce = false;
+            for (var ii = lineNo; ii <= lineNoEnd; ii++)
             {
-                Pattern p = pattern.get(patternNo);
-                Matcher m = p.matcher(lines[ii]);
+                var p = pattern.get(patternNo);
+                var m = p.matcher(lines[ii]);
                 if (m.matches())
                 {
 
@@ -680,24 +825,51 @@ import name.abuchen.portfolio.model.TypedMap;
                             }
                         }
 
+                        // enrich extracted values with context values
+                        // (Optionally)
+                        if (documentAttributesOptionally != null)
+                        {
+                            for (String attribute : documentAttributesOptionally)
+                            {
+                                if (documentContext.containsKey(attribute))
+                                    values.put(attribute, documentContext.get(attribute));
+                            }
+                        }
+
                         // enrich extracted values with range values
                         if (rangeAttributes != null)
                         {
-                            RangeAttributes ranges = documentContext.getType(RangeAttributes.class)
+                            var ranges = documentContext.getType(RangeAttributes.class)
                                             .orElseThrow(() -> new IllegalArgumentException(
                                                             "In order to use range attribute, you must add range blocks to the document type")); //$NON-NLS-1$
+
+                            // if the section is marked as optional, then also
+                            // do not require all range attributes to be
+                            // available
+                            var allAvailable = true;
                             for (String attribute : rangeAttributes)
                             {
                                 var value = ranges.find(attribute, lineNo);
                                 if (value.isEmpty())
                                 {
-                                    throw new IllegalArgumentException(MessageFormat.format(
-                                                    Messages.MsgErrorMissingValueMatches, values.keySet().toString(),
-                                                    attribute, filename, lineNo + 1, lineNoEnd + 1));
+                                    if (isOptional)
+                                        allAvailable = false;
+                                    else
+                                        // if the section is not optional, then
+                                        // fail early with the missing attribute
+                                        throw new IllegalArgumentException(
+                                                        MessageFormat.format(Messages.MsgErrorMissingValueMatches,
+                                                                        values.keySet().toString(), attribute, filename,
+                                                                        lineNo + 1, lineNoEnd + 1));
                                 }
-
-                                values.put(attribute, value.get());
+                                else
+                                {
+                                    values.put(attribute, value.get());
+                                }
                             }
+
+                            if (!allAvailable)
+                                break;
                         }
 
                         assignment.accept(target, new ParsedData(values, lineNo, lineNoEnd, filename, txContext));
@@ -734,7 +906,7 @@ import name.abuchen.portfolio.model.TypedMap;
             {
                 if (p.pattern().contains("<" + attribute + ">")) //$NON-NLS-1$ //$NON-NLS-2$
                 {
-                    String v = m.group(attribute);
+                    var v = m.group(attribute);
                     if (v != null)
                         values.put(attribute, v);
                 }
@@ -763,12 +935,12 @@ import name.abuchen.portfolio.model.TypedMap;
         {
             for (Map<String, Object> item : items)
             {
-                Object value = item.get(property);
+                var value = item.get(property);
                 if (value == null)
                     continue;
 
-                int start = (int) item.get(START);
-                int end = (int) item.get(END);
+                var start = (int) item.get(START);
+                var end = (int) item.get(END);
 
                 if (lineNumber >= start && lineNumber <= end)
                     return Optional.of(value.toString());
@@ -834,5 +1006,6 @@ import name.abuchen.portfolio.model.TypedMap;
 
     private PDFParser()
     {
+
     }
 }

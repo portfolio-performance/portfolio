@@ -8,7 +8,6 @@ import java.util.function.Function;
 import jakarta.inject.Inject;
 
 import org.eclipse.e4.ui.services.IStylingEngine;
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
@@ -29,6 +28,7 @@ import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Control;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.CrossEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -59,13 +60,14 @@ import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
-import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DropDown;
+import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.MoneyTrailDataSource;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
+import name.abuchen.portfolio.ui.util.ValueColorScheme;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.MarkDirtyClientListener;
@@ -86,6 +88,9 @@ import name.abuchen.portfolio.util.Interval;
 
 public class PerformanceView extends AbstractHistoricView
 {
+    private static final String CAPITAL_GAIN_USE_FIFO = PerformanceView.class.getSimpleName()
+                    + "-CAPITAL_GAIN_USE_FIFO"; //$NON-NLS-1$
+
     @Inject
     private SelectionService selectionService;
 
@@ -98,6 +103,7 @@ public class PerformanceView extends AbstractHistoricView
     private ClientFilterDropDown clientFilter;
 
     private boolean preTax = false;
+    private boolean useFifo = true;
 
     private TreeViewer calculation;
     private StatementOfAssetsViewer snapshotStart;
@@ -110,7 +116,9 @@ public class PerformanceView extends AbstractHistoricView
     @Override
     protected String getDefaultTitle()
     {
-        return Messages.LabelPerformanceCalculation;
+        return (clientFilter == null || !clientFilter.hasActiveFilter()) ? Messages.LabelPerformanceCalculation
+                        : Messages.LabelPerformanceCalculation + " : " //$NON-NLS-1$
+                                        + clientFilter.getClientFilterMenu().getSelectedItem().getLabel();
     }
 
     @Override
@@ -133,6 +141,26 @@ public class PerformanceView extends AbstractHistoricView
 
             action.setChecked(this.preTax);
             manager.add(action);
+
+            manager.add(new Separator());
+
+            manager.add(new LabelOnly(Messages.LabelCapitalGainsMethod));
+
+            SimpleAction useFifoAction = new SimpleAction(CostMethod.FIFO.getLabel(), a -> {
+                this.useFifo = true;
+                getPreferenceStore().setValue(CAPITAL_GAIN_USE_FIFO, String.valueOf(useFifo));
+                reportingPeriodUpdated();
+            });
+            useFifoAction.setChecked(this.useFifo);
+            manager.add(useFifoAction);
+
+            SimpleAction movingAverageMethod = new SimpleAction(CostMethod.MOVING_AVERAGE.getLabel(), a -> {
+                this.useFifo = false;
+                getPreferenceStore().setValue(CAPITAL_GAIN_USE_FIFO, String.valueOf(useFifo));
+                reportingPeriodUpdated();
+            });
+            movingAverageMethod.setChecked(!this.useFifo);
+            manager.add(movingAverageMethod);
         }));
     }
 
@@ -148,7 +176,7 @@ public class PerformanceView extends AbstractHistoricView
 
         setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
 
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(filteredClient, converter, period);
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(filteredClient, converter, period, useFifo);
 
         try
         {
@@ -177,6 +205,7 @@ public class PerformanceView extends AbstractHistoricView
     public void notifyModelUpdated()
     {
         reportingPeriodUpdated();
+        updateTitle(getDefaultTitle());
     }
 
     @Override
@@ -201,8 +230,22 @@ public class PerformanceView extends AbstractHistoricView
         fees = createTransactionViewer(folder, Messages.PerformanceTabFees);
 
         folder.setSelection(0);
+        String capitalGainMethod = getPreferenceStore().getString(CAPITAL_GAIN_USE_FIFO);
+        if (capitalGainMethod != null && !capitalGainMethod.isEmpty())
+        {
+            try
+            {
+                this.useFifo = Boolean.valueOf(capitalGainMethod);
+            }
+            catch (IllegalArgumentException e)
+            {
+                // unknown capital gain method type; continue to use the default
+                // one
+            }
+        }
 
         reportingPeriodUpdated();
+        updateTitle(getDefaultTitle());
 
         return folder;
     }
@@ -228,7 +271,7 @@ public class PerformanceView extends AbstractHistoricView
 
         calculation = new TreeViewer(container, SWT.FULL_SELECTION);
 
-        ColumnEditingSupport.prepare(calculation);
+        ColumnEditingSupport.prepare(getEditorActivationState(), calculation);
         ToolTipCustomProviderSupport.enableFor(calculation, ToolTip.NO_RECREATE);
         CopyPasteSupport.enableFor(calculation);
 
@@ -325,6 +368,12 @@ public class PerformanceView extends AbstractHistoricView
             return position.explain(ClientPerformanceSnapshot.Position.TRAIL_VALUE).map(MoneyTrailDataSource::new)
                             .orElseGet(() -> null);
         });
+        column.setSorter(ColumnViewerSorter.create(o -> {
+            if (o instanceof ClientPerformanceSnapshot.Position pos)
+                return pos.getValue();
+
+            return null;
+        }));
         support.addColumn(column);
 
         column = new Column("forex", Messages.ColumnThereofForeignCurrencyGains, SWT.RIGHT, 80); //$NON-NLS-1$
@@ -369,6 +418,7 @@ public class PerformanceView extends AbstractHistoricView
         item.setImage(Images.VIEW_TABLE.image());
 
         hookContextMenu(calculation.getTree(), this::fillContextMenu);
+        hookKeyListener();
     }
 
     private void fillContextMenu(IMenuManager manager) // NOSONAR
@@ -384,16 +434,22 @@ public class PerformanceView extends AbstractHistoricView
         new SecurityContextMenu(this).menuAboutToShow(manager, security);
     }
 
+    private void hookKeyListener()
+    {
+        calculation.getControl().addKeyListener(KeyListener.keyPressedAdapter(e -> {
+            var selection = ((IStructuredSelection) calculation.getSelection()).getFirstElement();
+            if (selection instanceof ClientPerformanceSnapshot.Position position)
+                new SecurityContextMenu(this).handleEditKey(e, position.getSecurity());
+        }));
+    }
+
     private void addTreeActionsContextMenu(IMenuManager manager, Object obj)
     {
-        manager.add(new Action(Messages.LabelExpand)
-        {
-            @Override
-            public void run()
-            {
-                calculation.setExpandedState(obj, true);
-            }
+        if (obj == null)
+            return;
 
+        manager.add(new SimpleAction(Messages.LabelExpand, a -> calculation.setExpandedState(obj, true))
+        {
             @Override
             public boolean isEnabled()
             {
@@ -401,14 +457,8 @@ public class PerformanceView extends AbstractHistoricView
             }
         });
 
-        manager.add(new Action(Messages.LabelCollapse)
+        manager.add(new SimpleAction(Messages.LabelCollapse, a -> calculation.setExpandedState(obj, false))
         {
-            @Override
-            public void run()
-            {
-                calculation.setExpandedState(obj, false);
-            }
-
             @Override
             public boolean isEnabled()
             {
@@ -418,23 +468,8 @@ public class PerformanceView extends AbstractHistoricView
 
         manager.add(new Separator());
 
-        manager.add(new Action(Messages.LabelExpandAll)
-        {
-            @Override
-            public void run()
-            {
-                calculation.expandAll();
-            }
-        });
-
-        manager.add(new Action(Messages.LabelCollapseAll)
-        {
-            @Override
-            public void run()
-            {
-                calculation.collapseAll();
-            }
-        });
+        manager.add(new SimpleAction(Messages.LabelExpandAll, a -> calculation.expandAll()));
+        manager.add(new SimpleAction(Messages.LabelCollapseAll, a -> calculation.collapseAll()));
     }
 
     private TableViewer createTransactionViewer(CTabFolder folder, String title)
@@ -998,14 +1033,15 @@ public class PerformanceView extends AbstractHistoricView
         TransactionPair<?> tx = (TransactionPair<?>) element;
         if (tx.getTransaction() instanceof AccountTransaction)
         {
-            return ((AccountTransaction) tx.getTransaction()).getType().isCredit() ? Colors.theme().greenForeground()
-                            : Colors.theme().redForeground();
+            return ((AccountTransaction) tx.getTransaction()).getType().isCredit()
+                            ? ValueColorScheme.current().positiveForeground()
+                            : ValueColorScheme.current().negativeForeground();
         }
         else
         {
             return ((PortfolioTransaction) tx.getTransaction()).getType().isPurchase()
-                            ? Colors.theme().greenForeground()
-                            : Colors.theme().redForeground();
+                            ? ValueColorScheme.current().positiveForeground()
+                            : ValueColorScheme.current().negativeForeground();
         }
     }
 }

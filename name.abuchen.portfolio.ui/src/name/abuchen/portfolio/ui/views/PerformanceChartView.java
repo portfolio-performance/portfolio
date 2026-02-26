@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -24,7 +23,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.swtchart.ISeries;
+import org.eclipse.swtchart.ISeries;
 
 import com.google.common.collect.Lists;
 
@@ -40,6 +39,7 @@ import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartCSVExporter;
+import name.abuchen.portfolio.ui.util.format.AxisTickPercentNumberFormat;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesChartLegend;
@@ -115,7 +115,7 @@ public class PerformanceChartView extends AbstractHistoricView
         chart = new TimelineChart(composite);
         chart.getTitle().setText(getTitle());
         chart.getTitle().setVisible(false);
-        chart.getAxisSet().getYAxis(0).getTick().setFormat(new DecimalFormat("0.#%")); //$NON-NLS-1$
+        chart.getAxisSet().getYAxis(0).getTick().setFormat(new AxisTickPercentNumberFormat("0.#%")); //$NON-NLS-1$
         chart.getToolTip().setDefaultValueFormat(new DecimalFormat(Values.Percent2.pattern()));
         chart.getToolTip().reverseLabels(true);
 
@@ -187,7 +187,7 @@ public class PerformanceChartView extends AbstractHistoricView
 
             chart.suspendUpdate(true);
             chart.getTitle().setText(getTitle());
-            for (ISeries s : chart.getSeriesSet().getSeries())
+            for (ISeries<?> s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
 
             setChartSeries();
@@ -275,7 +275,6 @@ public class PerformanceChartView extends AbstractHistoricView
                 {
                     TimelineChartCSVExporter exporter = new TimelineChartCSVExporter(chart);
                     exporter.addDiscontinousSeries(Messages.PerformanceChartLabelCPI);
-                    exporter.setDateFormat(new SimpleDateFormat("yyyy-MM-dd")); //$NON-NLS-1$
                     exporter.setValueFormat(new DecimalFormat("0.##########")); //$NON-NLS-1$
                     exporter.export(getTitle() + ".csv"); //$NON-NLS-1$
                 }

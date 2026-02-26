@@ -38,6 +38,8 @@ public enum Images
     SECURITY_RETIRED("watchlist.png"), //$NON-NLS-1$
     ACCOUNT("account.png"), //$NON-NLS-1$
     PORTFOLIO("portfolio.png"), //$NON-NLS-1$
+    GROUPEDACCOUNTS("groupedaccounts.svg"), //$NON-NLS-1$
+    GROUPEDACCOUNTS_ON("groupedaccounts_on.svg"), //$NON-NLS-1$
     WATCHLIST("watchlist.png"), //$NON-NLS-1$
     INVESTMENTPLAN("investmentplan.png"), //$NON-NLS-1$
     NOTE("note.png"), //$NON-NLS-1$
@@ -47,15 +49,14 @@ public enum Images
     // tool bar
 
     PLUS("plus.png"), //$NON-NLS-1$
-    CONFIG("config.png"), //$NON-NLS-1$
-    EXPORT("export.png"), //$NON-NLS-1$
+    CONFIG("config.svg"), //$NON-NLS-1$
+    EXPORT("export.svg"), //$NON-NLS-1$
     SAVE("save.png"), //$NON-NLS-1$
-    FILTER_ON("filter_on.png"), //$NON-NLS-1$
-    FILTER_OFF("filter_off.png"), //$NON-NLS-1$
-    CALENDAR_ON("calendar_on.png"), //$NON-NLS-1$
-    CALENDAR_OFF("calendar_off.png"), //$NON-NLS-1$
+    FILTER_ON("filter_on.svg"), //$NON-NLS-1$
+    FILTER_OFF("filter_off.svg"), //$NON-NLS-1$
+    CALENDAR_ON("calendar_on.svg"), //$NON-NLS-1$
+    CALENDAR_OFF("calendar_off.svg"), //$NON-NLS-1$
     CLOCK("clock.png"), //$NON-NLS-1$
-    CLOUD("cloud.png"), //$NON-NLS-1$
     MEASUREMENT_ON("measurement_on.png"), //$NON-NLS-1$
     MEASUREMENT_OFF("measurement_off.png"), //$NON-NLS-1$
     CROSSHAIR_ON("crosshair_on.png"), //$NON-NLS-1$
@@ -74,6 +75,7 @@ public enum Images
     VIEW_LINECHART("view_linechart.png"), //$NON-NLS-1$
 
     CHECK("check.png"), //$NON-NLS-1$
+    EDIT("edit.svg"),  //$NON-NLS-1$
     XMARK("xmark.png"), //$NON-NLS-1$
     QUICKFIX("quickfix.png"), //$NON-NLS-1$
     ADD("add.png"), //$NON-NLS-1$
@@ -104,14 +106,18 @@ public enum Images
     INFO("info.png"), //$NON-NLS-1$
     ONLINE("online.png"), //$NON-NLS-1$
     ERROR_NOTICE("error_notice.png"), //$NON-NLS-1$
+    SKIP("skip.svg"), //$NON-NLS-1$
 
-    RED_ARROW("red_arrow.png"), //$NON-NLS-1$
-    GREEN_ARROW("green_arrow.png"), //$NON-NLS-1$
+    VISIBLE("visible.png"), //$NON-NLS-1$
+    HIDDEN("hidden.png"), //$NON-NLS-1$
+
+    ARROW_FORWARD("arrow_forward.png"), //$NON-NLS-1$
+    ARROW_BACK("arrow_back.png"), //$NON-NLS-1$
 
     // 3rd party logos
 
     POEDITOR_LOGO("poeditor-logo.png"), //$NON-NLS-1$
-    DIVVYDIARY_LOGO("divvydiary.com-logo.png"), //$NON-NLS-1$
+    DIVVYDIARY_LOGO("logos/divvydiary.svg"), //$NON-NLS-1$
     MYDIVIDENDS24_LOGO("mydividends24.de-logo.png"), //$NON-NLS-1$
     EODHISTORICALDATA_LOGO("eodhistoricaldata-logo.png"), //$NON-NLS-1$
     PORTFOLIO_REPORT_LOGO("portfolio-report.net-logo.png"), //$NON-NLS-1$

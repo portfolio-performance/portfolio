@@ -1,0 +1,59 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.2
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+Erträgnisgutschrift aus Wertpapieren
+DEPOTNUMMER=711/0703/001
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=0000
+ADRESSZEILE1=Frau
+Ausschüttung für
+ADRESSZEILE2=xxx uZJTyLjA
+01.04.2016 - 31.03.2017
+ADRESSZEILE3=xxx xxx
+Depot-Nr. Abrechnungs-Nr.
+Frau ADRESSZEILE4=21365 FMJssVnZ
+ADRESSZEILE5=
+bbAyikdmh vXRACEzr
+711/0703/001 94535662
+ADRESSZEILE6=
+jUwbUYoJfmcqJh xxx
+BELEGNUMMER=93
+88306 FQACoAHW
+SEITENNUMMER=1
+STEUERERSTATTUNG=N
+Depotinhaber
+xxx hdmfRyIK
+Erträgnisgutschrift
+Wiesbaden, 15.11.2016
+Gattungsbezeichnung ISIN
+iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile DE000A0H0785
+Nominal Ex-Tag Zahltag Ausschüttungsbetrag pro Stück
+STK 105,000 15.11.2016 15.11.2016 EUR 0,548144
+Wert Betrag zu Ihren Gunsten
+15.11.2016 EUR 41,44
+Ertrag für 2016/17 EUR 57,56
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Zinsanteil (Ausschüttung) EUR 57,56
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 57,56
+einbehaltene Kapitalertragsteuer EUR 14,08
+einbehaltener Solidaritätszuschlag EUR 0,77
+einbehaltene Kirchensteuer EUR 1,27
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 1.902,27
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 104,62
+im laufenden Jahr einbehaltene Kirchensteuer EUR 171,20
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Wiesbaden, Steuernummer 402/200/0073.
+Steuerlicher Stichtag 15.11.2016
+Jahressteuerbescheinigung folgt
+Verwahrart: Girosammelverwahrung
+Mit freundlichen Grüßen
+S Broker AG & Co. KG
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.20/ABREEREIERTR/GDBERTRG/000093/151116/005713

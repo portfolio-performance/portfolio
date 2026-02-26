@@ -100,7 +100,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                             t.setDate(asDate(v.get("date")));
                             t.setShares(asShares(v.get("shares")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 
                             // if CUSIP lenght != 9
                             if (v.get("wkn").length() != 9)
@@ -160,7 +160,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
                                                             t.setAmount(asAmount(v.get("amount")) - asAmount(v.get("tax")));
-                                                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 
                                                             // if CUSIP lenght != 9
                                                             if (v.get("wkn").length() != 9)
@@ -168,7 +168,8 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                                                             else
                                                                 t.setSecurity(getOrCreateSecurity(v));
 
-                                                            Money tax = Money.of(asCurrencyCode(CurrencyUnit.USD), asAmount(v.get("tax")));
+                                                            Money tax = Money.of(CurrencyUnit.USD,
+                                                                            asAmount(v.get("tax")));
                                                             checkAndSetTax(tax, t, type.getCurrentContext());
                                                         }),
                                         section -> section //
@@ -183,7 +184,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
                                                             t.setAmount(asAmount(v.get("amount")) - asAmount(v.get("tax")));
-                                                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 
                                                             // if CUSIP lenght != 9
                                                             if (v.get("wkn").length() != 9)
@@ -191,7 +192,8 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                                                             else
                                                                 t.setSecurity(getOrCreateSecurity(v));
 
-                                                            Money tax = Money.of(asCurrencyCode(CurrencyUnit.USD), asAmount(v.get("tax")));
+                                                            Money tax = Money.of(CurrencyUnit.USD,
+                                                                            asAmount(v.get("tax")));
 
                                                             checkAndSetTax(tax, t, type.getCurrentContext());
                                                         }),
@@ -206,7 +208,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
                                                             t.setAmount(asAmount(v.get("amount")));
-                                                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 
                                                             // if CUSIP lenght != 9
                                                             if (v.get("wkn").length() != 9)
@@ -249,7 +251,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                                                             t.setShares(0L);
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(v.get("note"));
-                                                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 
                                                             // if CUSIP lenght != 9
                                                             if (v.get("wkn").length() != 9)
@@ -297,7 +299,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(v.get("date")));
                             t.setShares(asShares(v.get("shares")));
                             t.setAmount(0L);
-                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 
                             // if CUSIP lenght != 9
                             if (v.get("wkn").length() != 9)
@@ -341,7 +343,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 
                             // if CUSIP lenght != 9
                             if (v.get("wkn").length() != 9)
@@ -387,7 +389,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(v.get("date")));
                             t.setShares(0L);
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 
                             // if CUSIP lenght != 9
                             if (v.get("wkn").length() != 9)
@@ -430,7 +432,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
                         .wrap(TransactionItem::new));
@@ -460,7 +462,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
                         .wrap(TransactionItem::new));

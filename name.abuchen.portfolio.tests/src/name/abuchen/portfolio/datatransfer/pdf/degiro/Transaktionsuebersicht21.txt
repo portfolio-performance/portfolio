@@ -1,0 +1,37 @@
+```
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.6.qualifier
+System: linux | x86_64 | 25.0.1+8-LTS-27 | Oracle Corporation
+-----------------------------------------
+Herr Max Mustermann
+Musterstr. 4
+54321 Musterhausen
+Germany
+Benutzername: ***ner
+Transaktionsübersicht von 05-06-2020 bis 15-02-2026
+Transaktions
+Datum Uhrzei nzb Ausführung in hselk AutoFX- gebühren
+t Produkt ISIN Refere
+örse sort Anzahl Kurs Wert 
+Lokalwährung Wert EUR Wec
+urs Gebühr und/oder Gesamt EUR
+Fremdkosten
+07-01-2021 20:36 WIRECARD AG DE0007472060 FRA 90 1,0880 EUR -97,92 EUR -97,92 0,00 -97,92
+07-01-2021 20:36 WIRECARD AG DE0007472060 XET -90 1,0880 EUR 97,92 EUR 97,92 0,00 97,92
+24-06-2020 16:26 WIRECARD AG DE0007472060 XET XETU 30 11,5000 EUR -345,00 EUR -345,00 0,00 -2,06 -347,06
+19-06-2020 11:24 WIRECARD AG DE0007472060 XET XETU 20 22,0000 EUR -440,00 EUR -440,00 0,00 -2,08 -442,08
+18-06-2020 14:04 WIRECARD AG DE0007472060 XET XETU 10 45,0000 EUR -450,00 EUR -450,00 0,00 -2,08 -452,08
+18-06-2020 10:57 WIRECARD AG DE0007472060 XET XETU 18 59,5600 EUR -1.072,08 EUR -1.072,08 0,00 -2,19 -1.074,27
+10-06-2020 16:18 ISHARES DOW JONES U.S. DE000A0D8Q49 XET XETU 4 55,0000 EUR -220,00 EUR -220,00 0,00 -2,07 -222,07
+SELECT DIVIDEND UCITS (DE)
+ETF
+05-06-2020 13:30 ODX1 C12700.00 05JUN20 DE000C5F3ZF0 ERX -1 0,0000 EUR 0,00 EUR 0,00 0,00 0,00
+05-06-2020 11:32 ODX1 P12700.00 05JUN20 DE000C5F3ZG8 ERX XEUR -1 100,0000 EUR 500,00 EUR 500,00 0,00 -0,75 499,25
+05-06-2020 10:43 ODX1 P12700.00 05JUN20 DE000C5F3ZG8 ERX XEUR 1 30,0000 EUR -150,00 EUR -150,00 0,00 -0,75 -150,75
+05-06-2020 10:22 ODX1 C12700.00 05JUN20 DE000C5F3ZF0 ERX XEUR 1 30,0000 EUR -150,00 EUR -150,00 0,00 -0,75 -150,75
+Die flatexDEGIRO Bank Dutch Branch, die unter dem Namen DEGIRO tätig ist, ist die niederländische Niederlassung der flatexDEGIRO www.degiro.de Konto
+Bank SE. Die flatexDEGIRO Bank SE wird primär von der deutschen Finanzaufsicht (BaFin) beaufsichtigt. In den Niederlanden ist sie bei kundenservice@degiro.de
+der DNB registriert und wird von der AFM und der DNB beaufsichtigt. Amstelplein 1 1096 HA 2026-02-15
+Seite 1 / 1
+
+```

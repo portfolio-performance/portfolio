@@ -208,7 +208,7 @@ public class EarningsByTaxonomyChartWidget extends CircularChartWidget<Map<Inves
         Map<String, Color> id2color = new HashMap<>();
         ICircularSeries<?> circularSeries = (ICircularSeries<?>) getChart().getSeriesSet()
                         .createSeries(SeriesType.DOUGHNUT, Messages.LabelEarningsByTaxonomy);
-        circularSeries.setSliceColor(Colors.WHITE);
+        circularSeries.setSliceColor(getChart().getPlotArea().getBackground());
         Node rootNode = circularSeries.getRootNode();
 
         for (Classification classification : taxonomy.getRoot().getChildren())

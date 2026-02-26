@@ -1,0 +1,42 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.73.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+xYXVd TlPyTs
+OZleTFvjpBihGc HEJOhU 91 
+91919 JdNDkTwZDNPEq Datum 30.12.2024
+Deutschland Seite 1 / 2
+Wertpapierabrechnung 
+für Kundenauftrag 
+Typ MARKET Order SCALRnomPwYQrc5
+Ausführung 30.12.2024 13:39:12 Geschäft 3050eskoFJ914634
+Ausführungsplatz EIX Lagerland Luxemburg
+Depot 026394660 Verwahrart Wertpapierrechnung
+Wertpapierabrechnung 
+Typ Wertpapier Anzahl Kurs Betrag
+Verkauf Scalable MSCI AC World Xtrackers (Acc) 1,00 Stk. 9,585 EUR 9,59 EUR
+LU2903252349
+Ordergebühren -0,99 EUR
+Total 8,60 EUR
+Der Betrag wird mit dem Verrechnungskonto DE2634edjfbvdcgD27 (Valuta: 02.01.2025) verrechnet. 
+Bitte überprüfen Sie die Informationen auf Richtigkeit und melden Sie etwaige Einwände unverzüglich bei uns.
+Verwenden Sie dafür den Menüpunkt Support im Kundenbereich. 
+Scalable Capital GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Erik Podzuweit, Florian Prucker Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Martin Krebs, Dirk Franzmeyer, Dirk
+Urmoneit 1 / 2
+Wertpapierabrechnung 
+Verkauf 1,00 Stk. Scalable MSCI AC World Xtrackers
+(Acc) 
+Ermittlung steuerrelevanter Erträge
+Typ Anmerkung Betrag
+Gewinn oder Verlust -0,08 EUR
+Berücksichtigte Ordergebühren -1,98 EUR
+Teilfreistellung 30 % +0,62 EUR
+Verlusttopf allgemein 2,24 EUR → 3,68 EUR +1,44 EUR
+Zu versteuern 0,00 EUR
+Scalable Capital GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Erik Podzuweit, Florian Prucker Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Martin Krebs, Dirk Franzmeyer, Dirk
+Urmoneit 2 / 2

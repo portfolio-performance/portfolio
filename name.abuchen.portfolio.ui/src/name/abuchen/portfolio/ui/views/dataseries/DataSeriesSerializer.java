@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.swtchart.LineStyle;
+import org.eclipse.swtchart.LineStyle;
 
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries.ClientDataSeries;
@@ -38,6 +38,9 @@ public class DataSeriesSerializer
         Map<String, DataSeries> uuid2series = set.getAvailableSeries().stream()
                         .collect(Collectors.toMap(DataSeries::getUUID, s -> s));
 
+        uuid2series.putAll(set.getAvailableDerivedSeries().stream()
+                        .collect(Collectors.toMap(DataSeries::getUUID, s -> s)));
+
         String[] items = config.split(","); //$NON-NLS-1$
         for (String item : items)
         {
@@ -52,12 +55,25 @@ public class DataSeriesSerializer
                 if (data.length >= 4)
                 {
                     s.setColor(ColorConversion.hex2RGB(data[1]));
+                    // For backward compatibility: in case the configuration
+                    // does not specify a negative color,
+                    // set the negative color to the same value as the main
+                    // color.
+                    s.setColorNegative(ColorConversion.hex2RGB(data[1]));
                     s.setLineStyle(LineStyle.valueOf(data[2]));
                     s.setShowArea(Boolean.parseBoolean(data[3]));
                 }
                 if (data.length >= 5)
                 {
                     s.setLineWidth(Integer.parseInt(data[4]));
+                }
+                if (data.length >= 6)
+                {
+                    s.setVisible(Boolean.parseBoolean(data[5]));
+                }
+                if (data.length >= 7)
+                {
+                    s.setColorNegative(ColorConversion.hex2RGB(data[6]));
                 }
             }
         }
@@ -74,7 +90,9 @@ public class DataSeriesSerializer
             buf.append(Colors.toHex(s.getColor())).append(';');
             buf.append(s.getLineStyle().name()).append(';');
             buf.append(s.isShowArea()).append(';');
-            buf.append(s.getLineWidth());
+            buf.append(s.getLineWidth()).append(';');
+            buf.append(s.isVisible()).append(';');
+            buf.append(Colors.toHex(s.getColorNegative()));
         }
         return buf.toString();
     }

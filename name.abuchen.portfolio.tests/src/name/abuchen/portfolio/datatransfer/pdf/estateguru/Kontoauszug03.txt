@@ -1,0 +1,42 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.2
+-----------------------------------------
+Transactions Report
+ 
+QgQM taCQMwdsnSI (Investor) 
+ 
+Opening balance € 206.31
+Interest € 6.15
+Principal € 55.41
+Fee € -0.24
+Closing balance € 267.63
+ 
+ 
+Payment Date Confirmation Date Cash Flow Type Cash Flow Status Project Name Amount Balance
+#31981936
+28.09.2024, 03:00 30.09.2024, 06:00 Interest Approved Entwicklungskredit - 3.Stufe € 0.42 € 267.63
+(Lettland)
+#32132499
+27.09.2024, 03:00 30.09.2024, 06:00 Interest Approved Geschäftskredit - 1.Stufe € 1.25 € 267.21
+(Litauen)
+Überbrückung
+11.09.2024, 03:00 12.09.2024, 06:00 Principal Approved skredit - € 5.41 € 263.66
+22.Stufe
+(Litauen)
+06.09.2024, 03:00 06.09.2024, 06:00 Interest Approved Entwicklungskredit - 3.Stufe € 1.12 € 257.77
+(Litauen)
+05.09.2024, 00:24 05.09.2024, 00:24 AUM fee Approved (€ -0.24) € 256.65
+#49362757
+Überbrückung
+30.08.2024, 03:00 02.09.2024, 06:00 Interest Approved skredit - € 0.12 € 256.89
+2.Stufe
+(Litauen)
+#49362757
+Überbrückung
+22.09.2024, 03:00 02.09.2024, 06:00 Principal Approved skredit - € 50.00 € 256.77
+2.Stufe
+(Litauen)
+#58813469
+28.08.2024, 03:00 02.09.2024, 06:00 Interest Approved Entwicklungskredit - 1.Stufe € 0.46 € 206.77
+(Finnland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estonia, info@estateguru.co

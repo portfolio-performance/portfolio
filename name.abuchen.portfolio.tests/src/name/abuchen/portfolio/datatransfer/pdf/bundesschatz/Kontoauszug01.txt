@@ -1,0 +1,15 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.1
+System: linux | x86_64 | 21.0.9+10 | Red Hat, Inc.
+-----------------------------------------
+Kontoauszug Bundesschatz Bundes
+schatz
+Max Mustermann, Musterstraße 85, 2455 Musterstadt
+Konto: 1234 1234 2345 - Kontoalias Zeitraum: 01.12.2025 - 16.01.2026
+Währung: EUR Erstellt am: 16.01.2026 22:07:47
+Produkt Erwerb Fälligkeit Kapital Zinssatz Zinsen Steuer- Steuer Zinsen Gesamt Abgerechnet
+p.a. satz netto netto
+1 Monat 10.11.2025 10.12.2025 2.526,06 1,85 % 3,84 27,5% 1,06 2,78 2.528,84 ja
+1 Monat 10.12.2025 12.01.2026 2.528,84 1,85 % 4,23 27,5% 1,16 3,07 2.531,91 ja
+6 Monate Grün 30.12.2025 30.06.2026 5.000,00 1,85 % 46,12 27,5% 12,68 33,44 5.033,44 nein
+Seite 1 / 1

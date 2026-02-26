@@ -1,0 +1,45 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.1.qualifier
+System: macosx | aarch64 | 21.0.2+13-LTS | Amazon.com Inc.
+-----------------------------------------
+Scalable Capital Bank GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+UkTekUkf WqghY keWZTmbFyuaM
+KxexgwTWUJhXmiNCm 37 
+23726 IKbshC Datum 01.01.2026
+Deutschland Seite 1 / 2
+Dividende 
+Für 01.01.2026 - 31.12.2026 
+Berechtigtes Wertpapier NVIDIA Corp. 
+ISIN US67066G1040 
+Berechtigte Anzahl 20,43685 
+Ex Tag 04.12.2025 
+Verrechnungskonto DE11111 (UdFQQBPAPqC)
+Kontobewegung 
+Buchung Wertstellung Typ Betrag / Stk. Berechtigte Anzahl Gesamt 
+Wechselkurs 
+01.01.2026 31.12.2025 Gutschrift 0,01 USD 20,43685 0,17 EUR 
+USD / EUR 1,178 
+Ausländische Quellensteuer -0,03 EUR
+Steuern -0,02 EUR
+Gesamtbetrag 0,12 EUR
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV. Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind
+einkommensteuerpflichtig. 
+Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 1 / 2
+Dividende
+Ermittlung steuerrelevante Erträge
+Typ Betrag
+Gewinn oder Verlust 0,17 EUR
+Verrechnung anrechenbarer Quellensteuer -0,12 EUR
+Zu versteuern 0,05 EUR
+Anfallende Steuern 
+Typ Betrag
+Kapitalertragsteuer 0,02 EUR
+Solidaritätszuschlag 0,00 EUR
+Anfallende
+0,02 EUR
+Steuern 
+Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 2 / 2

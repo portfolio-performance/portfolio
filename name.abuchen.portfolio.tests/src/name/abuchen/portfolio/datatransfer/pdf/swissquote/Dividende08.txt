@@ -1,0 +1,44 @@
+TRANSAKTIONSBELEG 
+
+Kunde: 2036999 - TRADING 
+IBAN: CH9708781000203695555
+
+Herr Mustermann
+Musterstraße 6a 
+DE-16333 Musterstadt 
+
+Gland, 28.02.2025 
+
+Dividende Unsere Referenz: 795604930 
+
+Im Hinblick auf folgenden Titel: 
+
+Titel 
+Bezeichnung 
+Anzahl 
+SIMPLIFY BITCOIN STGY INC ETF ISIN: US82889N6739 
+NKN: 122171132 
+281 
+
+haben wir Ihrem Konto den folgenden Betrag gutgeschrieben: 
+
+Kontonummer 203694000 
+Ausführungsdatum 25.02.2025 
+Valutadatum 28.02.2025 
+Anzahl 281 
+Dividende pro Aktie USD 0.1 
+Bezeichnung Währung Referenzwährung 
+Betrag USD 28.10 CHF 25.28 
+Quellensteuer 15.00% (US) USD 4.22 CHF 3.80 
+Total USD 23.88 CHF 21.48 
+
+Wechselkurs USD / CHF : 0.89959 
+
+Dieser Transaktionsbeleg sowie die aufgeführte Transaktion unterliegen unseren Allgemeinen Geschäftsbedingungen und Depotreglement. 
+
+CHE-116.310.079 MwSt
+
+Swissquote Bank AG, 33 chemin de la Crétaux, CH-1196 Gland Formular ohne Unterschrift | SE&O. 
+Customer Care : 0848 25 88 88 (Aus dem Ausland +41 44 825 88 88) 
+
+

@@ -92,7 +92,10 @@ public class ClientSettings
     {
         Function<Class<? extends Attributable>, AttributeType> factory = target -> {
             AttributeType logoType = new AttributeType("logo"); //$NON-NLS-1$
-            logoType.setName(Messages.AttributesLogoName);
+
+            // Since we look up the logo by name, the name must not be
+            // translated. We cannot use the id because the user cannot edit it.
+            logoType.setName("Logo"); //$NON-NLS-1$
             logoType.setColumnLabel(Messages.AttributesLogoColumn);
             logoType.setTarget(target);
             logoType.setType(String.class);

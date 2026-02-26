@@ -95,6 +95,7 @@ public class AccountListView extends AbstractFinanceView implements Modification
 
     private void resetInput()
     {
+        accountColumns.invalidateCache();
         accounts.setInput(isFiltered ? getClient().getActiveAccounts() : getClient().getAccounts());
     }
 
@@ -202,7 +203,7 @@ public class AccountListView extends AbstractFinanceView implements Modification
 
         accounts = new TableViewer(container, SWT.FULL_SELECTION);
 
-        ColumnEditingSupport.prepare(accounts);
+        ColumnEditingSupport.prepare(getEditorActivationState(), accounts);
         ColumnViewerToolTipSupport.enableFor(accounts, ToolTip.NO_RECREATE);
         CopyPasteSupport.enableFor(accounts);
 

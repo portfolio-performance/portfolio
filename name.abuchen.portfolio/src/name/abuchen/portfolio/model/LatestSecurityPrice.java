@@ -3,6 +3,8 @@ package name.abuchen.portfolio.model;
 import java.time.LocalDate;
 import java.util.Objects;
 
+import name.abuchen.portfolio.money.Values;
+
 public class LatestSecurityPrice extends SecurityPrice
 {
     private long high;
@@ -79,5 +81,15 @@ public class LatestSecurityPrice extends SecurityPrice
             return false;
         LatestSecurityPrice other = (LatestSecurityPrice) obj;
         return super.equals(other) && high == other.high && low == other.low && volume == other.volume;
+    }
+
+    @Override
+    @SuppressWarnings("nls")
+    public String toString()
+    {
+        return String.format("%s %10s %10s %10s", super.toString(),
+                        (high == NOT_AVAILABLE) ? "n/a" : String.format("%,10.2f", high / Values.Quote.divider()),
+                        (low == NOT_AVAILABLE) ? "n/a" : String.format("%,10.2f", low / Values.Quote.divider()),
+                        (volume == NOT_AVAILABLE) ? "n/a " : String.format("%,10d", volume));
     }
 }

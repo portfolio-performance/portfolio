@@ -1,0 +1,50 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.72.2
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=0000000000
+Wertpapierabrechnung DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Herr
+Kauf  ADRESSZEILE2=Vorname Nachname
+Kommissionsgeschäft ADRESSZEILE3=Straße 1
+ADRESSZEILE4=12345 Ort
+Depot-Nr. Abrechnungs-Nr. ADRESSZEILE5=
+0000000000 92328727 / 29.08.2024 ADRESSZEILE6=
+BELEGNUMMER=11349
+Herr SEITENNUMMER=1
+Vorname Nachname STEUERERSTATTUNG=N
+Straße 1 Depotinhaber
+12345 Ort Vorname Nachname
+München, 29.08.2024
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+SPDR MSCI Wrld Small Cap U.ETF Registered Shares o.N. IE00BCBJG560
+Nominal Kurs
+STK 0,0425 EUR 97,1400
+Handelstag 29.08.2024 Kurswert EUR 4,13-
+Handelszeit 12:59*
+Börse Tradegate/EDG
+Verwahrart Wertpapierrechnung
+Lagerland Irland
+Wert Konto-Nr. Betrag zu Ihren Lasten
+02.09.2024 0000000000 EUR 4,13
+Die Höhe des von der KVG festgelegten Ausgabeauf- bzw. Rücknahmeabschlages sowie die jährlich zu zahlende Ver-
+waltungsvergütung und die Gesamtkostenquote sind dem Verkaufsprospekt bzw. den Vertragsbedingungen zu entnehmen.
+Aggregierte Order ggf. zum Mischkurs.
+* Die angegebene Zeit entspricht den Angaben der Handelspartner gemäß der lokalen Zeit in Deutschland (Mitteleuropäische Zeit bzw. Mitteleuropäische Sommerzeit).
+Widerrufsbelehrung für den Erwerb von Anteilen oder Aktien eines offenen Investmentvermögens: Ist der Käufer von Anteilen oder Aktien eines offenen Investmentvermögens 
+durch mündliche Verhandlungen außerhalb der ständigen Geschäftsräume desjenigen, der die Anteile oder Aktien verkauft oder den Verkauf vermittelt hat, dazu bestimmt worden, 
+eine auf den Kauf gerichtete Willenserklärung abzugeben, so ist er an diese Erklärung nur gebunden, wenn er sie nicht innerhalb einer Frist von zwei Wochen bei der 
+Verwaltungsgesellschaft oder einem Repräsentanten im Sinne des § 319 KAGB schriftlich widerruft.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Postadresse: DAB BNP Paribas > Postfach 2547 >
+90011 Nürnberg > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens
+> 75009 Paris > Frankreich > Registergericht: R.C.S. Paris 662 042 449 > Président du Conseil d‘Administration: Jean Lemierre > Directeur Général: Jean-Laurent Bonnafé
+3.19/ABREABHNHANDKF/GABAUFTL/011349/290824/210432
+
+```

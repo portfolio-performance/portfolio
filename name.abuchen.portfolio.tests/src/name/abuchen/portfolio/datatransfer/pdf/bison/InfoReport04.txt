@@ -1,0 +1,157 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.74.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Vorläufiger Report
+EUWAX Aktiengesellschaft | Börsenstraße 4 | 70174 Stuttgart EUWAX Aktiengesellschaft
+Börsenstraße 4
+aCfzTJ VndBG 70174 Stuttgart
+fWFfbVxCJZE miIZDj Tel.: +49 711 222 985 0
+29 E-Mail: support@bisonapp.com
+04683 VPFDWsboXaF OcycmaBV
+Vorläufiger BISON Info-Report für das Steuerjahr 2025 (bis zum
+06.02.2025 19:40)
+Der vorläuBge Info-Report zeigt dir die Transaktionen an, die bis einschließlich 06.02.2025
+getätigt wurden. Realisierte Gewinne und Verluste können sich ändern, wenn (1) weitere
+Transaktionen innerhalb des Steuerjahres 2025 getätigt werden oder (2) sich der Preis der
+jeweiligen Kryptowährung ändert. Transaktionen, die im Kalenderjahr 2025 nach dem
+06.02.2025 getätigt werden, sind in diesem vorläufigen Report nicht berücksichtigt.
+Mit dem Info-Report stellt dir BISON deine Transaktionen übersichtlich und detailliert dar und
+stellt dir eine unverbindliche Berechnung über die realisierten Gewinne und Verluste bei
+BISON nach dem FiFo-Verfahren (First-In First-Out) zu Verfügung.
+Unverbindliche Berechnung des realisierten Gewinns/Verlusts nach FiFo aus Transaktionen
+bei BISON im Jahr 2025 (bis zum 06.02.2025 19:40) mit einer Haltedauer unter einem Jahr:
+0,00 €
+Bitte beachte, dass bei dieser Berechnung Kryptowährungen, bei denen du eine Krypto Ein-
+oder Auszahlung getätigt hast, nicht in die Berechnung der realisierten Gewinne und Verluste
+eingehen. Transaktionen für diese Kryptowährungen werden in Abschnitt 1 und 2 grau
+hinterlegt.
+Diese Information stellt keine steuerliche oder rechtliche Beratung dar. Bei Fragen zu deiner
+Einkommensteuererklärung oder sonstigen Angelegenheiten wende dich bitte an deinen
+Steuerberater.
+Mit freundlichen Grüßen
+BISON
+EUWAX +49 711 222 985 0 Sitz der Gesellschaft: Vorstand: Michael Jaeggi, Dr. Manfred Pumbo, Dragan
+Aktiengesellschaft support@bisonapp.com Stuttgart Radanovic 
+Börsenstraße 4 www.bisonapp.com Registergericht: Aufsichtsratsvorsitzender: Dr. Christian Ricken
+70174 Stuttgart Amtsgericht 
+Stuttgart, HRB 19972 
+USt-ID: DE 175042226
+Vorläufiger Report
+Anhang:
+1. Vorläufiger Info-Report für das Steuerjahr 2025 (bis zum 06.02.2025 19:40)
+2. Export deiner Transaktionsübersicht für das Steuerjahr 2025 (bis zum 06.02.2025 19:40)
+3. Export deiner Krypto-Einzahlungen
+4. Export deiner Krypto-Auszahlungen
+EUWAX +49 711 222 985 0 Sitz der Gesellschaft: Vorstand: Michael Jaeggi, Dr. Manfred Pumbo, Dragan
+Aktiengesellschaft support@bisonapp.com Stuttgart Radanovic 
+Börsenstraße 4 www.bisonapp.com Registergericht: Aufsichtsratsvorsitzender: Dr. Christian Ricken
+70174 Stuttgart Amtsgericht 
+Stuttgart, HRB 19972 
+USt-ID: DE 175042226
+Vorläufiger Report
+1. Vorläufiger Info-Report für das Steuerjahr 2025 (bis zum 06.02.2025 19:40)
+Bei BISON werden realisierte Gewinne und Verluste nach dem FiFo-Verfahren (First-In First-
+Out) errechnet. Gewinne und Verluste mit über einem Jahr Haltedauer werden nicht
+berücksichtigt.
+Bitte beachte, dass bei dieser Berechnung Kryptowährungen, bei denen du eine Krypto Ein-
+oder Auszahlung getätigt hast, nicht in die Berechnung der realisierten Gewinne und Verluste
+eingehen. Transaktionen für diese Kryptowährungen werden in Abschnitt 1 und 2 grau
+hinterlegt. Zusätzlich werden deine individuellen Krypto Ein- und Auszahlungen in Abschnitt 3
+und 4 gesondert aufgelistet.
+Ethereum (ETH)
+Summe realisierte Gewinne/Verluste 2025 (bis zum
+0,00 €
+06.02.2025 19:40)
+Davon Haltedauer > 1 Jahr 0,00 €
+Davon Haltedauer ≤ 1 Jahr 0,00 €
+Summe erhaltene Staking Rewards 2025 (bis zum 06.02.2025
++ 0,02 €
+19:40)
+Bitcoin (BTC)
+Summe realisierte Gewinne/Verluste 2025 (bis zum
+0,00 €
+06.02.2025 19:40)
+Davon Haltedauer > 1 Jahr 0,00 €
+Davon Haltedauer ≤ 1 Jahr 0,00 €
+Gesamtsumme realisierte Gewinne/Verluste 2025 (bis zum
+0,00 €
+06.02.2025 19:40)
+Davon Haltedauer > 1 Jahr 0,00 €
+Davon Haltedauer ≤ 1 Jahr 0,00 €
+Summe erhaltene Staking Rewards 2025 (bis zum 06.02.2025
++ 0,02 €
+19:40)
+Unverbindliche Berechnung des realisierten Gewinns/Verlusts
+aus Transaktionen bei BISON im Jahr 2025 (bis zum 0,00 €
+06.02.2025 19:40) mit einer Haltedauer unter einem Jahr
+EUWAX +49 711 222 985 0 Sitz der Gesellschaft: Vorstand: Michael Jaeggi, Dr. Manfred Pumbo, Dragan
+Aktiengesellschaft support@bisonapp.com Stuttgart Radanovic 
+Börsenstraße 4 www.bisonapp.com Registergericht: Aufsichtsratsvorsitzender: Dr. Christian Ricken
+70174 Stuttgart Amtsgericht 
+Stuttgart, HRB 19972 
+USt-ID: DE 175042226
+Vorläufiger Report
+2. Export deiner Transaktionsübersicht für das Steuerjahr 2025 (bis zum 06.02.2025 19:40)
+* Im Info-Report berücksichtigte Transaktionen für die unverbindliche Berechnung des
+realisierten Gewinns/Verlustes aus Transaktionen bei BISON im Jahr 2025 (bis zum
+06.02.2025 19:40) mit einer Haltedauer unter einem Jahr.
+Einzahlung
+03.02.2025 20:17 + 53,00 €
+Staking Reward ETH 0,00000541
+03.02.2025 08:48 3.011,63 €/ETH + 0,02 €
+Kauf ETH 0,00113890
+31.01.2025 09:07 3.160,94 €/ETH - 3,60 €
+Kauf BTC 0,00008275
+31.01.2025 09:07 101.503,62 €/BTC - 8,40 €
+Staking Reward ETH 0,00000150
+27.01.2025 07:50 3.127,59 €/ETH + 0,00 €
+EUWAX +49 711 222 985 0 Sitz der Gesellschaft: Vorstand: Michael Jaeggi, Dr. Manfred Pumbo, Dragan
+Aktiengesellschaft support@bisonapp.com Stuttgart Radanovic 
+Börsenstraße 4 www.bisonapp.com Registergericht: Aufsichtsratsvorsitzender: Dr. Christian Ricken
+70174 Stuttgart Amtsgericht 
+Stuttgart, HRB 19972 
+USt-ID: DE 175042226
+Vorläufiger Report
+3. Export deiner Krypto-Einzahlungen
+Kryptowährungen, bei denen du eine Krypto-Einzahlung getätigt hast, gehen nicht in die
+Berechnung der realisierten Gewinne und Verluste ein, da BISON keine Informationen über
+das ursprüngliche Kaufdatum bzw. den Kaufpreis einer Krypto-Einzahlung hat. Eine
+Zuordnung nach FiFo-Verfahren (First-In First-Out) ist nicht möglich.
+EUWAX +49 711 222 985 0 Sitz der Gesellschaft: Vorstand: Michael Jaeggi, Dr. Manfred Pumbo, Dragan
+Aktiengesellschaft support@bisonapp.com Stuttgart Radanovic 
+Börsenstraße 4 www.bisonapp.com Registergericht: Aufsichtsratsvorsitzender: Dr. Christian Ricken
+70174 Stuttgart Amtsgericht 
+Stuttgart, HRB 19972 
+USt-ID: DE 175042226
+Vorläufiger Report
+4. Export deiner Krypto-Auszahlungen
+Kryptowährungen, bei denen du eine Krypto-Auszahlung getätigt hast, gehen nicht in die
+Berechnung der realisierten Gewinne und Verluste ein, da diese nicht über BISON verkauft
+wurden. Eine Zuordnung nach FiFo-Verfahren (First-In First-Out) ist nicht möglich.
+EUWAX +49 711 222 985 0 Sitz der Gesellschaft: Vorstand: Michael Jaeggi, Dr. Manfred Pumbo, Dragan
+Aktiengesellschaft support@bisonapp.com Stuttgart Radanovic 
+Börsenstraße 4 www.bisonapp.com Registergericht: Aufsichtsratsvorsitzender: Dr. Christian Ricken
+70174 Stuttgart Amtsgericht 
+Stuttgart, HRB 19972 
+USt-ID: DE 175042226
+Vorläufiger Report
+Hinweise zum Info-Report
+Für Deutschland gilt:
+Der Tausch oder Rücktausch von Kryptowährung, die vom Verkäufer nicht selbst generiert wurden, in Euro oder eine andere Kryptowährung führen zu einem
+privaten Veräußerungsgeschäft i. S. des § 23 Abs. 1 Satz 1 Nr. 2 EStG. Das gilt jedoch nur, wenn zwischen Erwerb und Veräußerung nicht mehr als ein Jahr liegt
+(Spekulationsfrist) und die jährliche Freigrenze in Höhe von 1.000 EUR überschritten wurde. Diese Freigrenze gilt allerdings für den Gesamtgewinn aus sämtlichen
+privaten Veräußerungsgeschäften innerhalb eines Jahres. Verluste dürfen nur bis zu Höhe des Gewinns, der im gleichen Jahr aus privaten Veräußerungsgeschäften
+erzielt wurde, verrechnet werden. Ein Verlustrücktrag bzw. - vortrag ist grundsätzlich möglich.
+Der Gewinn aus der Veräußerung von Kryptowährung ergibt sich als DiRerenz zwischen den AnschaRungskosten und dem Veräußerungspreis. Hierbei wird die Fifo-
+Methode angewandt (§ 23 Abs. 1 Nr. 2 Satz 3 EStG), wonach unterstellt wird, dass die zuerst angeschaRten Bestände zuerst veräußert wurden. Realisierte Gewinne
+und Verluste sind in der Regel in der Anlage SO bei der Steuererklärung anzugeben.
+Diese Information stellt keine steuerliche oder rechtliche Beratung dar. Bei Fragen zu deiner Einkommensteuererklärung oder sonstigen Angelegenheiten wende dich
+bitte an deinen Steuerberater.
+Diese Bescheinigung ist maschinell erstellt und wird nicht unterschrieben.
+EUWAX +49 711 222 985 0 Sitz der Gesellschaft: Vorstand: Michael Jaeggi, Dr. Manfred Pumbo, Dragan
+Aktiengesellschaft support@bisonapp.com Stuttgart Radanovic 
+Börsenstraße 4 www.bisonapp.com Registergericht: Aufsichtsratsvorsitzender: Dr. Christian Ricken
+70174 Stuttgart Amtsgericht 
+Stuttgart, HRB 19972 
+USt-ID: DE 175042226

@@ -33,12 +33,12 @@ public class VBankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(Kauf|Verkauf)( \\(Zeichnung\\))?");
+        DocumentType type = new DocumentType("(Kauf|Verkauf)( \\((Zeichnung|R.cknahme)\\))?");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^(Kauf|Verkauf)( \\(Zeichnung\\))?$", "^Diese Mitteilung wurde maschinell .*$");
+        Block firstRelevantLine = new Block("^(Kauf|Verkauf)( \\((Zeichnung|R.cknahme)\\))?$", "^Diese Mitteilung wurde maschinell .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -52,7 +52,7 @@ public class VBankAGPDFExtractor extends AbstractPDFExtractor
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
-                        .match("^(?<type>(Kauf|Verkauf))( \\(Zeichnung\\))?$") //
+                        .match("^(?<type>(Kauf|Verkauf))( \\((Zeichnung|Rücknahme)\\))?$") //
                         .assign((t, v) -> {
                             if ("Verkauf".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);

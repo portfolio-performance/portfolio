@@ -1,0 +1,59 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.77.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+RB Seefeld-Leutasch-Reith-Scharnitz         IBAN: GJ64 3496 8632 0302 9205
+Bankstelle Leutasch                                       BIC: RZTIAT22314
+yoVUU                               3
+mTFeDm bWVsb WtvtacJaAAP          314
+kQOYtiytO 95 c
+9575 TOzuH
+                                          Wertpapier Verrechnungskonto
+Datum Buchungstext                                   Wert       Betrag EUR
+Alter Kontostand laut Auszug vom 29.08.2025                          93,84
+05.09 Gutschrift                                     0509           200,00
+      Auftraggeber: sWCWNTvLNsw  Goiqmx msryl
+      Verwendungszweck: Monatliche Einzahlung WILL
+      Auftraggeberinformation: DVV-AKlz30bnW5f2z1hCLh7JfM7bu2h9L86
+08.09 Wertpapier-Abrechnung                          1009           -40,37
+      Kauf
+      65552997-08.09.25 Depot       61.003.513
+      IE00BKTLJC87        ISIV-SM.CITY INFR. DL ACC
+               5,246 Stk zu       7,696 EUR   08.09.25
+      DVV-wKQMKCkJH3Mj
+08.09 Wertpapier-Abrechnung                          1009           -56,93
+      Kauf
+      61804697-08.09.25 Depot       61.003.513
+      IE00BHZPJ569        ISHSIV-M.WLD ESG E.CTB A
+               6,374 Stk zu       8,931 EUR   08.09.25
+      DVV-TEG3F1NDDW0t
+08.09 Wertpapier-Abrechnung                          1009           -71,17
+      Kauf
+      62325097-08.09.25 Depot       61.003.513
+      IE00BYVJRP78        ISHSIV-SUS.M.EM.MK.SRI DL
+               9,588 Stk zu       7,423 EUR   08.09.25
+      DVV-fCvoPzeTgykO
+09.09 Wertpapier-Abrechnung                          1009           -28,38
+      Ausgabe Fonds
+      61237418-09.09.25 Depot       61.003.513
+      AT0000A2KUN6        Raiff-Nachh-Euro-Akt SZ T
+               0,223 Stk zu     127,260 EUR   09.09.25
+      Handelsplatz: RAIFFEISEN KAG
+      DVV-McNb3lb8lOjP
+24.09 Wertpapier-Abrechnung                          2609           121,10
+      Verkauf
+      68869622-24.09.25 Depot       61.003.513
+      IE00BYVJRP78        ISHSIV-SUS.M.EM.MK.SRI DL
+                                                   siehe Folgeblatt
+Auszug   9/001 vom 30.09.2025
+RB Seefeld-Leutasch-Reith-Scharnitz         IBAN: zj37 6281 7221 9182 9577
+Bankstelle Leutasch                                       BIC: RZTIAT22314
+Datum Buchungstext                                   Wert       Betrag EUR
+              16,242 Stk zu       7,739 EUR   24.09.25
+      DVV-8KAvLkBWd2As
+30.09 Abschluss per 30.09.2025
+      0,01 % p.a. Habenzinsen      ab 01.07.25       0110             0,01
+T:+43 5212 2100-0 W:www.rb-seefeld.at
+Gutschriften            321,11              Neuer Kontostand
+Lastschriften          -196,85              Guthaben EUR            218,10
+Auszug   9/002 vom 30.09.2025

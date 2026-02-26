@@ -1,0 +1,25 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital Bank GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+Marc Mvzbx
+Berliner Allee 22 
+71249 Bielefeld Datum 16.12.2025
+Deutschland Seite 1 / 1
+Wertpapierabrechnung 
+für Sparplanausführung 
+Typ LIMIT Order SCAL3Vg97fQnDju
+Ausführung 16.12.2025 11:58:49 Geschäft 1968133001
+Ausführungsplatz EIX Lagerland Luxemburg
+Depot 5170335553 Verwahrart Wertpapierrechnung
+Typ Wertpapier Anzahl Kurs Betrag
+Kauf Vanguard FTSE All-World High Dividend Yield (Dist) 0,720253 Stk. 69,42 EUR 50,00 EUR
+IE00B8GKDB10
+Belastung 50,00 EUR
+Der Betrag wird mit dem Verrechnungskonto DE71420920710753457832 (Valuta: 18.12.2025) verrechnet. 
+Bitte überprüfen Sie die Informationen auf Richtigkeit und melden Sie etwaige Einwände unverzüglich bei uns.
+Verwenden Sie dafür den Menüpunkt Support im Kundenbereich. 
+Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 1 / 1

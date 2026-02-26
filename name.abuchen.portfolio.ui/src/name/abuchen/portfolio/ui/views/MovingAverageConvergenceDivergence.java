@@ -12,7 +12,6 @@ import com.google.common.primitives.Doubles;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.views.SecuritiesChart.ChartInterval;
 
 public class MovingAverageConvergenceDivergence
@@ -97,14 +96,14 @@ public class MovingAverageConvergenceDivergence
         if (valuesMacd.size() >= MAX_MACD_PERIOD)
         {
             macd = new ChartLineSeriesAxes();
-            macd.setDates(TimelineChart.toJavaUtilDate(datesMacd.toArray(new LocalDate[0])));
+            macd.setDates(datesMacd.toArray(new LocalDate[0]));
             macd.setValues(Doubles.toArray(valuesMacd));
         }
 
         if (valuesSignal.size() >= SIGNAL_LINE_START)
         {
             signalLine = new ChartLineSeriesAxes();
-            signalLine.setDates(TimelineChart.toJavaUtilDate(datesSignal.toArray(new LocalDate[0])));
+            signalLine.setDates(datesSignal.toArray(new LocalDate[0]));
             signalLine.setValues(Doubles.toArray(valuesSignal));
         }
     }

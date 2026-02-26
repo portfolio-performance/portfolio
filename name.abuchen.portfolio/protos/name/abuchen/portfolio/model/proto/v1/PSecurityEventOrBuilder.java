@@ -63,4 +63,16 @@ public interface PSecurityEventOrBuilder extends
    */
   name.abuchen.portfolio.model.proto.v1.PAnyValueOrBuilder getDataOrBuilder(
       int index);
+
+  /**
+   * <code>string source = 5;</code>
+   * @return The source.
+   */
+  java.lang.String getSource();
+  /**
+   * <code>string source = 5;</code>
+   * @return The bytes for source.
+   */
+  com.google.protobuf.ByteString
+      getSourceBytes();
 }

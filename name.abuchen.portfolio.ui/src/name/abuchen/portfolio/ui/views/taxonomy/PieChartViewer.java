@@ -39,6 +39,7 @@ import name.abuchen.portfolio.ui.views.IPieChart;
 
         Action action = new SimpleAction(Messages.LabelIncludeSecuritiesInPieChart, a -> {
             getModel().setExcludeSecuritiesInPieChart(!getModel().isSecuritiesInPieChartExcluded());
+            getModel().fireTaxonomyModelChange(getModel().getVirtualRootNode());
             chart.refresh(null);
         });
         action.setChecked(!getModel().isSecuritiesInPieChartExcluded());

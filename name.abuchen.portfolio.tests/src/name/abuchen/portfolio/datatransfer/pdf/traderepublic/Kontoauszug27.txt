@@ -1,0 +1,230 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.74.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH BRUNNENSTRASSE 19-21 10119 BERLIN
+dNpopT HDWsGV SEITE 1 von 5
+DlveqJh 32, 63118 DATUM 01 Dez. 2024 - 31 Dez. 2024
+Göttidfgdsfgsn, DE IBAN DE234244424224243424334
+BIC PXuTLbJBhKu
+KONTOÜBERSICHT
+PRODUKT ANFANGSSALDO ZAHLUNGSEINGANG ZAHLUNGSAUSGANG ENDSALDO
+Cashkonto 7.502,89 € 872,85 € 2.718,52 € 5.657,22 €
+UMSATZÜBERSICHT
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+01 Dez.
+Kartentransaktion HubNsrxbIO HbYYXkTJHpUamm 6,70 € 7.496,19 €
+2024
+01 Dez.
+Kartentransaktion eSInlgr XWAnJB DuQwySEEKY 13,32 € 7.482,87 €
+2024
+01 Dez.
+Kartentransaktion rpyl rs UFBh phbAM FFB 6,60 € 7.476,27 €
+2024
+01 Dez.
+Kartentransaktion GDS-goHlc WyTr 41,59 € 7.434,68 €
+2024
+01 Dez.
+Kartentransaktion WBecp FBgFVeE 55,45 € 7.379,23 €
+2024
+01 Dez.
+Zinszahlung Your interest payment 15,77 € 7.395,00 €
+2024
+02 Dez.
+Kartentransaktion licfLzsOq xzwQtZL 4,75 € 7.390,25 €
+2024
+02 Dez.
+Prämie Your Saveback payment 9,45 € 7.399,70 €
+2024
+03 Dez. Savings plan execution US7475251036 QUALCOMM INC. DL-,0001,
+Handel 100,00 € 7.299,70 €
+2024 quantity: 0.650448
+03 Dez. Savings plan execution US7475251036 QUALCOMM INC. DL-,0001,
+Handel 9,45 € 7.290,25 €
+2024 quantity: 0.061467
+03 Dez.
+Kartentransaktion hFZmjl uehnzaSz 46,64 € 7.243,61 €
+2024
+03 Dez.
+Kartentransaktion cAnLVQI ZjXL 14,50 € 7.229,11 €
+2024
+08 Dez.
+Kartentransaktion epGjyYMZfp tpjIaWheSWVfbo 9,00 € 7.220,11 €
+2024
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Direktoren
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+Erstellt am 09 Feb. 2025 Seite 1 von 5
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+08 Dez.
+Kartentransaktion guMz PQNi 37,30 € 7.182,81 €
+2024
+08 Dez.
+Kartentransaktion kfv Xztr 98,54 € 7.084,27 €
+2024
+09 Dez.
+Überweisung Incoming transfer from QLVxyD JfJJlK 520,00 € 7.604,27 €
+2024
+09 Dez.
+Überweisung Incoming transfer from QyXJma mgNfqM 100,00 € 7.704,27 €
+2024
+09 Dez.
+Kartentransaktion hbpwHIMXOHcglnpCPV Vin 19,10 € 7.685,17 €
+2024
+11 Dez.
+Kartentransaktion EmIExmHsD uuxPydbjQz 100,00 € 7.585,17 €
+2024
+13 Dez.
+Kartentransaktion pRIfK JyMISAgH 3,19 € 7.581,98 €
+2024
+13 Dez.
+Kartentransaktion pMqnD JSQBaiCPxQex 4,87 € 7.577,11 €
+2024
+13 Dez.
+Kartentransaktion jnsEkeJV rtUOS 13,50 € 7.563,61 €
+2024
+13 Dez.
+Kartentransaktion ZFYtYjQOIohVl BdyC SDF 9,55 € 7.554,06 €
+2024
+14 Dez.
+Kartentransaktion EFFASFSFAS.DSA 36,18 € 7.517,88 €
+2024
+14 Dez.
+Kartentransaktion IVsrlEj MhwZqDpU doQHXUcJ 240,00 € 7.277,88 €
+2024
+15 Dez.
+Kartentransaktion nIfj uqenPoyA 36,42 € 7.241,46 €
+2024
+15 Dez.
+Kartentransaktion IxVflBvruR yLXMJvHzDtPplW 2,80 € 7.238,66 €
+2024
+15 Dez.
+Kartentransaktion ytbMV zcMiqTW 89,65 € 7.149,01 €
+2024
+16 Dez.
+Kartentransaktion sfsdfsd.ww*DS23424234 12,99 € 7.136,02 €
+2024
+19 Dez.
+Kartentransaktion Vtob PgVu DE*DI5NV9OJ5 22,98 € 7.113,04 €
+2024
+19 Dez.
+Kartentransaktion UDZr coFY 55,73 € 7.057,31 €
+2024
+19 Dez.
+Erträge Cash Dividend for ISIN US7475251036 2,05 € 7.059,36 €
+2024
+20 Dez.
+Kartentransaktion HDnl RstW 3,38 € 7.055,98 €
+2024
+20 Dez.
+Kartentransaktion PuraVKczLStpt FLPk DFG 2,10 € 7.053,88 €
+2024
+20 Dez. SEPA
+Outgoing transfer for yhCAHu SntXVf 400,00 € 6.653,88 €
+2024 Echtzeitüberweisung
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Direktoren
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+Erstellt am 09 Feb. 2025 Seite 2 von 5
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+21 Dez.
+Kartentransaktion FDSFDAFSASF.FSA 10,49 € 6.664,37 €
+2024
+21 Dez.
+Kartentransaktion ktEH & fqvS 34,40 € 6.629,97 €
+2024
+21 Dez.
+Kartentransaktion *FOhJADgX QQnE AG 200,00 € 6.429,97 €
+2024
+21 Dez.
+Kartentransaktion JDPr NlRbC&sTL wnIjzXt 9,99 € 6.419,98 €
+2024
+22 Dez.
+Kartentransaktion bKavFEEKTX nrxWZnaymunkcP 2,80 € 6.417,18 €
+2024
+22 Dez. SEPA
+Outgoing transfer for rjSDlg UFstUb 400,00 € 6.017,18 €
+2024 Echtzeitüberweisung
+23 Dez.
+Kartentransaktion wmUhh fxerrhfP 11,14 € 6.006,04 €
+2024
+24 Dez.
+Kartentransaktion QPlRVNVpw LyaBrfT 3,30 € 6.002,74 €
+2024
+25 Dez.
+Kartentransaktion yGOG mOxj 24,56 € 5.978,18 €
+2024
+25 Dez.
+Kartentransaktion urIbuRlwLGmeB wVBT GMB 4,00 € 5.974,18 €
+2024
+26 Dez. BACKBLAZE INC, 5,34 $, exchange rate: 0,9625468, ECB rate:
+Kartentransaktion 5,14 € 5.969,04 €
+2024 0,962000962, markup: 0,05673986 %
+27 Dez.
+Handel Sell trade US0021202025 ATYR PHARMA INC. DL -,001, quantity: 70 215,09 € 6.184,13 €
+2024
+27 Dez.
+Kartentransaktion Nfw skVO 99,61 € 6.084,52 €
+2024
+28 Dez.
+Kartentransaktion ID pncliPcD kQWV 238,10 € 5.846,42 €
+2024
+28 Dez.
+Kartentransaktion EcEuL kCFygIASpTyN 23,96 € 5.822,46 €
+2024
+28 Dez.
+Kartentransaktion FhvyLMRXE bZxnvCz 1,80 € 5.820,66 €
+2024
+29 Dez.
+Kartentransaktion jxrMtJgSqC bVTOLlpPCmahbU 5,70 € 5.814,96 €
+2024
+29 Dez.
+Kartentransaktion F.D.V. cbdMLKSmT 19,99 € 5.794,97 €
+2024
+30 Dez.
+Kartentransaktion sVwi Gflp DE*DF53535 38,77 € 5.756,20 €
+2024
+30 Dez.
+Kartentransaktion obOIB *FLGH PANyDq Da 5,10 € 5.751,10 €
+2024
+30 Dez.
+Kartentransaktion BVBcatJdS 184 3,30 € 5.747,80 €
+2024
+30 Dez.
+Kartentransaktion vfhv Fil. 3779 1,59 € 5.746,21 €
+2024
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Direktoren
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+Erstellt am 09 Feb. 2025 Seite 3 von 5
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+31 Dez.
+Kartentransaktion Bmh*VwwypVb KCclsISCP Nor 12,49 € 5.733,72 €
+2024
+31 Dez.
+Kartentransaktion dAGljO ujZvTfUWOOP 76,50 € 5.657,22 €
+2024
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Direktoren
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+Erstellt am 09 Feb. 2025 Seite 4 von 5
+HAFTUNGSAUSSCHLUSS
+Sehr geehrte Kundin, sehr geehrter Kunde
+Bitte überprüfe unbedingt deine Buchungen, Berechnungen und den Schlusssaldo auf dem Kontoauszug, der gleichzeitig deinen Rechnungsabschluss
+darstellt. Der Rechnungsabschluss gilt als anerkannt, wenn du innerhalb von sechs Wochen nach Zugang keine Einwendungen erhebst. Einwendungen
+gegen Kontoauszüge sind schriftlich an uns zu richten. Guthaben sind einlagefähig im Sinne des Einlagensicherungsgesetzes (EinSiG). Weitere
+Informationen entnehme bitte dem Merkblatt für den Einleger, das zusammen mit unseren Allgemeinen Geschäftsbedingungen eingesehen werden kann.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Direktoren
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+Erstellt am 09 Feb. 2025 Seite 5 von 5

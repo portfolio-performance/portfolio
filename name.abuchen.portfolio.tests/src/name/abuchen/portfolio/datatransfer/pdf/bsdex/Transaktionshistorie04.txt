@@ -1,0 +1,16 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.74.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+VORNAME(N) NACHNAME
+(mail@mail.com)
+01.01.2024 00:00 - 20.03.2025 17:33
+Transaktionshistorie
+ID Typ Ausführung eingehender eingehendes ausgehender ausgehendes Transaktionsentgel Entgeltwährun Sender Empfänger
+Betrag Asset Betrag Asset t g
+f5f27cba-6e3a-4120-8d96-c6be8859ce6f Einzahlung 14.06.2024 25.5 EUR CH0209000000100013997 DE02500105170137075030
+06:00:26 4 6
+c2c3eea6-cbee-4352-b87a- Auszahlung 17.12.2024 113.66 EUR DE02500105170137075030 CH0209000000100013997
+87557f1886c3 06:30:23 6 4
+20.03.2025 17:33
+Seite 1 / 1

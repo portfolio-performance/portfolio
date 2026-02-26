@@ -1,0 +1,69 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.1
+-----------------------------------------
+Baader Bank AG   Weihenstephaner Straße 4   85716 Unterschleißheim Scalable Capital GmbH 
+T  00800 00 586336*   F  +49 89 5150 2442    service@baaderbank.de Seitzstraße 8e
+80538 München 
+service@scalable.capital
+Seite 1/2
+Herrn München
+05.01.2024
+Max MtqpbfEbt
+Goethestr. 65 Max mMxZDcNkL
+57214 SsSRSDnO Stamm-Nr.: 9699353    Portfolio: 1
+Depot-Nr.: 8539851486
+Vorgangs-Nr.: 96569442
+Referenz-Nr.: 820709669
+Buchungsanzeige
+Obligatorischer Umtausch
+Ex-Tag: 02.01.2024
+Ausbuchung aus Depot 4617263036 per 02.01.2024
+Nominale ISIN: LU2360697374 WKN: A3CT9J
+STK 63 FREYR Battery
+Actions Nominatives DL 1
+Einbuchung in Depot 2149952422 per 02.01.2024
+Nominale ISIN: US35834F1049 WKN: A3E3UN
+STK 63 Freyr Battery Inc.
+Registered Shares o.N.
+Verhältnis: 1 : 1 
+Umrechnungskurs: EUR/USD 0,9127418
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Dirk Urmoneit, Dirk Franzmeyer • HRB 217778, Amtsgericht 
+München • USt-IdNr. DE300434774 • www.scalable.capital
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 
+121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336*
+service@baaderbank.de UMTA-053.048
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+Obligatorischer Umtausch
+Fortsetzung: Seite 2/2
+Ausbuchung
+Stück 63 FREYR Battery
+ISIN: LU2360697374/EUR
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäfts-
+Geschäft Nr. Datum Whg./St. Nominal/Stück Anschaff.-kosten ant. Veräußer.-erlös ant. Ergebnis
+WP Kauf 176548402 10.03.2023 STK 18 124,20 0,00 0,00
+WP Kauf 247363417 09.11.2023 STK 45 123,75 0,00 0,00
+Einbuchung
+Stück 63 Freyr Battery Inc.
+ISIN: US35834F1049/EUR
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäfts-
+Geschäft Nr. Datum Whg./St. Nominal/Stück Anschaff.-kosten
+WP Kauf 21849352 10.03.2023 STK 18 124,20
+WP Kauf 21849352 09.11.2023 STK 45 123,75
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Dirk Urmoneit, Dirk Franzmeyer • HRB 217778, Amtsgericht 
+München • USt-IdNr. DE300434774 • www.scalable.capital
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 
+121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336*
+service@baaderbank.de UMTA-053.048
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.

@@ -1,0 +1,93 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+flatexDEGIRO Bank AG 
+Kundenservice 
+Gadollaplatz 1 
+8010 Graz 
+Tel.: +43 - (0)720 518 777 
+Mail: info@flatex.at
+flatexDEGIRO Bank AG - Gadollaplatz 1 - A-8010 Graz
+Graz, 04.01.2026
+0101012000005527468570
+BDrHAGj rnvHioC 
+Fürstenstr. 32 
+7978 CQNAS lZWmBXFcCx 
+kgNUnnUjeC
+Kontoauszug Nr.: 004/2025
+Kontonummer: 50202837599
+dazugehörige IBAN: zh83 2077 8839 4993 8825
+Kontenart: Kontokorrentkonto
+Kontowährung: EUR
+Alter Saldo vom: 30.09.2025 in EUR 132,30+
+Buchungsdatum Valuta Buchungstext Betrag in EUR
+03.10. 02.10. Dividendenzahlung US67066G1040 0,70+
+Lastschrift
+Kauf IE00B4L5Y983 326592960
+OsafALSUhZG
+03.10. 03.10. LI787233965724704495 150,00+
+QoizOmD pTOuhbD
+MREF: Rmsou474126
+CRED: eN05IuK47449816366
+03.10. 03.10. Ausführung ORDER Kauf IE00B4L5Y983
+326592960 150,00-
+10.10. 30.09. Zinsabschluss 01.07.2025 - 30.09.2025 0,00+
+31.10. 04.11. Ausführung ORDER Verkauf US67066G1040
+327633319 3.470,22+
+04.11. 05.11. Ausführung ORDER Kauf IE00B4L5Y983
+327747146 150,00-
+Lastschrift
+Kauf IE00B4L5Y983 327747146
+kQjoVVKbWbz
+05.11. 05.11. fs939468989892221962 150,00+
+ZHlGlzz uFYfwEp
+MREF: gwOuR154272
+CRED: vJ98TLq16615039793
+02.12. 03.12. Ausführung ORDER Kauf IE00B4L5Y983
+328674010 150,00-
+flatexDEGIRO Bank AG Niederlassung Österreich | Aktiengesellschaft | Gadollaplatz 1 | 8010 Graz | Landesgericht für Zivilrechtssachen Graz | FN 334642 x | UID ATU 65140956
+Hauptniederlassung: flatexDEGIRO Bank AG | Omniturm | Große Gallusstr. 16-18 | 60312 Frankfurt am Main (Deutschland) | Amtsgericht Frankfurt am Main | HRB 105687
+- Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter | Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+Evgeni Kaplun, Jens Möbitz, Christiane Strubel -
+Seite 1 von 2
+2000005527468570 035110101000
+Buchungsdatum Valuta Buchungstext Betrag in EUR
+Lastschrift
+Kauf IE00B4L5Y983 328674010
+iZMGDslFApP
+03.12. 03.12. dM239204144852486335 150,00+
+tWYkQUx bUEKNoj
+MREF: LvCyv225297
+CRED: tm51sns30606913357
+16.12. 11.12. Dividendenzahlung US5949181045 5,63+
+16.12. 11.12. Dividendenzahlung US0382221051 5,98+
+17.12. 17.12. Dividendenzahlung IE000S9YS762 4,64+
+19.12. 19.12. Thesaurierung transparenter Fonds
+IE00B4L5Y983 11,58-
+30.12. 26.12. Dividendenzahlung US67066G1040 0,54+
+30.12. 02.01. Ausführung ORDER Verkauf US83417M1045
+329458294 1.290,61+
+Neuer Saldo 31.12.2025 Nr. 004/2025 Währung EUR 4.899,04+
+Der ausgewiesene Kontosaldo kann durch abweichende Wertstellung (Valuta) vom wertmäßigen Kontostand 
+abweichen. Die Wertstellung von Buchungen ist auch relevant für die Berechnung von Zinsen.
+Bei Geldeingängen aus dem Ausland beachten Sie bitte eventuelle Meldungen nach der Außenwirtschaftsverordnung 
+(AWV). Die Deutsche Bundesbank und ihre Filialen erteilen dazu gern die notwendigen Auskünfte.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere 
+Informationen können dem "Informationsbogen für den Einleger" entnommen werden.
+Der Rechnungsabschluss wird Ihnen als separates Dokument zur Verfügung gestellt.
+Beanstandungen gegen Rechnungsabschlüsse sind unverzüglich und schriftlich zu senden an:
+flatexDEGIRO Bank AG 
+Beschwerdemanagement 
+Postfach 100551 
+41405 Neuss. 
+DEUTSCHLAND
+Der Abschlusssaldo gilt als genehmigt, wenn ihm nicht innerhalb von 6 Wochen ab Zugang schriftlich widersprochen 
+wird. Zur Fristwahrung genügt die rechtzeitige Absendung der Einwendung.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+flatexDEGIRO Bank AG Niederlassung Österreich | Aktiengesellschaft | Gadollaplatz 1 | 8010 Graz | Landesgericht für Zivilrechtssachen Graz | FN 334642 x | UID ATU 65140956
+Hauptniederlassung: flatexDEGIRO Bank AG | Omniturm | Große Gallusstr. 16-18 | 60312 Frankfurt am Main (Deutschland) | Amtsgericht Frankfurt am Main | HRB 105687
+- Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter | Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+Evgeni Kaplun, Jens Möbitz, Christiane Strubel -
+Seite 2 von 2
+2000005527468570 035110101000

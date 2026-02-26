@@ -1,0 +1,25 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.74.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+AVIS D'ENCAISSEMENT COUPON M VPKnScq PorezWZU
+Au 13 décembre 2024 28 gbr ltauWITKZ
+48644 ZeAVy
+VOTRE COMPTE PEA N° 299103952010 M gWILwwR bZCPieuP
+Objet : Encaissement de coupon OPC
+Monsieur,
+Nous avons le plaisir de vous informer que nous avons procédé à l'encaissement des coupons suivants pour votre compte :
+Date Opération Détail opération Débit Crédit
+  n       OPCVM  AMUND.MSCI WORLD D (LU2655993207)
+10/12/2024 Quantité 211,00
+Montant unitaire 0,21 EUR
+Prélèvement fiscal 0,00 €
+Prélèvements sociaux 0,00 €
+Montant Net 44,31 € 44,31 €
+Veuillez agréer, Monsieur, l'expression de nos salutations distinguées.
+Le Service OST.
+Duplicata Internet
+Page 1/1
+Fortuneo est une marque commerciale d'Arkéa Direct Bank. Arkéa Direct Bank, Société Anonyme à Directoire et Conseil de Surveillance
+au capital de 89 198 952 euros. RCS Nanterre 384 288 890. Siège social : Tour Trinity - 1bis, place de la Défense 92400 Courbevoie.
+Courtier en assurance n°ORIAS 07 008 441. Adresse postale : Fortuneo - Service Clients - TSA41707 - 35917 RENNES CEDEX 9.

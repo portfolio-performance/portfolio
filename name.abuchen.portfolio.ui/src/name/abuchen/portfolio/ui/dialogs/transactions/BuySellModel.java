@@ -35,21 +35,21 @@ import name.abuchen.portfolio.ui.Messages;
     public void setSource(Object entry)
     {
         this.source = (BuySellEntry) entry;
-        
+
         presetFromSource(entry);
     }
-    
+
     @Override
     public void presetFromSource(Object entry)
     {
         var e = (BuySellEntry) entry;
-        
+
         this.type = e.getPortfolioTransaction().getType();
         this.portfolio = (Portfolio) e.getOwner(e.getPortfolioTransaction());
         this.account = (Account) e.getOwner(e.getAccountTransaction());
         fillFromTransaction(e.getPortfolioTransaction());
-    }    
-    
+    }
+
     @Override
     public boolean hasSource()
     {
@@ -73,18 +73,22 @@ import name.abuchen.portfolio.ui.Messages;
         }
         else
         {
+            entry = new BuySellEntry(portfolio, account);
+            entry.setCurrencyCode(account.getCurrencyCode());
+            entry.insert();
+
             if (source != null)
             {
                 @SuppressWarnings("unchecked")
                 TransactionOwner<Transaction> owner = (TransactionOwner<Transaction>) source
                                 .getOwner(source.getPortfolioTransaction());
                 owner.deleteTransaction(source.getPortfolioTransaction(), client);
+
+                // preserve the source field from the original transaction
+                entry.setSource(source.getSource());
+
                 source = null;
             }
-
-            entry = new BuySellEntry(portfolio, account);
-            entry.setCurrencyCode(account.getCurrencyCode());
-            entry.insert();
         }
 
         entry.setDate(LocalDateTime.of(date, time));
