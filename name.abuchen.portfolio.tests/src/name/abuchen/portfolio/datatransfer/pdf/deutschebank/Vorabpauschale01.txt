@@ -1,0 +1,46 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.6.qualifier
+System: linux | x86_64 | 21.0.9+10-Ubuntu-125.04 | Ubuntu
+-----------------------------------------
+Deutsche Bank AG
+24/7-Kundenservice (069) 910-10000
+Max Mustermann
+Musterallee 1
+11111 Musterhof
+22. Januar 2026
+Ihr Depot Nr. 100 7777777 01
+Vorabpauschale
+CorpID: 2027882211400
+Stück WKN ISIN
+300,000000 A1C9KK IE00B4X9L533
+HSBC MSCI WORLD UCITS ETF FUNDS
+Vorabpauschale Jahreswert (p.St.) 0,1508190400 EUR Kalenderjahr 2025
+Fondsart Aktienfonds (30% Teilfreistellung) Steuerjahr 2026
+KESt-pflichtige Vorabpauschale 31,67 EUR
+Kapitalertragsteuer (KESt) - 7,74 EUR
+Solidaritätszuschlag auf KESt - 0,43 EUR
+ 
+Kirchensteuer auf KESt - 0,70 EUR
+Belastung mit Wert 02.01.2026 8,87 EUR
+Steuerliche Bemessungsgrundlagen zur Vorabpauschale - keine Steuerbescheinigung
+Vorabpauschale vor Teilfreistellung* 45,25 EUR
+Abzüglich Teilfreistellung der Vorabpauschale 13,57 EUR
+Vorabpauschale nach Teilfreistellung 31,67 EUR
+KESt-pflichtige Vorabpauschale 31,67 EUR
+Vorsitzender des Aufsichtsrats: Alexander R. Wynaendts
+Vorstand: Christian Sewing (Vorsitzender), James von Moltke, Raja Akram, Fabrizio Campelli, Marcus Chromik, Bernd Leukert, Alexander von zur Mühlen, Laura Padovani, 
+Claudio de Sanctis, Rebecca Short
+Deutsche Bank Aktiengesellschaft mit Sitz in Frankfurt am Main; Amtsgericht Frankfurt am Main, HRB Nr. 30 000; Umsatzsteuer-Id.-Nr. DE114103379; www.db.com/de 1/2
+TRINCM0001 VOPA 20260122 23977220
+  
+ 
+Wir belasten den Betrag von 8,87 EUR Ihrem Konto 7777777 00.
+Hinweise
+Im Steuerabzugsverfahren sind generell die für Privatanleger geltenden Teilfreistellungssätze anzuwenden. Für einkommensteuerpflichtige Anleger, die ihre 
+Anteile im Betriebsvermögen halten, und körperschaftsteuerpflichtige Anleger werden die erhöhten Teilfreistellungssätze erst im Veranlagungsverfahren der 
+Besteuerung zu Grunde gelegt.
+* Unterjährige Anschaffungen des bezogenen Kalenderjahres wurden mit einer anteiligen Vorabpauschale gemäß §18 Abs. 2 InvStG 2018
+(1/12 des Jahreswertes pro Haltemonat) berücksichtigt.
+Kapitalerträge sind einkommensteuerpflichtig!
+Diese Mitteilung wurde maschinell erstellt und wird nicht unterschrieben.
+2/2
