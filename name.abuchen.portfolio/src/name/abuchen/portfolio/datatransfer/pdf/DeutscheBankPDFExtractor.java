@@ -35,6 +35,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
         addBuySellTransaction();
         addBuyTransactionFundsSavingsPlan();
         addDividendeTransaction();
+        addAdvanceTaxTransaction();
         addAccountStatementTransaction();
     }
 
@@ -463,6 +464,63 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addAdvanceTaxTransaction()
+    {
+        final var type = new DocumentType("Vorabpauschale");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^Vorabpauschale$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAXES);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // Stück WKN ISIN
+                        // 300,000000 A1C9KK IE00B4X9L533
+                        // HSBC MSCI WORLD UCITS ETF FUNDS
+                        // Vorabpauschale Jahreswert (p.St.) 0,1508190400 EUR Kalenderjahr 2025
+                        // @formatter:on
+                        .section("wkn", "isin", "name", "currency") //
+                        .find("St.ck WKN ISIN")
+                        .match("^[\\.,\\d]+ (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                        .match("(?<name>.*)") //
+                        .match("^Vorabpauschale Jahreswert .* [\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        // @formatter:off
+                        // Stück WKN ISIN
+                        // 3.000,000000 A1C9KK IE00B4X9L533
+                        // @formatter:on
+                        .section("shares") //
+                        .find("St.ck WKN ISIN").match("^(?<shares>[\\.,\\d]+) [A-Z0-9]{6} [A-Z]{2}[A-Z0-9]{9}[0-9]$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // Belastung mit Wert 02.01.2026 8,87 EUR
+                        // @formatter:on
+                        .section("date", "currency", "amount") //
+                        .match("^Belastung mit Wert (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .wrap(t -> t.getAmount() == 0
+                                        ? new SkippedItem(new TransactionItem(t),
+                                                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired)
+                                        : new TransactionItem(t));
     }
 
     private void addAccountStatementTransaction()
