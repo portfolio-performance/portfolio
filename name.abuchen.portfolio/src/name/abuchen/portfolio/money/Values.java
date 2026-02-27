@@ -20,9 +20,14 @@ public abstract class Values<E>
 
     public static final class MoneyValues extends Values<Money>
     {
-        private MoneyValues()
+        private final String currencyAmountFormat;
+        private final String amountFormat;
+
+        private MoneyValues(String pattern, String amountFormat)
         {
-            super("#,##0.00", 2); //$NON-NLS-1$
+            super(pattern, 2);
+            this.currencyAmountFormat = "%s " + amountFormat; //$NON-NLS-1$
+            this.amountFormat = amountFormat;
         }
 
         @Override
@@ -36,7 +41,7 @@ public abstract class Values<E>
             if (!alwaysVisible && DiscreetMode.isActive())
                 return amount.getCurrencyCode() + " " + DiscreetMode.HIDDEN_AMOUNT; //$NON-NLS-1$
             else
-                return String.format("%s %,.2f", amount.getCurrencyCode(), amount.getAmount() / divider()); //$NON-NLS-1$
+                return String.format(currencyAmountFormat, amount.getCurrencyCode(), amount.getAmount() / divider());
         }
 
         public String format(Money amount, String skipCurrencyCode)
@@ -53,7 +58,7 @@ public abstract class Values<E>
         {
             if (!FormatHelper.alwaysDisplayCurrencyCode() && skipCurrencyCode.equals(amount.getCurrencyCode()))
                 return !alwaysVisible && DiscreetMode.isActive() ? DiscreetMode.HIDDEN_AMOUNT
-                                : String.format("%,.2f", amount.getAmount() / divider()); //$NON-NLS-1$
+                                : String.format(amountFormat, amount.getAmount() / divider());
             else
                 return format(amount, alwaysVisible);
         }
@@ -231,7 +236,8 @@ public abstract class Values<E>
         }
     };
 
-    public static final MoneyValues Money = new MoneyValues(); // NOSONAR
+    public static final MoneyValues Money = new MoneyValues("#,##0.00", "%,.2f"); // NOSONAR //$NON-NLS-1$ //$NON-NLS-2$
+    public static final MoneyValues MoneyShort = new MoneyValues("#,##0", "%,.0f"); // NOSONAR //$NON-NLS-1$ //$NON-NLS-2$
 
     public static final Values<Long> AmountFraction = new Values<Long>("#,##0.00###", 5) //$NON-NLS-1$
     {
