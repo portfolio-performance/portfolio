@@ -87,7 +87,7 @@ public class AssertionStructureValidator
 
                 if (!REQUIRED_ASSERTION.matcher(body).find())
                 {
-                    errors.add(error(file, i + 1, "Missing assertion: assertThat(countSkippedItems(<resultsVar>), is(0L));"));
+                    errors.add(error(file, i + 1, "Missing assertion: assertThat(countSkippedItems(<resultsVar>), is(<long>));"));
                 }
             }
 
