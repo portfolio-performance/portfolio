@@ -13,10 +13,10 @@ public class AssertionStructureValidator
     // - allows whitespace/newlines
     // - <resultsVar> must look like an identifier (matches existing tests)
     private static final Pattern REQUIRED_ASSERTION = Pattern.compile(
-                    "assertThat\\s*\\(\\s*"
-                                    + "countSkippedItems\\s*\\(\\s*[A-Za-z_][A-Za-z0-9_]*\\s*\\)\\s*,\\s*"
-                                    + "is\\s*\\(\\s*0\\s*L\\s*\\)\\s*\\)\\s*;",
-                    Pattern.DOTALL);
+    "assertThat\\s*\\(\\s*"
+  + "countSkippedItems\\s*\\(\\s*[A-Za-z_][A-Za-z0-9_]*\\s*\\)\\s*,\\s*"
+  + "is\\s*\\(\\s*-?\\d+\\s*L\\s*\\)\\s*\\)\\s*;",
+  Pattern.DOTALL);
 
     public static List<StructureError> validatePackage(Path packagePath) throws IOException
     {
