@@ -73,6 +73,18 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .oneOf( //
+                        // @formatter:off
+                                        // 057 5567849 57 LENOVO GROUP LTD.REGISTERED SHARES O.N. 1/2
+                                        // WKN 894983 Nominal ST 8.000
+                                        // ISIN HK0992009065 Kurs EUR 1,025
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "wkn", "isin", "currency") //
+                                                        .match("^[\\d]{3} [\\d]+ [\\d]{2} (?<name>.*) [\\d]\\/[\\d]{1,2}$") //
+                                                        .match("^WKN (?<wkn>[A-Z0-9]{6}) Nominal ST [\\.,\\d]+$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Kurs (?<currency>[A-Z]{3}).*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+
                                         // @formatter:off
                                         // 123 1234567 00 BASF SE
                                         // WKN BASF11 Nominal ST 19
@@ -84,6 +96,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^WKN (?<wkn>[A-Z0-9]{6}) Nominal ST [\\.,\\d]+$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Kurs (?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+
                                         // @formatter:off
                                         // 444 1234567 02 IVU TRAFFIC TECHNOLOGIES AG INH.AKT. O.N. 1/2
                                         // WKN 744850 Nominal 120
@@ -95,6 +108,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^WKN (?<wkn>[A-Z0-9]{6}) Nominal [\\.,\\d]+$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .* \\((?<currency>[A-Z]{3})\\).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+
                                         // @formatter:off
                                         // 123 1234567 01 6,875% TÜRKEI, REPUBLIK NT.06 17.M/S 03.36 1/2
                                         // WKN A0GLU5 Nominal USD 5.000,00
@@ -184,7 +198,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                         // EUR 9.613,77
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("amount", "currency") //
+                                                        .attributes("currency", "amount") //
                                                         .find("Gesamtbetrag") //
                                                         .match("^(?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
@@ -193,10 +207,11 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                         }),
                                         // @formatter:off
                                         // Buchung auf Kontonummer 1234567 40 mit Wertstellung 08.04.2015 EUR 675,50
+                                        // Buchung auf Kontonummer EUR 7.185,60
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("amount", "currency") //
-                                                        .match("^Buchung auf Kontonummer [\\s\\d]+ mit Wertstellung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^Buchung auf Kontonummer .*(?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));

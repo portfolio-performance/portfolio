@@ -1,0 +1,57 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.5
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Deutsche Bank AG
+Zentrale Frankfurt 
+60262 Frankfurt
+zeQEjk gasnMqIgMDi 
+WtLOTCUCGoCcS Geschäftskundenberatung Süd 
+ 49 U 
+81101 Telefon 06131 203-771
+ rQATlV
+24/7-Kundenservice (069) 910-10000
+24. Februar 2026
+Abrechnung: Verkauf von Wertpapieren 
+Depotinhaber: tlfFMA rnwbglApaVC
+Filialnummer Depotnummer Wertpapierbezeichnung Seite
+057 5567849 57 LENOVO GROUP LTD.REGISTERED SHARES O.N. 1/2
+WKN 894983 Nominal ST 8.000
+ISIN HK0992009065 Kurs EUR 1,025
+Verwahrart Wertpapierrechnung Hongkong
+Geschäft Kommissionsgeschäft
+Börse Frankfurt - Deutsche Börse - Frankfurter Wertpapierbörse
+Belegnummer 6978580640 / 890153444 Schlusstag/-zeit MEZ 24.02.2026 / 08:02
+Auftragsart Limitauftrag
+Abrechnung Währung Betrag
+Kurswert EUR 8.200,00
+Provision EUR -20,50
+Weitere Provision der Bank bei der börslichen Orderausführung EUR -4,50
+Fremde Spesen und Auslagen EUR -4,92
+Kapitalertragsteuer EUR -933,16
+Solidaritätszuschlag auf Kapitalertragsteuer EUR -51,32
+Gutschrift
+Buchung auf Kontonummer EUR 7.185,60
+ 3854999 51 mit Wertstellung 26.02.2026
+Summe der in der Abrechnung enthaltenen Provisionen und Auslagen EUR 29,92
+Informationen zum Steuerabzug 
+- keine Steuerbescheinigung Währung Betrag
+  -
+Veräußerungsgewinn EUR 4.013,62
+Auf Ihren Freistellungsbetrag angerechnet EUR 281,00
+KESt-pflichtiger Kapitalertrag EUR 3.732,62
+Vorsitzender des Aufsichtsrats: Alexander R. Wynaendts
+Vorstand: Christian Sewing (Vorsitzender), James von Moltke, Raja Akram, Fabrizio Campelli, Marcus Chromik, Bernd Leukert, Alexander von zur Mühlen, Laura Padovani, 
+Claudio de Sanctis, Rebecca Short
+Deutsche Bank Aktiengesellschaft mit Sitz in Frankfurt am Main; Amtsgericht Frankfurt am Main, HRB Nr. 30 000; Umsatzsteuer-Id.-Nr. DE114103379; www.db.com/de
+TR00000001 20260224 619_000_
+  
+Zu dem abgerechneten Geschäft haben wir keine Empfehlung gegeben. Daher liegt keine entsprechende 
+Beratungsdokumentation vor.
+Die Wertpapiere haben wir entsprechend der Abrechnung gebucht. Unser Geschäftsverkehr mit Ihnen wird durch unsere Allgemeinen Geschäftsbedingungen 
+und die Sonderbedingungen für Wertpapiergeschäfte geregelt. Bitte überprüfen Sie diese Abrechnung schnellstmöglich und richten Sie etwaige Einwendungen 
+in den Geschäftsräumen der Bank oder schriftlich an Deutsche Bank AG, QM - Support, 04082 Leipzig. Andernfalls gilt diese Abrechnung als genehmigt. 
+Die unter § 4 Nr. 8 UStG im Inland fallenden Bank- und Finanzdienstleistungen sind von der Umsatzsteuer befreit, sofern Umsatzsteuer nicht gesondert 
+ausgewiesen ist. Soweit der Leistungsempfänger umsatzsteuerlicher Unternehmer ist und seinen Sitz in einem anderen EU-Mitgliedstaat hat und die Bank 
+und Finanzdienstleistungen nach dortigem Recht umsatzsteuerpflichtig sind, gilt die Steuerschuldnerschaft des Leistungsempfängers. Umsatzsteuer ID Nr.: 
+Deutsche Bank AG, 60262 Frankfurt DE114103379
