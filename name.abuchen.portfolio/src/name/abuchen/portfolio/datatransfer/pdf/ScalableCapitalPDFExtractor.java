@@ -717,7 +717,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                             var item = new TransactionItem(t);
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                return new SkippedItem(item, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             return item;
                         });
