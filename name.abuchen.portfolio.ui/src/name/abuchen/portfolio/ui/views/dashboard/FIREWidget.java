@@ -138,7 +138,8 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                                             delegate.getClient().getBaseCurrency())
                             : Messages.LabelFIREClickToSet;
             manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME,
-                            new LabelOnly(Messages.LabelFIRENumber + ": " + display));
+                            new LabelOnly(MessageFormat.format(Messages.LabelColonSeparated, Messages.LabelFIRENumber,
+                                            display)));
         }
 
         @Override
@@ -148,7 +149,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                             ? ((FIREWidget) delegate).formatMoneyShort(fireNumber,
                                             delegate.getClient().getBaseCurrency())
                             : Messages.LabelFIREClickToSet;
-            return Messages.LabelFIRENumber + ": " + display;
+            return MessageFormat.format(Messages.LabelColonSeparated, Messages.LabelFIRENumber, display);
         }
 
     }
@@ -204,7 +205,8 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                                             delegate.getClient().getBaseCurrency())
                             : Messages.LabelFIREClickToSet;
             manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME,
-                            new LabelOnly(Messages.LabelFIREMonthlySavings + ": " + display));
+                            new LabelOnly(MessageFormat.format(Messages.LabelColonSeparated,
+                                            Messages.LabelFIREMonthlySavings, display)));
         }
 
         @Override
@@ -214,7 +216,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                             ? ((FIREWidget) delegate).formatMoneyShort(monthlySavings,
                                             delegate.getClient().getBaseCurrency())
                             : Messages.LabelFIREClickToSet;
-            return Messages.LabelFIREMonthlySavings + ": " + display;
+            return MessageFormat.format(Messages.LabelColonSeparated, Messages.LabelFIREMonthlySavings, display);
         }
 
     }
@@ -264,14 +266,15 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         {
             String display = returns != null ? Values.Percent2.format(returns) : Messages.LabelFIREClickToSet;
             manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME,
-                            new LabelOnly(Messages.LabelFIREReturns + ": " + display));
+                            new LabelOnly(MessageFormat.format(Messages.LabelColonSeparated, Messages.LabelFIREReturns,
+                                            display)));
         }
 
         @Override
         public String getLabel()
         {
             String display = returns != null ? Values.Percent2.format(returns) : Messages.LabelFIREClickToSet;
-            return Messages.LabelFIREReturns + ": " + display;
+            return MessageFormat.format(Messages.LabelColonSeparated, Messages.LabelFIREReturns, display);
         }
     }
 
@@ -314,7 +317,8 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         // Current Net Worth (first row)
         new Label(container, SWT.NONE); // Empty sign column
         Label currentValueLbl = new Label(container, SWT.NONE);
-        currentValueLbl.setText(Messages.LabelFIRECurrentNetWorth + ":");
+        currentValueLbl.setText(MessageFormat.format(Messages.LabelColonSeparated, Messages.LabelFIRECurrentNetWorth,
+                        "")); //$NON-NLS-1$
         currentValueLbl.setBackground(container.getBackground());
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(currentValueLbl);
 
@@ -326,7 +330,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         // FIRE Number (second row, editable when clicked)
         new Label(container, SWT.NONE); // Empty sign column
         Label fireNumberLbl = new Label(container, SWT.NONE);
-        fireNumberLbl.setText(Messages.LabelFIRENumber + ":");
+        fireNumberLbl.setText(MessageFormat.format(Messages.LabelColonSeparated, Messages.LabelFIRENumber, "")); //$NON-NLS-1$
         fireNumberLbl.setBackground(container.getBackground());
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(fireNumberLbl);
 
@@ -396,7 +400,8 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         // Est. Monthly Savings (editable when clicked)
         new Label(container, SWT.NONE); // Empty sign column
         Label monthlySavingsLbl = new Label(container, SWT.NONE);
-        monthlySavingsLbl.setText(Messages.LabelFIREMonthlySavings + ":");
+        monthlySavingsLbl.setText(
+                        MessageFormat.format(Messages.LabelColonSeparated, Messages.LabelFIREMonthlySavings, "")); //$NON-NLS-1$
         monthlySavingsLbl.setBackground(container.getBackground());
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(monthlySavingsLbl);
 
@@ -465,7 +470,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         // Est. Returns (editable when clicked)
         new Label(container, SWT.NONE); // Empty sign column
         Label twrorLbl = new Label(container, SWT.NONE);
-        twrorLbl.setText(Messages.LabelFIREReturns + ":");
+        twrorLbl.setText(MessageFormat.format(Messages.LabelColonSeparated, Messages.LabelFIREReturns, "")); //$NON-NLS-1$
         twrorLbl.setBackground(container.getBackground());
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(twrorLbl);
 
@@ -534,7 +539,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         // Time to FIRE
         new Label(container, SWT.NONE); // Empty sign column
         Label timeToFireLbl = new Label(container, SWT.NONE);
-        timeToFireLbl.setText(Messages.LabelFIRETimeToFIRE + ":");
+        timeToFireLbl.setText(MessageFormat.format(Messages.LabelColonSeparated, Messages.LabelFIRETimeToFIRE, "")); //$NON-NLS-1$
         timeToFireLbl.setBackground(container.getBackground());
         timeToFireLbl.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(timeToFireLbl);
@@ -548,7 +553,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         // FIRE Date
         new Label(container, SWT.NONE); // Empty sign column
         Label targetDateLbl = new Label(container, SWT.NONE);
-        targetDateLbl.setText(Messages.LabelFIRETargetDate + ":");
+        targetDateLbl.setText(MessageFormat.format(Messages.LabelColonSeparated, Messages.LabelFIRETargetDate, "")); //$NON-NLS-1$
         targetDateLbl.setBackground(container.getBackground());
         targetDateLbl.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(targetDateLbl);
