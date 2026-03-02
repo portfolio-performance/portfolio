@@ -727,7 +727,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                         newValue -> get(FIREMonthlySavingsConfig.class).setMonthlySavings(newValue),
                         DEFAULT_MONTHLY_SAVINGS_INPUT);
     }
-    
+
     private void cancelFireNumberEditing()
     {
         Money currentFireNumber = get(FIRENumberConfig.class).getFireNumber();
@@ -884,6 +884,28 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         return false;
     }
 
+    private boolean isTimeToFireCapped(FIREData data)
+    {
+        if (data.getCurrentValue() == null || data.getFireNumber() == null || data.getMonthlySavings() == null
+                        || Double.isNaN(data.getTwror()) || data.getTimeToFire() < MAX_TIME_TO_FIRE_YEARS - EPSILON_MONTHS / 12.0)
+            return false;
+
+        long monthlySavings = data.getMonthlySavings().getAmount();
+        if (monthlySavings <= 0)
+            return false;
+
+        double monthlyReturn = Math.pow(1.0 + data.getTwror(), 1.0 / 12.0) - 1.0;
+        if (monthlyReturn <= 0)
+            return false;
+
+        double maxMonths = MAX_TIME_TO_FIRE_YEARS * 12.0;
+        double powerTerm = Math.pow(1 + monthlyReturn, maxMonths);
+        double projectedValue = data.getCurrentValue().getAmount() * powerTerm
+                        + monthlySavings * ((powerTerm - 1) / monthlyReturn);
+
+        return projectedValue < data.getFireNumber().getAmount();
+    }
+
     private String formatMoneyShort(Money money, String currency)
     {
         long roundedAmount = (money.getAmount() / 100) * 100;
@@ -950,7 +972,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             targetDateLabel.setText("-");
             targetDateLabel.setTextColor(Colors.theme().defaultForeground());
         }
-        else if (data.getTimeToFire() >= MAX_TIME_TO_FIRE_YEARS - EPSILON_MONTHS / 12.0)
+        else if (isTimeToFireCapped(data))
         {
             String cappedYears = MessageFormat.format(Messages.LabelMetricYearsFormatter, MAX_TIME_TO_FIRE_YEARS);
             timeToFireLabel.setText(cappedYears + "+"); //$NON-NLS-1$
