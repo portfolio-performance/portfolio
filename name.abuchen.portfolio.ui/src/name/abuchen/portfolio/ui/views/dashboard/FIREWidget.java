@@ -46,7 +46,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
     private static final double MAX_TIME_TO_FIRE_YEARS = 50;
     private static final double EPSILON_MONTHS = 0.01;
     private static final String DEFAULT_FIRE_NUMBER_INPUT = "1500000"; //$NON-NLS-1$
-    private static final String DEFAULT_MONTHLY_SAVINGS_INPUT = "500000"; //$NON-NLS-1$
+    private static final String DEFAULT_MONTHLY_SAVINGS_INPUT = "5000"; //$NON-NLS-1$
 
     public static class FIREData
     {
