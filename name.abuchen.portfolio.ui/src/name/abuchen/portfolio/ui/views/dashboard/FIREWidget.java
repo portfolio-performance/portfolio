@@ -48,23 +48,17 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
     private static final String DEFAULT_FIRE_NUMBER_INPUT = "1500000"; //$NON-NLS-1$
     private static final String DEFAULT_MONTHLY_SAVINGS_INPUT = "5000"; //$NON-NLS-1$
 
-    public static class FIREData
+    public record FIREData(Money fireNumber, Money currentValue, Money monthlySavings, double twror, double timeToFire,
+                    LocalDate targetDate)
     {
-        private Money fireNumber;
-        private Money currentValue;
-        private Money monthlySavings;
-        private double twror = Double.NaN;
-        private double timeToFire = Double.NaN;
-        private LocalDate targetDate;
+        public FIREData()
+        {
+            this(null, null, null, Double.NaN, Double.NaN, null);
+        }
 
         public Money getFireNumber()
         {
             return fireNumber;
-        }
-
-        public void setFireNumber(Money fireNumber)
-        {
-            this.fireNumber = fireNumber;
         }
 
         public Money getCurrentValue()
@@ -72,19 +66,9 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             return currentValue;
         }
 
-        public void setCurrentValue(Money currentValue)
-        {
-            this.currentValue = currentValue;
-        }
-
         public Money getMonthlySavings()
         {
             return monthlySavings;
-        }
-
-        public void setMonthlySavings(Money monthlySavings)
-        {
-            this.monthlySavings = monthlySavings;
         }
 
         public double getTwror()
@@ -92,29 +76,14 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             return twror;
         }
 
-        public void setTwror(double twror)
-        {
-            this.twror = twror;
-        }
-
         public double getTimeToFire()
         {
             return timeToFire;
         }
 
-        public void setTimeToFire(double timeToFire)
-        {
-            this.timeToFire = timeToFire;
-        }
-
         public LocalDate getTargetDate()
         {
             return targetDate;
-        }
-
-        public void setTargetDate(LocalDate targetDate)
-        {
-            this.targetDate = targetDate;
         }
     }
 
@@ -606,13 +575,11 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
     public Supplier<FIREData> getUpdateTask()
     {
         return () -> {
-            FIREData data = new FIREData();
-
-            // Get user input FIRE number
-            data.setFireNumber(get(FIRENumberConfig.class).getFireNumber());
+            Money fireNumber = get(FIRENumberConfig.class).getFireNumber();
 
             // Calculate current portfolio value using the first (default) data
             // series
+            Money currentValue = null;
             var availableSeries = getDashboardData().getDataSeriesSet().getAvailableSeries();
             if (!availableSeries.isEmpty())
             {
@@ -624,35 +591,31 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                 long[] totals = index.getTotals();
                 if (totals.length > 0)
                 {
-                    data.setCurrentValue(Money.of(index.getCurrency(), totals[totals.length - 1]));
+                    currentValue = Money.of(index.getCurrency(), totals[totals.length - 1]);
                 }
             }
 
             // Get user input monthly savings and returns
-            data.setMonthlySavings(get(FIREMonthlySavingsConfig.class).getMonthlySavings());
+            Money monthlySavings = get(FIREMonthlySavingsConfig.class).getMonthlySavings();
             Double userReturns = get(FIREReturnsConfig.class).getReturns();
-            if (userReturns != null)
-            {
-                data.setTwror(userReturns);
-            }
+            double twror = userReturns != null ? userReturns : Double.NaN;
 
             // Calculate years to FIRE and target date
-            if (data.getFireNumber() != null && data.getCurrentValue() != null && data.getMonthlySavings() != null
-                            && !Double.isNaN(data.getTwror()))
+            double timeToFire = Double.NaN;
+            LocalDate targetDate = null;
+            if (fireNumber != null && currentValue != null && monthlySavings != null && !Double.isNaN(twror))
             {
-                double timeToFire = calculateTimeToFIRE(data.getCurrentValue().getAmount(),
-                                data.getFireNumber().getAmount(), data.getMonthlySavings().getAmount(),
-                                data.getTwror());
-                data.setTimeToFire(timeToFire);
+                timeToFire = calculateTimeToFIRE(currentValue.getAmount(), fireNumber.getAmount(),
+                                monthlySavings.getAmount(), twror);
 
                 if (timeToFire > 0 && timeToFire < MAX_TIME_TO_FIRE_YEARS - EPSILON_MONTHS / 12.0) // avoid setting a misleading capped date
                 {
                     long daysToAdd = Math.round(timeToFire * 365.25);
-                    data.setTargetDate(LocalDate.now().plusDays(daysToAdd));
+                    targetDate = LocalDate.now().plusDays(daysToAdd);
                 }
             }
 
-            return data;
+            return new FIREData(fireNumber, currentValue, monthlySavings, twror, timeToFire, targetDate);
         };
     }
 
