@@ -15,6 +15,7 @@ import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
@@ -337,7 +338,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         fireNumberInput = new Text(container, SWT.BORDER | SWT.RIGHT);
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(fireNumberInput);
         fireNumberInput.setVisible(false);
-        ((org.eclipse.swt.layout.GridData) fireNumberInput.getLayoutData()).exclude = true;
+        ((GridData) fireNumberInput.getLayoutData()).exclude = true;
 
         Money currentFireNumber = get(FIRENumberConfig.class).getFireNumber();
         String currency = getDashboardData().getClient().getBaseCurrency();
@@ -407,7 +408,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         monthlySavingsInput = new Text(container, SWT.BORDER | SWT.RIGHT);
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(monthlySavingsInput);
         monthlySavingsInput.setVisible(false);
-        ((org.eclipse.swt.layout.GridData) monthlySavingsInput.getLayoutData()).exclude = true;
+        ((GridData) monthlySavingsInput.getLayoutData()).exclude = true;
 
         Money currentMonthlySavings = get(FIREMonthlySavingsConfig.class).getMonthlySavings();
         if (currentMonthlySavings != null)
@@ -476,7 +477,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         twrorInput = new Text(container, SWT.BORDER | SWT.RIGHT);
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(twrorInput);
         twrorInput.setVisible(false);
-        ((org.eclipse.swt.layout.GridData) twrorInput.getLayoutData()).exclude = true;
+        ((GridData) twrorInput.getLayoutData()).exclude = true;
 
         Double currentReturns = get(FIREReturnsConfig.class).getReturns();
         if (currentReturns != null)
@@ -790,10 +791,10 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
     private void showInput(ColoredLabel label, Text input)
     {
         label.setVisible(false);
-        ((org.eclipse.swt.layout.GridData) label.getLayoutData()).exclude = true;
+        ((GridData) label.getLayoutData()).exclude = true;
 
         input.setVisible(true);
-        ((org.eclipse.swt.layout.GridData) input.getLayoutData()).exclude = false;
+        ((GridData) input.getLayoutData()).exclude = false;
 
         container.layout(true);
         input.setFocus();
@@ -803,10 +804,10 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
     private void showLabel(ColoredLabel label, Text input)
     {
         input.setVisible(false);
-        ((org.eclipse.swt.layout.GridData) input.getLayoutData()).exclude = true;
+        ((GridData) input.getLayoutData()).exclude = true;
 
         label.setVisible(true);
-        ((org.eclipse.swt.layout.GridData) label.getLayoutData()).exclude = false;
+        ((GridData) label.getLayoutData()).exclude = false;
 
         container.layout(true);
     }
