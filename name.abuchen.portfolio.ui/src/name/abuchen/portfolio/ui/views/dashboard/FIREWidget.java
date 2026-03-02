@@ -41,6 +41,8 @@ import name.abuchen.portfolio.util.TextUtil;
 public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
 {
     private static final double DEFAULT_RETURNS = 0.07;
+    private static final double MAX_TIME_TO_FIRE_YEARS = 50;
+    private static final double EPSILON_MONTHS = 0.01;
 
     public static class FIREData
     {
@@ -619,7 +621,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                                 data.getTwror());
                 data.setTimeToFire(timeToFire);
 
-                if (timeToFire > 0 && timeToFire < 100) // reasonable bounds
+                if (timeToFire > 0 && timeToFire < MAX_TIME_TO_FIRE_YEARS - EPSILON_MONTHS / 12.0) // avoid setting a misleading capped date
                 {
                     long daysToAdd = Math.round(timeToFire * 365.25);
                     data.setTargetDate(LocalDate.now().plusDays(daysToAdd));
@@ -667,10 +669,9 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
 
         // Use binary search to find n
         double low = 0;
-        double high = 600; // max 50 years
-        double epsilon = 0.01; // precision to 0.01 months
+        double high = MAX_TIME_TO_FIRE_YEARS * 12.0;
 
-        while (high - low > epsilon)
+        while (high - low > EPSILON_MONTHS)
         {
             double mid = (low + high) / 2.0;
             double powerTerm = Math.pow(1 + r, mid);
@@ -857,6 +858,14 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         if (data.getFireNumber() == null || Double.isNaN(data.getTimeToFire()))
         {
             timeToFireLabel.setText("-");
+            timeToFireLabel.setTextColor(Colors.theme().defaultForeground());
+            targetDateLabel.setText("-");
+            targetDateLabel.setTextColor(Colors.theme().defaultForeground());
+        }
+        else if (data.getTimeToFire() >= MAX_TIME_TO_FIRE_YEARS - EPSILON_MONTHS / 12.0)
+        {
+            String cappedYears = MessageFormat.format(Messages.LabelMetricYearsFormatter, MAX_TIME_TO_FIRE_YEARS);
+            timeToFireLabel.setText(cappedYears + "+"); //$NON-NLS-1$
             timeToFireLabel.setTextColor(Colors.theme().defaultForeground());
             targetDateLabel.setText("-");
             targetDateLabel.setTextColor(Colors.theme().defaultForeground());
