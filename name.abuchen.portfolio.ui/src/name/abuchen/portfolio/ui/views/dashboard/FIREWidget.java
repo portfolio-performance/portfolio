@@ -19,7 +19,9 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.Dashboard;
@@ -43,6 +45,8 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
     private static final double DEFAULT_RETURNS = 0.07;
     private static final double MAX_TIME_TO_FIRE_YEARS = 50;
     private static final double EPSILON_MONTHS = 0.01;
+    private static final String DEFAULT_FIRE_NUMBER_INPUT = "1500000"; //$NON-NLS-1$
+    private static final String DEFAULT_MONTHLY_SAVINGS_INPUT = "500000"; //$NON-NLS-1$
 
     public static class FIREData
     {
@@ -312,6 +316,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
     private Text twrorInput;
     private ColoredLabel timeToFireLabel;
     private ColoredLabel targetDateLabel;
+    private Listener clickOutsideCancelListener;
 
     public FIREWidget(Widget widget, DashboardData dashboardData)
     {
@@ -375,7 +380,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         else
         {
             fireNumberLabel.setText(Messages.LabelFIREClickToSet);
-            fireNumberInput.setText("1500000"); // Default for editing
+            fireNumberInput.setText(DEFAULT_FIRE_NUMBER_INPUT); // Default for editing
         }
 
         // Click on label to edit
@@ -394,7 +399,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             @Override
             public void focusLost(FocusEvent e)
             {
-                commitFireNumber();
+                cancelFireNumberEditing();
                 showLabel(fireNumberLabel, fireNumberInput);
             }
         });
@@ -408,6 +413,11 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                 if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR)
                 {
                     commitFireNumber();
+                    showLabel(fireNumberLabel, fireNumberInput);
+                }
+                else if (e.keyCode == SWT.ESC)
+                {
+                    cancelFireNumberEditing();
                     showLabel(fireNumberLabel, fireNumberInput);
                 }
             }
@@ -439,7 +449,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         else
         {
             monthlySavingsLabel.setText(Messages.LabelFIREClickToSet);
-            monthlySavingsInput.setText("500000"); // Default $5000 for editing
+            monthlySavingsInput.setText(DEFAULT_MONTHLY_SAVINGS_INPUT); // Default $5000 for editing
         }
 
         // Click on label to edit
@@ -458,7 +468,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             @Override
             public void focusLost(FocusEvent e)
             {
-                commitMonthlySavings();
+                cancelMonthlySavingsEditing();
                 showLabel(monthlySavingsLabel, monthlySavingsInput);
             }
         });
@@ -472,6 +482,11 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                 if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR)
                 {
                     commitMonthlySavings();
+                    showLabel(monthlySavingsLabel, monthlySavingsInput);
+                }
+                else if (e.keyCode == SWT.ESC)
+                {
+                    cancelMonthlySavingsEditing();
                     showLabel(monthlySavingsLabel, monthlySavingsInput);
                 }
             }
@@ -522,7 +537,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             @Override
             public void focusLost(FocusEvent e)
             {
-                commitReturns();
+                cancelReturnsEditing();
                 showLabel(twrorLabel, twrorInput);
             }
         });
@@ -536,6 +551,11 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                 if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR)
                 {
                     commitReturns();
+                    showLabel(twrorLabel, twrorInput);
+                }
+                else if (e.keyCode == SWT.ESC)
+                {
+                    cancelReturnsEditing();
                     showLabel(twrorLabel, twrorInput);
                 }
             }
@@ -568,6 +588,10 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         targetDateLabel.setText("");
         targetDateLabel.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(targetDateLabel);
+
+        clickOutsideCancelListener = this::handleClickOutsideActiveEditor;
+        container.getDisplay().addFilter(SWT.MouseDown, clickOutsideCancelListener);
+        container.addDisposeListener(e -> container.getDisplay().removeFilter(SWT.MouseDown, clickOutsideCancelListener));
 
         return container;
     }
@@ -693,14 +717,33 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
     private void commitFireNumber()
     {
         commitMoneyField(fireNumberInput, fireNumberLabel, get(FIRENumberConfig.class).getFireNumber(),
-                        newValue -> get(FIRENumberConfig.class).setFireNumber(newValue), "1500000"); //$NON-NLS-1$
+                        newValue -> get(FIRENumberConfig.class).setFireNumber(newValue), DEFAULT_FIRE_NUMBER_INPUT);
     }
 
     private void commitMonthlySavings()
     {
         commitMoneyField(monthlySavingsInput, monthlySavingsLabel,
                         get(FIREMonthlySavingsConfig.class).getMonthlySavings(),
-                        newValue -> get(FIREMonthlySavingsConfig.class).setMonthlySavings(newValue), "500000"); //$NON-NLS-1$
+                        newValue -> get(FIREMonthlySavingsConfig.class).setMonthlySavings(newValue),
+                        DEFAULT_MONTHLY_SAVINGS_INPUT);
+    }
+    
+    private void cancelFireNumberEditing()
+    {
+        Money currentFireNumber = get(FIRENumberConfig.class).getFireNumber();
+        if (currentFireNumber != null)
+            fireNumberInput.setText(Values.Amount.format(currentFireNumber.getAmount()));
+        else
+            fireNumberInput.setText(DEFAULT_FIRE_NUMBER_INPUT);
+    }
+
+    private void cancelMonthlySavingsEditing()
+    {
+        Money currentMonthlySavings = get(FIREMonthlySavingsConfig.class).getMonthlySavings();
+        if (currentMonthlySavings != null)
+            monthlySavingsInput.setText(Values.Amount.format(currentMonthlySavings.getAmount()));
+        else
+            monthlySavingsInput.setText(DEFAULT_MONTHLY_SAVINGS_INPUT);
     }
 
     private void commitReturns()
@@ -733,6 +776,15 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                 twrorInput.setText(getDefaultReturnsInput());
             }
         }
+    }
+
+    private void cancelReturnsEditing()
+    {
+        Double currentReturns = get(FIREReturnsConfig.class).getReturns();
+        if (currentReturns != null)
+            twrorInput.setText(Values.Percent.format(currentReturns));
+        else
+            twrorInput.setText(getDefaultReturnsInput());
     }
 
     private String getDefaultReturnsInput()
@@ -794,6 +846,42 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         ((org.eclipse.swt.layout.GridData) label.getLayoutData()).exclude = false;
 
         container.layout(true);
+    }
+
+    private void handleClickOutsideActiveEditor(Event event)
+    {
+        if (!(event.widget instanceof Control clickedControl))
+            return;
+
+        if (fireNumberInput.isVisible() && !isSameOrDescendant(clickedControl, fireNumberInput))
+        {
+            cancelFireNumberEditing();
+            showLabel(fireNumberLabel, fireNumberInput);
+        }
+
+        if (monthlySavingsInput.isVisible() && !isSameOrDescendant(clickedControl, monthlySavingsInput))
+        {
+            cancelMonthlySavingsEditing();
+            showLabel(monthlySavingsLabel, monthlySavingsInput);
+        }
+
+        if (twrorInput.isVisible() && !isSameOrDescendant(clickedControl, twrorInput))
+        {
+            cancelReturnsEditing();
+            showLabel(twrorLabel, twrorInput);
+        }
+    }
+
+    private boolean isSameOrDescendant(Control control, Control possibleParent)
+    {
+        Control current = control;
+        while (current != null)
+        {
+            if (current == possibleParent)
+                return true;
+            current = current.getParent();
+        }
+        return false;
     }
 
     private String formatMoneyShort(Money money, String currency)
