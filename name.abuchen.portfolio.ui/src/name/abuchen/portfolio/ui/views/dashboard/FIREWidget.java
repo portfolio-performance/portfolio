@@ -36,6 +36,7 @@ import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.StringToCurrencyConverter;
 import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TextUtil;
 
@@ -296,6 +297,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         addConfig(new FIRENumberConfig(this));
         addConfig(new FIREMonthlySavingsConfig(this));
         addConfig(new FIREReturnsConfig(this));
+        addConfig(new DataSeriesConfig(this, false));
     }
 
     @Override
@@ -581,16 +583,15 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         return () -> {
             Money fireNumber = get(FIRENumberConfig.class).getFireNumber();
 
-            // Calculate current portfolio value using the first (default) data
-            // series
+            // Calculate current portfolio value using the configured data series
             Money currentValue = null;
-            var availableSeries = getDashboardData().getDataSeriesSet().getAvailableSeries();
-            if (!availableSeries.isEmpty())
+            DataSeries dataSeries = get(DataSeriesConfig.class).getDataSeries();
+            if (dataSeries != null)
             {
                 // Use last 1 year for current value calculation
                 LocalDate now = LocalDate.now();
                 Interval interval = Interval.of(now.minusYears(1), now);
-                PerformanceIndex index = getDashboardData().calculate(availableSeries.get(0), interval);
+                PerformanceIndex index = getDashboardData().calculate(dataSeries, interval);
 
                 long[] totals = index.getTotals();
                 if (totals.length > 0)
