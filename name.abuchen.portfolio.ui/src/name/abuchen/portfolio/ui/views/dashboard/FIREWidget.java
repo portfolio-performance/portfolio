@@ -87,6 +87,10 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         }
     }
 
+    private record EditableRow(ColoredLabel valueLabel, Text input)
+    {
+    }
+
     private abstract static class MoneyWidgetConfig implements WidgetConfig
     {
         private final WidgetDelegate<?> delegate;
@@ -293,22 +297,11 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         currentValueLabel.setText("");
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(currentValueLabel);
 
-        // FIRE Number (second row, editable when clicked)
-        new Label(container, SWT.NONE); // Empty sign column
-        Label fireNumberLbl = new Label(container, SWT.NONE);
-        fireNumberLbl.setText(MessageFormat.format(Messages.LabelColonSeparated, Messages.LabelFIRENumber, "")); //$NON-NLS-1$
-        fireNumberLbl.setBackground(container.getBackground());
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(fireNumberLbl);
-
-        // Create both label and text field, initially show only label
-        fireNumberLabel = new ColoredLabel(container, SWT.RIGHT);
-        fireNumberLabel.setBackground(Colors.theme().defaultBackground());
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(fireNumberLabel);
-
-        fireNumberInput = new Text(container, SWT.BORDER | SWT.RIGHT);
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(fireNumberInput);
-        fireNumberInput.setVisible(false);
-        ((GridData) fireNumberInput.getLayoutData()).exclude = true;
+        // FIRE Number (second row, editable)
+        EditableRow fireNumberRow = createEditableRow(Messages.LabelFIRENumber, this::commitFireNumber,
+                        this::cancelFireNumberEditing);
+        fireNumberLabel = fireNumberRow.valueLabel();
+        fireNumberInput = fireNumberRow.input();
 
         Money currentFireNumber = get(FIRENumberConfig.class).getFireNumber();
         String currency = getDashboardData().getClient().getBaseCurrency();
@@ -323,63 +316,11 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             fireNumberInput.setText(DEFAULT_FIRE_NUMBER_INPUT); // Default for editing
         }
 
-        // Click on label to edit
-        fireNumberLabel.addMouseListener(new MouseAdapter()
-        {
-            @Override
-            public void mouseDown(MouseEvent e)
-            {
-                showInput(fireNumberLabel, fireNumberInput);
-            }
-        });
-
-        // Focus lost - hide text input
-        fireNumberInput.addFocusListener(new FocusAdapter()
-        {
-            @Override
-            public void focusLost(FocusEvent e)
-            {
-                cancelFireNumberEditing();
-                showLabel(fireNumberLabel, fireNumberInput);
-            }
-        });
-
-        // Enter key - finish editing
-        fireNumberInput.addKeyListener(new KeyAdapter()
-        {
-            @Override
-            public void keyPressed(KeyEvent e)
-            {
-                if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR)
-                {
-                    commitFireNumber();
-                    showLabel(fireNumberLabel, fireNumberInput);
-                }
-                else if (e.keyCode == SWT.ESC)
-                {
-                    cancelFireNumberEditing();
-                    showLabel(fireNumberLabel, fireNumberInput);
-                }
-            }
-        });
-
-        // Est. Monthly Savings (editable when clicked)
-        new Label(container, SWT.NONE); // Empty sign column
-        Label monthlySavingsLbl = new Label(container, SWT.NONE);
-        monthlySavingsLbl.setText(
-                        MessageFormat.format(Messages.LabelColonSeparated, Messages.LabelFIREMonthlySavings, "")); //$NON-NLS-1$
-        monthlySavingsLbl.setBackground(container.getBackground());
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(monthlySavingsLbl);
-
-        // Create both label and text field, initially show only label
-        monthlySavingsLabel = new ColoredLabel(container, SWT.RIGHT);
-        monthlySavingsLabel.setBackground(Colors.theme().defaultBackground());
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(monthlySavingsLabel);
-
-        monthlySavingsInput = new Text(container, SWT.BORDER | SWT.RIGHT);
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(monthlySavingsInput);
-        monthlySavingsInput.setVisible(false);
-        ((GridData) monthlySavingsInput.getLayoutData()).exclude = true;
+        // Est. Monthly Savings (editable)
+        EditableRow monthlySavingsRow = createEditableRow(Messages.LabelFIREMonthlySavings, this::commitMonthlySavings,
+                        this::cancelMonthlySavingsEditing);
+        monthlySavingsLabel = monthlySavingsRow.valueLabel();
+        monthlySavingsInput = monthlySavingsRow.input();
 
         Money currentMonthlySavings = get(FIREMonthlySavingsConfig.class).getMonthlySavings();
         if (currentMonthlySavings != null)
@@ -393,62 +334,11 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             monthlySavingsInput.setText(DEFAULT_MONTHLY_SAVINGS_INPUT); // Default $5000 for editing
         }
 
-        // Click on label to edit
-        monthlySavingsLabel.addMouseListener(new MouseAdapter()
-        {
-            @Override
-            public void mouseDown(MouseEvent e)
-            {
-                showInput(monthlySavingsLabel, monthlySavingsInput);
-            }
-        });
-
-        // Focus lost - hide text input
-        monthlySavingsInput.addFocusListener(new FocusAdapter()
-        {
-            @Override
-            public void focusLost(FocusEvent e)
-            {
-                cancelMonthlySavingsEditing();
-                showLabel(monthlySavingsLabel, monthlySavingsInput);
-            }
-        });
-
-        // Enter key - finish editing
-        monthlySavingsInput.addKeyListener(new KeyAdapter()
-        {
-            @Override
-            public void keyPressed(KeyEvent e)
-            {
-                if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR)
-                {
-                    commitMonthlySavings();
-                    showLabel(monthlySavingsLabel, monthlySavingsInput);
-                }
-                else if (e.keyCode == SWT.ESC)
-                {
-                    cancelMonthlySavingsEditing();
-                    showLabel(monthlySavingsLabel, monthlySavingsInput);
-                }
-            }
-        });
-
-        // Est. Returns (editable when clicked)
-        new Label(container, SWT.NONE); // Empty sign column
-        Label twrorLbl = new Label(container, SWT.NONE);
-        twrorLbl.setText(MessageFormat.format(Messages.LabelColonSeparated, Messages.LabelFIREReturns, "")); //$NON-NLS-1$
-        twrorLbl.setBackground(container.getBackground());
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(twrorLbl);
-
-        // Create both label and text field, initially show only label
-        twrorLabel = new ColoredLabel(container, SWT.RIGHT);
-        twrorLabel.setBackground(Colors.theme().defaultBackground());
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(twrorLabel);
-
-        twrorInput = new Text(container, SWT.BORDER | SWT.RIGHT);
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(twrorInput);
-        twrorInput.setVisible(false);
-        ((GridData) twrorInput.getLayoutData()).exclude = true;
+        // Est. Returns (editable)
+        EditableRow returnsRow = createEditableRow(Messages.LabelFIREReturns, this::commitReturns,
+                        this::cancelReturnsEditing);
+        twrorLabel = returnsRow.valueLabel();
+        twrorInput = returnsRow.input();
 
         Double currentReturns = get(FIREReturnsConfig.class).getReturns();
         if (currentReturns != null)
@@ -461,46 +351,6 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             twrorLabel.setText(Messages.LabelFIREClickToSet);
             twrorInput.setText(getDefaultReturnsInput());
         }
-
-        // Click on label to edit
-        twrorLabel.addMouseListener(new MouseAdapter()
-        {
-            @Override
-            public void mouseDown(MouseEvent e)
-            {
-                showInput(twrorLabel, twrorInput);
-            }
-        });
-
-        // Focus lost - hide text input
-        twrorInput.addFocusListener(new FocusAdapter()
-        {
-            @Override
-            public void focusLost(FocusEvent e)
-            {
-                cancelReturnsEditing();
-                showLabel(twrorLabel, twrorInput);
-            }
-        });
-
-        // Enter key - finish editing
-        twrorInput.addKeyListener(new KeyAdapter()
-        {
-            @Override
-            public void keyPressed(KeyEvent e)
-            {
-                if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR)
-                {
-                    commitReturns();
-                    showLabel(twrorLabel, twrorInput);
-                }
-                else if (e.keyCode == SWT.ESC)
-                {
-                    cancelReturnsEditing();
-                    showLabel(twrorLabel, twrorInput);
-                }
-            }
-        });
 
         // Time to FIRE
         new Label(container, SWT.NONE); // Empty sign column
@@ -756,6 +606,63 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                 input.setText(defaultInput);
             }
         }
+    }
+
+    private EditableRow createEditableRow(String rowLabelText, Runnable onCommit, Runnable onCancel)
+    {
+        new Label(container, SWT.NONE); // Empty sign column
+        Label rowLabel = new Label(container, SWT.NONE);
+        rowLabel.setText(MessageFormat.format(Messages.LabelColonSeparated, rowLabelText, "")); //$NON-NLS-1$
+        rowLabel.setBackground(container.getBackground());
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(rowLabel);
+
+        ColoredLabel valueLabel = new ColoredLabel(container, SWT.RIGHT);
+        valueLabel.setBackground(Colors.theme().defaultBackground());
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(valueLabel);
+
+        Text input = new Text(container, SWT.BORDER | SWT.RIGHT);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(input);
+        input.setVisible(false);
+        ((GridData) input.getLayoutData()).exclude = true;
+
+        valueLabel.addMouseListener(new MouseAdapter()
+        {
+            @Override
+            public void mouseDown(MouseEvent e)
+            {
+                showInput(valueLabel, input);
+            }
+        });
+
+        input.addFocusListener(new FocusAdapter()
+        {
+            @Override
+            public void focusLost(FocusEvent e)
+            {
+                onCancel.run();
+                showLabel(valueLabel, input);
+            }
+        });
+
+        input.addKeyListener(new KeyAdapter()
+        {
+            @Override
+            public void keyPressed(KeyEvent e)
+            {
+                if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR)
+                {
+                    onCommit.run();
+                    showLabel(valueLabel, input);
+                }
+                else if (e.keyCode == SWT.ESC)
+                {
+                    onCancel.run();
+                    showLabel(valueLabel, input);
+                }
+            }
+        });
+
+        return new EditableRow(valueLabel, input);
     }
 
     private void showInput(ColoredLabel label, Text input)
