@@ -27,7 +27,6 @@ import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
-import name.abuchen.portfolio.money.DiscreetMode;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
@@ -37,7 +36,6 @@ import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.StringToCurrencyConverter;
 import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
-import name.abuchen.portfolio.util.FormatHelper;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TextUtil;
 
@@ -134,7 +132,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         public void menuAboutToShow(IMenuManager manager)
         {
             String display = fireNumber != null
-                            ? ((FIREWidget) delegate).formatMoneyShort(fireNumber,
+                            ? Values.MoneyShort.format(fireNumber,
                                             delegate.getClient().getBaseCurrency())
                             : Messages.LabelFIREClickToSet;
             manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME,
@@ -146,7 +144,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         public String getLabel()
         {
             String display = fireNumber != null
-                            ? ((FIREWidget) delegate).formatMoneyShort(fireNumber,
+                            ? Values.MoneyShort.format(fireNumber,
                                             delegate.getClient().getBaseCurrency())
                             : Messages.LabelFIREClickToSet;
             return MessageFormat.format(Messages.LabelColonSeparated, Messages.LabelFIRENumber, display);
@@ -201,7 +199,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         public void menuAboutToShow(IMenuManager manager)
         {
             String display = monthlySavings != null
-                            ? ((FIREWidget) delegate).formatMoneyShort(monthlySavings,
+                            ? Values.MoneyShort.format(monthlySavings,
                                             delegate.getClient().getBaseCurrency())
                             : Messages.LabelFIREClickToSet;
             manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME,
@@ -213,7 +211,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         public String getLabel()
         {
             String display = monthlySavings != null
-                            ? ((FIREWidget) delegate).formatMoneyShort(monthlySavings,
+                            ? Values.MoneyShort.format(monthlySavings,
                                             delegate.getClient().getBaseCurrency())
                             : Messages.LabelFIREClickToSet;
             return MessageFormat.format(Messages.LabelColonSeparated, Messages.LabelFIREMonthlySavings, display);
@@ -348,7 +346,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         String currency = getDashboardData().getClient().getBaseCurrency();
         if (currentFireNumber != null)
         {
-            fireNumberLabel.setText(formatMoneyShort(currentFireNumber, currency));
+            fireNumberLabel.setText(Values.MoneyShort.format(currentFireNumber, currency));
             fireNumberInput.setText(Values.Amount.format(currentFireNumber.getAmount()));
         }
         else
@@ -418,7 +416,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         Money currentMonthlySavings = get(FIREMonthlySavingsConfig.class).getMonthlySavings();
         if (currentMonthlySavings != null)
         {
-            monthlySavingsLabel.setText(formatMoneyShort(currentMonthlySavings, currency));
+            monthlySavingsLabel.setText(Values.MoneyShort.format(currentMonthlySavings, currency));
             monthlySavingsInput.setText(Values.Amount.format(currentMonthlySavings.getAmount()));
         }
         else
@@ -775,14 +773,14 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             if (currentValue == null || !currentValue.equals(newValue))
                 setter.accept(newValue);
 
-            label.setText(formatMoneyShort(newValue, currency));
+            label.setText(Values.MoneyShort.format(newValue, currency));
             input.setText(Values.Amount.format(newValue.getAmount()));
         }
         catch (IllegalArgumentException e)
         {
             if (currentValue != null)
             {
-                label.setText(formatMoneyShort(currentValue, currency));
+                label.setText(Values.MoneyShort.format(currentValue, currency));
                 input.setText(Values.Amount.format(currentValue.getAmount()));
             }
             else
@@ -875,21 +873,6 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         return projectedValue < data.getFireNumber().getAmount();
     }
 
-    private String formatMoneyShort(Money money, String currency)
-    {
-        long roundedAmount = (money.getAmount() / 100) * 100;
-        Money roundedMoney = Money.of(money.getCurrencyCode(), roundedAmount);
-
-        if (DiscreetMode.isActive())
-            return Values.Money.format(roundedMoney, currency);
-
-        String amount = Values.AmountShort.format(roundedMoney.getAmount());
-        if (FormatHelper.alwaysDisplayCurrencyCode() || !currency.equals(roundedMoney.getCurrencyCode()))
-            return roundedMoney.getCurrencyCode() + " " + amount; //$NON-NLS-1$
-
-        return amount;
-    }
-
     @Override
     public void update(FIREData data)
     {
@@ -899,7 +882,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
 
         if (data.getCurrentValue() != null)
         {
-            currentValueLabel.setText(formatMoneyShort(data.getCurrentValue(), currency));
+            currentValueLabel.setText(Values.MoneyShort.format(data.getCurrentValue(), currency));
         }
         else
         {
@@ -910,7 +893,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         Money userMonthlySavings = get(FIREMonthlySavingsConfig.class).getMonthlySavings();
         if (userMonthlySavings != null)
         {
-            monthlySavingsLabel.setText(formatMoneyShort(userMonthlySavings, currency));
+            monthlySavingsLabel.setText(Values.MoneyShort.format(userMonthlySavings, currency));
             monthlySavingsLabel.setTextColor(userMonthlySavings.isNegative() ? Colors.theme().redForeground()
                             : Colors.theme().greenForeground());
         }

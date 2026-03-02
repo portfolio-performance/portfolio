@@ -77,6 +77,65 @@ public abstract class Values<E>
         }
     }
 
+    public static final class MoneyShortValues extends Values<Money>
+    {
+        private MoneyShortValues()
+        {
+            super("#,##0", 2); //$NON-NLS-1$
+        }
+
+        @Override
+        public String format(Money amount)
+        {
+            return format(amount, false);
+        }
+
+        private String format(Money amount, boolean alwaysVisible)
+        {
+            if (!alwaysVisible && DiscreetMode.isActive())
+                return amount.getCurrencyCode() + " " + DiscreetMode.HIDDEN_AMOUNT; //$NON-NLS-1$
+            else
+                return String.format("%s %,.0f", amount.getCurrencyCode(), amount.getAmount() / divider()); //$NON-NLS-1$
+        }
+
+        public String format(Money amount, String skipCurrencyCode)
+        {
+            return format(amount, skipCurrencyCode, false);
+        }
+
+        public String formatAlwaysVisible(Money amount, String skipCurrencyCode)
+        {
+            return format(amount, skipCurrencyCode, true);
+        }
+
+        private String format(Money amount, String skipCurrencyCode, boolean alwaysVisible)
+        {
+            if (!FormatHelper.alwaysDisplayCurrencyCode() && skipCurrencyCode.equals(amount.getCurrencyCode()))
+                return !alwaysVisible && DiscreetMode.isActive() ? DiscreetMode.HIDDEN_AMOUNT
+                                : String.format("%,.0f", amount.getAmount() / divider()); //$NON-NLS-1$
+            else
+                return format(amount, alwaysVisible);
+        }
+
+        @Override
+        public String formatNonZero(Money amount)
+        {
+            return amount == null || amount.isZero() ? null : format(amount);
+        }
+
+        @Override
+        public String formatNonZero(Money amount, double threshold)
+        {
+            boolean isNotZero = amount != null && Math.abs(amount.getAmount()) >= threshold;
+            return isNotZero ? format(amount) : null;
+        }
+
+        public String formatNonZero(Money amount, String skipCurrencyCode)
+        {
+            return amount == null || amount.isZero() ? null : format(amount, skipCurrencyCode);
+        }
+    }
+
     public static final class QuoteValues extends Values<Long>
     {
         private static final String QUOTE_PATTERN = "#,##0.00######"; //$NON-NLS-1$
@@ -232,6 +291,7 @@ public abstract class Values<E>
     };
 
     public static final MoneyValues Money = new MoneyValues(); // NOSONAR
+    public static final MoneyShortValues MoneyShort = new MoneyShortValues(); // NOSONAR
 
     public static final Values<Long> AmountFraction = new Values<Long>("#,##0.00###", 5) //$NON-NLS-1$
     {
