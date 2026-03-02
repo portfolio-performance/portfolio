@@ -87,137 +87,103 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         }
     }
 
-    private static class FIRENumberConfig implements WidgetConfig
+    private abstract static class MoneyWidgetConfig implements WidgetConfig
     {
         private final WidgetDelegate<?> delegate;
-        private Money fireNumber;
+        private final Dashboard.Config configurationKey;
+        private final String label;
+        private Money money;
 
-        public FIRENumberConfig(WidgetDelegate<?> delegate)
+        protected MoneyWidgetConfig(WidgetDelegate<?> delegate, Dashboard.Config configurationKey, String label)
         {
             this.delegate = delegate;
+            this.configurationKey = configurationKey;
+            this.label = label;
 
-            String fireNumberStr = delegate.getWidget().getConfiguration().get(Dashboard.Config.FIRE_NUMBER.name());
-            if (fireNumberStr != null && !fireNumberStr.isEmpty())
+            String value = delegate.getWidget().getConfiguration().get(configurationKey.name());
+            if (value != null && !value.isEmpty())
             {
                 try
                 {
-                    long amount = Long.parseLong(fireNumberStr);
-                    this.fireNumber = Money.of(delegate.getClient().getBaseCurrency(), amount);
+                    long amount = Long.parseLong(value);
+                    this.money = Money.of(delegate.getClient().getBaseCurrency(), amount);
                 }
                 catch (NumberFormatException e)
                 {
-                    this.fireNumber = null; // No default, show placeholder
+                    this.money = null;
                 }
             }
             else
             {
-                this.fireNumber = null; // No default, show placeholder
+                this.money = null;
             }
+        }
+
+        protected Money getMoney()
+        {
+            return money;
+        }
+
+        protected void setMoney(Money money)
+        {
+            this.money = money;
+            delegate.getWidget().getConfiguration().put(configurationKey.name(), String.valueOf(money.getAmount()));
+            delegate.update();
+            delegate.getClient().touch();
+        }
+
+        @Override
+        public void menuAboutToShow(IMenuManager manager)
+        {
+            String display = money != null ? Values.MoneyShort.format(money, delegate.getClient().getBaseCurrency())
+                            : Messages.LabelFIREClickToSet;
+            manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME,
+                            new LabelOnly(MessageFormat.format(Messages.LabelColonSeparated, label, display)));
+        }
+
+        @Override
+        public String getLabel()
+        {
+            String display = money != null ? Values.MoneyShort.format(money, delegate.getClient().getBaseCurrency())
+                            : Messages.LabelFIREClickToSet;
+            return MessageFormat.format(Messages.LabelColonSeparated, label, display);
+        }
+    }
+
+    private static class FIRENumberConfig extends MoneyWidgetConfig
+    {
+        public FIRENumberConfig(WidgetDelegate<?> delegate)
+        {
+            super(delegate, Dashboard.Config.FIRE_NUMBER, Messages.LabelFIRENumber);
         }
 
         public Money getFireNumber()
         {
-            return fireNumber;
+            return getMoney();
         }
 
         public void setFireNumber(Money fireNumber)
         {
-            this.fireNumber = fireNumber;
-            delegate.getWidget().getConfiguration().put(Dashboard.Config.FIRE_NUMBER.name(),
-                            String.valueOf(fireNumber.getAmount()));
-            delegate.update();
-            delegate.getClient().touch();
+            setMoney(fireNumber);
         }
-
-        @Override
-        public void menuAboutToShow(IMenuManager manager)
-        {
-            String display = fireNumber != null
-                            ? Values.MoneyShort.format(fireNumber,
-                                            delegate.getClient().getBaseCurrency())
-                            : Messages.LabelFIREClickToSet;
-            manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME,
-                            new LabelOnly(MessageFormat.format(Messages.LabelColonSeparated, Messages.LabelFIRENumber,
-                                            display)));
-        }
-
-        @Override
-        public String getLabel()
-        {
-            String display = fireNumber != null
-                            ? Values.MoneyShort.format(fireNumber,
-                                            delegate.getClient().getBaseCurrency())
-                            : Messages.LabelFIREClickToSet;
-            return MessageFormat.format(Messages.LabelColonSeparated, Messages.LabelFIRENumber, display);
-        }
-
     }
 
-    private static class FIREMonthlySavingsConfig implements WidgetConfig
+    private static class FIREMonthlySavingsConfig extends MoneyWidgetConfig
     {
-        private final WidgetDelegate<?> delegate;
-        private Money monthlySavings;
-
         public FIREMonthlySavingsConfig(WidgetDelegate<?> delegate)
         {
-            this.delegate = delegate;
-
-            String monthlySavingsStr = delegate.getWidget().getConfiguration()
-                            .get(Dashboard.Config.FIRE_MONTHLY_SAVINGS.name());
-            if (monthlySavingsStr != null && !monthlySavingsStr.isEmpty())
-            {
-                try
-                {
-                    long amount = Long.parseLong(monthlySavingsStr);
-                    this.monthlySavings = Money.of(delegate.getClient().getBaseCurrency(), amount);
-                }
-                catch (NumberFormatException e)
-                {
-                    this.monthlySavings = null;
-                }
-            }
-            else
-            {
-                this.monthlySavings = null;
-            }
+            super(delegate, Dashboard.Config.FIRE_MONTHLY_SAVINGS, Messages.LabelFIREMonthlySavings);
         }
 
         public Money getMonthlySavings()
         {
-            return monthlySavings;
+            return getMoney();
         }
 
         public void setMonthlySavings(Money monthlySavings)
         {
-            this.monthlySavings = monthlySavings;
-            delegate.getWidget().getConfiguration().put(Dashboard.Config.FIRE_MONTHLY_SAVINGS.name(),
-                            String.valueOf(monthlySavings.getAmount()));
-            delegate.update();
-            delegate.getClient().touch();
+            setMoney(monthlySavings);
         }
-
-        @Override
-        public void menuAboutToShow(IMenuManager manager)
-        {
-            String display = monthlySavings != null
-                            ? Values.MoneyShort.format(monthlySavings,
-                                            delegate.getClient().getBaseCurrency())
-                            : Messages.LabelFIREClickToSet;
-            manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME,
-                            new LabelOnly(MessageFormat.format(Messages.LabelColonSeparated,
-                                            Messages.LabelFIREMonthlySavings, display)));
-        }
-
-        @Override
-        public String getLabel()
-        {
-            String display = monthlySavings != null
-                            ? Values.MoneyShort.format(monthlySavings,
-                                            delegate.getClient().getBaseCurrency())
-                            : Messages.LabelFIREClickToSet;
-            return MessageFormat.format(Messages.LabelColonSeparated, Messages.LabelFIREMonthlySavings, display);
-        }
-
     }
 
     private static class FIREReturnsConfig implements WidgetConfig
