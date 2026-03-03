@@ -2982,12 +2982,18 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Dez. Überweisung 1.800,00 € 8.204,71 €
                                         // (DE00000000000000000000)
                                         // 2025
+                                        //
+                                        // 17 
+                                        // Sepa Direct Debit transfer to apetito catering B.V. + Co. KG 
+                                        // Feb. SEPA-Lastschrift 10,00 € 1.000,00 €
+                                        // (DE00000000000000000000)
+                                        // 2026
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("day", "month", "year", "note0", "note1", "amount", "currency") //
                                                         .match("^(?<day>[\\d]{2})[\\s]*$") //
-                                                        .match("^(?<note0>(Outgoing transfer for) .*)$") //
-                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) (.berweisung) " //
+                                                        .match("^(?<note0>(Outgoing transfer for|Sepa Direct Debit transfer to) .*)$") //
+                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) (.berweisung|SEPA\\-Lastschrift) " //
                                                                         + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) ([\\.,\\d]+) (\\p{Sc})$") //
                                                         .match("^(?<note1>.*)$") //
                                                         .match("^(?<year>[\\d]{4})$") //

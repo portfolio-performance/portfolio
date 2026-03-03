@@ -4116,6 +4116,34 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testKontoauszug41()
+    {
+        var extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug41.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2026-02-16"), hasAmount("EUR", 100.01),
+                        hasSource("Kontoauszug41.txt"), hasNote("Sepa Direct Debit transfer to Stadt Blah (DE00000000000000000000)"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2026-02-17"), hasAmount("EUR", 10.00),
+                        hasSource("Kontoauszug41.txt"), hasNote("Sepa Direct Debit transfer to apetito catering B.V. + Co. KG (DE00000000000000000000)"))));
+    }
+
+    @Test
     public void testEstrattoContoRiassuntivo01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
