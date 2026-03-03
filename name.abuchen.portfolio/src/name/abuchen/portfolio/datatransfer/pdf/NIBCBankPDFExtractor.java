@@ -188,6 +188,11 @@ public class NIBCBankPDFExtractor extends AbstractPDFExtractor
                 .match("^.* Art der Dividende (?<note>.*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
+                // Ex-Tag 12.12.2019 fonds) 0,208116300 USD
+                .section("exDate").optional()
+                .match("^Ex\\-Tag (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
+                .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
                 .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
