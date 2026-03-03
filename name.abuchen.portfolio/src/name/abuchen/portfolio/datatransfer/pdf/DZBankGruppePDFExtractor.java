@@ -289,6 +289,14 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                         .match("^.* Art der Dividende (?<note>.*)$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
+                        // @formatter:off
+                        // Ex-Tag 26.02.2021 Art der Dividende Quartalsdividende
+                        // Ex-Tag 31.05.2021
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Ex\\-Tag (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
                         .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
