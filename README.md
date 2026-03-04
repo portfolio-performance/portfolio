@@ -29,6 +29,14 @@
 * [Trade Calendars](CONTRIBUTING.md#trade-calendars)
 
 
+## Public GPG Key
+
+Fingerprint: `E46E 6F8F F02E 4C83 5690 8458 9239 277F 560C 95AC`
+
+* [OpenPGP](https://keys.openpgp.org/search?q=0xe46e6f8ff02e4c83569084589239277f560c95ac)
+* [Ubuntu Keyserver](https://keyserver.ubuntu.com/pks/lookup?search=e46e6f8ff02e4c83569084589239277f560c95ac&fingerprint=on&op=index)
+
+
 ## License
 
 Eclipse Public License
