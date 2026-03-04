@@ -524,7 +524,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^Postbank(?! \\- ).*$");
+        var firstRelevantLine = new Block();
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -558,18 +558,50 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<shares>[\\.,\\d]+) [A-Z0-9]{6} [A-Z]{2}[A-Z0-9]{9}[0-9]$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        // @formatter:off
-                        // Belastung mit Wert 02.01.2024 26,41 EUR
-                        // @formatter:on
-                        .section("date", "currency", "amount").optional() //
-                        .match("^Belastung mit Wert (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
-                        .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Belastung mit Wert 02.01.2024 26,41 EUR
+                                        // @formatter:on
+                                        section -> section.attributes("date") //
+                                                        .match("^Belastung mit Wert (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
 
-                        .wrap(t -> t.getAmount() == 0
+                                        // fallback to the document date as documents
+                                        // with zero taxes have no other date
+                                        //
+                                        // @formatter:off
+                                        // 15. Januar 2026
+                                        // @formatter:on
+                                        section -> section.attributes("date") //
+                                                        .match("^(?<date>[\\d]{2}\\. \\p{L}+ [\\d]{4})$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        )
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Belastung mit Wert 02.01.2024 26,41 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^Belastung mit Wert [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+
+                                        // @formatter:off
+                                        // KESt-pflichtige Vorabpauschale 0,00 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^KESt-pflichtige Vorabpauschale (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        })
+                        )
+
+                        .wrap(t -> t.getCurrencyCode() == null || t.getAmount() == 0
                                         ? new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired)
                                         : new TransactionItem(t));
     }
