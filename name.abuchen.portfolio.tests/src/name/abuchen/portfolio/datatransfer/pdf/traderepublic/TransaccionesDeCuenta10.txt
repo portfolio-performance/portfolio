@@ -1,0 +1,29 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.5
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH, SUCURSAL EN ESPAÑA  C/ VELAZQUEZ 50 - PLANTA 5, MADRID 28001 - MADRID
+gYeRC Kiwas AjNSqo FECHA 01 ene 2026 - 31 ene 2026
+IiuQWJ fbm de la xqiulw 190- YD 5 IBAN ji0759048194506644417252
+83916 KYgbXVQYT BIC TRBKESM2XXX
+RESUMEN DE ESTADO DE CUENTA
+PRODUCTO BALANCE INICIAL ENTRADA DE DINERO SALIDA DE DINERO BALANCE FINAL
+Cuenta corriente 7.268,20 € 6.170,97 € 4.613,62 € 8.825,55 €
+TRANSACCIONES DE CUENTA
+FECHA TIPO DESCRIPCIÓN ENTRADA DE SALIDA DE BALANCE
+DINERO DINERO
+14 ene Incoming transfer from gmjtlp XluEoyJqEV RhncI, S.L.
+Transferencia 25,00 € 6.101,63 €
+2026 (oN9903194352357816331388)
+24 ene
+Transferencia Incoming transfer from Mintos Marketplace AS (ep336651755135764039) 198,71 € 5.790,89 €
+2026
+28 ene Incoming transfer from XHRHmb rBwIZDBPIU EUWmk, S.L.
+Transferencia 4.552,63 € 8.850,72 €
+2026 (Cx5298127404899415340791)
+Trade Republic Bank GmbH, Sucursal en España www.traderepublic.es Domicilio social: Trade Republic Bank GmbH Directores generales
+C/ Velazquez 50 - Planta 5 NIF-IVA DE307510626 Brunnenstrasse 19-21, 10119 Berlín, Alemania Andreas Torner
+28001, Madrid, Madrid Registrada en el Registro Mercantil del juzgado local de Gernot Mittendorfer
+NIF: W0322893I Charlottenburg con el número HRB 244347 B, Alemania Christian Hecker
+Thomas Pischke
+Creado en 11 feb 2026, 16:42:26 Página 1 de 1

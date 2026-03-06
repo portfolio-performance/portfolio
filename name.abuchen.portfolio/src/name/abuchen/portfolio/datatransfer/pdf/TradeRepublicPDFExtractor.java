@@ -45,6 +45,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         addInterestStatementTransaction_Format01();
         addInterestStatementTransaction_Format02();
         addInterestStatementTransaction_Format03();
+        addInterestStatementTransaction_Format04();
         addFeeStatementTransaction();
         addNonImportableTransaction();
     }
@@ -427,10 +428,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // Ausführung von Round up am 09.02.2024 an der Lang & Schwarz Exchange.
                                         // Ausführung von Saveback am 04.03.2024 an der Lang & Schwarz Exchange.
+                                        // Ejecución del Saveback el 02.02.2026 en Lang und Schwarz Exchange.
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^Ausf.hrung von (Round up|Saveback) .* "
+                                                        .match("^(Ausf.hrung von (Round up|Saveback)|Ejecuci.n del Saveback) .* "
                                                                         + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}"
                                                                         + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date")))),
@@ -2622,11 +2624,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // 02 Jan. Incoming transfer from Vorname Nachname
                                         // Überweisung 50,00 € 361,83 €
                                         // 2026 (DE00000000000000000000)
+                                        //
+                                        // 14 ene Incoming transfer from gmjtlp XluEoyJqEV RhncI, S.L.
+                                        // Transferencia 25,00 € 6.101,63 €
+                                        // 2026 (oN9903194352357816331388)
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "amount", "currency", "amountAfter", "currencyAfter", "note0", "year", "note1") //
                                                         .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?) (?<note0>(Incoming transfer from) .*)$") //
-                                                        .match("^(.berweisung) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
+                                                        .match("^(.berweisung|Transferencia) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
                                                         .match("^(?<year>[\\d]{4}) (?<note1>(.*))$") //
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.DEPOSIT);
@@ -4008,6 +4014,44 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         addTaxesSectionsTransaction(pdfTransaction, type);
     }
 
+    private void addInterestStatementTransaction_Format04()
+    {
+        final var type = new DocumentType("INFORME DE INTERESES");
+
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^INFORME DE INTERESES$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // IBAN FECHA DE EFECTO CRÉDITO DESPUÉS DE IMPUESTOS
+                        // Ee7185932018829118828273 01.01.2026 62,71 EUR
+                        // @formatter:on
+                        .section("date", "amount", "currency") //
+                        .find("IBAN FECHA DE EFECTO.*") //
+                        .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .wrap(TransactionItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+    }
+
     private void addFeeStatementTransaction()
     {
         final var type = new DocumentType("PAIEMENTS PAR CARTE TRADE REPUBLIC");
@@ -4475,10 +4519,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // Ausführung von Round up am 09.02.2024 an der Lang & Schwarz Exchange.
                                         // Ausführung von Saveback am 04.03.2024 an der Lang & Schwarz Exchange.
+                                        // Ejecución del Saveback el 02.02.2026 en Lang und Schwarz Exchange.
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^Ausf.hrung von (Round up|Saveback) .* "
+                                                        .match("^(Ausf.hrung von (Round up|Saveback)|Ejecuci.n del Saveback) .* "
                                                                         + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}"
                                                                         + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
@@ -5016,6 +5061,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("tax", "currency").optional() //
                         .match("^Imp.t sur le revenu des personnes physiques (\\-)?(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Retención IRPF -14,71 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Retenci.n IRPF (\\-)?(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
