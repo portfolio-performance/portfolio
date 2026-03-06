@@ -756,6 +756,11 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
                                 return new TransactionItem(t);
+
+                            // We have the option to return a SkippedItem here.
+                            // However, there is no test case. And with only one
+                            // optional section, returning a SkippedItem could
+                            // prevent the parsing by other sections.
                             return null;
                         });
     }
