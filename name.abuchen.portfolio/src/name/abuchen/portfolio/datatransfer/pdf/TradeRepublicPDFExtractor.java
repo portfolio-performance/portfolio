@@ -435,6 +435,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                         + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date")))),
                                         // @formatter:off
+                                        // Ejecución del Saveback el 02.02.2026 en Lang und Schwarz Exchange.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Ejecuci.n del Saveback .* "
+                                                                        + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}"
+                                                                        + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))),
+                                        // @formatter:off
                                         // DE40110101001234567890 06.08.2021 0,44 GBP
                                         // DE71100123450999999601 30.07.2024 2.05 EUR
                                         // @formatter:on
@@ -2655,11 +2664,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // 02 Jan. Incoming transfer from Vorname Nachname
                                         // Überweisung 50,00 € 361,83 €
                                         // 2026 (DE00000000000000000000)
+                                        //
+                                        // 14 ene Incoming transfer from gmjtlp XluEoyJqEV RhncI, S.L.
+                                        // Transferencia 25,00 € 6.101,63 €
+                                        // 2026 (oN9903194352357816331388)
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "amount", "currency", "amountAfter", "currencyAfter", "note0", "year", "note1") //
                                                         .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?) (?<note0>(Incoming transfer from) .*)$") //
-                                                        .match("^(.berweisung) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
+                                                        .match("^(.berweisung|Transferencia) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
                                                         .match("^(?<year>[\\d]{4}) (?<note1>(.*))$") //
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.DEPOSIT);
@@ -3958,14 +3971,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         final var type = new DocumentType("(ABRECHNUNG ZINSEN" //
                         + "|RESOCONTO INTERESSI MATURATI" //
                         + "|INTEREST INVOICE" //
-                        + "|RAPPORT D.INT.R.TS)", //
+                        + "|RAPPORT D.INT.R.TS" //
+                        + "|INFORME DE INTERESES)", //
                         "Besteuerungsgrundlage");
 
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^(.BERSICHT|OVERVIEW|SYNTH.SE|PANORAMICA)$");
+        var firstRelevantLine = new Block("^(.BERSICHT|OVERVIEW|SYNTH.SE|PANORAMICA|RESUMEN)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -4522,6 +4536,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                         + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
                                         // @formatter:off
+                                        // Ejecución del Saveback el 02.02.2026 en Lang und Schwarz Exchange.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Ejecuci.n del Saveback .* "
+                                                                        + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}"
+                                                                        + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                        // @formatter:off
                                         // DE40110101001234567890 06.08.2021 0,44 GBP
                                         // DE71100123450999999601 30.07.2024 2.05 EUR
                                         // @formatter:on
@@ -5055,6 +5078,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("tax", "currency").optional() //
                         .match("^Imp.t sur le revenu des personnes physiques (\\-)?(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Retención IRPF -14,71 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Retenci.n IRPF (\\-)?(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
