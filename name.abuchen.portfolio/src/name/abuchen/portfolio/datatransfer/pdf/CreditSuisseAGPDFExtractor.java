@@ -349,6 +349,12 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
                                 return new TransactionItem(t);
+                            
+                            // The addFeeReturnBlock optionally creates a fee
+                            // refund in case the customer was granted a fee
+                            // reduction ("Internet-Vergünstigung"). We do not
+                            // need to inform the user about a non-existent fee
+                            // refund.
                             return null;
                         }));
     }
