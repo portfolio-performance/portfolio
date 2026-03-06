@@ -684,6 +684,13 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
                                 return new TransactionItem(t);
+                            
+                            // Do *not* return a skipped item here. The
+                            // addSellWithNegativeAmountTransaction method
+                            // creates an *additional* transaction in case the
+                            // fees are bigger than the proceeds of a sale. That
+                            // scenario is not supported by PP and requires two
+                            // separate transactions.
                             return null;
                         });
     }
