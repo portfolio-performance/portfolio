@@ -230,6 +230,11 @@ public class NIBCBankPDFExtractor extends AbstractPDFExtractor
                 .wrap(t -> {
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
                         return new TransactionItem(t);
+
+                    // We have no test case for this tax refund, however,
+                    // probably this is part of sales document. The
+                    // additional tax refund is created only if the sale
+                    // realizes a loss.
                     return null;
                 }));
     }
