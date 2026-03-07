@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Portfolio Performance CLI
+Bundle-SymbolicName: name.abuchen.portfolio.cli;singleton:=true
+Bundle-Version: 0.81.6.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-21
+Require-Bundle: name.abuchen.portfolio,
+ org.eclipse.core.runtime
+Import-Package: com.google.gson,
+ org.eclipse.equinox.app
+Automatic-Module-Name: name.abuchen.portfolio.cli
