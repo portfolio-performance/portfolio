@@ -50,10 +50,12 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionModel.Properties;
+import name.abuchen.portfolio.ui.util.DatePicker;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SWTHelper;
 import name.abuchen.portfolio.ui.util.SecurityNameLabelProvider;
+import name.abuchen.portfolio.ui.util.SimpleDateTimeDateSelectionProperty;
 
 public class AccountTransactionDialog extends AbstractTransactionDialog // NOSONAR
 {
@@ -120,6 +122,18 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         dateTime.bindDate(Properties.date.name());
         dateTime.bindTime(Properties.time.name());
         dateTime.bindButton(() -> model().getTime(), time -> model().setTime(time));
+
+        Label lblExDate = null;
+        DatePicker exDate = null;
+        if (model().supportsShares())
+        {
+            lblExDate = new Label(editArea, SWT.RIGHT);
+            lblExDate.setText(Messages.ColumnExDate);
+            exDate = new DatePicker(editArea);
+            IObservableValue<?> targetDate = new SimpleDateTimeDateSelectionProperty().observe(exDate.getControl());
+            IObservableValue<?> modelDate = BeanProperties.value(Properties.exDate.name()).observe(model);
+            context.bindValue(targetDate, modelDate);
+        }
 
         // shares
 
@@ -250,6 +264,11 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         forms = forms.thenBelow(dateTime.date.getControl()).label(dateTime.label);
 
         startingWith(dateTime.date.getControl()).thenRight(dateTime.time).thenRight(dateTime.button, 0);
+
+        if (model().supportsShares())
+        {
+            startingWith(dateTime.button).thenRight(lblExDate).thenRight(exDate.getControl());
+        }
 
         // shares [- amount per share]
         forms.thenBelow(shares.value).width(amountWidth).label(shares.label).suffix(btnShares) //
