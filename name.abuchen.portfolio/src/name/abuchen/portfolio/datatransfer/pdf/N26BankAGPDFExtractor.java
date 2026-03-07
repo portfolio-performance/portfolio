@@ -68,6 +68,11 @@ public class N26BankAGPDFExtractor extends AbstractPDFExtractor
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
                                 return new TransactionItem(t);
 
+                            // No test case available for a transaction with
+                            // zero amount. It is a monthly account statement,
+                            // therefore reporting a skip transaction only
+                            // because there are no deposits or withdrawals this
+                            // months is debatable.
                             return null;
                         });
     }
@@ -152,6 +157,11 @@ public class N26BankAGPDFExtractor extends AbstractPDFExtractor
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
                                 return new TransactionItem(t);
 
+                            // No test case available for a transaction with
+                            // zero amount. It is a monthly account statement,
+                            // therefore reporting a skip transaction only
+                            // because there are no interest payments this
+                            // months is debatable.
                             return null;
                         });
 

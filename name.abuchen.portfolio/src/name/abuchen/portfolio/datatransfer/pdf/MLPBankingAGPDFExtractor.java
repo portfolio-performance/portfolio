@@ -500,6 +500,9 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
                                 return new TransactionItem(t);
+                            
+                            // In case the document does not contain a tax
+                            // refund due to realized loss, nothing to skip.
                             return null;
                         });
     }
