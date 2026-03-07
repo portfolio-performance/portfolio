@@ -83,6 +83,10 @@ public class ClientInput
     private List<Runnable> disposeJobs = new ArrayList<>();
     private List<ClientInputListener> listeners = new ArrayList<>();
 
+    private final Object scheduleLock = new Object();
+    private boolean scheduleSetDirty;
+    private boolean scheduleRecalculate;
+
     @Inject
     private IEventBroker broker;
 
@@ -148,13 +152,49 @@ public class ClientInput
         setDirty(true, false);
     }
 
-    private void setDirty(boolean isDirty, boolean recalculate)
+    private void setDirty(Boolean isDirty, boolean recalculate)
     {
+        synchronized (scheduleLock)
+        {
+            if (scheduleSetDirty)
+            {
+                isDirty = true;
+                recalculate |= scheduleRecalculate;
+                scheduleSetDirty = false;
+                scheduleRecalculate = false;
+            }
+            if (isDirty == null)
+            {
+                return;
+            }
+        }
+
         this.isDirty = isDirty;
         this.listeners.forEach(l -> l.onDirty(this.isDirty));
 
         if (isDirty && recalculate)
             this.listeners.forEach(ClientInputListener::onRecalculationNeeded);
+    }
+
+    private void scheduleSetDirty(boolean recalculate)
+    {
+        if (Display.getDefault().getThread() == Thread.currentThread())
+        {
+            setDirty(true, recalculate);
+        }
+        else
+        {
+            synchronized (scheduleLock)
+            {
+                scheduleRecalculate |= recalculate;
+                if (scheduleSetDirty)
+                {
+                    return;
+                }
+                scheduleSetDirty = true;
+            }
+            Display.getDefault().asyncExec(() -> setDirty(null, false));
+        }
     }
 
     public String getLabel()
@@ -658,15 +698,7 @@ public class ClientInput
             // convenience: Client#markDirty can be called on any thread, but
             // ClientInputListener#onDirty will always be called on the UI
             // thread
-
-            if (Display.getDefault().getThread() == Thread.currentThread())
-            {
-                setDirty(true, recalculate);
-            }
-            else
-            {
-                Display.getDefault().asyncExec(() -> setDirty(true, recalculate));
-            }
+            scheduleSetDirty(recalculate);
         };
         client.addPropertyChangeListener(listener);
         disposeJobs.add(() -> client.removePropertyChangeListener(listener));
