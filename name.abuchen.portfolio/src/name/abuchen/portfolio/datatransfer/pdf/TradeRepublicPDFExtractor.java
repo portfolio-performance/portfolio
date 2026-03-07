@@ -45,7 +45,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         addInterestStatementTransaction_Format01();
         addInterestStatementTransaction_Format02();
         addInterestStatementTransaction_Format03();
-        addInterestStatementTransaction_Format04();
         addFeeStatementTransaction();
         addNonImportableTransaction();
     }
@@ -3925,14 +3924,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         final var type = new DocumentType("(ABRECHNUNG ZINSEN" //
                         + "|RESOCONTO INTERESSI MATURATI" //
                         + "|INTEREST INVOICE" //
-                        + "|RAPPORT D.INT.R.TS)", //
+                        + "|RAPPORT D.INT.R.TS" //
+                        + "|INFORME DE INTERESES)", //
                         "Besteuerungsgrundlage");
 
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^(.BERSICHT|OVERVIEW|SYNTH.SE|PANORAMICA)$");
+        var firstRelevantLine = new Block("^(.BERSICHT|OVERVIEW|SYNTH.SE|PANORAMICA|RESUMEN)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -4003,44 +4003,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .section("date", "amount", "currency") //
                         .find("VERRECHNUNGSKONTO.*") //
                         .match("^.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
-                        .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
-
-                        .wrap(TransactionItem::new);
-
-        addTaxesSectionsTransaction(pdfTransaction, type);
-    }
-
-    private void addInterestStatementTransaction_Format04()
-    {
-        final var type = new DocumentType("INFORME DE INTERESES");
-
-        this.addDocumentTyp(type);
-
-        var pdfTransaction = new Transaction<AccountTransaction>();
-
-        var firstRelevantLine = new Block("^INFORME DE INTERESES$");
-        type.addBlock(firstRelevantLine);
-        firstRelevantLine.set(pdfTransaction);
-
-        pdfTransaction //
-
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
-
-                        // @formatter:off
-                        // IBAN FECHA DE EFECTO CRÉDITO DESPUÉS DE IMPUESTOS
-                        // Ee7185932018829118828273 01.01.2026 62,71 EUR
-                        // @formatter:on
-                        .section("date", "amount", "currency") //
-                        .find("IBAN FECHA DE EFECTO.*") //
-                        .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));

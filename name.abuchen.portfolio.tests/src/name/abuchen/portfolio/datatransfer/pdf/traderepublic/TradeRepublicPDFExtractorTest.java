@@ -11538,15 +11538,18 @@ public class TradeRepublicPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction - Incoming transfer from without Transferencia prefix
-        assertThat(results, hasItem(deposit(hasDate("2026-01-14"), hasAmount("EUR", 25.00), //
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2026-01-14"), hasAmount("EUR", 25.00), //
                         hasSource("TransaccionesDeCuenta10.txt"), hasNote("Incoming transfer from gmjtlp XluEoyJqEV RhncI, S.L.(oN9903194352357816331388)"))));
 
         // assert transaction - Incoming transfer from with Transferencia prefix (already working)
-        assertThat(results, hasItem(deposit(hasDate("2026-01-24"), hasAmount("EUR", 198.71), //
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2026-01-24"), hasAmount("EUR", 198.71), //
                         hasSource("TransaccionesDeCuenta10.txt"), hasNote("Incoming transfer from Mintos Marketplace AS (ep336651755135764039)"))));
 
         // assert transaction - Incoming transfer from without Transferencia prefix
-        assertThat(results, hasItem(deposit(hasDate("2026-01-28"), hasAmount("EUR", 4552.63), //
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2026-01-28"), hasAmount("EUR", 4552.63), //
                         hasSource("TransaccionesDeCuenta10.txt"), hasNote("Incoming transfer from XHRHmb rBwIZDBPIU EUWmk, S.L.(Cx5298127404899415340791)"))));
     }
 
