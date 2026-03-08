@@ -493,6 +493,9 @@ public class Messages extends NLS
     public static String IBFlexToken;
     public static String IBFlexTokenExpired;
     public static String IBFlexNoItemsExtracted;
+    public static String IBFlexNoNewItemsExtracted;
+    public static String IBFlexLastImportDate;
+    public static String IBFlexClearLastImportDate;
     public static String ImportWizardPasteSourceDescription;
     public static String ImportWizardPasteSourceExplanation;
     public static String ImportWizardPasteSourcePasteHere;

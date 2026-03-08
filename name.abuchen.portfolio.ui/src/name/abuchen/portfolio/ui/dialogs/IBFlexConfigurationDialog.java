@@ -6,6 +6,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
@@ -13,8 +14,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 
 import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
@@ -27,6 +31,7 @@ public class IBFlexConfigurationDialog extends AbstractDialog
     {
         private static final String PROPERTY_TOKEN = "ibflex-token"; //$NON-NLS-1$
         private static final String PROPERTY_QUERY_ID = "ibflex-query-id"; //$NON-NLS-1$
+        private static final String PROPERTY_LAST_IMPORT_DATE = "ibflex-last-import-date"; //$NON-NLS-1$
 
         private String token;
         private String queryId;
@@ -88,6 +93,23 @@ public class IBFlexConfigurationDialog extends AbstractDialog
         {
             client.removeProperty(PROPERTY_TOKEN);
             client.removeProperty(PROPERTY_QUERY_ID);
+            client.removeProperty(PROPERTY_LAST_IMPORT_DATE);
+        }
+
+        public static LocalDateTime getLastImportDate(Client client)
+        {
+            String value = client.getProperty(PROPERTY_LAST_IMPORT_DATE);
+            if (value == null || value.isBlank())
+                return null;
+            return LocalDateTime.parse(value);
+        }
+
+        public static void setLastImportDate(Client client, LocalDateTime date)
+        {
+            if (date != null)
+                client.setProperty(PROPERTY_LAST_IMPORT_DATE, date.toString());
+            else
+                client.removeProperty(PROPERTY_LAST_IMPORT_DATE);
         }
 
         public static boolean hasConfiguration(Client client)
@@ -150,6 +172,29 @@ public class IBFlexConfigurationDialog extends AbstractDialog
             }
         };
         bindings().getBindingContext().addValidationStatusProvider(validator);
+
+        // Last import date (read-only with clear button)
+        LocalDateTime lastImportDate = IBFlexModel.getLastImportDate(client);
+        Label lastImportLabel = new Label(editArea, SWT.NONE);
+        lastImportLabel.setText(Messages.IBFlexLastImportDate);
+
+        Composite lastImportComposite = new Composite(editArea, SWT.NONE);
+        GridLayoutFactory.fillDefaults().numColumns(2).applyTo(lastImportComposite);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(lastImportComposite);
+
+        Text lastImportText = new Text(lastImportComposite, SWT.BORDER | SWT.READ_ONLY);
+        if (lastImportDate != null)
+            lastImportText.setText(lastImportDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))); //$NON-NLS-1$
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(lastImportText);
+
+        Button clearButton = new Button(lastImportComposite, SWT.PUSH);
+        clearButton.setText(Messages.IBFlexClearLastImportDate);
+        clearButton.setEnabled(lastImportDate != null);
+        clearButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            IBFlexModel.setLastImportDate(client, null);
+            lastImportText.setText(""); //$NON-NLS-1$
+            clearButton.setEnabled(false);
+        }));
 
         // Security hint
         Label securityHint = new Label(editArea, SWT.WRAP);

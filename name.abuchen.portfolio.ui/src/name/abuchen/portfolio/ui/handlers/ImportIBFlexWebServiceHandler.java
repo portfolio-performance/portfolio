@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.text.MessageFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -87,10 +88,11 @@ public class ImportIBFlexWebServiceHandler
         // Fetch and import
         final String finalToken = token;
         final String finalQueryId = queryId;
+        LocalDateTime lastImportDate = IBFlexModel.getLastImportDate(client);
 
         try
         {
-            IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(client);
+            IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(client, lastImportDate);
             List<Extractor.Item> items = new ArrayList<>();
             List<Exception> errors = new ArrayList<>();
 
@@ -129,16 +131,29 @@ public class ImportIBFlexWebServiceHandler
             // Check if any items were extracted
             if (items.isEmpty() && errors.isEmpty())
             {
-                MessageDialog.openInformation(shell, Messages.LabelInfo, Messages.IBFlexNoItemsExtracted);
+                String message = lastImportDate != null
+                                ? MessageFormat.format(Messages.IBFlexNoNewItemsExtracted, lastImportDate)
+                                : Messages.IBFlexNoItemsExtracted;
+                MessageDialog.openInformation(shell, Messages.LabelInfo, message);
                 return;
             }
+
+            // Find max date among filtered items for later storage
+            LocalDateTime maxDate = items.stream()
+                            .map(Extractor.Item::getDate)
+                            .filter(d -> d != null)
+                            .max(LocalDateTime::compareTo)
+                            .orElse(null);
 
             // Show import wizard
             IPreferenceStore preferences = part.getPreferenceStore();
             ImportExtractedItemsWizard wizard = new ImportExtractedItemsWizard(client, preferences,
                             Map.of(extractor, items),
                             errors.isEmpty() ? Map.of() : Map.of(new File("IBFlex Web Service"), errors)); //$NON-NLS-1$
-            new WizardDialog(shell, wizard).open();
+            if (new WizardDialog(shell, wizard).open() == WizardDialog.OK && maxDate != null)
+            {
+                IBFlexModel.setLastImportDate(client, maxDate);
+            }
         }
         catch (InvocationTargetException e)
         {

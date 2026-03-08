@@ -3394,6 +3394,70 @@ public class IBFlexStatementExtractorTest
     }
 
     @Test
+    public void testIBFlexStatementFile25CanBeFilteredByLastImportDate() throws IOException
+    {
+        var client = new Client();
+
+        var vwrl = new Security("Vanguard MSCI World", "EUR");
+        vwrl.setTickerSymbol("VWRL");
+        client.addSecurity(vwrl);
+
+        var euns = new Security("EUNS", "EUR");
+        euns.setTickerSymbol("EUNS");
+        client.addSecurity(euns);
+
+        var test = new Security("TEST", "GBP");
+        test.setTickerSymbol("TEST");
+        client.addSecurity(test);
+
+        var test2 = new Security("TEST2", "EUR");
+        test2.setTickerSymbol("TEST2");
+        client.addSecurity(test2);
+
+        var extractor = new IBFlexStatementExtractor(client, LocalDateTime.of(2025, 1, 1, 0, 0));
+
+        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile25.xml");
+        var tempFile = createTempFile(activityStatement);
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(Collections.singletonList(tempFile), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-01-29"), hasShares(10), //
+                        hasSecurity(hasTicker("EUNS")), //
+                        hasAmount("EUR", 13.51), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-01-29"), hasShares(10), //
+                        hasSecurity(hasTicker("TEST")), //
+                        hasAmount("EUR", 13.51), hasForexGrossValue("GBP", 11.31), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testIBFlexStatementFile01CanFilterOutOldTransactionsAndSecurityItems() throws IOException
+    {
+        var extractor = new IBFlexStatementExtractor(new Client(), LocalDateTime.of(2020, 1, 1, 0, 0));
+
+        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile01.xml");
+        var tempFile = createTempFile(activityStatement);
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(Collections.singletonList(tempFile), errors);
+
+        assertThat(errors, empty());
+        assertThat(results, empty());
+    }
+
+    @Test
     public void testIBFlexStatementFile26() throws IOException
     {
         var client = new Client();
