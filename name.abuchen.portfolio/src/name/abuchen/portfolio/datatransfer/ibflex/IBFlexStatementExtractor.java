@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -87,6 +88,7 @@ public class IBFlexStatementExtractor implements Extractor
 
     // The client associated with this extractor
     private final Client client;
+    private final LocalDateTime importDateCutoff;
 
     // List to store all securities associated with the client
     private List<Security> allSecurities = new ArrayList<>();
@@ -187,7 +189,13 @@ public class IBFlexStatementExtractor implements Extractor
      */
     public IBFlexStatementExtractor(Client client)
     {
+        this(client, null);
+    }
+
+    public IBFlexStatementExtractor(Client client, LocalDateTime importDateCutoff)
+    {
         this.client = client;
+        this.importDateCutoff = importDateCutoff;
         allSecurities.addAll(client.getSecurities());
 
         initializeExchangeMappings();
@@ -1314,6 +1322,8 @@ public class IBFlexStatementExtractor implements Extractor
                 errors.addAll(result.getErrors());
                 items.addAll(result.getResults());
             }
+            if (importDateCutoff != null)
+                items = filterByImportDateCutoff(items);
             return items;
         }
         catch (IOException e)
@@ -1321,6 +1331,22 @@ public class IBFlexStatementExtractor implements Extractor
             errors.add(e);
             return Collections.emptyList();
         }
+    }
+
+    private List<Item> filterByImportDateCutoff(List<Item> items)
+    {
+        List<Item> filtered = items.stream()
+                        .filter(item -> item.getDate() == null || item.getDate().isAfter(importDateCutoff))
+                        .collect(Collectors.toList());
+
+        Set<Security> referencedSecurities = filtered.stream()
+                        .filter(item -> !(item instanceof SecurityItem))
+                        .map(Item::getSecurity)
+                        .filter(security -> security != null)
+                        .collect(Collectors.toSet());
+
+        filtered.removeIf(item -> item instanceof SecurityItem && !referencedSecurities.contains(item.getSecurity()));
+        return filtered;
     }
 
     /**

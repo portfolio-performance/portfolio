@@ -2,9 +2,9 @@ package name.abuchen.portfolio.datatransfer.ibflex;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
@@ -15,6 +15,9 @@ import name.abuchen.portfolio.datatransfer.ibflex.IBFlexWebServiceClient.IBFlexE
 @SuppressWarnings("nls")
 public class IBFlexWebServiceClientTest
 {
+    private static final String TOKEN = "test-token";
+    private static final String QUERY_ID = "12345";
+
     // Sample XML responses from IB Flex Web Service
     private static final String SUCCESS_RESPONSE = """
             <?xml version="1.0" encoding="UTF-8"?>
@@ -99,43 +102,26 @@ public class IBFlexWebServiceClientTest
 
     @Test
     public void testParseReferenceCodeTokenInvalid()
+                    throws IOException
     {
         IBFlexWebServiceClient client = new IBFlexWebServiceClient();
-        try
-        {
-            client.parseReferenceCode(ERROR_RESPONSE_TOKEN_INVALID);
-            fail("Expected IBFlexException");
-        }
-        catch (IBFlexException e)
-        {
-            assertThat(e.getErrorCode(), is(IBFlexWebServiceClient.ERROR_TOKEN_INVALID));
-            assertTrue(e.isTokenExpired());
-            assertThat(e.getMessage(), is("Token is invalid or has expired"));
-        }
-        catch (IOException e)
-        {
-            fail("Unexpected IOException: " + e.getMessage());
-        }
+        IBFlexException exception = assertThrows(IBFlexException.class,
+                        () -> client.parseReferenceCode(ERROR_RESPONSE_TOKEN_INVALID));
+
+        assertException(exception, IBFlexWebServiceClient.ERROR_TOKEN_INVALID, false, true,
+                        "Token is invalid or has expired");
     }
 
     @Test
     public void testParseErrorResponseStatementGenerating()
+                    throws IOException
     {
         IBFlexWebServiceClient client = new IBFlexWebServiceClient();
-        try
-        {
-            client.parseErrorResponse(ERROR_RESPONSE_STATEMENT_GENERATING);
-            fail("Expected IBFlexException");
-        }
-        catch (IBFlexException e)
-        {
-            assertThat(e.getErrorCode(), is(IBFlexWebServiceClient.ERROR_STATEMENT_GENERATING));
-            assertTrue(e.isStatementGenerating());
-        }
-        catch (IOException e)
-        {
-            fail("Unexpected IOException: " + e.getMessage());
-        }
+        IBFlexException exception = assertThrows(IBFlexException.class,
+                        () -> client.parseErrorResponse(ERROR_RESPONSE_STATEMENT_GENERATING));
+
+        assertException(exception, IBFlexWebServiceClient.ERROR_STATEMENT_GENERATING, true, false,
+                        "Statement generation in progress. Please try again shortly.");
     }
 
     @Test
@@ -155,31 +141,23 @@ public class IBFlexWebServiceClientTest
             }
         });
 
-        String result = client.fetchStatement("test-token", "12345");
+        String result = client.fetchStatement(TOKEN, QUERY_ID, () -> false);
 
         assertThat(callCount[0], is(2)); // One for SendRequest, one for GetStatement
         assertTrue(result.contains("FlexQueryResponse"));
     }
 
     @Test
-    public void testFetchStatementTokenExpired()
+    public void testFetchStatementTokenExpired() throws IOException
     {
         IBFlexWebServiceClient client = new IBFlexWebServiceClient(
                         (host, path, token, queryOrRef, version) -> ERROR_RESPONSE_TOKEN_INVALID);
 
-        try
-        {
-            client.fetchStatement("expired-token", "12345");
-            fail("Expected IBFlexException");
-        }
-        catch (IBFlexException e)
-        {
-            assertTrue(e.isTokenExpired());
-        }
-        catch (IOException e)
-        {
-            fail("Unexpected IOException: " + e.getMessage());
-        }
+        IBFlexException exception = assertThrows(IBFlexException.class,
+                        () -> client.fetchStatement("expired-token", QUERY_ID, () -> false));
+
+        assertException(exception, IBFlexWebServiceClient.ERROR_TOKEN_INVALID, false, true,
+                        "Token is invalid or has expired");
     }
 
     @Test
@@ -189,18 +167,18 @@ public class IBFlexWebServiceClientTest
             throw new IOException("Network unreachable");
         });
 
-        try
-        {
-            client.fetchStatement("test-token", "12345");
-            fail("Expected IOException");
-        }
-        catch (IBFlexException e)
-        {
-            fail("Unexpected IBFlexException: " + e.getMessage());
-        }
-        catch (IOException e)
-        {
-            assertThat(e.getMessage(), is("Network unreachable"));
-        }
+        IOException exception = assertThrows(IOException.class,
+                        () -> client.fetchStatement(TOKEN, QUERY_ID, () -> false));
+
+        assertThat(exception.getMessage(), is("Network unreachable"));
+    }
+
+    private void assertException(IBFlexException exception, int errorCode, boolean statementGenerating,
+                    boolean tokenExpired, String message)
+    {
+        assertThat(exception.getErrorCode(), is(errorCode));
+        assertThat(exception.isStatementGenerating(), is(statementGenerating));
+        assertThat(exception.isTokenExpired(), is(tokenExpired));
+        assertThat(exception.getMessage(), is(message));
     }
 }
