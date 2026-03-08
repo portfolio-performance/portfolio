@@ -1,0 +1,42 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.5
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Wertpapier-Abrechnu n g                          Verkauf
+888888 - 29.04.2021
+Depotnummer Betreuer
+Mustermann Max 111-1111.11 Z 3
+23
+Wertpapiernummer Bezeichnung Nominale/Stück
+AT0000730007 ANDRITZ AG Abgang Stk.               95,00
+AKTIEN O.N.
+Kurs 44,9 EUR Kurswert EUR             4.265,50
+Kursgewinn-KESt EUR               -73,15
+Spesen EUR               -14,93
+Summe EUR             4.177,42
+Handelszeitpunkt: 29.04.2021 09:40:30
+Handelsplatz: WIENER BOERSE
+Auftrags-Nr. 999999-29.04.2021
+Schlusstag 29.04.2021
+Kassatag 03.05.2021
+Verrechnung
+Verwahrart, Positionsdaten EUR             4.177,42
+SVK Sammelverwahrung Wert 03.05.2021
+zu Gunsten Konto AT11 1111 1111 1111 1111
+Wien
+      Seite 1 von 2
+Oberbank AG, Rechtsform: Aktiengesellschaft, Sitz: Linz, Firmenbuch Nr. FN 79063w, Landesgericht Linz, DVR: 0019020, UID-Nr. ATU22852606
+Wertpapier-Abrechnung
+888888 - 29.04.2021
+Depotbezeichnung Depotnummer Betreuer
+Mustermann Max 111-1111.11 Z 3
+23
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden                          95,00 STK
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG
+  Nebenkosten:                                                                      14,00 EUR
+  steuerlicher Anschaffungswert:                                                 3.999,50 EUR
+  steuerlicher Veräußerungswert:                                                 4.265,50 EUR
+  steuerpflichtiger Kursgewinn:                                                    266,00 EUR
+---------------------------------------------------------------------------------------------
+Die KESt wird an das Finanzamt Linz abgeführt.
+Oberbank AG, Rechtsform: Aktiengesellschaft, Sitz: Linz, Firmenbuch Nr. FN 79063w, Landesgericht Linz, DVR: 0019020, UID-Nr. ATU22852606       Seite 2 von 2
