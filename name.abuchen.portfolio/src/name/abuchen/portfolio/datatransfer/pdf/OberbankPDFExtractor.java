@@ -40,10 +40,7 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        // var firstRelevantLine = new
-        // Block("^Wertpapier-Abrechnu\\s*n\\s*g.*$");
         var firstRelevantLine = new Block("^Wertpapier-Abrechnu\\s*n\\s*g\\s+(Kauf|Verkauf)$");
-
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -56,7 +53,7 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // Is type --> "Verkauf" change from BUY to SELL
-                        .section("type").optional() //
+                        .section("type") //
                         .match("^Wertpapier-Abrechnu\\s*n\\s*g\\s+" //
                                         + "(?<type>(Kauf" //
                                         + "|Verkauf))$") //
@@ -70,37 +67,54 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
                                         // Wertpapiernummer Bezeichnung Nominale/Stück
                                         // CA09228F1036 BlackBerry Ltd. Zugang Stk .              14,00
                                         // Registered Shares o.N.
-                                        // Kurs 19,098 EUR Kurswert EUR              267,37
+                                        // Wertpapiernummer Bezeichnung Nominale/Stück
+                                        // AT0000730007 ANDRITZ AG Abgang Stk.               95,00
+                                        // AKTIEN O.N.
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("isin", "name", "nameContinued", "local", "shares") //
+                                                        .attributes("isin", "name", "nameContinued") //
                                                         .find("^Wertpapiernummer Bezeichnung Nominale/St.ck$") //
-                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) (Zugang|Abgang) (?<local>Stk)\\s*\\.\\s+(?<shares>[\\.,\\d]+)$") //
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) (Zugang|Abgang) Stk\\s*\\.\\s+[\\.,\\d]+$") //
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .assign((t, v) -> {
-                                                            // if
-                                                            // (v.get("nameContinued").endsWith("p.STK"))
-                                                            // v.put("nameContinued",
-                                                            // v.get("nameContinued")
-                                                            // .replace("p.STK",
-                                                            // ""));
-
                                                             t.setSecurity(getOrCreateSecurity(v));
-                                                            t.setShares(asShares(v.get("shares")));
                                                         }),
                                         // @formatter:off
                                         // Wertpapiernummer Bezeichnung Nominale/Stück
                                         // AT000B127337 Oberbank AG Zugang EUR            8.000,00
                                         // Nachr. Anleihe 2023-2031
-                                        // Kurs 98,3 PROZ Kurswert EUR            7.864,00
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("isin", "name", "nameContinued", "shares") //
+                                                        .attributes("isin", "name", "nameContinued") //
                                                         .find("^Wertpapiernummer Bezeichnung Nominale/St.ck$") //
-                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) (Zugang|Abgang) [A-Z]{3}\\s+(?<shares>[\\.,\\d]+)$") //
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) (Zugang|Abgang) [A-Z]{3}\\s+[\\.,\\d]+$") //
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .assign((t, v) -> {
                                                             t.setSecurity(getOrCreateSecurity(v));
+                                                        }))
+                        .oneOf( //
+                        // @formatter:off
+                                        // Wertpapiernummer Bezeichnung Nominale/Stück
+                                        // CA09228F1036 BlackBerry Ltd. Zugang Stk .              14,00
+                                        // Wertpapiernummer Bezeichnung Nominale/Stück
+                                        // AT0000730007 ANDRITZ AG Abgang Stk.               95,00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("local", "shares") //
+                                                        .find("^Wertpapiernummer Bezeichnung Nominale/St.ck$") //
+                                                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] .* (Zugang|Abgang) (?<local>Stk)\\s*\\.\\s+(?<shares>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setShares(asShares(v.get("shares")));
+                                                        }),
+                                        // @formatter:off
+                                        // Wertpapiernummer Bezeichnung Nominale/Stück
+                                        // AT000B127337 Oberbank AG Zugang EUR            8.000,00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .find("^Wertpapiernummer Bezeichnung Nominale/St.ck$") //
+                                                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] .* (Zugang|Abgang) [A-Z]{3}\\s+(?<shares>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
                                                             // Percentage
                                                             // quotation,
                                                             // workaround for
@@ -156,7 +170,6 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Kupon 4,55 % jährlich Stückzinsen f. 166 Tage EUR              165,55
-
                         // @formatter:on
                         .section("note1", "note2", "note3").optional() //
                         .match("^Kupon [\\.,\\d]+ % .* (?<note1>St.ckzinsen .* [\\d]+ Tage).* (?<note3>[A-Z]{3})\\s+(?<note2>[\\.,\\d]+)$") //
