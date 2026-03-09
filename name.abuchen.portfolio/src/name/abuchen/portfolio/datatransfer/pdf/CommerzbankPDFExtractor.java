@@ -613,9 +613,6 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                             // Store attribute in item data map
                             item.setData(ATTRIBUTE_GROSS_TAXES_TREATMENT, ctx.get(ATTRIBUTE_GROSS_TAXES_TREATMENT));
 
-                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
-
                             return item;
                         });
     }
@@ -921,6 +918,16 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
             {
                 ExtractorUtils.fixGrossValue().accept(dividendTransaction);
             }
+        }
+
+        // convert zero tax statements skipped items only in post processing. If
+        // the zero tax payment was matched to a sale or dividend transaction,
+        // we do not want to bother the user with the additional skipped item
+        for (var iterator = items.listIterator(); iterator.hasNext();)
+        {
+            var item = iterator.next();
+            if (item.getAmount().getAmount() == 0)
+                iterator.set(new SkippedItem(item, Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
         }
     }
 
