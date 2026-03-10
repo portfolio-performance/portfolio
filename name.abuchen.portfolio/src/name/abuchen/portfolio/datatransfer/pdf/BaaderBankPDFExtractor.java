@@ -762,12 +762,10 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<note>(Zahlungszeitraum|Payment Period): .*)$") //
                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
-                        .wrap((t, ctx) -> {
-                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
-
-                            return new TransactionItem(t);
-                        });
+                        .wrap(t -> t.getCurrencyCode() != null && t.getAmount() == 0
+                                        ? new SkippedItem(new TransactionItem(t),
+                                                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired)
+                                        : new TransactionItem(t));
     }
 
     private void addTaxAdjustmentTransaction()

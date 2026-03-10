@@ -3121,8 +3121,13 @@ public class DeutscheBankPDFExtractorTest
                         hasName("ISHS EO IN.LI.GO.BD U.ETF(D)RG.SH.O.N."), //
                         hasCurrencyCode("EUR"))));
 
-        // check skipped item (not meaningfully parsed: no date, no currency, no amount)
+        // check skipped item
         assertThat(results, hasItem(skippedItem( //
-                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired)));
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, taxes( //
+                                        hasDate("2026-01-15"), hasShares(120), //
+                                        hasSource("Vorabpauschale02.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 }

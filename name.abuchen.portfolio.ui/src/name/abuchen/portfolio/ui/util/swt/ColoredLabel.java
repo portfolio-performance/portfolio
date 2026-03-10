@@ -86,7 +86,7 @@ public class ColoredLabel extends Canvas // NOSONAR
     {
         Rectangle bounds = getClientArea();
 
-        Color background = backdropColor != null ? backdropColor : getBackground();
+        Color background = backdropColor != null ? backdropColor : getParent().getBackground();
 
         e.gc.setBackground(background);
         e.gc.fillRectangle(bounds.x, bounds.y, bounds.width, bounds.height);
