@@ -40,6 +40,7 @@ import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.OberbankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
 
 @SuppressWarnings("nls")
 public class OberbankPDFExtractorTest
@@ -114,6 +115,40 @@ public class OberbankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf03()
+    {
+        var extractor = new OberbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("AT0000784830"), hasWkn(null), hasTicker(null), //
+                        hasName("3 Banken Aktien-Dachfonds (T) Miteigentumsanteile - Thesaurierend"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-03-09T00:00:01"), hasShares(9.6), //
+                        hasSource("Kauf03.txt"), //
+                        hasNote("Auftrags-Nr. 999999"), //
+                        hasAmount("EUR", 239.93), hasGrossValue("EUR", 239.33), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.60))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         var extractor = new OberbankPDFExtractor(new Client());
@@ -145,6 +180,40 @@ public class OberbankPDFExtractorTest
                         hasNote("Auftrags-Nr. 999999"), //
                         hasAmount("EUR", 4177.42), hasGrossValue("EUR", 4265.50), //
                         hasTaxes("EUR", 73.15), hasFees("EUR", 14.93))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf02()
+    {
+        var extractor = new OberbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("AT0000A06NX7"), hasWkn(null), hasTicker(null), //
+                        hasName("Oberbank Vermögensmanagement (T) Miteigentumsanteile - Thesaurierend"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2021-01-22T00:00:01"), hasShares(6.6), //
+                        hasSource("Verkauf02.txt"), //
+                        hasNote("Auftrags-Nr. 999999"), //
+                        hasAmount("EUR", 909.89), hasGrossValue("EUR", 923.74), //
+                        hasTaxes("EUR", 13.85), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -247,6 +316,39 @@ public class OberbankPDFExtractorTest
                         hasAmount("EUR", 4.11), hasGrossValue("EUR", 5.68), //
                         hasTaxes("EUR", (0.84 + 1.01) / 1.1797), hasFees("EUR", 0.00),
                         hasForexGrossValue("USD", 5.68 * 1.1797))));
+    }
+
+    @Test
+    public void testDividende01WithSecurityInEUR()
+    {
+        var security = new Security("VISA Inc. Reg. Shares Class A DL -,0001", "EUR");
+        security.setIsin("US92826C8394");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new OberbankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-03-02T00:00"), hasShares(10), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 4.11), hasGrossValue("EUR", 5.68), //
+                        hasTaxes("EUR", (0.84 + 1.01) / 1.1797), hasFees("EUR", 0.00))));
     }
 
     @Test

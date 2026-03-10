@@ -47,12 +47,20 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
     {
         final var type = new DocumentType("(Wertpapier-Abrechnu\\s*n\\s*g\\s+" //
                         + "(Kauf" //
-                        + "|Verkauf))");
+                        + "|Verkauf" //
+                        + "|Ausgabe Fonds" //
+                        + "|R.cknahme Fonds" //
+                        + "))");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        var firstRelevantLine = new Block("^Wertpapier-Abrechnu\\s*n\\s*g\\s+" + "(Kauf" + "|Verkauf)$");
+        var firstRelevantLine = new Block("^Wertpapier-Abrechnu\\s*n\\s*g\\s+" //
+                        + "(Kauf" //
+                        + "|Verkauf" //
+                        + "|Ausgabe Fonds" //
+                        + "|R.cknahme Fonds" //
+                        + ")$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -65,12 +73,16 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // Is type --> "Verkauf" change from BUY to SELL
+                        // Is type --> "Rücknahme Fonds" change from BUY to SELL
                         .section("type") //
                         .match("^Wertpapier-Abrechnu\\s*n\\s*g\\s+" //
                                         + "(?<type>(Kauf" //
-                                        + "|Verkauf))$") //
+                                        + "|Verkauf" //
+                                        + "|Ausgabe Fonds" //
+                                        + "|R.cknahme Fonds" //
+                                        + "))$") //
                         .assign((t, v) -> {
-                            if ("Verkauf".equals(v.get("type")))
+                            if ("Verkauf".equals(v.get("type")) || "Rücknahme Fonds".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
@@ -398,11 +410,24 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
         transaction //
         // @formatter:off
                         // Spesen EUR                7,25
-                        // 24.02.2024 Spesen EUR               39,32
                         // Spesen EUR               -14,93
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{4} )?Spesen (?<currency>[A-Z]{3})\\s+\\-?(?<fee>[\\.,\\d]+)$") //
+                        .match("^Spesen (?<currency>[A-Z]{3})\\s+\\-?(?<fee>[\\.,\\d]+)$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // 24.02.2024 Spesen EUR               39,32
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Spesen (?<currency>[A-Z]{3})\\s+\\-?(?<fee>[\\.,\\d]+)$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Kupon Spesen EUR                0,60
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^Kupon Spesen (?<currency>[A-Z]{3})\\s+\\-?(?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
