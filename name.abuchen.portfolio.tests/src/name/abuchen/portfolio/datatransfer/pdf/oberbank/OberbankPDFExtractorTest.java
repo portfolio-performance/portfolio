@@ -1,9 +1,11 @@
 package name.abuchen.portfolio.datatransfer.pdf.oberbank;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
@@ -211,6 +213,75 @@ public class OberbankPDFExtractorTest
                         hasNote(null), //
                         hasAmount("EUR", 1199.76), hasGrossValue("EUR", 1199.76), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende01()
+    {
+        var extractor = new OberbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US92826C8394"), hasWkn(null), hasTicker(null), //
+                        hasName("VISA Inc. Reg. Shares Class A DL -,0001"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-03-02T00:00"), hasShares(10), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 4.11), hasGrossValue("EUR", 5.68), //
+                        hasTaxes("EUR", (0.84 + 1.01) / 1.1797), hasFees("EUR", 0.00),
+                        hasForexGrossValue("USD", 5.68 * 1.1797))));
+    }
+
+    @Test
+    public void testDividende02()
+    {
+        var extractor = new OberbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("AT0000821103"), hasWkn(null), hasTicker(null), //
+                        hasName("UNIQA Insurance Group AG Stamm-Aktien o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-06-16T00:00"), hasShares(338), //
+                        hasSource("Dividende02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 147.03), hasGrossValue("EUR", 202.80), //
+                        hasTaxes("EUR", 55.77), hasFees("EUR", 0.00))));
+
     }
 
 }
