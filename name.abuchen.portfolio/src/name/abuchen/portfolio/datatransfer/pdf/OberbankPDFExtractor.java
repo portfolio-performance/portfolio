@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
@@ -7,15 +8,18 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.LineSpan;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.SplittingStrategy;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
@@ -29,6 +33,7 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("Oberbank AG");
 
         addBuySellTransaction();
+        addDividendTransaction();
         addDeliveryInOutBoundTransaction();
     }
 
@@ -47,7 +52,7 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        var firstRelevantLine = new Block("^Wertpapier-Abrechnu\\s*n\\s*g\\s+(Kauf|Verkauf)$");
+        var firstRelevantLine = new Block("^Wertpapier-Abrechnu\\s*n\\s*g\\s+" + "(Kauf" + "|Verkauf)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -71,16 +76,13 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
 
                         .oneOf( //
                         // @formatter:off
-                                        // Wertpapiernummer Bezeichnung Nominale/Stück
                                         // CA09228F1036 BlackBerry Ltd. Zugang Stk .              14,00
                                         // Registered Shares o.N.
-                                        // Wertpapiernummer Bezeichnung Nominale/Stück
                                         // AT0000730007 ANDRITZ AG Abgang Stk.               95,00
                                         // AKTIEN O.N.
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("isin", "name", "nameContinued") //
-                                                        .find("^Wertpapiernummer Bezeichnung Nominale/St.ck$") //
                                                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) (Zugang|Abgang) Stk\\s*\\.\\s+[\\.,\\d]+$") //
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .assign((t, v) -> {
@@ -93,7 +95,6 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("isin", "name", "nameContinued") //
-                                                        .find("^Wertpapiernummer Bezeichnung Nominale/St.ck$") //
                                                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) (Zugang|Abgang) [A-Z]{3}\\s+[\\.,\\d]+$") //
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .assign((t, v) -> {
@@ -101,25 +102,20 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
                                                         }))
                         .oneOf( //
                         // @formatter:off
-                                        // Wertpapiernummer Bezeichnung Nominale/Stück
                                         // CA09228F1036 BlackBerry Ltd. Zugang Stk .              14,00
-                                        // Wertpapiernummer Bezeichnung Nominale/Stück
                                         // AT0000730007 ANDRITZ AG Abgang Stk.               95,00
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("local", "shares") //
-                                                        .find("^Wertpapiernummer Bezeichnung Nominale/St.ck$") //
                                                         .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] .* (Zugang|Abgang) (?<local>Stk)\\s*\\.\\s+(?<shares>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setShares(asShares(v.get("shares")));
                                                         }),
                                         // @formatter:off
-                                        // Wertpapiernummer Bezeichnung Nominale/Stück
                                         // AT000B127337 Oberbank AG Zugang EUR            8.000,00
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .find("^Wertpapiernummer Bezeichnung Nominale/St.ck$") //
                                                         .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] .* (Zugang|Abgang) [A-Z]{3}\\s+(?<shares>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             // Percentage
@@ -142,11 +138,10 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                                         // Verwahrart, Positionsdaten
                                         // Wertpapierrechnung Wert 01.02.2021 EUR              274,62
-                                        // zu Lasten Konto AT11 1111 1111 1111 1111
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^Wertpapierrechnung Wert [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[A-Z]{3})\\s+(?<amount>[\\.,\\d]+)$") //
+                                                        .match("^(Wertpapierrechnung|SVK Sammelverwahrung) Wert [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[A-Z]{3})\\s+(?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -155,7 +150,6 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // Verwahrart, Positionsdaten EUR            8.068,87
                                         // SVK Sammelverwahrung Wert 09.08.2023
-                                        // zu Lasten Konto AT11 1111 1111 1111 1111
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
@@ -186,6 +180,99 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
 
                         .wrap(BuySellEntryItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addDividendTransaction()
+    {
+        final var type = new DocumentType("(Wertpapier-Abrechnu\\s*n\\s*g\\s+" //
+                        + "(Dividende" //
+                        + "|Ausschüttung))");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^Wertpapier-Abrechnu\\s*n\\s*g\\s+" + "(Dividende" + "|Ausschüttung)$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
+                            return accountTransaction;
+                        })
+
+                        // TODO: Ausschüttung / Thesaurierung needs to be
+                        // handled
+
+                        // @formatter:off
+                        // US92826C8394 VISA Inc. Stk .              10,00
+                        // Reg. Shares Class A DL -,0001
+                        // Ertrag USD                6,70
+                        // @formatter:on
+                        .section("isin", "name", "nameContinued", "currency") //
+                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) Stk\\s*\\.\\s+[\\.,\\d]+$") //
+                        .match("^(?<nameContinued>.*)$") //
+                        .match("^Ertrag (?<currency>[\\w]{3})\\s+[\\.,\\d]+$") //
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+
+                        // @formatter:off
+                        // US92826C8394 VISA Inc. Stk .              10,00
+                        // @formatter:on
+                        .section("local", "shares") //
+                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] .*(?<local>Stk)\\s*\\.\\s+(?<shares>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setShares(asShares(v.get("shares")));
+                        })
+
+                        // @formatter:off
+                        // Wertpapierrechnung Wert 02.03.2026 EUR                4,11
+                        // SVK Sammelverwahrung Wert 16.06.2025 EUR              147,03
+                        // @formatter:on
+                        .section("date") //
+                        .match("^(Wertpapierrechnung|SVK Sammelverwahrung) Wert (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[A-Z]{3})\\s+(?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Verwahrart, Positionsdaten
+                        // Wertpapierrechnung Wert 02.03.2026 EUR                4,11
+                        // Verwahrart, Positionsdaten
+                        // SVK Sammelverwahrung Wert 16.06.2025 EUR              147,03
+                        // @formatter:on
+                        .section("currency", "amount") //
+                        .match("^(Wertpapierrechnung|SVK Sammelverwahrung) Wert [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[A-Z]{3})\\s+(?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // @formatter:off
+                        // @formatter:off
+                        // Ertrag 0,67 USD
+                        // 15 % QUSt a 1,1797 v. 26.02.2026 EUR                4,11
+                        // @formatter:on
+                        .section("termCurrency", "fxGross", "exchangeRate", "baseCurrency").optional()
+                        .match("^Ertrag (?<fxGross>[\\.,\\d]+) (?<termCurrency>[\\w]{3})$") //
+                        .match("^.* a (?<exchangeRate>[\\.,\\d]+) v. [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<baseCurrency>[\\w]{3}) ([\\s]+)?[\\.,\\d]+$") //
+                        .assign((t, v) -> {
+                            ExtrExchangeRate rate = asExchangeRate(v);
+                            type.getCurrentContext().putType(rate);
+
+                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+
+                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                        })
+
+                        .conclude(ExtractorUtils.fixGrossValueA())
+
+                        .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -256,15 +343,12 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // @formatter:off
-                        // Wertpapiernummer Bezeichnung Nominale/Stück
                         // IE00BYZK4552 iShsIV-Automation&Robot.U.ETF Zugang Stk.              123,00
                         // Registered Shares o.N.
-                        // Wertpapiernummer Bezeichnung Nominale/Stück
                         // IE00BYZK4552 iShsIV-Automation&Robot.U.ETF Abgang Stk.              123,00
                         // Registered Shares o.N.
                         // @formatter:on
                         .section("isin", "name", "nameContinued") //
-                        .find("^Wertpapiernummer Bezeichnung Nominale/St.ck$") //
                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) (Zugang|Abgang) Stk\\s*\\.\\s+[\\.,\\d]+$") //
                         .match("^(?<nameContinued>.*)$") //
                         .assign((t, v) -> {
@@ -278,7 +362,6 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
                         // IE00BYZK4552 iShsIV-Automation&Robot.U.ETF Abgang Stk.              123,00
                         // @formatter:on
                         .section("local", "shares") //
-                        .find("^Wertpapiernummer Bezeichnung Nominale/St.ck$") //
                         .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] .* (Zugang|Abgang) (?<local>Stk)\\s*\\.\\s+(?<shares>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setShares(asShares(v.get("shares")));
@@ -321,20 +404,42 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "fee").optional() //
                         .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{4} )?Spesen (?<currency>[A-Z]{3})\\s+\\-?(?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
-
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction //
-
         // @formatter:off
                         // Kursgewinn-KESt EUR               -73,15
                         // @formatter:on
                         .section("tax", "currency").optional() //
                         .match("^Kursgewinn-KESt (?<currency>[A-Z]{3})\\s+\\-(?<tax>[\\.,\\d]+)$") //
-                        .assign((t, v) -> processTaxEntries(t, v, type));
+                        .assign((t, v) -> processTaxEntries(t, v, type))
 
+                        // @formatter:off
+                        // KESt EUR              -55,77
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^KESt (?<currency>[A-Z]{3})\\s+\\-(?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Auslands-KESt USD               -0,26
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Auslands-KESt (?<currency>[\\w]{3})\\s+\\-(?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            processTaxEntries(t, v, type);
+                        })
+
+                        // @formatter:off
+                        // Ausländische Steuern USD               -1,01
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Ausl.ndische Steuern (?<currency>[\\w]{3})\\s+\\-(?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            processTaxEntries(t, v, type);
+                        });
     }
 
 }
