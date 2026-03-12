@@ -776,7 +776,7 @@ public class ScorePriorityIncPDFExtractorTest
         assertThat(security6.getName(), is("Orion Office Reit Inc Com"));
         assertThat(security6.getCurrencyCode(), is("USD"));
 
-        // check cancellation (Storno) (CUSIP is to short) transaction
+        // check cancellation (Storno) (CUSIP is too short) transaction
         var cancellation = (TransactionItem) results.stream() //
                         .filter(i -> i.isFailure()) //
                         .filter(TransactionItem.class::isInstance) //
