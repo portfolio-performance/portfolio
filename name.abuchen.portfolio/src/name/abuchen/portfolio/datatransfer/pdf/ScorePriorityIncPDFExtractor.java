@@ -225,7 +225,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                             v.put("currency", CurrencyUnit.USD);
 
-                            // if CUSIP lenght != 9
+                            // if CUSIP length != 9
                             if (trim(v.get("wkn")).length() < 9)
                                 v.markAsFailure(MessageFormat.format(Messages.MsgErrorInvalidWKN, trim(v.get("name"))));
                             else
