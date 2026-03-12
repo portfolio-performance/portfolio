@@ -116,8 +116,13 @@ import de.engehausen.treemap.swt.TreeMap;
             GC gc = new GC(this);
             var width = 0;
             var height = 0;
+
+            var defaultFont = gc.getFont();
+            var boldFont = renderer.getBoldFont(gc);
+
             for (int ii = 0; ii < label.length; ii++)
             {
+                gc.setFont(ii == 0 ? boldFont : defaultFont);
                 Point extent = gc.textExtent(label[ii]);
                 if (extent.x > width)
                     width = extent.x;
