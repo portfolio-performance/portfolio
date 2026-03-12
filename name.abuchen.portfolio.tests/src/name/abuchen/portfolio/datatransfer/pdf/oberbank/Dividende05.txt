@@ -1,0 +1,34 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.6.qualifier
+System: macosx | aarch64 | 21.0.9+10-LTS | Eclipse Adoptium
+-----------------------------------------
+Wertpapier-Abrechnu n g                      Zinszahlung
+888888 - 26.02.2024
+Depotnummer Betreuer
+Mustermann Max 111-1111.11 Z 3
+23
+Wertpapiernummer Bezeichnung Nominale/Stück
+AT000B127337 Oberbank AG EUR            8.000,00
+Nachr. Anleihe 2023-2031
+Ertrag f. 365 Tage EUR              364,00
+Ertrag 4,55 %
+Kupon jährlich KESt EUR             -100,10
+24.02.2024
+Summe EUR              263,90
+Extag 24.02.2024
+Verrechnung
+Verwahrart, Positionsdaten
+SVK Sammelverwahrung Wert 26.02.2024 EUR              263,90
+Wien zu Gunsten Konto AT11 1111 1111 1111 1111
+      Seite 1 von 2
+Oberbank AG, Rechtsform: Aktiengesellschaft, Sitz: Linz, Firmenbuch Nr. FN 79063w, Landesgericht Linz, DVR: 0019020, UID-Nr. ATU22852606
+Wertpapier-Abrechnung
+888888 - 26.02.2024
+Depotbezeichnung Depotnummer Betreuer
+Mustermann Max 111-1111.11 Z 3
+23
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden                       8.000,00 NOM
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG
+---------------------------------------------------------------------------------------------
+Die KESt wird an das Finanzamt Linz abgeführt.
+Oberbank AG, Rechtsform: Aktiengesellschaft, Sitz: Linz, Firmenbuch Nr. FN 79063w, Landesgericht Linz, DVR: 0019020, UID-Nr. ATU22852606       Seite 2 von 2
