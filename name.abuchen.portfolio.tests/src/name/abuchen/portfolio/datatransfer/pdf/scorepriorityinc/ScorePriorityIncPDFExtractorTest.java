@@ -783,7 +783,7 @@ public class ScorePriorityIncPDFExtractorTest
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.FEES));
-        assertThat(cancellation.getFailureMessage(), is(MessageFormat.format(Messages.MsgErrorInvalidWKN, "Tsvt")));
+        assertThat(cancellation.getFailureMessage(), is(MessageFormat.format(Messages.MsgErrorInvalidWKN, "09609")));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2021-11-05T00:00")));
