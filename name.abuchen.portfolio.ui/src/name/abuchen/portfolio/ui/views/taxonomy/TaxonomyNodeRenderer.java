@@ -7,8 +7,11 @@ import java.util.Map;
 import java.util.function.DoubleFunction;
 import java.util.function.Function;
 
+import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.LocalResourceManager;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -105,6 +108,8 @@ import name.abuchen.portfolio.util.ColorConversion;
     protected Map<String, Color> hex2color = new HashMap<>();
     protected Function<String, Color> colorFactory = color -> new Color(ColorConversion.hex2RGB(color));
 
+    private Font boldFont;
+
     public TaxonomyNodeRenderer(TaxonomyModel model, LocalResourceManager resources)
     {
         this.model = model;
@@ -121,9 +126,17 @@ import name.abuchen.portfolio.util.ColorConversion;
         return new String[] { label, info };
     }
 
+    public Font getBoldFont(GC gc)
+    {
+        if (boldFont == null)
+            boldFont = resources.create(FontDescriptor.createFrom(gc.getFont().getFontData()).setStyle(SWT.BOLD));
+        return boldFont;
+    }
+
     public final void drawRectangle(TaxonomyNode rootNode, TaxonomyNode node, GC gc, Rectangle r)
     {
         var color = getColorFor(rootNode, node);
+        var defaultFont = gc.getFont();
 
         gc.setBackground(color);
         gc.fillRectangle(r.x, r.y, r.width, r.height);
@@ -148,6 +161,7 @@ import name.abuchen.portfolio.util.ColorConversion;
             var widestLabel = 0;
             for (int ii = 0; ii < label.length; ii++)
             {
+                gc.setFont(ii == 0 ? boldFont : defaultFont);
                 Point extent = gc.textExtent(label[ii]);
                 textExtents[ii] = extent;
                 if (extent.x > widestLabel)
@@ -161,6 +175,7 @@ import name.abuchen.portfolio.util.ColorConversion;
                 // horizontal
                 for (int ii = 0; ii < label.length; ii++)
                 {
+                    gc.setFont(ii == 0 ? boldFont : defaultFont);
                     gc.drawString(label[ii], r.x + 2, r.y + 2 + ii * lineHeight, true);
                 }
             }
@@ -180,6 +195,7 @@ import name.abuchen.portfolio.util.ColorConversion;
 
                     for (int ii = 0; ii < label.length; ii++)
                     {
+                        gc.setFont(ii == 0 ? boldFont : defaultFont);
                         gc.drawString(label[ii], //
                                         Math.max(-textExtents[ii].x - 2, -r.height + 2), //
                                         2 + ii * lineHeight, true);
@@ -194,6 +210,7 @@ import name.abuchen.portfolio.util.ColorConversion;
         }
         finally
         {
+            gc.setFont(defaultFont);
             gc.setClipping((Rectangle) null);
         }
 
