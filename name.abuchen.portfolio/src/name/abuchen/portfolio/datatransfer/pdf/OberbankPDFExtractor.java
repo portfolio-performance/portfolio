@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -34,6 +35,7 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
         addBuySellTransaction();
         addDividendTransaction();
         addDeliveryInOutBoundTransaction();
+        addNonImportableTransaction();
     }
 
     @Override
@@ -48,6 +50,7 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
                         + "(Kauf" //
                         + "|Verkauf" //
                         + "|Ausgabe Fonds" //
+                        + "|Ausgabe Fonds aus Dauerauftrag" //
                         + "|R.cknahme Fonds" //
                         + "))");
         this.addDocumentTyp(type);
@@ -58,6 +61,7 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
                         + "(Kauf" //
                         + "|Verkauf" //
                         + "|Ausgabe Fonds" //
+                        + "|Ausgabe Fonds aus Dauerauftrag" //
                         + "|R.cknahme Fonds" //
                         + ")$");
         type.addBlock(firstRelevantLine);
@@ -78,12 +82,20 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
                                         + "(?<type>(Kauf" //
                                         + "|Verkauf" //
                                         + "|Ausgabe Fonds" //
+                                        + "|Ausgabe Fonds aus Dauerauftrag" //
                                         + "|R.cknahme Fonds" //
                                         + "))$") //
                         .assign((t, v) -> {
                             if ("Verkauf".equals(v.get("type")) || "Rücknahme Fonds".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
+
+                        // @formatter:off
+                        //     Storno 888888 - 13.04.2021
+                        // @formatter:on
+                        .section("type").optional() //
+                        .match("^[\\s]*(?<type>Storno) [\\d]+ - [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
+                        .assign((t, v) -> v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported))
 
                         .oneOf( //
                         // @formatter:off
@@ -100,7 +112,6 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
                                                             t.setSecurity(getOrCreateSecurity(v));
                                                         }),
                                         // @formatter:off
-                                        // Wertpapiernummer Bezeichnung Nominale/Stück
                                         // AT000B127337 Oberbank AG Zugang EUR            8.000,00
                                         // Nachr. Anleihe 2023-2031
                                         // @formatter:on
@@ -174,18 +185,28 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
                         // Auftrags-Nr. 999999-28.01.2021
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^(?<note>Auftrags-Nr\\. \\d+)-[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
+                        .match("^(?<note>Auftrags-Nr\\. [\\d]+)-[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
                         .assign((t, v) -> t.setNote(v.get("note")))
+
+                        // @formatter:off
+                        // 888888 - 02.03.2026
+                        //     Storno 888888 - 13.04.2021
+                        // @formatter:on
+                        .section("note1").optional() //
+                        .match("^([\\s]*Storno )?(?<note1>[\\d]+) - [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
+                        .assign((t, v) -> {
+                            t.setNote(concatenate(t.getNote(), "Abrechnungs-Nr. " + v.get("note1"), " | "));
+                        })
 
                         // @formatter:off
                         // Kupon 4,55 % jährlich Stückzinsen f. 166 Tage EUR              165,55
                         // @formatter:on
-                        .section("note1", "note2", "note3").optional() //
-                        .match("^Kupon [\\.,\\d]+ % .* (?<note1>St.ckzinsen .* [\\d]+ Tage).* (?<note3>[A-Z]{3})[\\s]+(?<note2>[\\.,\\d]+)$") //
+                        .section("note2", "note3", "note4").optional() //
+                        .match("^Kupon [\\.,\\d]+ % .* (?<note2>St.ckzinsen .* [\\d]+ Tage).* (?<note4>[A-Z]{3})[\\s]+(?<note3>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setNote(concatenate(t.getNote(), v.get("note1"), " | "));
-                            t.setNote(concatenate(t.getNote(), v.get("note2"), ": "));
-                            t.setNote(concatenate(t.getNote(), v.get("note3"), " "));
+                            t.setNote(concatenate(t.getNote(), v.get("note2"), " | "));
+                            t.setNote(concatenate(t.getNote(), v.get("note3"), ": "));
+                            t.setNote(concatenate(t.getNote(), v.get("note4"), " "));
                         })
 
                         .wrap(BuySellEntryItem::new);
@@ -198,7 +219,9 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
     {
         final var type = new DocumentType("(Wertpapier\\-.*" //
                         + "(Dividende" //
-                        + "|Aussch.ttung))");
+                        + "|Aussch.ttung" //
+                        + "|Zinszahlung" //
+                        + "|Aussch.ttungsgleicher Ertrag))");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -206,6 +229,7 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
         var firstRelevantLine = new Block("^Wertpapier\\-.*" //
                         + "(Dividende" //
                         + "|Aussch.ttung" //
+                        + "|Zinszahlung" //
                         + "|Aussch.ttungsgleicher Ertrag)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
@@ -218,30 +242,77 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        // TODO: Ausschüttung / Thesaurierung needs to be
-                        // handled
-
                         // @formatter:off
-                        // US92826C8394 VISA Inc. Stk .              10,00
-                        // Reg. Shares Class A DL -,0001
-                        // Ertrag USD                6,70
+                        // If we have a positive amount and a gross reinvestment,
+                        // there is a tax refund.
+                        // If the amount is negative, then it is taxes.
                         // @formatter:on
-                        .section("isin", "name", "nameContinued", "currency") //
-                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) Stk[\\s]*\\.[\\s]+[\\.,\\d]+$") //
-                        .match("^(?<nameContinued>.*)$") //
-                        .match("^Ertrag (?<currency>[\\w]{3})[\\s]+[\\.,\\d]+$") //
+                        .section("type", "sign").optional() //
+                        .match("^Wertpapier\\-.*" //
+                                        + "(?<type>(Aussch.ttungsgleicher Ertrag" //
+                                        + "))$") //
+                        .match("^.*zu (?<sign>(Gunsten|Lasten)) Konto .*$") //
                         .assign((t, v) -> {
-                            t.setSecurity(getOrCreateSecurity(v));
+                            if ("Ausschüttungsgleicher Ertrag".equals(v.get("type")) && "Gunsten".equals(v.get("sign")))
+                                t.setType(AccountTransaction.Type.TAX_REFUND);
+
+                            if ("Ausschüttungsgleicher Ertrag".equals(v.get("type")) && "Lasten".equals(v.get("sign")))
+                                t.setType(AccountTransaction.Type.TAXES);
                         })
 
+                        .oneOf( //
                         // @formatter:off
-                        // US92826C8394 VISA Inc. Stk .              10,00
-                        // @formatter:on
-                        .section("shares") //
-                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] .*Stk[\\s]*\\.[\\s]+(?<shares>[\\.,\\d]+)$") //
-                        .assign((t, v) -> {
-                            t.setShares(asShares(v.get("shares")));
-                        })
+                                        // US92826C8394 VISA Inc. Stk .              10,00
+                                        // Reg. Shares Class A DL -,0001
+                                        // Ertrag USD                6,70
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("isin", "name", "nameContinued", "currency") //
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) Stk[\\s]*\\.[\\s]+[\\.,\\d]+$") //
+                                                        .match("^(?<nameContinued>.*)$") //
+                                                        .match("^Ertrag [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }),
+                                        // @formatter:off
+                                        // AT000B127337 Oberbank AG EUR            8.000,00
+                                        // Nachr. Anleihe 2023-2031
+                                        // Ertrag f. 365 Tage EUR              364,00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("isin", "name", "nameContinued", "currency") //
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) [A-Z]{3}[\\s]+[\\.,\\d]+$") //
+                                                        .match("^(?<nameContinued>.*)$") //
+                                                        .match("^Ertrag f. [\\d]+ Tage (?<currency>[\\w]{3})[\\s]+[\\.,\\d]+$") //
+                                                        .assign((t, v) -> {
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }))
+
+                        .oneOf( //
+                        // @formatter:off
+                                        // US92826C8394 VISA Inc. Stk .              10,00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] .*Stk[\\s]*\\.[\\s]+(?<shares>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setShares(asShares(v.get("shares")));
+                                                        }),
+                                        // @formatter:off
+                                        // AT000B127337 Oberbank AG EUR            8.000,00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] .* [A-Z]{3}[\\s]+(?<shares>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            // Percentage
+                                                            // quotation,
+                                                            // workaround for
+                                                            // bonds
+                                                            var shares = asBigDecimal(v.get("shares"));
+                                                            t.setShares(Values.Share
+                                                                            .factorize(shares.doubleValue() / 100));
+                                                        }))
 
                         // @formatter:off
                         // Wertpapierrechnung Wert 02.03.2026 EUR                4,11
@@ -282,6 +353,15 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
 
+                        // @formatter:off
+                        // 888888 - 02.03.2026
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^(?<note>[\\d]+) - [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
+                        .assign((t, v) -> {
+                            t.setNote(concatenate(t.getNote(), "Abrechnungs-Nr. " + v.get("note"), " | "));
+                        })
+
                         .conclude(ExtractorUtils.fixGrossValueA())
 
                         .wrap(TransactionItem::new);
@@ -305,7 +385,9 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
         //
         // Repeated occurrences must be ignored to prevent the creation of
         // duplicate blocks.
-        var startsWith = Pattern.compile("^Durchf.hrungsanzeig[\\s]*e[\\s]+(Freie Lieferung|Freier Erhalt)$");
+        var startsWith = Pattern.compile("^Durchf.hrungsanzeig[\\s]*e[\\s]+" //
+                        + "(Freie Lieferung" //
+                        + "|Freier Erhalt)$");
         var splittingStrategy = (SplittingStrategy) lines -> {
             var blockIdentifiers = new HashSet<String>();
 
@@ -400,8 +482,78 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
                         // Auftrags-Nr. 999999-28.01.2021
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^(?<note>Auftrags-Nr\\. \\d+)-[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
+                        .match("^(?<note>Auftrags-Nr\\. [\\d]+)-[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
                         .assign((t, v) -> t.setNote(v.get("note")))
+
+                        // @formatter:off
+                        // 888888 - 02.03.2026
+                        // @formatter:on
+                        .section("note1").optional() //
+                        .match("^(?<note1>[\\d]+) - [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
+                        .assign((t, v) -> {
+                            t.setNote(concatenate(t.getNote(), "Abrechnungs-Nr. " + v.get("note1"), " | "));
+                        })
+
+                        .wrap(TransactionItem::new);
+    }
+
+    private void addNonImportableTransaction()
+    {
+        final var type = new DocumentType("(Durchf.hrungsanzeig[\\s]*e[\\s]+" //
+                        + "(Kapitalmaßnahme))", //
+                        documentContext -> documentContext //
+                                        .section("transaction") //
+                                        .match("^(?<transaction>(Split))$") //
+                                        .assign((ctx, v) -> ctx.put("transaction", v.get("transaction"))));
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<PortfolioTransaction>();
+
+        var firstRelevantLine = new Block("^Durchf.hrungsanzeig[\\s]*e[\\s]+" //
+                        + "(Einbuchung)$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var portfolioTransaction = new PortfolioTransaction();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+                            return portfolioTransaction;
+                        })
+
+                        // @formatter:off
+                        // US67066G1040 NVIDIA CORP. Zugang Stk.               12,00
+                        // Registered Shares DL-,001
+                        // 888888 - 20.07.2021
+                        // @formatter:on    
+                        .section("name", "nameContinued", "date", "isin", "shares") //
+                        .documentContext("transaction") //
+                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) Zugang Stk[\\s]*\\.[\\s]+(?<shares>[\\.,\\d]+)$") //
+                        .match("^(?<nameContinued>.*)$") //
+                        .match("^[\\d]+ - (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> {
+                            if ("Split".equals(v.get("transaction")))
+                                v.markAsFailure(Messages.MsgErrorTransactionSplitUnsupported);
+                            else
+                                v.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setShares(asShares(v.get("shares")));
+                            t.setSecurity(getOrCreateSecurity(v));
+
+                            t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
+                            t.setAmount(0L);
+                        })
+
+                        // @formatter:off
+                        // 888888 - 02.03.2026
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^(?<note>[\\d]+) - [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
+                        .assign((t, v) -> {
+                            t.setNote(concatenate(t.getNote(), "Abrechnungs-Nr. " + v.get("note"), " | "));
+                        })
 
                         .wrap(TransactionItem::new);
     }
@@ -434,6 +586,15 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
+        // If we have a gross reinvestment,
+        // we set a flag and don't book tax below.
+        transaction //
+                        .section("n").optional() //
+                        .match("^Wertpapier\\-.*[\\s]+Aussch.ttungsgleicher Ertrag$") //
+                        .match("^.*zu (?<n>(Gunsten|Lasten)) Konto .*$") //
+
+                        .assign((t, v) -> type.getCurrentContext().putBoolean("noTax", true));
+
         transaction //
         // @formatter:off
                         // Kursgewinn-KESt EUR               -73,15
@@ -441,6 +602,7 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency").optional() //
                         .match("^Kursgewinn-KESt (?<currency>[A-Z]{3})[\\s]+\\-(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noTax"))
                                 processTaxEntries(t, v, type);
                         })
 
@@ -450,6 +612,7 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency").optional() //
                         .match("^KESt (?<currency>[A-Z]{3})[\\s]+\\-(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noTax"))
                                 processTaxEntries(t, v, type);
                         })
 
@@ -459,7 +622,8 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency").optional() //
                         .match("^Auslands-KESt (?<currency>[\\w]{3})[\\s]+\\-(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            processTaxEntries(t, v, type);
+                            if (!type.getCurrentContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
                         })
 
                         // @formatter:off
@@ -468,7 +632,18 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency").optional() //
                         .match("^Ausl.ndische Steuern (?<currency>[\\w]{3})[\\s]+\\-(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            processTaxEntries(t, v, type);
+                            if (!type.getCurrentContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
+
+                        // @formatter:off
+                        // Kupon jährlich KESt EUR             -100,10
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Kupon jährlich KESt (?<currency>[\\w]{3})[\\s]+\\-(?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
                         });
     }
 
