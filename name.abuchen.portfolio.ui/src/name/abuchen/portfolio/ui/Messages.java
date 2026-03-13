@@ -235,6 +235,7 @@ public class Messages extends NLS
     public static String ColumnIssue;
     public static String ColumnLabel;
     public static String ColumnLastDate;
+    public static String ColumnLastTransactionDate;
     public static String ColumnLastDividendPayment;
     public static String ColumnLastDividendPayment_MenuLabel;
     public static String ColumnLatest;
