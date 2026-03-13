@@ -116,14 +116,14 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                 {
                     movingRelativeCost = 0;
                     movingRelativeNetCost = 0;
-                    heldShares = 0;
                 }
                 else
                 {
                     movingRelativeCost = Math.round(movingRelativeCost / (double) heldShares * remaining);
                     movingRelativeNetCost = Math.round(movingRelativeNetCost / (double) heldShares * remaining);
-                    heldShares = remaining;
                 }
+
+                heldShares = remaining;
 
                 for (LineItem entry : fifo)
                 {
@@ -151,6 +151,16 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                     PortfolioLog.warning(MessageFormat.format(Messages.MsgNegativeHoldingsDuringFIFOCostCalculation,
                                     Values.Share.format(sold), t.getSecurity().getName(),
                                     Values.DateTime.format(t.getDateTime())));
+
+                    grossAmount = t.getMonetaryAmount(converter).getAmount();
+                    netAmount = t.getGrossValue(converter).getAmount();
+
+                    trail = TrailRecord.ofTransaction(t);
+                    if (!getTermCurrency().equals(t.getCurrencyCode()))
+                        trail = trail.convert(Money.of(getTermCurrency(), grossAmount),
+                                        converter.getRate(t.getDateTime(), t.getCurrencyCode()));
+
+                    fifo.add(new LineItem(item.getOwner(), -sold, grossAmount, netAmount, trail));
                 }
 
                 break;
