@@ -223,6 +223,7 @@ public class WeberbankPDFExtractorTest
 
         assertThat(transaction.getShares(), is(Values.Share.factorize(107)));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-13T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2020-08-07T00:00")));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertThat(transaction.getNote(), is("Quartalsdividende"));
 
