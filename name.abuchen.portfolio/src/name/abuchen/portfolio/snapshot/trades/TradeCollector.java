@@ -108,6 +108,7 @@ public class TradeCollector
 
         List<Trade> trades = new ArrayList<>();
         Map<Portfolio, List<TransactionPair<PortfolioTransaction>>> openTransactions = new HashMap<>();
+        Map<Portfolio, List<TransactionPair<PortfolioTransaction>>> allTransactions = new HashMap<>();
 
         for (TransactionPair<?> txp : transactions)
         {
@@ -131,14 +132,16 @@ public class TradeCollector
                     // a new trade. (Note: it's an invariant that fifo contains
                     // transaction of the same type (purchase vs !purchase), so
                     // we test 0th element in fifo).
+                    allTransactions.computeIfAbsent(portfolio, p -> new ArrayList<>()).add(pair);
                     if (openList.isEmpty() || openList.get(0).getTransaction().getType().isPurchase() == type.isPurchase())
                         openList.add(pair);
                     else
-                        trades.add(createNewTrade(openTransactions, pair));
+                        trades.add(createNewTrade(openTransactions, pair, allTransactions));
                     break;
 
                 case TRANSFER_IN:
                     moveOpenTransaction(openTransactions, pair);
+                    moveOpenTransaction(allTransactions, pair);
                     break;
 
                 case TRANSFER_OUT:
@@ -165,17 +168,20 @@ public class TradeCollector
             Trade newTrade = new Trade(security, entry.getKey(), shares);
             newTrade.setStart(position.get(0).getTransaction().getDateTime());
             newTrade.getTransactions().addAll(position);
+            newTrade.getTransactionsMovingAverage().addAll(allTransactions.get(entry.getKey()));
 
             trades.add(newTrade);
         }
 
-        trades.forEach(t -> t.calculate(client, converter));
+        trades.forEach(t -> t.calculate(converter));
 
         return trades;
     }
 
     private Trade createNewTrade(Map<Portfolio, List<TransactionPair<PortfolioTransaction>>> openTransactions,
-                    TransactionPair<PortfolioTransaction> pair) throws TradeCollectorException
+                    TransactionPair<PortfolioTransaction> pair,
+                    Map<Portfolio, List<TransactionPair<PortfolioTransaction>>> allTransactions)
+                    throws TradeCollectorException
     {
         Trade newTrade = new Trade(pair.getTransaction().getSecurity(), (Portfolio) pair.getOwner(),
                         pair.getTransaction().getShares());
@@ -225,6 +231,7 @@ public class TradeCollector
                             pair.getOwner(), Values.Share.format(sharesToDistribute), pair));
         }
 
+        newTrade.getTransactionsMovingAverage().addAll(allTransactions.get(pair.getOwner()));
         newTrade.getTransactions().add(pair);
         newTrade.setEnd(pair.getTransaction().getDateTime());
 
