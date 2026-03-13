@@ -457,6 +457,14 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         // @formatter:off
+                        // Ex-Tag 09.02.2017 Art der Dividende Quartalsdividende
+                        // Ex-Tag 07.04.2016
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Ex\\-Tag (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
+                        // @formatter:off
                         // Kapitalrückzahlung
                         // @formatter:on
                         .section("note").optional() //
