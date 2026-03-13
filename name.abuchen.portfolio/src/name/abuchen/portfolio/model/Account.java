@@ -161,26 +161,22 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
                         .mapToLong(t -> {
                             switch (t.getType())
                             {
-                                case DEPOSIT:
-                                case DIVIDENDS:
-                                case INTEREST:
-                                case SELL:
-                                case TRANSFER_IN:
-                                case TAX_REFUND:
-                                case FEES_REFUND:
+                                case DEPOSIT, DIVIDENDS, INTEREST, SELL, TRANSFER_IN, TAX_REFUND, FEES_REFUND:
                                     return t.getAmount();
-                                case FEES:
-                                case INTEREST_CHARGE:
-                                case TAXES:
-                                case REMOVAL:
-                                case BUY:
-                                case TRANSFER_OUT:
+                                case FEES, INTEREST_CHARGE, TAXES, REMOVAL, BUY, TRANSFER_OUT:
                                     return -t.getAmount();
                                 default:
                                     throw new UnsupportedOperationException("unsupported transaction type '" //$NON-NLS-1$
                                                     + t.getType() + "' for transaction " + t); //$NON-NLS-1$
                             }
                         }).sum();
+    }
+
+    public LocalDateTime getLastTransactionDate()
+    {
+        return transactions.stream() //
+                        .max(Transaction.BY_DATE) //
+                        .map(Transaction::getDateTime).orElse(null);
     }
 
     @Override
