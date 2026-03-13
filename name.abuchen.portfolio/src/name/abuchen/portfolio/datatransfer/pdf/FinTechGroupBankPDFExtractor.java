@@ -1051,6 +1051,20 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Zahlungsdatum: (?<date>[\\d]{2}\\. .* [\\d]{4})$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
+                        // @formatter:off
+                        // Extag           :  08.05.2014          Bruttodividende
+                        // Ex-Datum: 9. Feb 2024 CUSIP: D69671218
+                        // @formatter:on
+                        .optionalOneOf( //
+                                        section -> section //
+                                                        .attributes("exDate") //
+                                                        .match("^Extag[:\\s]+(?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate")))), //
+                                        section -> section //
+                                                        .attributes("exDate") //
+                                                        .match("^Ex-Datum: (?<exDate>[\\d]{1,2}\\. .* [\\d]{4}) CUSIP:.*$") //
+                                                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate")))))
+
                         .oneOf( //
                                         // @formatter:off
                                         // Extag           :    07.10.2021        Bruttothesaurierung:        78,81 USD
