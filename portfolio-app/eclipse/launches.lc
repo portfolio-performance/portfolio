@@ -29,7 +29,7 @@ eclipse configuration PortfolioPerformance {
     argument "-consoleLog";
     
     vm-argument "-XX:+IgnoreUnrecognizedVMOptions";
-    vm-argument "--add-modules=ALL-SYSTEM";
+    vm-argument "--add-modules=java.se,jdk.httpserver";
     vm-argument "-XX:+UseG1GC";
     vm-argument "-XX:+UseStringDeduplication";
     vm-argument "-XstartOnFirstThread";
