@@ -11,6 +11,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.PaintEvent;
@@ -192,6 +193,7 @@ import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNodeRenderer.Performance
     }
 
     private static final String COLORING_STRATEGY_TTWROR = "ttwror:"; //$NON-NLS-1$
+    private static final String SASH_IDENTIFIER = TreeMapViewer.class.getSimpleName() + "-newsash"; //$NON-NLS-1$
 
     private final IStylingEngine stylingEngine;
     private final AbstractFinanceView view;
@@ -202,6 +204,9 @@ import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNodeRenderer.Performance
     private ColorSchema colorSchema = ColorSchema.BLUE_GRAY_ORANGE;
 
     private TaxonomyNode selectedNode;
+
+    @Inject
+    private IPreferenceStore preferences;
 
     @Inject
     public TreeMapViewer(IStylingEngine stylingEngine, AbstractFinanceView view, TaxonomyModel model,
@@ -370,7 +375,12 @@ import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNodeRenderer.Performance
         GridDataFactory.fillDefaults().grab(true, false).applyTo(legend);
 
         // layout sash
-        details.getControl().setLayoutData(new SashLayoutData(SWTHelper.getPackedWidth(details.getControl())));
+        var size = preferences.getInt(SASH_IDENTIFIER);
+        if (size == 0)
+            size = SWTHelper.getPackedWidth(details.getControl());
+        details.getControl().setLayoutData(new SashLayoutData(size));
+        sash.addDisposeListener(e -> preferences.setValue(SASH_IDENTIFIER,
+                        ((SashLayoutData) details.getControl().getLayoutData()).getSize()));
 
         treeMap.setRectangleRenderer(new ClassificationRectangleRenderer());
         treeMap.setTreeModel(new Model(getModel()));
