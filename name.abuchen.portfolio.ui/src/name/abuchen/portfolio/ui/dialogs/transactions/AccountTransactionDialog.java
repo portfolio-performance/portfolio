@@ -28,6 +28,7 @@ import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -120,6 +121,12 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         dateTime.bindDate(Properties.date.name());
         dateTime.bindTime(Properties.time.name());
         dateTime.bindButton(() -> model().getTime(), time -> model().setTime(time));
+
+        // ex-date
+
+        var exDate = new ExDateInput(editArea);
+        exDate.bindDate(Properties.exDate.name());
+        exDate.setVisible(model().supportsSecurity());
 
         // shares
 
@@ -251,6 +258,20 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
 
         startingWith(dateTime.date.getControl()).thenRight(dateTime.time).thenRight(dateTime.button, 0);
 
+        if (model().supportsSecurity())
+        {
+            startingWith(dateTime.button).thenRight(exDate.checkBox).thenRight(exDate.date.getControl());
+
+            var hasExDate = model().getExDate() != null;
+            toggleExDatePicker(exDate, hasExDate);
+
+            exDate.checkBox.addSelectionListener(SelectionListener.widgetSelectedAdapter(event -> {
+                var button = (Button) event.widget;
+                toggleExDatePicker(exDate, button.getSelection());
+                editArea.layout();
+            }));
+        }
+
         // shares [- amount per share]
         forms.thenBelow(shares.value).width(amountWidth).label(shares.label).suffix(btnShares) //
                         // fxAmount - exchange rate - amount
@@ -350,6 +371,22 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         model.addPropertyChangeListener(Properties.date.name(), e -> warnings.check());
 
         model.firePropertyChange(Properties.exchangeRateCurrencies.name(), "", model().getExchangeRateCurrencies()); //$NON-NLS-1$
+    }
+
+    private void toggleExDatePicker(ExDateInput exDate, boolean enable)
+    {
+        exDate.checkBox.setSelection(enable);
+        exDate.date.getControl().setVisible(enable);
+
+        if (enable)
+        {
+            model().setExDate(exDate.date.getSelection().atStartOfDay());
+        }
+        else
+        {
+            model().setExDate(null);
+            exDate.date.setSelection(model.getDate());
+        }
     }
 
     private ComboInput setupSecurities(Composite editArea)

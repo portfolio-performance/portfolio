@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +43,7 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -59,7 +62,10 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.CurrencyProposalProvider;
 import name.abuchen.portfolio.ui.util.CurrencyToStringConverter;
 import name.abuchen.portfolio.ui.util.DatePicker;
+import name.abuchen.portfolio.ui.util.DateTimeToDateConverter;
+import name.abuchen.portfolio.ui.util.DateToDateTimeConverter;
 import name.abuchen.portfolio.ui.util.IValidatingConverter;
+import name.abuchen.portfolio.ui.util.NullableDateTimeDateSelectionProperty;
 import name.abuchen.portfolio.ui.util.SimpleDateTimeDateSelectionProperty;
 import name.abuchen.portfolio.ui.util.SimpleDateTimeTimeSelectionProperty;
 import name.abuchen.portfolio.ui.util.StringToCurrencyConverter;
@@ -317,6 +323,40 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
                         consumer.accept(LocalTime.MIDNIGHT);
                 }
             });
+        }
+    }
+
+    public class ExDateInput
+    {
+        public final Button checkBox;
+        public final DatePicker date;
+
+        public ExDateInput(Composite editArea)
+        {
+            checkBox = new Button(editArea, SWT.CHECK);
+            checkBox.setText(Messages.ColumnExDate);
+            date = new DatePicker(editArea);
+        }
+
+        public void bindDate(String property)
+        {
+            UpdateValueStrategy<LocalDate, LocalDateTime> targetToModel = new UpdateValueStrategy<>();
+            targetToModel.setConverter(new DateToDateTimeConverter());
+
+            UpdateValueStrategy<LocalDateTime, LocalDate> modelToTarget = new UpdateValueStrategy<>();
+            modelToTarget.setConverter(new DateTimeToDateConverter());
+
+            IObservableValue<LocalDate> targetObservable = new NullableDateTimeDateSelectionProperty()
+                            .observe(date.getControl());
+            IObservableValue<LocalDateTime> modelObservable = BeanProperties.value(property, LocalDateTime.class)
+                            .observe(model);
+            context.bindValue(targetObservable, modelObservable, targetToModel, modelToTarget);
+        }
+
+        public void setVisible(boolean visible)
+        {
+            checkBox.setVisible(visible);
+            date.getControl().setVisible(visible);
         }
     }
 

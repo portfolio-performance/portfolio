@@ -1095,12 +1095,14 @@ public class Messages extends NLS
     public static String MsgConfirmInstall;
     public static String MsgCreateTransactionsAutomaticallyUponOpening;
     public static String MsgDateIsInTheFuture;
+    public static String MsgDateExIsAfterTheDate;
     public static String MsgDeletionNotPossible;
     public static String MsgDeletionNotPossibleDetail;
     public static String MsgDialogInputRequired;
     public static String MsgDialogNotAValidCurrency;
     public static String MsgDialogNotAValidISIN;
     public static String MsgEmbeddedBrowserError;
+    public static String MsgExDateNotAllowed;
     public static String MsgErrorAccountNotExist;
     public static String MsgErrorConvertedAmount;
     public static String MsgErrorConvertToBuySellCurrencyMismatch;
