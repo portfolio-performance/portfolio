@@ -1069,7 +1069,12 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
 
             .wrap((t, ctx) -> {
                 if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() == 0)
-                    ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                {
+                    if (t.getPortfolioTransaction().getShares() != 0)
+                        ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                    else
+                        ctx.skipTransaction(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                }
 
                 return new BuySellEntryItem(t);
             }));
@@ -1255,7 +1260,12 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
 
                 .wrap((t, ctx) -> {
                     if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                        ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                    {
+                        if (t.getShares() != 0)
+                            ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                        else
+                            ctx.skipTransaction(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                    }
 
                     return new TransactionItem(t);
                 }));
@@ -1414,12 +1424,9 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                     })
                     )
 
-                .wrap((t, ctx) -> {
-                    if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                        ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
-
-                    return new TransactionItem(t);
-                }));
+                .wrap(t -> t.getCurrencyCode() != null && t.getAmount() == 0
+                                ? new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired)
+                                : new TransactionItem(t)));
 
         Block feesBlock = new Block("^.*(Vertragsgeb.hr in [\\d]{4}"
                         + "|.* (inkl|incl)\\.( [\\d]+%)? (Mehrwertsteuer \\(MwSt\\)|MwSt|MWSt)"
@@ -1583,11 +1590,9 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         })
                         )
 
-                .wrap((t, ctx) -> {
-                    if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                        ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
-                    return new TransactionItem(t);
-                }));
+                .wrap(t -> t.getCurrencyCode() != null && t.getAmount() == 0
+                                ? new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired)
+                                : new TransactionItem(t)));
     }
 
     private void addTaxReturnBlock(DocumentType type)
