@@ -37,7 +37,33 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
-   <release version="0.81.5" date="2026-02-08">
+    <release version="0.82.0" date="2026-03-15">
+      <description>
+        <ul>
+          <li>New: Added value color scheme for Asia (Red Up / Green Down), configurable in the preferences.</li>
+          <li>New: Added a collapsible Statement of Assets page.</li>
+          <li>New: Added an ex-date field for dividends and other security-related account transactions.</li>
+          <li>New: Added PDF importers for Liberty Vorsorge AG, Freiburger Kantonalbank, and neon Switzerland AG.</li>
+          <li>Improvement: Enhanced PDF importers for Scalable Capital, Revolut, PostFinance, Raiffeisenbank, flatex, Questrade, Deutsche Bank, Postbank, Baader Bank, Degiro, Onvista, Renault Bank, JTDirektbank, and Bank11.</li>
+          <li>Improvement: Allow opening bookmarks for multiple securities in the Security Performance view.</li>
+          <li>Improvement: Improved UI responsiveness when updating historical prices on slower computers.</li>
+          <li>Fix: Preserve the source field when changing the account or portfolio in transaction dialogs.</li>
+          <li>Fix: Fixed a stock split rounding error with reverse splits.</li>
+          <li>Fix: Fixed the Quote Range column not being exported correctly in CSV export.</li>
+          <li xml:lang="de">Neu: Wertfarbschema für Asien hinzugefügt (Rot = Anstieg / Grün = Rückgang), in den Einstellungen konfigurierbar.</li>
+          <li xml:lang="de">Neu: Einklappbare Seite "Vermögensaufstellung" hinzugefügt.</li>
+          <li xml:lang="de">Neu: Ex-Datum für Dividenden und andere wertpapierbezogene Kontobuchungen hinzugefügt.</li>
+          <li xml:lang="de">Neu: PDF-Importer für Liberty Vorsorge AG, Freiburger Kantonalbank und neon Switzerland AG hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für Scalable Capital, Revolut, PostFinance, Raiffeisenbank, flatex, Questrade, Deutsche Bank, Postbank, Baader Bank, Degiro, Onvista, Renault Bank, JTDirektbank und Bank11 verbessert.</li>
+          <li xml:lang="de">Verbesserung: Lesezeichen für mehrere Wertpapiere in der Ansicht "Wertpapier-Performance" öffnen.</li>
+          <li xml:lang="de">Verbesserung: Verbessertes Verhalten der Benutzeroberfläche beim Aktualisieren historischer Kurse auf langsameren Computern.</li>
+          <li xml:lang="de">Fehlerbehebung: Das Quellenfeld bleibt erhalten, wenn in Transaktionsdialogen das Konto oder Portfolio geändert wird.</li>
+          <li xml:lang="de">Fehlerbehebung: Rundungsfehler bei Aktiensplits mit Reverse Splits behoben.</li>
+          <li xml:lang="de">Fehlerbehebung: Die Spalte "Kursspanne" wird beim CSV-Export nun korrekt exportiert.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.81.5" date="2026-02-08">
       <description>
         <ul>
           <li>New: Added dashboard widget for upcoming dividend events (ex-date and payment date).</li>
