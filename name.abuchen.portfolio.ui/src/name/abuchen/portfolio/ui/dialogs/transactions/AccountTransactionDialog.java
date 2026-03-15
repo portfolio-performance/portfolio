@@ -292,6 +292,15 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
                 if (exDate.checkBox.isVisible() && exDate.checkBox.getSelection())
                 {
                     suggestExDate(exDate);
+
+                    var currentExDate = model().getExDate();
+                    var newTxDate = model().getDate();
+                    if (currentExDate != null && currentExDate.toLocalDate().isAfter(newTxDate))
+                    {
+                        exDate.date.setSelection(newTxDate);
+                        model().setExDate(newTxDate.atStartOfDay());
+                    }
+
                     toggleExDatePicker(exDate, true);
                 }
             });
