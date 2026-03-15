@@ -175,11 +175,24 @@ public abstract class AbstractFinanceView
         sl.setTag(UIConstants.Tag.INFORMATIONPANE);
         sash.setLayout(sl);
 
-        createBody(sash);
-        sashLayout = sl;
+        // Defer layout until both children (body + information pane) have been
+        // added. Without this, createBody may trigger a layout cascade (e.g.
+        // via setRedraw or updateTitle) while the sash has only one child,
+        // causing TreeColumnLayout to assert on partially initialized columns.
+        sash.setLayoutDeferred(true);
+        try
+        {
+            createBody(sash);
+            sashLayout = sl;
 
-        pane = make(InformationPane.class);
-        pane.createViewControl(sash);
+            pane = make(InformationPane.class);
+            pane.createViewControl(sash);
+        }
+        finally
+        {
+            sash.setLayoutDeferred(false);
+        }
+
         pane.setView(this);
         pane.setLayoutData(new SashLayoutData(-200));
 

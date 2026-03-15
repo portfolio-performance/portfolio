@@ -270,6 +270,11 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             tableColumn.setWidth(width);
             tableColumn.setData(Column.class.getName(), column);
 
+            // register column data immediately after creation so that
+            // TableColumnLayout never encounters a column without layout data
+            // (even if a later step in this method triggers a layout cascade)
+            layout.setColumnData(tableColumn, new ColumnPixelData(width));
+
             if (column.getImage() != null)
                 tableColumn.setImage(column.getImage().image());
 
@@ -288,8 +293,6 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
                 tableColumn.setData(OPTIONS_KEY, option);
             }
-
-            layout.setColumnData(tableColumn, new ColumnPixelData(width));
 
             CellLabelProvider labelProvider = column.getLabelProvider().get();
             col.setLabelProvider(labelProvider);
@@ -438,6 +441,11 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             treeColumn.setWidth(width);
             treeColumn.setData(Column.class.getName(), column);
 
+            // register column data immediately after creation so that
+            // TreeColumnLayout never encounters a column without layout data
+            // (even if a later step in this method triggers a layout cascade)
+            layout.setColumnData(treeColumn, new ColumnPixelData(width));
+
             if (column.getImage() != null)
                 treeColumn.setImage(column.getImage().image());
 
@@ -455,8 +463,6 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                 treeColumn.setToolTipText(createToolTip(text, description, column.getMenuLabel()));
                 treeColumn.setData(OPTIONS_KEY, option);
             }
-
-            layout.setColumnData(treeColumn, new ColumnPixelData(width));
 
             CellLabelProvider labelProvider = column.getLabelProvider().get();
             col.setLabelProvider(labelProvider);
