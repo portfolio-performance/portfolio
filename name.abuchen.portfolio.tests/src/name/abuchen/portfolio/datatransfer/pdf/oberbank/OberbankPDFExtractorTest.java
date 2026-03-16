@@ -4,6 +4,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -385,7 +386,7 @@ public class OberbankPDFExtractorTest
 
         assertThat(results, hasItem(dividend( //
                         hasDate("2026-03-02T00:00"), hasShares(10), //
-                        hasSource("Dividende01.txt"), //
+                        hasExDate("2026-02-10T00:00"), hasSource("Dividende01.txt"), //
                         hasNote("Abrechnungs-Nr. 888888"), //
                         hasAmount("EUR", 4.11), hasGrossValue("EUR", 5.68), //
                         hasTaxes("EUR", (0.84 + 1.01) / 1.1797), hasFees("EUR", 0.00), //
@@ -419,7 +420,7 @@ public class OberbankPDFExtractorTest
 
         assertThat(results, hasItem(dividend( //
                         hasDate("2026-03-02T00:00"), hasShares(10), //
-                        hasSource("Dividende01.txt"), //
+                        hasExDate("2026-02-10T00:00"), hasSource("Dividende01.txt"), //
                         hasNote("Abrechnungs-Nr. 888888"), //
                         hasAmount("EUR", 4.11), hasGrossValue("EUR", 5.68), //
                         hasTaxes("EUR", (0.84 + 1.01) / 1.1797), hasFees("EUR", 0.00))));
@@ -453,7 +454,7 @@ public class OberbankPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2025-06-16T00:00"), hasShares(338), //
-                        hasSource("Dividende02.txt"), //
+                        hasExDate("2025-06-12T00:00"), hasSource("Dividende02.txt"), //
                         hasNote("Abrechnungs-Nr. 888888"), //
                         hasAmount("EUR", 147.03), hasGrossValue("EUR", 202.80), //
                         hasTaxes("EUR", 55.77), hasFees("EUR", 0.00))));
@@ -488,7 +489,7 @@ public class OberbankPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(taxRefund( //
                         hasDate("2021-02-03T00:00"), hasShares(5.98), //
-                        hasSource("Dividende03.txt"), //
+                        hasExDate("2021-02-01T00:00"), hasSource("Dividende03.txt"), //
                         hasNote("Abrechnungs-Nr. 888888"), //
                         hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -523,7 +524,7 @@ public class OberbankPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2022-11-09T00:00"), hasShares(123), //
-                        hasSource("Dividende04.txt"), //
+                        hasExDate("2022-11-09T00:00"), hasSource("Dividende04.txt"), //
                         hasNote("Abrechnungs-Nr. 888888"), //
                         hasAmount("EUR", 22.83), hasGrossValue("EUR", 22.83), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
@@ -557,7 +558,7 @@ public class OberbankPDFExtractorTest
 
         assertThat(results, hasItem(taxes( //
                         hasDate("2022-11-09T00:00"), hasShares(123), //
-                        hasSource("Dividende04.txt"), //
+                        hasExDate("2022-11-09T00:00"), hasSource("Dividende04.txt"), //
                         hasNote("Abrechnungs-Nr. 888888"), //
                         hasAmount("EUR", 22.83), hasGrossValue("EUR", 22.83), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -591,7 +592,7 @@ public class OberbankPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2024-02-26T00:00"), hasShares(80), //
-                        hasSource("Dividende05.txt"), //
+                        hasExDate("2024-02-24T00:00"), hasSource("Dividende05.txt"), //
                         hasNote("Abrechnungs-Nr. 888888"), //
                         hasAmount("EUR", 263.90), hasGrossValue("EUR", 364.00), //
                         hasTaxes("EUR", 100.10), hasFees("EUR", 0.00))));

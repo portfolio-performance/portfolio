@@ -323,6 +323,13 @@ public class OberbankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
+                        // Extag 24.02.2024
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Extag (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
+                        // @formatter:off
                         // Verwahrart, Positionsdaten
                         // Wertpapierrechnung Wert 02.03.2026 EUR                4,11
                         // Verwahrart, Positionsdaten
