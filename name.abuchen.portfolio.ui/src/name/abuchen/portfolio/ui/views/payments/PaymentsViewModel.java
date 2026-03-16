@@ -19,6 +19,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -169,6 +170,7 @@ public class PaymentsViewModel
     private Mode mode = Mode.ALL;
     private boolean useGrossValue = true;
     private boolean useConsolidateRetired = true;
+    private CostMethod costMethod = CostMethod.FIFO;
     private boolean hideTotalsAtTheTop = true;
     private boolean hideTotalsAtTheBottom = false;
 
@@ -179,13 +181,14 @@ public class PaymentsViewModel
         this.filteredClient = client;
     }
 
-    public void configure(int startYear, Mode mode, boolean useGrossValue, boolean useConsolidateRetired)
+    public void configure(int startYear, Mode mode, boolean useGrossValue, boolean useConsolidateRetired,
+                    CostMethod costMethod)
     {
         this.startYear = startYear;
         this.mode = mode;
         this.useGrossValue = useGrossValue;
         this.useConsolidateRetired = useConsolidateRetired;
-
+        this.costMethod = costMethod;
         recalculate();
     }
 
@@ -254,6 +257,17 @@ public class PaymentsViewModel
     public void setUseConsolidateRetired(boolean useConsolidateRetired)
     {
         this.useConsolidateRetired = useConsolidateRetired;
+        recalculate();
+    }
+
+    public CostMethod getCostMethod()
+    {
+        return costMethod;
+    }
+
+    public void setCostMethod(CostMethod costMethod)
+    {
+        this.costMethod = costMethod;
         recalculate();
     }
 
@@ -342,7 +356,9 @@ public class PaymentsViewModel
                     continue;
 
                 long value = 0;
-                value = trade.getProfitLossWithoutTaxesAndFees().getAmount();
+                value = costMethod.useFifo()
+                                ? trade.getProfitLossWithoutTaxesAndFees().getAmount()
+                                : trade.getProfitLossMovingAverageWithoutTaxesAndFees().getAmount();
 
                 if (value != 0)
                 {
