@@ -362,6 +362,15 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Gutschrift [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [\\.,\\d]+ [A-Z]{3}.*$")
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
+                        .optionalOneOf(//
+                        // @formatter:off
+                                        // Ex Tag 12.12.2025 
+                                        // Ex-dag 04.06.2025 
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exDate") //
+                                                        .match("^(Ex Tag|Ex-dag) (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})[\\s]*$")
+                                                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate")))))
                         .oneOf( //
                                         // @formatter:off
                                         // Gesamtbetrag 0,07 EUR
