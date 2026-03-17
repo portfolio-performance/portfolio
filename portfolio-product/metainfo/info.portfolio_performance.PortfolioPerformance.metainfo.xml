@@ -37,6 +37,14 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.82.1" date="2026-03-17">
+      <description>
+        <ul>
+          <li>Temporarily reverted the collapsible Statement of Assets page in order to apply fixes before re-releasing.</li>
+          <li xml:lang="de">Die einklappbare Seite "Vermögensaufstellung" wurde vorübergehend zurückgenommen, um Korrekturen vor der erneuten Veröffentlichung vorzunehmen.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.82.0" date="2026-03-15">
       <description>
         <ul>
