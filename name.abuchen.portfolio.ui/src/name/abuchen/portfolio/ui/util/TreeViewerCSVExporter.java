@@ -24,17 +24,10 @@ import name.abuchen.portfolio.util.TextUtil;
 public class TreeViewerCSVExporter extends AbstractCSVExporter
 {
     private final TreeViewer viewer;
-    private boolean flatTable = false;
 
     public TreeViewerCSVExporter(TreeViewer viewer)
     {
         this.viewer = viewer;
-    }
-
-    public TreeViewerCSVExporter withFlatTable()
-    {
-        this.flatTable = true;
-        return this;
     }
 
     @Override
@@ -59,26 +52,17 @@ public class TreeViewerCSVExporter extends AbstractCSVExporter
 
             // write header
             String label = viewer.getTree().getColumn(0).getText();
-            if (flatTable)
-            {
-                printer.print(label);
-            }
-            else
-            {
-                for (int ii = 0; ii < depth; ii++)
-                    printer.print(label + " " + (ii + 1)); //$NON-NLS-1$
-            }
+            for (int ii = 0; ii < depth; ii++)
+                printer.print(label + " " + (ii + 1)); //$NON-NLS-1$
             for (int ii = 1; ii < columnCount; ii++)
                 printer.print(viewer.getTree().getColumn(ii).getText());
             printer.println();
 
             // write body
+            LinkedList<String> path = new LinkedList<>();
             for (Object element : provider.getElements(null))
             {
-                if (flatTable)
-                    writeFlatLine(printer, provider, labels, element);
-                else
-                    writeLine(printer, provider, labels, depth, new LinkedList<>(), element);
+                writeLine(printer, provider, labels, depth, path, element);
             }
         }
     }
@@ -160,24 +144,6 @@ public class TreeViewerCSVExporter extends AbstractCSVExporter
         }
 
         path.removeLast();
-    }
-
-    private void writeFlatLine(CSVPrinter printer, ITreeContentProvider provider, ILabelProvider[] labels,
-                    Object element) throws IOException
-    {
-        for (int ii = 0; ii < labels.length; ii++)
-        {
-            String text = labels[ii].getText(element);
-            printer.print(text != null ? TextUtil.sanitizeFormattedNumber(text) : ""); //$NON-NLS-1$
-        }
-
-        printer.println();
-
-        if (provider.hasChildren(element))
-        {
-            for (Object child : provider.getChildren(element))
-                writeFlatLine(printer, provider, labels, child);
-        }
     }
 
     private int depth(final ITreeContentProvider tree)

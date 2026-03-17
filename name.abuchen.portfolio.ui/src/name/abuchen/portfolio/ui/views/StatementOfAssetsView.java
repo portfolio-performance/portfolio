@@ -123,7 +123,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
         toolBar.add(clientFilter);
 
         Action export = new SimpleAction(null, action -> new TreeViewerCSVExporter(assetViewer.getTreeViewer())
-                        .withFlatTable().export(Messages.LabelStatementOfAssets + ".csv")); //$NON-NLS-1$
+                        .export(Messages.LabelStatementOfAssets + ".csv")); //$NON-NLS-1$
         export.setImageDescriptor(Images.EXPORT.descriptor());
         export.setToolTipText(Messages.MenuExportData);
         toolBar.add(export);

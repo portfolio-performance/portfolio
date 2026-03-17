@@ -70,7 +70,7 @@ public class StatementOfAssetsPane implements InformationPanePage
     public void addButtons(ToolBarManager toolBar)
     {
         toolBar.add(new SimpleAction(Messages.MenuExportData, Images.EXPORT,
-                        a -> new TreeViewerCSVExporter(viewer.getTreeViewer()).withFlatTable().export(getLabel(),
+                        a -> new TreeViewerCSVExporter(viewer.getTreeViewer()).export(getLabel(),
                                         genericAccount)));
 
         configurationMenu = new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,

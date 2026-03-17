@@ -1003,11 +1003,11 @@ public class PerformanceView extends AbstractHistoricView
 
             manager.add(new SimpleAction(
                             MessageFormat.format(Messages.LabelExport, Messages.PerformanceTabAssetsAtStart),
-                            a -> new TreeViewerCSVExporter(snapshotStart.getTreeViewer()).withFlatTable()
+                            a -> new TreeViewerCSVExporter(snapshotStart.getTreeViewer())
                                             .export(Messages.PerformanceTabAssetsAtStart + fileSuffix)));
 
             manager.add(new SimpleAction(MessageFormat.format(Messages.LabelExport, Messages.PerformanceTabAssetsAtEnd),
-                            a -> new TreeViewerCSVExporter(snapshotEnd.getTreeViewer()).withFlatTable()
+                            a -> new TreeViewerCSVExporter(snapshotEnd.getTreeViewer())
                                             .export(Messages.PerformanceTabAssetsAtEnd + fileSuffix)));
 
             manager.add(new SimpleAction(MessageFormat.format(Messages.LabelExport, Messages.PerformanceTabEarnings),
