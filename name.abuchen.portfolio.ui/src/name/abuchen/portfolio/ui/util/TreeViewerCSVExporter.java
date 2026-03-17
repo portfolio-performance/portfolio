@@ -16,9 +16,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
-import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class TreeViewerCSVExporter extends AbstractCSVExporter
@@ -88,19 +86,6 @@ public class TreeViewerCSVExporter extends AbstractCSVExporter
                     {
                         Long value = labelProvider.getValue(element);
                         return value != null ? Values.Share.format(value) : null;
-                    }
-                };
-            }
-            else if (blp instanceof OptionLabelProvider<?> labelProvider)
-            {
-                var option = viewer.getTree().getColumn(ii).getData(ShowHideColumnHelper.OPTIONS_KEY);
-                labels[ii] = new LabelProvider()
-                {
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public String getText(Object element)
-                    {
-                        return ((OptionLabelProvider<Object>) labelProvider).getText(element, option);
                     }
                 };
             }

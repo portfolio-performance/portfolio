@@ -4,7 +4,6 @@ import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,18 +25,17 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
-import org.eclipse.jface.layout.TreeColumnLayout;
+import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
@@ -139,8 +137,7 @@ public class StatementOfAssetsViewer
         private CurrencyConverter converter;
 
         private ClientSnapshot clientSnapshot;
-        private List<Element> allElements = new ArrayList<>();
-        private List<Element> rootElements = new ArrayList<>();
+        private List<Element> elements = new ArrayList<>();
         private GroupByTaxonomy groupByTaxonomy;
 
         private final Interval globalInterval;
@@ -169,17 +166,12 @@ public class StatementOfAssetsViewer
             this.hideTotalsAtTheTop = preferences.getBoolean(TOP);
             this.hideTotalsAtTheBottom = preferences.getBoolean(BOTTOM);
 
-            createModelElements(groupByTaxonomy);
+            this.elements.addAll(flatten(groupByTaxonomy));
         }
 
         public List<Element> getElements()
         {
-            return flattenVisible(getRootElements());
-        }
-
-        public List<Element> getRootElements()
-        {
-            return rootElements.stream().filter(e -> e.getSortOrder() != 0 || !hideTotalsAtTheTop)
+            return elements.stream().filter(e -> e.getSortOrder() != 0 || !hideTotalsAtTheTop)
                             .filter(e -> e.getSortOrder() != Integer.MAX_VALUE || !hideTotalsAtTheBottom)
                             .collect(Collectors.toList());
         }
@@ -221,20 +213,18 @@ public class StatementOfAssetsViewer
             preferences.setValue(BOTTOM, hideTotalsAtTheBottom);
         }
 
-        private void createModelElements(GroupByTaxonomy groupByTaxonomy)
+        private final List<Element> flatten(GroupByTaxonomy groupByTaxonomy)
         {
             // when flattening, assign sortOrder to keep the tree structure for
             // sorting (only positions within a category are sorted)
             int sortOrder = 1;
-            this.allElements.clear();
-            this.rootElements.clear();
+            List<Element> answer = new ArrayList<>();
 
             // totals elements
             Element totalTop = new Element(groupByTaxonomy, 0);
             Element totalBottom = new Element(groupByTaxonomy, Integer.MAX_VALUE);
 
-            allElements.add(totalTop);
-            rootElements.add(totalTop);
+            answer.add(totalTop);
 
             for (AssetCategory cat : groupByTaxonomy.asList())
             {
@@ -243,9 +233,8 @@ public class StatementOfAssetsViewer
                 var hideCategory = taxonomy == null && isUnassignedCategory;
 
                 Element category = new Element(groupByTaxonomy, cat, sortOrder);
-                allElements.add(category);
                 if (!hideCategory)
-                    rootElements.add(category);
+                    answer.add(category);
                 totalTop.addChild(category);
                 totalBottom.addChild(category);
                 sortOrder++;
@@ -253,31 +242,13 @@ public class StatementOfAssetsViewer
                 for (AssetPosition p : cat.getPositions())
                 {
                     Element child = new Element(groupByTaxonomy, p, sortOrder);
-                    allElements.add(child);
+                    answer.add(child);
                     category.addChild(child);
-
-                    // If the (unassigned) category is hidden, show positions
-                    // at root level.
-                    if (hideCategory)
-                        rootElements.add(child);
                 }
                 sortOrder++;
             }
 
-            allElements.add(totalBottom);
-            rootElements.add(totalBottom);
-        }
-
-        private List<Element> flattenVisible(List<Element> roots)
-        {
-            List<Element> answer = new ArrayList<>();
-
-            for (Element root : roots)
-            {
-                answer.add(root);
-                if (root.isCategory())
-                    root.getChildren().forEach(answer::add);
-            }
+            answer.add(totalBottom);
 
             return answer;
         }
@@ -297,12 +268,12 @@ public class StatementOfAssetsViewer
             Map<Security, LazySecurityPerformanceRecord> map = snapshot.getRecords().stream()
                             .collect(Collectors.toMap(LazySecurityPerformanceRecord::getSecurity, r -> r));
 
-            allElements.stream().filter(Element::isSecurity)
+            elements.stream().filter(Element::isSecurity)
                             .forEach(e -> e.setPerformance(currencyCode, interval, map.get(e.getSecurity())));
 
             // create (lazily!) the performance index for categories
 
-            allElements.stream() //
+            elements.stream() //
                             .filter(Element::isCategory) //
                             .filter(e -> !Objects.equals(Classification.UNASSIGNED_ID,
                                             e.getCategory().getClassification().getId()))
@@ -316,7 +287,7 @@ public class StatementOfAssetsViewer
             // create (lazily!) the performance index for the total lines
             var index = new LazyValue<PerformanceIndex>(() -> PerformanceIndex.forClient(filteredClient,
                             converter.with(currencyCode), interval, new ArrayList<>()));
-            allElements.stream().filter(Element::isGroupByTaxonomy)
+            elements.stream().filter(Element::isGroupByTaxonomy)
                             .forEach(e -> e.setPerformanceForCategoryTotals(currencyCode, interval, index));
 
             calculated.add(key);
@@ -334,7 +305,7 @@ public class StatementOfAssetsViewer
 
     private boolean useIndirectQuotation = false;
 
-    private TreeViewer assets;
+    private TableViewer assets;
 
     private Font boldFont;
     private Menu contextMenu;
@@ -367,7 +338,7 @@ public class StatementOfAssetsViewer
     {
         Control control = createColumns(parent, isConfigurable);
 
-        this.assets.getTree().addDisposeListener(e -> StatementOfAssetsViewer.this.widgetDisposed());
+        this.assets.getTable().addDisposeListener(e -> StatementOfAssetsViewer.this.widgetDisposed());
 
         return control;
     }
@@ -399,10 +370,10 @@ public class StatementOfAssetsViewer
     private Control createColumns(Composite parent, boolean isConfigurable) // NOSONAR
     {
         Composite container = new Composite(parent, SWT.NONE);
-        TreeColumnLayout layout = new TreeColumnLayout();
+        TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
 
-        assets = new TreeViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
+        assets = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
         ColumnViewerToolTipSupport.enableFor(assets, ToolTip.NO_RECREATE);
         ColumnEditingSupport.prepare(owner.getEditorActivationState(), assets);
         CopyPasteSupport.enableFor(assets);
@@ -643,10 +614,10 @@ public class StatementOfAssetsViewer
 
         support.createColumns(isConfigurable);
 
-        assets.getTree().setHeaderVisible(true);
-        assets.getTree().setLinesVisible(true);
+        assets.getTable().setHeaderVisible(true);
+        assets.getTable().setLinesVisible(true);
 
-        assets.setContentProvider(new ElementContentProvider());
+        assets.setContentProvider(ArrayContentProvider.getInstance());
 
         assets.addDragSupport(DND.DROP_MOVE, //
                         new Transfer[] { SecurityTransfer.getTransfer() }, //
@@ -655,10 +626,10 @@ public class StatementOfAssetsViewer
         // make sure to apply the styles (including font information to the
         // table) before creating the bold font. Otherwise the font does not
         // match the styles in CSS
-        stylingEngine.style(assets.getTree());
+        stylingEngine.style(assets.getTable());
 
-        LocalResourceManager resources = new LocalResourceManager(JFaceResources.getResources(), assets.getTree());
-        boldFont = resources.create(FontDescriptor.createFrom(assets.getTree().getFont()).setStyle(SWT.BOLD));
+        LocalResourceManager resources = new LocalResourceManager(JFaceResources.getResources(), assets.getTable());
+        boldFont = resources.create(FontDescriptor.createFrom(assets.getTable().getFont()).setStyle(SWT.BOLD));
 
         return container;
     }
@@ -1103,13 +1074,6 @@ public class StatementOfAssetsViewer
 
             new SecurityContextMenu(view).menuAboutToShow(manager, element.getSecurity(), reference);
         }
-
-        if (element.isCategory())
-        {
-            if (!manager.isEmpty())
-                manager.add(new Separator());
-            addTreeActionsContextMenu(manager, element);
-        }
     }
 
     public void hookKeyListener()
@@ -1121,7 +1085,7 @@ public class StatementOfAssetsViewer
         }));
     }
 
-    public TreeViewer getTreeViewer()
+    public TableViewer getTableViewer()
     {
         return assets;
     }
@@ -1175,9 +1139,7 @@ public class StatementOfAssetsViewer
 
         Action action = new SimpleAction(Messages.LabelTotalsAtTheTop, a -> {
             model.setHideTotalsAtTheTop(!model.isHideTotalsAtTheTop());
-            var expandedCategoryIds = getExpandedCategoryIds();
-            assets.setInput(model.getRootElements());
-            restoreExpandedCategories(expandedCategoryIds);
+            assets.setInput(model.getElements());
             assets.refresh();
         });
         action.setChecked(!model.isHideTotalsAtTheTop());
@@ -1185,9 +1147,7 @@ public class StatementOfAssetsViewer
 
         action = new SimpleAction(Messages.LabelTotalsAtTheBottom, a -> {
             model.setHideTotalsAtTheBottom(!model.isHideTotalsAtTheBottom());
-            var expandedCategoryIds = getExpandedCategoryIds();
-            assets.setInput(model.getRootElements());
-            restoreExpandedCategories(expandedCategoryIds);
+            assets.setInput(model.getElements());
             assets.refresh();
         });
         action.setChecked(!model.isHideTotalsAtTheBottom());
@@ -1197,73 +1157,25 @@ public class StatementOfAssetsViewer
 
     public void setInput(ClientFilter filter, LocalDate date, CurrencyConverter converter)
     {
-        assets.getTree().setRedraw(false);
+        assets.getTable().setRedraw(false);
         try
         {
-            Set<String> expandedCategoryIds = model != null ? getExpandedCategoryIds() : null;
-            boolean taxonomyChanged = model != null && !Objects.equals(model.taxonomy, taxonomy);
-
             this.model = new Model(preference, client, filter, converter, date, taxonomy);
 
             support.invalidateCache();
-            assets.setInput(model.getRootElements());
-            if (expandedCategoryIds == null || taxonomyChanged)
-                assets.expandAll();
-            else
-                restoreExpandedCategories(expandedCategoryIds);
+            assets.setInput(model.getElements());
             assets.refresh();
         }
         finally
         {
-            assets.getTree().setRedraw(true);
+            assets.getTable().setRedraw(true);
         }
-    }
-
-    private Set<String> getExpandedCategoryIds()
-    {
-        return Arrays.stream(assets.getExpandedElements()).filter(Element.class::isInstance).map(Element.class::cast)
-                        .filter(Element::isCategory).map(e -> e.getCategory().getClassification().getId())
-                        .collect(Collectors.toSet());
-    }
-
-    private void restoreExpandedCategories(Set<String> expandedCategoryIds)
-    {
-        Object[] expandedElements = model.getRootElements().stream().filter(Element::isCategory)
-                        .filter(e -> expandedCategoryIds.contains(e.getCategory().getClassification().getId()))
-                        .toArray();
-
-        assets.setExpandedElements(expandedElements);
-    }
-
-    private void addTreeActionsContextMenu(IMenuManager manager, Element element)
-    {
-        manager.add(new SimpleAction(Messages.LabelExpand, a -> assets.setExpandedState(element, true))
-        {
-            @Override
-            public boolean isEnabled()
-            {
-                return assets.isExpandable(element) && !assets.getExpandedState(element);
-            }
-        });
-
-        manager.add(new SimpleAction(Messages.LabelCollapse, a -> assets.setExpandedState(element, false))
-        {
-            @Override
-            public boolean isEnabled()
-            {
-                return assets.getExpandedState(element);
-            }
-        });
-
-        manager.add(new Separator());
-        manager.add(new SimpleAction(Messages.LabelExpandAll, a -> assets.expandAll()));
-        manager.add(new SimpleAction(Messages.LabelCollapseAll, a -> assets.collapseAll()));
     }
 
     public void selectSubject(Object subject)
     {
         model.getElements().stream().filter(e -> Objects.equals(e.getSubject(), subject)).findAny()
-                        .ifPresent(e -> assets.setSelection(new StructuredSelection(e), true));
+                        .ifPresent(e -> assets.setSelection(new StructuredSelection(e)));
     }
 
     public Function<Stream<Object>, Object> withSum()
@@ -1288,60 +1200,6 @@ public class StatementOfAssetsViewer
 
         if (contextMenu != null)
             contextMenu.dispose();
-    }
-
-    private static class ElementContentProvider implements ITreeContentProvider
-    {
-        private List<Element> rootElements = List.of();
-
-        @Override
-        public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
-        {
-            if (newInput == null)
-            {
-                rootElements = List.of();
-            }
-            else if (newInput instanceof List<?> list)
-            {
-                rootElements = list.stream().filter(Element.class::isInstance).map(Element.class::cast).toList();
-            }
-            else
-            {
-                throw new IllegalArgumentException("Unsupported type: " + newInput.getClass().getName()); //$NON-NLS-1$
-            }
-        }
-
-        @Override
-        public Object[] getElements(Object inputElement)
-        {
-            return rootElements.toArray();
-        }
-
-        @Override
-        public Object[] getChildren(Object parentElement)
-        {
-            if (parentElement instanceof Element element && element.isCategory())
-                return element.getChildren().toArray();
-            return new Object[0];
-        }
-
-        @Override
-        public Object getParent(Object element)
-        {
-            return null;
-        }
-
-        @Override
-        public boolean hasChildren(Object element)
-        {
-            return element instanceof Element e && e.isCategory() && e.getChildren().findAny().isPresent();
-        }
-
-        @Override
-        public void dispose()
-        {
-            rootElements = List.of();
-        }
     }
 
     public static class Element implements Adaptable
