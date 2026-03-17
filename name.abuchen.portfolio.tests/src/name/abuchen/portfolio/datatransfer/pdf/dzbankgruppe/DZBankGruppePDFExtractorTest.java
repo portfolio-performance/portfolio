@@ -722,6 +722,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-10T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2021-05-31T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(17)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertNull(transaction.getNote());
@@ -769,6 +770,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-10T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2021-05-31T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(17)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertNull(transaction.getNote());
@@ -821,6 +823,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-17T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2021-02-26T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(205)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertThat(transaction.getNote(), is("Quartalsdividende"));
@@ -868,6 +871,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-17T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2021-02-26T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(205)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertThat(transaction.getNote(), is("Quartalsdividende"));
@@ -920,6 +924,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-08T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2021-02-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(160)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
         assertNull(transaction.getNote());
@@ -965,6 +970,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-24T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2021-03-18T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(350)));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
         assertNull(transaction.getNote());
@@ -1011,6 +1017,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-24T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2021-03-18T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(350)));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
         assertNull(transaction.getNote());
@@ -1062,6 +1069,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-23T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2021-06-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(250)));
         assertThat(transaction.getSource(), is("Dividende05.txt"));
         assertNull(transaction.getNote());
@@ -1107,6 +1115,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-21T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2022-06-08T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(102)));
         assertThat(transaction.getSource(), is("Dividende06.txt"));
         assertNull(transaction.getNote());
@@ -1154,6 +1163,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-21T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2022-06-08T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(102)));
         assertThat(transaction.getSource(), is("Dividende06.txt"));
         assertNull(transaction.getNote());
@@ -1206,6 +1216,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-30T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2022-07-28T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1400)));
         assertThat(transaction.getSource(), is("Dividende07.txt"));
         assertThat(transaction.getNote(), is("Zwischendividende"));
@@ -1253,6 +1264,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-30T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2022-07-28T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1400)));
         assertThat(transaction.getSource(), is("Dividende07.txt"));
         assertThat(transaction.getNote(), is("Zwischendividende"));
