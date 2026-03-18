@@ -70,7 +70,12 @@ public class PaymentsPerMonthChartBuilder implements PaymentsChartBuilder
 
             int noOfYears = (totalNoOfMonths / 12) + (totalNoOfMonths % 12 > month ? 1 : 0);
 
-            builder.addColumns(new Column(Messages.ColumnSecurity, SWT.LEFT, 220).withLogo());
+            var firstColumnLabel = switch (model.getMode())
+            {
+                case INTEREST -> Messages.ColumnAccount;
+                default -> Messages.ColumnSecurity;
+            };
+            builder.addColumns(new Column(firstColumnLabel, SWT.LEFT, 220).withLogo());
             for (int year = 0; year < noOfYears; year++)
             {
                 builder.addColumns(new Column(String.valueOf(model.getStartYear() + year))
