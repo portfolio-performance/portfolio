@@ -7,6 +7,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyC
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
@@ -182,11 +183,12 @@ public class GladbacherBankAGPDFExtractorTest
                         hasNote("Abrechnungsnr.: 86148344230 | Quartalsdividende"), //
                         hasAmount("EUR", 8.71), hasGrossValue("EUR", 11.70), //
                         hasForexGrossValue("USD", 13.00), //
-                        hasTaxes("EUR", 1.76 + 1.17 + 0.06), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 1.76 + 1.17 + 0.06), hasFees("EUR", 0.00), //
+                        hasExDate("2023-12-07T00:00"))));
     }
 
     @Test
-    public void testDividende02WithSecurityInEUR()
+    public void testDividende01WithSecurityInEUR()
     {
         var security = new Security("AMETEK INC. REGISTERED SHARES DL -,01", "EUR");
         security.setIsin("US0311001004");
@@ -218,6 +220,7 @@ public class GladbacherBankAGPDFExtractorTest
                         hasNote("Abrechnungsnr.: 86148344230 | Quartalsdividende"), //
                         hasAmount("EUR", 8.71), hasGrossValue("EUR", 11.70), //
                         hasTaxes("EUR", 1.76 + 1.17 + 0.06), hasFees("EUR", 0.00), //
+                        hasExDate("2023-12-07T00:00"), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
