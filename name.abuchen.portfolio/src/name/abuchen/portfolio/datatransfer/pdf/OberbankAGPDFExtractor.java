@@ -270,7 +270,7 @@ public class OberbankAGPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("isin", "name", "nameContinued", "currency") //
                                                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) Stk[\\s]*\\.[\\s]+[\\.,\\d]+$") //
                                                         .match("^(?<nameContinued>.*)$") //
-                                                        .match("^Ertrag [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .match("^Ertrag [\\.,\\d]+ (?<currency>[\\w]{3})[\\s]*$") //
                                                         .assign((t, v) -> {
                                                             t.setSecurity(getOrCreateSecurity(v));
                                                         }),
@@ -283,7 +283,7 @@ public class OberbankAGPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("isin", "name", "nameContinued", "currency") //
                                                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) [A-Z]{3}[\\s]+[\\.,\\d]+$") //
                                                         .match("^(?<nameContinued>.*)$") //
-                                                        .match("^Ertrag f. [\\d]+ Tage (?<currency>[\\w]{3})[\\s]+[\\.,\\d]+$") //
+                                                        .match("^Ertrag f. [\\d]+ Tage (?<currency>[\\w]{3})[\\s]+[\\.,\\d]+[\\s]*$") //
                                                         .assign((t, v) -> {
                                                             t.setSecurity(getOrCreateSecurity(v));
                                                         }))
