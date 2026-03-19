@@ -52,6 +52,7 @@ import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
+import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LabelOnly;
@@ -293,6 +294,7 @@ public final class TradeDetailsView extends AbstractFinanceView
 
     private Input input;
 
+    private ClientFilterDropDown clientFilterDropDown;
     private CurrencyConverter converter;
     private TradesTableViewer table;
     private Taxonomy taxonomy;
@@ -399,6 +401,10 @@ public final class TradeDetailsView extends AbstractFinanceView
         toolBarManager.add(new Separator());
 
         addFilterButton(toolBarManager);
+
+        this.clientFilterDropDown = new ClientFilterDropDown(getClient(), getPreferenceStore(),
+                        TradeDetailsView.class.getSimpleName(), filter -> notifyModelUpdated());
+        toolBarManager.add(clientFilterDropDown);
 
         toolBarManager.add(new DropDown(Messages.MenuExportData, Images.EXPORT, SWT.NONE,
                         manager -> manager.add(new SimpleAction(Messages.LabelTrades + " (CSV)", //$NON-NLS-1$
@@ -805,7 +811,8 @@ public final class TradeDetailsView extends AbstractFinanceView
                 CurrencyConverter converterToUse = useSecCurrency && s.getCurrencyCode() != null
                                 ? currentConverter.with(s.getCurrencyCode())
                                 : currentConverter;
-                var collector = new TradeCollector(getClient(), converterToUse);
+                var collector = new TradeCollector(clientFilterDropDown.getSelectedFilter().filter(getClient()),
+                                converterToUse);
                 trades.addAll(collector.collect(s));
             }
             catch (TradeCollectorException e)
