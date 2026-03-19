@@ -43,6 +43,7 @@ public interface UIConstants
         interface Global // NOSONAR
         {
             String DISCREET_MODE = "global/discreet-mode"; //$NON-NLS-1$
+            String VALUE_COLOR_SCHEME_CHANGED = "global/value-color-scheme-changed"; //$NON-NLS-1$
         }
     }
 
