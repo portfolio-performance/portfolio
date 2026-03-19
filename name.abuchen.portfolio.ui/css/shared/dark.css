@@ -86,6 +86,13 @@ ValueColorScheme.asia {
 	down-arrow: "scheme/asia/dark/down_arrow.svg";
 }
 
+ValueColorScheme.vivid {
+	positive-foreground: #02f500;
+	negative-foreground: #fe2b05;
+	up-arrow: "scheme/vivid/dark/up_arrow.svg";
+	down-arrow: "scheme/vivid/dark/down_arrow.svg";
+}
+
 SecuritiesChart {
 	quote-color: #4ddaff;
 	quote-area-positive-color: #23b0d7;
