@@ -769,6 +769,7 @@ public class Messages extends NLS
     public static String LabelLayoutRelevant;
     public static String LabelLevelNameNumber;
     public static String LabelLevelNumber;
+    public static String LabelLoser;
     public static String LabelMaxDrawdown;
     public static String LabelMaxDrawdownChart;
     public static String LabelMaxDrawdownDuration;
@@ -969,6 +970,8 @@ public class Messages extends NLS
     public static String LabelWeeksAgo;
     public static String LabelWithoutClassification;
     public static String LabelWithQualifier;
+    public static String LabelWinnerLoserList;
+    public static String LabelWinner;
     public static String LabelXDays;
     public static String LabelYear;
     public static String LabelYearlyHeatmap;

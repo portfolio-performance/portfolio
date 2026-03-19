@@ -35,7 +35,6 @@ import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsListWidget;
 import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsListWidget.ExpansionSetting;
-
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.CostHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.InvestmentHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.PerformanceHeatmapWidget;
@@ -326,6 +325,8 @@ public enum WidgetFactory
 
     CHART(Messages.LabelPerformanceChart, Messages.ClientEditorLabelPerformance, Images.VIEW_LINECHART,
                     (widget, data) -> new ChartWidget(widget, data, DataSeries.UseCase.PERFORMANCE)),
+
+    TOPFLOP(Messages.LabelWinnerLoserList, Messages.ClientEditorLabelPerformance, TopFlopWidget::new),
 
     ASSET_CHART(Messages.LabelAssetChart, Messages.LabelStatementOfAssets, Images.VIEW_LINECHART,
                     (widget, data) -> new ChartWidget(widget, data, DataSeries.UseCase.STATEMENT_OF_ASSETS)),
