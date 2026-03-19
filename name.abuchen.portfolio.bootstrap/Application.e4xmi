@@ -260,6 +260,7 @@
     <tags>removeOnHide</tags>
     <tags>Editor</tags>
     <tags>Cloneable</tags>
+    <tags>NoDetach</tags>
   </descriptors>
   <descriptors xmi:id="_4RiCMKz9EeOjzfbCEdp40A" elementId="name.abuchen.portfolio.ui.part.textviewer" label="%part.textviewer" allowMultiple="true" closeable="true" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.parts.TextViewerPart"/>
   <commands xmi:id="_1mco0Bi8EeO8gYEHAOvLsA" elementId="org.eclipse.ui.file.exit" commandName="quitCommand"/>
