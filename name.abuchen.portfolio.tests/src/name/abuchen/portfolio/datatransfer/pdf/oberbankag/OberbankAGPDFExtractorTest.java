@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.datatransfer.pdf.oberbank;
+package name.abuchen.portfolio.datatransfer.pdf.oberbankag;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
@@ -42,19 +42,19 @@ import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
-import name.abuchen.portfolio.datatransfer.pdf.OberbankPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.OberbankAGPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 
 @SuppressWarnings("nls")
-public class OberbankPDFExtractorTest
+public class OberbankAGPDFExtractorTest
 {
 
     @Test
     public void testWertpapierKauf01()
     {
-        var extractor = new OberbankPDFExtractor(new Client());
+        var extractor = new OberbankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -88,7 +88,7 @@ public class OberbankPDFExtractorTest
     @Test
     public void testWertpapierKauf02()
     {
-        var extractor = new OberbankPDFExtractor(new Client());
+        var extractor = new OberbankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -122,7 +122,7 @@ public class OberbankPDFExtractorTest
     @Test
     public void testWertpapierKauf03()
     {
-        var extractor = new OberbankPDFExtractor(new Client());
+        var extractor = new OberbankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -156,7 +156,7 @@ public class OberbankPDFExtractorTest
     @Test
     public void testWertpapierKauf04()
     {
-        var extractor = new OberbankPDFExtractor(new Client());
+        var extractor = new OberbankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -190,7 +190,7 @@ public class OberbankPDFExtractorTest
     @Test
     public void testWertpapierKaufStorno01()
     {
-        var extractor = new OberbankPDFExtractor(new Client());
+        var extractor = new OberbankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -226,7 +226,7 @@ public class OberbankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf01()
     {
-        var extractor = new OberbankPDFExtractor(new Client());
+        var extractor = new OberbankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -260,7 +260,7 @@ public class OberbankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf02()
     {
-        var extractor = new OberbankPDFExtractor(new Client());
+        var extractor = new OberbankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -294,7 +294,7 @@ public class OberbankPDFExtractorTest
     @Test
     public void testFreieLieferung01()
     {
-        var extractor = new OberbankPDFExtractor(new Client());
+        var extractor = new OberbankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -328,7 +328,7 @@ public class OberbankPDFExtractorTest
     @Test
     public void testFreierErhalt01()
     {
-        var extractor = new OberbankPDFExtractor(new Client());
+        var extractor = new OberbankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -362,7 +362,7 @@ public class OberbankPDFExtractorTest
     @Test
     public void testDividende01()
     {
-        var extractor = new OberbankPDFExtractor(new Client());
+        var extractor = new OberbankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -402,7 +402,7 @@ public class OberbankPDFExtractorTest
         var client = new Client();
         client.addSecurity(security);
 
-        var extractor = new OberbankPDFExtractor(client);
+        var extractor = new OberbankAGPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -429,7 +429,7 @@ public class OberbankPDFExtractorTest
     @Test
     public void testDividende02()
     {
-        var extractor = new OberbankPDFExtractor(new Client());
+        var extractor = new OberbankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -464,7 +464,7 @@ public class OberbankPDFExtractorTest
     @Test
     public void testDividende03()
     {
-        var extractor = new OberbankPDFExtractor(new Client());
+        var extractor = new OberbankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -499,7 +499,7 @@ public class OberbankPDFExtractorTest
     @Test
     public void testDividende04()
     {
-        var extractor = new OberbankPDFExtractor(new Client());
+        var extractor = new OberbankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -540,7 +540,7 @@ public class OberbankPDFExtractorTest
         var client = new Client();
         client.addSecurity(security);
 
-        var extractor = new OberbankPDFExtractor(client);
+        var extractor = new OberbankAGPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -567,7 +567,7 @@ public class OberbankPDFExtractorTest
     @Test
     public void testDividende05()
     {
-        var extractor = new OberbankPDFExtractor(new Client());
+        var extractor = new OberbankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -602,7 +602,7 @@ public class OberbankPDFExtractorTest
     @Test
     public void testSplit01()
     {
-        var extractor = new OberbankPDFExtractor(new Client());
+        var extractor = new OberbankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 

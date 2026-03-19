@@ -23,10 +23,10 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
-public class OberbankPDFExtractor extends AbstractPDFExtractor
+public class OberbankAGPDFExtractor extends AbstractPDFExtractor
 {
 
-    public OberbankPDFExtractor(Client client)
+    public OberbankAGPDFExtractor(Client client)
     {
         super(client);
 
