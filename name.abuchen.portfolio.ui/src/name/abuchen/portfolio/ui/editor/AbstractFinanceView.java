@@ -10,6 +10,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.MenuManager;
@@ -109,6 +110,14 @@ public abstract class AbstractFinanceView
             if (pane != null && pane.getControl() != null && !pane.getControl().isDisposed())
                 pane.onRecalculationNeeded();
         });
+    }
+
+    @Inject
+    @org.eclipse.e4.core.di.annotations.Optional
+    public void onValueColorSchemeChanged(
+                    @UIEventTopic(UIConstants.Event.Global.VALUE_COLOR_SCHEME_CHANGED) Object ignored)
+    {
+        onRecalculationNeeded();
     }
 
     /** called when some other view modifies the model */
