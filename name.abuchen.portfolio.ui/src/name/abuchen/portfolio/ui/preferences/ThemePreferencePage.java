@@ -40,7 +40,9 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.theme.ThemePreferences;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ValueColorScheme;
+import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
 import name.abuchen.portfolio.ui.util.swt.ControlDecoration;
 
 @SuppressWarnings("restriction")
@@ -69,6 +71,7 @@ public final class ThemePreferencePage extends PreferencePage
     private ComboViewer fontSizeCombo;
 
     private List<Button> valueColorSchemeOptions = new ArrayList<>();
+    private List<Runnable> previewBackgroundUpdaters = new ArrayList<>();
 
     public ThemePreferencePage(IThemeEngine themeEngine)
     {
@@ -232,6 +235,8 @@ public final class ThemePreferencePage extends PreferencePage
             }
         }
 
+        Display.getDefault().asyncExec(() -> previewBackgroundUpdaters.forEach(Runnable::run));
+
         return super.performOk();
     }
 
@@ -249,6 +254,8 @@ public final class ThemePreferencePage extends PreferencePage
             var scheme = (ValueColorScheme) button.getData();
             button.setSelection(ValueColorScheme.STANDARD_SCHEME.equals(scheme.getIdentifier()));
         }
+
+        Display.getDefault().asyncExec(() -> previewBackgroundUpdaters.forEach(Runnable::run));
 
         super.performDefaults();
     }
@@ -334,17 +341,35 @@ public final class ThemePreferencePage extends PreferencePage
         var positiveArrowLabel = new Label(previewComposite, SWT.NONE);
         positiveArrowLabel.setImage(scheme.upArrow());
 
-        var positiveLabel = new Label(previewComposite, SWT.NONE);
+        var positiveLabel = new ColoredLabel(previewComposite, SWT.NONE);
         positiveLabel.setText(Values.Amount.format(Values.Amount.factorize(1234.56)));
-        positiveLabel.setForeground(scheme.positiveForeground());
+        positiveLabel.setTextColor(scheme.positiveForeground());
 
         // Negative
         var negativeArrowLabel = new Label(previewComposite, SWT.NONE);
         negativeArrowLabel.setImage(scheme.downArrow());
 
-        var negativeLabel = new Label(previewComposite, SWT.NONE);
+        var negativeLabel = new ColoredLabel(previewComposite, SWT.NONE);
         negativeLabel.setText(Values.Amount.format(Values.Amount.factorize(-1234.56)));
-        negativeLabel.setForeground(scheme.negativeForeground());
+        negativeLabel.setTextColor(scheme.negativeForeground());
+
+        Runnable updatePreviewBackground = () -> {
+            if (previewComposite.isDisposed())
+                return;
+            var previewBackground = Colors.theme().defaultBackground();
+            previewComposite.setBackground(previewBackground);
+            positiveArrowLabel.setBackground(previewBackground);
+            positiveArrowLabel.setImage(scheme.upArrow());
+            negativeArrowLabel.setBackground(previewBackground);
+            negativeArrowLabel.setImage(scheme.downArrow());
+            positiveLabel.setBackdropColor(previewBackground);
+            positiveLabel.setTextColor(scheme.positiveForeground());
+            negativeLabel.setBackdropColor(previewBackground);
+            negativeLabel.setTextColor(scheme.negativeForeground());
+            previewComposite.redraw();
+        };
+        previewBackgroundUpdaters.add(updatePreviewBackground);
+        Display.getDefault().asyncExec(updatePreviewBackground);
 
         return radioButton;
     }
