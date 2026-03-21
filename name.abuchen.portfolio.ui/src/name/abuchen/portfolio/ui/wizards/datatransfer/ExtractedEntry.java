@@ -47,10 +47,15 @@ public class ExtractedEntry
         this.isImported = isImported;
     }
 
+    public boolean isExplicitlyNotImported()
+    {
+        return Boolean.FALSE.equals(isImported);
+    }
+
     public boolean isImported()
     {
         // do not import if explicitly excluded by the user
-        if (isImported != null && !isImported.booleanValue())
+        if (isExplicitlyNotImported())
             return false;
 
         // do not import if the entry has a dependency which is not imported
