@@ -8,7 +8,9 @@ import java.util.function.DoubleFunction;
 import java.util.function.Function;
 
 import org.eclipse.jface.resource.LocalResourceManager;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -142,12 +144,19 @@ import name.abuchen.portfolio.util.ColorConversion;
         {
             gc.setForeground(Colors.getTextColor(gc.getBackground()));
 
+            var defaultFont = gc.getFont();
+            var fontDatas = defaultFont.getFontData();
+            for (var fontData : fontDatas)
+                fontData.setStyle(SWT.BOLD);
+            var boldFont = new Font(gc.getDevice(), fontDatas);
+
             var label = getLabel(node);
 
             var textExtents = new Point[label.length];
             var widestLabel = 0;
             for (int ii = 0; ii < label.length; ii++)
             {
+                gc.setFont(ii == 0 ? boldFont : defaultFont);
                 Point extent = gc.textExtent(label[ii]);
                 textExtents[ii] = extent;
                 if (extent.x > widestLabel)
@@ -161,6 +170,7 @@ import name.abuchen.portfolio.util.ColorConversion;
                 // horizontal
                 for (int ii = 0; ii < label.length; ii++)
                 {
+                    gc.setFont(ii == 0 ? boldFont : defaultFont);
                     gc.drawString(label[ii], r.x + 2, r.y + 2 + ii * lineHeight, true);
                 }
             }
@@ -180,6 +190,7 @@ import name.abuchen.portfolio.util.ColorConversion;
 
                     for (int ii = 0; ii < label.length; ii++)
                     {
+                        gc.setFont(ii == 0 ? boldFont : defaultFont);
                         gc.drawString(label[ii], //
                                         Math.max(-textExtents[ii].x - 2, -r.height + 2), //
                                         2 + ii * lineHeight, true);
@@ -191,6 +202,7 @@ import name.abuchen.portfolio.util.ColorConversion;
                     gc.setTransform(null);
                 }
             }
+            boldFont.dispose();
         }
         finally
         {
