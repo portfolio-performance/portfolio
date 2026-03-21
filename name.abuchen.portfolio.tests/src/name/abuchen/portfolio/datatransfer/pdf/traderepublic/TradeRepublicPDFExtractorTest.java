@@ -11517,4 +11517,101 @@ public class TradeRepublicPDFExtractorTest
                         hasAmount("EUR", 1.00), hasGrossValue("EUR", 1.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
+
+    @Test
+    public void testTransaccionesDeCuenta10()
+    {
+        var extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "TransaccionesDeCuenta10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction - Incoming transfer from without Transferencia prefix
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2026-01-14"), hasAmount("EUR", 25.00), //
+                        hasSource("TransaccionesDeCuenta10.txt"), hasNote("Incoming transfer from gmjtlp XluEoyJqEV RhncI, S.L.(oN9903194352357816331388)"))));
+
+        // assert transaction - Incoming transfer from with Transferencia prefix (already working)
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2026-01-24"), hasAmount("EUR", 198.71), //
+                        hasSource("TransaccionesDeCuenta10.txt"), hasNote("Incoming transfer from Mintos Marketplace AS (ep336651755135764039)"))));
+
+        // assert transaction - Incoming transfer from without Transferencia prefix
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2026-01-28"), hasAmount("EUR", 4552.63), //
+                        hasSource("TransaccionesDeCuenta10.txt"), hasNote("Incoming transfer from XHRHmb rBwIZDBPIU EUWmk, S.L.(Cx5298127404899415340791)"))));
+    }
+
+    @Test
+    public void testInformeDeIntereses01()
+    {
+        var extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "InformeDeIntereses01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check interest transaction (net amount after IRPF withholding tax)
+        assertThat(results, hasItem(interest( //
+                        hasDate("2026-01-01T00:00"), //
+                        hasSource("InformeDeIntereses01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 62.71), hasGrossValue("EUR", 77.42), //
+                        hasTaxes("EUR", 14.71), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testLiquidacionDeValoresSaveback01()
+    {
+        var extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "LiquidacionDeValoresSaveback01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE000716YHJ7"), hasWkn(null), hasTicker(null), //
+                        hasName("FTSE All-World USD (Acc)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-02-02T00:00"), hasShares(0.761108), //
+                        hasSource("LiquidacionDeValoresSaveback01.txt"), //
+                        hasNote("Saveback: 9a96-8457 | Ejecución: 44a4-10f3"), //
+                        hasAmount("EUR", 5.55), hasGrossValue("EUR", 5.55), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
 }
