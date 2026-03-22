@@ -363,6 +363,7 @@ public class IBFlexStatementExtractor implements Extractor
         private String accountCurrency = null;
         private Map<String, Account> accounts = new HashMap<>();
         private Portfolio portfolio = null;
+        private Set<String> canceledTradeTransactionIds = new HashSet<>();
 
         // Map to store currency conversion rates by (date, "fromCurrency-toCurrency")
         private Map<Pair<String, String>, BigDecimal> conversionRates = new HashMap<>();
@@ -523,6 +524,11 @@ public class IBFlexStatementExtractor implements Extractor
 
             // Check if the asset category is supported
             if (!ASSETKEY_CASH.equals(element.getAttribute("assetCategory")))
+                return;
+
+            // Skip executions that are canceled by a separate TradeCancel row.
+            String transactionID = element.getAttribute("transactionID");
+            if (!transactionID.isEmpty() && canceledTradeTransactionIds.contains(transactionID))
                 return;
 
             // Check if the level of detail is supported
@@ -1068,6 +1074,27 @@ public class IBFlexStatementExtractor implements Extractor
             }
         }
 
+        private void collectCanceledTradeTransactionIds()
+        {
+            canceledTradeTransactionIds.clear();
+
+            NodeList nList = statement.getElementsByTagName("Trade");
+            for (int index = 0; index < nList.getLength(); index++)
+            {
+                Node node = nList.item(index);
+                if (node.getNodeType() != Node.ELEMENT_NODE)
+                    continue;
+
+                Element element = (Element) node;
+                if (!"TradeCancel".equals(element.getAttribute("transactionType")))
+                    continue;
+
+                String origTransactionID = element.getAttribute("origTransactionID");
+                if (!origTransactionID.isEmpty() && !"0".equals(origTransactionID) && !"N/A".equals(origTransactionID))
+                    canceledTradeTransactionIds.add(origTransactionID);
+            }
+        }
+
         /**
          * Parses a single FlexStatement element and processes its model objects.
          *
@@ -1085,6 +1112,9 @@ public class IBFlexStatementExtractor implements Extractor
 
             // Import AccountInformation
             importModelObjects("AccountInformation", buildAccountInformation);
+
+            // Collect canceled trades before importing trade executions.
+            collectCanceledTradeTransactionIds();
 
             // Process all Trades
             importModelObjects("Trade", buildPortfolioTransaction);
