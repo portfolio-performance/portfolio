@@ -1982,7 +1982,7 @@ public class ScalableCapitalPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(taxRefund(hasDate("2025-06-30"), hasAmount("EUR", 0.77), //
+        assertThat(results, hasItem(taxes(hasDate("2025-06-30"), hasAmount("EUR", 0.77), //
                         hasSource("Kontoauszug02.txt"), hasNote("Solidaritätszuschlag"))));
 
         // assert transaction
@@ -1995,7 +1995,7 @@ public class ScalableCapitalPDFExtractorTest
                                         hasAmount("EUR", 56.27)))));
 
         // assert transaction
-        assertThat(results, hasItem(taxRefund(hasDate("2025-06-30"), hasAmount("EUR", 14.07), //
+        assertThat(results, hasItem(taxes(hasDate("2025-06-30"), hasAmount("EUR", 14.07), //
                         hasSource("Kontoauszug02.txt"), hasNote("Kapitalertragssteuer"))));
 
         // assert transaction
@@ -2068,15 +2068,15 @@ public class ScalableCapitalPDFExtractorTest
                                         hasAmount("EUR", 50.36)))));
 
         // assert transaction
-        assertThat(results, hasItem(taxRefund(hasDate("2025-12-31"), hasAmount("EUR", 1.10), //
+        assertThat(results, hasItem(taxes(hasDate("2025-12-31"), hasAmount("EUR", 1.10), //
                         hasSource("Kontoauszug04.txt"), hasNote("Kirchensteuer"))));
 
         // assert transaction
-        assertThat(results, hasItem(taxRefund(hasDate("2025-12-31"), hasAmount("EUR", 12.31), //
+        assertThat(results, hasItem(taxes(hasDate("2025-12-31"), hasAmount("EUR", 12.31), //
                         hasSource("Kontoauszug04.txt"), hasNote("Kapitalertragssteuer"))));
 
         // assert transaction
-        assertThat(results, hasItem(taxRefund(hasDate("2025-12-31"), hasAmount("EUR", 0.67), //
+        assertThat(results, hasItem(taxes(hasDate("2025-12-31"), hasAmount("EUR", 0.67), //
                         hasSource("Kontoauszug04.txt"), hasNote("Solidaritätszuschlag"))));
     }
 
