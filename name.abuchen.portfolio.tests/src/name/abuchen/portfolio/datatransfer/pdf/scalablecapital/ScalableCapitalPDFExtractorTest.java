@@ -2032,6 +2032,55 @@ public class ScalableCapitalPDFExtractorTest
     }
 
     @Test
+    public void testKontoauszug04()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(6L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(6));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-01-06"), hasAmount("EUR", 1000.00), //
+                        hasSource("Kontoauszug04.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-01-23"), hasAmount("EUR", 5000.00), //
+                        hasSource("Kontoauszug04.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired, //
+                        interest( //
+                                        hasDate("2025-12-31"), //
+                                        hasSource("Kontoauszug04.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 50.36)))));
+
+        // assert transaction
+        assertThat(results, hasItem(taxRefund(hasDate("2025-12-31"), hasAmount("EUR", 1.10), //
+                        hasSource("Kontoauszug04.txt"), hasNote("Kirchensteuer"))));
+
+        // assert transaction
+        assertThat(results, hasItem(taxRefund(hasDate("2025-12-31"), hasAmount("EUR", 12.31), //
+                        hasSource("Kontoauszug04.txt"), hasNote("Kapitalertragssteuer"))));
+
+        // assert transaction
+        assertThat(results, hasItem(taxRefund(hasDate("2025-12-31"), hasAmount("EUR", 0.67), //
+                        hasSource("Kontoauszug04.txt"), hasNote("Solidaritätszuschlag"))));
+    }
+
+    @Test
     public void testAccountStatement01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
