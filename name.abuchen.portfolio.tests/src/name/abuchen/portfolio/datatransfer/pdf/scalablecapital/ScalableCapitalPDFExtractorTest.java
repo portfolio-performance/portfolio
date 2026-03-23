@@ -2046,8 +2046,8 @@ public class ScalableCapitalPDFExtractorTest
         assertThat(countAccountTransactions(results), is(6L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(1L));
-        assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(6));
+        assertThat(countSkippedItems(results), is(2L));
+        assertThat(results.size(), is(8));
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
@@ -2078,6 +2078,15 @@ public class ScalableCapitalPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(taxes(hasDate("2025-12-31"), hasAmount("EUR", 0.67), //
                         hasSource("Kontoauszug04.txt"), hasNote("Solidaritätszuschlag"))));
+
+        // assert transaction (this is present twice)
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        interest( //
+                                        hasDate("2026-01-02"), //
+                                        hasSource("Kontoauszug04.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00)))));
     }
 
     @Test
