@@ -526,6 +526,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 01.07.2025 30.06.2025 Abgezogener oder erstatteter Solidaritätszuschlag auf Kundenebene -0,77 EUR
         // 01.07.2025 30.06.2025 Auf Kundenebene einbehaltene oder erstattete Kapitalertragssteuer -14,07 EUR
+        // 01.01.2026 31.12.2025 Auf Kundenebene einbehaltene oder erstattete Kirchensteuer -1,10 EUR 
         // @formatter:on
         var taxesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (.*oder erstattete.*) [\\-|\\+][\\.,\\d]+ [A-Z]{3}.*$");
         type.addBlock(taxesBlock);
@@ -540,7 +541,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         .section("date", "note", "type", "amount", "currency") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
                                         + ".*" //
-                                        + "(?<note>(Solidarit.tszuschlag|Kapitalertrag(s)?steuer)).*" //
+                                        + "(?<note>(Solidarit.tszuschlag|Kapitalertrag(s)?steuer|Kirchensteuer)).*" //
                                         + "(?<type>[\\-|\\+])(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> {
                          // Is type --> "-" change from TAXES to TAX_REFUND
@@ -629,10 +630,11 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
     {
         final var type = new DocumentType("Vorabpauschale", //
                         "(Wertpapierabrechnung" //
-                        + "|Contract note" //
-                        + "|Transactiebevestiging" //
-                        + "|Nota contrattuale" //
-                        + "|Laufzeitende)");
+                                        + "|Contract note" //
+                                        + "|Transactiebevestiging" //
+                                        + "|Nota contrattuale" //
+                                        + "|Kontoauszug" //
+                                        + "|Laufzeitende)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
