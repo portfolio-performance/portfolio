@@ -137,14 +137,16 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^Acquisto .* (?<shares>[\\.,\\d]+) unit. [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3}$") //
-                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                                        .assign((t, v) -> t.setShares(
+                                                                        asShares(v.get("shares"), "en", "US"))),
                                         // @formatter:off
                                         // Kopen IncomeShares S&P 500 Options 0.935016 stk. 5.3475 EUR 5.00 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^Kopen .* (?<shares>[\\.,\\d]+) stk\\. [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3}$") //
-                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                                        .assign((t, v) -> t.setShares(
+                                                                        asShares(v.get("shares"), "en", "US"))),
                                         // @formatter:off
                                         // Kauf Vngrd Fds-ESG Dv.As-Pc Al ETF 3,00 Stk. 6,168 EUR 18,50 EUR
                                         // Verkauf Scalable MSCI AC World Xtrackers (Acc) 1,00 Stk. 9,585 EUR 9,59 EUR
@@ -337,9 +339,11 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^Rechthebbende hoeveelheid (?<shares>[\\.,\\d]+).*$") //
-                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                                        .assign((t, v) -> t.setShares(
+                                                                        asShares(v.get("shares"), "en", "US"))),
                                         // @formatter:off
                                         // Berechtigte Anzahl 0,663129
+                                        // Berechtigte Anzahl 1.200 
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
@@ -710,8 +714,8 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^Entitled quantity (?<shares>[\\.,\\d]+) .*$") //
-                                                        .assign((t, v) -> t.setShares(asShares(v.get(
-                                                                        "shares"))))
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en",
+                                                                                        "US")))
                         )
 
 
@@ -976,24 +980,5 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
         }
 
         return ExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
-    }
-
-    @Override
-    protected long asShares(String value)
-    {
-        var language = "de";
-        var country = "DE";
-
-        var lastDot = value.lastIndexOf(".");
-        var lastComma = value.lastIndexOf(",");
-
-        // returns the greater of two int values
-        if (Math.max(lastDot, lastComma) == lastDot)
-        {
-            language = "en";
-            country = "US";
-        }
-
-        return ExtractorUtils.convertToNumberLong(value, Values.Share, language, country);
     }
 }

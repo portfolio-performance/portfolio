@@ -555,7 +555,7 @@ public class ScalableCapitalPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2026-01-14T00:00"), hasShares(1.327), //
+                        hasDate("2026-01-14T00:00"), hasShares(1327), //
                         hasSource("Verkauf06.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 1.33), hasGrossValue("EUR", 1.33), //
@@ -1843,6 +1843,41 @@ public class ScalableCapitalPDFExtractorTest
                         hasNote(null), //
                         hasAmount("EUR", 2.12), hasGrossValue("EUR", 2.49), //
                         hasTaxes("EUR", 0.37), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende11()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende11.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BMYDM919"), hasWkn(null), hasTicker(null), //
+                        hasName("LG Eur.x-UK Qual.Div.E.W.U.ETF"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-03-20T00:00"), hasExDate("2026-03-12T00:00"), //
+                        hasShares(1200), //
+                        hasSource("Dividende11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 29.85), hasGrossValue("EUR", 36.60), //
+                        hasTaxes("EUR", 6.75), hasFees("EUR", 0.00))));
     }
 
     @Test
