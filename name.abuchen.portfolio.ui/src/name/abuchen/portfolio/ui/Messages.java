@@ -406,6 +406,8 @@ public class Messages extends NLS
     public static String DesktopAPIErrorOpeningURL;
     public static String DesktopAPIIllegalURL;
     public static String DesktopAPIPlatformNotSupported;
+    public static String DialogBackfillExDatesMessage;
+    public static String DialogBackfillExDatesTitle;
     public static String DialogConsistencyChecksTitle;
     public static String DialogConssitencyChecksMessage;
     public static String DialogTaxonomyNamePrompt;
@@ -540,6 +542,7 @@ public class Messages extends NLS
     public static String JobMsgSamplingHistoricalQuotes;
     public static String JobMsgUpdatingQuotesFor;
     public static String LabelAbout;
+    public static String LabelBackfillExDates;
     public static String LabelAbsoluteChange;
     public static String LabelAbsoluteDelta;
     public static String LabelAbsoluteInvestedCapital;
@@ -1106,6 +1109,9 @@ public class Messages extends NLS
     public static String MsgErrorAccountNotExist;
     public static String MsgErrorConvertedAmount;
     public static String MsgErrorConvertToBuySellCurrencyMismatch;
+    public static String MsgBackfillExDatesMissingAPIKey;
+    public static String MsgBackfillExDatesNoCandidates;
+    public static String MsgBackfillExDatesUpdated;
     public static String MsgErrorDividendsYearBetween1900AndNow;
     public static String MsgErrorExchangeMissing;
     public static String MsgErrorMinimumHeightRequired;
