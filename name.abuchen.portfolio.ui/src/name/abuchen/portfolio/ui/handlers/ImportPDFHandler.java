@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.handlers;
 
+import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -8,11 +10,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -33,11 +38,20 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 
+import com.google.common.base.Strings;
+
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFImportAssistant;
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityEvent;
+import name.abuchen.portfolio.model.SecurityEvent.DividendEvent;
+import name.abuchen.portfolio.online.DividendFeed;
+import name.abuchen.portfolio.online.Factory;
+import name.abuchen.portfolio.online.impl.DivvyDiaryDividendFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
@@ -47,6 +61,10 @@ import name.abuchen.portfolio.ui.wizards.datatransfer.ImportExtractedItemsWizard
 
 public class ImportPDFHandler
 {
+    private static final long EX_DATE_PAYMENT_DATE_TOLERANCE_DAYS = 5;
+
+    private static final Map<Security, List<DividendEvent>> securityEventsMap = new HashMap<>();
+
     @CanExecute
     boolean isVisible(@Named(IServiceConstants.ACTIVE_PART) MPart part)
     {
@@ -174,6 +192,7 @@ public class ImportPDFHandler
             IRunnableWithProgress operation = monitor -> {
                 PDFImportAssistant assistent = new PDFImportAssistant(client, files);
                 result.putAll(assistent.run(monitor, errors));
+                enrichMissingExDates(result);
             };
 
             new ProgressMonitorDialog(shell).run(true, true, operation);
@@ -194,5 +213,68 @@ public class ImportPDFHandler
             String message = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
             MessageDialog.openError(shell, Messages.LabelError, message);
         }
+    }
+
+    /* package */ static void enrichMissingExDates(Map<Extractor, List<Extractor.Item>> result)
+    {
+        result.values().stream().flatMap(List::stream)
+                        .forEach(item -> enrichMissingExDate(item));
+    }
+
+    /* package */ static boolean enrichMissingExDate(Extractor.Item item)
+    {
+        if (!(item.getSubject() instanceof AccountTransaction transaction))
+            return false;
+
+        if (transaction.getType() != AccountTransaction.Type.DIVIDENDS || transaction.getExDate() != null)
+            return false;
+
+        Security security = transaction.getSecurity();
+        if (security == null || Strings.isNullOrEmpty(security.getIsin()))
+            return false;
+
+        List<DividendEvent> events = security.getEvents().stream()
+                        .filter(event -> event.getType() == SecurityEvent.Type.DIVIDEND_PAYMENT)
+                        .map(DividendEvent.class::cast) //
+                        .collect(toMutableList());
+        if (events.isEmpty())
+        {
+            events = securityEventsMap.get(security);
+        }
+        if (events == null)
+        {
+            try
+            {
+                DividendFeed feed = Factory.getDividendFeed(DivvyDiaryDividendFeed.class);
+                events = feed.getDividendPayments(security);
+            }
+            catch (IOException e)
+            {
+                PortfolioPlugin.log(security.getName(), e);
+                events = List.of();
+            }
+
+            securityEventsMap.put(security, events);
+        }
+
+        return findMatchingExDate(transaction.getDateTime().toLocalDate(), events).map(exDate -> {
+            transaction.setExDate(exDate.atStartOfDay());
+            return true;
+        }).orElse(false);
+    }
+
+    /* package */ static Optional<LocalDate> findMatchingExDate(LocalDate bookingDate,
+                    List<DividendEvent> dividendEvents)
+    {
+        if (bookingDate == null || dividendEvents == null || dividendEvents.isEmpty())
+            return Optional.empty();
+
+        return dividendEvents.stream().filter(event -> event.getDate() != null && event.getPaymentDate() != null)
+                        .filter(event -> Math.abs(ChronoUnit.DAYS.between(bookingDate,
+                                        event.getPaymentDate())) <= EX_DATE_PAYMENT_DATE_TOLERANCE_DAYS)
+                        .min(Comparator.comparingLong((DividendEvent event) -> Math
+                                        .abs(ChronoUnit.DAYS.between(bookingDate, event.getPaymentDate())))
+                                        .thenComparing(DividendEvent::getPaymentDate))
+                        .map(DividendEvent::getDate);
     }
 }
