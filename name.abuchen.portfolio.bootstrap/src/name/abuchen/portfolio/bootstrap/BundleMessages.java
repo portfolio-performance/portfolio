@@ -15,6 +15,7 @@ public class BundleMessages
             String updateQuotesWatchlist = "command.updateQuotesWatchlist.name"; // NOSONAR
             String importTaxonomy = "command.import.taxonomy"; // NOSONAR
             String exportTaxonomy = "command.export.taxonomy"; // NOSONAR
+            String backfillExDate = "command.backfillExDates.name"; // NOSONAR
         }
     }
 
