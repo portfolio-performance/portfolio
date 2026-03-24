@@ -553,6 +553,8 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         + "(?<note>(Solidarit.tszuschlag|Kapitalertrag(s)?steuer|Kirchensteuer)).*" //
                                         + "(?<type>[\\-|\\+])(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
                         .assign((t, v) -> {
+                            v.markAsFailure(Messages.MsgErrorTransactionAlternativeDocumentRequired);
+
                             // Is type --> "+" change from TAXES to TAX_REFUND
                             if ("+".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.TAX_REFUND);
@@ -583,6 +585,8 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*" //
                                         + "(?<type>[\\-|\\+])(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
                         .assign((t, v) -> {
+                            v.markAsFailure(Messages.MsgErrorTransactionAlternativeDocumentRequired);
+
                          // Is type --> "-" change from INTEREST to INTEREST_CHARGE
                             if ("-".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.INTEREST_CHARGE);
@@ -593,44 +597,6 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
-
-        // All entries of the this block are invalid and just there to provide
-        // feedback about skipped or invalid entries. Main reason is that we
-        // can't differ if the taxes belong to such or to the account interest.
-        //
-        // @formatter:off
-        // 24.01.2026 02.01.2026 Vorabpauschale 0,00 EUR 
-        // @formatter:on
-        var invalidBlock = new Block(
-                        "^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Vorabpauschale) [\\-|\\+]?[\\.,\\d]+ [A-Z]{3}[\\s]*$");
-        type.addBlock(invalidBlock);
-        invalidBlock.set(new Transaction<AccountTransaction>()
-
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
-
-                        .section("date", "note", "amount", "currency") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
-                                        + "(?<note>(Vorabpauschale)) " //
-                                        + "[\\-|\\+]?(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
-                        .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setNote(v.get("note"));
-                        })
-
-                        .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
-
-                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                return new SkippedItem(item, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
-
-                            return item;
-                        }));
     }
 
     private void addTaxAdjustmentTransaction()
