@@ -1117,6 +1117,8 @@ public class Messages extends NLS
     public static String MsgErrorAccountNotExist;
     public static String MsgErrorConvertedAmount;
     public static String MsgErrorConvertToBuySellCurrencyMismatch;
+    public static String MsgBackfillExDatesNoCandidates;
+    public static String MsgBackfillExDatesUpdated;
     public static String MsgErrorDividendsYearBetween1900AndNow;
     public static String MsgErrorExchangeMissing;
     public static String MsgErrorMinimumHeightRequired;
