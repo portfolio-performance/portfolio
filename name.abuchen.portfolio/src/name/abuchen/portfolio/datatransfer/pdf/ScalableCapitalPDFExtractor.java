@@ -465,7 +465,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final var type = new DocumentType("(Verrechnungskonto|Cash Account Statement)", //
+        final var type = new DocumentType("(Kontoauszug|Cash Account Statement)", //
                         "(Dividende|Zinszahlung|Kapitalr.ckzahlung)");
         this.addDocumentTyp(type);
 
@@ -504,9 +504,11 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
         // @formatter:off
         // 03.04.2025 04.04.2025 Prime-Abonnementgebühr -4,99 EUR
+        // 06.01.2026 07.01.2026 Abhebung vom Geldkonto -1.000,00 EUR 
         // @formatter:on
-        var removalBlock = new Block(
-                        "^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Prime\\-Abonnementgeb.hr) \\-[\\.,\\d]+ [A-Z]{3}[\\s]*$");
+        var removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                        + "(Prime\\-Abonnementgeb.hr|Abhebung vom Geldkonto) " //
+                        + "\\-[\\.,\\d]+ [A-Z]{3}[\\s]*$");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
@@ -518,7 +520,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "note", "amount", "currency") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
-                                        + "(?<note>(Prime\\-Abonnementgeb.hr)) " //
+                                        + "(?<note>(Prime\\-Abonnementgeb.hr|Abhebung vom Geldkonto)) " //
                                         + "\\-(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
@@ -581,8 +583,6 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*" //
                                         + "(?<type>[\\-|\\+])(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
                         .assign((t, v) -> {
-                         v.markAsFailure(Messages.MsgErrorTransactionAlternativeDocumentRequired);
-
                          // Is type --> "-" change from INTEREST to INTEREST_CHARGE
                             if ("-".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.INTEREST_CHARGE);
@@ -594,27 +594,33 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
+        // All entries of the this block are invalid and just there to provide
+        // feedback about skipped or invalid entries. Main reason is that we
+        // can't differ if the taxes belong to such or to the account interest.
+        //
         // @formatter:off
         // 24.01.2026 02.01.2026 Vorabpauschale 0,00 EUR 
         // @formatter:on
-        var skippedBlock = new Block(
-                        "^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Vorabpauschale [\\.,\\d]+ [A-Z]{3}[\\s]*$");
-        type.addBlock(skippedBlock);
-        skippedBlock.set(new Transaction<AccountTransaction>()
+        var invalidBlock = new Block(
+                        "^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Vorabpauschale) [\\-|\\+]?[\\.,\\d]+ [A-Z]{3}[\\s]*$");
+        type.addBlock(invalidBlock);
+        invalidBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
                             var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
+                            accountTransaction.setType(AccountTransaction.Type.TAXES);
                             return accountTransaction;
                         })
 
-                        .section("date", "amount", "currency") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Vorabpauschale " //
-                                        + "(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .section("date", "note", "amount", "currency") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + "(?<note>(Vorabpauschale)) " //
+                                        + "[\\-|\\+]?(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(v.get("note"));
                         })
 
                         .wrap((t, ctx) -> {

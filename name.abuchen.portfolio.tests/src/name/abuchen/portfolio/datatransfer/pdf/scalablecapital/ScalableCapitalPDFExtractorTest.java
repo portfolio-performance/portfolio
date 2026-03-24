@@ -25,7 +25,6 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.skippedItem;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
@@ -1950,19 +1949,17 @@ public class ScalableCapitalPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(9L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(9));
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionAlternativeDocumentRequired, //
-                        interest( //
-                                        hasDate("2025-03-31"), //
-                                        hasSource("Kontoauszug01.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 13.69)))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2025-03-31"), //
+                        hasSource("Kontoauszug01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 13.69))));
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2025-04-04"), hasAmount("EUR", 4.99), //
@@ -2011,7 +2008,7 @@ public class ScalableCapitalPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(4L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(4));
         new AssertImportActions().check(results, "EUR");
@@ -2021,13 +2018,11 @@ public class ScalableCapitalPDFExtractorTest
                         hasSource("Kontoauszug02.txt"), hasNote("Solidaritätszuschlag"))));
 
         // assert transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionAlternativeDocumentRequired, //
-                        interest( //
-                                        hasDate("2025-06-30"), //
-                                        hasSource("Kontoauszug02.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 56.27)))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2025-06-30"), //
+                        hasSource("Kontoauszug02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 56.27))));
 
         // assert transaction
         assertThat(results, hasItem(taxes(hasDate("2025-06-30"), hasAmount("EUR", 14.07), //
@@ -2080,7 +2075,7 @@ public class ScalableCapitalPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(6L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(2L));
         assertThat(results.size(), is(8));
         new AssertImportActions().check(results, "EUR");
@@ -2094,13 +2089,11 @@ public class ScalableCapitalPDFExtractorTest
                         hasSource("Kontoauszug04.txt"), hasNote("Überweisung"))));
 
         // assert transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionAlternativeDocumentRequired, //
-                        interest( //
-                                        hasDate("2025-12-31"), //
-                                        hasSource("Kontoauszug04.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 50.36)))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2025-12-31"), //
+                        hasSource("Kontoauszug04.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 50.36))));
 
         // assert transaction
         assertThat(results, hasItem(taxes(hasDate("2025-12-31"), hasAmount("EUR", 1.10), //
@@ -2117,11 +2110,91 @@ public class ScalableCapitalPDFExtractorTest
         // assert transaction (this is present twice)
         assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
-                        interest( //
+                        taxes( //
                                         hasDate("2026-01-02"), //
                                         hasSource("Kontoauszug04.txt"), //
-                                        hasNote(null), //
+                                        hasNote("Vorabpauschale"), //
                                         hasAmount("EUR", 0.00)))));
+    }
+
+    @Test
+    public void testKontoauszug05()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(12L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(2L));
+        assertThat(results.size(), is(14));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction (belongs to dividend; not wanted)
+        assertThat(results, hasItem(taxes(hasDate("2025-12-31"), hasAmount("EUR", 0.02), //
+                        hasSource("Kontoauszug05.txt"), hasNote("Kapitalertragssteuer"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2025-12-31"), //
+                        hasSource("Kontoauszug05.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 503.31))));
+
+        // assert transaction (belongs to quarterly interest)
+        assertThat(results, hasItem(taxes(hasDate("2025-12-31"), hasAmount("EUR", 125.82), //
+                        hasSource("Kontoauszug05.txt"), hasNote("Kapitalertragssteuer"))));
+
+        // assert transaction (belongs to quarterly interest)
+        assertThat(results, hasItem(taxes(hasDate("2025-12-31"), hasAmount("EUR", 6.92), //
+                        hasSource("Kontoauszug05.txt"), hasNote("Solidaritätszuschlag"))));
+        
+        // assert transaction 
+        assertThat(results, hasItem(deposit(hasDate("2026-01-02"), hasAmount("EUR", 829.31), //
+                        hasSource("Kontoauszug05.txt"), hasNote("Überweisung"))));
+
+        // assert transaction (this is present twice)
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        taxes( //
+                                        hasDate("2026-01-02"), //
+                                        hasSource("Kontoauszug05.txt"), //
+                                        hasNote("Vorabpauschale"), //
+                                        hasAmount("EUR", 0.00)))));
+        
+        // assert transaction (belongs to Vorabpauschale 1; not wanted)
+        assertThat(results, hasItem(taxes(hasDate("2026-01-02"), hasAmount("EUR", 4.13), //
+                        hasSource("Kontoauszug05.txt"), hasNote("Kapitalertragssteuer"))));
+
+        // assert transaction (belongs to Vorabpauschale 1; not wanted)
+        assertThat(results, hasItem(taxes(hasDate("2026-01-02"), hasAmount("EUR", 0.22), //
+                        hasSource("Kontoauszug05.txt"), hasNote("Solidaritätszuschlag"))));
+
+        // assert transaction (belongs to Vorabpauschale 2; not wanted)
+        assertThat(results, hasItem(taxes(hasDate("2026-01-02"), hasAmount("EUR", 316.11), //
+                        hasSource("Kontoauszug05.txt"), hasNote("Kapitalertragssteuer"))));
+
+        // assert transaction (belongs to Vorabpauschale 2; not wanted)
+        assertThat(results, hasItem(taxes(hasDate("2026-01-02"), hasAmount("EUR", 17.39), //
+                        hasSource("Kontoauszug05.txt"), hasNote("Solidaritätszuschlag"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2026-01-06"), hasAmount("EUR", 52497.70), //
+                        hasSource("Kontoauszug05.txt"), hasNote("Abhebung vom Geldkonto"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2026-01-07"), hasAmount("EUR", 1000), //
+                        hasSource("Kontoauszug05.txt"), hasNote("Abhebung vom Geldkonto"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2026-01-09"), hasAmount("EUR", 4000), //
+                        hasSource("Kontoauszug05.txt"), hasNote("Abhebung vom Geldkonto"))));
     }
 
     @Test
