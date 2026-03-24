@@ -1,0 +1,3857 @@
+<client>
+  <version>70</version>
+  <baseCurrency>EUR</baseCurrency>
+  <securities>
+    <security>
+      <uuid>d60295d6-b5a4-4642-85d2-a6c7dac88fdf</uuid>
+      <name>Security with all Attributes</name>
+      <currencyCode>EUR</currencyCode>
+      <feed>MANUAL</feed>
+      <prices>
+        <price t="2021-01-01" v="100000000000"/>
+      </prices>
+      <attributes>
+        <map>
+          <entry>
+            <string>e72ad59d-b810-45bc-a13e-d389386d2fea</string>
+            <string>Test</string>
+          </entry>
+          <entry>
+            <string>259aa3c0-f227-46b6-ae95-02b9afcccb3e</string>
+            <string>data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAA7EAAAOxAGVKw4bAAADgklEQVRYw+1XTWgbRxT+3qxkKUsOwaccTREU0kJzSRxKWJvmYkjSBEL9lwqMsVUUh/iY3EIOxaS3hCZppdAWbNquoDSJfS62ZAwRPhjHNRRM0anHUCjZsNLuTA5eLbO7I2ns5pZ8sOzs7pv3fe/NvJ0Z4F0HSW3WzXBjap61XjvD4OI8gDMAcgD6g88vAewBqIPRcvqIufrpT/d4D26uEsDj9/X89ZTvujMQ4iaAAc3AGiC6a2Qyj88ufutJwSVEdc1AdaxwQnC+CODkITO8RYzlLbu0q5OBCNZGZz+HEL8AMA9J3oYDoomhSvmZ6qNyCNZGZy9AiN8ApP4neRseiK6oRCQyUB0rfCw4f64ZeXtMmYatQ4wNWnZpR34pd2Tr+blUMOa6aa8Elw5Mwfnien4uktWIct9tzuAAE44YWyDGFnTtAZwMOELesLExNc+CUtPFE8su7QQpfaLdS4ibG1PzSQEtxxmGfp2DGPta1dbAQOu1M5wQACHOa7sgWrHs0ib2JyG37NImiFa0+3Nxsd2UJ8QZlSmAn0H4C6A9IvqbpVN7Rz+z/kWlLAfAj42cu/TfH9VjvOXlhBAfACIHgQ8BTCJZJadVAnIKAQwAM/oy35xdetAM3y49lAUCAD6ZHufYXxPqAOrrX871+a77I9QlmpMJ2uiHGpO+69q1q9f6JHv5HillAKhdvdbnu64dRK9CP2KOeuEybzaf1iaLWYWIiJDaZNHkzeZTAJd1HMtOXvawHeGt1u9S2uWVLWwHNiM9fIVcsoA9DcHHY888JogrbFQIuWQBdY2O27Hsqa5tDT912UnQouWe3YheyNFXxwq56lghF8lE1KaTn5ArLMP0EXO19epVA93/htsAUB3/6rjw/duC82kAWPti5gcyjDvWr9//o5GBRto0V0MtckrXRmcLEOJRp54slfqI+34eQtxAcsV0QHSfGcYi97w/u0RfHKqUv0sOAQAjk3kMYKtTX+55NQhxC+rl2oQQt7jn1bpEvxVwhLyJHdEBNyQHQc8NCQcAyy7tgGgCgPcWyT0QTcTJ4wLCUhqqlJ+B6AoA521EHuwHVxAt14SAMAsAMFQprxBjg+gyJzSwRYwNSptRjujPKyEg8mzZpV0jmz0FoiKAxgGIGyAqGtnsqeBMEF+8Ok/CDvf9o5njDEOIi9hfz9VHM6LltBk5mvGY//eI4A27DUtWyvAhIQAAAABJRU5ErkJggg==</string>
+          </entry>
+          <entry>
+            <string>14450a69-3f62-4df9-921a-65c7d529ab0b</string>
+            <long>123456789</long>
+          </entry>
+          <entry>
+            <string>b6039e5f-be79-47d5-94b0-6598b8dc5eb0</string>
+            <local-date>2021-01-01</local-date>
+          </entry>
+          <entry>
+            <string>9756daa9-4a7f-44f0-8272-867f4b913670</string>
+            <boolean>true</boolean>
+          </entry>
+          <entry>
+            <string>204d7cc0-b39f-4d7e-aaa3-fc704746abff</string>
+            <long>10000</long>
+          </entry>
+          <entry>
+            <string>5caed276-5b85-4143-93d3-6b6aadfeb4c0</string>
+            <double>0.0545</double>
+          </entry>
+          <entry>
+            <string>895f7b88-7d2a-4cf7-8d0f-1f648228dc60</string>
+            <long>13223000000</long>
+          </entry>
+          <entry>
+            <string>a7f5bb2d-d946-41b1-ba7d-dbb9876018ec</string>
+            <bookmark>
+              <label>https://www.google.com</label>
+              <pattern>https://www.google.com</pattern>
+            </bookmark>
+          </entry>
+          <entry>
+            <string>e78152d3-ca80-4151-a4ba-08488f1f056f</string>
+            <limitPrice>
+              <operator>GREATER</operator>
+              <value>10000000000</value>
+            </limitPrice>
+          </entry>
+          <entry>
+            <string>59bb83f8-5a42-41a2-974f-6c5ef87fa56c</string>
+            <double>5.0</double>
+          </entry>
+          <entry>
+            <string>9780fec5-a4b5-4b35-98a6-1aad7b143317</string>
+            <long>12345</long>
+          </entry>
+        </map>
+      </attributes>
+      <events>
+        <event>
+          <date>2021-08-01</date>
+          <type>STOCK_SPLIT</type>
+          <details>2:1</details>
+        </event>
+        <event>
+          <date>2021-08-02</date>
+          <type>NOTE</type>
+          <details>Test</details>
+        </event>
+        <dividendEvent>
+          <date>2021-08-03</date>
+          <type>DIVIDEND_PAYMENT</type>
+          <details>details</details>
+          <source>source</source>
+          <paymentDate>2021-08-04</paymentDate>
+          <amount currency="EUR" amount="500"/>
+        </dividendEvent>
+      </events>
+      <isRetired>false</isRetired>
+      <updatedAt>2021-08-06T20:28:15.729440Z</updatedAt>
+    </security>
+    <security>
+      <uuid>004680ab-92b2-4de7-8dd6-b7f05dec4ff3</uuid>
+      <name>Deutschland (HVPI)</name>
+      <tickerSymbol>DE</tickerSymbol>
+      <calendar>first-of-the-month</calendar>
+      <feed>EUROSTATHICP</feed>
+      <prices>
+        <price t="2025-06-01" v="13190000000"/>
+        <price t="2025-07-01" v="13240000000"/>
+        <price t="2025-08-01" v="13250000000"/>
+        <price t="2025-09-01" v="13280000000"/>
+        <price t="2025-10-01" v="13320000000"/>
+        <price t="2025-11-01" v="13260000000"/>
+        <price t="2025-12-01" v="13280000000"/>
+      </prices>
+      <latestFeed>MANUAL</latestFeed>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <isRetired>false</isRetired>
+      <updatedAt>2021-08-08T13:36:54.092389Z</updatedAt>
+    </security>
+    <security>
+      <uuid>92707c1c-60f4-4610-a470-224147abff0d</uuid>
+      <name>Exchange Rate</name>
+      <currencyCode>EUR</currencyCode>
+      <targetCurrencyCode>LVL</targetCurrencyCode>
+      <feed>MANUAL</feed>
+      <prices/>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <isRetired>false</isRetired>
+      <updatedAt>2021-08-08T13:37:24.937280Z</updatedAt>
+    </security>
+    <security>
+      <uuid>5293d6ab-3d6a-480f-8e61-ab367b8964e3</uuid>
+      <name>Security with all Attributes null</name>
+      <currencyCode>EUR</currencyCode>
+      <feed>MANUAL</feed>
+      <prices/>
+      <attributes>
+        <map>
+          <entry>
+            <string>e72ad59d-b810-45bc-a13e-d389386d2fea</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>259aa3c0-f227-46b6-ae95-02b9afcccb3e</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>14450a69-3f62-4df9-921a-65c7d529ab0b</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>b6039e5f-be79-47d5-94b0-6598b8dc5eb0</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>9756daa9-4a7f-44f0-8272-867f4b913670</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>204d7cc0-b39f-4d7e-aaa3-fc704746abff</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>5caed276-5b85-4143-93d3-6b6aadfeb4c0</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>895f7b88-7d2a-4cf7-8d0f-1f648228dc60</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>a7f5bb2d-d946-41b1-ba7d-dbb9876018ec</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>e78152d3-ca80-4151-a4ba-08488f1f056f</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>59bb83f8-5a42-41a2-974f-6c5ef87fa56c</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>9780fec5-a4b5-4b35-98a6-1aad7b143317</string>
+            <null/>
+          </entry>
+        </map>
+      </attributes>
+      <events/>
+      <isRetired>false</isRetired>
+      <updatedAt>2021-08-14T06:55:44.429170Z</updatedAt>
+    </security>
+    <security>
+      <uuid>a4b65953-d820-4465-944f-46afc1b695c7</uuid>
+      <onlineId>dc174e30a87c4364923261bffa65ad44</onlineId>
+      <name>Security with security properties</name>
+      <currencyCode>EUR</currencyCode>
+      <isin>DE0007164600</isin>
+      <tickerSymbol>SAP</tickerSymbol>
+      <wkn>716460</wkn>
+      <feed>GENERIC-JSON</feed>
+      <feedURL>https://json</feedURL>
+      <prices/>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <property type="FEED" name="GENERIC-JSON-DATE">$.date[*].date</property>
+      <property type="FEED" name="GENERIC-JSON-CLOSE">$.date[*].close</property>
+      <isRetired>false</isRetired>
+      <updatedAt>2021-08-21T12:52:12.263407Z</updatedAt>
+    </security>
+    <security>
+      <uuid>76918332-38e1-406d-bfe1-a1aad4ba3096</uuid>
+      <name>Security with latest ticker symbol</name>
+      <currencyCode>EUR</currencyCode>
+      <tickerSymbol>SGLD.MI</tickerSymbol>
+      <feed>YAHOO</feed>
+      <prices>
+        <price t="2026-03-18" v="40757000000"/>
+        <price t="2026-03-19" v="38281000000"/>
+        <price t="2026-03-20" v="38163000000"/>
+        <price t="2026-03-23" v="36350000000"/>
+        <price t="2026-03-24" v="36693000000"/>
+        <price t="2026-03-25" v="37621000000"/>
+      </prices>
+      <latestFeed>YAHOO</latestFeed>
+      <latestTickerSymbol>SGLD.SW</latestTickerSymbol>
+      <latest t="2026-03-25" v="37621000000">
+        <high>38037000000</high>
+        <low>37537000000</low>
+        <volume>21908</volume>
+      </latest>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <isRetired>false</isRetired>
+      <updatedAt>2026-03-25T12:48:24.466159200Z</updatedAt>
+    </security>
+  </securities>
+  <watchlists>
+    <watchlist>
+      <name>A Watchlist</name>
+      <securities>
+        <security reference="../../../../securities/security"/>
+      </securities>
+    </watchlist>
+  </watchlists>
+  <accounts>
+    <account>
+      <uuid>bfe141fa-0bc4-4372-b074-8979be4d6934</uuid>
+      <name>My Cash Account</name>
+      <currencyCode>EUR</currencyCode>
+      <isRetired>false</isRetired>
+      <transactions>
+        <account-transaction>
+          <uuid>9248d5cf-0d5c-4e8f-b49d-4528bab777c8</uuid>
+          <date>2021-08-09T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>9000</amount>
+          <shares>0</shares>
+          <note>Generiert von Sparplan &apos;Cash Deposit&apos; am 14.08.2021, 09:22</note>
+          <updatedAt>2021-08-14T07:22:28.331146Z</updatedAt>
+          <type>DEPOSIT</type>
+        </account-transaction>
+        <account-transaction>
+          <uuid>e1922df6-9387-4032-b8e9-0a1082d9fc91</uuid>
+          <date>2021-08-02T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>100</amount>
+          <security reference="../../../../../securities/security"/>
+          <crossEntry class="buysell">
+            <portfolio>
+              <uuid>fcbb7f99-8311-459c-ac45-bcf7847d0b5c</uuid>
+              <name>My Securities Account</name>
+              <isRetired>false</isRetired>
+              <referenceAccount reference="../../../../.."/>
+              <transactions>
+                <portfolio-transaction>
+                  <uuid>f73225c5-c9ee-4f3a-8b83-c1e883f2b437</uuid>
+                  <date>2021-08-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>10000</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <shares>9000000</shares>
+                  <note>Generiert von Sparplan &apos;Inbound Delivery&apos; am 14.08.2021, 09:26</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2021-08-14T07:26:37.542791Z</updatedAt>
+                  <type>DELIVERY_INBOUND</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>864c90d4-0afa-4be6-8e78-0df10a0ef250</uuid>
+                  <date>2021-08-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell" reference="../../../.."/>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.957357800Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>1ebfba85-8e77-4146-8f70-5061bdde54da</uuid>
+                  <date>2021-09-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>21f7a53a-9f49-403a-b433-206304e46f44</uuid>
+                      <date>2021-09-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.963362900Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.963362900Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>b6f8e527-7e10-447e-b039-89d246ce0090</uuid>
+                  <date>2021-10-04T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>43f72e8e-8748-4eda-b5b1-7317bee2b7d2</uuid>
+                      <date>2021-10-04T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>1d74cc4c-0daf-4197-877f-38f8bfc8b20a</uuid>
+                  <date>2021-11-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>b98cddd5-2129-4392-8ac3-735575360c49</uuid>
+                      <date>2021-11-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>1edf8555-68b3-4654-8289-ea111fb6905e</uuid>
+                  <date>2021-12-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>05a84f5f-80a6-412d-a6e9-4b368c2da3a7</uuid>
+                      <date>2021-12-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>a3463855-d534-47bb-9b94-7ca2ea390de5</uuid>
+                  <date>2022-01-03T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>8b6d6886-039b-4325-9113-70aee2b50afe</uuid>
+                      <date>2022-01-03T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>c84565e3-9fd4-430c-a96f-7a170855a68a</uuid>
+                  <date>2022-02-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>289a9b3b-95d3-4e6c-8569-abdc3a38184b</uuid>
+                      <date>2022-02-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>61374a1a-c66e-43ac-a334-fab535399fd2</uuid>
+                  <date>2022-03-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>50a0f181-5910-462e-babe-42810c7df627</uuid>
+                      <date>2022-03-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>8f0ea282-aa8f-4cd4-b9de-5290db0067f9</uuid>
+                  <date>2022-04-04T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>8ed3e27d-f39f-4df4-8766-c1c9feaad273</uuid>
+                      <date>2022-04-04T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>a5b7ad2d-65c3-4f53-b6ba-f131eb374115</uuid>
+                  <date>2022-05-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>65d8cf3a-721c-4d24-9f5a-16f9293a29d0</uuid>
+                      <date>2022-05-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>166b9134-fd76-4133-9c73-9f90cac7f5e4</uuid>
+                  <date>2022-06-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>a4bf7cb4-a9c0-496f-8dd7-ccd25dc2cf42</uuid>
+                      <date>2022-06-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>7d153b79-eee9-4d04-9ce6-36ef1d4420e8</uuid>
+                  <date>2022-07-04T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>92bd1c9b-8092-4759-8207-82dde928b103</uuid>
+                      <date>2022-07-04T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>52fc7e47-f810-45e3-beed-ae09bc0a28ae</uuid>
+                  <date>2022-08-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>3cfceeb3-617f-4088-9964-1509861568ba</uuid>
+                      <date>2022-08-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>a0408dc4-141e-437e-a55f-366f61c60d5f</uuid>
+                  <date>2022-09-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>3573ba06-4731-42c0-b82f-c034a832a9f9</uuid>
+                      <date>2022-09-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>d3893a0e-051c-47d5-be33-6e2f12138750</uuid>
+                  <date>2022-10-03T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>5a77afb0-07f5-4816-ae85-42133d775e87</uuid>
+                      <date>2022-10-03T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>42bb3235-5a77-426e-b556-d2ca689069d3</uuid>
+                  <date>2022-11-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>a817fd6f-0fa4-4dd0-a624-a85cc97a0544</uuid>
+                      <date>2022-11-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>e39c14d7-0c20-4555-802f-0afe1896cbb2</uuid>
+                  <date>2022-12-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>76d79340-1296-4751-9ab1-a7495affaba8</uuid>
+                      <date>2022-12-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>4f64fd83-d18e-4ab2-b53d-fa216ccb0bdc</uuid>
+                  <date>2023-01-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>11c5197a-e4e9-4ccb-9550-c2be40068bba</uuid>
+                      <date>2023-01-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>4c1e06f5-92aa-4a95-8349-4dbb16cd6531</uuid>
+                  <date>2023-02-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>f0c57e17-dbdd-4b5f-bf05-3b16e525c1dd</uuid>
+                      <date>2023-02-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>46c1131b-baf5-4f0d-ad0a-42509efec007</uuid>
+                  <date>2023-03-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>79b0e454-167b-4af8-a4c5-ba7ac0dea3ef</uuid>
+                      <date>2023-03-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>ead2a308-c46e-4dcb-acd1-007d3e5ae286</uuid>
+                  <date>2023-04-03T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>b4575fe4-ba8b-4729-ae2b-3bb75e6efa68</uuid>
+                      <date>2023-04-03T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>f3b99858-6c94-461e-abc4-39f5b8421135</uuid>
+                  <date>2023-05-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>9f17d46b-da61-4995-9552-48fcb37ac215</uuid>
+                      <date>2023-05-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>00e4751f-11ae-4e31-85ec-9edf4e66f9b9</uuid>
+                  <date>2023-06-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>0a2d1bfc-48be-4868-ad52-f15965eb1a84</uuid>
+                      <date>2023-06-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>57308d37-f8f3-400c-acaf-af854e818544</uuid>
+                  <date>2023-07-03T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>4a77de3a-4002-4fed-b22b-72e92851fbb1</uuid>
+                      <date>2023-07-03T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>c377df7f-3af5-474b-97bb-83146e0d9566</uuid>
+                  <date>2023-08-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>94ceb14e-14a1-4ea6-b8f1-29e7ecebeab1</uuid>
+                      <date>2023-08-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>1e854493-9419-4b05-aa8a-c0ce5e8ff7e1</uuid>
+                  <date>2023-09-04T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>20212ef2-a84e-45f5-99e8-32fcfb272531</uuid>
+                      <date>2023-09-04T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>b96652d4-e8f8-409c-b57b-50d22d94010a</uuid>
+                  <date>2023-10-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>1ac283d0-2d9b-457d-a454-3adc1eae0c9a</uuid>
+                      <date>2023-10-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>13fa0684-f315-4ceb-9c27-c35b494f12bf</uuid>
+                  <date>2023-11-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>0bf9e6fd-43e1-482c-b754-82bd8ebf2b60</uuid>
+                      <date>2023-11-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>f9994af8-c364-4369-9491-b56edae58928</uuid>
+                  <date>2023-12-04T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>783d571c-bd0d-4a5b-9bdc-b9cab4524d05</uuid>
+                      <date>2023-12-04T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>2bfa72a7-9def-4ab4-8ed7-ec44c16fe0fa</uuid>
+                  <date>2024-01-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>2f7b0dc1-0963-4b09-bb07-b456f830fb99</uuid>
+                      <date>2024-01-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>cd9865fa-acd8-4650-b6ae-51ced228fc8d</uuid>
+                  <date>2024-02-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>936312b1-9b73-4eef-9f0b-7c951e040780</uuid>
+                      <date>2024-02-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>26979d8b-e927-4a04-827c-9ffff5037bed</uuid>
+                  <date>2024-03-04T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>de549387-c24f-40a7-a739-71d7b177576c</uuid>
+                      <date>2024-03-04T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.964357800Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>03850497-72f9-43d6-8979-4ae02f6674d5</uuid>
+                  <date>2024-04-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>46a77f1d-0005-437a-8b61-b5b1d37da3e2</uuid>
+                      <date>2024-04-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>8ad02723-8479-45cf-aa2e-2a65042bd96f</uuid>
+                  <date>2024-05-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>4b9f4686-9ee5-4e95-8716-bdde6715f0e8</uuid>
+                      <date>2024-05-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>1bcc2f19-66e8-4ef2-ad56-8ea844a7d0f5</uuid>
+                  <date>2024-06-03T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>f90f82f3-bec1-4032-8636-94f93fca1a6b</uuid>
+                      <date>2024-06-03T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>6234f3ae-d8d5-457a-876d-f665134a8b2e</uuid>
+                  <date>2024-07-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>43642c8c-ac3d-47b2-98de-edac96f25306</uuid>
+                      <date>2024-07-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>35adc60f-be99-4387-81c8-21d54445e64f</uuid>
+                  <date>2024-08-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>c9a24cb2-eb5d-474c-ada6-9a2f2299c91e</uuid>
+                      <date>2024-08-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>9f922bc6-4ada-4d62-8be7-3140ac8754dd</uuid>
+                  <date>2024-09-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>602d66c8-e0fa-43c8-8e93-ff01fc177eb1</uuid>
+                      <date>2024-09-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>f3d0666e-eb2f-4e7c-9bfa-f5aaf6d33ffe</uuid>
+                  <date>2024-10-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>4929d164-6a75-430a-995e-b5f71fa1b262</uuid>
+                      <date>2024-10-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>6f89b235-d518-40d2-b4ae-7608c3f85cbe</uuid>
+                  <date>2024-11-04T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>e3fb72c8-fde0-4576-82b9-f94a89eca5b7</uuid>
+                      <date>2024-11-04T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>cf2bae78-0bde-4e96-9473-a83312764537</uuid>
+                  <date>2024-12-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>395d14ae-28d1-416b-9671-ecf072542a22</uuid>
+                      <date>2024-12-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>11c258aa-36ec-4854-8167-f6c3e9bfec7a</uuid>
+                  <date>2025-01-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>4b8c4af7-3889-4df0-acb1-cf1005eee857</uuid>
+                      <date>2025-01-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>07946e4e-48b5-4448-a917-0aa7c22adddb</uuid>
+                  <date>2025-02-03T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>952856a2-8611-4a29-bfe1-025977bde67e</uuid>
+                      <date>2025-02-03T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>c6eb81f3-690a-4b3e-9d26-4fa0110bd7b3</uuid>
+                  <date>2025-03-03T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>44df6a94-e561-4c48-9ebf-76673589452d</uuid>
+                      <date>2025-03-03T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>cdcfe5e6-c4a6-439d-9b37-9586bf04d1f1</uuid>
+                  <date>2025-04-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>75ee7fa1-43c4-4320-a3ed-be57c94fb212</uuid>
+                      <date>2025-04-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>fe126625-e96f-4e4f-aa97-766f5773def6</uuid>
+                  <date>2025-05-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>14aaf20d-bf1c-4e59-93bb-baba5159c11a</uuid>
+                      <date>2025-05-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>222b6f39-956c-4c20-b5e9-6b679711da54</uuid>
+                  <date>2025-06-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>abc7631c-982d-4efe-b8fd-e5cf0c54c022</uuid>
+                      <date>2025-06-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>e6143e65-fb07-4b44-9114-9f4ac2bb90a9</uuid>
+                  <date>2025-07-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>b516190a-d9f2-409f-ae43-d71cb493d947</uuid>
+                      <date>2025-07-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>9e33f27e-e859-4055-a137-9d4e839b826b</uuid>
+                  <date>2025-08-04T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>47ef40f7-18ec-4292-8de8-7787925b0292</uuid>
+                      <date>2025-08-04T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>a4d204e3-9016-41f8-a407-52e741da26d2</uuid>
+                  <date>2025-09-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>34fce5a5-838c-4dba-85a7-9e370fb60d2c</uuid>
+                      <date>2025-09-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>42e8c219-a23b-4d9e-866e-b7d01a268d63</uuid>
+                  <date>2025-10-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>932b893b-05c4-43e5-a308-685112623bfe</uuid>
+                      <date>2025-10-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>9c41ad0d-257a-4696-bf14-6d6bc326fc2c</uuid>
+                  <date>2025-11-03T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>82ecf4a3-0913-4d4c-8cb5-763d94893b9a</uuid>
+                      <date>2025-11-03T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>eead4384-12e5-44aa-816a-1576eafe0610</uuid>
+                  <date>2025-12-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>cb1a1f61-16ae-4105-9ee2-0274293826db</uuid>
+                      <date>2025-12-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>b7ceed9c-9b88-44a6-aaa0-3e7420e4ec2b</uuid>
+                  <date>2026-01-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>940fa3bd-9922-4211-96dc-cceabb838881</uuid>
+                      <date>2026-01-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>04acce2e-bf5c-40d4-842d-ce31e89ceaf3</uuid>
+                  <date>2026-02-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>f8f42f74-95c4-44cc-9277-0fda3d9cde1c</uuid>
+                      <date>2026-02-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>cd2ff4ca-4cec-4406-89b5-0aec83a47b72</uuid>
+                  <date>2026-03-02T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>b88f5890-0340-437a-a090-6110adcfbdf7</uuid>
+                      <date>2026-03-02T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                      <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>-900000</shares>
+                  <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="1000"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2026-03-25T12:43:32.965356300Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+              </transactions>
+              <attributes>
+                <map/>
+              </attributes>
+              <updatedAt>2021-08-08T18:16:38.181312Z</updatedAt>
+            </portfolio>
+            <portfolioTransaction reference="../portfolio/transactions/portfolio-transaction[2]"/>
+            <account reference="../../../.."/>
+            <accountTransaction reference="../.."/>
+          </crossEntry>
+          <shares>0</shares>
+          <note>Generiert von Sparplan &apos;Purchase&apos; am 25.03.2026, 13:43</note>
+          <updatedAt>2026-03-25T12:43:32.957357800Z</updatedAt>
+          <type>BUY</type>
+        </account-transaction>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[3]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[4]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[5]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[6]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[7]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[8]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[9]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[10]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[11]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[12]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[13]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[14]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[15]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[16]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[17]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[18]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[19]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[20]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[21]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[22]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[23]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[24]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[25]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[26]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[27]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[28]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[29]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[30]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[31]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[32]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[33]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[34]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[35]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[36]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[37]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[38]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[39]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[40]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[41]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[42]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[43]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[44]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[45]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[46]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[47]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[48]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[49]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[50]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[51]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[52]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[53]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[54]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[55]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[56]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[57]/crossEntry/accountTransaction"/>
+      </transactions>
+      <attributes>
+        <map/>
+      </attributes>
+      <updatedAt>2021-08-08T18:16:31.358414Z</updatedAt>
+    </account>
+  </accounts>
+  <portfolios>
+    <portfolio reference="../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio"/>
+  </portfolios>
+  <plans>
+    <investment-plan>
+      <name>Inbound Delivery</name>
+      <security reference="../../../securities/security"/>
+      <portfolio reference="../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio"/>
+      <attributes>
+        <map/>
+      </attributes>
+      <autoGenerate>false</autoGenerate>
+      <start>2021-08-01T00:00</start>
+      <interval>1</interval>
+      <amount>10000</amount>
+      <fees>1000</fees>
+      <taxes>0</taxes>
+      <type>PURCHASE_OR_DELIVERY</type>
+      <transactions>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction"/>
+      </transactions>
+    </investment-plan>
+    <investment-plan>
+      <name>Purchase</name>
+      <security reference="../../../securities/security"/>
+      <portfolio reference="../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio"/>
+      <account reference="../../../accounts/account"/>
+      <attributes>
+        <map>
+          <entry>
+            <string>c74e0a12-d6f5-44ba-a108-9917ad5801f1</string>
+            <long>4210</long>
+          </entry>
+        </map>
+      </attributes>
+      <autoGenerate>true</autoGenerate>
+      <start>2021-08-02T00:00</start>
+      <interval>1</interval>
+      <amount>100</amount>
+      <fees>1000</fees>
+      <taxes>0</taxes>
+      <type>PURCHASE_OR_DELIVERY</type>
+      <transactions>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[2]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[3]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[4]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[5]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[6]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[7]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[8]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[9]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[10]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[11]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[12]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[13]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[14]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[15]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[16]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[17]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[18]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[19]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[20]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[21]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[22]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[23]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[24]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[25]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[26]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[27]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[28]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[29]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[30]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[31]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[32]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[33]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[34]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[35]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[36]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[37]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[38]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[39]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[40]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[41]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[42]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[43]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[44]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[45]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[46]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[47]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[48]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[49]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[50]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[51]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[52]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[53]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[54]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[55]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[56]"/>
+        <portfolio-transaction reference="../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[57]"/>
+      </transactions>
+    </investment-plan>
+    <investment-plan>
+      <name>Cash Deposit</name>
+      <account reference="../../../accounts/account"/>
+      <attributes>
+        <map>
+          <entry>
+            <string>c74e0a12-d6f5-44ba-a108-9917ad5801f1</string>
+            <long>10200</long>
+          </entry>
+        </map>
+      </attributes>
+      <autoGenerate>false</autoGenerate>
+      <start>2021-08-08T00:00</start>
+      <interval>2</interval>
+      <amount>9000</amount>
+      <fees>0</fees>
+      <taxes>0</taxes>
+      <type>DEPOSIT</type>
+      <transactions>
+        <account-transaction reference="../../../../accounts/account/transactions/account-transaction"/>
+      </transactions>
+    </investment-plan>
+  </plans>
+  <taxonomies>
+    <taxonomy>
+      <id>db56855d-f1b9-459a-bb7d-311c53c1d725</id>
+      <name>Regionen</name>
+      <dimensions>
+        <string>Kontinent</string>
+        <string>Region</string>
+        <string>Land</string>
+      </dimensions>
+      <root>
+        <id>32a87b30-d316-4d6c-8fcd-a7147f035295</id>
+        <name>Regionen</name>
+        <color>#bbccc2</color>
+        <children>
+          <classification>
+            <id>a81da403-c037-47f2-8fbd-8ec609367e52</id>
+            <name>Europa</name>
+            <color>#87a2ef</color>
+            <parent reference="../../.."/>
+            <children>
+              <classification>
+                <id>104ed565-13a3-4bce-806c-9ea7efd0fb27</id>
+                <name>Nordeuropa</name>
+                <color>#95d0ec</color>
+                <parent reference="../../.."/>
+                <children>
+                  <classification>
+                    <id>4ffcb6ab-152e-4687-a39e-ccbcf115d9d8</id>
+                    <name>Dänemark</name>
+                    <color>#f6c0a5</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>DK</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>DNK</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_DK</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>ae241f7f-2d90-4394-8fca-f18876fd53ff</id>
+                    <name>Estland</name>
+                    <color>#93a8ef</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>EE</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>EST</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_EE</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>7ab6030a-07ea-4feb-8151-55a6c5f6b071</id>
+                    <name>Finnland</name>
+                    <color>#9fc1c7</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>FI</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>FIN</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_FI</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>56e02c7c-a612-4e0d-927f-15c71790ff53</id>
+                    <name>Großbritannien</name>
+                    <color>#fcabbc</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>GB</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>GBR</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_GB</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>e8e31b52-f813-451d-9339-6d55428c984d</id>
+                    <name>Island</name>
+                    <color>#9a8aac</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>IS</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>ISL</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_IS</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>2fc96e2d-0047-4589-abbc-cc79b5499dd8</id>
+                    <name>Irland</name>
+                    <color>#fca59c</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>IE</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>IRL</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_IE</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>f9f98635-2d64-4ce3-b92b-229f3e1054d5</id>
+                    <name>Lettland</name>
+                    <color>#a0cbda</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>LV</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>LVA</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_LV</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>c25295a6-91bf-4a0d-879b-4967ce38f1e9</id>
+                    <name>Litauen</name>
+                    <color>#bce6d7</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>LT</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>LTU</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_LT</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>e1da3a6c-22ac-4cc3-9930-195035ed0bf5</id>
+                    <name>Norwegen</name>
+                    <color>#f6e8c6</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>NO</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>NOR</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_NO</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>967f6144-c19b-4b53-9fa7-53d0510d7323</id>
+                    <name>Schweden</name>
+                    <color>#bed1b3</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>SE</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>SWE</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_SE</string>
+                      </entry>
+                    </data>
+                  </classification>
+                </children>
+                <assignments/>
+                <weight>10000</weight>
+                <rank>0</rank>
+                <data>
+                  <entry>
+                    <string>expected-return:in-use</string>
+                    <boolean>false</boolean>
+                  </entry>
+                  <entry>
+                    <string>portfolioClassificationKey</string>
+                    <string>R1010</string>
+                  </entry>
+                </data>
+              </classification>
+              <classification>
+                <id>7dafae70-ba55-43ad-a098-06c5f97763dc</id>
+                <name>Westeuropa</name>
+                <color>#dceca6</color>
+                <parent reference="../../.."/>
+                <children>
+                  <classification>
+                    <id>a1d88952-e762-453c-abc0-18e88d7e2ddd</id>
+                    <name>Österreich</name>
+                    <color>#9bc4cd</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>AT</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>AUT</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_AT</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>e49902e5-0ec5-4b12-9813-9b16a5e64de3</id>
+                    <name>Belgien</name>
+                    <color>#effbd7</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>BE</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>BEL</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_BE</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>deaf4385-46ad-4694-a689-8e3060984098</id>
+                    <name>Frankreich</name>
+                    <color>#d0e480</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>FR</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>FRA</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_FR</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>97eff6e6-5edb-4d49-82e8-2b1f8626548b</id>
+                    <name>Deutschland</name>
+                    <color>#bcfdab</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>DE</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>DEU</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_DE</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>dc9d196e-7ce0-437d-9983-33bd41a9c656</id>
+                    <name>Liechtenstein</name>
+                    <color>#d6dd92</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>LI</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>LIE</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_LI</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>1bd8e135-b043-41f9-970b-220f92b02d95</id>
+                    <name>Luxemburg</name>
+                    <color>#a2b0f9</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>LU</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>LUX</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_LU</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>94ccf303-0118-4561-afc4-a418de114396</id>
+                    <name>Monaco</name>
+                    <color>#fce4b5</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>MC</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>MCO</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_MC</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>bcbc42f5-c7a1-4548-af0c-9e6486816f71</id>
+                    <name>Niederlande</name>
+                    <color>#b4ccc0</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>NL</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>NLD</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_NL</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>d3003d73-2ea0-4939-b3ed-f9085ca07f76</id>
+                    <name>Schweiz</name>
+                    <color>#ecb1a6</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>CH</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>CHE</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_CH</string>
+                      </entry>
+                    </data>
+                  </classification>
+                </children>
+                <assignments/>
+                <weight>10000</weight>
+                <rank>0</rank>
+                <data>
+                  <entry>
+                    <string>expected-return:in-use</string>
+                    <boolean>false</boolean>
+                  </entry>
+                  <entry>
+                    <string>portfolioClassificationKey</string>
+                    <string>R1020</string>
+                  </entry>
+                </data>
+              </classification>
+              <classification>
+                <id>f0b0ca8f-386e-4b84-a07e-c5b8c85dc841</id>
+                <name>Osteuropa</name>
+                <color>#b98ea1</color>
+                <parent reference="../../.."/>
+                <children>
+                  <classification>
+                    <id>426e9f84-bef6-4778-b64a-46a563443d9e</id>
+                    <name>Weißrussland</name>
+                    <color>#dcbeb6</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>BY</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>BLR</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>3f4d9870-4dde-4012-98af-34ba05393b7a</id>
+                    <name>Bulgarien</name>
+                    <color>#ea9ab4</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>BG</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>BGR</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_BG</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>b44ee0b7-84c3-46b4-b779-4a99b6e11132</id>
+                    <name>Tschechien</name>
+                    <color>#f6d3e8</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>CZ</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>CZE</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_CZ</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>89870b8f-5bac-4dac-a483-93d4c57584b6</id>
+                    <name>Ungarn</name>
+                    <color>#e4c899</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>HU</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>HUN</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_HU</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>b61fa8b4-0e88-4c67-9571-58934bb711c8</id>
+                    <name>Polen</name>
+                    <color>#9db2a2</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>PL</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>POL</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_PL</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>f8c6d3c9-2897-40e8-aebd-acd5b0345c4f</id>
+                    <name>Rumänien</name>
+                    <color>#91a0d2</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>RO</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>ROU</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_RO</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>4bb17377-47ac-4f11-a969-2991d0d49ff9</id>
+                    <name>Russland</name>
+                    <color>#dbb690</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>RU</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>RUS</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_RU</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>f46aa29f-63fc-4367-8c34-b38a1cb125ce</id>
+                    <name>Slowakei</name>
+                    <color>#d77fa5</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>SK</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>SVK</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_SK</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>bc1e4aee-cec3-401c-8c89-ca8142472116</id>
+                    <name>Ukraine</name>
+                    <color>#b2bce4</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>UA</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>UKR</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_UA</string>
+                      </entry>
+                    </data>
+                  </classification>
+                </children>
+                <assignments/>
+                <weight>10000</weight>
+                <rank>0</rank>
+                <data>
+                  <entry>
+                    <string>expected-return:in-use</string>
+                    <boolean>false</boolean>
+                  </entry>
+                  <entry>
+                    <string>portfolioClassificationKey</string>
+                    <string>R1030</string>
+                  </entry>
+                </data>
+              </classification>
+              <classification>
+                <id>f03b0b29-928a-4426-8484-edadba0c4317</id>
+                <name>Südeuropa</name>
+                <color>#a2dc97</color>
+                <parent reference="../../.."/>
+                <children>
+                  <classification>
+                    <id>435f8ac5-1ed1-4953-bfe3-5605cd9d666b</id>
+                    <name>Albanien</name>
+                    <color>#88dd8e</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>AL</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>ALB</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_AL</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>3405c5f0-4b02-4db5-ac45-6e5bfb169950</id>
+                    <name>Andorra</name>
+                    <color>#f5998b</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>AD</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>AND</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_AD</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>d508ef7e-b9ef-49ea-925c-9837e8d75a13</id>
+                    <name>Bosnien und Herzegowina</name>
+                    <color>#bfab8d</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>BA</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>BIH</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_BA</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>74c935b7-8405-48ec-a4e5-47a4d3e9e6ec</id>
+                    <name>Kroatien</name>
+                    <color>#cb8d97</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>HR</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>HRV</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_HR</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>8739f3b9-ddf8-412b-b1fa-0c9a2b70afbe</id>
+                    <name>Gibraltar</name>
+                    <color>#f9b4e5</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>GI</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>GIB</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_GI</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>8c70abc3-9037-4722-b80f-2487ffbe2d6f</id>
+                    <name>Griechenland</name>
+                    <color>#a3fec9</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>GR</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>GRC</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_GR</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>a4b9fc5e-fa9c-4e76-8ffe-97e2c9d5a987</id>
+                    <name>Italien</name>
+                    <color>#d4a988</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>IT</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>ITA</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_IT</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>755c017a-5f54-43ef-ae28-887ccc676359</id>
+                    <name>Malta</name>
+                    <color>#facbfc</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>MT</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>MLT</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_MT</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>ffbeec2e-37df-4e9e-8147-26104ee1e074</id>
+                    <name>Montenegro</name>
+                    <color>#eca5f2</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>ME</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>MNE</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_ME</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>6f726fdf-cb37-4d04-9258-64a4373a12e3</id>
+                    <name>Portugal</name>
+                    <color>#c7bfc2</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>PT</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>PRT</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_PT</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>5f3b28de-2bf1-4dd7-996f-b9675d542f7a</id>
+                    <name>San Marino</name>
+                    <color>#d0bda6</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>SM</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>SMR</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_SM</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>cd613d88-3aa3-48b5-a308-b6fbce7fed1b</id>
+                    <name>Serbien</name>
+                    <color>#a9c2fd</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>RS</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>SRB</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_RS</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>5f517fde-cc55-42bb-bd62-675942dfb542</id>
+                    <name>Spanien</name>
+                    <color>#c0aebe</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>ES</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>ESP</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_ES</string>
+                      </entry>
+                    </data>
+                  </classification>
+                  <classification>
+                    <id>66246fa7-8813-44ee-9a0e-8d6de7f1540e</id>
+                    <name>Vatikanstadt</name>
+                    <color>#cdf1a2</color>
+                    <parent reference="../../.."/>
+                    <children/>
+                    <assignments/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
+                    <data>
+                      <entry>
+                        <string>ISO3166-1-Alpha-2</string>
+                        <string>VA</string>
+                      </entry>
+                      <entry>
+                        <string>ISO3166-1-Alpha-3</string>
+                        <string>VAT</string>
+                      </entry>
+                      <entry>
+                        <string>expected-return:in-use</string>
+                        <boolean>false</boolean>
+                      </entry>
+                      <entry>
+                        <string>portfolioClassificationKey</string>
+                        <string>country_VA</string>
+                      </entry>
+                    </data>
+                  </classification>
+                </children>
+                <assignments/>
+                <weight>10000</weight>
+                <rank>0</rank>
+                <data>
+                  <entry>
+                    <string>expected-return:in-use</string>
+                    <boolean>false</boolean>
+                  </entry>
+                  <entry>
+                    <string>portfolioClassificationKey</string>
+                    <string>R1040</string>
+                  </entry>
+                </data>
+              </classification>
+            </children>
+            <assignments/>
+            <weight>10000</weight>
+            <rank>0</rank>
+            <data>
+              <entry>
+                <string>expected-return:in-use</string>
+                <boolean>true</boolean>
+              </entry>
+              <entry>
+                <string>portfolioClassificationKey</string>
+                <string>R10</string>
+              </entry>
+              <entry>
+                <string>expected-return:value</string>
+                <int>1000</int>
+              </entry>
+            </data>
+          </classification>
+        </children>
+        <assignments/>
+        <weight>10000</weight>
+        <rank>0</rank>
+        <data>
+          <entry>
+            <string>expected-return:in-use</string>
+            <boolean>true</boolean>
+          </entry>
+          <entry>
+            <string>portfolioClassificationKey</string>
+            <string>regions</string>
+          </entry>
+          <entry>
+            <string>expected-return:value</string>
+            <int>0</int>
+          </entry>
+        </data>
+      </root>
+    </taxonomy>
+  </taxonomies>
+  <dashboards/>
+  <properties/>
+  <settings>
+    <bookmarks>
+      <bookmark>
+        <label>Yahoo Finance</label>
+        <pattern>http://de.finance.yahoo.com/q?s={tickerSymbol}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>OnVista</label>
+        <pattern>http://www.onvista.de/suche.html?SEARCH_VALUE={isin}&amp;SELECTED_TOOL=ALL_TOOLS</pattern>
+      </bookmark>
+      <bookmark>
+        <label>Finanzen.net</label>
+        <pattern>http://www.finanzen.net/suchergebnis.asp?frmAktiensucheTextfeld={isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>Ariva.de Fundamentaldaten</label>
+        <pattern>http://www.ariva.de/{isin}/bilanz-guv</pattern>
+      </bookmark>
+      <bookmark>
+        <label>justETF</label>
+        <pattern>https://www.justetf.com/de/etf-profile.html?isin={isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>fondsweb.de</label>
+        <pattern>http://www.fondsweb.de/{isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>Morningstar.de</label>
+        <pattern>http://www.morningstar.de/de/funds/SecuritySearchResults.aspx?type=ALL&amp;search={isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>extraETF.com</label>
+        <pattern>https://extraetf.com/etf-profile/{isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>Alle Aktien Kennzahlen</label>
+        <pattern>https://www.alleaktien.de/quantitativ/{isin}/</pattern>
+      </bookmark>
+      <bookmark>
+        <label>Comdirect (Aktien)</label>
+        <pattern>https://www.comdirect.de/inf/aktien/{isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>DivvyDiary</label>
+        <pattern>https://divvydiary.com/symbols/{isin}</pattern>
+      </bookmark>
+    </bookmarks>
+    <attributeTypes>
+      <attribute-type>
+        <id>logo</id>
+        <name>Logo</name>
+        <columnLabel>Logo</columnLabel>
+        <target>name.abuchen.portfolio.model.Account</target>
+        <type>java.lang.String</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$ImageConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>logo</id>
+        <name>Logo</name>
+        <columnLabel>Logo</columnLabel>
+        <target>name.abuchen.portfolio.model.Portfolio</target>
+        <type>java.lang.String</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$ImageConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>logo</id>
+        <name>Logo</name>
+        <columnLabel>Logo</columnLabel>
+        <target>name.abuchen.portfolio.model.InvestmentPlan</target>
+        <type>java.lang.String</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$ImageConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>e72ad59d-b810-45bc-a13e-d389386d2fea</id>
+        <name>Text</name>
+        <columnLabel>Text</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.String</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$StringConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>9780fec5-a4b5-4b35-98a6-1aad7b143317</id>
+        <name>Betrag</name>
+        <columnLabel>Betrag</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.Long</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$AmountConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>204d7cc0-b39f-4d7e-aaa3-fc704746abff</id>
+        <name>Betrag (einfach)</name>
+        <columnLabel>Betrag (einfach)</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.Long</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$AmountPlainConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>5caed276-5b85-4143-93d3-6b6aadfeb4c0</id>
+        <name>Prozentzahl</name>
+        <columnLabel>Prozentzahl</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.Double</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$PercentConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>59bb83f8-5a42-41a2-974f-6c5ef87fa56c</id>
+        <name>Prozentzahl (einfach)</name>
+        <columnLabel>Prozentzahl (einfach)</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.Double</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$PercentPlainConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>895f7b88-7d2a-4cf7-8d0f-1f648228dc60</id>
+        <name>Kurs</name>
+        <columnLabel>Kurs</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.Long</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$QuoteConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>14450a69-3f62-4df9-921a-65c7d529ab0b</id>
+        <name>Anteil</name>
+        <columnLabel>Anteil</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.Long</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$ShareConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>b6039e5f-be79-47d5-94b0-6598b8dc5eb0</id>
+        <name>Datum</name>
+        <columnLabel>Datum</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.time.LocalDate</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$DateConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>9756daa9-4a7f-44f0-8272-867f4b913670</id>
+        <name>Ja/Nein</name>
+        <columnLabel>Ja/Nein</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.Boolean</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$BooleanConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>e78152d3-ca80-4151-a4ba-08488f1f056f</id>
+        <name>Limit Preis</name>
+        <columnLabel>Limit Preis</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>name.abuchen.portfolio.model.LimitPrice</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$LimitPriceConverter</converterClass>
+        <properties/>
+      </attribute-type>
+      <attribute-type>
+        <id>a7f5bb2d-d946-41b1-ba7d-dbb9876018ec</id>
+        <name>Bookmark</name>
+        <columnLabel>Bookmark</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>name.abuchen.portfolio.model.Bookmark</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$BookmarkConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>259aa3c0-f227-46b6-ae95-02b9afcccb3e</id>
+        <name>Bild</name>
+        <columnLabel>Bild</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.String</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$ImageConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>c74e0a12-d6f5-44ba-a108-9917ad5801f1</id>
+        <name>Betrag</name>
+        <columnLabel>Betrag</columnLabel>
+        <target>name.abuchen.portfolio.model.InvestmentPlan</target>
+        <type>java.lang.Long</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$AmountConverter</converterClass>
+      </attribute-type>
+    </attributeTypes>
+    <configurationSets>
+      <entry>
+        <string>name.abuchen.portfolio.ui.views.SecuritiesTable</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>c8657f4d-fbcb-4e30-98cb-4f7423b8643d</uuid>
+              <name>Standard</name>
+              <data>0=1024$400;note=22;1=100;2=80;7=80;4=60;5=80;changeonpreviousamount=80;9=80;10=80;q-date-first-historic=80;</data>
+            </config>
+            <config>
+              <uuid>73592b4b-72a3-481a-8010-0b8661323eb5</uuid>
+              <name>Attributes</name>
+              <data>0=1024$203;attribute$e72ad59d-b810-45bc-a13e-d389386d2fea=30;attribute$9780fec5-a4b5-4b35-98a6-1aad7b143317=45;attribute$204d7cc0-b39f-4d7e-aaa3-fc704746abff=27;attribute$5caed276-5b85-4143-93d3-6b6aadfeb4c0=42;attribute$59bb83f8-5a42-41a2-974f-6c5ef87fa56c=32;attribute$895f7b88-7d2a-4cf7-8d0f-1f648228dc60=45;attribute$14450a69-3f62-4df9-921a-65c7d529ab0b=86;attribute$b6039e5f-be79-47d5-94b0-6598b8dc5eb0=80;attribute$b6039e5f-be79-47d5-94b0-6598b8dc5eb0-daysbetween=54;attribute$9756daa9-4a7f-44f0-8272-867f4b913670=80;attribute$e78152d3-ca80-4151-a4ba-08488f1f056f=64;attribute$a7f5bb2d-d946-41b1-ba7d-dbb9876018ec=100;attribute$259aa3c0-f227-46b6-ae95-02b9afcccb3e=80;</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+      <entry>
+        <string>name.abuchen.portfolio.ui.views.StatementOfAssetsViewer</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>d8cd1ba5-c931-4e27-a0e3-cdc5da52cc55</uuid>
+              <name>Standard</name>
+              <data>{&quot;items&quot;:[{&quot;id&quot;:&quot;0&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;1&quot;,&quot;width&quot;:300},{&quot;id&quot;:&quot;2&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;4&quot;,&quot;width&quot;:60},{&quot;id&quot;:&quot;5&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;6&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;note&quot;,&quot;width&quot;:22}]}</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+    </configurationSets>
+  </settings>
+</client>

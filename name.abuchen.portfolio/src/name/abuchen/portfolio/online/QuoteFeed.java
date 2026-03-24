@@ -117,7 +117,7 @@ public interface QuoteFeed // NOSONAR
         return getHistoricalQuotes(security, true);
     }
 
-    default List<Exchange> getExchanges(Security subject, List<Exception> errors)
+    default List<Exchange> getExchanges(Security subject, String ticker, List<Exception> errors)
     {
         return Collections.emptyList();
     }

@@ -432,7 +432,7 @@ public final class PortfolioPerformanceFeed implements QuoteFeed
     }
 
     @Override
-    public List<Exchange> getExchanges(Security subject, List<Exception> errors)
+    public List<Exchange> getExchanges(Security subject, String ticker, List<Exception> errors)
     {
         var parameter = PortfolioPerformanceSearchProvider.Parameter.ISIN;
         var query = subject.getIsin();
@@ -440,7 +440,7 @@ public final class PortfolioPerformanceFeed implements QuoteFeed
         if (query == null || query.isBlank())
         {
             parameter = PortfolioPerformanceSearchProvider.Parameter.SYMBOL;
-            query = subject.getTickerSymbol();
+            query = ticker;
         }
 
         if (query == null || query.isBlank())

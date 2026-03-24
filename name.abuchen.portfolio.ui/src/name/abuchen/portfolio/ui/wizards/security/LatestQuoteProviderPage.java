@@ -178,6 +178,25 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
     }
 
     @Override
+    protected String getFeedTicker()
+    {
+        if (getModel().getLatestTickerSymbol() != null && !getModel().getLatestTickerSymbol().isEmpty())
+        {
+            return getModel().getLatestTickerSymbol();
+        }
+        else
+        {
+            return getModel().getTickerSymbol();
+        }
+    }
+
+    @Override
+    protected void setFeedTicker(String feedTicker)
+    {
+        getModel().setLatestTickerSymbol(feedTicker);
+    }
+
+    @Override
     protected void setStatus(String status)
     {
         getModel().setStatusLatestQuotesProvider(status);

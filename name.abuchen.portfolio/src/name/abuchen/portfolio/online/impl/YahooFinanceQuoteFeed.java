@@ -467,7 +467,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public final List<Exchange> getExchanges(Security subject, List<Exception> errors)
+    public final List<Exchange> getExchanges(Security subject, String ticker, List<Exception> errors)
     {
         List<Exchange> answer = new ArrayList<>();
 
@@ -475,7 +475,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         // exchanges of a given symbol. For the time being, we add all
         // exchanges...
 
-        String symbol = subject.getTickerSymbol();
+        String symbol = ticker;
         if (symbol != null && !symbol.isEmpty())
         {
             // strip away exchange suffix

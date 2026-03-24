@@ -183,6 +183,8 @@ import name.abuchen.portfolio.money.Money;
                 security.setLatestFeed(newSecurity.getLatestFeed());
             if (newSecurity.hasLatestFeedURL())
                 security.setLatestFeedURL(newSecurity.getLatestFeedURL());
+            if (newSecurity.hasLatestTickerSymbol())
+                security.setLatestTickerSymbol(newSecurity.getLatestTickerSymbol());
 
             if (newSecurity.hasLatest())
             {
@@ -925,6 +927,8 @@ import name.abuchen.portfolio.money.Money;
                 newSecurity.setLatestFeed(security.getLatestFeed());
             if (security.getLatestFeedURL() != null)
                 newSecurity.setLatestFeedURL(security.getLatestFeedURL());
+            if (security.getLatestTickerSymbol() != null)
+                newSecurity.setLatestTickerSymbol(security.getLatestTickerSymbol());
 
             LatestSecurityPrice latest = security.getLatest();
             if (latest != null)

@@ -107,6 +107,18 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
     }
 
     @Override
+    protected String getFeedTicker()
+    {
+        return getModel().getTickerSymbol();
+    }
+
+    @Override
+    protected void setFeedTicker(String feedTicker)
+    {
+        getModel().setTickerSymbol(feedTicker);
+    }
+
+    @Override
     protected String getJSONDatePropertyName()
     {
         return GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC;

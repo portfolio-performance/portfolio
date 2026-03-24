@@ -169,7 +169,7 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public List<Exchange> getExchanges(Security subject, List<Exception> errors)
+    public List<Exchange> getExchanges(Security subject, String ticker, List<Exception> errors)
     {
         List<Exchange> answer = new ArrayList<>();
 

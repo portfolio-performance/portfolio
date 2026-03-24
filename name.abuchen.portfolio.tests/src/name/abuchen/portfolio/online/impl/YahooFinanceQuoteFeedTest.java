@@ -226,7 +226,7 @@ public class YahooFinanceQuoteFeedTest
         s.setTickerSymbol("BAS.DE");
 
         ArrayList<Exception> errors = new ArrayList<>();
-        List<Exchange> exchanges = feed.getExchanges(s, errors);
+        List<Exchange> exchanges = feed.getExchanges(s, "BAS.DE", errors);
 
         Optional<Exchange> original = exchanges.stream().filter(e -> e.getId().equals("BAS.DE")).findAny();
 

@@ -29,13 +29,15 @@ public class EditSecurityCache
         private final EditSecurityCache cache;
         private final QuoteFeed feed;
         private final Security security;
+        private final String ticker;
 
-        public LoadExchangesJob(EditSecurityCache cache, QuoteFeed feed, Security security)
+        public LoadExchangesJob(EditSecurityCache cache, QuoteFeed feed, Security security, String ticker)
         {
             super(Messages.JobMsgLoadingExchanges);
             this.cache = cache;
             this.feed = feed;
             this.security = security;
+            this.ticker = ticker;
 
             setSystem(true);
         }
@@ -46,7 +48,7 @@ public class EditSecurityCache
             monitor.beginTask(Messages.JobMsgLoadingExchanges, 1);
 
             List<Exception> errors = new ArrayList<>();
-            var exchanges = feed.getExchanges(security, errors);
+            var exchanges = feed.getExchanges(security, ticker, errors);
             PortfolioPlugin.log(errors);
 
             Display.getDefault().asyncExec(() -> {
@@ -78,13 +80,13 @@ public class EditSecurityCache
         listeners.add(listener);
     }
 
-    public Optional<List<Exchange>> getOrLoadExchanges(QuoteFeed feed, Security security)
+    public Optional<List<Exchange>> getOrLoadExchanges(QuoteFeed feed, Security security, String ticker)
     {
         var list = cacheExchanges.get(feed);
         if (list != null)
             return Optional.of(list);
 
-        new LoadExchangesJob(this, feed, security).schedule();
+        new LoadExchangesJob(this, feed, security, ticker).schedule();
 
         return Optional.empty();
     }

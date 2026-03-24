@@ -84,6 +84,7 @@ public final class Security implements Attributable, InvestmentVehicle
     // quote. If null, the values from feed and feedURL are used instead.
     private String latestFeed;
     private String latestFeedURL;
+    private String latestTickerSymbol;
     private LatestSecurityPrice latest;
 
     private Attributes attributes;
@@ -623,6 +624,17 @@ public final class Security implements Attributable, InvestmentVehicle
         this.updatedAt = Instant.now();
     }
 
+    public String getLatestTickerSymbol()
+    {
+        return latestTickerSymbol;
+    }
+
+    public void setLatestTickerSymbol(String latestTickerSymbol)
+    {
+        this.latestTickerSymbol = latestTickerSymbol;
+        this.updatedAt = Instant.now();
+    }
+
     public LatestSecurityPrice getLatest()
     {
         return latest;
@@ -923,6 +935,7 @@ public final class Security implements Attributable, InvestmentVehicle
 
         answer.latestFeed = latestFeed;
         answer.latestFeedURL = latestFeedURL;
+        answer.latestTickerSymbol = latestTickerSymbol;
         answer.latest = latest;
 
         answer.events = new ArrayList<>(getEvents());

@@ -208,6 +208,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
     private String feedURL;
     private String latestFeed;
     private String latestFeedURL;
+    private String latestTickerSymbol;
     private boolean isRetired;
 
     /**
@@ -241,6 +242,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         this.feedURL = security.getFeedURL();
         this.latestFeed = security.getLatestFeed();
         this.latestFeedURL = security.getLatestFeedURL();
+        this.latestTickerSymbol = security.getLatestTickerSymbol();
         this.isRetired = security.isRetired();
 
         for (Taxonomy taxonomy : client.getTaxonomies())
@@ -390,6 +392,16 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         firePropertyChange("latestFeedURL", this.latestFeedURL, this.latestFeedURL = latestFeedURL); //$NON-NLS-1$ //NOSONAR
     }
 
+    public String getLatestTickerSymbol()
+    {
+        return latestTickerSymbol;
+    }
+
+    public void setLatestTickerSymbol(String latestTickerSymbol)
+    {
+        firePropertyChange("latestTickerSymbol", this.latestTickerSymbol, this.latestTickerSymbol = latestTickerSymbol); //$NON-NLS-1$ //NOSONAR
+    }
+
     public boolean isRetired()
     {
         return isRetired;
@@ -478,6 +490,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         security.setFeedURL(feedURL);
         security.setLatestFeed(latestFeed);
         security.setLatestFeedURL(latestFeedURL);
+        security.setLatestTickerSymbol(latestTickerSymbol);
         security.setRetired(isRetired);
 
         Attributes a = new Attributes();

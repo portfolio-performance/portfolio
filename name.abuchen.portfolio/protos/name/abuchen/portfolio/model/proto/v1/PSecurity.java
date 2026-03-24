@@ -34,6 +34,7 @@ private static final long serialVersionUID = 0L;
     attributes_ = java.util.Collections.emptyList();
     events_ = java.util.Collections.emptyList();
     properties_ = java.util.Collections.emptyList();
+    latestTickerSymbol_ = "";
   }
 
   @java.lang.Override
@@ -926,6 +927,53 @@ private static final long serialVersionUID = 0L;
     return updatedAt_ == null ? com.google.protobuf.Timestamp.getDefaultInstance() : updatedAt_;
   }
 
+  public static final int LATESTTICKERSYMBOL_FIELD_NUMBER = 22;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object latestTickerSymbol_ = "";
+  /**
+   * <code>optional string latestTickerSymbol = 22;</code>
+   * @return Whether the latestTickerSymbol field is set.
+   */
+  @java.lang.Override
+  public boolean hasLatestTickerSymbol() {
+    return ((bitField0_ & 0x00002000) != 0);
+  }
+  /**
+   * <code>optional string latestTickerSymbol = 22;</code>
+   * @return The latestTickerSymbol.
+   */
+  @java.lang.Override
+  public java.lang.String getLatestTickerSymbol() {
+    java.lang.Object ref = latestTickerSymbol_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      latestTickerSymbol_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>optional string latestTickerSymbol = 22;</code>
+   * @return The bytes for latestTickerSymbol.
+   */
+  @java.lang.Override
+  public com.google.protobuf.ByteString
+      getLatestTickerSymbolBytes() {
+    java.lang.Object ref = latestTickerSymbol_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      latestTickerSymbol_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -1002,6 +1050,9 @@ private static final long serialVersionUID = 0L;
     }
     if (updatedAt_ != null) {
       output.writeMessage(21, getUpdatedAt());
+    }
+    if (((bitField0_ & 0x00002000) != 0)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 22, latestTickerSymbol_);
     }
     getUnknownFields().writeTo(output);
   }
@@ -1081,6 +1132,9 @@ private static final long serialVersionUID = 0L;
     if (updatedAt_ != null) {
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(21, getUpdatedAt());
+    }
+    if (((bitField0_ & 0x00002000) != 0)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(22, latestTickerSymbol_);
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -1181,6 +1235,11 @@ private static final long serialVersionUID = 0L;
       if (!getUpdatedAt()
           .equals(other.getUpdatedAt())) return false;
     }
+    if (hasLatestTickerSymbol() != other.hasLatestTickerSymbol()) return false;
+    if (hasLatestTickerSymbol()) {
+      if (!getLatestTickerSymbol()
+          .equals(other.getLatestTickerSymbol())) return false;
+    }
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -1270,6 +1329,10 @@ private static final long serialVersionUID = 0L;
     if (hasUpdatedAt()) {
       hash = (37 * hash) + UPDATEDAT_FIELD_NUMBER;
       hash = (53 * hash) + getUpdatedAt().hashCode();
+    }
+    if (hasLatestTickerSymbol()) {
+      hash = (37 * hash) + LATESTTICKERSYMBOL_FIELD_NUMBER;
+      hash = (53 * hash) + getLatestTickerSymbol().hashCode();
     }
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
@@ -1464,6 +1527,7 @@ private static final long serialVersionUID = 0L;
         updatedAtBuilder_.dispose();
         updatedAtBuilder_ = null;
       }
+      latestTickerSymbol_ = "";
       return this;
     }
 
@@ -1605,6 +1669,10 @@ private static final long serialVersionUID = 0L;
         result.updatedAt_ = updatedAtBuilder_ == null
             ? updatedAt_
             : updatedAtBuilder_.build();
+      }
+      if (((from_bitField0_ & 0x00200000) != 0)) {
+        result.latestTickerSymbol_ = latestTickerSymbol_;
+        to_bitField0_ |= 0x00002000;
       }
       result.bitField0_ |= to_bitField0_;
     }
@@ -1804,6 +1872,11 @@ private static final long serialVersionUID = 0L;
       if (other.hasUpdatedAt()) {
         mergeUpdatedAt(other.getUpdatedAt());
       }
+      if (other.hasLatestTickerSymbol()) {
+        latestTickerSymbol_ = other.latestTickerSymbol_;
+        bitField0_ |= 0x00200000;
+        onChanged();
+      }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
       return this;
@@ -1971,6 +2044,11 @@ private static final long serialVersionUID = 0L;
               bitField0_ |= 0x00100000;
               break;
             } // case 170
+            case 178: {
+              latestTickerSymbol_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00200000;
+              break;
+            } // case 178
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -4308,6 +4386,85 @@ private static final long serialVersionUID = 0L;
         updatedAt_ = null;
       }
       return updatedAtBuilder_;
+    }
+
+    private java.lang.Object latestTickerSymbol_ = "";
+    /**
+     * <code>optional string latestTickerSymbol = 22;</code>
+     * @return Whether the latestTickerSymbol field is set.
+     */
+    public boolean hasLatestTickerSymbol() {
+      return ((bitField0_ & 0x00200000) != 0);
+    }
+    /**
+     * <code>optional string latestTickerSymbol = 22;</code>
+     * @return The latestTickerSymbol.
+     */
+    public java.lang.String getLatestTickerSymbol() {
+      java.lang.Object ref = latestTickerSymbol_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        latestTickerSymbol_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>optional string latestTickerSymbol = 22;</code>
+     * @return The bytes for latestTickerSymbol.
+     */
+    public com.google.protobuf.ByteString
+        getLatestTickerSymbolBytes() {
+      java.lang.Object ref = latestTickerSymbol_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        latestTickerSymbol_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>optional string latestTickerSymbol = 22;</code>
+     * @param value The latestTickerSymbol to set.
+     * @return This builder for chaining.
+     */
+    public Builder setLatestTickerSymbol(
+        java.lang.String value) {
+      if (value == null) { throw new NullPointerException(); }
+      latestTickerSymbol_ = value;
+      bitField0_ |= 0x00200000;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string latestTickerSymbol = 22;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearLatestTickerSymbol() {
+      latestTickerSymbol_ = getDefaultInstance().getLatestTickerSymbol();
+      bitField0_ = (bitField0_ & ~0x00200000);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string latestTickerSymbol = 22;</code>
+     * @param value The bytes for latestTickerSymbol to set.
+     * @return This builder for chaining.
+     */
+    public Builder setLatestTickerSymbolBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
+      latestTickerSymbol_ = value;
+      bitField0_ |= 0x00200000;
+      onChanged();
+      return this;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

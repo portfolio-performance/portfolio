@@ -387,7 +387,7 @@ public class ECBDataPortalQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public List<Exchange> getExchanges(Security subject, List<Exception> errors)
+    public List<Exchange> getExchanges(Security subject, String ticker, List<Exception> errors)
     {
         return Arrays.stream(ECBSDWSeries.values()).map(series -> series.exchange).collect(Collectors.toList());
     }

@@ -221,11 +221,11 @@ public class LeewayQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public final List<Exchange> getExchanges(Security subject, List<Exception> errors)
+    public final List<Exchange> getExchanges(Security subject, String ticker, List<Exception> errors)
     {
         List<Exchange> answer = new ArrayList<>();
 
-        String tickerSymbol = subject.getTickerSymbol();
+        String tickerSymbol = ticker;
         if (tickerSymbol == null)
             return answer;
 

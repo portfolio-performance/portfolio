@@ -34,6 +34,7 @@ public class ProtobufWriterTest
                         { "/issues/Issue672CapitalGainsIfSecurityIsTransferred.xml" },
                         { "/issues/IssueCurrencyGainsRoundingError.xml" }, //
                         { "/scenarios/protobuf.xml" }, //
+                        { "/scenarios/protobuf70.xml" }, //
                         { "/scenarios/account_performance_tax_refund.xml" }, //
                         { "/scenarios/classification_test_case.xml" }, //
                         { "/scenarios/currency_sample.xml" }, //

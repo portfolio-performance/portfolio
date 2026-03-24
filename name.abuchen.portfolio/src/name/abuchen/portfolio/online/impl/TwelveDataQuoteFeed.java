@@ -302,11 +302,11 @@ public class TwelveDataQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public final List<Exchange> getExchanges(Security subject, List<Exception> errors)
+    public final List<Exchange> getExchanges(Security subject, String ticker, List<Exception> errors)
     {
         List<Exchange> answer = new ArrayList<>();
 
-        final String tickerSymbol = subject.getTickerSymbol();
+        final String tickerSymbol = ticker;
         if (tickerSymbol == null)
             return answer;
 

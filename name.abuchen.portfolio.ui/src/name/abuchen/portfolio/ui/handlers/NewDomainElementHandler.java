@@ -207,7 +207,7 @@ public class NewDomainElementHandler
 
         dialog.setTitle(Messages.SecurityMenuNewHICP);
         dialog.setMessage(Messages.SecurityMenuHICPMessage);
-        dialog.setElements(new EurostatHICPQuoteFeed().getExchanges(null, new ArrayList<>()));
+        dialog.setElements(new EurostatHICPQuoteFeed().getExchanges(null, null, new ArrayList<>()));
 
         if (dialog.open() == Window.OK)
         {

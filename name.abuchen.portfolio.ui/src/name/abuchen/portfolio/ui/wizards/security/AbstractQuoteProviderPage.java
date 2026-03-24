@@ -141,6 +141,10 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
     protected abstract void setFeedURL(String feedURL);
 
+    protected abstract String getFeedTicker();
+
+    protected abstract void setFeedTicker(String feedTicker);
+
     protected abstract String getJSONDatePropertyName();
 
     protected abstract String getJSONDateFormatPropertyName();
@@ -178,9 +182,9 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
     {
         QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
 
-        if (!Objects.equals(tickerSymbol, model.getTickerSymbol()))
+        if (!Objects.equals(tickerSymbol, getFeedTicker()))
         {
-            this.tickerSymbol = model.getTickerSymbol();
+            this.tickerSymbol = getFeedTicker();
 
             if (this.tickerSymbol.isEmpty() && feed != null && (feed.getId().startsWith(YAHOO) //
                             || feed.getId().equals(PortfolioPerformanceFeed.ID) //
@@ -193,7 +197,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             // clear caches
             cache.clearExchanges();
             reinitCaches();
-            updateExchangesDropdown(feed);
+            updateExchangesDropdown(feed, getFeedTicker());
         }
 
         if (feed != null && feed.getId() != null && feed.getId().indexOf(HTML) >= 0)
@@ -316,7 +320,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             Exchange exchange = (Exchange) ((IStructuredSelection) comboExchange.getSelection()).getFirstElement();
             if (exchange != null)
             {
-                model.setTickerSymbol(exchange.getId());
+                setFeedTicker(exchange.getId());
                 tickerSymbol = exchange.getId();
                 setFeedURL(null);
             }
@@ -760,7 +764,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
     private void setupInitialData()
     {
-        this.tickerSymbol = model.getTickerSymbol();
+        this.tickerSymbol = getFeedTicker();
 
         QuoteFeed feed = getQuoteFeedProvider(getFeed());
 
@@ -786,7 +790,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
         createDetailDataWidgets(feed);
 
-        if (model.getTickerSymbol() != null && feed != null && feed.getId() != null && //
+        if (getFeedTicker() != null && feed != null && feed.getId() != null && //
                         (feed.getId().startsWith(YAHOO) //
                                         || feed.getId().equals(PortfolioPerformanceFeed.ID) //
                                         || feed.getId().equals(LeewayQuoteFeed.ID) //
@@ -794,7 +798,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                                         || feed.getId().equals(EurostatHICPQuoteFeed.ID) //
                                         || feed.getId().equals(ECBDataPortalQuoteFeed.ID)))
         {
-            updateExchangesDropdown(feed);
+            updateExchangesDropdown(feed, getFeedTicker());
         }
 
         if (textFeedURL != null && getFeedURL() != null)
@@ -872,11 +876,11 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
      * is not (yet) cached, then the current ticker is set as single element in
      * the dropdown to have a valid selection.
      */
-    private void updateExchangesDropdown(QuoteFeed feed)
+    private void updateExchangesDropdown(QuoteFeed feed, String ticker)
     {
         if (feed != null && comboExchange != null)
         {
-            var exchanges = cache.getOrLoadExchanges(feed, buildTemporarySecurity());
+            var exchanges = cache.getOrLoadExchanges(feed, buildTemporarySecurity(), ticker);
 
             if (exchanges.isPresent())
             {
@@ -922,9 +926,9 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             if (exchange != null)
                 previousExchangeId = exchange.getId();
 
-            if (previousExchangeId == null && model.getTickerSymbol() != null)
+            if (previousExchangeId == null && getFeedTicker() != null)
             {
-                previousExchangeId = model.getTickerSymbol();
+                previousExchangeId = getFeedTicker();
             }
 
             // set new list of exchanges
@@ -984,7 +988,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
         if (comboExchange != null)
         {
-            updateExchangesDropdown(feed);
+            updateExchangesDropdown(feed, getFeedTicker());
         }
 
         if (textFeedURL != null)
@@ -1114,7 +1118,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
     private void onTickerSymbolChanged()
     {
-        boolean hasTicker = model.getTickerSymbol() != null && !model.getTickerSymbol().isEmpty();
+        boolean hasTicker = getFeedTicker() != null && !getFeedTicker().isEmpty();
 
         if (!hasTicker)
         {

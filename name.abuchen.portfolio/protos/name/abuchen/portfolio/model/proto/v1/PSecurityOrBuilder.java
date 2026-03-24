@@ -366,4 +366,21 @@ public interface PSecurityOrBuilder extends
    * <code>.google.protobuf.Timestamp updatedAt = 21;</code>
    */
   com.google.protobuf.TimestampOrBuilder getUpdatedAtOrBuilder();
+
+  /**
+   * <code>optional string latestTickerSymbol = 22;</code>
+   * @return Whether the latestTickerSymbol field is set.
+   */
+  boolean hasLatestTickerSymbol();
+  /**
+   * <code>optional string latestTickerSymbol = 22;</code>
+   * @return The latestTickerSymbol.
+   */
+  java.lang.String getLatestTickerSymbol();
+  /**
+   * <code>optional string latestTickerSymbol = 22;</code>
+   * @return The bytes for latestTickerSymbol.
+   */
+  com.google.protobuf.ByteString
+      getLatestTickerSymbolBytes();
 }
