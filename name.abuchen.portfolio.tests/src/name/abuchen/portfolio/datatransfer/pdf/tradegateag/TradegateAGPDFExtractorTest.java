@@ -82,6 +82,40 @@ public class TradegateAGPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf02()
+    {
+        var extractor = new TradegateAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("XS2819844387"), hasWkn("A4AGV3"), hasTicker(null), //
+                        hasName("WisdomTree Multi Ass.Iss.PLC ETP 30.11.62 WTI 3xShort"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-02-19T16:30:22"), hasShares(1560.00), //
+                        hasSource("Kauf02.txt"), //
+                        hasNote("Order-/Ref.nr. 37914729 | Limit 19,3500 EUR"), //
+                        hasAmount("EUR", 30186.00), hasGrossValue("EUR", 30186.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         var extractor = new TradegateAGPDFExtractor(new Client());

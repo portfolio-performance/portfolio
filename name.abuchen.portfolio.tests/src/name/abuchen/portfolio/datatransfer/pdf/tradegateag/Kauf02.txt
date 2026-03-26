@@ -1,0 +1,56 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.5
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Tradegate AG · Kurfürstendamm 129d · 10711 Berlin
+Datum 19.02.2026
+Herrn Kundennummer 00123456
+Vorname Nachname IBAN DE71 1031 0000 0000 0000 00
+Heimweg 1 Trading-Depot 00123456.020
+12345 Ort Order-/Ref.nr. 37914729
+E-Mail support@tradegate.direct
+Seite 1 von 2
+Wertpapierteilabrechnung zum Mischkurs
+Ihre Wertpapierorder vom 19.02.2026 wurde teilausgeführt:
+Orderart Kauf Börsenplatz Tradegate BSX
+Wertpapierart ETP Stück 2.600
+ISIN XS2819844387 Gültigkeit 27.02.2026
+WKN A4AGV3
+Wertpapier WisdomTree Multi Ass.Iss.PLC ETP 30.11.62 WTI 3xShort
+Verwahrart Wertpapierrechnung
+Lagerland Irland
+Ordertyp Limit
+Limit 19,3500 EUR
+Stück ausgeführt 600
+Ausführungskurs 19,3500 EUR
+Handelstag/-zeit 19.02.2026 16:30:22
+Stück ausgeführt 600
+Ausführungskurs 19,3500 EUR
+Handelstag/-zeit 19.02.2026 16:30:23
+Stück ausgeführt 360
+Ausführungskurs 19,3500 EUR
+Handelstag/-zeit 19.02.2026 16:30:24
+Daraus ergibt sich ein Mischkurs von 19,3500 EUR für insgesamt 1.560 Stück.
+Wertpapierabrechnung
+Kurswert 30.186,00 EUR
+Orderprovision 0,00 EUR
+Fremde Gebühren und Spesen 0,00 EUR
+Ausmachender Betrag 30.186,00 EUR
+Der Abrechnungsbetrag i. H. v. 30.186,00 EUR wird Ihrem o. g. Verrechnungskonto mit Valuta 23.02.2026 belastet.
+Bitte beachten Sie, dass mit dieser Abrechnung Ihre Wertpapierorder nun vollständig ausgeführt ist.
+tradegate.direct ein Service der Tradegate AG
+Tradegate AG · Kurfürstendamm 129d · 10711 Berlin
+Telefon: +49 (0)30 515 657 700 · E-Mail: info@tradegate.direct · Internet: www.tradegate.direct
+Handelsregister: Amtsgericht Berlin-Charlottenburg, HRB 71506 B · USt-ID: DE 155 528 522 · BIC: TRDADEBBDIR · BLZ: 103 106 66
+Aufsichtsratsvorsitzender: Frank-Uwe Fricke · Vorstand: Holger Timm (Vorsitzender), Kerstin Timm, Jörg Hartmann, Thorsten Commichau, Klaus-Gerd Kleversaat, Karsten Haesen
+Seite 2 von 2
+DieWertpapiere habenwir entsprechend IhrerWertpapierabrechnung gebucht. Bitte prüfen Sie dieseWertpapierabrechnung
+unverzüglich und richten etwaige Einwendungenunverzüglich an tradegate.direct, Kurfürstendamm129d, 10711Berlin oder
+an beschwerdemanagement@tradegate.direct. Andernfalls gilt diese Wertpapierabrechnung als genehmigt.
+Beratungsfreies Geschäft
+Diese Mitteilung wurde maschinell erstellt und wird von der Bank nicht unterschrieben.
+tradegate.direct ein Service der Tradegate AG
+Tradegate AG · Kurfürstendamm 129d · 10711 Berlin
+Telefon: +49 (0)30 515 657 700 · E-Mail: info@tradegate.direct · Internet: www.tradegate.direct
+Handelsregister: Amtsgericht Berlin-Charlottenburg, HRB 71506 B · USt-ID: DE 155 528 522 · BIC: TRDADEBBDIR · BLZ: 103 106 66
+Aufsichtsratsvorsitzender: Frank-Uwe Fricke · Vorstand: Holger Timm (Vorsitzender), Kerstin Timm, Jörg Hartmann, Thorsten Commichau, Klaus-Gerd Kleversaat, Karsten Haesen
