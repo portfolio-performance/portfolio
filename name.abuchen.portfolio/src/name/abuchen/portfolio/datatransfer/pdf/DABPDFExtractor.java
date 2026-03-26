@@ -369,6 +369,16 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]+ [\\w]{3}\\/[\\w]{3} .*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
+                        .optionalOneOf(//
+                        // @formatter:off
+                                        // Nominal Ex-Tag Zahltag Dividenden-Betrag pro Stück
+                                        // STK 100,000 14.04.2015 16.05.2015 USD 0,669500
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exDate") //
+                                                        .match("^STK [\\.,\\d]+ (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .*$")
+                                                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate")))))
+
                         .oneOf( //
                                         // @formatter:off
                                         // 08.01.2015 8022574001 EUR 150,00
