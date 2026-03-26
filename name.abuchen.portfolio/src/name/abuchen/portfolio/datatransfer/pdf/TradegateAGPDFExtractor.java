@@ -26,7 +26,8 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("Tradegate AG");
 
         addBuySellTransaction();
-        addDividendeTransaction();
+        addDividendTransaction();
+        addAccountStatementTransaction();
         addAdvanceTaxTransaction();
         addTaxAdjustmentTransaction();
     }
@@ -132,7 +133,7 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
         addTaxesSectionsTransaction(pdfTransaction, type);
     }
 
-    private void addDividendeTransaction()
+    private void addDividendTransaction()
     {
         final var type = new DocumentType("(Ertragsgutschrift|Bardividende)",
                         "Durch steuerliche Verrechnungen");
@@ -392,5 +393,51 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency").optional() //
                         .match("^Abgef.hrte Kirchensteuer \\-(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
+    }
+
+    private void addAccountStatementTransaction()
+    {
+        final var type = new DocumentType("Kontoauszug", //
+                        documentContext -> documentContext //
+                        // @formatter:off
+                                        // Alter Kontostand per 30.11.2024 95,23 EUR
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("^Alter Kontostand per .* (?<currency>[A-Z]{3})$") //
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
+
+        this.addDocumentTyp(type);
+
+        // @formatter:off
+        // 9668834 Einzahlung 09.12.2024 75,00
+        // 38063139 Auszahlung 02.03.2026 -10,72
+        // @formatter:on
+        var depositAndWithdrawalBlock = new Block(
+                        "^.* (Einzahlung|Auszahlung) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\-]?[\\.,\\d]+$");
+        type.addBlock(depositAndWithdrawalBlock);
+        depositAndWithdrawalBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
+
+                        .section("note", "type", "date", "amount") //
+                        .documentContext("currency") //
+                        .match("^(?<note>.*) (?<type>(Einzahlung|Auszahlung)) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\-]?(?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            // Is type --> "Auszahlung" change from DEPOSIT to
+                            // REMOVAL
+                            if ("Auszahlung".equals(v.get("type")))
+                                t.setType(AccountTransaction.Type.REMOVAL);
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote("Ref.nr. " + v.get("note"));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 }
