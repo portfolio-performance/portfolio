@@ -77,12 +77,24 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
                         .match("^Ausf.hrungskurs [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
+                        .oneOf(
                         // @formatter:off
-                        // Stück ausgeführt 3
-                        // @formatter:on
-                        .section("shares") //
-                        .match("^St.ck .* (?<shares>[\\.,\\d]+)$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                                        // Daraus ergibt sich ein Mischkurs von 19,3500 EUR für insgesamt 1.560 Stück.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^Daraus ergibt sich ein Mischkurs von [\\.,\\d]+ [A-Z]{3} f.r insgesamt (?<shares>[\\.,\\d]+) St.ck\\.$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+
+                                        // @formatter:off
+                                        // Stück ausgeführt 3
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^St.ck .* (?<shares>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        )
 
                         // @formatter:off
                         // Handelstag/-zeit 04.06.2024 11:04:53
