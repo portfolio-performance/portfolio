@@ -6271,6 +6271,111 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf12()
+    {
+        var extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf12.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DK0062498333"), hasWkn(null), hasTicker(null), //
+                        hasName("Novo-Nordisk (B)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-03-18T19:05"), hasShares(136.00), //
+                        hasSource("Verkauf12.txt"), //
+                        hasNote("Auftrag: 181f-3af9 | Ausführung: 5330-b574"), //
+                        hasAmount("EUR", 4395.88), hasGrossValue("EUR", 4396.88), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.00))));
+
+    }
+
+    @Test
+    public void testWertpapierVerkauf13()
+    {
+        var extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf13.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US60937P1066"), hasWkn(null), hasTicker(null), //
+                        hasName("MongoDB A"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-03-05T19:00"), hasShares(5.00), //
+                        hasSource("Verkauf13.txt"), //
+                        hasNote("Auftrag: b7b9-b4be | Ausführung: 8078-508a"), //
+                        hasAmount("EUR", 1100.00), hasGrossValue("EUR", 1129.50), //
+                        hasTaxes("EUR", 25.12 + 2.00 + 1.38), hasFees("EUR", 1.00))));
+
+    }
+
+    @Test
+    public void testWertpapierVerkauf14()
+    {
+        var extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf14.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US8725901040"), hasWkn(null), hasTicker(null), //
+                        hasName("T-Mobile US"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-02-25T13:46"), hasShares(10.00), //
+                        hasSource("Verkauf14.txt"), //
+                        hasNote("Auftrag: 6974-687e | Ausführung: 7d34-c23d"), //
+                        hasAmount("EUR", 1883.20), hasGrossValue("EUR", 1884.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.00))));
+
+    }
+
+    @Test
     public void testSecuritySell01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
