@@ -430,6 +430,7 @@ public class Messages extends NLS
     public static String EditWizardMasterDataUnlink;
     public static String EditWizardMasterDataUnlink_ToolTip;
     public static String EditWizardOptionSameAsHistoricalQuoteFeed;
+    public static String EditWizardUseDifferentLatestTicker;
     public static String EditWizardQuoteFeedLabelFeedURL;
     public static String EditWizardQuoteFeedMsgErrorMissingURL;
     public static String EditWizardQuoteFeedMsgErrorOrNoData;

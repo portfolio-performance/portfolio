@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui.wizards.security;
 
-import java.beans.PropertyChangeListener;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -12,9 +11,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.eclipse.core.databinding.beans.typed.BeanProperties;
-import org.eclipse.core.databinding.observable.value.IObservableValue;
-import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -30,6 +26,7 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
@@ -41,9 +38,8 @@ import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
-import name.abuchen.portfolio.online.impl.BinanceQuoteFeed;
 import name.abuchen.portfolio.online.impl.BinanceFuturesUsdsMarginedQuoteFeed;
-import name.abuchen.portfolio.online.impl.MEXCQuoteFeed;
+import name.abuchen.portfolio.online.impl.BinanceQuoteFeed;
 import name.abuchen.portfolio.online.impl.BitfinexQuoteFeed;
 import name.abuchen.portfolio.online.impl.CSQuoteFeed;
 import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
@@ -55,6 +51,7 @@ import name.abuchen.portfolio.online.impl.GenericJSONQuoteFeed;
 import name.abuchen.portfolio.online.impl.HTMLTableQuoteFeed;
 import name.abuchen.portfolio.online.impl.KrakenQuoteFeed;
 import name.abuchen.portfolio.online.impl.LeewayQuoteFeed;
+import name.abuchen.portfolio.online.impl.MEXCQuoteFeed;
 import name.abuchen.portfolio.online.impl.MFAPIQuoteFeed;
 import name.abuchen.portfolio.online.impl.PortfolioPerformanceFeed;
 import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
@@ -63,7 +60,6 @@ import name.abuchen.portfolio.online.impl.TwelveDataQuoteFeed;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
-import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
 import name.abuchen.portfolio.ui.util.SWTHelper;
 import name.abuchen.portfolio.ui.util.swt.ControlDecoration;
@@ -81,6 +77,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
     private ComboViewer comboExchange;
     private Text textFeedURL;
     private Text textTicker;
+    private Button checkboxTickerOverride;
 
     private Text textQuandlCode;
     private Label labelQuandlCloseColumnName;
@@ -110,22 +107,22 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
     private Text textSchemeCode;
 
-    private PropertyChangeListener tickerSymbolPropertyChangeListener = e -> onTickerSymbolChanged();
-
     private final EditSecurityModel model;
     private final EditSecurityCache cache;
-    private final BindingHelper bindings;
 
     // used to identify if the ticker has been changed on another page
     private String tickerSymbol;
     // used to identify if the currency has been changed on another page
     private String currencyCode;
 
-    protected AbstractQuoteProviderPage(EditSecurityModel model, EditSecurityCache cache, BindingHelper bindings)
+    // Prevent modify listeners from treating programmatic UI refreshes as user
+    // edits.
+    private boolean isUpdatingTickerWidget;
+
+    protected AbstractQuoteProviderPage(EditSecurityModel model, EditSecurityCache cache)
     {
         this.model = model;
         this.cache = cache;
-        this.bindings = bindings;
     }
 
     protected final EditSecurityModel getModel()
@@ -140,6 +137,45 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
     protected abstract String getFeedURL();
 
     protected abstract void setFeedURL(String feedURL);
+
+    protected abstract String getFeedTicker();
+
+    protected abstract void setFeedTicker(String feedTicker);
+
+    /**
+     * Returns the effective ticker symbol used for change detection and
+     * temporary display. By default returns {@link #getFeedTicker()}.
+     * Subclasses can override to provide fallback logic (e.g. inherit the
+     * historical ticker when no override is set).
+     */
+    protected String getEffectiveTicker()
+    {
+        return getFeedTicker();
+    }
+
+    /**
+     * Returns whether the page supports a separate ticker override (used for
+     * the latest price).
+     */
+    protected boolean hasTickerOverrideOption()
+    {
+        return false;
+    }
+
+    /** Returns whether the separate ticker override is currently active. */
+    protected boolean isTickerOverrideEnabled()
+    {
+        return true;
+    }
+
+    protected void setTickerOverrideEnabled(boolean enabled)
+    {
+    }
+
+    protected String getCurrentTickerValue()
+    {
+        return isTickerOverrideEnabled() ? getFeedTicker() : getEffectiveTicker();
+    }
 
     protected abstract String getJSONDatePropertyName();
 
@@ -178,14 +214,15 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
     {
         QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
 
-        if (!Objects.equals(tickerSymbol, model.getTickerSymbol()))
+        if (!Objects.equals(tickerSymbol, getEffectiveTicker()))
         {
-            this.tickerSymbol = model.getTickerSymbol();
+            this.tickerSymbol = getEffectiveTicker();
 
-            if (this.tickerSymbol.isEmpty() && feed != null && (feed.getId().startsWith(YAHOO) //
-                            || feed.getId().equals(PortfolioPerformanceFeed.ID) //
-                            || feed.getId().equals(LeewayQuoteFeed.ID) //
-                            || feed.getId().equals(TwelveDataQuoteFeed.ID)))
+            if ((this.tickerSymbol == null || this.tickerSymbol.isEmpty()) && feed != null
+                            && (feed.getId().startsWith(YAHOO) //
+                                            || feed.getId().equals(PortfolioPerformanceFeed.ID) //
+                                            || feed.getId().equals(LeewayQuoteFeed.ID) //
+                                            || feed.getId().equals(TwelveDataQuoteFeed.ID)))
             {
                 setStatus(MessageFormat.format(Messages.MsgCheckMissingTickerSymbol, getTitle()));
             }
@@ -296,6 +333,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             String schemeCode = model.getFeedProperty(MFAPIQuoteFeed.SCHEME_CODE);
             textSchemeCode.setText(schemeCode != null ? schemeCode : ""); //$NON-NLS-1$
         }
+
+        refreshTickerWidgets();
     }
 
     @Override
@@ -313,12 +352,20 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                         || feed.getId().equals(TwelveDataQuoteFeed.ID) //
                         || feed.getId().equals(ECBDataPortalQuoteFeed.ID)))
         {
-            Exchange exchange = (Exchange) ((IStructuredSelection) comboExchange.getSelection()).getFirstElement();
-            if (exchange != null)
+            if (hasTickerOverrideOption() && !isTickerOverrideEnabled())
             {
-                model.setTickerSymbol(exchange.getId());
-                tickerSymbol = exchange.getId();
+                setFeedTicker(null);
                 setFeedURL(null);
+            }
+            else
+            {
+                var exchange = (Exchange) ((IStructuredSelection) comboExchange.getSelection()).getFirstElement();
+                if (exchange != null)
+                {
+                    setFeedTicker(exchange.getId());
+                    tickerSymbol = exchange.getId() != null ? exchange.getId() : getEffectiveTicker();
+                    setFeedURL(null);
+                }
             }
         }
         else if (textFeedURL != null)
@@ -492,12 +539,12 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             comboExchange = null;
         }
 
+        checkboxTickerOverride = disposeIf(checkboxTickerOverride);
+
         if (textTicker != null)
         {
             textTicker.dispose();
             textTicker = null;
-
-            model.removePropertyChangeListener("tickerSymbol", tickerSymbolPropertyChangeListener); //$NON-NLS-1$
         }
 
         textQuandlCode = disposeIf(textQuandlCode);
@@ -528,6 +575,16 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
         textSchemeCode = disposeIf(textSchemeCode);
 
+        if ((dropDown || needsTicker) && hasTickerOverrideOption())
+        {
+            checkboxTickerOverride = new Button(grpQuoteFeed, SWT.CHECK);
+            checkboxTickerOverride.setText(Messages.EditWizardUseDifferentLatestTicker);
+            checkboxTickerOverride.setSelection(isTickerOverrideEnabled());
+            GridDataFactory.fillDefaults().span(3, 1).applyTo(checkboxTickerOverride);
+            checkboxTickerOverride.addSelectionListener(
+                            SelectionListener.widgetSelectedAdapter(e -> onTickerOverrideChanged()));
+        }
+
         if (dropDown)
         {
             labelDetailData.setText(Messages.LabelExchange);
@@ -543,7 +600,10 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                     return exchange.getDisplayName();
                 }
             });
-            GridDataFactory.fillDefaults().span(2, 1).hint(300, SWT.DEFAULT).applyTo(comboExchange.getControl());
+            
+            // in case the ticker override check box is shown, the label is on a separate line
+            GridDataFactory.fillDefaults().span(hasTickerOverrideOption() ? 3 : 2, 1).hint(300, SWT.DEFAULT)
+                            .applyTo(comboExchange.getControl());
 
             comboExchange.addSelectionChangedListener(this::onExchangeChanged);
         }
@@ -563,13 +623,11 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             labelDetailData.setText(Messages.ColumnTicker);
 
             textTicker = new Text(grpQuoteFeed, SWT.BORDER);
-            GridDataFactory.fillDefaults().span(2, 1).hint(100, SWT.DEFAULT).applyTo(textTicker);
 
-            IObservableValue<?> observeText = WidgetProperties.text(SWT.Modify).observe(textTicker);
-            IObservableValue<?> observable = BeanProperties.value("tickerSymbol").observe(model); //$NON-NLS-1$
-            bindings.getBindingContext().bindValue(observeText, observable);
-
-            model.addPropertyChangeListener("tickerSymbol", tickerSymbolPropertyChangeListener); //$NON-NLS-1$
+            // in case the ticker override check box is shown, the label is on a separate line
+            GridDataFactory.fillDefaults().span(hasTickerOverrideOption() ? 3 : 2, 1).hint(100, SWT.DEFAULT)
+                            .applyTo(textTicker);
+            textTicker.addModifyListener(e -> onTickerTextChanged());
         }
 
         if (needsQuandlCode)
@@ -747,6 +805,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             labelDetailData.setText(""); //$NON-NLS-1$
         }
 
+        refreshTickerWidgets();
+
         grpQuoteFeed.layout(true);
         grpQuoteFeed.getParent().layout();
     }
@@ -760,7 +820,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
     private void setupInitialData()
     {
-        this.tickerSymbol = model.getTickerSymbol();
+        this.tickerSymbol = getEffectiveTicker();
 
         QuoteFeed feed = getQuoteFeedProvider(getFeed());
 
@@ -786,7 +846,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
         createDetailDataWidgets(feed);
 
-        if (model.getTickerSymbol() != null && feed != null && feed.getId() != null && //
+        if (getEffectiveTicker() != null && feed != null && feed.getId() != null && //
                         (feed.getId().startsWith(YAHOO) //
                                         || feed.getId().equals(PortfolioPerformanceFeed.ID) //
                                         || feed.getId().equals(LeewayQuoteFeed.ID) //
@@ -865,6 +925,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             if (schemeCode != null)
                 textSchemeCode.setText(schemeCode);
         }
+
+        refreshTickerWidgets();
     }
 
     /**
@@ -886,7 +948,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             }
             else
             {
-                // the job to load exchanges it scheduled. Until then display
+                // the job to load exchanges is scheduled. Until then display
                 // the existing symbol if available.
 
                 if (this.tickerSymbol != null && !this.tickerSymbol.isEmpty())
@@ -922,9 +984,9 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             if (exchange != null)
                 previousExchangeId = exchange.getId();
 
-            if (previousExchangeId == null && model.getTickerSymbol() != null)
+            if (previousExchangeId == null && getCurrentTickerValue() != null)
             {
-                previousExchangeId = model.getTickerSymbol();
+                previousExchangeId = getCurrentTickerValue();
             }
 
             // set new list of exchanges
@@ -933,16 +995,13 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             // select exchange if other provider supports same exchange id
             // (yahoo close vs. yahoo adjusted close)
             boolean exchangeSelected = false;
-            if (previousExchangeId != null)
+            for (Exchange e : exchanges)
             {
-                for (Exchange e : exchanges)
+                if (Objects.equals(e.getId(), previousExchangeId))
                 {
-                    if (e.getId().equals(previousExchangeId))
-                    {
-                        comboExchange.setSelection(new StructuredSelection(e));
-                        exchangeSelected = true;
-                        break;
-                    }
+                    comboExchange.setSelection(new StructuredSelection(e));
+                    exchangeSelected = true;
+                    break;
                 }
             }
 
@@ -1075,6 +1134,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             }
             setStatus(null);
         }
+
+        refreshTickerWidgets();
     }
 
     private void onExchangeChanged(SelectionChangedEvent event)
@@ -1114,7 +1175,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
     private void onTickerSymbolChanged()
     {
-        boolean hasTicker = model.getTickerSymbol() != null && !model.getTickerSymbol().isEmpty();
+        boolean hasTicker = getEffectiveTicker() != null && !getEffectiveTicker().isEmpty();
 
         if (!hasTicker)
         {
@@ -1127,6 +1188,61 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             showSampleQuotes(feed, null);
             setStatus(null);
         }
+    }
+
+    private void onTickerTextChanged()
+    {
+        if (isUpdatingTickerWidget)
+            return;
+
+        setFeedTicker(textTicker.getText());
+        onTickerSymbolChanged();
+    }
+
+    private void onTickerOverrideChanged()
+    {
+        boolean enabled = checkboxTickerOverride.getSelection();
+        setTickerOverrideEnabled(enabled);
+
+        if (comboExchange != null && enabled && (getFeedTicker() == null || getFeedTicker().isEmpty()))
+            comboExchange.setSelection(StructuredSelection.EMPTY);
+
+        refreshTickerWidgets();
+
+        QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
+
+        if (comboExchange != null)
+            updateExchangesDropdown(feed);
+        else
+            onTickerSymbolChanged();
+    }
+
+    private void refreshTickerWidgets()
+    {
+        if (checkboxTickerOverride != null && !checkboxTickerOverride.isDisposed())
+            checkboxTickerOverride.setSelection(isTickerOverrideEnabled());
+
+        if (textTicker != null && !textTicker.isDisposed())
+        {
+            String displayedTicker = getCurrentTickerValue();
+            String value = displayedTicker != null ? displayedTicker : ""; //$NON-NLS-1$
+
+            isUpdatingTickerWidget = true;
+            try
+            {
+                if (!Objects.equals(textTicker.getText(), value))
+                    textTicker.setText(value);
+            }
+            finally
+            {
+                isUpdatingTickerWidget = false;
+            }
+
+            textTicker.setEnabled(!hasTickerOverrideOption() || isTickerOverrideEnabled());
+        }
+
+        if (comboExchange != null && !comboExchange.getControl().isDisposed())
+            comboExchange.getControl().setEnabled(!hasTickerOverrideOption() || isTickerOverrideEnabled());
     }
 
     private void onQuandlCodeChanged()
