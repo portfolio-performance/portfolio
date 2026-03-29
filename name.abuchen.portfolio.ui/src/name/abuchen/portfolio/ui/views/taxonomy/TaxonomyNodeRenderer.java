@@ -107,6 +107,8 @@ import name.abuchen.portfolio.util.ColorConversion;
     protected Map<String, Color> hex2color = new HashMap<>();
     protected Function<String, Color> colorFactory = color -> new Color(ColorConversion.hex2RGB(color));
 
+    private Font boldFont;
+
     public TaxonomyNodeRenderer(TaxonomyModel model, LocalResourceManager resources)
     {
         this.model = model;
@@ -123,9 +125,20 @@ import name.abuchen.portfolio.util.ColorConversion;
         return new String[] { label, info };
     }
 
+    public void setBoldFont(Font font)
+    {
+        if (boldFont != null && !boldFont.isDisposed())
+            boldFont.dispose();
+
+        var fontData = font.getFontData()[0];
+        fontData.setStyle(SWT.BOLD);
+        boldFont = new Font(resources.getDevice(), fontData);
+    }
+
     public final void drawRectangle(TaxonomyNode rootNode, TaxonomyNode node, GC gc, Rectangle r)
     {
         var color = getColorFor(rootNode, node);
+        var defaultFont = gc.getFont();
 
         gc.setBackground(color);
         gc.fillRectangle(r.x, r.y, r.width, r.height);
@@ -143,12 +156,6 @@ import name.abuchen.portfolio.util.ColorConversion;
         try
         {
             gc.setForeground(Colors.getTextColor(gc.getBackground()));
-
-            var defaultFont = gc.getFont();
-            var fontDatas = defaultFont.getFontData();
-            for (var fontData : fontDatas)
-                fontData.setStyle(SWT.BOLD);
-            var boldFont = new Font(gc.getDevice(), fontDatas);
 
             var label = getLabel(node);
 
@@ -202,10 +209,10 @@ import name.abuchen.portfolio.util.ColorConversion;
                     gc.setTransform(null);
                 }
             }
-            boldFont.dispose();
         }
         finally
         {
+            gc.setFont(defaultFont);
             gc.setClipping((Rectangle) null);
         }
 
