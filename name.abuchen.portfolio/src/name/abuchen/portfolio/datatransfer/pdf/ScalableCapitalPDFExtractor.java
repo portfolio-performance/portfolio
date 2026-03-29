@@ -687,8 +687,8 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^Entitled quantity (?<shares>[\\.,\\d]+) .*$") //
-                                                        .assign((t, v) -> t.setShares(asShares(v.get(
-                                                                        "shares"))))
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en",
+                                                                                        "US")))
                         )
 
 

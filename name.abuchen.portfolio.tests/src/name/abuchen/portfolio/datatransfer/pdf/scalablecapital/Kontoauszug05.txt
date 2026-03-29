@@ -34,6 +34,16 @@ Buchung Wertstellung Beschreibung Betrag
 24.01.2026 02.01.2026 Vorabpauschale 0,00 EUR 
 24.01.2026 02.01.2026 Abgezogener oder erstatteter Solidaritätszuschlag auf Kundenebene -17,39 EUR 
 24.01.2026 02.01.2026 Auf Kundenebene einbehaltene oder erstattete Kapitalertragssteuer -316,11 EUR 
+04.01.2026 05.01.2026 Kapitalmaßnahme Ausschüttungen +201,05 EUR 
+Vanguard FTSE All-World High Dividend Yield (Dist) (IE00B8GKDB10) 
+02.01.2026 06.01.2026 Kauf eines Finanzinstruments -700,00 EUR 
+66,84 Stk. Scalable MSCI AC World Xtrackers (Acc) (LU2903252349) 
+02.01.2026 06.01.2026 Kauf eines Finanzinstruments -250,00 EUR 
+34,69 Stk. Invesco FTSE All-World (Acc) (IE000716YHJ7) 
+02.01.2026 06.01.2026 Kauf eines Finanzinstruments -150,00 EUR 
+2,14 Stk. Vanguard FTSE All-World High Dividend Yield (Dist) (IE00B8GKDB10) 
+02.01.2026 06.01.2026 Kauf eines Finanzinstruments -100,00 EUR 
+0,66 Stk. Xtrackers STOXX Europe 600 (Acc) (LU0328475792) 
 05.01.2026 06.01.2026 Abhebung vom Geldkonto -52.497,70 EUR 
 06.01.2026 07.01.2026 Abhebung vom Geldkonto -1.000,00 EUR 
 Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
@@ -49,6 +59,9 @@ Buchung Wertstellung Beschreibung Betrag
 21.01.2026 21.01.2026 Kapitalmaßnahme Ausschüttungen +13,45 EUR 
 Realty Income (US7561091049) 
 21.01.2026 21.01.2026 US Quellensteuer -2,02 EUR 
+21.01.2026 21.01.2026 US Quellensteuer -2,05 EUR 
+21.01.2026 21.01.2026 Kapitalmaßnahme Ausschüttungen +13,65 EUR 
+The Walt Disney Co (US2546871060) 
 20.01.2026 22.01.2026 Kauf eines Finanzinstruments -491,24 EUR 
 47,00 Stk. Scalable MSCI AC World Xtrackers (Acc) (LU2903252349) 
 Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
