@@ -65,3 +65,4 @@ public void testWertpapierKauf01()
 - Use `//` to enforce line-breaks when checking securities and transactions
 - Include time (hours, minutes, seconds) in `hasDate` when the source document provides it.
 - The `ExtractorMatchers`-class contains test assertion helpers
+- The fees and taxes could consist from multiple values, do not merge them into a single value for better understanding

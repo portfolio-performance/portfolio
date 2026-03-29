@@ -297,7 +297,7 @@ public void testWertpapierKauf01()
                     hasName("Vngrd Fds-ESG Dv.As-Pc Al ETF"), //
                     hasCurrencyCode("EUR"))));
 
-    // check purchase transaction
+    // check transaction
     assertThat(results, hasItem(purchase( //
                     hasDate("2024-12-12T13:12:51"), hasShares(3.00), //
                     hasSource("Kauf01.txt"), //
