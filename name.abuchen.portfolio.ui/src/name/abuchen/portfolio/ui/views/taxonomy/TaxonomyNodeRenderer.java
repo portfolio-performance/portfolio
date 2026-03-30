@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.function.DoubleFunction;
 import java.util.function.Function;
 
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -114,6 +115,7 @@ import name.abuchen.portfolio.util.ColorConversion;
         this.model = model;
         this.resources = resources;
         this.nameConfig = new ClientProperties(model.getClient()).getSecurityNameConfig();
+        setBoldFont();
     }
 
     public String[] getLabel(TaxonomyNode node)
@@ -125,14 +127,11 @@ import name.abuchen.portfolio.util.ColorConversion;
         return new String[] { label, info };
     }
 
-    public void setBoldFont(Font font)
+    private void setBoldFont()
     {
-        if (boldFont != null && !boldFont.isDisposed())
-            boldFont.dispose();
-
-        var fontData = font.getFontData()[0];
-        fontData.setStyle(SWT.BOLD);
-        boldFont = new Font(resources.getDevice(), fontData);
+        var defaultFontDescriptor = JFaceResources.getDefaultFontDescriptor();
+        var boldDescriptor = defaultFontDescriptor.setStyle(SWT.BOLD);
+        boldFont = resources.create(boldDescriptor);
     }
 
     public final void drawRectangle(TaxonomyNode rootNode, TaxonomyNode node, GC gc, Rectangle r)

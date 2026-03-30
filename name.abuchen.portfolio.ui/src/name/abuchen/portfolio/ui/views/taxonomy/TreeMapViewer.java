@@ -453,7 +453,6 @@ import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNodeRenderer.Performance
                             rectangle.getHeight());
 
             var coloring = selectedRenderer != null ? selectedRenderer : getRenderer();
-            coloring.setBoldFont(event.gc.getFont());
             coloring.drawRectangle(model.getRoot().getNode(), item, event.gc, r);
 
             event.gc.setForeground(oldForeground);

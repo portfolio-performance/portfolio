@@ -29,7 +29,7 @@ import de.engehausen.treemap.swt.TreeMap;
 
         this.model = model;
         this.renderer = renderer;
-        this.renderer.setBoldFont(getFont());
+
         setBackground(parent.getBackground());
 
         RowLayout layout = new RowLayout(SWT.HORIZONTAL);
