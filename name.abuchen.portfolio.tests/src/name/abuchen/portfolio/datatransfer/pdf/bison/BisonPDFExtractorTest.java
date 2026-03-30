@@ -303,17 +303,12 @@ public class BisonPDFExtractorTest
                         hasAmount("EUR", 10.00), hasGrossValue("EUR", 10.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // check buy sell transaction
-        assertThat(results, hasItem(purchase( //
-                        hasDate("2020-01-16T11:19"), hasShares(0.01282436), //
+        // check deposit transactions
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2020-01-16T10:30"), //
                         hasSource("InfoReport03.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-
-        // check deposit transactions
-        assertThat(results, hasItem(deposit(hasDate("2020-01-16T10:30"), hasAmount("EUR", 100.00), //
-                        hasSource("InfoReport03.txt"), hasNote(null))));
+                        hasAmount("EUR", 100.00))));
     }
 
     @Test

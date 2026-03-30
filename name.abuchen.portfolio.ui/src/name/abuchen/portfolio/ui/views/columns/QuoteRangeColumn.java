@@ -90,7 +90,7 @@ public class QuoteRangeColumn extends Column implements Column.CacheInvalidation
             double pos = value;
 
             // Leave some space in case 2 such columns go side by side
-            int width = (getTableColumn() != null ? getTableColumn().getWidth() : getTreeColumn().getWidth()) - 2;
+            int width = getTableColumn().getWidth() - 2;
             int yOff = (event.height - BAR_HEIGHT) / 2;
 
             event.gc.setForeground(Colors.theme().defaultForeground());

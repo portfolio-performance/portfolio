@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +29,7 @@ import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -40,6 +42,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityEvent;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
@@ -120,6 +123,13 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         dateTime.bindDate(Properties.date.name());
         dateTime.bindTime(Properties.time.name());
         dateTime.bindButton(() -> model().getTime(), time -> model().setTime(time));
+
+        // ex-date
+
+        var exDate = new ExDateInput(editArea);
+        exDate.bindDate(Properties.exDate.name());
+        exDate.setVisible(model().supportsSecurity() && model().getSecurity() != null
+                        && !AccountTransactionModel.EMPTY_SECURITY.equals(model().getSecurity()));
 
         // shares
 
@@ -251,6 +261,51 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
 
         startingWith(dateTime.date.getControl()).thenRight(dateTime.time).thenRight(dateTime.button, 0);
 
+        if (model().supportsSecurity())
+        {
+            startingWith(dateTime.button).thenRight(exDate.checkBox).thenRight(exDate.date.getControl());
+
+            var hasRealSecurity = model().getSecurity() != null
+                            && !AccountTransactionModel.EMPTY_SECURITY.equals(model().getSecurity());
+            exDate.setVisible(hasRealSecurity);
+
+            var hasExDate = hasRealSecurity && model().getExDate() != null;
+            toggleExDatePicker(exDate, hasExDate);
+
+            exDate.checkBox.addSelectionListener(SelectionListener.widgetSelectedAdapter(event -> {
+                var button = (Button) event.widget;
+                toggleExDatePicker(exDate, button.getSelection());
+                if (button.getSelection())
+                    suggestExDate(exDate);
+                editArea.layout();
+            }));
+
+            model.addPropertyChangeListener(Properties.security.name(), event -> {
+                var newSecurity = event.getNewValue();
+                var isRealSecurity = newSecurity != null && !AccountTransactionModel.EMPTY_SECURITY.equals(newSecurity);
+                exDate.setVisible(isRealSecurity);
+                toggleExDatePicker(exDate, false);
+                editArea.layout();
+            });
+
+            model.addPropertyChangeListener(Properties.date.name(), event -> {
+                if (exDate.checkBox.isVisible() && exDate.checkBox.getSelection())
+                {
+                    suggestExDate(exDate);
+
+                    var currentExDate = model().getExDate();
+                    var newTxDate = model().getDate();
+                    if (currentExDate != null && currentExDate.toLocalDate().isAfter(newTxDate))
+                    {
+                        exDate.date.setSelection(newTxDate);
+                        model().setExDate(newTxDate.atStartOfDay());
+                    }
+
+                    toggleExDatePicker(exDate, true);
+                }
+            });
+        }
+
         // shares [- amount per share]
         forms.thenBelow(shares.value).width(amountWidth).label(shares.label).suffix(btnShares) //
                         // fxAmount - exchange rate - amount
@@ -350,6 +405,62 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         model.addPropertyChangeListener(Properties.date.name(), e -> warnings.check());
 
         model.firePropertyChange(Properties.exchangeRateCurrencies.name(), "", model().getExchangeRateCurrencies()); //$NON-NLS-1$
+    }
+
+    private void toggleExDatePicker(ExDateInput exDate, boolean enable)
+    {
+        exDate.checkBox.setSelection(enable);
+        exDate.date.getControl().setVisible(enable);
+
+        if (enable)
+        {
+            var exDateValue = model().getExDate();
+            if (exDateValue == null)
+            {
+                var txDate = model.getDate();
+                exDate.date.setSelection(txDate);
+                model().setExDate(txDate.atStartOfDay());
+            }
+            else
+            {
+                model().setExDate(exDate.date.getSelection().atStartOfDay());
+            }
+        }
+        else
+        {
+            model().setExDate(null);
+            exDate.date.setSelection(model.getDate());
+        }
+    }
+
+    private void suggestExDate(ExDateInput exDate)
+    {
+        var security = model().getSecurity();
+        if (security == null || AccountTransactionModel.EMPTY_SECURITY.equals(security))
+            return;
+
+        var txDate = model().getDate();
+
+        for (var event : security.getEvents())
+        {
+            if (!(event instanceof SecurityEvent.DividendEvent dividend))
+                continue;
+
+            var paymentDate = dividend.getPaymentDate();
+            if (paymentDate == null)
+                continue;
+
+            if (Math.abs(ChronoUnit.DAYS.between(txDate, paymentDate)) <= 5)
+            {
+                var eventExDate = dividend.getDate();
+                if (eventExDate == null)
+                    continue;
+
+                exDate.date.setSelection(eventExDate);
+                model().setExDate(eventExDate.atStartOfDay());
+                return;
+            }
+        }
     }
 
     private ComboInput setupSecurities(Composite editArea)

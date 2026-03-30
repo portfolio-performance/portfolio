@@ -16,25 +16,16 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
-import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class TreeViewerCSVExporter extends AbstractCSVExporter
 {
     private final TreeViewer viewer;
-    private boolean flatTable = false;
 
     public TreeViewerCSVExporter(TreeViewer viewer)
     {
         this.viewer = viewer;
-    }
-
-    public TreeViewerCSVExporter withFlatTable()
-    {
-        this.flatTable = true;
-        return this;
     }
 
     @Override
@@ -59,26 +50,17 @@ public class TreeViewerCSVExporter extends AbstractCSVExporter
 
             // write header
             String label = viewer.getTree().getColumn(0).getText();
-            if (flatTable)
-            {
-                printer.print(label);
-            }
-            else
-            {
-                for (int ii = 0; ii < depth; ii++)
-                    printer.print(label + " " + (ii + 1)); //$NON-NLS-1$
-            }
+            for (int ii = 0; ii < depth; ii++)
+                printer.print(label + " " + (ii + 1)); //$NON-NLS-1$
             for (int ii = 1; ii < columnCount; ii++)
                 printer.print(viewer.getTree().getColumn(ii).getText());
             printer.println();
 
             // write body
+            LinkedList<String> path = new LinkedList<>();
             for (Object element : provider.getElements(null))
             {
-                if (flatTable)
-                    writeFlatLine(printer, provider, labels, element);
-                else
-                    writeLine(printer, provider, labels, depth, new LinkedList<>(), element);
+                writeLine(printer, provider, labels, depth, path, element);
             }
         }
     }
@@ -104,19 +86,6 @@ public class TreeViewerCSVExporter extends AbstractCSVExporter
                     {
                         Long value = labelProvider.getValue(element);
                         return value != null ? Values.Share.format(value) : null;
-                    }
-                };
-            }
-            else if (blp instanceof OptionLabelProvider<?> labelProvider)
-            {
-                var option = viewer.getTree().getColumn(ii).getData(ShowHideColumnHelper.OPTIONS_KEY);
-                labels[ii] = new LabelProvider()
-                {
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public String getText(Object element)
-                    {
-                        return ((OptionLabelProvider<Object>) labelProvider).getText(element, option);
                     }
                 };
             }
@@ -160,24 +129,6 @@ public class TreeViewerCSVExporter extends AbstractCSVExporter
         }
 
         path.removeLast();
-    }
-
-    private void writeFlatLine(CSVPrinter printer, ITreeContentProvider provider, ILabelProvider[] labels,
-                    Object element) throws IOException
-    {
-        for (int ii = 0; ii < labels.length; ii++)
-        {
-            String text = labels[ii].getText(element);
-            printer.print(text != null ? TextUtil.sanitizeFormattedNumber(text) : ""); //$NON-NLS-1$
-        }
-
-        printer.println();
-
-        if (provider.hasChildren(element))
-        {
-            for (Object child : provider.getChildren(element))
-                writeFlatLine(printer, provider, labels, child);
-        }
     }
 
     private int depth(final ITreeContentProvider tree)

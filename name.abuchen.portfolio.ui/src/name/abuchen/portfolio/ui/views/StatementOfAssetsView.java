@@ -29,8 +29,8 @@ import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.TimeMachineDropDown;
-import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
 import name.abuchen.portfolio.ui.views.panes.ChartPane;
 import name.abuchen.portfolio.ui.views.panes.HistoricalPricesDataQualityPane;
 import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
@@ -60,7 +60,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
     @Override
     public void notifyModelUpdated()
     {
-        StatementOfAssetsViewer.Element selection = (StatementOfAssetsViewer.Element) assetViewer.getTreeViewer()
+        StatementOfAssetsViewer.Element selection = (StatementOfAssetsViewer.Element) assetViewer.getTableViewer()
                         .getStructuredSelection().getFirstElement();
 
         Client filteredClient = clientFilter.getSelectedFilter().filter(getClient());
@@ -122,8 +122,8 @@ public class StatementOfAssetsView extends AbstractFinanceView
                         StatementOfAssetsView.class.getSimpleName(), filter -> notifyModelUpdated());
         toolBar.add(clientFilter);
 
-        Action export = new SimpleAction(null, action -> new TreeViewerCSVExporter(assetViewer.getTreeViewer())
-                        .withFlatTable().export(Messages.LabelStatementOfAssets + ".csv")); //$NON-NLS-1$
+        Action export = new SimpleAction(null, action -> new TableViewerCSVExporter(assetViewer.getTableViewer())
+                        .export(Messages.LabelStatementOfAssets + ".csv")); //$NON-NLS-1$
         export.setImageDescriptor(Images.EXPORT.descriptor());
         export.setToolTipText(Messages.MenuExportData);
         toolBar.add(export);
@@ -148,11 +148,11 @@ public class StatementOfAssetsView extends AbstractFinanceView
                 notifyModelUpdated();
         });
 
-        hookContextMenu(assetViewer.getTreeViewer().getControl(),
+        hookContextMenu(assetViewer.getTableViewer().getControl(),
                         manager -> assetViewer.hookMenuListener(manager, StatementOfAssetsView.this));
         assetViewer.hookKeyListener();
 
-        assetViewer.getTreeViewer().addSelectionChangedListener(e -> {
+        assetViewer.getTableViewer().addSelectionChangedListener(e -> {
             var selection = e.getStructuredSelection();
 
             // test for a single selection because it might be a cash account or

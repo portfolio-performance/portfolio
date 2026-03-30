@@ -83,6 +83,10 @@ public class ClientInput
     private List<Runnable> disposeJobs = new ArrayList<>();
     private List<ClientInputListener> listeners = new ArrayList<>();
 
+    private final Object pendingLock = new Object();
+    private boolean pendingDirty;
+    private boolean pendingRecalculate;
+
     @Inject
     private IEventBroker broker;
 
@@ -146,6 +150,37 @@ public class ClientInput
     public void touch()
     {
         setDirty(true, false);
+    }
+
+    private void scheduleDirty(boolean recalculate)
+    {
+        if (Display.getDefault().getThread() == Thread.currentThread())
+        {
+            setDirty(true, recalculate);
+            return;
+        }
+        synchronized (pendingLock)
+        {
+            pendingRecalculate |= recalculate;
+            if (pendingDirty)
+                return; // asyncExec already queued; it will pick up the merged state
+            pendingDirty = true;
+        }
+        Display.getDefault().asyncExec(this::applyPendingDirty);
+    }
+
+    private void applyPendingDirty()
+    {
+        boolean recalculate;
+        synchronized (pendingLock)
+        {
+            if (!pendingDirty)
+                return; // consumed by a save() that ran before we fired
+            recalculate = pendingRecalculate;
+            pendingDirty = false;
+            pendingRecalculate = false;
+        }
+        setDirty(true, recalculate);
     }
 
     private void setDirty(boolean isDirty, boolean recalculate)
@@ -230,7 +265,21 @@ public class ClientInput
                 storePreferences(false);
 
                 broker.post(UIConstants.Event.File.SAVED, clientFile.getAbsolutePath());
-                setDirty(false, false);
+
+                // Cancel any pending asyncExec dirty notification. If a background
+                // modification arrived during the save the on-disk file may not reflect
+                // it, so we conservatively remain dirty in that case.
+                boolean hadPendingModification;
+                boolean hadPendingRecalculate;
+                synchronized (pendingLock)
+                {
+                    hadPendingModification = pendingDirty;
+                    hadPendingRecalculate = pendingRecalculate;
+                    pendingDirty = false;
+                    pendingRecalculate = false;
+                }
+                setDirty(hadPendingModification, hadPendingRecalculate);
+
                 listeners.forEach(ClientInputListener::onSaved);
             }
             catch (IOException e)
@@ -269,7 +318,18 @@ public class ClientInput
                 storePreferences(true);
 
                 broker.post(UIConstants.Event.File.SAVED, clientFile.getAbsolutePath());
-                setDirty(false, false);
+
+                boolean hadPendingModification;
+                boolean hadPendingRecalculate;
+                synchronized (pendingLock)
+                {
+                    hadPendingModification = pendingDirty;
+                    hadPendingRecalculate = pendingRecalculate;
+                    pendingDirty = false;
+                    pendingRecalculate = false;
+                }
+                setDirty(hadPendingModification, hadPendingRecalculate);
+
                 listeners.forEach(ClientInputListener::onSaved);
             }
             catch (IOException e)
@@ -658,15 +718,7 @@ public class ClientInput
             // convenience: Client#markDirty can be called on any thread, but
             // ClientInputListener#onDirty will always be called on the UI
             // thread
-
-            if (Display.getDefault().getThread() == Thread.currentThread())
-            {
-                setDirty(true, recalculate);
-            }
-            else
-            {
-                Display.getDefault().asyncExec(() -> setDirty(true, recalculate));
-            }
+            scheduleDirty(recalculate);
         };
         client.addPropertyChangeListener(listener);
         disposeJobs.add(() -> client.removePropertyChangeListener(listener));

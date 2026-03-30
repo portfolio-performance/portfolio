@@ -34,7 +34,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         addBuySellTransaction();
         addSellWithNegativeAmountTransaction();
         addBuySellCryptoTransaction();
-        addDividendeTransaction();
+        addDividendTransaction();
         addAdvanceTaxTransaction();
         addExAnteFeeTransaction();
         addAccountStatementTransaction_Format01();
@@ -1244,7 +1244,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
-    private void addDividendeTransaction()
+    private void addDividendTransaction()
     {
         final var type = new DocumentType("(AUSSCH.TTUNG" //
                         + "|DIVIDENDE" //
@@ -1499,6 +1499,39 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("date") //
                                                         .match("^[\\w]+ (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (\\-)?[\\.,\\d]+ [A-Z]{3}$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+
+                        .optionalOneOf( //
+                        // @formatter:off
+                                        // Dividend with the ex-tag 10.11.2023.
+                                        // Cash Dividend with Ex-Date 28.06.2024.
+                                        // Dividendo con l'ex-tag 12.05.2023.
+                                        // Distribuzione con l'ex-tag 17.08.2023. 
+                                        // Ausschüttung mit dem Ex-Tag 12.09.2019.
+                                        // Dividende mit Ex-Datum22.05.2024.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exDate") //
+                                                        .match("^.* (ex-tag|Ex-Tag|Ex-Date|l'ex-tag|Ex-Datum)[\\s]*(?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})\\.$") //
+                                                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate")))),
+
+                                        // @formatter:off
+                                        // Dividende à la date du 10/05/2024.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exDate") //
+                                                        .match("^Dividende . la date du (?<exDate>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4})\\.$") //
+                                                        .assign((t, v) -> t.setExDate(asDate(v.get(
+                                                                        "exDate")))),
+
+                                        // @formatter:off
+                                        // Dividende en espèces avec la date d'exécution au -15.05.2024.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exDate") //
+                                                        .match("^Dividende en esp.ces .* -(?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})\\.$") //
+                                                        .assign((t, v) -> t.setExDate(asDate(v.get(
+                                                                        "exDate"))))
+                        )
 
                         .oneOf( //
                                         // @formatter:off
@@ -2954,12 +2987,18 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Dez. Überweisung 1.800,00 € 8.204,71 €
                                         // (DE00000000000000000000)
                                         // 2025
+                                        //
+                                        // 17 
+                                        // Sepa Direct Debit transfer to apetito catering B.V. + Co. KG 
+                                        // Feb. SEPA-Lastschrift 10,00 € 1.000,00 €
+                                        // (DE00000000000000000000)
+                                        // 2026
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("day", "month", "year", "note0", "note1", "amount", "currency") //
                                                         .match("^(?<day>[\\d]{2})[\\s]*$") //
-                                                        .match("^(?<note0>(Outgoing transfer for) .*)$") //
-                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) (.berweisung) " //
+                                                        .match("^(?<note0>(Outgoing transfer for|Sepa Direct Debit transfer to) .*)$") //
+                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) (.berweisung|SEPA\\-Lastschrift) " //
                                                                         + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) ([\\.,\\d]+) (\\p{Sc})$") //
                                                         .match("^(?<note1>.*)$") //
                                                         .match("^(?<year>[\\d]{4})$") //

@@ -32,7 +32,7 @@ public class TaxonomyJSONExporter implements Exporter
         @Override
         public String getName()
         {
-            return "AllTaxonomies";
+            return "AllTaxonomies"; //$NON-NLS-1$
         }
 
         @Override

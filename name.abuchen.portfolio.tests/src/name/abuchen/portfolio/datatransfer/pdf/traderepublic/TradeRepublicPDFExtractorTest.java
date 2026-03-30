@@ -7,6 +7,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFeed;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFeedProperty;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
@@ -4115,6 +4116,34 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testKontoauszug41()
+    {
+        var extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug41.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2026-02-16"), hasAmount("EUR", 100.01),
+                        hasSource("Kontoauszug41.txt"), hasNote("Sepa Direct Debit transfer to Stadt Blah (DE00000000000000000000)"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2026-02-17"), hasAmount("EUR", 10.00),
+                        hasSource("Kontoauszug41.txt"), hasNote("Sepa Direct Debit transfer to apetito catering B.V. + Co. KG (DE00000000000000000000)"))));
+    }
+
+    @Test
     public void testEstrattoContoRiassuntivo01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
@@ -6781,6 +6810,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-09-25T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2019-09-12T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(10)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertNull(transaction.getNote());
@@ -6826,6 +6856,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-09-25T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2019-09-12T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(10)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertNull(transaction.getNote());
@@ -6877,6 +6908,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-09-12T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2019-08-14T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(10)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertNull(transaction.getNote());
@@ -6923,6 +6955,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-09-12T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2019-08-14T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(10)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertNull(transaction.getNote());
@@ -6975,6 +7008,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-23T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2019-12-05T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
         assertNull(transaction.getNote());
@@ -7021,6 +7055,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-23T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2019-12-05T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
         assertNull(transaction.getNote());
@@ -7073,6 +7108,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-15T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2020-01-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(8)));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
         assertNull(transaction.getNote());
@@ -7118,6 +7154,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-14T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2020-01-30T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(142)));
         assertThat(transaction.getSource(), is("Dividende05.txt"));
         assertNull(transaction.getNote());
@@ -7163,6 +7200,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-14T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2020-01-30T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(142)));
         assertThat(transaction.getSource(), is("Dividende05.txt"));
         assertNull(transaction.getNote());
@@ -7214,6 +7252,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-09-21T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2020-08-13T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(500)));
         assertThat(transaction.getSource(), is("Dividende06.txt"));
         assertNull(transaction.getNote());
@@ -7260,6 +7299,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-09-21T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2020-08-13T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(500)));
         assertThat(transaction.getSource(), is("Dividende06.txt"));
         assertNull(transaction.getNote());
@@ -7312,6 +7352,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-11T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2020-11-18T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(3.3272)));
         assertThat(transaction.getSource(), is("Dividende07.txt"));
         assertNull(transaction.getNote());
@@ -7357,6 +7398,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-11T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2020-11-18T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(3.3272)));
         assertThat(transaction.getSource(), is("Dividende07.txt"));
         assertNull(transaction.getNote());
@@ -7408,6 +7450,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-05-26T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2021-05-13T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(124.0903)));
         assertThat(transaction.getSource(), is("Dividende08.txt"));
         assertNull(transaction.getNote());
@@ -7453,6 +7496,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-05-26T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2021-05-13T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(124.0903)));
         assertThat(transaction.getSource(), is("Dividende08.txt"));
         assertNull(transaction.getNote());
@@ -7504,6 +7548,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-05-27T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2021-05-24T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(4.3521)));
         assertThat(transaction.getSource(), is("Dividende09.txt"));
         assertNull(transaction.getNote());
@@ -7549,6 +7594,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-17T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2020-12-09T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(25)));
         assertThat(transaction.getSource(), is("Dividende10.txt"));
         assertNull(transaction.getNote());
@@ -7595,6 +7641,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-04-16T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2020-04-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(50)));
         assertThat(transaction.getSource(), is("Dividende11.txt"));
         assertNull(transaction.getNote());
@@ -7778,6 +7825,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-10-27T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2021-10-14T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
         assertThat(transaction.getSource(), is("Dividende13.txt"));
         assertNull(transaction.getNote());
@@ -7823,6 +7871,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-04-21T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2022-12-29T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6.214744)));
         assertThat(transaction.getSource(), is("Dividende14.txt"));
         assertNull(transaction.getNote());
@@ -7868,6 +7917,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-04-21T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2022-12-29T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6.214744)));
         assertThat(transaction.getSource(), is("Dividende14.txt"));
         assertNull(transaction.getNote());
@@ -7911,7 +7961,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-06-07T00:00"), hasShares(123.00), //
+                        hasDate("2024-06-07T00:00"), hasExDate("2024-05-22T00:00"), //
+                        hasShares(123.00), //
                         hasSource("Dividende15.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 99.99), hasGrossValue("EUR", 112.21), //
@@ -7946,7 +7997,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-06-07T00:00"), hasShares(123.00), //
+                        hasDate("2024-06-07T00:00"), hasExDate("2024-05-22T00:00"), //
+                        hasShares(123.00), //
                         hasSource("Dividende15.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 99.99), hasGrossValue("EUR", 112.21), //
@@ -7980,7 +8032,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-01-10T00:00"), hasShares(55), //
+                        hasDate("2024-01-10T00:00"), hasExDate("2023-12-20T00:00"), //
+                        hasShares(55), //
                         hasSource("Dividende16.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 63.31), hasGrossValue("EUR", 63.31), //
@@ -8024,7 +8077,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-01-10T00:00"), hasShares(55), //
+                        hasDate("2024-01-10T00:00"), hasExDate("2023-12-20T00:00"), //
+                        hasShares(55), //
                         hasSource("Dividende16.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 63.31), hasGrossValue("EUR", 63.31), //
@@ -8066,7 +8120,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-05-16T00:00"), hasShares(1.92086), //
+                        hasDate("2024-05-16T00:00"), hasExDate("2024-05-10T00:00"), //
+                        hasShares(1.92086), //
                         hasSource("Dividende17.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.38), hasGrossValue("EUR", 0.44), //
@@ -8101,7 +8156,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-05-16T00:00"), hasShares(1.92086), //
+                        hasDate("2024-05-16T00:00"), hasExDate("2024-05-10T00:00"), //
+                        hasShares(1.92086), //
                         hasSource("Dividende17.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.38), hasGrossValue("EUR", 0.44), //
@@ -8135,7 +8191,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-06-12T00:00"), hasShares(90.537929), //
+                        hasDate("2024-06-12T00:00"), hasExDate("2024-06-05T00:00"), //
+                        hasShares(90.537929), //
                         hasSource("Dividende18.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 66.95), hasGrossValue("EUR", 78.77), //
@@ -8169,7 +8226,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-06-14T00:00"), hasShares(45.671650), //
+                        hasDate("2024-06-14T00:00"), hasExDate("2024-06-12T00:00"), //
+                        hasShares(45.671650), //
                         hasSource("Dividende19.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 116.92), hasGrossValue("EUR", 130.98), //
@@ -8211,7 +8269,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-06-14T00:00"), hasShares(23.908066), //
+                        hasDate("2024-06-14T00:00"), hasExDate("2024-06-03T00:00"), //
+                        hasShares(23.908066), //
                         hasSource("Dividende20.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 4.97), hasGrossValue("EUR", 5.84), //
@@ -8246,7 +8305,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-06-14T00:00"), hasShares(23.908066), //
+                        hasDate("2024-06-14T00:00"), hasExDate("2024-06-03T00:00"), //
+                        hasShares(23.908066), //
                         hasSource("Dividende20.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 4.97), hasGrossValue("EUR", 5.84), //
@@ -8280,7 +8340,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-06-10T00:00"), hasShares(206.651869), //
+                        hasDate("2024-06-10T00:00"), hasExDate("2024-06-08T00:00"), //
+                        hasShares(206.651869), //
                         hasSource("Dividende21.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 79.76), hasGrossValue("EUR", 99.19), //
@@ -8314,7 +8375,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-06-17T00:00"), hasShares(1.552443), //
+                        hasDate("2024-06-17T00:00"), hasExDate("2024-06-13T00:00"), //
+                        hasShares(1.552443), //
                         hasSource("Dividende22.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 6.09), hasGrossValue("EUR", 6.09), //
@@ -8348,7 +8410,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-06-25T00:00"), hasShares(12.00), //
+                        hasDate("2024-06-25T00:00"), hasExDate("2024-06-17T00:00"), //
+                        hasShares(12.00), //
                         hasSource("Dividende23.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 19.97), hasGrossValue("EUR", 23.49), //
@@ -8383,7 +8446,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-06-25T00:00"), hasShares(12.00), //
+                        hasDate("2024-06-25T00:00"), hasExDate("2024-06-17T00:00"), //
+                        hasShares(12.00), //
                         hasSource("Dividende23.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 19.97), hasGrossValue("EUR", 23.49), //
@@ -8417,7 +8481,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-06-07T00:00"), hasShares(110.661875), //
+                        hasDate("2024-06-07T00:00"), hasExDate("2024-05-22T00:00"), //
+                        hasShares(110.661875), //
                         hasSource("Dividende24.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 29.44), hasGrossValue("EUR", 36.10), //
@@ -8452,7 +8517,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-06-07T00:00"), hasShares(110.661875), //
+                        hasDate("2024-06-07T00:00"), hasExDate("2024-05-22T00:00"), //
+                        hasShares(110.661875), //
                         hasSource("Dividende24.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 29.44), hasGrossValue("EUR", 36.10), //
@@ -8486,7 +8552,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-06-14T00:00"), hasShares(45.671650), //
+                        hasDate("2024-06-14T00:00"), hasExDate("2024-06-12T00:00"), //
+                        hasShares(45.671650), //
                         hasSource("Dividende25.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 116.92), hasGrossValue("EUR", 130.98), //
@@ -8562,7 +8629,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-06-13T00:00"), hasShares(0.561914), //
+                        hasDate("2024-06-13T00:00"), hasExDate("2024-05-15T00:00"), //
+                        hasShares(0.561914), //
                         hasSource("Dividende27.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.33), hasGrossValue("EUR", 0.39), //
@@ -8597,7 +8665,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-06-13T00:00"), hasShares(0.561914), //
+                        hasDate("2024-06-13T00:00"), hasExDate("2024-05-15T00:00"), //
+                        hasShares(0.561914), //
                         hasSource("Dividende27.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.33), hasGrossValue("EUR", 0.39), //
@@ -8631,7 +8700,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-10-03T00:00"), hasShares(32.00), //
+                        hasDate("2024-10-03T00:00"), hasExDate("2024-09-12T00:00"), //
+                        hasShares(32.00), //
                         hasSource("Dividende28.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.22), hasGrossValue("EUR", 0.29), //
@@ -8666,7 +8736,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-10-03T00:00"), hasShares(32.00), //
+                        hasDate("2024-10-03T00:00"), hasExDate("2024-09-12T00:00"), //
+                        hasShares(32.00), //
                         hasSource("Dividende28.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.22), hasGrossValue("EUR", 0.29), //
@@ -8700,7 +8771,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-07-03T00:00"), hasShares(4.171585), //
+                        hasDate("2025-07-03T00:00"), hasExDate("2025-06-11T00:00"), //
+                        hasShares(4.171585), //
                         hasSource("Dividende29.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.02), hasGrossValue("EUR", 0.03), //
@@ -8735,7 +8807,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-07-03T00:00"), hasShares(4.171585), //
+                        hasDate("2025-07-03T00:00"), hasExDate("2025-06-11T00:00"), //
+                        hasShares(4.171585), //
                         hasSource("Dividende29.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.02), hasGrossValue("EUR", 0.03), //
@@ -8769,7 +8842,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-11-16T00:00"), hasShares(0.0929), //
+                        hasDate("2023-11-16T00:00"), hasExDate("2023-11-10T00:00"), //
+                        hasShares(0.0929), //
                         hasSource("Dividend01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.02), hasGrossValue("EUR", 0.02), //
@@ -8804,7 +8878,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-11-16T00:00"), hasShares(0.0929), //
+                        hasDate("2023-11-16T00:00"), hasExDate("2023-11-10T00:00"), //
+                        hasShares(0.0929), //
                         hasSource("Dividend01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.02), hasGrossValue("EUR", 0.02), //
@@ -8838,7 +8913,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-07-12T00:00"), hasShares(2.00), //
+                        hasDate("2024-07-12T00:00"), hasExDate("2024-06-28T00:00"), //
+                        hasShares(2.00), //
                         hasSource("Dividend02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.66), hasGrossValue("EUR", 0.78), //
@@ -8873,7 +8949,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-07-12T00:00"), hasShares(2.00), //
+                        hasDate("2024-07-12T00:00"), hasExDate("2024-06-28T00:00"), //
+                        hasShares(2.00), //
                         hasSource("Dividend02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.66), hasGrossValue("EUR", 0.78), //
@@ -8907,7 +8984,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-07-31T00:00"), hasShares(43.00), //
+                        hasDate("2024-07-31T00:00"), hasExDate("2024-07-18T00:00"), //
+                        hasShares(43.00), //
                         hasSource("Dividend03.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 90.28), hasGrossValue("EUR", 90.28), //
@@ -8941,7 +9019,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-06-14T00:00"), hasShares(15.00), //
+                        hasDate("2024-06-14T00:00"), hasExDate("2024-06-03T00:00"), //
+                        hasShares(15.00), //
                         hasSource("Dividend04.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 3.11), hasGrossValue("EUR", 3.66), //
@@ -8976,7 +9055,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-06-14T00:00"), hasShares(15.00), //
+                        hasDate("2024-06-14T00:00"), hasExDate("2024-06-03T00:00"), //
+                        hasShares(15.00), //
                         hasSource("Dividend04.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 3.11), hasGrossValue("EUR", 3.66), //
@@ -9010,7 +9090,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-07-03T00:00"), hasShares(30.00), //
+                        hasDate("2024-07-03T00:00"), hasExDate("2024-06-18T00:00"), //
+                        hasShares(30.00), //
                         hasSource("Dividend05.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 9.86), hasGrossValue("EUR", 11.60), //
@@ -9045,7 +9126,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-07-03T00:00"), hasShares(30.00), //
+                        hasDate("2024-07-03T00:00"), hasExDate("2024-06-18T00:00"), //
+                        hasShares(30.00), //
                         hasSource("Dividend05.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 9.86), hasGrossValue("EUR", 11.60), //
@@ -9079,7 +9161,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-07-15T00:00"), hasShares(15.00), //
+                        hasDate("2024-07-15T00:00"), hasExDate("2024-07-01T00:00"), //
+                        hasShares(15.00), //
                         hasSource("Dividend06.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 3.09), hasGrossValue("EUR", 3.63), //
@@ -9114,7 +9197,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-07-15T00:00"), hasShares(15.00), //
+                        hasDate("2024-07-15T00:00"), hasExDate("2024-07-01T00:00"), //
+                        hasShares(15.00), //
                         hasSource("Dividend06.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 3.09), hasGrossValue("EUR", 3.63), //
@@ -9148,7 +9232,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-07-03T00:00"), hasShares(30.00), //
+                        hasDate("2024-07-03T00:00"), hasExDate("2024-06-18T00:00"), //
+                        hasShares(30.00), //
                         hasSource("Dividend07.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 9.86), hasGrossValue("EUR", 11.60), //
@@ -9183,7 +9268,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-07-03T00:00"), hasShares(30.00), //
+                        hasDate("2024-07-03T00:00"), hasExDate("2024-06-18T00:00"), //
+                        hasShares(30.00), //
                         hasSource("Dividend07.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 9.86), hasGrossValue("EUR", 11.60), //
@@ -9217,7 +9303,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-06-17T00:00"), hasShares(2.00), //
+                        hasDate("2024-06-17T00:00"), hasExDate("2024-06-08T00:00"), //
+                        hasShares(2.00), //
                         hasSource("Dividend08.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.31), hasGrossValue("EUR", 0.37), //
@@ -9252,7 +9339,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-06-17T00:00"), hasShares(2.00), //
+                        hasDate("2024-06-17T00:00"), hasExDate("2024-06-08T00:00"), //
+                        hasShares(2.00), //
                         hasSource("Dividend08.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.31), hasGrossValue("EUR", 0.37), //
@@ -9286,7 +9374,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-06-14T00:00"), hasShares(15.00), //
+                        hasDate("2024-06-14T00:00"), hasExDate("2024-06-03T00:00"), //
+                        hasShares(15.00), //
                         hasSource("Dividend09.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 3.11), hasGrossValue("EUR", 3.66), //
@@ -9321,7 +9410,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-06-14T00:00"), hasShares(15.00), //
+                        hasDate("2024-06-14T00:00"), hasExDate("2024-06-03T00:00"), //
+                        hasShares(15.00), //
                         hasSource("Dividend09.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 3.11), hasGrossValue("EUR", 3.66), //
@@ -9355,7 +9445,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-06-01T00:00"), hasShares(20.971565), //
+                        hasDate("2023-06-01T00:00"), hasExDate("2023-05-12T00:00"), //
+                        hasShares(20.971565), //
                         hasSource("Dividendo01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 9.56), hasGrossValue("EUR", 12.74), //
@@ -9390,7 +9481,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-06-01T00:00"), hasShares(20.971565), //
+                        hasDate("2023-06-01T00:00"), hasExDate("2023-05-12T00:00"), //
+                        hasShares(20.971565), //
                         hasSource("Dividendo01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 9.56), hasGrossValue("EUR", 12.74), //
@@ -9424,7 +9516,8 @@ public class TradeRepublicPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-07-17T00:00"), hasShares(23.632607), //
+                        hasDate("2023-07-17T00:00"), hasExDate("2023-08-17T00:00"), //
+                        hasShares(23.632607), //
                         hasSource("Distribuzione01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 16.64), hasGrossValue("EUR", 16.64), //

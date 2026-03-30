@@ -167,6 +167,14 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
+                        // Ex-Tag 20.05.2021 Art der Dividende Quartalsdividende
+                        // Ex-Tag 06.05.2021
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Ex\\-Tag (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
+                        // @formatter:off
                         // Ausmachender Betrag 2,07+ EUR
                         // @formatter:on
                         .section("amount", "currency") //

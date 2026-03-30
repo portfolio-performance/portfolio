@@ -28,7 +28,7 @@ import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
-import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
+import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.views.StatementOfAssetsViewer;
 
 public class StatementOfAssetsPane implements InformationPanePage
@@ -61,7 +61,7 @@ public class StatementOfAssetsPane implements InformationPanePage
 
         Control control = viewer.createControl(parent, true);
 
-        new ContextMenu(viewer.getTreeViewer().getControl(), manager -> viewer.hookMenuListener(manager, view)).hook();
+        new ContextMenu(viewer.getTableViewer().getControl(), manager -> viewer.hookMenuListener(manager, view)).hook();
 
         return control;
     }
@@ -70,7 +70,7 @@ public class StatementOfAssetsPane implements InformationPanePage
     public void addButtons(ToolBarManager toolBar)
     {
         toolBar.add(new SimpleAction(Messages.MenuExportData, Images.EXPORT,
-                        a -> new TreeViewerCSVExporter(viewer.getTreeViewer()).withFlatTable().export(getLabel(),
+                        a -> new TableViewerCSVExporter(viewer.getTableViewer()).export(getLabel(),
                                         genericAccount)));
 
         configurationMenu = new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
