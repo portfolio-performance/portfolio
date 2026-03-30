@@ -57,3 +57,4 @@ classDiagram
     Transaction "*" -- "0..1" Security
     Watchlist "1" o-- "*" Security
 
+```
