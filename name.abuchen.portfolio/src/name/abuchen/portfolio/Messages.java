@@ -110,6 +110,12 @@ public class Messages extends NLS
     public static String FixSetSecurity;
     public static String FixSetSecurityDone;
     public static String IBXML_Label;
+    public static String IBFlexMsgErrorHttpRequest;
+    public static String IBFlexMsgErrorInterrupted;
+    public static String IBFlexMsgErrorNoReferenceCode;
+    public static String IBFlexMsgErrorParsingResponse;
+    public static String IBFlexMsgErrorStatementNotReady;
+    public static String IBFlexMsgErrorUnknown;
     public static String InvestmentPlanAutoNoteLabel;
     public static String InvestmentPlanItemImportToolTip;
     public static String IssueBuySellWithoutSecurity;
