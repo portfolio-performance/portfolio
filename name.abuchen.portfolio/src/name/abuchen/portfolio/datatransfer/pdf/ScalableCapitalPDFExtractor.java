@@ -137,14 +137,16 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^Acquisto .* (?<shares>[\\.,\\d]+) unit. [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3}$") //
-                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                                        .assign((t, v) -> t.setShares(
+                                                                        asShares(v.get("shares"), "en", "US"))),
                                         // @formatter:off
                                         // Kopen IncomeShares S&P 500 Options 0.935016 stk. 5.3475 EUR 5.00 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^Kopen .* (?<shares>[\\.,\\d]+) stk\\. [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3}$") //
-                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                                        .assign((t, v) -> t.setShares(
+                                                                        asShares(v.get("shares"), "en", "US"))),
                                         // @formatter:off
                                         // Kauf Vngrd Fds-ESG Dv.As-Pc Al ETF 3,00 Stk. 6,168 EUR 18,50 EUR
                                         // Verkauf Scalable MSCI AC World Xtrackers (Acc) 1,00 Stk. 9,585 EUR 9,59 EUR
@@ -337,9 +339,11 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^Rechthebbende hoeveelheid (?<shares>[\\.,\\d]+).*$") //
-                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                                        .assign((t, v) -> t.setShares(
+                                                                        asShares(v.get("shares"), "en", "US"))),
                                         // @formatter:off
                                         // Berechtigte Anzahl 0,663129
+                                        // Berechtigte Anzahl 1.200 
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
@@ -461,7 +465,8 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final var type = new DocumentType("(Verrechnungskonto|Cash Account Statement)");
+        final var type = new DocumentType("(Kontoauszug|Cash Account Statement)", //
+                        "(Dividende|Zinszahlung|Kapitalr.ckzahlung)");
         this.addDocumentTyp(type);
 
         // @formatter:off
@@ -472,7 +477,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         + "(.berweisung" //
                         + "|Lastschrift" //
                         + "|Direct debit) " //
-                        + "\\+[\\.,\\d]+ [A-Z]{3}.*$");
+                        + "\\+[\\.,\\d]+ [A-Z]{3}[\\s]*$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
@@ -487,7 +492,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         + "(?<note>(.berweisung" //
                                         + "|Lastschrift" //
                                         + "|Direct debit)) " //
-                                        + "\\+(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                                        + "\\+(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -499,8 +504,11 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
         // @formatter:off
         // 03.04.2025 04.04.2025 Prime-Abonnementgebühr -4,99 EUR
+        // 06.01.2026 07.01.2026 Abhebung vom Geldkonto -1.000,00 EUR 
         // @formatter:on
-        var removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Prime\\-Abonnementgeb.hr) \\-[\\.,\\d]+ [A-Z]{3}.*$");
+        var removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                        + "(Prime\\-Abonnementgeb.hr|Abhebung vom Geldkonto) " //
+                        + "\\-[\\.,\\d]+ [A-Z]{3}[\\s]*$");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
@@ -512,8 +520,8 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "note", "amount", "currency") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
-                                        + "(?<note>(Prime\\-Abonnementgeb.hr)) " //
-                                        + "\\-(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                                        + "(?<note>(Prime\\-Abonnementgeb.hr|Abhebung vom Geldkonto)) " //
+                                        + "\\-(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -526,8 +534,10 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 01.07.2025 30.06.2025 Abgezogener oder erstatteter Solidaritätszuschlag auf Kundenebene -0,77 EUR
         // 01.07.2025 30.06.2025 Auf Kundenebene einbehaltene oder erstattete Kapitalertragssteuer -14,07 EUR
+        // 01.01.2026 31.12.2025 Auf Kundenebene einbehaltene oder erstattete Kirchensteuer -1,10 EUR 
         // @formatter:on
-        var taxesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (.*oder erstattete.*) [\\-|\\+][\\.,\\d]+ [A-Z]{3}.*$");
+        var taxesBlock = new Block(
+                        "^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (.*oder erstattete.*) [\\-|\\+][\\.,\\d]+ [A-Z]{3}[\\s]*$");
         type.addBlock(taxesBlock);
         taxesBlock.set(new Transaction<AccountTransaction>()
 
@@ -540,11 +550,13 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         .section("date", "note", "type", "amount", "currency") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
                                         + ".*" //
-                                        + "(?<note>(Solidarit.tszuschlag|Kapitalertrag(s)?steuer)).*" //
-                                        + "(?<type>[\\-|\\+])(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                                        + "(?<note>(Solidarit.tszuschlag|Kapitalertrag(s)?steuer|Kirchensteuer)).*" //
+                                        + "(?<type>[\\-|\\+])(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
                         .assign((t, v) -> {
-                         // Is type --> "-" change from TAXES to TAX_REFUND
-                            if ("-".equals(v.get("type")))
+                            v.markAsFailure(Messages.MsgErrorTransactionAlternativeDocumentRequired);
+
+                            // Is type --> "+" change from TAXES to TAX_REFUND
+                            if ("+".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.TAX_REFUND);
 
                             t.setDateTime(asDate(v.get("date")));
@@ -558,7 +570,8 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 01.07.2025 30.06.2025 Erhaltene Zinsen +56,27 EUR
         // @formatter:on
-        var interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Erhaltene Zinsen) [\\-|\\+][\\.,\\d]+ [A-Z]{3}.*$");
+        var interestBlock = new Block(
+                        "^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Erhaltene Zinsen) [\\-|\\+][\\.,\\d]+ [A-Z]{3}[\\s]*$");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
@@ -570,9 +583,9 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "type", "amount", "currency") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*" //
-                                        + "(?<type>[\\-|\\+])(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                                        + "(?<type>[\\-|\\+])(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
                         .assign((t, v) -> {
-                         v.markAsFailure(Messages.MsgErrorTransactionAlternativeDocumentRequired);
+                            v.markAsFailure(Messages.MsgErrorTransactionAlternativeDocumentRequired);
 
                          // Is type --> "-" change from INTEREST to INTEREST_CHARGE
                             if ("-".equals(v.get("type")))
@@ -629,10 +642,11 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
     {
         final var type = new DocumentType("Vorabpauschale", //
                         "(Wertpapierabrechnung" //
-                        + "|Contract note" //
-                        + "|Transactiebevestiging" //
-                        + "|Nota contrattuale" //
-                        + "|Laufzeitende)");
+                                        + "|Contract note" //
+                                        + "|Transactiebevestiging" //
+                                        + "|Nota contrattuale" //
+                                        + "|Kontoauszug" //
+                                        + "|Laufzeitende)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -673,8 +687,8 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^Entitled quantity (?<shares>[\\.,\\d]+) .*$") //
-                                                        .assign((t, v) -> t.setShares(asShares(v.get(
-                                                                        "shares"))))
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en",
+                                                                                        "US")))
                         )
 
 
@@ -939,24 +953,5 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
         }
 
         return ExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
-    }
-
-    @Override
-    protected long asShares(String value)
-    {
-        var language = "de";
-        var country = "DE";
-
-        var lastDot = value.lastIndexOf(".");
-        var lastComma = value.lastIndexOf(",");
-
-        // returns the greater of two int values
-        if (Math.max(lastDot, lastComma) == lastDot)
-        {
-            language = "en";
-            country = "US";
-        }
-
-        return ExtractorUtils.convertToNumberLong(value, Values.Share, language, country);
     }
 }
