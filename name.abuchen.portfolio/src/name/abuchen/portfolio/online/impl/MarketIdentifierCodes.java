@@ -12,7 +12,7 @@ import java.util.ResourceBundle;
 /**
  * Returns the labels based on the ISO 10383 market identifier code.
  * 
- * @see https://www.iso20022.org/market-identifier-codes
+ * @see <a href="https://www.iso20022.org/market-identifier-codes">ISO 20022 Market Identifier Codes</a>
  */
 @SuppressWarnings("nls")
 public class MarketIdentifierCodes

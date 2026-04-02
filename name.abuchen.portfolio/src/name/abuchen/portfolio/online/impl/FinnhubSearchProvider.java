@@ -21,7 +21,7 @@ import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 /**
  * Use the <a href="https://finnhub.io/">Finnhub</a> API to search for
  * securities by symbol or ISIN. This API can be used with the free API key that
- * you can obtain by registering on <a href="https://finnhub.io/>FinnHub.io</a>.
+ * you can obtain by registering on <a href="https://finnhub.io/">FinnHub.io</a>.
  */
 public class FinnhubSearchProvider implements SecuritySearchProvider
 {

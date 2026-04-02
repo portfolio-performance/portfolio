@@ -20,7 +20,7 @@ import name.abuchen.portfolio.money.Values;
  *           However, their 3a accounts are a separate product held by Simply3a and managed by
  *           Lienhardt & Partner Privatbank Zürich AG.
  *
- * @see href="https://www.neon-free.ch/en/saeule3a">Neon 3a Account Information</a>
+ * @see <a href="https://www.neon-free.ch/en/saeule3a">Neon 3a Account Information</a>
  *
  * @implSpec The VALOR number is the WKN number.
  * @formatter:on
