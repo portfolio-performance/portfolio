@@ -58,6 +58,7 @@ import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
+import name.abuchen.portfolio.ui.views.panes.AbsolutePerformancePane;
 import name.abuchen.portfolio.ui.views.panes.PortfolioBalancePane;
 import name.abuchen.portfolio.ui.views.panes.PortfolioHoldingsPane;
 import name.abuchen.portfolio.ui.views.panes.StatementOfAssetsPane;
@@ -380,5 +381,6 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
         pages.add(make(TransactionsPane.class));
         pages.add(make(PortfolioBalancePane.class));
         pages.add(make(PortfolioHoldingsPane.class));
+        pages.add(make(AbsolutePerformancePane.class));
     }
 }
