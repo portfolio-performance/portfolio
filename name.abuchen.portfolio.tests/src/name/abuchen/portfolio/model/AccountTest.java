@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -75,5 +76,31 @@ public class AccountTest
                                         + transaction.getUUID() + "): EUR <> USD",
                         iae.getMessage());
         assertNull("no cause expected", iae.getCause());
+    }
+
+    @Test
+    public void testGetLastTransactionDateWithNoTransactions()
+    {
+        assertEquals(0, account.getTransactions().size());
+        assertEquals(null, account.getLastTransactionDate());
+    }
+
+    @Test
+    public void testGetLastTransactionDate()
+    {
+        assertEquals(0, account.getTransactions().size());
+
+        var transactionDates = List.of(LocalDate.of(2020, 04, 16).atStartOfDay(), //
+                        LocalDate.of(2026, 03, 15).atStartOfDay(), //
+                        LocalDate.of(2024, 06, 20).atStartOfDay());
+
+        for (var date : transactionDates)
+        {
+            var t = new AccountTransaction(date, CurrencyUnit.EUR, 100, null,
+                            AccountTransaction.Type.DEPOSIT);
+            account.addTransaction(t);
+        }
+
+        assertEquals(LocalDate.of(2026, 03, 15).atStartOfDay(), account.getLastTransactionDate());
     }
 }

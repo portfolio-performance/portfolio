@@ -31,7 +31,6 @@ import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
@@ -51,6 +50,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.DateTimeLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.CurrencyColumn;
@@ -110,7 +110,7 @@ public class AccountListView extends AbstractFinanceView implements Modification
     private void addNewButton(ToolBarManager manager)
     {
         SimpleAction.Runnable newAccountAction = a -> {
-            Account account = new Account();
+            var account = new Account();
             account.setName(Messages.LabelNoName);
             account.setCurrencyCode(getClient().getBaseCurrency());
 
@@ -126,14 +126,14 @@ public class AccountListView extends AbstractFinanceView implements Modification
 
             menuListener.add(new Separator());
 
-            Account account = (Account) accounts.getStructuredSelection().getFirstElement();
+            var account = (Account) accounts.getStructuredSelection().getFirstElement();
             new AccountContextMenu(AccountListView.this).menuAboutToShow(menuListener, account, null);
         }));
     }
 
     private void addFilterButton(ToolBarManager manager)
     {
-        Action filter = new Action()
+        var filter = new Action()
         {
             @Override
             public void run()
@@ -160,7 +160,7 @@ public class AccountListView extends AbstractFinanceView implements Modification
     {
         resetInput();
 
-        Account account = (Account) ((IStructuredSelection) accounts.getSelection()).getFirstElement();
+        var account = (Account) ((IStructuredSelection) accounts.getSelection()).getFirstElement();
         if (getClient().getAccounts().contains(account))
             accounts.setSelection(new StructuredSelection(account));
         else
@@ -197,8 +197,8 @@ public class AccountListView extends AbstractFinanceView implements Modification
     @Override
     protected Control createBody(Composite parent)
     {
-        Composite container = new Composite(parent, SWT.NONE);
-        TableColumnLayout layout = new TableColumnLayout();
+        var container = new Composite(parent, SWT.NONE);
+        var layout = new TableColumnLayout();
         container.setLayout(layout);
 
         accounts = new TableViewer(container, SWT.FULL_SELECTION);
@@ -210,47 +210,11 @@ public class AccountListView extends AbstractFinanceView implements Modification
         accountColumns = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@top2", //$NON-NLS-1$
                         getPreferenceStore(), accounts, layout);
 
-        Column column = new NameColumn("0", Messages.ColumnAccount, SWT.None, 150, getClient()); //$NON-NLS-1$
-        column.setLabelProvider(new NameColumnLabelProvider(getClient()) // NOSONAR
-        {
-            @Override
-            public Color getForeground(Object e)
-            {
-                boolean isRetired = ((Account) e).isRetired();
-                return isRetired ? Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY) : null;
-            }
-        });
-        column.getEditingSupport().addListener(this);
-        accountColumns.addColumn(column);
-
-        column = new Column("1", Messages.ColumnBalance, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setDescription(Messages.ColumnBalance_Description);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                return Values.Amount.format(((Account) e).getCurrentAmount(LocalDateTime.now().with(LocalTime.MAX)));
-            }
-        });
-        ColumnViewerSorter.create(o -> ((Account) o).getCurrentAmount(LocalDateTime.now().with(LocalTime.MAX)))
-                        .attachTo(column);
-        accountColumns.addColumn(column);
-
-        column = new CurrencyColumn();
-        column.setEditingSupport(new CurrencyEditingSupport()
-        {
-            @Override
-            public boolean canEdit(Object element)
-            {
-                return ((Account) element).getTransactions().isEmpty();
-            }
-        });
-        accountColumns.addColumn(column);
-
-        column = new NoteColumn();
-        column.getEditingSupport().addListener(this);
-        accountColumns.addColumn(column);
+        accountColumns.addColumn(defineAccountNameColumn());
+        accountColumns.addColumn(defineAccountBalanceColumn());
+        accountColumns.addColumn(defineCurrencyColumn());
+        accountColumns.addColumn(defineNotesColumn());
+        accountColumns.addColumn(defineLastTransactionDateColumn());
 
         addAttributeColumns(accountColumns);
 
@@ -264,12 +228,74 @@ public class AccountListView extends AbstractFinanceView implements Modification
         hookContextMenu(accounts.getTable(), this::fillAccountsContextMenu);
 
         accounts.addSelectionChangedListener(event -> {
-            Account account = (Account) event.getStructuredSelection().getFirstElement();
+            var account = (Account) event.getStructuredSelection().getFirstElement();
             updateBalance(account);
             setInformationPaneInput(account);
         });
 
         return container;
+    }
+
+    private Column defineLastTransactionDateColumn()
+    {
+        var column = new Column("last-date", "Letztes Buchungsdatum", SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setLabelProvider(new DateTimeLabelProvider(a -> ((Account) a).getLastTransactionDate()));
+        ColumnViewerSorter.create(a -> ((Account) a).getLastTransactionDate()).attachTo(column);
+        return column;
+    }
+
+    private Column defineNotesColumn()
+    {
+        var column = new NoteColumn();
+        column.getEditingSupport().addListener(this);
+        return column;
+    }
+
+    private Column defineCurrencyColumn()
+    {
+        var column = new CurrencyColumn();
+        column.setEditingSupport(new CurrencyEditingSupport()
+        {
+            @Override
+            public boolean canEdit(Object element)
+            {
+                return ((Account) element).getTransactions().isEmpty();
+            }
+        });
+        return column;
+    }
+
+    private Column defineAccountBalanceColumn()
+    {
+        var column = new Column("1", Messages.ColumnBalance, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setDescription(Messages.ColumnBalance_Description);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return Values.Amount.format(((Account) e).getCurrentAmount(LocalDateTime.now().with(LocalTime.MAX)));
+            }
+        });
+        ColumnViewerSorter.create(o -> ((Account) o).getCurrentAmount(LocalDateTime.now().with(LocalTime.MAX)))
+                        .attachTo(column);
+        return column;
+    }
+
+    private Column defineAccountNameColumn()
+    {
+        var column = new NameColumn("0", Messages.ColumnAccount, SWT.None, 150, getClient()); //$NON-NLS-1$
+        column.setLabelProvider(new NameColumnLabelProvider(getClient()) // NOSONAR
+        {
+            @Override
+            public Color getForeground(Object e)
+            {
+                boolean isRetired = ((Account) e).isRetired();
+                return isRetired ? Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY) : null;
+            }
+        });
+        column.getEditingSupport().addListener(this);
+        return column;
     }
 
     private void addAttributeColumns(ShowHideColumnHelper support)
@@ -283,7 +309,7 @@ public class AccountListView extends AbstractFinanceView implements Modification
 
     private void fillAccountsContextMenu(IMenuManager manager) // NOSONAR
     {
-        final Account account = (Account) ((IStructuredSelection) accounts.getSelection()).getFirstElement();
+        final var account = (Account) ((IStructuredSelection) accounts.getSelection()).getFirstElement();
         if (account == null)
             return;
 
@@ -323,7 +349,7 @@ public class AccountListView extends AbstractFinanceView implements Modification
             label += " (" + MessageFormat.format(Messages.LabelTransactionCount, account.getTransactions().size()) //$NON-NLS-1$
                             + ")"; //$NON-NLS-1$
 
-        Action action = new ConfirmAction(label,
+        var action = new ConfirmAction(label,
                         MessageFormat.format(Messages.AccountMenuDeleteConfirm, account.getName()), //
                         a -> {
                             getClient().removeAccount(account);
@@ -353,37 +379,26 @@ public class AccountListView extends AbstractFinanceView implements Modification
         if (account == null)
             return;
 
-        List<AccountTransaction> tx = new ArrayList<>(account.getTransactions());
-        Collections.sort(tx, Transaction.BY_DATE);
+        var transactions = new ArrayList<>(account.getTransactions());
+        Collections.sort(transactions, Transaction.BY_DATE);
 
-        MutableMoney balance = MutableMoney.of(account.getCurrencyCode());
-        for (AccountTransaction t : tx)
+        var balance = MutableMoney.of(account.getCurrencyCode());
+        for (var transaction : transactions)
         {
-            Type type = t.getType();
+            var type = transaction.getType();
             switch (type)
             {
-                case DEPOSIT:
-                case INTEREST:
-                case DIVIDENDS:
-                case TAX_REFUND:
-                case SELL:
-                case TRANSFER_IN:
-                case FEES_REFUND:
-                    balance.add(t.getMonetaryAmount());
+                case DEPOSIT, INTEREST, DIVIDENDS, TAX_REFUND, SELL, TRANSFER_IN, FEES_REFUND:
+                    balance.add(transaction.getMonetaryAmount());
                     break;
-                case REMOVAL:
-                case FEES:
-                case INTEREST_CHARGE:
-                case TAXES:
-                case BUY:
-                case TRANSFER_OUT:
-                    balance.subtract(t.getMonetaryAmount());
+                case REMOVAL, FEES, INTEREST_CHARGE, TAXES, BUY, TRANSFER_OUT:
+                    balance.subtract(transaction.getMonetaryAmount());
                     break;
                 default:
-                    throw new IllegalArgumentException("unsupported type " + type + " for transaction " + tx); //$NON-NLS-1$ //$NON-NLS-2$
+                    throw new IllegalArgumentException("unsupported type " + type + " for transaction " + transactions); //$NON-NLS-1$ //$NON-NLS-2$
             }
 
-            transaction2balance.put(t, balance.toMoney());
+            transaction2balance.put(transaction, balance.toMoney());
         }
     }
 }
