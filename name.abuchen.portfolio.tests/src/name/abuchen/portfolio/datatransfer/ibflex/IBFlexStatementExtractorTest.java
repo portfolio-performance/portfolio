@@ -36,6 +36,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -3631,5 +3633,198 @@ public class IBFlexStatementExtractorTest
 
         // Invalid format should return null
         assertThat(IBFlexStatementExtractor.parseDateTime("invalid"), is(nullValue()));
+    }
+
+    @Test
+    public void testIBFlexStatementFile28() throws IOException
+    {
+        // Test cross-rate calculation using fxRateToBase when direct rate is missing
+        // Case 1: Transaction currency: USD, Security currency: GBP, Base currency: EUR
+        // Case 2: Transaction currency: USD, Security currency: GBX (minor unit), Base currency: EUR
+        // Case 3: Transaction currency: USD, Security currency: GBX (minor unit), Base currency: GBP
+        // USD/EUR available via fxRateToBase, GBP/EUR available via ConversionRate
+        var client = new Client();
+
+        // Create security with GBP currency (security currency differs from transaction currency)
+        var hidr = new Security("HSBC MSCI INDONESIA UCITS ET", "GBP");
+        hidr.setTickerSymbol("HIDR");
+        hidr.setIsin("IE00B46G8275");
+        hidr.setWkn("86281326");
+        client.addSecurity(hidr);
+
+        // Create security with GBX currency (minor unit)
+        var eqqq = new Security("INVESCO NASDAQ-100 DIST", "GBX");
+        eqqq.setTickerSymbol("EQQQ");
+        eqqq.setIsin("IE0032077012");
+        eqqq.setWkn("18706552");
+        client.addSecurity(eqqq);
+
+        // Create security with USD currency for reverse minor-unit conversion
+        var gbdv = new Security("Global USD Dividend Fund", "USD");
+        gbdv.setTickerSymbol("GBDV");
+        gbdv.setIsin("US1234567890");
+        gbdv.setWkn("12345678");
+        client.addSecurity(gbdv);
+
+        var referenceAccount = new Account("A");
+        referenceAccount.setCurrencyCode("EUR");
+        client.addAccount(referenceAccount);
+
+        var extractor = new IBFlexStatementExtractor(client);
+
+        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile28.xml");
+        var tempFile = createTempFile(activityStatement);
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(Collections.singletonList(tempFile), errors);
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L)); // Securities already exist
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+
+        // Find the first dividend transaction (HIDR - USD->GBP)
+        List<AccountTransaction> transactions = results.stream() //
+                        .filter(TransactionItem.class::isInstance) //
+                        .map(item -> (AccountTransaction) ((TransactionItem) item).getSubject()) //
+                        .filter(t -> t.getType() == AccountTransaction.Type.DIVIDENDS) //
+                        .toList();
+
+        assertThat(transactions.size(), is(4));
+
+        // Test first transaction: HIDR (USD->GBP)
+        AccountTransaction hidrTransaction = transactions.stream() //
+                        .filter(t -> "HIDR".equals(t.getSecurity().getTickerSymbol())) //
+                        .findFirst() //
+                        .orElseThrow(() -> new AssertionError("HIDR dividend transaction not found"));
+
+        assertThat(hidrTransaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(hidrTransaction.getDateTime(), is(LocalDateTime.parse("2025-03-04T00:00")));
+
+        assertThat(hidrTransaction.getCurrencyCode(), is("USD"));
+        assertThat(hidrTransaction.getAmount(), is(18_15L)); // 18.15 USD
+        assertThat(hidrTransaction.getSecurity().getCurrencyCode(), is("GBP"));
+
+        // Verify GROSS_VALUE unit exists and has correct conversion
+        // USD/EUR = 0.94106 (from fxRateToBase)
+        // GBP/EUR = 1.2041 (from ConversionRate on 20250304)
+        // USD/GBP = (USD/EUR) / (GBP/EUR) = 0.94106 / 1.2041 ≈ 0.781546
+        // After inversion in setAmount: GBP/USD ≈ 1.2795
+        var hidrGrossValueUnit = hidrTransaction.getUnit(Unit.Type.GROSS_VALUE);
+        assertThat("GROSS_VALUE unit should be present for USD->GBP conversion", hidrGrossValueUnit.isPresent(), is(true));
+
+        var hidrUnit = hidrGrossValueUnit.get();
+        assertThat(hidrUnit.getAmount().getCurrencyCode(), is("USD"));
+        assertThat(hidrUnit.getAmount().getAmount(), is(18_15L)); // 18.15 USD
+        assertThat(hidrUnit.getForex().getCurrencyCode(), is("GBP"));
+        assertThat(hidrUnit.getForex().getAmount(), is(14_19L)); // 14.19 GBP (rounded)
+
+        BigDecimal hidrExpectedRate = new BigDecimal("1.2795145899");
+        BigDecimal tolerance = new BigDecimal("0.0000001");
+        assertThat(hidrUnit.getExchangeRate().subtract(hidrExpectedRate).abs().compareTo(tolerance) < 0, is(true));
+
+        // Test second transaction: EQQQ (USD->GBX via GBP)
+        AccountTransaction eqqqTransaction = transactions.stream() //
+                        .filter(t -> "EQQQ".equals(t.getSecurity().getTickerSymbol())) //
+                        .filter(t -> LocalDateTime.parse("2025-03-21T00:00").equals(t.getDateTime())) //
+                        .findFirst() //
+                        .orElseThrow(() -> new AssertionError("EQQQ dividend transaction not found"));
+
+        assertThat(eqqqTransaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(eqqqTransaction.getDateTime(), is(LocalDateTime.parse("2025-03-21T00:00")));
+
+        assertThat(eqqqTransaction.getCurrencyCode(), is("USD"));
+        assertThat(eqqqTransaction.getAmount(), is(1_36L)); // 1.36 USD
+        assertThat(eqqqTransaction.getSecurity().getCurrencyCode(), is("GBX"));
+
+        // Verify GROSS_VALUE unit exists and has correct conversion
+        // USD/EUR = 0.92464 (from fxRateToBase)
+        // GBP/EUR = 1.1726 (from ConversionRate on 20250321)
+        // USD/GBP = (USD/EUR) / (GBP/EUR) = 0.92464 / 1.1726 ≈ 0.7887
+        // GBX/GBP = 0.01 (from FixedExchangeRateProvider)
+        // USD/GBX = USD/GBP / GBX/GBP = 0.7887 / 0.01 = 78.87
+        // After inversion in setAmount: GBX/USD ≈ 0.01268
+        var eqqqGrossValueUnit = eqqqTransaction.getUnit(Unit.Type.GROSS_VALUE);
+        assertThat("GROSS_VALUE unit should be present for USD->GBX conversion", eqqqGrossValueUnit.isPresent(), is(true));
+
+        var eqqqUnit = eqqqGrossValueUnit.get();
+        assertThat(eqqqUnit.getAmount().getCurrencyCode(), is("USD"));
+        assertThat(eqqqUnit.getAmount().getAmount(), is(1_36L)); // 1.36 USD
+        assertThat(eqqqUnit.getForex().getCurrencyCode(), is("GBX"));
+        assertThat(eqqqUnit.getForex().getAmount(), is(107_24L)); // 107.24 GBX (rounded)
+
+        // Exchange rate calculation (with 10 decimal precision, HALF_DOWN in divisions):
+        // USD/EUR = 0.92464, GBP/EUR = 1.1726
+        // USD/GBP = 0.92464 / 1.1726 = 0.7887030844... (exact)
+        //   With 10 decimals HALF_DOWN: 0.7887030844
+        // USD/GBX = 0.7887030844 / 0.01 = 78.87030844
+        // After inversion in setAmount (10 decimals, HALF_DOWN): GBX/USD = 1 / 78.87030844
+        // Calculate expected rate with same precision as implementation
+        BigDecimal usdToGbp = new BigDecimal("0.92464").divide(new BigDecimal("1.1726"), 10, RoundingMode.HALF_DOWN);
+        BigDecimal usdToGbx = usdToGbp.divide(new BigDecimal("0.01"), 10, RoundingMode.HALF_DOWN);
+        BigDecimal eqqqExpectedRate = BigDecimal.ONE.divide(usdToGbx, 10, RoundingMode.HALF_DOWN);
+        BigDecimal eqqqTolerance = new BigDecimal("0.0000001"); // Same tolerance as HIDR test
+        assertThat(eqqqUnit.getExchangeRate().subtract(eqqqExpectedRate).abs().compareTo(eqqqTolerance) < 0, is(true));
+
+        // Test third transaction: EQQQ (USD->GBX with GBP base currency)
+        AccountTransaction eqqqGbpBaseTransaction = transactions.stream() //
+                        .filter(t -> "EQQQ".equals(t.getSecurity().getTickerSymbol())) //
+                        .filter(t -> LocalDateTime.parse("2025-03-25T00:00").equals(t.getDateTime())) //
+                        .findFirst() //
+                        .orElseThrow(() -> new AssertionError("EQQQ GBP-base dividend transaction not found"));
+
+        assertThat(eqqqGbpBaseTransaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(eqqqGbpBaseTransaction.getDateTime(), is(LocalDateTime.parse("2025-03-25T00:00")));
+
+        assertThat(eqqqGbpBaseTransaction.getCurrencyCode(), is("USD"));
+        assertThat(eqqqGbpBaseTransaction.getAmount(), is(1_27L)); // 1.27 USD
+        assertThat(eqqqGbpBaseTransaction.getSecurity().getCurrencyCode(), is("GBX"));
+
+        // Base currency already matches the major unit (GBP), so fxRateToBase should still
+        // allow deriving USD->GBX via USD->GBP and GBP->GBX.
+        var eqqqGbpBaseGrossValueUnit = eqqqGbpBaseTransaction.getUnit(Unit.Type.GROSS_VALUE);
+        assertThat("GROSS_VALUE unit should be present for USD->GBX conversion with GBP base currency",
+                        eqqqGbpBaseGrossValueUnit.isPresent(), is(true));
+
+        var eqqqGbpBaseUnit = eqqqGbpBaseGrossValueUnit.get();
+        assertThat(eqqqGbpBaseUnit.getAmount().getCurrencyCode(), is("USD"));
+        assertThat(eqqqGbpBaseUnit.getAmount().getAmount(), is(1_27L)); // 1.27 USD
+        assertThat(eqqqGbpBaseUnit.getForex().getCurrencyCode(), is("GBX"));
+        assertThat(eqqqGbpBaseUnit.getForex().getAmount(), is(98_62L)); // 98.62 GBX (rounded)
+
+        BigDecimal usdToGbxWithGbpBase = new BigDecimal("0.77654").divide(new BigDecimal("0.01"), 10, RoundingMode.HALF_DOWN);
+        BigDecimal eqqqGbpBaseExpectedRate = BigDecimal.ONE.divide(usdToGbxWithGbpBase, 10, RoundingMode.HALF_DOWN);
+        assertThat(eqqqGbpBaseUnit.getExchangeRate().subtract(eqqqGbpBaseExpectedRate).abs().compareTo(eqqqTolerance) < 0,
+                        is(true));
+
+        // Test fourth transaction: GBDV (GBX->USD with GBP base currency)
+        AccountTransaction gbdvTransaction = transactions.stream() //
+                        .filter(t -> "GBDV".equals(t.getSecurity().getTickerSymbol())) //
+                        .filter(t -> LocalDateTime.parse("2025-03-26T00:00").equals(t.getDateTime())) //
+                        .findFirst() //
+                        .orElseThrow(() -> new AssertionError("GBDV GBP-base dividend transaction not found"));
+
+        assertThat(gbdvTransaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(gbdvTransaction.getDateTime(), is(LocalDateTime.parse("2025-03-26T00:00")));
+
+        assertThat(gbdvTransaction.getCurrencyCode(), is("GBX"));
+        assertThat(gbdvTransaction.getAmount(), is(138_00L)); // 138.00 GBX
+        assertThat(gbdvTransaction.getSecurity().getCurrencyCode(), is("USD"));
+
+        // Base currency already matches the major unit (GBP), so fxRateToBase should still
+        // allow deriving GBX->USD via GBX->GBP and GBP->USD.
+        var gbdvGrossValueUnit = gbdvTransaction.getUnit(Unit.Type.GROSS_VALUE);
+        assertThat("GROSS_VALUE unit should be present for GBX->USD conversion with GBP base currency",
+                        gbdvGrossValueUnit.isPresent(), is(true));
+
+        var gbdvUnit = gbdvGrossValueUnit.get();
+        assertThat(gbdvUnit.getAmount().getCurrencyCode(), is("GBX"));
+        assertThat(gbdvUnit.getAmount().getAmount(), is(138_00L)); // 138.00 GBX
+        assertThat(gbdvUnit.getForex().getCurrencyCode(), is("USD"));
+        assertThat(gbdvUnit.getForex().getAmount(), is(1_79L)); // 1.79 USD (rounded)
+
+        BigDecimal gbxToUsd = new BigDecimal("0.01").multiply(BigDecimal.ONE.divide(new BigDecimal("0.7722"), 10, RoundingMode.HALF_DOWN));
+        BigDecimal gbdvExpectedRate = BigDecimal.ONE.divide(gbxToUsd, 10, RoundingMode.HALF_DOWN);
+        assertThat(gbdvUnit.getExchangeRate().subtract(gbdvExpectedRate).abs().compareTo(eqqqTolerance) < 0, is(true));
     }
 }
