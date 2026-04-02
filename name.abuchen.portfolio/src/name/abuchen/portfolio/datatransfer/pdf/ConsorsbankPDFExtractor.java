@@ -809,12 +809,10 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
-                        .wrap((t, ctx) -> {
+                        .wrap(t -> {
                             var item = new TransactionItem(t);
-
                             if (t.getAmount() == 0)
-                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
-
+                                return new SkippedItem(item, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
                             return item;
                         });
     }
@@ -872,12 +870,10 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
-                        .wrap((t, ctx) -> {
+                        .wrap(t -> {
                             var item = new TransactionItem(t);
-
                             if (t.getAmount() == 0)
-                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
-
+                                return new SkippedItem(item, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
                             return item;
                         });
     }
