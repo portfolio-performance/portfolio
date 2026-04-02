@@ -31,6 +31,8 @@ import name.abuchen.portfolio.ui.views.dashboard.charts.RebalancingChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.charts.RebalancingTargetChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.charts.TaxonomyChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsByTaxonomyChartWidget;
+import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningType;
+import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningTypeConfig;
 import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsListWidget;
@@ -45,6 +47,7 @@ import name.abuchen.portfolio.ui.views.dashboard.lists.FollowUpWidget;
 import name.abuchen.portfolio.ui.views.dashboard.lists.LimitExceededWidget;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel;
+import name.abuchen.portfolio.util.Interval;
 
 public enum WidgetFactory
 {
@@ -93,6 +96,19 @@ public enum WidgetFactory
                                         int length = index.getTotals().length;
                                         return Money.of(index.getCurrency(),
                                                         index.getTotals()[length - 1] - index.getTotals()[0]);
+                                    }) //
+                                    .withBenchmarkDataSeries(false) //
+                                    .build()),
+
+    PERCENTAGE_CHANGE(Messages.LabelPercentageChange, Messages.LabelStatementOfAssets, //
+                    (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
+                                    .with(Values.Percent2) //
+                                    .with((ds, period) -> {
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        long[] totals = index.getTotals();
+                                        if (totals.length < 2 || totals[0] == 0)
+                                            return 0.0;
+                                        return (double) (totals[totals.length - 1] - totals[0]) / totals[0];
                                     }) //
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
@@ -364,6 +380,27 @@ public enum WidgetFactory
     EARNINGS_BY_TAXONOMY(Messages.LabelEarningsByTaxonomy, Messages.LabelEarnings, Images.VIEW_PIECHART,
                     EarningsByTaxonomyChartWidget::new),
 
+    EARNINGS_PERCENTAGE_CHANGE_YOY(Messages.LabelEarningsPercentageChangeYoY, Messages.LabelEarnings, //
+                    (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
+                                    .with(Values.Percent2) //
+                                    .withConfig(delegate -> new EarningTypeConfig(delegate)) //
+                                    .with((ds, period) -> {
+                                        var earningType = readEarningType(widget);
+
+                                        long currentEarnings = sumEarnings(data.calculate(ds, period), earningType);
+
+                                        var priorPeriod = Interval.of(
+                                                        period.getStart().minusYears(1),
+                                                        period.getEnd().minusYears(1));
+                                        long priorEarnings = sumEarnings(data.calculate(ds, priorPeriod), earningType);
+
+                                        if (priorEarnings == 0)
+                                            return 0.0;
+                                        return (double) (currentEarnings - priorEarnings) / priorEarnings;
+                                    }) //
+                                    .withBenchmarkDataSeries(false) //
+                                    .build()),
+
     TRADES_BASIC_STATISTICS(Messages.LabelTradesBasicStatistics, Messages.LabelTrades, TradesWidget::new),
 
     TRADES_PROFIT_LOSS(Messages.LabelTradesProfitLoss, Messages.LabelTrades, TradesProfitLossWidget::new),
@@ -613,5 +650,44 @@ public enum WidgetFactory
             defaultConfigFunction.accept(widget.getConfiguration());
 
         return widget;
+    }
+
+    private static EarningType readEarningType(Dashboard.Widget widget)
+    {
+        var value = widget.getConfiguration().get(Dashboard.Config.EARNING_TYPE.name());
+        if (value != null)
+        {
+            try
+            {
+                return EarningType.valueOf(value);
+            }
+            catch (IllegalArgumentException e)
+            {
+                // fall through to default
+            }
+        }
+        return EarningType.EARNINGS;
+    }
+
+    private static long sumEarnings(PerformanceIndex index, EarningType earningType)
+    {
+        long sum = 0;
+        switch (earningType)
+        {
+            case DIVIDENDS:
+                sum = LongStream.of(index.getDividends()).sum();
+                break;
+            case INTEREST:
+                sum = LongStream.of(index.getInterest()).sum()
+                                - LongStream.of(index.getInterestCharge()).sum();
+                break;
+            case EARNINGS:
+            default:
+                sum = LongStream.of(index.getDividends()).sum()
+                                + LongStream.of(index.getInterest()).sum()
+                                - LongStream.of(index.getInterestCharge()).sum();
+                break;
+        }
+        return sum;
     }
 }
