@@ -13,7 +13,7 @@ import name.abuchen.portfolio.model.SecurityPrice;
 
 public interface QuoteFeed // NOSONAR
 {
-    static final Pattern HOST_PATTERN = Pattern.compile("^https?://([^/]+)/?.*"); //$NON-NLS-1$
+    Pattern HOST_PATTERN = Pattern.compile("^https?://([^/]+)/?.*"); //$NON-NLS-1$
 
     String MANUAL = "MANUAL"; //$NON-NLS-1$
 
