@@ -13,9 +13,16 @@ import name.abuchen.portfolio.model.SecurityPrice;
 
 public interface QuoteFeed // NOSONAR
 {
-    static final Pattern HOST_PATTERN = Pattern.compile("^https?://([^/]+)/?.*"); //$NON-NLS-1$
+    Pattern HOST_PATTERN = Pattern.compile("^https?://([^/]+)/?.*"); //$NON-NLS-1$
 
     String MANUAL = "MANUAL"; //$NON-NLS-1$
+
+    /**
+     * SecurityProperty name used to store an alternative ticker symbol for the
+     * latest quote provider. If set, the latest quote provider uses this ticker
+     * instead of the security's main ticker symbol.
+     */
+    String TICKER_SYMBOL_LATEST = "TICKER-SYMBOL-LATEST"; //$NON-NLS-1$
 
     /**
      * Returns the technical identifier of the quote feed.

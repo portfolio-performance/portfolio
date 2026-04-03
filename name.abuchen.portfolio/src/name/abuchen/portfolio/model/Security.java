@@ -25,7 +25,7 @@ import name.abuchen.portfolio.util.TextUtil;
 /**
  * A <code>Security</code> is used for assets that have historical prices
  * attached.
- * </p>
+ * <p/>
  * <strong>Attributes</strong> are managed and edited by the user while
  * <strong>properties</strong> are managed by the program.
  */
@@ -272,7 +272,7 @@ public final class Security implements Attributable, InvestmentVehicle
     /**
      * Returns the ticker symbol (if available) without the stock market
      * extension.
-     * </p>
+     * <p/>
      * In some countries there is no ISIN or WKN, only the ticker symbol. If
      * historical prices are retrieved from the stock exchange, the ticker
      * symbol is expanded. (UMAX --> UMAX.AX)

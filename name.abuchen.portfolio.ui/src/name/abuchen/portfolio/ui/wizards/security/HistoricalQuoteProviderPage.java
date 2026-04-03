@@ -63,7 +63,7 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
 
     public HistoricalQuoteProviderPage(final EditSecurityModel model, EditSecurityCache cache, BindingHelper bindings)
     {
-        super(model, cache, bindings);
+        super(model, cache);
 
         setTitle(Messages.EditWizardQuoteFeedTitle);
 
@@ -104,6 +104,18 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
     protected void setFeedURL(String feedURL)
     {
         getModel().setFeedURL(feedURL);
+    }
+
+    @Override
+    protected String getFeedTicker()
+    {
+        return getModel().getTickerSymbol();
+    }
+
+    @Override
+    protected void setFeedTicker(String feedTicker)
+    {
+        getModel().setTickerSymbol(feedTicker);
     }
 
     @Override

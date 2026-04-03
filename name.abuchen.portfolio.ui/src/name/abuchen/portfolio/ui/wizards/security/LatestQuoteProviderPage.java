@@ -83,7 +83,7 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
 
                 // exchange is not bound to model (only set in #afterPage)
                 // therefore we must set it explicitly here
-                if (exchange != null)
+                if (exchange != null && exchange.getId() != null)
                     s.setTickerSymbol(exchange.getId());
                 s.setFeed(feed.getId());
 
@@ -135,7 +135,7 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
 
     public LatestQuoteProviderPage(final EditSecurityModel model, EditSecurityCache cache, BindingHelper bindings)
     {
-        super(model, cache, bindings);
+        super(model, cache);
 
         setTitle(Messages.EditWizardLatestQuoteFeedTitle);
 
@@ -175,6 +175,69 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
     protected void setFeedURL(String feedURL)
     {
         getModel().setLatestFeedURL(feedURL);
+    }
+
+    @Override
+    protected String getFeedTicker()
+    {
+        return getModel().getLatestTickerSymbol();
+    }
+
+    @Override
+    protected void setFeedTicker(String feedTicker)
+    {
+        getModel().setLatestTickerSymbol(feedTicker);
+    }
+
+    @Override
+    protected boolean hasTickerOverrideOption()
+    {
+        return true;
+    }
+
+    @Override
+    protected boolean isTickerOverrideEnabled()
+    {
+        return getModel().getLatestTickerSymbol() != null;
+    }
+
+    @Override
+    protected void setTickerOverrideEnabled(boolean enabled)
+    {
+        if (enabled)
+        {
+            if (getModel().getLatestTickerSymbol() == null)
+                getModel().setLatestTickerSymbol(""); //$NON-NLS-1$
+        }
+        else
+        {
+            getModel().setLatestTickerSymbol(null);
+        }
+    }
+
+    @Override
+    protected String getEffectiveTicker()
+    {
+        var latestTicker = getModel().getLatestTickerSymbol();
+        return latestTicker != null ? latestTicker : getModel().getTickerSymbol();
+    }
+
+    @Override
+    protected String getCurrentTickerValue()
+    {
+        return isTickerOverrideEnabled() ? getModel().getLatestTickerSymbol() : getModel().getTickerSymbol();
+    }
+
+    @Override
+    protected Security buildTemporarySecurity()
+    {
+        var security = super.buildTemporarySecurity();
+
+        var latestTicker = getModel().getLatestTickerSymbol();
+        if (latestTicker != null && !latestTicker.isEmpty())
+            security.setTickerSymbol(latestTicker);
+
+        return security;
     }
 
     @Override

@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedException;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -46,15 +47,29 @@ abstract class Task
 
     static class LatestTask extends Task
     {
+        private final Security fetchSecurity;
+
         public LatestTask(String groupingCriterion, QuoteFeed feed, FeedUpdateStatus status, Security security)
         {
             super(groupingCriterion, feed, status, security);
+
+            var latestTicker = security.getPropertyValue(SecurityProperty.Type.FEED,
+                            QuoteFeed.TICKER_SYMBOL_LATEST);
+            if (latestTicker.isPresent())
+            {
+                this.fetchSecurity = security.deepCopy();
+                this.fetchSecurity.setTickerSymbol(latestTicker.get());
+            }
+            else
+            {
+                this.fetchSecurity = security;
+            }
         }
 
         @Override
         public UpdateStatus update() throws QuoteFeedException
         {
-            var latest = feed.getLatestQuote(security);
+            var latest = feed.getLatestQuote(fetchSecurity);
             if (latest.isPresent())
             {
                 return security.setLatest(latest.get()) ? UpdateStatus.MODIFIED : UpdateStatus.UNMODIFIED;

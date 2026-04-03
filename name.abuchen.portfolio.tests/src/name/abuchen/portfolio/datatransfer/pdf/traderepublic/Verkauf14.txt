@@ -1,0 +1,59 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.5
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+VornameEgal NachnameEgal SEITE 1 von 2
+StraßeEgal 10 DATUM 25.02.2026
+12345 OrtEgal AUFTRAG 6974-687e
+AUSFÜHRUNG 7d34-c23d
+DEPOT 01324241001
+WERTPAPIERABRECHNUNG
+ÜBERSICHT
+Limit-Order Verkauf am 25.02.2026, um 13:46 Uhr (Europe/Berlin) an der Lang und Schwarz Exchange.
+Der Kontrahent der Transaktion ist Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION ANZAHL PREIS BETRAG
+T-Mobile US 10 Stk. 188,42 EUR 1.884,20 EUR
+ISIN: US8725901040
+GESAMT 1.884,20 EUR
+ABRECHNUNG
+POSITION BETRAG
+Fremdkostenzuschlag -1,00 EUR
+Kapitalertragsteuer 0,00 EUR
+Solidaritätszuschlag 0,00 EUR
+GESAMT 1.883,20 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+DE962739571732957192456 2026-02-27 1.883,20 EUR
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+VornameEgal NachnameEgal SEITE 2 von 2
+StraßeEgal 10 DATUM 25.02.2026
+12345 OrtEgal AUFTRAG 6974-687e
+AUSFÜHRUNG 7d34-c23d
+DEPOT 01324241001
+STEUERLICHE BEHANDLUNG
+BERECHNUNG DER STEUERBEMESSUNGSGRUNDLAGE BETRAG
+Bruttogewinn 17,20 EUR
+Verlustverrechnungstopf: Allgemein -17,20 EUR
+STEUERBEMESSUNGSGRUNDLAGE 0,00 EUR
+BERECHNUNG DER STEUERN BETRAG
+Steuerbemessungsgrundlage 0,00 EUR
+Kapitalertragsteuer 0,00 EUR
+Solidaritätszuschlag 0,00 EUR
+GESAMTE STEUERN 0,00 EUR
+VERRECHNUNGSTÖPFE VORHER VERÄNDERUNG NACHHER
+Verlustverrechnungstopf: Aktien 0,00 EUR 0,00 EUR 0,00 EUR
+Verlustverrechnungstopf: Allgemein 11.407,05 EUR -17,20 EUR 11.389,85 EUR
+Freistellungsauftrag 500,00 EUR 0,00 EUR 500,00 EUR
+Quellensteuertopf 0,00 EUR 0,00 EUR 0,00 EUR
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke

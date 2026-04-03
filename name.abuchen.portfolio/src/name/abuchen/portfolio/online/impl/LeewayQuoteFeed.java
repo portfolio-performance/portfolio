@@ -26,8 +26,8 @@ import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.util.WebAccess;
 
 /**
- * @see https://leeway.tech/api-doc/general?lang=ger&dataapi=true
- * @implNote https://api.leeway.tech/swagger_output.json
+ * @see <a href="https://leeway.tech/api-doc/general?lang=ger&amp;dataapi=true">Leeway API Documentation</a>
+ * @implNote <a href="https://api.leeway.tech/swagger_output.json">Swagger API Specification</a>
  * @apiNote There are only 50 API/day available, so only query with validated
  *          ISIN.
  *
