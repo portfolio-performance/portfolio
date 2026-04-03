@@ -17,6 +17,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.Security;
@@ -47,6 +48,7 @@ import name.abuchen.portfolio.util.Interval;
  */
 public class IssuePerformanceIndicatorsWithPartialAssignmentTest
 {
+    private static NegativeValue negativeValue = new NegativeValue();
     private static Client CLIENT;
 
     private static Interval REPORTING_PERIOD = Interval.of(LocalDate.parse("2017-07-14"), //$NON-NLS-1$
@@ -69,7 +71,7 @@ public class IssuePerformanceIndicatorsWithPartialAssignmentTest
     @BeforeClass
     public static void setupClient() throws IOException
     {
-        CLIENT = ClientFactory.load(IssuePerformanceIndicatorsWithPartialAssignmentTest.class
+        CLIENT = ClientFactory.load(negativeValue, IssuePerformanceIndicatorsWithPartialAssignmentTest.class
                         .getResourceAsStream("IssuePerformanceIndicatorsWithPartialAssignment.xml")); //$NON-NLS-1$
 
         TestCurrencyConverter converter = new TestCurrencyConverter();

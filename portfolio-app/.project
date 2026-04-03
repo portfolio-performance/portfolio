@@ -3,6 +3,15 @@
 	<name>portfolio-app</name>
 	<comment></comment>
 	<projects>
+		<project>name.abuchen.portfolio</project>
+		<project>name.abuchen.portfolio.bootstrap</project>
+		<project>name.abuchen.portfolio.feature</project>
+		<project>name.abuchen.portfolio.pdfbox1</project>
+		<project>name.abuchen.portfolio.pdfbox3</project>
+		<project>name.abuchen.portfolio.ui</project>
+		<project>portfolio</project>
+		<project>portfolio-product</project>
+		<project>portfolio-target-definition</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

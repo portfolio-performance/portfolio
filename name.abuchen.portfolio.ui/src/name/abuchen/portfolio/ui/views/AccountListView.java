@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -65,6 +66,9 @@ import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
 public class AccountListView extends AbstractFinanceView implements ModificationListener
 {
     private static final String FILTER_INACTIVE_ACCOUNTS = "filter-redired-accounts"; //$NON-NLS-1$
+
+    @Inject
+    private ImportCSVHandler importCSVHandler;
 
     private TableViewer accounts;
 
@@ -291,11 +295,12 @@ public class AccountListView extends AbstractFinanceView implements Modification
         manager.add(new Separator());
 
         manager.add(new SimpleAction(Messages.AccountMenuTroubleshootBalanceDiscrepancy,
-                        a -> new TroubleshootBalanceDiscrepancyDialog(getActiveShell(), getPart().getClientInput(),
+                        a -> new TroubleshootBalanceDiscrepancyDialog(negativeValue, getActiveShell(),
+                                        getPart().getClientInput(),
                                         account).open()));
         manager.add(new Separator());
 
-        manager.add(new SimpleAction(Messages.AccountMenuImportCSV, a -> ImportCSVHandler.runImport(getPart(),
+        manager.add(new SimpleAction(Messages.AccountMenuImportCSV, a -> importCSVHandler.runImport(getPart(),
                         Display.getDefault().getActiveShell(), getContext(), null, null, getClient(), account, null)));
 
         manager.add(new SimpleAction(Messages.AccountMenuImportPDF, a -> ImportPDFHandler.runImport(getPart(),

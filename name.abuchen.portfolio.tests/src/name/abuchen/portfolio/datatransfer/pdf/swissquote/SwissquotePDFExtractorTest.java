@@ -41,6 +41,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
@@ -53,6 +54,7 @@ import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.SwissquotePDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.TestCoinSearchProvider;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -68,6 +70,8 @@ import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
 @SuppressWarnings("nls")
 public class SwissquotePDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client())
     {
         @Override
@@ -77,12 +81,19 @@ public class SwissquotePDFExtractorTest
         }
     };
 
+    @Before
+    public void init()
+    {
+        extractor.setNegativeValue(negativeValue);
+    }
+
     @Test
     public void testWertpapierKauf01()
     {
         var client = new Client();
 
         var extractor = new SwissquotePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -135,6 +146,7 @@ public class SwissquotePDFExtractorTest
         var client = new Client();
 
         var extractor = new SwissquotePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -187,6 +199,7 @@ public class SwissquotePDFExtractorTest
         var client = new Client();
 
         var extractor = new SwissquotePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -247,6 +260,7 @@ public class SwissquotePDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new SwissquotePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -296,6 +310,7 @@ public class SwissquotePDFExtractorTest
         var client = new Client();
 
         var extractor = new SwissquotePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -348,6 +363,7 @@ public class SwissquotePDFExtractorTest
         var client = new Client();
 
         var extractor = new SwissquotePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -396,6 +412,7 @@ public class SwissquotePDFExtractorTest
     public void testWertpapierKauf06()
     {
         var extractor = new SwissquotePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -430,6 +447,7 @@ public class SwissquotePDFExtractorTest
     public void testWertpapierKauf07()
     {
         var extractor = new SwissquotePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -464,6 +482,7 @@ public class SwissquotePDFExtractorTest
     public void testWertpapierKauf08()
     {
         var extractor = new SwissquotePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -498,6 +517,7 @@ public class SwissquotePDFExtractorTest
     public void testWertpapierKauf09()
     {
         var extractor = new SwissquotePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -534,6 +554,7 @@ public class SwissquotePDFExtractorTest
         var client = new Client();
 
         var extractor = new SwissquotePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -570,6 +591,7 @@ public class SwissquotePDFExtractorTest
         var client = new Client();
 
         var extractor = new SwissquotePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -622,6 +644,7 @@ public class SwissquotePDFExtractorTest
         var client = new Client();
 
         var extractor = new SwissquotePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -682,6 +705,7 @@ public class SwissquotePDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new SwissquotePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -729,6 +753,7 @@ public class SwissquotePDFExtractorTest
     public void testWertpapierVerkauf03()
     {
         var extractor = new SwissquotePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -763,6 +788,7 @@ public class SwissquotePDFExtractorTest
     public void testWertpapierVerkauf04()
     {
         var extractor = new SwissquotePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -797,6 +823,7 @@ public class SwissquotePDFExtractorTest
     public void testWertpapierVerkauf05()
     {
         var extractor = new SwissquotePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -831,6 +858,7 @@ public class SwissquotePDFExtractorTest
     public void testWertpapierVerkauf06()
     {
         var extractor = new SwissquotePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -867,6 +895,7 @@ public class SwissquotePDFExtractorTest
         var client = new Client();
 
         var extractor = new SwissquotePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -901,6 +930,7 @@ public class SwissquotePDFExtractorTest
     public void testExpiryOption01()
     {
         var extractor = new SwissquotePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -973,6 +1003,7 @@ public class SwissquotePDFExtractorTest
         var client = new Client();
 
         var extractor = new SwissquotePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1024,6 +1055,7 @@ public class SwissquotePDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new SwissquotePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1062,6 +1094,7 @@ public class SwissquotePDFExtractorTest
         var client = new Client();
 
         var extractor = new SwissquotePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1109,6 +1142,7 @@ public class SwissquotePDFExtractorTest
         var client = new Client();
 
         var extractor = new SwissquotePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1160,6 +1194,7 @@ public class SwissquotePDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new SwissquotePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1198,6 +1233,7 @@ public class SwissquotePDFExtractorTest
         var client = new Client();
 
         var extractor = new SwissquotePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1245,6 +1281,7 @@ public class SwissquotePDFExtractorTest
         var client = new Client();
 
         var extractor = new SwissquotePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1292,6 +1329,7 @@ public class SwissquotePDFExtractorTest
         var client = new Client();
 
         var extractor = new SwissquotePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1343,6 +1381,7 @@ public class SwissquotePDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new SwissquotePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1379,6 +1418,7 @@ public class SwissquotePDFExtractorTest
     public void testDividende07()
     {
         var extractor = new SwissquotePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1419,6 +1459,7 @@ public class SwissquotePDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new SwissquotePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1455,6 +1496,7 @@ public class SwissquotePDFExtractorTest
     public void testDividende08()
     {
         var extractor = new SwissquotePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1496,6 +1538,7 @@ public class SwissquotePDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new SwissquotePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1532,6 +1575,7 @@ public class SwissquotePDFExtractorTest
     public void testDividende09()
     {
         var extractor = new SwissquotePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1573,6 +1617,7 @@ public class SwissquotePDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new SwissquotePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1609,6 +1654,7 @@ public class SwissquotePDFExtractorTest
     public void testDividende10()
     {
         var extractor = new SwissquotePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1650,6 +1696,7 @@ public class SwissquotePDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new SwissquotePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1686,6 +1733,7 @@ public class SwissquotePDFExtractorTest
     public void testDividende11()
     {
         var extractor = new SwissquotePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1727,6 +1775,7 @@ public class SwissquotePDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new SwissquotePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1762,6 +1811,7 @@ public class SwissquotePDFExtractorTest
     public void testDividende12()
     {
         var extractor = new SwissquotePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1804,6 +1854,7 @@ public class SwissquotePDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new SwissquotePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1839,6 +1890,7 @@ public class SwissquotePDFExtractorTest
     public void testDividende13()
     {
         var extractor = new SwissquotePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1879,6 +1931,7 @@ public class SwissquotePDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new SwissquotePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1978,6 +2031,7 @@ public class SwissquotePDFExtractorTest
     public void testZahlungsverkehr01()
     {
         var extractor = new SwissquotePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2012,6 +2066,7 @@ public class SwissquotePDFExtractorTest
     public void testZahlungsverkehr02()
     {
         var extractor = new SwissquotePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2046,6 +2101,7 @@ public class SwissquotePDFExtractorTest
     public void testZahlungsverkehr03()
     {
         var extractor = new SwissquotePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2080,6 +2136,7 @@ public class SwissquotePDFExtractorTest
     public void testZahlungsverkehr04()
     {
         var extractor = new SwissquotePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2116,6 +2173,7 @@ public class SwissquotePDFExtractorTest
         var client = new Client();
 
         var extractor = new SwissquotePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2151,6 +2209,7 @@ public class SwissquotePDFExtractorTest
     public void testZinsabrechnung01()
     {
         var extractor = new SwissquotePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2205,6 +2264,7 @@ public class SwissquotePDFExtractorTest
     public void testKontoauszug01()
     {
         var extractor = new SwissquotePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

@@ -41,6 +41,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.SaveFlag;
@@ -86,6 +87,9 @@ public class ClientInput
     private final Object pendingLock = new Object();
     private boolean pendingDirty;
     private boolean pendingRecalculate;
+
+    @Inject
+    private NegativeValue negativeValue;
 
     @Inject
     private IEventBroker broker;
@@ -261,7 +265,7 @@ public class ClientInput
                 if (preferences.getBoolean(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true))
                     createBackup(clientFile, "backup"); //$NON-NLS-1$
 
-                ClientFactory.save(client, clientFile);
+                ClientFactory.save(negativeValue, client, clientFile);
                 storePreferences(false);
 
                 broker.post(UIConstants.Event.File.SAVED, clientFile.getAbsolutePath());
@@ -314,7 +318,7 @@ public class ClientInput
         BusyIndicator.showWhile(shell.getDisplay(), () -> {
             try
             {
-                ClientFactory.saveAs(client, clientFile, pwd, flags);
+                ClientFactory.saveAs(negativeValue, client, clientFile, pwd, flags);
                 storePreferences(true);
 
                 broker.post(UIConstants.Event.File.SAVED, clientFile.getAbsolutePath());
@@ -360,7 +364,7 @@ public class ClientInput
         BusyIndicator.showWhile(shell.getDisplay(), () -> {
             try
             {
-                ClientFactory.exportAs(client, localFile, null, flags);
+                ClientFactory.exportAs(negativeValue, client, localFile, null, flags);
             }
             catch (IOException e)
             {
@@ -432,7 +436,7 @@ public class ClientInput
 
             try
             {
-                ClientFactory.save(client, autosaveFile);
+                ClientFactory.save(negativeValue, client, autosaveFile);
             }
             catch (IOException e)
             {

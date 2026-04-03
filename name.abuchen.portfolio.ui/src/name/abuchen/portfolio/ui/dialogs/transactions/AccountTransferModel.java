@@ -2,7 +2,6 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -11,6 +10,7 @@ import java.util.Optional;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
@@ -31,6 +31,7 @@ public class AccountTransferModel extends AbstractModel
         inverseExchangeRateCurrencies, calculationStatus;
     }
 
+    protected final NegativeValue negativeValue;
     private final Client client;
 
     private AccountTransferEntry source;
@@ -47,8 +48,9 @@ public class AccountTransferModel extends AbstractModel
 
     private IStatus calculationStatus = ValidationStatus.ok();
 
-    public AccountTransferModel(Client client)
+    public AccountTransferModel(NegativeValue negativeValue, Client client)
     {
+        this.negativeValue = negativeValue;
         this.client = client;
     }
 
@@ -186,11 +188,23 @@ public class AccountTransferModel extends AbstractModel
         long upper = Math.round(fxAmount * exchangeRate.add(BigDecimal.valueOf(0.0001)).doubleValue());
         long lower = Math.round(fxAmount * exchangeRate.add(BigDecimal.valueOf(-0.0001)).doubleValue());
 
-        if (amount < lower || amount > upper)
-            return ValidationStatus.error(Messages.MsgErrorConvertedAmount);
+        if (negativeValue.isNegativeValueAllowed())
+        {
+            if (amount >= 0 && (amount < lower || amount > upper))
+                return ValidationStatus.error(Messages.MsgErrorConvertedAmount);
+            if (amount < 0 && (-amount < lower || -amount > upper))
+                return ValidationStatus.error(Messages.MsgErrorConvertedAmount);
+        }
+        else
+        {
+            if (amount < lower || amount > upper)
+                return ValidationStatus.error(Messages.MsgErrorConvertedAmount);
+        }
 
+        /* allow grossAmount to be zero in case of fees/taxes only transactions
         if (amount == 0L || fxAmount == 0L)
             return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnTotal));
+        */
 
         return ValidationStatus.ok();
     }
@@ -345,7 +359,7 @@ public class AccountTransferModel extends AbstractModel
         if (fxAmount != 0)
         {
             BigDecimal newExchangeRate = BigDecimal.valueOf(amount).divide(BigDecimal.valueOf(fxAmount), 10,
-                            RoundingMode.HALF_UP);
+                            RoundingMode.HALF_UP).abs();
             BigDecimal oldInverseRate = getInverseExchangeRate();
             firePropertyChange(Properties.exchangeRate.name(), this.exchangeRate, this.exchangeRate = newExchangeRate);
             firePropertyChange(Properties.inverseExchangeRate.name(), oldInverseRate, getInverseExchangeRate());

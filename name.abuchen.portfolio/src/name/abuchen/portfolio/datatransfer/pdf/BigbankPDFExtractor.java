@@ -118,6 +118,6 @@ public class BigbankPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Amount, "et", "EE");
+        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Amount, "et", "EE");
     }
 }

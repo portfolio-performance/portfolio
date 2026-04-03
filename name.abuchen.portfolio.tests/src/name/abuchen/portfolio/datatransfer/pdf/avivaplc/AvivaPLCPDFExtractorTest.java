@@ -35,15 +35,19 @@ import org.junit.Test;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.AvivaPLCPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 
 @SuppressWarnings("nls")
 public class AvivaPLCPDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testWertpapierKauf01()
     {
         var extractor = new AvivaPLCPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -78,6 +82,7 @@ public class AvivaPLCPDFExtractorTest
     public void testWertpapierKauf02()
     {
         var extractor = new AvivaPLCPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -125,6 +130,7 @@ public class AvivaPLCPDFExtractorTest
     public void testWertpapierVerkauf01()
     {
         var extractor = new AvivaPLCPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -159,6 +165,7 @@ public class AvivaPLCPDFExtractorTest
     public void testWertpapierVerkauf02()
     {
         var extractor = new AvivaPLCPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

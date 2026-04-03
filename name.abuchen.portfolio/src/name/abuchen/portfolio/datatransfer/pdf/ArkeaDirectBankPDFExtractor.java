@@ -465,13 +465,13 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Amount, "fr", "FR");
+        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Amount, "fr", "FR");
     }
 
     @Override
     protected long asShares(String value)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Share, "fr", "FR");
+        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Share, "fr", "FR");
     }
 
     /**

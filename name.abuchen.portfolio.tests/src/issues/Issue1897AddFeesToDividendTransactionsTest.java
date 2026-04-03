@@ -12,6 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
@@ -40,11 +41,12 @@ public class Issue1897AddFeesToDividendTransactionsTest
     private static CurrencyConverter converter = new TestCurrencyConverter();
     private static Interval period = Interval.of(LocalDate.parse("2020-11-01"), //$NON-NLS-1$
                     LocalDate.parse("2020-12-31")); //$NON-NLS-1$
+    private static NegativeValue negativeValue = new NegativeValue();
 
     @BeforeClass
     public static void setup() throws IOException
     {
-        client = ClientFactory.load(Issue371PurchaseValueWithTransfersTest.class
+        client = ClientFactory.load(negativeValue, Issue371PurchaseValueWithTransfersTest.class
                         .getResourceAsStream("Issue1897AddFeesToDividendTransactions.xml")); //$NON-NLS-1$
     }
 
