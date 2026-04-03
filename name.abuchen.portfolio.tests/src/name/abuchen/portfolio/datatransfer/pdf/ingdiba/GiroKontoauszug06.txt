@@ -1,0 +1,82 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.82.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+ING-DiBa AG · 60628 Frankfurt am Main
+Datum 31.03.2026
+Herrn Auszugsnummer 3
+YHxGtt aJsMS Eingeräumte Kontoüberziehung 100,00 Euro
+eMlbzuahB 27 Alter Saldo 1.000,00 Euro
+30453 Muster Neuer Saldo 1.000,00 Euro
+IBAN ov84 1075 6403 4994 1935 64
+BIC INGDDEFFXXX
+Seite 1 von 1
+Girokonto Nummer 0274818418
+Kontoauszug März 2026
+Buchung Buchung / Verwendungszweck Betrag (EUR)
+Valuta
+02.03.2026 Lastschrift Strom GmbH -100,00
+02.03.2026 ABSCHLAG Strom 03/26 VK: 789456123 13 Strom GmbH
+Mandat: 65465465454-01-1
+Referenz: 4564654655464454
+16.03.2026 Echtzeitüberweisung Peter Pan Bla -1.000,00
+16.03.2026
+Neuer Saldo 1.000,00
+Kunden-Information
+Vorliegender Freistellungsauftrag 100,00
+Verbrauchter Sparer-Pauschbetrag 100,00
+Bitte beachten Sie auch die Hinweise auf der Folgeseite.
+ING-DiBa AG
+34GKKA5417643311_T
+Bitte beachten Sie die nachstehenden Hinweise:
+Rechnungsabschluss (Kontoübersicht)
+Wir bitten Sie, den Kontoauszug gemäß Ziffer 11 Absatz 4 unserer Allgemeinen Geschäftsbedingungen (www.ing.de/agb/)
+auf Vollständigkeit und Richtigkeit zu prüfen und uns Einwendungen in Textform unverzüglich mitzuteilen.
+Rechnungsabschluss inkl. Saldenmitteilung
+Wir bitten Sie, den Saldo Ihres Kontos/die Salden Ihrer Konten zu prüfen und uns Einwendungen in Textform unverzüg-
+lich, spätestens innerhalb von 6 Wochen nach Zugang, mitzuteilen. Werden innerhalb der Frist keine Einwendungen
+vorgebracht, so gilt der Saldo/gelten die Salden wie oben aufgeführt entsprechend unseren Allgemeinen Geschäfts-
+bedingungen als von Ihnen anerkannt. Sie können zwar auch nach Fristablauf eine Berichtigung des Rechnungs-
+abschlusses verlangen, müssen dann aber beweisen, dass zu Unrecht Ihr Konto belastet oder eine Ihnen zustehende
+Gutschrift nicht erteilt wurde.
+Einlagensicherung
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen
+können dem "Informationsbogen für den Einleger" (siehe auch www.ing.de/einlagensicherung) entnommen werden.
+Neben der gesetzlichen Einlagensicherung nach dem Einlagensicherungsgesetz wirkt die ING außerdem am Einlagen-
+sicherungsfonds deutscher Banken (Einlagensicherungsfonds) mit. Dieser sichert nach Maßgabe seines Statuts Einlagen
+bis zu den Sicherungsgrenzen, wie in Ziffer 20 ("Schutz der Einlagen") unserer Allgemeinen Geschäftsbedingungen
+dargelegt. Weitere Informationen zum Schutz Ihrer Einlagen finden Sie unter: www.ing.de/einlagensicherung.
+Sollzins und effektiver Jahreszins (Änderung von Zinsen)
+Die Sollzinssätze für die eingeräumte Kontoüberziehung [Dispokredit] und die geduldete Kontoüberziehung sind vari-
+abel. Die ING ist gemäß der nachfolgenden Regelung berechtigt und verpflichtet, die Zinssätze anzupassen. Maßgeblich
+für Anpassungen sind Veränderungen des Zinssatzes der Europäischen Zentralbank für Hauptrefinanzierungsgeschäfte
+(nachfolgend EZB-Zinssatz genannt). Maßgeblich sind weiterhin die am 01.09.2010 bestehenden Differenzen zwischen
+den Sollzinssätzen und dem EZB-Zinssatz (Äquivalenzverhältnisse). Sie betragen für die eingeräumte Kontoüberziehung
+[Dispokredit] 8,0 Prozentpunkte und die geduldete Kontoüberziehung 11,5 Prozentpunkte.
+Die ING prüft die Entwicklung des EZB-Zinssatzes jeweils am 15. eines Monats (Prüfungstag). Veränderungen des
+EZB-Zinssatzes um mindestens 0,25 Prozentpunkte (relevante Veränderung) gegenüber dessen Niveau am 01.09.2010
+bzw. danach gegenüber dessen Niveau zum Zeitpunkt der Feststellung der letzten relevanten EZB-Zinssatzänderung
+berechtigen die ING bei Erhöhungen und verpflichten die ING bei Ermäßigungen zur Anpassung der Sollzinssätze. Eine
+Ermäßigung der Sollzinssätze muss dabei mindestens der Ermäßigung des EZB-Zinssatzes entsprechen. Eine Erhöhung
+darf maximal der Erhöhung des EZB-Zinssatzes entsprechen. Eine Zinsanpassung wird 3 Kalendermonate nach dem
+Prüfungstag, jeweils am 15. eines Monats, wirksam (Anpassungstag).
+Nutzt die ING - im Falle einer Erhöhung des EZB-Zinssatzes um mindestens 0,25 Prozentpunkte - ihr Recht zur Erhöhung
+der Sollzinssätze nicht oder nicht voll aus, werden dadurch die vereinbarten Äquivalenzverhältnisse zu Gunsten des
+Kunden unterschritten. Die ING kann die nicht ausgenutzte Erhöhung jeweils am 15. eines Monats unter Einhaltung der
+vereinbarten Äquivalenzverhältnisse nachholen. Bei einer nachfolgenden Ermäßigung des EZB-Zinssatzes (relevante
+Ermäßigung) ist sie erst dann zur Senkung der Sollzinssätze verpflichtet, wenn die im Rahmen des vereinbarten Äquiva-
+lenzverhältnisses bestehende Differenz von 8,0 Prozentpunkten (eingeräumte Kontoüberziehung [Dispokredit]) bzw.
+11,5 Prozentpunkten (geduldete Kontoüberziehung) überschritten würde.
+Die ING wird den Kunden vorab über jede Sollzinssatzänderung informieren. Die Information darf auch per Kontoauszug
+erfolgen.
+Die Sollzinssätze sowie eine eventuelle, nicht ausgenutzte Erhöhung des EZB-Zinssatzes sind im Preis- und Leistungs-
+verzeichnis ausgewiesen. Die Höhe des EZB-Zinssatzes zum 01.09.2010, dessen Entwicklung sowie die Entwicklung einer
+nicht ausgenutzten Erhöhung können unter www.ing.de/zinsanpassungsklausel/ abgerufen werden.
+Buchungen mit der VISA Card [Debitkarte]
+Die Umsätze, die mit der VISA Card [Debitkarte] getätigt wurden, werden auf dem Girokonto am Tag des Eingangs
+bei uns mit dem Saldo des Girokontos verbucht und sofort verrechnet. Wir bitten Sie, den monatlichen Kontoauszug
+auf Richtigkeit und Vollständigkeit zu prüfen. Einwendungen gegen Buchungen müssen uns innerhalb von 6 Wochen ab
+Zugang des Kontoauszugs in Textform mitgeteilt werden. Die Unterlassung rechtzeitiger Einwendungen gilt als Genehm-
+igung. Sie können zwar auch nach Fristablauf eine Berichtigung von Buchungen verlangen, müssen dann aber beweisen,
+dass Ihr Girokonto zu Unrecht belastet oder eine Ihnen zustehende Gutschrift nicht erteilt wurde.
+ING-DiBa AG
