@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -116,13 +117,22 @@ import de.engehausen.treemap.swt.TreeMap;
             GC gc = new GC(this);
             var width = 0;
             var height = 0;
+
+            var defaultFont = gc.getFont();
+            var fontDatas = defaultFont.getFontData();
+            for (var fontData : fontDatas)
+                fontData.setStyle(SWT.BOLD);
+            var boldFont = new Font(gc.getDevice(), fontDatas);
+
             for (int ii = 0; ii < label.length; ii++)
             {
+                gc.setFont(ii == 0 ? boldFont : defaultFont);
                 Point extent = gc.textExtent(label[ii]);
                 if (extent.x > width)
                     width = extent.x;
                 height += extent.y;
             }
+            boldFont.dispose();
             gc.dispose();
 
             return new Point(width + 4, height + 4);
