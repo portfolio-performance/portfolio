@@ -4423,6 +4423,34 @@ public class INGDiBaPDFExtractorTest
     }
 
     @Test
+    public void testKGiroKontoauszug06()
+    {
+        var extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2026-03-02"), hasAmount("EUR", 100.00), //
+                        hasSource("GiroKontoauszug06.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2026-03-16"), hasAmount("EUR", 1000.00), //
+                        hasSource("GiroKontoauszug06.txt"), hasNote("Echtzeitüberweisung"))));
+    }
+    
+    @Test
     public void testExtraKontoauszug01()
     {
         var extractor = new INGDiBaPDFExtractor(new Client());
