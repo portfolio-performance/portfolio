@@ -8,7 +8,9 @@ import org.eclipse.core.runtime.Status;
 
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityProperty;
+import name.abuchen.portfolio.online.QuoteFeed.HistoricalUpdatePolicy;
 import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.online.QuoteFeedException;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.util.WebAccess.WebAccessException;
@@ -26,7 +28,7 @@ abstract class Task
         public UpdateStatus update() throws QuoteFeedException
         {
             var data = feed.getHistoricalQuotes(security, false);
-            var isDirty = security.addAllPrices(data.getPrices());
+            boolean isDirty = applyHistoricalQuotes(data);
 
             if (!data.getErrors().isEmpty())
                 PortfolioPlugin.log(createErrorStatus(security.getName(), data.getErrors()));
@@ -43,6 +45,50 @@ abstract class Task
 
             return status;
         }
+
+        private boolean applyHistoricalQuotes(QuoteFeedData data)
+        {
+            HistoricalUpdatePolicy updatePolicy = feed.getHistoricalUpdatePolicy(security);
+
+            if (updatePolicy == HistoricalUpdatePolicy.REPLACE)
+                return replaceHistoricalQuotes(data, null);
+
+            if (updatePolicy == HistoricalUpdatePolicy.REPLACE_IF_SOURCE_CHANGED)
+                return applyReplaceIfSourceChanged(data);
+
+            return security.addAllPrices(data.getPrices());
+        }
+
+        private boolean applyReplaceIfSourceChanged(QuoteFeedData data)
+        {
+            var currentIdentity = feed.getHistoricalDataIdentity(security);
+            if (currentIdentity.isEmpty())
+                return security.addAllPrices(data.getPrices());
+
+            String storedIdentity = security
+                            .getPropertyValue(SecurityProperty.Type.FEED, QuoteFeed.HISTORICAL_DATA_IDENTITY)
+                            .orElse(null);
+
+            if (currentIdentity.get().equals(storedIdentity))
+                return security.addAllPrices(data.getPrices());
+
+            return replaceHistoricalQuotes(data, currentIdentity.get());
+        }
+
+        private boolean replaceHistoricalQuotes(QuoteFeedData data, String identity)
+        {
+            if (!data.getErrors().isEmpty() || data.getPrices().isEmpty())
+                return false;
+
+            boolean hadExistingPrices = !security.getPrices().isEmpty();
+            security.removeAllPrices();
+
+            boolean isDirty = security.addAllPrices(data.getPrices()) || hadExistingPrices;
+            if (security.setPropertyValue(SecurityProperty.Type.FEED, QuoteFeed.HISTORICAL_DATA_IDENTITY, identity))
+                isDirty = true;
+
+            return isDirty;
+        }
     }
 
     static class LatestTask extends Task
@@ -53,8 +99,7 @@ abstract class Task
         {
             super(groupingCriterion, feed, status, security);
 
-            var latestTicker = security.getPropertyValue(SecurityProperty.Type.FEED,
-                            QuoteFeed.TICKER_SYMBOL_LATEST);
+            var latestTicker = security.getPropertyValue(SecurityProperty.Type.FEED, QuoteFeed.TICKER_SYMBOL_LATEST);
             if (latestTicker.isPresent())
             {
                 this.fetchSecurity = security.deepCopy();
