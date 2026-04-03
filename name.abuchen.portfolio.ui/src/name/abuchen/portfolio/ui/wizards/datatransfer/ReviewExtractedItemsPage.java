@@ -4,6 +4,7 @@ import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -489,6 +490,20 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         layout.setColumnData(column.getColumn(), new ColumnPixelData(80, true));
 
         column = new TableViewerColumn(viewer, SWT.NONE);
+        column.getColumn().setText(Messages.ColumnExDate);
+        column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
+        {
+            @Override
+            public String getText(ExtractedEntry entry)
+            {
+                LocalDate exDate = getExDate(entry.getItem());
+                return exDate != null ? Values.Date.format(exDate) : null;
+            }
+        });
+        ColumnViewerSorter.create(entry -> getExDate(((ExtractedEntry) entry).getItem())).attachTo(viewer, column);
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(80, true));
+
+        column = new TableViewerColumn(viewer, SWT.NONE);
         column.getColumn().setText(Messages.ColumnTransactionType);
         column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
         {
@@ -624,6 +639,18 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             }
         });
         layout.setColumnData(column.getColumn(), new ColumnPixelData(100, true));
+    }
+
+    static LocalDate getExDate(Extractor.Item item)
+    {
+        if (item == null)
+            return null;
+
+        Annotated subject = item.getSubject();
+        if (subject instanceof AccountTransaction transaction)
+            return transaction.getExDate() != null ? transaction.getExDate().toLocalDate() : null;
+
+        return null;
     }
 
     private void attachContextMenu(final Table table)
