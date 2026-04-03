@@ -690,6 +690,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         + "(Ueberweisung" //
                         + "|Dauerauftrag\\/Terminueberw\\." //
                         + "|Lastschrift" //
+                        + "|Echtzeit.berweisung" //
                         + "|Kontol.schung)" //
                         + ".* \\-[\\.,\\d]+$");
         type.addBlock(removalBlock);
@@ -707,6 +708,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                         + "(?<note>Ueberweisung" //
                                         + "|Dauerauftrag\\/Terminueberw\\." //
                                         + "|Lastschrift" //
+                                        + "|Echtzeit.berweisung" //
                                         + "|Kontol.schung)" //
                                         + ".* \\-(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
