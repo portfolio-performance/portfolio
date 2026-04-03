@@ -711,6 +711,15 @@ public class Messages extends NLS
     public static String LabelExport;
     public static String LabelFees;
     public static String LabelFeesAccumulated;
+    public static String LabelFIREClickToSet;
+    public static String LabelFIRECurrentNetWorth;
+    public static String LabelFIREMonthlySavings;
+    public static String LabelFIRENumber;
+    public static String LabelFIRETargetDate;
+    public static String LabelFIRETimeToFIRE;
+    public static String LabelFIREReturns;
+    public static String LabelFIREWidget;
+    public static String LabelFIREAchieved;
     public static String LabelFirstDayOfWeek;
     public static String LabelFontSize;
     public static String LabelFormatJSON;

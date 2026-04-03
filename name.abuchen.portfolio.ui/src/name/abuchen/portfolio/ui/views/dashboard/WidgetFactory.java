@@ -143,6 +143,8 @@ public enum WidgetFactory
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
 
+    FIRE(Messages.LabelFIREWidget, Messages.LabelStatementOfAssets, FIREWidget::new),
+
     ABSOLUTE_INVESTED_CAPITAL(Messages.LabelAbsoluteInvestedCapital, Messages.LabelStatementOfAssets, //
                     (widget, data) -> IndicatorWidget.<Money>create(widget, data) //
                                     .with(Values.Money) //
