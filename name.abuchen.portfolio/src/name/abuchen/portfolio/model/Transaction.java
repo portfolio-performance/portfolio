@@ -198,6 +198,9 @@ public abstract class Transaction implements Annotated, Adaptable
         @Override
         public int compare(Transaction t1, Transaction t2)
         {
+            if (t1.getDateTime() == null) System.out.println(t1.toString());
+            if (t2.getDateTime() == null) System.out.println(t2.toString());
+            
             int compareTo = t1.getDateTime().compareTo(t2.getDateTime());
             if (compareTo != 0)
                 return compareTo;
