@@ -39,6 +39,7 @@ public class PDFImportAssistant
         extractors.add(new AlpacCapitalPDFExtractor(client));
         extractors.add(new ApoBankPDFExtractor(client));
         extractors.add(new AvivaPLCPDFExtractor(client));
+        extractors.add(new AyvensBankPDFExtractor(client));
         extractors.add(new BaaderBankPDFExtractor(client));
         extractors.add(new Bank11PDFExtractor(client));
         extractors.add(new BancoBilbaoVizcayaArgentariaPDFExtractor(client));
