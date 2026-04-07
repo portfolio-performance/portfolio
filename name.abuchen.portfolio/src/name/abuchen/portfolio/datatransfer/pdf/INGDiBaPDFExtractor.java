@@ -684,12 +684,14 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         // 13.07.2016 Ueberweisung Mustermann -5.000,00
         // 13.02.2020 Gutschrift/Dauerauftrag Max Mustermann 1,01
         // 16.02.2020 Lastschrift XYZ GmbH -10,00
+        // 16.03.2026 Echtzeitüberweisung Peter Pan Bla -1.000,00
         // 06.03.2023 Kontolöschung -1.161,10
         // @formatter:on
         var removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
                         + "(Ueberweisung" //
                         + "|Dauerauftrag\\/Terminueberw\\." //
                         + "|Lastschrift" //
+                        + "|Echtzeit.berweisung" //
                         + "|Kontol.schung)" //
                         + ".* \\-[\\.,\\d]+$");
         type.addBlock(removalBlock);
@@ -707,6 +709,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                         + "(?<note>Ueberweisung" //
                                         + "|Dauerauftrag\\/Terminueberw\\." //
                                         + "|Lastschrift" //
+                                        + "|Echtzeit.berweisung" //
                                         + "|Kontol.schung)" //
                                         + ".* \\-(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {

@@ -13,9 +13,36 @@ import name.abuchen.portfolio.model.SecurityPrice;
 
 public interface QuoteFeed // NOSONAR
 {
+    /**
+     * Defines how fetched historical prices should be applied to the existing
+     * prices of a security.
+     */
+    enum HistoricalUpdatePolicy
+    {
+        /**
+         * Merge fetched prices into the existing history using the default
+         * model merge semantics.
+         */
+        MERGE,
+
+        /**
+         * Replace all existing historical prices with the fetched prices on
+         * every successful update.
+         */
+        REPLACE,
+
+        /**
+         * Replace all existing historical prices with the fetched prices when
+         * the current historical data identity differs from the identity stored
+         * on the security. Otherwise use the default merge behavior.
+         */
+        REPLACE_IF_SOURCE_CHANGED
+    }
+
     Pattern HOST_PATTERN = Pattern.compile("^https?://([^/]+)/?.*"); //$NON-NLS-1$
 
     String MANUAL = "MANUAL"; //$NON-NLS-1$
+    String HISTORICAL_DATA_IDENTITY = "HISTORICAL-DATA-IDENTITY"; //$NON-NLS-1$
 
     /**
      * SecurityProperty name used to store an alternative ticker symbol for the
@@ -122,6 +149,37 @@ public interface QuoteFeed // NOSONAR
     default QuoteFeedData previewHistoricalQuotes(Security security) throws QuoteFeedException
     {
         return getHistoricalQuotes(security, true);
+    }
+
+    /**
+     * Returns the policy used when applying fetched historical prices to the
+     * given security.
+     * <p>
+     * {@link HistoricalUpdatePolicy#MERGE} keeps the existing behavior.
+     * {@link HistoricalUpdatePolicy#REPLACE} replaces all existing historical
+     * prices with the fetched prices.
+     * {@link HistoricalUpdatePolicy#REPLACE_IF_SOURCE_CHANGED} replaces all
+     * historical prices only when the feed's historical data identity differs
+     * from the previously stored identity.
+     */
+    default HistoricalUpdatePolicy getHistoricalUpdatePolicy(Security security)
+    {
+        return HistoricalUpdatePolicy.MERGE;
+    }
+
+    /**
+     * Returns an identifier for the historical data source currently used by
+     * this feed for the given security.
+     * <p>
+     * The update task persists this value in the security property
+     * {@link #HISTORICAL_DATA_IDENTITY}. It is only relevant for policies that
+     * depend on source changes, such as
+     * {@link HistoricalUpdatePolicy#REPLACE_IF_SOURCE_CHANGED}. Feeds that do
+     * not need source-aware migration can return {@link Optional#empty()}.
+     */
+    default Optional<String> getHistoricalDataIdentity(Security security)
+    {
+        return Optional.empty();
     }
 
     default List<Exchange> getExchanges(Security subject, List<Exception> errors)

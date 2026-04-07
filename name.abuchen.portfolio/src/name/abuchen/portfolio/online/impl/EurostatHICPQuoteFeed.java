@@ -7,6 +7,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -25,16 +26,15 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
-import name.abuchen.portfolio.util.WebAccess;;
+import name.abuchen.portfolio.util.WebAccess;
 
 public final class EurostatHICPQuoteFeed implements QuoteFeed
 {
-
     public static final String ID = "EUROSTATHICP"; //$NON-NLS-1$
+    public static final String DATASET_VERSION = "prc_hicp_minr@I25/TOTAL"; //$NON-NLS-1$
 
     private static final String EUROSTAT_HOST = "ec.europa.eu"; //$NON-NLS-1$
-
-    private static final String EUROSTAT_PAGE = "/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_midx"; //$NON-NLS-1$
+    private static final String EUROSTAT_PAGE = "/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_minr"; //$NON-NLS-1$
 
     @Override
     public String getId()
@@ -79,15 +79,28 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
         return data;
     }
 
+    @Override
+    public HistoricalUpdatePolicy getHistoricalUpdatePolicy(Security security)
+    {
+        return HistoricalUpdatePolicy.REPLACE_IF_SOURCE_CHANGED;
+    }
+
+    @Override
+    public Optional<String> getHistoricalDataIdentity(Security security)
+    {
+        return Optional.of(DATASET_VERSION);
+    }
+
     @SuppressWarnings("nls")
-    private String requestData(Security security, boolean collectRawResponse, QuoteFeedData data)
+    /* package */ String requestData(Security security, boolean collectRawResponse, QuoteFeedData data)
                     throws IOException, URISyntaxException
     {
         WebAccess webaccess = new WebAccess(EUROSTAT_HOST, EUROSTAT_PAGE) //
                         .addParameter("format", "JSON") //
-                        .addParameter("coicop", "CP00") //
+                        .addParameter("coicop18", "TOTAL") //
                         .addParameter("geo", security.getTickerSymbol().toUpperCase()) //
-                        .addParameter("unit", "I15");
+                        .addParameter("unit", "I25") //
+                        .addParameter("lang", "EN"); //$NON-NLS-1$ //$NON-NLS-2$
 
         String text = webaccess.get();
 
@@ -97,7 +110,7 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
         return text;
     }
 
-    private void extractQuotes(String responseBody, QuoteFeedData data)
+    /* package */ void extractQuotes(String responseBody, QuoteFeedData data)
     {
         try
         {
@@ -105,24 +118,16 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
             if (responseData == null)
                 throw new IOException("responseBody"); //$NON-NLS-1$
 
-            // the periods are 4th JSON hierarchy level @ dimensions > time >
-            // category > index
-            JSONObject eurostatValue = (JSONObject) responseData.get("value"); //$NON-NLS-1$
+            JSONObject eurostatValue = getRequiredObject(responseData, "value"); //$NON-NLS-1$
+            JSONObject eurostatDimension = getRequiredObject(responseData, "dimension"); //$NON-NLS-1$
+            JSONObject eurostatTime = getRequiredObject(eurostatDimension, "time"); //$NON-NLS-1$
+            JSONObject eurostatCategory = getRequiredObject(eurostatTime, "category"); //$NON-NLS-1$
+            JSONObject eurostatIndex = getRequiredObject(eurostatCategory, "index"); //$NON-NLS-1$
 
-            JSONObject eurostatDimension = (JSONObject) responseData.get("dimension"); //$NON-NLS-1$
-            JSONObject eurostatTime = (JSONObject) eurostatDimension.get("time"); //$NON-NLS-1$
-            JSONObject eurostatCategory = (JSONObject) eurostatTime.get("category"); //$NON-NLS-1$
-            JSONObject eurostatIndex = (JSONObject) eurostatCategory.get("index"); //$NON-NLS-1$
-
-            // EUROSTAT hicp values
-            // The key of the hicpValues is linked to hicpPeriods value
-            // parameter
-            // {230=100.2, 110=85.4, 231=100.1, 111=85.4, 232=100.2, ...
             HashMap<String, Double> hicpValues = new HashMap<>();
             for (Object key : eurostatValue.keySet())
                 hicpValues.put(key.toString(), parseIndex(eurostatValue.get(key).toString()));
 
-            // EUROSTAT periods
             HashMap<String, String> hicpPeriods = new HashMap<>();
             for (Object key : eurostatIndex.keySet())
                 hicpPeriods.put(eurostatIndex.get(key).toString(), key.toString());
@@ -130,8 +135,7 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
             for (int ii = 0; ii < hicpPeriods.size(); ii++)
             {
                 String pricePeriod = hicpPeriods.get(Integer.toString(ii));
-                LocalDate ts = LocalDate.of(Integer.parseInt(pricePeriod.substring(0, 4)),
-                                Integer.parseInt(pricePeriod.substring(5, 7)), 1);
+                LocalDate ts = parsePeriod(pricePeriod);
                 Double q = hicpValues.get(Integer.toString(ii));
 
                 if (q != null)
@@ -148,10 +152,25 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
                 }
             }
         }
-        catch (IOException | IndexOutOfBoundsException | IllegalArgumentException | SecurityException e)
+        catch (IOException | IllegalArgumentException | SecurityException e)
         {
             data.addError(e);
         }
+    }
+
+    private JSONObject getRequiredObject(JSONObject object, String key) throws IOException
+    {
+        Object value = object.get(key);
+        if (value instanceof JSONObject jsonObject)
+            return jsonObject;
+
+        throw new IOException(MessageFormat.format("Unexpected Eurostat response for {0}: missing object ''{1}''", //$NON-NLS-1$
+                        DATASET_VERSION, key));
+    }
+
+    private LocalDate parsePeriod(String text)
+    {
+        return YearMonth.parse(text).atDay(1);
     }
 
     private Double parseIndex(String text) throws IOException

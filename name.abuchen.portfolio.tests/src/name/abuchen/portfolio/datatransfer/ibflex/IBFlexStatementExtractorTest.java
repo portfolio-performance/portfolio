@@ -19,6 +19,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundCash;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundCash;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
@@ -3557,6 +3558,48 @@ public class IBFlexStatementExtractorTest
         // Exchange rate should be 0.01 (GBP to GBX: 1 GBP = 100 GBX, so rate is
         // 0.01)
         assertThat(unit.getExchangeRate().compareTo(new java.math.BigDecimal("0.01")), is(0));
+    }
+
+    @Test
+    public void testIBFlexStatementFile28() throws IOException
+    {
+        var client = new Client();
+
+        var referenceAccount = new Account("FX");
+        referenceAccount.setCurrencyCode(CurrencyUnit.USD);
+        client.addAccount(referenceAccount);
+
+        var accountWithTWD = new Account("FX TWD");
+        accountWithTWD.setCurrencyCode("TWD");
+        client.addAccount(accountWithTWD);
+
+        var portfolio = new Portfolio("U1234567");
+        portfolio.setReferenceAccount(referenceAccount);
+        client.addPortfolio(portfolio);
+
+        var extractor = new IBFlexStatementExtractor(client);
+        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile28.xml");
+        var tempFile = createTempFile(activityStatement);
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(Collections.singletonList(tempFile), errors);
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(0L));
+
+        // Expected behavior: the canceled original execution must not be imported.
+        assertThat(countAccountTransfers(results), is(1L));
+
+        assertThat(results, hasItem(allOf( //
+                        hasAccount(referenceAccount), //
+                        hasSecondaryAccount(accountWithTWD), //
+                        outboundCash( //
+                                        hasDate("2025-09-11T17:00"), //
+                                        hasNote("Trade-ID: 1144440025 | Transaction-ID: 4610738885")))));
+
+        assertThat(results, not(hasItem(outboundCash( //
+                        hasNote("Trade-ID: 1144440025 | Transaction-ID: 4606872535")))));
     }
 
     @Test
