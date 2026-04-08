@@ -957,6 +957,40 @@ public class WirBankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf13()
+    {
+        var client = new Client();
+
+        var extractor = new WirBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf13_ViacInvest_English.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH1336969097"), hasWkn(null), hasTicker(null), //
+                        hasName("VIAC Equity Switzerland Sustainable"), //
+                        hasCurrencyCode("CHF"))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-01-16T00:00"), hasShares(0.682), //
+                        hasSource("Kauf13_ViacInvest_English.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 67.72), hasGrossValue("CHF", 67.72), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+    }
+
+    @Test
     public void testInterest01()
     {
         var client = new Client();
@@ -1460,6 +1494,35 @@ public class WirBankPDFExtractorTest
                         hasSource("CreditNote04_Francais.txt"), //
                         hasNote("Versement BVRB"), //
                         hasAmount("CHF", 6768.00))));
+    }
+
+    @Test
+    public void testCreditNote05()
+    {
+        var client = new Client();
+
+        var extractor = new WirBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CreditNote05_ViacInvest_English.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2025-01-08"), //
+                        hasSource("CreditNote05_ViacInvest_English.txt"), //
+                        hasNote("John Doe"), //
+                        hasAmount("CHF", 610.00))));
     }
 
     @Test

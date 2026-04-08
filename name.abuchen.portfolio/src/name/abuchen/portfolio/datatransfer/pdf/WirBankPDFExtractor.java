@@ -78,7 +78,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // Zahlungseingang von: Einzahlung ABCD
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^(Zahlungseingang von|Incoming payment from|Mode de versement): (?<note>.*)$") //
+                        .match("^(Zahlungseingang von|Incoming payment from|Mode de versement|Deposit by): (?<note>.*)$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         .wrap(TransactionItem::new);
