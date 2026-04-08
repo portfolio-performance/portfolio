@@ -86,6 +86,7 @@ public interface UIConstants
         String OPEN_RECENT_FILE = "name.abuchen.portfolio.ui.command.openRecentFile"; //$NON-NLS-1$
         String NEW_DOMAIN_ELEMENT = "name.abuchen.portfolio.ui.command.newDomainElement"; //$NON-NLS-1$
         String IMPORT_CSV = "name.abuchen.portfolio.ui.command.import"; //$NON-NLS-1$
+        String IMPORT_IB_FLEX_WEBSERVICE = "name.abuchen.portfolio.ui.command.import.ib.webservice"; //$NON-NLS-1$
         String PREFERENCES = "org.eclipse.ui.window.preferences"; //$NON-NLS-1$
         String UPDATE_QUOTES = "name.abuchen.portfolio.ui.command.updatequotes"; //$NON-NLS-1$
         String MIGRATE_PORTFOLIO_REPORT = "name.abuchen.portfolio.ui.command.tools.migratePortfolioReportHandler"; //$NON-NLS-1$
@@ -111,6 +112,7 @@ public interface UIConstants
         String TYPE = "name.abuchen.portfolio.ui.param.type"; //$NON-NLS-1$
         String FILTER = "name.abuchen.portfolio.ui.param.filter"; //$NON-NLS-1$
         String WATCHLIST = "name.abuchen.portfolio.ui.param.watchlist"; //$NON-NLS-1$
+        String IBFLEX_QUERY_ID = "name.abuchen.portfolio.ui.param.ibflex-query-id"; //$NON-NLS-1$
     }
 
     /**
@@ -248,6 +250,8 @@ public interface UIConstants
         String COINGECKO_API_KEY = "COINGECKO_API_KEY"; //$NON-NLS-1$
 
         String COINGECKO_DEMO_API_KEY = "COINGECKO_DEMO_API_KEY"; //$NON-NLS-1$
+
+        String IBFLEX_CREDENTIALS = "IBFLEX_CREDENTIALS"; //$NON-NLS-1$
 
         @Deprecated(since = "2025-05-09")
         String PORTFOLIO_REPORT_API_KEY = "PORTFOLIO_REPORT_API_KEY"; //$NON-NLS-1$ //NOSONAR
