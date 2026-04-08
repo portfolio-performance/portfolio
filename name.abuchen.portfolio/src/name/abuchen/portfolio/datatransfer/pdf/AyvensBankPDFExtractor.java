@@ -40,11 +40,7 @@ public class AyvensBankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .section("date", "amount", "currency") //
                         .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) Zinsen dazu (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc})$") //
@@ -67,11 +63,7 @@ public class AyvensBankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "note", "amount", "currency") //
                         .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<note>(?!Zinsen).*) dazu (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc})$") //
@@ -91,11 +83,7 @@ public class AyvensBankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.REMOVAL);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
 
                         .section("date", "note", "amount", "currency") //
                         .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<note>.*) Ab \\-(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc})$") //
