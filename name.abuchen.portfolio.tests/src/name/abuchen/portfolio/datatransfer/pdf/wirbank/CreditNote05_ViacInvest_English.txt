@@ -1,0 +1,30 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.82.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+VIAC Invest AG
+Innere Margarethenstrasse 2
+4051 Basel
+E-Mail info@viac.ch
+Phone 0800 80 40 40
+www.viac.ch
+Contract 1.111.111.111
+Portfolio 1.111.111.111.11
+Mr
+John Doe
+Sample Street 1
+4051 Basel
+Basel, 08.01.2025
+Deposit VIAC Invest
+Credit from 08.01.2025:
+Deposit by: John Doe
+Employer AG
+Deposit for: John Doe
+Private
+QR-IBAN: CH1111111111111111111
+Reference number: 1111111111111111111111
+Credit: Value date 08.01.2025 CHF 610.00
+S. E. & O.
+Kind regards
+VIAC Invest AG
+Notice without signature
