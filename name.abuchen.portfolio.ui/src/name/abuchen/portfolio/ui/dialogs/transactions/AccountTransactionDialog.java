@@ -9,7 +9,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +42,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityEvent;
+import name.abuchen.portfolio.model.SecurityEvent.DividendEvent;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
@@ -439,28 +439,15 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         if (security == null || AccountTransactionModel.EMPTY_SECURITY.equals(security))
             return;
 
-        var txDate = model().getDate();
+        var dividendEvents = security.getEvents().stream()
+                        .filter(event -> event.getType() == SecurityEvent.Type.DIVIDEND_PAYMENT)
+                        .map(DividendEvent.class::cast)
+                        .toList();
 
-        for (var event : security.getEvents())
-        {
-            if (!(event instanceof SecurityEvent.DividendEvent dividend))
-                continue;
-
-            var paymentDate = dividend.getPaymentDate();
-            if (paymentDate == null)
-                continue;
-
-            if (Math.abs(ChronoUnit.DAYS.between(txDate, paymentDate)) <= 5)
-            {
-                var eventExDate = dividend.getDate();
-                if (eventExDate == null)
-                    continue;
-
-                exDate.date.setSelection(eventExDate);
-                model().setExDate(eventExDate.atStartOfDay());
-                return;
-            }
-        }
+        DividendEvent.findExDateByPaymentDate(model().getDate(), dividendEvents).ifPresent(eventExDate -> {
+            exDate.date.setSelection(eventExDate);
+            model().setExDate(eventExDate.atStartOfDay());
+        });
     }
 
     private ComboInput setupSecurities(Composite editArea)

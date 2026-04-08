@@ -1,7 +1,11 @@
 package name.abuchen.portfolio.model;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import name.abuchen.portfolio.money.Money;
@@ -97,6 +101,26 @@ public class SecurityEvent
                 return false;
             DividendEvent other = (DividendEvent) obj;
             return Objects.equals(amount, other.amount) && Objects.equals(paymentDate, other.paymentDate);
+        }
+
+        /**
+         * Finds the ex-date of the dividend event whose payment date is closest
+         * to the given booking date, within a tolerance of 5 days.
+         */
+        public static Optional<LocalDate> findExDateByPaymentDate(LocalDate bookingDate,
+                        List<DividendEvent> dividendEvents)
+        {
+            if (bookingDate == null || dividendEvents == null || dividendEvents.isEmpty())
+                return Optional.empty();
+
+            return dividendEvents.stream()
+                            .filter(event -> event.getDate() != null && event.getPaymentDate() != null)
+                            .filter(event -> Math.abs(ChronoUnit.DAYS.between(bookingDate,
+                                            event.getPaymentDate())) <= 5)
+                            .min(Comparator.comparingLong((DividendEvent event) -> Math
+                                            .abs(ChronoUnit.DAYS.between(bookingDate, event.getPaymentDate())))
+                                            .thenComparing(DividendEvent::getPaymentDate))
+                            .map(DividendEvent::getDate);
         }
     }
 

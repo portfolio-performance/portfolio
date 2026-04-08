@@ -1,12 +1,8 @@
 package name.abuchen.portfolio.ui.wizards.datatransfer;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 import org.eclipse.swt.widgets.Display;
 
@@ -30,8 +26,6 @@ import name.abuchen.portfolio.ui.wizards.security.FindQuoteProviderDialog;
 
 public class ImportController
 {
-    private static final long EX_DATE_PAYMENT_DATE_TOLERANCE_DAYS = 5;
-
     private final Client client;
 
     public ImportController(Client client)
@@ -145,7 +139,7 @@ public class ImportController
             }
         }
 
-        var exDate = findMatchingExDate(transaction.getDateTime().toLocalDate(), events);
+        var exDate = DividendEvent.findExDateByPaymentDate(transaction.getDateTime().toLocalDate(), events);
 
         if (exDate.isPresent())
         {
@@ -156,19 +150,5 @@ public class ImportController
         {
             return false;
         }
-    }
-
-    private Optional<LocalDate> findMatchingExDate(LocalDate bookingDate, List<DividendEvent> dividendEvents)
-    {
-        if (bookingDate == null || dividendEvents == null || dividendEvents.isEmpty())
-            return Optional.empty();
-
-        return dividendEvents.stream().filter(event -> event.getDate() != null && event.getPaymentDate() != null)
-                        .filter(event -> Math.abs(ChronoUnit.DAYS.between(bookingDate,
-                                        event.getPaymentDate())) <= EX_DATE_PAYMENT_DATE_TOLERANCE_DAYS)
-                        .min(Comparator.comparingLong((DividendEvent event) -> Math
-                                        .abs(ChronoUnit.DAYS.between(bookingDate, event.getPaymentDate())))
-                                        .thenComparing(DividendEvent::getPaymentDate))
-                        .map(DividendEvent::getDate);
     }
 }
