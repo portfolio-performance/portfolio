@@ -326,6 +326,14 @@ public enum WidgetFactory
     CALCULATION(Messages.LabelPerformanceCalculation, Messages.ClientEditorLabelPerformance,
                     PerformanceCalculationWidget::new),
 
+    PERFORMANCE_TOP_CONTRIBUTORS(Messages.LabelTopContributorsValue, Messages.ClientEditorLabelPerformance,
+                    config -> config.put(Dashboard.Config.LAYOUT.name(),
+                                    TopContributorsWidget.ContributorsLayout.ONLY_SECURITIES.name()),
+                    TopContributorsWidget::new),
+
+    PERFORMANCE_TOP_CONTRIBUTORS_RETURN(Messages.LabelTopContributorsReturn, Messages.ClientEditorLabelPerformance,
+                    TopContributorsReturnWidget::new),
+
     CHART(Messages.LabelPerformanceChart, Messages.ClientEditorLabelPerformance, Images.VIEW_LINECHART,
                     (widget, data) -> new ChartWidget(widget, data, DataSeries.UseCase.PERFORMANCE)),
 

@@ -935,6 +935,9 @@ public class Messages extends NLS
     public static String LabelTotalsAtTheBottom;
     public static String LabelTotalsAtTheTop;
     public static String LabelTotalSum;
+    public static String LabelTopAndBottomCount;
+    public static String LabelTopContributorsReturn;
+    public static String LabelTopContributorsValue;
     public static String LabelTotalValuePercent;
     public static String LabelTrades;
     public static String LabelTradesBasicStatistics;
