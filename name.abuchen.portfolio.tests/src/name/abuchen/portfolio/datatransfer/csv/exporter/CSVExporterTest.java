@@ -75,4 +75,69 @@ public class CSVExporterTest
         assertThat(errors2, empty());
         assertThat(results2.stream().filter(SecurityUpdateItem.class::isInstance).count(), is(1L));
     }
+    
+    @Test
+    public void testExportsExDateForAccountTransactions() throws Exception
+    {
+        AccountTransaction transaction = new AccountTransaction();
+        transaction.setType(AccountTransaction.Type.DIVIDENDS);
+        transaction.setDateTime(LocalDateTime.parse("2026-04-01T00:00"));
+        transaction.setExDate(LocalDateTime.parse("2026-03-30T00:00"));
+        transaction.setAmount(123_45);
+        transaction.setCurrencyCode("EUR");
+
+        var file = Files.createTempFile("csv-exporter-", ".csv");
+
+        try
+        {
+            new CSVExporter().exportTransactions(file.toFile(), List.of(transaction));
+
+            var lines = Files.readAllLines(file, StandardCharsets.UTF_8);
+            assertThat(lines.size(), is(2));
+
+            var separator = Pattern.quote(String.valueOf(TextUtil.getListSeparatorChar()));
+            var header = lines.get(0).split(separator, -1);
+            var row = lines.get(1).split(separator, -1);
+
+            var exDateColumn = IntStream.range(0, header.length)
+                            .filter(i -> Messages.CSVColumn_ExDate.equals(header[i])).findFirst().orElseThrow();
+            assertThat(row[exDateColumn], is("2026-03-30T00:00"));
+        }
+        finally
+        {
+            Files.deleteIfExists(file);
+        }
+    }
+
+    @Test
+    public void testLeavesExDateEmptyForPortfolioTransactions() throws Exception
+    {
+        PortfolioTransaction transaction = new PortfolioTransaction();
+        transaction.setType(PortfolioTransaction.Type.BUY);
+        transaction.setDateTime(LocalDateTime.parse("2026-04-01T00:00"));
+        transaction.setAmount(123_45);
+        transaction.setCurrencyCode("EUR");
+
+        Path file = Files.createTempFile("csv-exporter-", ".csv");
+
+        try
+        {
+            new CSVExporter().exportTransactions(file.toFile(), List.of(transaction));
+
+            var lines = Files.readAllLines(file, StandardCharsets.UTF_8);
+            assertThat(lines.size(), is(2));
+
+            var separator = Pattern.quote(String.valueOf(TextUtil.getListSeparatorChar()));
+            var header = lines.get(0).split(separator, -1);
+            var row = lines.get(1).split(separator, -1);
+
+            var exDateColumn = IntStream.range(0, header.length)
+                            .filter(i -> Messages.CSVColumn_ExDate.equals(header[i])).findFirst().orElseThrow();
+            assertThat(row[exDateColumn], is(""));
+        }
+        finally
+        {
+            Files.deleteIfExists(file);
+        }
+    }
 }
