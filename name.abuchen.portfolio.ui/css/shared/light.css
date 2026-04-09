@@ -96,7 +96,7 @@ CustomColors {
 
 ValueColorScheme.standard {
 	positive-foreground: #377500;
-	negative-foreground: #7f0000;
+	negative-foreground: #990000;
 	up-arrow: "scheme/standard/light/up_arrow.svg";
 	down-arrow: "scheme/standard/light/down_arrow.svg";
 }
@@ -113,6 +113,13 @@ ValueColorScheme.asia {
 	negative-foreground: #377500;
 	up-arrow: "scheme/asia/light/up_arrow.svg";
 	down-arrow: "scheme/asia/light/down_arrow.svg";
+}
+
+ValueColorScheme.vivid {
+	positive-foreground: #009B00;
+	negative-foreground: #C9310E;
+	up-arrow: "scheme/vivid/light/up_arrow.svg";
+	down-arrow: "scheme/vivid/light/down_arrow.svg";
 }
 
 SecuritiesChart {

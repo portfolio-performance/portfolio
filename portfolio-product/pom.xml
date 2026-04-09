@@ -157,7 +157,7 @@
 								<argument>--alias</argument>
 								<argument>${jarsigner.alias}</argument>
 								<argument>--tsaurl</argument>
-								<argument>http://time.certum.pl/</argument>
+								<argument>${tsaurl}</argument>
 								<argument>--name</argument>
 								<argument>Portfolio Performance</argument>
 								<argument>-url</argument>

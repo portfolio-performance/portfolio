@@ -37,7 +37,7 @@ find . -type f -name 'PortfolioPerformance.exe' | while read -r EXECUTABLE; do
     --storetype PKCS11 \
     --storepass "$STOREPASS" \
     --alias "$ALIAS" \
-    --tsaurl http://time.certum.pl/ \
+    --tsaurl "$TSAURL" \
     --name "Portfolio Performance" \
     --url https://www.portfolio-performance.info \
     "$EXECUTABLE"

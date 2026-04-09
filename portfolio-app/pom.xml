@@ -17,6 +17,7 @@
 		<applesigner.skip>true</applesigner.skip>
 		<installer.skip>true</installer.skip>
 		<exesigner.skip>true</exesigner.skip>
+		<tsaurl>http://time.certum.pl/</tsaurl>
 		<sonar.skippedModules>name.abuchen.portfolio.feature</sonar.skippedModules>
 		<sonar.exclusions>**/Messages.java,**/name/abuchen/portfolio/model/proto/**</sonar.exclusions>
 		<sonar.organization>buchen-github</sonar.organization>
@@ -523,7 +524,7 @@
 						<alias>${jarsigner.alias}</alias>
 						<providerArg>${jarsigner.providerArg}</providerArg>
 						<certchain>${project.basedir}/../portfolio-app/certchain.txt</certchain>
-						<tsa>http://time.certum.pl/</tsa>
+						<tsa>${tsaurl}</tsa>
 					</configuration>
 				</plugin>
 				<plugin>

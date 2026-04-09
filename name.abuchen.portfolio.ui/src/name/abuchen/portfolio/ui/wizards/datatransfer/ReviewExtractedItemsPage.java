@@ -659,10 +659,15 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             // marked as to be imported by the user
             atLeastOneImported = atLeastOneImported || entry.isImported();
 
-            // an entry will not be imported if it marked as not to be
-            // imported *or* if it has a WARNING code (e.g. is a duplicate)
+            // show "Do Import" only for entries the user can actually import
+            // (not dependency-blocked, not ERROR/SKIP) that aren't currently
+            // marked for import
+            boolean canImport = entry.getMaxCode() == Code.OK || entry.getMaxCode() == Code.WARNING;
+            boolean notDependencyBlocked = entry.getSecurityDependency() == null
+                            || entry.getSecurityDependency().isImported()
+                            || entry.getSecurityOverride() != null;
             atLeastOneNotImported = atLeastOneNotImported
-                            || (!entry.isImported() && (entry.getMaxCode() == Code.WARNING));
+                            || (!entry.isImported() && canImport && notDependencyBlocked);
         }
 
         // provide a hint to the user why the entry is struck out
