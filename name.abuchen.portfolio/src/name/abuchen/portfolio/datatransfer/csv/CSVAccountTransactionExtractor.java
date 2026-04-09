@@ -54,6 +54,7 @@ import name.abuchen.portfolio.money.Money;
         fields.add(new AmountField("gross", Messages.CSVColumn_GrossAmount).setOptional(true)); //$NON-NLS-1$
         fields.add(new Field("currencyGross", Messages.CSVColumn_CurrencyGrossAmount).setOptional(true)); //$NON-NLS-1$
         fields.add(new AmountField("exchangeRate", Messages.CSVColumn_ExchangeRate).setOptional(true)); //$NON-NLS-1$
+        fields.add(new DateField("exDate", Messages.CSVColumn_ExDate).setOptional(true)); //$NON-NLS-1$
     }
 
     @Override
@@ -79,6 +80,7 @@ import name.abuchen.portfolio.money.Money;
         var date = getDate(Messages.CSVColumn_Date, Messages.CSVColumn_Time, rawValues, field2column);
         if (date == null)
             throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Date), 0);
+        var exDate = getDate(Messages.CSVColumn_ExDate, null, rawValues, field2column);
         var note = getText(Messages.CSVColumn_Note, rawValues, field2column);
         var shares = getShares(Messages.CSVColumn_Shares, rawValues, field2column);
         var taxes = getAmount(Messages.CSVColumn_Taxes, rawValues, field2column);
@@ -131,6 +133,7 @@ import name.abuchen.portfolio.money.Money;
                 buySellEntry.setSecurity(security);
                 buySellEntry.setDate(date);
                 buySellEntry.setNote(note);
+                buySellEntry.getAccountTransaction().setExDate(exDate);
 
                 if (grossAmount.isPresent())
                     buySellEntry.getPortfolioTransaction().addUnit(grossAmount.get());
@@ -182,6 +185,8 @@ import name.abuchen.portfolio.money.Money;
                     t.setSecurity(security);
                 t.setDateTime(date);
                 t.setNote(note);
+                if (security != null)
+                    t.setExDate(exDate);
 
                 if (type == Type.DIVIDENDS)
                 {

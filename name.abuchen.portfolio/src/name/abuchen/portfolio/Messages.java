@@ -36,6 +36,7 @@ public class Messages extends NLS
     public static String CSVColumn_Date;
     public static String CSVColumn_DateQuote;
     public static String CSVColumn_DateValue;
+    public static String CSVColumn_ExDate;
     public static String CSVColumn_DeltaInPercent;
     public static String CSVColumn_ExchangeRate;
     public static String CSVColumn_Fees;
