@@ -7,6 +7,11 @@ import static org.hamcrest.Matchers.is;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+<<<<<<< Upstream, based on origin/master
+=======
+import java.nio.file.Path;
+import java.time.LocalDateTime;
+>>>>>>> 0599cab CSV Import/Export for ex-date
 import java.util.ArrayList;
 import java.util.List;
 
@@ -90,7 +95,7 @@ public class CSVExporterTest
 
         try
         {
-            new CSVExporter().exportTransactions(file.toFile(), List.of(transaction));
+            new CSVExporter().exportTransactions(file.toFile(), new ArrayList<>(List.of(transaction)));
 
             var lines = Files.readAllLines(file, StandardCharsets.UTF_8);
             assertThat(lines.size(), is(2));
@@ -122,7 +127,7 @@ public class CSVExporterTest
 
         try
         {
-            new CSVExporter().exportTransactions(file.toFile(), List.of(transaction));
+            new CSVExporter().exportTransactions(file.toFile(), new ArrayList<>(List.of(transaction)));
 
             var lines = Files.readAllLines(file, StandardCharsets.UTF_8);
             assertThat(lines.size(), is(2));
