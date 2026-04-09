@@ -96,7 +96,7 @@ CustomColors {
 
 ValueColorScheme.standard {
 	positive-foreground: #377500;
-	negative-foreground: #7f0000;
+	negative-foreground: #990000;
 	up-arrow: "scheme/standard/light/up_arrow.svg";
 	down-arrow: "scheme/standard/light/down_arrow.svg";
 }
