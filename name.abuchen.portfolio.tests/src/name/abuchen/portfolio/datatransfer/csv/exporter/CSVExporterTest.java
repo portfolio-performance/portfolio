@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
@@ -35,7 +36,7 @@ public class CSVExporterTest
 
         try
         {
-            new CSVExporter().exportTransactions(file.toFile(), List.of(transaction));
+            new CSVExporter().exportTransactions(file.toFile(), new ArrayList<>(List.of(transaction)));
 
             var lines = Files.readAllLines(file, StandardCharsets.UTF_8);
             assertThat(lines.size(), is(2));
@@ -67,7 +68,7 @@ public class CSVExporterTest
 
         try
         {
-            new CSVExporter().exportTransactions(file.toFile(), List.of(transaction));
+            new CSVExporter().exportTransactions(file.toFile(), new ArrayList<>(List.of(transaction)));
 
             var lines = Files.readAllLines(file, StandardCharsets.UTF_8);
             assertThat(lines.size(), is(2));
