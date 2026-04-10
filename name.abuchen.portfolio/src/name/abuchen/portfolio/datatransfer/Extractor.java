@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ImportAction.Context;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
@@ -825,6 +827,7 @@ public interface Extractor
      */
     List<Item> extract(SecurityCache securityCache, InputFile file, List<Exception> errors);
 
+    @VisibleForTesting
     default List<Item> extract(List<InputFile> file, List<Exception> errors)
     {
         // keep the method signature stable to avoid changing *all* test cases.
