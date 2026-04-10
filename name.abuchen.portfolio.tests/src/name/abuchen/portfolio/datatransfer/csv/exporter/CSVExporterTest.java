@@ -25,7 +25,7 @@ public class CSVExporterTest
     @Test
     public void testExportsExDateForAccountTransactions() throws Exception
     {
-        AccountTransaction transaction = new AccountTransaction();
+        var transaction = new AccountTransaction();
         transaction.setType(AccountTransaction.Type.DIVIDENDS);
         transaction.setDateTime(LocalDateTime.parse("2026-04-01T00:00"));
         transaction.setExDate(LocalDateTime.parse("2026-03-30T00:00"));
@@ -58,7 +58,7 @@ public class CSVExporterTest
     @Test
     public void testLeavesExDateEmptyForPortfolioTransactions() throws Exception
     {
-        PortfolioTransaction transaction = new PortfolioTransaction();
+        var transaction = new PortfolioTransaction();
         transaction.setType(PortfolioTransaction.Type.BUY);
         transaction.setDateTime(LocalDateTime.parse("2026-04-01T00:00"));
         transaction.setAmount(123_45);
