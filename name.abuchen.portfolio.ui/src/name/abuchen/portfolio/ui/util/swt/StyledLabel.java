@@ -257,7 +257,10 @@ public class StyledLabel extends Canvas // NOSONAR
     @Override
     public Point computeSize(int wHint, int hHint, boolean changed)
     {
-        this.textLayout.setWidth(wHint == SWT.DEFAULT ? SWT.DEFAULT : Math.max(wHint - 4, 1));
+        if ((getStyle() & SWT.WRAP) != 0)
+            this.textLayout.setWidth(wHint == SWT.DEFAULT ? SWT.DEFAULT : Math.max(wHint - 4, 1));
+        else
+            this.textLayout.setWidth(SWT.DEFAULT);
         Rectangle bounds = this.textLayout.getBounds();
         return new Point(bounds.width + 4, bounds.height + 1);
     }
