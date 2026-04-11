@@ -478,6 +478,9 @@ public class GenericJSONQuoteFeed implements QuoteFeed
 
     private LocalDate parseDateTimestamp(Long object, ZoneOffset offset)
     {
+        if (object < 0)
+            return LocalDateTime.ofEpochSecond(object, 0, offset).toLocalDate();
+
         Long futureEpoch = LocalDateTime.of(2200, 1, 1, 0, 0, 0, 0).toEpochSecond(offset);
 
         if (object > futureEpoch)

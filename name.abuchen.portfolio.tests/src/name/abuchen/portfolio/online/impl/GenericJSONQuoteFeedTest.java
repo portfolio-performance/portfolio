@@ -710,6 +710,19 @@ public class GenericJSONQuoteFeedTest
     }
 
     @Test
+    public void testDateExtractionNegativeTimestamp()
+    {
+        // Date is in seconds from epoch, negative for pre-1970 dates (e.g. onvista API)
+        String json = "{\"data\":[{\"date\":-86400,\"close\":\"123.00\"}],\"info\":\"Json Feed for APPLE ORD\"}";
+        GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
+
+        Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
+        LocalDate date = feed.extractDate(object, Optional.empty(), Optional.empty());
+
+        assertEquals(LocalDate.of(1969, 12, 31), date);
+    }
+
+    @Test
     public void testDateExtractionInvalid()
     {
         // Date is an array -> invalid
