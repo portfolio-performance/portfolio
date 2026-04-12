@@ -37,7 +37,7 @@
 	    <keyword>investment</keyword>
   </keywords>
   <releases>
-    <release version="0.82.2" date="2026-04-12">
+    <release version="0.83.0" date="2026-04-12">
       <description>
         <ul>
           <li>New: Added Top Contributors dashboard widgets.</li>
