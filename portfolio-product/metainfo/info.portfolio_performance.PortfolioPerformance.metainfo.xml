@@ -33,10 +33,42 @@
   </categories>
   <keywords>
     <keyword>finance</keyword>
-    <keyword>portfolio</keyword>
-    <keyword>investment</keyword>
+	    <keyword>portfolio</keyword>
+	    <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.82.2" date="2026-04-12">
+      <description>
+        <ul>
+          <li>New: Added Top Contributors dashboard widgets.</li>
+          <li>New: Allow using different tickers for historical and latest quote feeds.</li>
+          <li>New: Added Vivid value color scheme.</li>
+          <li>New: Added backfill tool for ex-dates of existing dividend transactions.</li>
+          <li>New: Added option to show the last transaction date in accounts and portfolios.</li>
+          <li>New: Added FIRE (Financial Independence, Retire Early) calculation widget.</li>
+          <li>New: Added PDF importers for Ayvens Bank and Tradegate (account statements).</li>
+          <li>Improvement: Migrated Eurostat HICP feed to a new dataset.</li>
+          <li>Improvement: Automatically look up ex-date during PDF import of new dividend transactions.</li>
+          <li>Improvement: Enhanced PDF importers for Trade Republic, ING-DiBa, Scalable Capital, DKB, DZ Bank Gruppe, Gladbacher Bank AG, NIBC Bank, Raiffeisen Bankgruppe, S Broker, Santander Consumer Bank, DAB, and Deutsche Bank.</li>
+          <li>Improvement: Made first treemap labels bold for better readability.</li>
+          <li>Fix: Importer allows re-marking entries for import.</li>
+          <li>Fix: Prevent detaching the portfolio window.</li>
+          <li xml:lang="de">Neu: Top-Contributors-Widgets im Dashboard hinzugefügt.</li>
+          <li xml:lang="de">Neu: Unterschiedliche Ticker für historische und aktuelle Kursquellen konfigurierbar.</li>
+          <li xml:lang="de">Neu: Farbschema „Vivid“ hinzugefügt.</li>
+          <li xml:lang="de">Neu: Werkzeug zum Nachpflegen der Ex-Daten bestehender Dividendenbuchungen hinzugefügt.</li>
+          <li xml:lang="de">Neu: Optionale Anzeige des Datums der letzten Transaktion in Konten und Portfolios.</li>
+          <li xml:lang="de">Neu: FIRE-Berechnungs-Widget (Financial Independence, Retire Early) hinzugefügt.</li>
+          <li xml:lang="de">Neu: PDF-Importer für Ayvens Bank und Tradegate (Kontoauszüge) hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: Eurostat-HICP-Datenquelle auf den neuen Datensatz umgestellt.</li>
+          <li xml:lang="de">Verbesserung: Ex-Daten werden beim PDF-Import neuer Dividendenbuchungen automatisch ermittelt.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für Trade Republic, ING-DiBa, Scalable Capital, DKB, DZ Bank Gruppe, Gladbacher Bank AG, NIBC Bank, Raiffeisen Bankgruppe, S Broker, Santander Consumer Bank, DAB und Deutsche Bank verbessert.</li>
+          <li xml:lang="de">Verbesserung: Die erste Zeile der Treemap-Beschriftungen für bessere Lesbarkeit fett dargestellt.</li>
+          <li xml:lang="de">Fehlerbehebung: Importer ermöglicht das erneute Markieren von Einträgen für den Import.</li>
+          <li xml:lang="de">Fehlerbehebung: Abdocken des Portfolio-Fensters wird verhindert.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.82.1" date="2026-03-17">
       <description>
         <ul>
