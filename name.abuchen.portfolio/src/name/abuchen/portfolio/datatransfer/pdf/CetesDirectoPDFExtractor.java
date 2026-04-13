@@ -299,6 +299,6 @@ public class CetesDirectoPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Amount, "es", "MX");
+        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Amount, "es", "MX");
     }
 }

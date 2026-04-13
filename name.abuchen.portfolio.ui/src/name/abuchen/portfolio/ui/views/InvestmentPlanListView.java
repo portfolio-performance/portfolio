@@ -300,7 +300,8 @@ public class InvestmentPlanListView extends AbstractFinanceView implements Modif
             }
         });
         ColumnViewerSorter.create(InvestmentPlan.class, "amount").attachTo(column); //$NON-NLS-1$
-        new ValueEditingSupport(InvestmentPlan.class, "amount", Values.Amount).addListener(this).attachTo(column); //$NON-NLS-1$
+        new ValueEditingSupport(negativeValue, InvestmentPlan.class, "amount", Values.Amount).addListener(this) //$NON-NLS-1$
+                        .attachTo(column);
         support.addColumn(column);
 
         column = new Column(Messages.ColumnFees, SWT.RIGHT, 80);

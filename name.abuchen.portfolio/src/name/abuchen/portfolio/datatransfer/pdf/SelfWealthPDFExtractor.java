@@ -138,12 +138,12 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Amount, "en", "AU");
+        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Amount, "en", "AU");
     }
 
     @Override
     protected long asShares(String value)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Share, "en", "AU");
+        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Share, "en", "AU");
     }
 }

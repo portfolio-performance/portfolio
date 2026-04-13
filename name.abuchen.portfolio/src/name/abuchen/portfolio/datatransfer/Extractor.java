@@ -17,6 +17,7 @@ import name.abuchen.portfolio.datatransfer.ImportAction.Context;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.ibflex.IBFlexStatementExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.AbstractPDFExtractor;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
@@ -868,5 +869,9 @@ public interface Extractor
     default void postProcessing(List<Item> result)
     {
     }
+
+    NegativeValue getNegativeValue();
+
+    void setNegativeValue(NegativeValue negativeValue);
 
 }

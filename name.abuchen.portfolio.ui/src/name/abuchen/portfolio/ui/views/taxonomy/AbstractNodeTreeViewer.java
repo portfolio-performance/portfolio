@@ -47,6 +47,7 @@ import org.eclipse.swt.widgets.Control;
 
 import com.google.common.base.Strings;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.InvestmentVehicle;
@@ -286,6 +287,9 @@ import name.abuchen.portfolio.util.TextUtil;
     protected static final String MENU_GROUP_DEFAULT_ACTIONS = "defaultActions"; //$NON-NLS-1$
     protected static final String MENU_GROUP_CUSTOM_ACTIONS = "customActions"; //$NON-NLS-1$
     protected static final String MENU_GROUP_DELETE_ACTIONS = "deleteActions"; //$NON-NLS-1$
+
+    @Inject
+    protected NegativeValue negativeValue;
 
     @Inject
     private SelectionService selectionService;
@@ -601,7 +605,7 @@ import name.abuchen.portfolio.util.TextUtil;
             }
 
         });
-        new ValueEditingSupport(TaxonomyNode.class, "weight", Values.Weight) //$NON-NLS-1$
+        new ValueEditingSupport(negativeValue, TaxonomyNode.class, "weight", Values.Weight) //$NON-NLS-1$
         {
             @Override
             public boolean canEdit(Object element)

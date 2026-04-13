@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
@@ -15,10 +16,12 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 
 public class IssueFixGrossValueUnitInClientFactoryTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testMigrationOfClassificationKeys() throws IOException
     {
-        Client client = ClientFactory.load(Issue1498FifoCrossPortfolioTest.class
+        Client client = ClientFactory.load(negativeValue, Issue1498FifoCrossPortfolioTest.class
                         .getResourceAsStream("IssueFixGrossValueUnitInClientFactory.xml")); //$NON-NLS-1$
 
         assertThat(client.getFileVersionAfterRead(), is(55));

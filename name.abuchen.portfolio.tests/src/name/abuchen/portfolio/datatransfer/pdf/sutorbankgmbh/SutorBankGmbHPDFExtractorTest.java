@@ -51,6 +51,7 @@ import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.SutorBankGmbHPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.TestCoinSearchProvider;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -64,6 +65,8 @@ import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
 @SuppressWarnings("nls")
 public class SutorBankGmbHPDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     SutorBankGmbHPDFExtractor extractor = new SutorBankGmbHPDFExtractor(new Client())
     {
         @Override
@@ -77,6 +80,7 @@ public class SutorBankGmbHPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new SutorBankGmbHPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

@@ -179,18 +179,18 @@ public class CommSecPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Amount, "en", "AU");
+        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Amount, "en", "AU");
     }
 
     @Override
     protected long asShares(String value)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Share, "en", "AU");
+        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Share, "en", "AU");
     }
 
     @Override
     protected BigDecimal asExchangeRate(String value)
     {
-        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "en", "AU");
+        return ExtractorUtils.convertToNumberBigDecimal(negativeValue, value, Values.Share, "en", "AU");
     }
 }

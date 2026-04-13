@@ -23,6 +23,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.PictetCieGruppeSAPDFExtractor;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -34,10 +35,13 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class PictetCieGruppeSAPDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testWertpapierKauf01()
     {
         var extractor = new PictetCieGruppeSAPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -88,6 +92,7 @@ public class PictetCieGruppeSAPDFExtractorTest
     public void testWertpapierKauf02()
     {
         var extractor = new PictetCieGruppeSAPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -138,6 +143,7 @@ public class PictetCieGruppeSAPDFExtractorTest
     public void testWertpapierKauf03()
     {
         var extractor = new PictetCieGruppeSAPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -188,6 +194,7 @@ public class PictetCieGruppeSAPDFExtractorTest
     public void testWertpapierKauf04()
     {
         var extractor = new PictetCieGruppeSAPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -238,6 +245,7 @@ public class PictetCieGruppeSAPDFExtractorTest
     public void testWertpapierVerkauf01()
     {
         var extractor = new PictetCieGruppeSAPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -288,6 +296,7 @@ public class PictetCieGruppeSAPDFExtractorTest
     public void testDividende01()
     {
         var extractor = new PictetCieGruppeSAPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

@@ -51,6 +51,7 @@ import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.WirBankPDFExtractor;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -66,10 +67,13 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class WirBankPDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testWertpapierKauf01()
     {
         var extractor = new WirBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -111,6 +115,7 @@ public class WirBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -144,6 +149,7 @@ public class WirBankPDFExtractorTest
     public void testWertpapierKauf02()
     {
         var extractor = new WirBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -178,6 +184,7 @@ public class WirBankPDFExtractorTest
     public void testWertpapierKauf03()
     {
         var extractor = new WirBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -219,6 +226,7 @@ public class WirBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -254,6 +262,7 @@ public class WirBankPDFExtractorTest
         var client = new Client();
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -306,6 +315,7 @@ public class WirBankPDFExtractorTest
         var client = new Client();
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -366,6 +376,7 @@ public class WirBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -415,6 +426,7 @@ public class WirBankPDFExtractorTest
         var client = new Client();
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -475,6 +487,7 @@ public class WirBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -524,6 +537,7 @@ public class WirBankPDFExtractorTest
         var client = new Client();
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -584,6 +598,7 @@ public class WirBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -631,6 +646,7 @@ public class WirBankPDFExtractorTest
     public void testWertpapierKauf08()
     {
         var extractor = new WirBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -672,6 +688,7 @@ public class WirBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -705,6 +722,7 @@ public class WirBankPDFExtractorTest
     public void testWertpapierKauf09()
     {
         var extractor = new WirBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -739,6 +757,7 @@ public class WirBankPDFExtractorTest
     public void testWertpapierKauf10()
     {
         var extractor = new WirBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -780,6 +799,7 @@ public class WirBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -815,6 +835,7 @@ public class WirBankPDFExtractorTest
         var client = new Client();
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -875,6 +896,7 @@ public class WirBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -910,6 +932,7 @@ public class WirBankPDFExtractorTest
         var client = new Client();
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -996,6 +1019,7 @@ public class WirBankPDFExtractorTest
         var client = new Client();
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1033,6 +1057,7 @@ public class WirBankPDFExtractorTest
         var client = new Client();
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1070,6 +1095,7 @@ public class WirBankPDFExtractorTest
         var client = new Client();
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1107,6 +1133,7 @@ public class WirBankPDFExtractorTest
         var client = new Client();
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1142,6 +1169,7 @@ public class WirBankPDFExtractorTest
     public void testInterest05()
     {
         var extractor = new WirBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1172,6 +1200,7 @@ public class WirBankPDFExtractorTest
         var client = new Client();
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1202,6 +1231,7 @@ public class WirBankPDFExtractorTest
         var client = new Client();
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1239,6 +1269,7 @@ public class WirBankPDFExtractorTest
         var client = new Client();
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1274,6 +1305,7 @@ public class WirBankPDFExtractorTest
     public void testFees03()
     {
         var extractor = new WirBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1304,6 +1336,7 @@ public class WirBankPDFExtractorTest
     public void testFees04()
     {
         var extractor = new WirBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1332,6 +1365,7 @@ public class WirBankPDFExtractorTest
     public void testFees05()
     {
         var extractor = new WirBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1362,6 +1396,7 @@ public class WirBankPDFExtractorTest
         var client = new Client();
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1399,6 +1434,7 @@ public class WirBankPDFExtractorTest
         var client = new Client();
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1436,6 +1472,7 @@ public class WirBankPDFExtractorTest
         var client = new Client();
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1473,6 +1510,7 @@ public class WirBankPDFExtractorTest
         var client = new Client();
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1531,6 +1569,7 @@ public class WirBankPDFExtractorTest
         var client = new Client();
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1578,6 +1617,7 @@ public class WirBankPDFExtractorTest
         var client = new Client();
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1632,6 +1672,7 @@ public class WirBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1676,6 +1717,7 @@ public class WirBankPDFExtractorTest
         var client = new Client();
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1730,6 +1772,7 @@ public class WirBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1774,6 +1817,7 @@ public class WirBankPDFExtractorTest
         var client = new Client();
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1828,6 +1872,7 @@ public class WirBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1870,6 +1915,7 @@ public class WirBankPDFExtractorTest
     public void testDividende05()
     {
         var extractor = new WirBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1904,6 +1950,7 @@ public class WirBankPDFExtractorTest
     public void testDividende06()
     {
         var extractor = new WirBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1945,6 +1992,7 @@ public class WirBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1982,6 +2030,7 @@ public class WirBankPDFExtractorTest
         var client = new Client();
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2042,6 +2091,7 @@ public class WirBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2091,6 +2141,7 @@ public class WirBankPDFExtractorTest
         var client = new Client();
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2143,6 +2194,7 @@ public class WirBankPDFExtractorTest
         var client = new Client();
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2203,6 +2255,7 @@ public class WirBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2250,6 +2303,7 @@ public class WirBankPDFExtractorTest
     public void testWertpapierVerkauf04()
     {
         var extractor = new WirBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2284,6 +2338,7 @@ public class WirBankPDFExtractorTest
     public void testWertpapierVerkauf05()
     {
         var extractor = new WirBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2323,6 +2378,7 @@ public class WirBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2357,6 +2413,7 @@ public class WirBankPDFExtractorTest
         var client = new Client();
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2404,6 +2461,7 @@ public class WirBankPDFExtractorTest
         var client = new Client();
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2451,6 +2509,7 @@ public class WirBankPDFExtractorTest
         var client = new Client();
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2498,6 +2557,7 @@ public class WirBankPDFExtractorTest
         var client = new Client();
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2546,6 +2606,7 @@ public class WirBankPDFExtractorTest
         var client = new Client();
 
         var extractor = new WirBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2592,6 +2653,7 @@ public class WirBankPDFExtractorTest
     public void testSteuerrueckerstattung06()
     {
         var extractor = new WirBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2627,6 +2689,7 @@ public class WirBankPDFExtractorTest
     public void testSteuerrueckerstattung07()
     {
         var extractor = new WirBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2661,6 +2724,7 @@ public class WirBankPDFExtractorTest
     public void testDividendeStorno01()
     {
         var extractor = new WirBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

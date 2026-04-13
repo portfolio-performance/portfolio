@@ -18,6 +18,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
@@ -36,6 +37,7 @@ import name.abuchen.portfolio.util.Interval;
 public class ClassificationTestCase
 {
     private static TestCurrencyConverter converter = new TestCurrencyConverter();
+    private static NegativeValue negativeValue = new NegativeValue();
 
     private static Client client;
 
@@ -47,7 +49,8 @@ public class ClassificationTestCase
     @BeforeClass
     public static void prepare() throws IOException
     {
-        client = ClientFactory.load(SecurityTestCase.class.getResourceAsStream("classification_test_case.xml"));
+        client = ClientFactory.load(negativeValue,
+                        SecurityTestCase.class.getResourceAsStream("classification_test_case.xml"));
 
         adidas = client.getSecurities().stream().filter(s -> "Adidas AG".equals(s.getName())).findAny()
                         .orElseThrow(IllegalArgumentException::new);

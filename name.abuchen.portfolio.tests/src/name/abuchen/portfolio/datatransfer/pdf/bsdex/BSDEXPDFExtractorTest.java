@@ -34,12 +34,14 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.BSDEXPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.TestCoinSearchProvider;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
@@ -47,6 +49,8 @@ import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
 @SuppressWarnings("nls")
 public class BSDEXPDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     BSDEXPDFExtractor extractor = new BSDEXPDFExtractor(new Client())
     {
         @Override
@@ -55,6 +59,12 @@ public class BSDEXPDFExtractorTest
             return TestCoinSearchProvider.cryptoProvider();
         }
     };
+
+    @Before
+    public void init()
+    {
+        extractor.setNegativeValue(negativeValue);
+    }
 
     @Test
     public void testTransaktionshistorie01()
@@ -162,6 +172,7 @@ public class BSDEXPDFExtractorTest
     public void testTransaktionshistorie04()
     {
         var extractor = new BSDEXPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

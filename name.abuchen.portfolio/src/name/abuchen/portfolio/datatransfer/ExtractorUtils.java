@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Transaction;
@@ -343,7 +344,8 @@ public class ExtractorUtils
         }
     }
 
-    public static long convertToNumberLong(String value, Values<Long> valueType, String language, String country)
+    public static long convertToNumberLong(NegativeValue negativeValue, String value, Values<Long> valueType,
+                    String language, String country)
     {
         var newNumberFormat = (DecimalFormat) NumberFormat
                         .getInstance(Locale.forLanguageTag(language + "-" + country));
@@ -386,7 +388,7 @@ public class ExtractorUtils
 
         try
         {
-            return Math.abs(Math.round(newNumberFormat.parse(value).doubleValue() * valueType.factor()));
+            return negativeValue.maybeAbs(Math.round(newNumberFormat.parse(value).doubleValue() * valueType.factor()));
         }
         catch (ParseException e)
         {
@@ -394,7 +396,8 @@ public class ExtractorUtils
         }
     }
 
-    public static BigDecimal convertToNumberBigDecimal(String value, Values<Long> valueType, String language,
+    public static BigDecimal convertToNumberBigDecimal(NegativeValue negativeValue, String value,
+                    Values<Long> valueType, String language,
                     String country)
     {
         /**
@@ -446,9 +449,9 @@ public class ExtractorUtils
         }
     }
 
-    public static long asShares(String value, String language, String country)
+    public static long asShares(NegativeValue negativeValue, String value, String language, String country)
     {
-        return convertToNumberLong(value, Values.Share, language, country);
+        return convertToNumberLong(negativeValue, value, Values.Share, language, country);
     }
 
     public static LocalDateTime asDate(String value, Locale... hints)

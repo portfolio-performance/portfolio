@@ -175,7 +175,8 @@ public class QuotesContextMenu
                 if (fileName == null)
                     return;
 
-                CSVImportWizard wizard = new CSVImportWizard(owner.getClient(), owner.getPreferenceStore(),
+                CSVImportWizard wizard = new CSVImportWizard(owner.getNegativeValue(), owner.getClient(),
+                                owner.getPreferenceStore(),
                                 new File(fileName));
                 owner.inject(wizard);
                 wizard.setTarget(security);
@@ -210,7 +211,8 @@ public class QuotesContextMenu
             @Override
             public void run()
             {
-                Dialog dialog = new SecurityPriceDialog(Display.getDefault().getActiveShell(), owner.getClient(),
+                Dialog dialog = new SecurityPriceDialog(owner.getNegativeValue(), Display.getDefault().getActiveShell(),
+                                owner.getClient(),
                                 security);
 
                 if (dialog.open() != Window.OK)
