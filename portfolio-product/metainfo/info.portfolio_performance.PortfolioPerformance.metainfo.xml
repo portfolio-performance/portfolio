@@ -37,6 +37,14 @@
 	    <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.83.1" date="2026-04-15">
+      <description>
+        <ul>
+          <li>New: Import your complete transaction history via Trade Republic’s new CSV interface.</li>
+          <li xml:lang="de">Neu: Importiere Deine komplette Buchungshistorie über die neue CSV-Schnittstelle von Trade Republic.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.83.0" date="2026-04-12">
       <description>
         <ul>
