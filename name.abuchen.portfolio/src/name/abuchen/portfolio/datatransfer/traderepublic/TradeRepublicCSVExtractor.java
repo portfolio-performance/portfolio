@@ -55,6 +55,12 @@ public class TradeRepublicCSVExtractor implements Extractor
     }
 
     @Override
+    public void postProcessing(List<Item> items)
+    {
+        CashDividendCorrectionMatcher.reconcile(items);
+    }
+
+    @Override
     public List<Item> extract(SecurityCache securityCache, InputFile inputFile, List<Exception> errors)
     {
         var items = new ArrayList<Item>();
@@ -358,6 +364,12 @@ public class TradeRepublicCSVExtractor implements Extractor
 
     private void processCashDividend(CSVRecord csvRecord, SecurityCache securityCache, String source, List<Item> items)
     {
+        if (parseAmount(csvRecord) < 0)
+        {
+            processCashDividendCorrection(csvRecord, securityCache, source, items);
+            return;
+        }
+
         var security = lookupSecurity(csvRecord, securityCache);
         var date = parseDate(csvRecord);
         var currency = getField(csvRecord, "currency");
@@ -381,6 +393,49 @@ public class TradeRepublicCSVExtractor implements Extractor
         addFxUnitsIfNeeded(csvRecord, t, security, currency);
 
         items.add(new TransactionItem(t));
+    }
+
+    // Emits a failure DIVIDENDS item for a cash-dividend correction row
+    // (negative amount). Values are stored with their CSV signs preserved
+    // on the transaction (amount signed, tax/fee Units signed, GROSS_VALUE
+    // Unit signed) so that CashDividendCorrectionMatcher can locate the
+    // matching original — if any — by inverting every sign. If no match is
+    // found, the failure message asks the user to delete the original
+    // dividend they imported previously.
+    private void processCashDividendCorrection(CSVRecord csvRecord, SecurityCache securityCache, String source,
+                    List<Item> items)
+    {
+        var security = lookupSecurity(csvRecord, securityCache);
+        var date = parseDate(csvRecord);
+        var currency = getField(csvRecord, "currency");
+        var shares = parseShares(csvRecord);
+
+        long amount = parseAmount(csvRecord);
+        long feeRaw = parseFeeRaw(csvRecord);
+        long taxRaw = parseTaxRaw(csvRecord);
+        long signedNet = amount + feeRaw + taxRaw;
+
+        var t = new AccountTransaction();
+        t.setType(AccountTransaction.Type.DIVIDENDS);
+        t.setSecurity(security);
+        t.setDateTime(date);
+        t.setCurrencyCode(currency);
+        t.setShares(shares);
+        t.setAmount(signedNet);
+        t.setNote(getField(csvRecord, "description"));
+        t.setSource(source);
+
+        if (taxRaw != 0)
+            t.addUnit(new Unit(Unit.Type.TAX, Money.of(currency, -taxRaw)));
+
+        if (feeRaw != 0)
+            t.addUnit(new Unit(Unit.Type.FEE, Money.of(currency, -feeRaw)));
+
+        addSignedFxUnitsIfNeeded(csvRecord, t, security, currency);
+
+        var item = new TransactionItem(t);
+        item.setFailureMessage(Messages.TradeRepublicCSVMsgFailureCashDividendCorrectionUnmatched);
+        items.add(item);
     }
 
     private void processCashInterest(CSVRecord csvRecord, SecurityCache securityCache, String source, List<Item> items)
@@ -735,6 +790,30 @@ public class TradeRepublicCSVExtractor implements Extractor
                         rate));
     }
 
+    private void addSignedFxUnitsIfNeeded(CSVRecord csvRecord, name.abuchen.portfolio.model.Transaction t,
+                    Security security, String accountCurrency)
+    {
+        var securityCurrency = security.getCurrencyCode();
+        if (securityCurrency == null || securityCurrency.equals(accountCurrency))
+            return;
+
+        var originalAmountStr = getField(csvRecord, "original_amount");
+        var originalCurrency = getField(csvRecord, "original_currency");
+        var fxRateStr = getField(csvRecord, "fx_rate");
+
+        if (originalAmountStr.isEmpty() || originalCurrency.isEmpty() || fxRateStr.isEmpty())
+            return;
+
+        long fxAmount = Math.round(Double.parseDouble(originalAmountStr) * Values.Amount.factor());
+        long amount = parseAmount(csvRecord);
+        var rate = new BigDecimal(fxRateStr);
+
+        t.addUnit(new Unit(Unit.Type.GROSS_VALUE, //
+                        Money.of(accountCurrency, amount), //
+                        Money.of(originalCurrency, fxAmount), //
+                        rate));
+    }
+
     // -------------------------------------------------------
     // Parsing helpers
     // -------------------------------------------------------
@@ -842,6 +921,7 @@ public class TradeRepublicCSVExtractor implements Extractor
         {
             var security = lookupSecurity(csvRecord, securityCache);
             t.setSecurity(security);
+            t.setShares(parseShares(csvRecord));
         }
 
         return new TransactionItem(t)
@@ -856,7 +936,13 @@ public class TradeRepublicCSVExtractor implements Extractor
 
     private Item createSkippedItem(CSVRecord csvRecord, SecurityCache securityCache, String source)
     {
+        return createSkippedItem(csvRecord, securityCache, source,
+                        Messages.TradeRepublicCSVMsgSkippedCoveredByOtherLines);
+    }
+
+    private Item createSkippedItem(CSVRecord csvRecord, SecurityCache securityCache, String source, String reason)
+    {
         var item = createFailureItem(csvRecord, securityCache, source);
-        return new SkippedItem(item, Messages.TradeRepublicCSVMsgSkippedCoveredByOtherLines);
+        return new SkippedItem(item, reason);
     }
 }

@@ -552,4 +552,149 @@ public class TradeRepublicCSVExtractorTest
                         hasAmount("EUR", 53.00), hasGrossValue("EUR", 53.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
+
+    @Test
+    public void testTransactionReport04() throws IOException
+    {
+        var client = new Client();
+        var extractor = new TradeRepublicCSVExtractor(client);
+        var errors = new ArrayList<Exception>();
+        var filename = "TransactionExport04.csv";
+
+        var results = TestExtractorHelper.runExtractor(extractor, client, getClass(), filename, errors);
+
+        assertThat(errors, empty());
+
+        // 8 DIVIDEND rows, 4 corrections have no matching originals in the
+        // import, so each correction becomes a failure DIVIDENDS item asking
+        // the user to delete any previously imported original. The 4 positive
+        // rows become regular dividends.
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(8L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(4L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1 + 8));
+
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US3793782018"), hasWkn(null), hasTicker(null), //
+                        hasName("Global Net Lease"), //
+                        hasCurrencyCode("USD"))));
+
+        // DIVIDEND 2026-03-28T12:41:41.190983Z: 197.346557 shares, amount=32.27, no tax
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-03-28T12:41:41.190983"), hasShares(197.346557), //
+                        hasSource(filename), //
+                        hasNote("Cash Dividend for ISIN US3793782018"), //
+                        hasAmount("EUR", 32.27), hasGrossValue("EUR", 32.27), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // DIVIDEND 2026-03-28T12:43:11.375393Z: 166.672527 shares, amount=27.97, tax=-5.14
+        // PP amount = abs(27.97 + -5.14) = 22.83
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-03-28T12:43:11.375393"), hasShares(166.672527), //
+                        hasSource(filename), //
+                        hasNote("Cash Dividend for ISIN US3793782018"), //
+                        hasAmount("EUR", 22.83), hasGrossValue("EUR", 27.97), //
+                        hasTaxes("EUR", 5.14), hasFees("EUR", 0.00))));
+
+        // DIVIDEND 2026-03-28T12:44:58.343321Z: 181.638106 shares, amount=29.58, tax=-7.80
+        // PP amount = abs(29.58 + -7.80) = 21.78
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-03-28T12:44:58.343321"), hasShares(181.638106), //
+                        hasSource(filename), //
+                        hasNote("Cash Dividend for ISIN US3793782018"), //
+                        hasAmount("EUR", 21.78), hasGrossValue("EUR", 29.58), //
+                        hasTaxes("EUR", 7.80), hasFees("EUR", 0.00))));
+
+        // DIVIDEND 2026-03-28T12:46:15.537436Z: 152.443728 shares, amount=40.70, tax=-10.72
+        // PP amount = abs(40.70 + -10.72) = 29.98
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-03-28T12:46:15.537436"), hasShares(152.443728), //
+                        hasSource(filename), //
+                        hasNote("Cash Dividend for ISIN US3793782018"), //
+                        hasAmount("EUR", 29.98), hasGrossValue("EUR", 40.70), //
+                        hasTaxes("EUR", 10.72), hasFees("EUR", 0.00))));
+
+        // Unmatched correction 2026-03-28T12:17:14.638045Z: 197.346557 shares,
+        // amount=-32.27, tax=8.25 -> signed net -24.02, gross -32.27.
+        assertThat(results, hasItem(withFailureMessage(
+                        Messages.TradeRepublicCSVMsgFailureCashDividendCorrectionUnmatched,
+                        dividend(hasDate("2026-03-28T12:17:14.638045"), hasShares(197.346557), //
+                                        hasSource(filename), //
+                                        hasAmount("EUR", -24.02), hasGrossValue("EUR", -32.27), //
+                                        hasTaxes("EUR", -8.25), hasFees("EUR", 0.00)))));
+
+        // Unmatched correction 2026-03-28T12:17:08.949883Z: 181.638106 shares,
+        // amount=-29.58, tax=7.56 -> signed net -22.02, gross -29.58.
+        assertThat(results, hasItem(withFailureMessage(
+                        Messages.TradeRepublicCSVMsgFailureCashDividendCorrectionUnmatched,
+                        dividend(hasDate("2026-03-28T12:17:08.949883"), hasShares(181.638106), //
+                                        hasSource(filename), //
+                                        hasAmount("EUR", -22.02), hasGrossValue("EUR", -29.58), //
+                                        hasTaxes("EUR", -7.56), hasFees("EUR", 0.00)))));
+
+        // Unmatched correction 2026-03-28T12:17:05.567508Z: 152.443728 shares,
+        // amount=-40.70, tax=6.11 -> signed net -34.59, gross -40.70.
+        assertThat(results, hasItem(withFailureMessage(
+                        Messages.TradeRepublicCSVMsgFailureCashDividendCorrectionUnmatched,
+                        dividend(hasDate("2026-03-28T12:17:05.567508"), hasShares(152.443728), //
+                                        hasSource(filename), //
+                                        hasAmount("EUR", -34.59), hasGrossValue("EUR", -40.70), //
+                                        hasTaxes("EUR", -6.11), hasFees("EUR", 0.00)))));
+
+        // Unmatched correction 2026-03-28T12:16:22.541483Z: 166.672527 shares,
+        // amount=-27.97, tax=7.14 -> signed net -20.83, gross -27.97.
+        assertThat(results, hasItem(withFailureMessage(
+                        Messages.TradeRepublicCSVMsgFailureCashDividendCorrectionUnmatched,
+                        dividend(hasDate("2026-03-28T12:16:22.541483"), hasShares(166.672527), //
+                                        hasSource(filename), //
+                                        hasAmount("EUR", -20.83), hasGrossValue("EUR", -27.97), //
+                                        hasTaxes("EUR", -7.14), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
+    public void testTransactionReport05() throws IOException
+    {
+        var client = new Client();
+        var extractor = new TradeRepublicCSVExtractor(client);
+        var errors = new ArrayList<Exception>();
+        var filename = "TransactionExport05.csv";
+
+        var results = TestExtractorHelper.runExtractor(extractor, client, getClass(), filename, errors);
+
+        assertThat(errors, empty());
+
+        // 3 DIVIDEND rows: one original (2025-07-17), one matching correction
+        // (2026-03-28 12:17:08), one replacement with updated tax
+        // (2026-03-28 12:44:58). The original + correction pair is removed by
+        // postProcessing; only the replacement survives.
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+
+        new AssertImportActions().check(results, "EUR");
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US3793782018"), hasWkn(null), hasTicker(null), //
+                        hasName("Global Net Lease"), //
+                        hasCurrencyCode("USD"))));
+
+        // Replacement DIVIDEND 2026-03-28 12:44:58: amount=29.58, tax=-7.80
+        // net = 29.58 - 7.80 = 21.78.
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-03-28T12:44:58.343321"), hasShares(181.638106), //
+                        hasSource(filename), //
+                        hasNote("Cash Dividend for ISIN US3793782018"), //
+                        hasAmount("EUR", 21.78), hasGrossValue("EUR", 29.58), //
+                        hasTaxes("EUR", 7.80), hasFees("EUR", 0.00))));
+    }
 }

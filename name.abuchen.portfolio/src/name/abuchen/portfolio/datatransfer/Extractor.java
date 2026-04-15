@@ -700,6 +700,7 @@ public interface Extractor
 
         private LocalDateTime dateTime;
         private Money amount;
+        private long shares;
         private String typeInformation;
         private String source;
         private Security security;
@@ -741,9 +742,16 @@ public interface Extractor
             // copy basic data from original item
             dateTime = item.getDate();
             amount = item.getAmount();
+            shares = item.getShares();
             typeInformation = item.getTypeInformation();
             source = item.getSource();
             security = item.getSecurity();
+        }
+
+        @Override
+        public long getShares()
+        {
+            return shares;
         }
 
         @Override
