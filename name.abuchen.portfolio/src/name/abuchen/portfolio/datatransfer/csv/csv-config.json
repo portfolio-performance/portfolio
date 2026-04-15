@@ -591,4 +591,73 @@
             "label": "Wert"
         }
     ]
-}]
+},
+{
+    "label": "Scalable Capital",
+    "delimiter": ";",
+    "encoding": "UTF-8",
+    "isFirstLineHeader": true,
+    "skipLines": 0,
+    "target": "account-transaction",
+    "columns": [
+        {
+            "field": "date",
+            "format": "yyyy-MM-dd",
+            "label": "date"
+        },
+        {
+            "field": "time",
+            "label": "time"
+        },
+        {
+            "label": "status"
+        },
+        {
+            "label": "reference"
+        },
+        {
+            "field": "note",
+            "label": "description"
+        },
+        {
+            "label": "assetType"
+        },
+        {
+            "field": "type",
+            "format": "BUY=Buy|Savings plan;DEPOSIT=Deposit;DIVIDENDS=Distribution;FEES=Fee;INTEREST=Interest;REMOVAL=Withdrawal;SELL=Sell;TAXES=Taxes;TRANSFER_IN=Cash Transfer In;TRANSFER_OUT=Cash Transfer Out",
+            "label": "type"
+        },
+        {
+            "field": "isin",
+            "label": "isin"
+        },
+        {
+            "field": "shares",
+            "format": "0.000,00",
+            "label": "shares"
+        },
+        {
+            "label": "price"
+        },
+        {
+            "field": "value",
+            "format": "0.000,00",
+            "label": "amount"
+        },
+        {
+            "field": "fees",
+            "format": "0.000,00",
+            "label": "fee"
+        },
+        {
+            "field": "taxes",
+            "format": "0.000,00",
+            "label": "tax"
+        },
+        {
+            "field": "currency",
+            "label": "currency"
+        }
+    ]
+}
+]
