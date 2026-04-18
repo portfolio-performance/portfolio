@@ -29,10 +29,12 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.model.ClientMergeResult;
 import name.abuchen.portfolio.model.ClientMergeService;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
@@ -87,12 +89,13 @@ public class MergePortfolioFilesHandler
 
         Map<File, char[]> passwords = collectPasswords(shell, files);
 
+        ClientMergeResult mergeResult;
         ClientMergeService mergeService = new ClientMergeService();
         Client merged;
 
         try
         {
-            merged = mergeService.merge(files, passwords, new NullProgressMonitor());
+            mergeResult = mergeService.merge(files, passwords, new NullProgressMonitor());
         }
         catch (IOException e)
         {
@@ -103,7 +106,7 @@ public class MergePortfolioFilesHandler
             clearPasswords(passwords);
         }
 
-        ClientInput clientInput = clientInputFactory.create(buildLabel(files), merged);
+        ClientInput clientInput = clientInputFactory.create(buildLabel(files), mergeResult.getClient());
 
         MPart part = partService.createPart(UIConstants.Part.PORTFOLIO);
         part.setLabel(clientInput.getLabel());
@@ -117,6 +120,7 @@ public class MergePortfolioFilesHandler
         part.setVisible(true);
         part.getParent().setVisible(true);
         partService.showPart(part, PartState.ACTIVATE);
+        showMergeSummary(shell, mergeResult);
     }
 
     private Map<File, char[]> collectPasswords(Shell shell, List<File> files)
@@ -165,5 +169,16 @@ public class MergePortfolioFilesHandler
     {
         return MessageDialog.openConfirm(shell, Messages.LabelClientMergeConfirmTitel,
                         Messages.LabelClientMergeConfirmMessage);
+    }
+
+    private void showMergeSummary(Shell shell, ClientMergeResult result)
+    {
+        MessageBox messageBox = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
+        messageBox.setText(Messages.LabelClientMergeSummaryTitle);
+        messageBox.setMessage(MessageFormat.format(Messages.LabelClientMergeSummaryMessage, result.getFilesMerged(),
+                        result.getSecuritiesReused(), result.getSecuritiesAdded(), result.getAccountsImported(),
+                        result.getPortfoliosImported(), result.getInvestmentPlansImported(),
+                        result.getWatchlistsImported()));
+        messageBox.open();
     }
 }

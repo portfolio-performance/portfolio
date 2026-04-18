@@ -12,10 +12,26 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 
 public class ClientMergeService
 {
-    public Client merge(List<File> files, Map<File, char[]> passwords, IProgressMonitor monitor) throws IOException
+
+    private int securitiesReused;
+    private int securitiesAdded;
+    private int accountsImported;
+    private int portfoliosImported;
+    private int investmentPlansImported;
+    private int watchlistsImported;
+
+    public ClientMergeResult merge(List<File> files, Map<File, char[]> passwords, IProgressMonitor monitor)
+                    throws IOException
     {
         if (files == null || files.isEmpty())
             throw new IllegalArgumentException("files must not be empty"); //$NON-NLS-1$
+
+        securitiesReused = 0;
+        securitiesAdded = 0;
+        accountsImported = 0;
+        portfoliosImported = 0;
+        investmentPlansImported = 0;
+        watchlistsImported = 0;
 
         IProgressMonitor progress = monitor != null ? monitor : new NullProgressMonitor();
 
@@ -29,7 +45,8 @@ public class ClientMergeService
             mergeInto(target, source);
         }
 
-        return target;
+        return new ClientMergeResult(target, files.size(), securitiesReused, securitiesAdded, accountsImported,
+                        portfoliosImported, investmentPlansImported, watchlistsImported);
     }
 
     private void mergeInto(Client target, Client source)
@@ -69,11 +86,13 @@ public class ClientMergeService
             if (existing != null)
             {
                 securityMapping.put(sourceSecurity, existing);
+                securitiesReused++;
                 continue;
             }
 
             target.addSecurity(sourceSecurity);
             securityMapping.put(sourceSecurity, sourceSecurity);
+            securitiesAdded++;
         }
 
         return securityMapping;
@@ -196,25 +215,37 @@ public class ClientMergeService
     private void mergeAccounts(Client target, Client source)
     {
         for (Account account : source.getAccounts())
+        {
             target.addAccount(account);
+            accountsImported++;
+        }
     }
 
     private void mergePortfolios(Client target, Client source)
     {
         for (Portfolio portfolio : source.getPortfolios())
+        {
             target.addPortfolio(portfolio);
+            portfoliosImported++;
+        }
     }
 
     private void mergeWatchlists(Client target, Client source)
     {
         for (Watchlist watchlist : source.getWatchlists())
+        {
             target.addWatchlist(watchlist);
+            watchlistsImported++;
+        }
     }
 
     private void mergeInvestmentPlans(Client target, Client source)
     {
         for (InvestmentPlan plan : source.getPlans())
+        {
             target.addPlan(plan);
+            investmentPlansImported++;
+        }
     }
 
     private Map<SecurityKey, Integer> countSecurityKeys(List<Security> securities)
