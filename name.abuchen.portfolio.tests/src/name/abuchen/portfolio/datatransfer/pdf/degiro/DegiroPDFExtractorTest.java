@@ -6082,22 +6082,22 @@ public class DegiroPDFExtractorTest
                         hasDate("2019-04-26T17:52"), hasShares(2), //
                         hasSource("Transaktionsuebersicht22.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", 430.77), hasGrossValue("EUR", 430.26), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.51))));
+                        hasAmount("EUR", 430.77), hasGrossValue("EUR", 429.83), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.94))));
         
         assertThat(results, hasItem(purchase( //
                         hasDate("2019-04-26T20:23"), hasShares(1), //
                         hasSource("Transaktionsuebersicht22.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", 210.21), hasGrossValue("EUR", 209.71), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.50))));
+                        hasAmount("EUR", 210.21), hasGrossValue("EUR", 209.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.71))));
         
         assertThat(results, hasItem(sale( //
                         hasDate("2019-04-29T16:11"), hasShares(3), //
                         hasSource("Transaktionsuebersicht22.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", 645.18), hasGrossValue("EUR", 645.69), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.51))));
+                        hasAmount("EUR", 645.18), hasGrossValue("EUR", 646.34), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.16))));
         
         assertThat(results, hasItem(purchase( //
                         hasSecurity(hasIsin("DE000C34JCK6")), //
@@ -6884,6 +6884,111 @@ public class DegiroPDFExtractorTest
         Unit grossValueUnit9 = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
                         .orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit9.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(208.58))));
+    }
+
+    @Test
+    public void testTransactions_english02()
+    {
+        var extractor = new DegiroPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Transactions_english02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(6L));
+        assertThat(countBuySell(results), is(6L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(12));
+        new AssertImportActions().check(results, "EUR");
+
+        // check securities
+        assertThat(results, hasItem(security( //
+                        hasIsin("FI0009003727"), hasTicker(null), //
+                        hasName("WARTSILA OYJ ABP"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("SE0020050417"), hasTicker(null), //
+                        hasName("BOLIDEN AB"), //
+                        hasCurrencyCode("SEK"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("CA89621C1059"), hasTicker(null), //
+                        hasName("TRILOGY METALS INC"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("XS2872233403"), hasTicker(null), //
+                        hasName("WISDOMTREE EUROPEAN"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US26441C2044"), hasTicker(null), //
+                        hasName("DUKE ENERGY CORP"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US90364P1057"), hasTicker(null), //
+                        hasName("UIPATH INC CLASS A"), //
+                        hasCurrencyCode("USD"))));
+
+        // EUR-native purchase
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("FI0009003727")), //
+                        hasDate("2026-04-10T15:53"), hasShares(27), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 962.59), hasGrossValue("EUR", 957.69), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 4.90))));
+
+        // AutoFX + third-party purchase (foreign currency: SEK)
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("SE0020050417")), //
+                        hasDate("2026-04-10T15:58"), hasShares(18), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 911.09), hasGrossValue("EUR", 903.93), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 7.16))));
+
+        // AutoFX-only purchase (no third-party fee column)
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("CA89621C1059")), //
+                        hasDate("2025-10-14T20:51"), hasShares(25), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 217.15), hasGrossValue("EUR", 216.61), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.54))));
+
+        // EUR-native sale (with wrapped product name)
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("XS2872233403")), //
+                        hasDate("2026-04-08T09:16"), hasShares(59), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1768.18), hasGrossValue("EUR", 1771.18), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.00))));
+
+        // AutoFX + third-party sale (foreign currency: USD)
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US26441C2044")), //
+                        hasDate("2026-03-24T20:57"), hasShares(10), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1093.32), hasGrossValue("EUR", 1098.07), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 4.75))));
+
+        // AutoFX-only sale (no third-party fee column)
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US90364P1057")), //
+                        hasDate("2025-10-16T15:30"), hasShares(68), //
+                        hasSource("Transactions_english02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 979.40), hasGrossValue("EUR", 981.85), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 2.45))));
     }
 
     @Test
