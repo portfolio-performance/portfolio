@@ -704,9 +704,12 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 BigDecimal.valueOf(tax.getAmount()).divide(item.get().rate, Values.MC)
                                                                 .setScale(0, RoundingMode.HALF_UP).longValue());
 
-                                Unit unit = new Unit(Unit.Type.TAX, converted, tax,
-                                                BigDecimal.ONE.divide(item.get().rate, Values.MC));
-                                t.addUnit(unit);
+                                if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                                    t.addUnit(new Unit(Unit.Type.TAX, converted));
+                                else
+                                    t.addUnit(new Unit(Unit.Type.TAX, converted, tax,
+                                                    BigDecimal.ONE.divide(item.get().rate, Values.MC)));
+
                                 t.setAmount(t.getAmount() - converted.getAmount());
                             }
                             else if (tax.getCurrencyCode().equals(t.getCurrencyCode()))
@@ -882,8 +885,10 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                                         .setScale(0, RoundingMode.HALF_UP).longValue());
 
                                         t.setMonetaryAmount(converted);
-                                        t.addUnit(new Unit(Unit.Type.GROSS_VALUE, converted, money,
-                                                        BigDecimal.ONE.divide(item.get().rate, Values.MC)));
+
+                                        if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                                            t.addUnit(new Unit(Unit.Type.GROSS_VALUE, converted, money,
+                                                            BigDecimal.ONE.divide(item.get().rate, Values.MC)));
 
                                         context.putType(item.get());
                                     }
@@ -2256,12 +2261,15 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
 
         public Optional<DividendeTransactionsItem> findItem(LocalDateTime dateTime, String isin)
         {
-            // Search date and time of dividend transaction using date+time and
-            // ISIN.
+            // Search dividend transaction by ISIN and date. Allow up to 1
+            // minute difference in time, because dividend and tax rows may be
+            // booked seconds/minute apart in the same statement.
 
             for (DividendeTransactionsItem item : items)
             {
-                if (item.dateTime.equals(dateTime) && item.isin.equals(isin))
+                if (item.isin.equals(isin) //
+                                && item.dateTime.toLocalDate().equals(dateTime.toLocalDate()) //
+                                && Math.abs(java.time.Duration.between(item.dateTime, dateTime).toMinutes()) <= 1)
                     return Optional.of(item);
             }
 
