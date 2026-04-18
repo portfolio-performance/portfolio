@@ -1,0 +1,25 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.83.1.qualifier
+System: linux | x86_64 | 25.0.1+8-LTS-27 | Oracle Corporation
+-----------------------------------------
+Mr Max Mustermann
+Musterstrasse 1
+12345 Musterhausen
+User name: ***ner
+Transactions from 14-10-2025 until 10-04-2026
+Transaction
+Date Time Product ISIN Reference
+exchange Venue Quantity Price Local value Value EUR Exchange AutoFX and/or third
+rate Fee party fees Total EUR
+EUR
+10-04-2026 15:53 WARTSILA OYJ ABP FI0009003727 HSE MESI 27 35,4700 EUR -957,69 EUR -957,69 0,00 -4,90 -962,59
+10-04-2026 15:58 BOLIDEN AB SE0020050417 OMX MESI 18 544,0000 SEK -9 792,00 SEK -903,93 10,8327 -2,26 -4,90 -911,09
+14-10-2025 20:51 TRILOGY METALS INC CA89621C1059 ASE CDED 25 10,0550 USD -251,38 USD -216,61 1,1605 -0,54 -217,15
+08-04-2026 09:16 WISDOMTREE EUROPEAN XS2872233403 LSE XLON -59 30,0200 EUR 1 771,18 EUR 1 771,18 0,00 -3,00 1 768,18
+NATURAL GAS ETC
+24-03-2026 20:57 DUKE ENERGY CORP US26441C2044 NSY CDED -10 127,2100 USD 1 272,10 USD 1 098,06 1,1585 -2,75 -2,00 1 093,32
+16-10-2025 15:30 UIPATH INC CLASS A US90364P1057 NSY XNYS -68 16,8300 USD 1 144,44 USD 981,85 1,1656 -2,45 979,40
+flatexDEGIRO Bank Dutch Branch, trading under the name DEGIRO, is the Dutch branch of flatexDEGIRO Bank SE. flatexDEGIRO Bank www.degiro.fr Account statement
+SE is primarily supervised by the German financial regulator (BaFin). In the Netherlands, flatexDEGIRO Bank Dutch Branch is registered clients@degiro.fr
+with DNB and supervised by AFM and DNB. Amstelplein 1 1096 HA 2026-04-18
+Page 1 / 1

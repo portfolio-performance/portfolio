@@ -158,6 +158,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             + "|Valuta Debitering"
                             + "|Prelievo"
                             + "|Retirada Cambio de Divisa"
+                            + "|Op.ration de change \\- D.bit"
                             + "|FX vyu.tov.n. konverze m.ny).* "
                             + "(?<fxRate>[\\.,'\\d\\s]+) "
                             + "(?<currency>[\\w]{3}) "
@@ -202,6 +203,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             + "|Credito"
                             + "|Ingreso Cambio de Divisa"
                             + "|Prelievo FX"
+                            + "|Operation de change \\- Cr.dit"
                             + "|FX vyu.tov.ní konverze m.ny).* "
                             + "(?<currency>[\\w]{3}) "
                             + "(\\-)?(?<amount>[\\.,'\\d\\s]+) "
@@ -321,6 +323,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         + "(Einzahlung"
                         + "|Deposit"
                         + "|Deposito"
+                        + "|D.p.t"
                         + "|Storting"
                         + "|Ingreso"
                         + "|Vklad)"
@@ -342,6 +345,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "(Einzahlung"
                                         + "|Deposit"
                                         + "|Deposito"
+                                        + "|D.p.t"
                                         + "|Storting"
                                         + "|Ingreso"
                                         + "|Vklad))"
@@ -683,6 +687,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "|Dividend Tax"
                                         + "|Dividendbelasting"
                                         + "|Ritenuta sul dividendo"
+                                        + "|Imp.ts sur dividende"
                                         + "|Retenci.n del dividendo) "
                                         + "(?<currencyTax>[\\w]{3}) "
                                         + "\\-(?<tax>[\\.,'\\d\\s]+) "
@@ -699,9 +704,12 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 BigDecimal.valueOf(tax.getAmount()).divide(item.get().rate, Values.MC)
                                                                 .setScale(0, RoundingMode.HALF_UP).longValue());
 
-                                Unit unit = new Unit(Unit.Type.TAX, converted, tax,
-                                                BigDecimal.ONE.divide(item.get().rate, Values.MC));
-                                t.addUnit(unit);
+                                if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                                    t.addUnit(new Unit(Unit.Type.TAX, converted));
+                                else
+                                    t.addUnit(new Unit(Unit.Type.TAX, converted, tax,
+                                                    BigDecimal.ONE.divide(item.get().rate, Values.MC)));
+
                                 t.setAmount(t.getAmount() - converted.getAmount());
                             }
                             else if (tax.getCurrencyCode().equals(t.getCurrencyCode()))
@@ -799,6 +807,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         + "|Dividend Tax"
                         + "|Dividendbelasting"
                         + "|Ritenuta sul dividendo"
+                        + "|Imp.ts sur dividende"
                         + "|Retenci.n del dividendo) "
                         + ".*$");
         type.addBlock(blockDividendTax);
@@ -828,6 +837,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "|Dividend Tax"
                                         + "|Dividendbelasting"
                                         + "|Ritenuta sul dividendo"
+                                        + "|Imp.ts sur dividende"
                                         + "|Retenci.n del dividendo) "
                                         + "(?<currency>[\\w]{3})"
                                         + "(?<type>\\s(\\-)?)"
@@ -875,8 +885,10 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                                         .setScale(0, RoundingMode.HALF_UP).longValue());
 
                                         t.setMonetaryAmount(converted);
-                                        t.addUnit(new Unit(Unit.Type.GROSS_VALUE, converted, money,
-                                                        BigDecimal.ONE.divide(item.get().rate, Values.MC)));
+
+                                        if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                                            t.addUnit(new Unit(Unit.Type.GROSS_VALUE, converted, money,
+                                                            BigDecimal.ONE.divide(item.get().rate, Values.MC)));
 
                                         context.putType(item.get());
                                     }
@@ -1060,6 +1072,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         + "|Giro Exchange Connection Fee"
                         + "|DEGIRO Costi di connessione"
                         + "|DEGIRO poplatek za Obchodování"
+                        + "|Frais de connexion aux places boursi.res"
                         + "|ADR\\/GDR Weitergabegeb.hr) "
                         + ".*$");
         type.addBlock(blockTrademodalities);
@@ -1101,6 +1114,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                     + "|DEGIRO Aansluitingskosten"
                                                     + "|Giro Exchange Connection Fee"
                                                     + "|DEGIRO Costi di connessione"
+                                                    + "|Frais de connexion aux places boursi.res"
                                                     + "|DEGIRO poplatek za Obchodov.n.)) .* "
                                                     + "(?<currency>[\\w]{3})"
                                                     + "(?<type>\\s(\\-)?)"
@@ -1125,6 +1139,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                     + "|DEGIRO Aansluitingskosten"
                                                     + "|Giro Exchange Connection Fee"
                                                     + "|DEGIRO Costi di connessione"
+                                                    + "|Frais de connexion aux places boursi.res"
                                                     + "|DEGIRO poplatek za Obchodov.n.)( [\\d]{4})?( \\(.*\\))?).* "
                                                     + "(?<currency>[\\w]{3})"
                                                     + "(?<type>\\s(\\-)?)"
@@ -1289,7 +1304,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         // 05-03-2019 15:37 28-02-2019 Rabatt für 500 Euro Aktion EUR 18,00 EUR 1.960,64
         // @formatter:on
         Block blockFeeReturn = new Block("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}:[\\d]{2}( [\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
-                        + "(Rabatt|Gutschrift) "
+                        + "(Rabatt|Gutschrift|Remboursement) "
                         + ".*$");
         type.addBlock(blockFeeReturn);
         blockFeeReturn.set(new Transaction<AccountTransaction>()
@@ -1303,7 +1318,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         .section("date", "time", "note", "currency", "amount")
                         .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                         + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
-                                        + "(?<note>(Rabatt|Gutschrift) .*) "
+                                        + "(?<note>(Rabatt|Gutschrift|Remboursement) .*) "
                                         + "(?<currency>[\\w]{3}) "
                                         + "(?<amount>[\\.,'\\d\\s]+) "
                                         + "[\\w]{3} "
@@ -1729,7 +1744,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // @formatter:on
                             section -> section.id(
                                 "withExchangeRate-withFee-withStockExchangePlace-withAutoFx - <amount> <currency>")
-                                .attributes("date", "time", "name", "isin", "shares", "amountFx", "currency", "exchangeRate", "currencyFee", "fee", "amount")
+                                .attributes("date", "time", "name", "isin", "shares", "amountFx", "currency", "exchangeRate", "autoFxFee", "fee", "amount")
                                 .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) "
@@ -1737,15 +1752,15 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(?<shares>[\\-\\.,'\\d]+) "
                                                 + "(\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2,6} [\\w]{3} "
                                                 + "(\\-)?(?<amountFx>[\\.,'\\d\\s]+[\\.|,][\\d]{2}) "
-                                                + "(?<currency>[\\w]{3}) (\\-)?[\\.,'\\d]+[\\.|,][\\d]{2} "
+                                                + "(?<currency>[\\w]{3}) (\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2} "
                                                 + "(?<exchangeRate>[\\.,'\\d\\s]+[\\.|,][\\d]{1,4}) "
-                                                + "(\\-)?(?<currencyFee>[\\.,'\\d\\s]+[\\.|,][\\d]{1,4}) "
+                                                + "(\\-)?(?<autoFxFee>[\\.,'\\d\\s]+[\\.|,][\\d]{2}) "
                                                 + "(\\-)?(?<fee>[\\.,'\\d\\s]+[\\.|,][\\d]{2}) "
                                                 + "(\\-)?(?<amount>[\\.,'\\d\\s]+[\\.|,][\\d]{2})$")
                                 .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date"), v.get("time")));
-                                    t.setCurrencyCode(asCurrencyCode(v.get("currencyAccount")));
+                                    t.setCurrencyCode(asCurrencyCode(getClient().getBaseCurrency()));
                                     t.setAmount(asAmount(v.get("amount")));
     
                                     if (v.get("shares").startsWith("-"))
@@ -1758,7 +1773,12 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         t.setShares(asShares(v.get("shares")));
                                     }
     
-                                    Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(v.get("fee")));
+                                    // AutoFX fee in account base currency
+                                    Money autoFxFeeAmount = Money.of(getClient().getBaseCurrency(), asAmount(v.get("autoFxFee")));
+                                    t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, autoFxFeeAmount));
+    
+                                    // Third-party / DEGIRO transaction fee in account base currency
+                                    Money feeAmount = Money.of(getClient().getBaseCurrency(), asAmount(v.get("fee")));
                                     t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, feeAmount));
     
                                     long amountFx = asAmount(v.get("amountFx"));
@@ -1769,11 +1789,75 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         Money amount = Money.of(asCurrencyCode(getClient().getBaseCurrency()), asAmount(v.get("amount")));
                                         if (t.getPortfolioTransaction().getType() == PortfolioTransaction.Type.BUY)
                                         {
-                                            amount = amount.subtract(feeAmount);
+                                            amount = amount.subtract(autoFxFeeAmount).subtract(feeAmount);
                                         }
                                         else
                                         {
-                                            amount = amount.add(feeAmount);
+                                            amount = amount.add(autoFxFeeAmount).add(feeAmount);
+                                        }
+                                        BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(v.get("exchangeRate")), 10, RoundingMode.HALF_DOWN);
+                                        Money forex = Money.of(asCurrencyCode(v.get("currency")), amountFx);
+                                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
+                                        t.getPortfolioTransaction().addUnit(grossValue);
+                                    }
+                                }),
+
+                            // @formatter:off
+                            // with exchange rate
+                            // with autoFx fee only (no third-party fee)
+                            // with stock exchange place
+                            // -------------------------------------
+                            // Formatting:
+                            // DateTime | Name | ISIN | Stock Exchange | Place | Shares | Quote | Local value | Value EUR | Exchange rate | AutoFX fee | Total
+                            // -------------------------------------
+                            // 16-10-2025 15:30 UIPATH INC CLASS A US90364P1057 NSY XNYS -68 16,8300 USD 1 144,44 USD 981,85 1,1656 -2,45 979,40
+                            // @formatter:on
+                            section -> section.id(
+                                "withExchangeRate-withAutoFxFee-withStockExchangePlace - <amount> <currency>")
+                                .attributes("date", "time", "name", "isin", "shares", "amountFx", "currency", "exchangeRate", "autoFxFee", "amount")
+                                .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
+                                                + "(?<name>.*) "
+                                                + "(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) "
+                                                + "[\\w]{3} [\\w]{4}([\\s]+)?"
+                                                + "(?<shares>[\\-\\.,'\\d]+) "
+                                                + "(\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2,6} [\\w]{3} "
+                                                + "(\\-)?(?<amountFx>[\\.,'\\d\\s]+[\\.|,][\\d]{2}) "
+                                                + "(?<currency>[\\w]{3}) (\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2} "
+                                                + "(?<exchangeRate>(?!0[\\.|,]0+\\s)[\\.,'\\d\\s]+[\\.|,][\\d]{1,4}) "
+                                                + "(\\-)?(?<autoFxFee>[\\.,'\\d\\s]+[\\.|,][\\d]{2}) "
+                                                + "(\\-)?(?<amount>[\\.,'\\d\\s]+[\\.|,][\\d]{2})$")
+                                .assign((t, v) -> {
+                                    t.setSecurity(getOrCreateSecurity(v));
+                                    t.setDate(asDate(v.get("date"), v.get("time")));
+                                    t.setCurrencyCode(asCurrencyCode(getClient().getBaseCurrency()));
+                                    t.setAmount(asAmount(v.get("amount")));
+    
+                                    if (v.get("shares").startsWith("-"))
+                                    {
+                                        t.setType(PortfolioTransaction.Type.SELL);
+                                        t.setShares(asShares(v.get("shares").replaceFirst("-", "")));
+                                    }
+                                    else
+                                    {
+                                        t.setShares(asShares(v.get("shares")));
+                                    }
+    
+                                    Money autoFxFeeAmount = Money.of(getClient().getBaseCurrency(), asAmount(v.get("autoFxFee")));
+                                    t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, autoFxFeeAmount));
+    
+                                    long amountFx = asAmount(v.get("amountFx"));
+                                    String currencyFx = asCurrencyCode(v.get("currency"));
+    
+                                    if (currencyFx.equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode()))
+                                    {
+                                        Money amount = Money.of(asCurrencyCode(getClient().getBaseCurrency()), asAmount(v.get("amount")));
+                                        if (t.getPortfolioTransaction().getType() == PortfolioTransaction.Type.BUY)
+                                        {
+                                            amount = amount.subtract(autoFxFeeAmount);
+                                        }
+                                        else
+                                        {
+                                            amount = amount.add(autoFxFeeAmount);
                                         }
                                         BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(v.get("exchangeRate")), 10, RoundingMode.HALF_DOWN);
                                         Money forex = Money.of(asCurrencyCode(v.get("currency")), amountFx);
@@ -2177,12 +2261,15 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
 
         public Optional<DividendeTransactionsItem> findItem(LocalDateTime dateTime, String isin)
         {
-            // Search date and time of dividend transaction using date+time and
-            // ISIN.
+            // Search dividend transaction by ISIN and date. Allow up to 1
+            // minute difference in time, because dividend and tax rows may be
+            // booked seconds/minute apart in the same statement.
 
             for (DividendeTransactionsItem item : items)
             {
-                if (item.dateTime.equals(dateTime) && item.isin.equals(isin))
+                if (item.isin.equals(isin) //
+                                && item.dateTime.toLocalDate().equals(dateTime.toLocalDate()) //
+                                && Math.abs(java.time.Duration.between(item.dateTime, dateTime).toMinutes()) <= 1)
                     return Optional.of(item);
             }
 

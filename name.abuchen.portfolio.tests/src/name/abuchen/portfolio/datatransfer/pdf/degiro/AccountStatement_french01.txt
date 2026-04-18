@@ -1,0 +1,24 @@
+PDFBox Version: 3.0.6
+-----------------------------------------
+Account statement from 27-01-2025 until 18-04-2026
+Date Time Value date Product ISIN Description FX Change Balance
+10-04-2026 15:40 10-04-2026 Dépôt flatex EUR 1 700,00 EUR 10 109,90
+10-04-2026 17:31 10-04-2026 Degiro Cash Sweep Transfer EUR 537,70 EUR 428,64
+10-04-2026 17:31 10-04-2026 Virement depuis votre Compte Espèces à la flatexDEGIRO EUR -109,06
+Bank: 537,7 EUR
+08-04-2026 13:43 08-04-2026 Degiro Cash Sweep Transfer EUR -1 768,18 EUR 8 409,90
+08-04-2026 13:43 08-04-2026 Virement vers votre Compte Espèces à la flatexDEGIRO EUR 10 178,08
+Bank: 1768,18 EUR
+10-04-2026 15:58 10-04-2026 BOLIDEN AB SE0020050417 Frais DEGIRO de courtage et/ou de parties tierces EUR -4,90 EUR 1 872,53
+02-04-2026 07:04 01-04-2026 Operation de change - Crédit EUR 4,99 EUR 5 490,22
+02-04-2026 07:04 01-04-2026 Opération de change - Débit 1,1618 USD -5,80 USD 0,00
+01-04-2026 08:12 31-03-2026 BROOKFIELD INFRASTRUCTURE CORP CA11276H1064 Dividende USD 7,74 USD 5,80
+01-04-2026 08:12 31-03-2026 BROOKFIELD INFRASTRUCTURE CORP CA11276H1064 Impôts sur dividende USD -1,94 USD -1,94
+06-04-2026 10:03 31-03-2026 Flatex Interest Income EUR 0,00 EUR 5 490,22
+07-04-2026 09:44 31-03-2026 Frais de connexion aux places boursières 2026 (London EUR -2,50 EUR 5 487,72
+Stock Exchange (LSE) - LSE)
+21-11-2025 15:48 21-11-2025 Remboursement offre promotionnelle EUR 100,00 EUR 156,70
+flatexDEGIRO Bank Dutch Branch, trading under the name DEGIRO, is the Dutch branch of flatexDEGIRO Bank SE. flatexDEGIRO Bank www.degiro.fr Account statement
+SE is primarily supervised by the German financial regulator (BaFin). In the Netherlands, flatexDEGIRO Bank Dutch Branch is registered clients@degiro.fr
+with DNB and supervised by AFM and DNB. Amstelplein 1 1096 HA 2026-04-18
+Page 1 /1
