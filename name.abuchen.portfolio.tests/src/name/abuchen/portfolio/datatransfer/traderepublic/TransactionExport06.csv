@@ -1,0 +1,2 @@
+datetime,date,account_type,category,type,asset_class,name,symbol,shares,price,amount,fee,tax,currency,original_amount,original_currency,fx_rate,description,transaction_id,counterparty_name,counterparty_iban,payment_reference,mcc_code
+2026-02-15T00:00:00.000000Z,2026-02-15,DEFAULT,CASH,TAX_OPTIMIZATION,,,,,,0.000000,,-4.21,EUR,,,,Tax Optimisation,c27f9a58-1a40-4c1d-9fb7-9b7b2f39e111,,,,

@@ -616,16 +616,16 @@ public class TradeRepublicCSVExtractor implements Extractor
     {
         var date = parseDate(csvRecord);
         var currency = getField(csvRecord, "currency");
-        var tax = parseTax(csvRecord);
+        var rawTax = parseTaxRaw(csvRecord);
 
-        if (tax == 0)
+        if (rawTax == 0)
             return;
 
         var t = new AccountTransaction();
-        t.setType(AccountTransaction.Type.TAX_REFUND);
+        t.setType(rawTax > 0 ? AccountTransaction.Type.TAX_REFUND : AccountTransaction.Type.TAXES);
         t.setDateTime(date);
         t.setCurrencyCode(currency);
-        t.setAmount(tax);
+        t.setAmount(Math.abs(rawTax));
         t.setNote(getField(csvRecord, "description"));
         t.setSource(source);
 

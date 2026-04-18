@@ -697,4 +697,37 @@ public class TradeRepublicCSVExtractorTest
                         hasAmount("EUR", 21.78), hasGrossValue("EUR", 29.58), //
                         hasTaxes("EUR", 7.80), hasFees("EUR", 0.00))));
     }
+
+    @Test
+    public void testTransactionReport06() throws IOException
+    {
+        var client = new Client();
+        var extractor = new TradeRepublicCSVExtractor(client);
+        var errors = new ArrayList<Exception>();
+        var filename = "TransactionExport06.csv";
+
+        var results = TestExtractorHelper.runExtractor(extractor, client, getClass(), filename, errors);
+
+        assertThat(errors, empty());
+
+        // Single TAX_OPTIMIZATION row with negative tax -> booked as TAXES.
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+
+        new AssertImportActions().check(results, "EUR");
+
+        // TAX_OPTIMIZATION 2026-02-15: amount=0, tax=-4.21 -> TAXES
+        // PP amount = abs(-4.21) = 4.21
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2026-02-15"), hasShares(0.00), //
+                        hasSource(filename), //
+                        hasNote("Tax Optimisation"), //
+                        hasAmount("EUR", 4.21), hasGrossValue("EUR", 4.21), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
 }
