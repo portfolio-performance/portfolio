@@ -1439,6 +1439,7 @@ public class Messages extends NLS
     public static String TooltipAverageHoldingPeriod;
     public static String TooltipCurrentDrawdown;
     public static String TooltipDateOfExchangeRate;
+    public static String TooltipFIRENumber;
     public static String TooltipHintPressAlt;
     public static String TooltipMaxDrawdown;
     public static String TooltipMaxDrawdownDuration;
