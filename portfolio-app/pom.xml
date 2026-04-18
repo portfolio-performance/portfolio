@@ -11,6 +11,8 @@
 	<name>Portfolio Performance</name>
 
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<tycho-version>5.0.2</tycho-version>
 		<jarsigner.skip>true</jarsigner.skip>
 		<gpgsigner.skip>true</gpgsigner.skip>
@@ -26,6 +28,7 @@
 		<argLine>-ea</argLine>
 		<maven.compiler.source>21</maven.compiler.source>
 		<maven.compiler.target>21</maven.compiler.target>
+		<portfolio.build.command>check</portfolio.build.command>
 	</properties>
 
 	<modules>
@@ -39,6 +42,7 @@
 		<module>../name.abuchen.portfolio.ui.tests</module>
 		<module>../name.abuchen.portfolio.feature</module>
 		<module>../name.abuchen.portfolio.bootstrap</module>
+		<module>../portfolio-build-tools</module>
 	</modules>
 
 	<repositories>
@@ -63,6 +67,7 @@
 			</properties>
 			<modules>
 				<module>../portfolio-product</module>
+				<module>../portfolio-build-tools-check</module>
 			</modules>
 		</profile>
 		<profile>
@@ -81,6 +86,9 @@
 				<checkstyle.skip>true</checkstyle.skip>
 				<protobuf.execution.phase>none</protobuf.execution.phase>
 			</properties>
+			<modules>
+				<module>../portfolio-build-tools-check</module>
+			</modules>
 		</profile>
 	</profiles>
 
@@ -575,6 +583,32 @@
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>exec-maven-plugin</artifactId>
 					<version>3.6.3</version>
+					<configuration>
+						<mainClass>name.abuchen.portfolio.build.MessagesTool</mainClass>
+						<classpathScope>runtime</classpathScope>
+						<arguments>
+							<argument>${portfolio.build.command}</argument>
+							<argument>${project.parent.basedir}/..</argument>
+							<argument>--bundle=name.abuchen.portfolio/src/name/abuchen/portfolio|messages|name.abuchen.portfolio/src/name/abuchen/portfolio/Messages.java</argument>
+							<argument>--bundle=name.abuchen.portfolio/src/name/abuchen/portfolio/util|holiday-names|</argument>
+							<argument>--bundle=name.abuchen.portfolio/src/name/abuchen/portfolio/model|labels|</argument>
+							<argument>--bundle=name.abuchen.portfolio/src/name/abuchen/portfolio/online/impl|exchange-labels|</argument>
+							<argument>--bundle=name.abuchen.portfolio/src/name/abuchen/portfolio/online/impl|eurostathicp-labels|</argument>
+							<argument>--bundle=name.abuchen.portfolio/src/name/abuchen/portfolio/snapshot|labels|</argument>
+							<argument>--bundle=name.abuchen.portfolio.ui/src/name/abuchen/portfolio/ui|messages|name.abuchen.portfolio.ui/src/name/abuchen/portfolio/ui/Messages.java</argument>
+							<argument>--bundle=name.abuchen.portfolio.ui/src/name/abuchen/portfolio/ui/parts|samplemessages|</argument>
+							<argument>--bundle=name.abuchen.portfolio.ui/src/name/abuchen/portfolio/ui/views/settings|labels|</argument>
+							<argument>--bundle=name.abuchen.portfolio.ui/src/name/abuchen/portfolio/ui/views|labels|</argument>
+							<argument>--bundle=name.abuchen.portfolio.ui/OSGI-INF/l10n|bundle|</argument>
+							<argument>--bundle=name.abuchen.portfolio.bootstrap/src/name/abuchen/portfolio/bootstrap|messages|name.abuchen.portfolio.bootstrap/src/name/abuchen/portfolio/bootstrap/Messages.java</argument>
+							<argument>--bundle=name.abuchen.portfolio.bootstrap/OSGI-INF/l10n|bundle|</argument>
+							<argument>--bundle=name.abuchen.portfolio/src/name/abuchen/portfolio/model/taxonomy_templates|security-type|</argument>
+							<argument>--bundle=name.abuchen.portfolio/src/name/abuchen/portfolio/model/taxonomy_templates|kommer|</argument>
+							<argument>--bundle=name.abuchen.portfolio/src/name/abuchen/portfolio/model/taxonomy_templates|assetclasses|</argument>
+							<argument>--bundle=name.abuchen.portfolio/src/name/abuchen/portfolio/model/taxonomy_templates|regions|</argument>
+							<argument>--bundle=name.abuchen.portfolio/src/name/abuchen/portfolio/model/taxonomy_templates|regions-msci|</argument>
+						</arguments>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.jacoco</groupId>
