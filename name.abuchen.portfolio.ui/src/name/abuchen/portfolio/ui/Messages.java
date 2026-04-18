@@ -1304,6 +1304,8 @@ public class Messages extends NLS
     public static String PrefUpdateQuotesAfterFileOpen;
     public static String PrefUpdateQuotesPeriodically;
     public static String PrefUpdateSite;
+    public static String PrefUpdateSiteBetaChannel;
+    public static String PrefUpdateSiteStableChannel;
     public static String PresetsPrefPageDescription;
     public static String PresetsPrefPageNow;
     public static String PresetsPrefPageStartOfDay;
