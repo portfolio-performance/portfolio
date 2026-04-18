@@ -623,7 +623,7 @@ public class TradeRepublicCSVExtractorTest
         // Unmatched correction 2026-03-28T12:17:14.638045Z: 197.346557 shares,
         // amount=-32.27, tax=8.25 -> signed net -24.02, gross -32.27.
         assertThat(results, hasItem(withFailureMessage(
-                        Messages.TradeRepublicCSVMsgFailureCashDividendCorrectionUnmatched,
+                        Messages.MsgErrorCashDividendCorrectionUnmatched,
                         dividend(hasDate("2026-03-28T12:17:14.638045"), hasShares(197.346557), //
                                         hasSource(filename), //
                                         hasAmount("EUR", -24.02), hasGrossValue("EUR", -32.27), //
@@ -632,7 +632,7 @@ public class TradeRepublicCSVExtractorTest
         // Unmatched correction 2026-03-28T12:17:08.949883Z: 181.638106 shares,
         // amount=-29.58, tax=7.56 -> signed net -22.02, gross -29.58.
         assertThat(results, hasItem(withFailureMessage(
-                        Messages.TradeRepublicCSVMsgFailureCashDividendCorrectionUnmatched,
+                        Messages.MsgErrorCashDividendCorrectionUnmatched,
                         dividend(hasDate("2026-03-28T12:17:08.949883"), hasShares(181.638106), //
                                         hasSource(filename), //
                                         hasAmount("EUR", -22.02), hasGrossValue("EUR", -29.58), //
@@ -641,7 +641,7 @@ public class TradeRepublicCSVExtractorTest
         // Unmatched correction 2026-03-28T12:17:05.567508Z: 152.443728 shares,
         // amount=-40.70, tax=6.11 -> signed net -34.59, gross -40.70.
         assertThat(results, hasItem(withFailureMessage(
-                        Messages.TradeRepublicCSVMsgFailureCashDividendCorrectionUnmatched,
+                        Messages.MsgErrorCashDividendCorrectionUnmatched,
                         dividend(hasDate("2026-03-28T12:17:05.567508"), hasShares(152.443728), //
                                         hasSource(filename), //
                                         hasAmount("EUR", -34.59), hasGrossValue("EUR", -40.70), //
@@ -650,7 +650,7 @@ public class TradeRepublicCSVExtractorTest
         // Unmatched correction 2026-03-28T12:16:22.541483Z: 166.672527 shares,
         // amount=-27.97, tax=7.14 -> signed net -20.83, gross -27.97.
         assertThat(results, hasItem(withFailureMessage(
-                        Messages.TradeRepublicCSVMsgFailureCashDividendCorrectionUnmatched,
+                        Messages.MsgErrorCashDividendCorrectionUnmatched,
                         dividend(hasDate("2026-03-28T12:16:22.541483"), hasShares(166.672527), //
                                         hasSource(filename), //
                                         hasAmount("EUR", -20.83), hasGrossValue("EUR", -27.97), //

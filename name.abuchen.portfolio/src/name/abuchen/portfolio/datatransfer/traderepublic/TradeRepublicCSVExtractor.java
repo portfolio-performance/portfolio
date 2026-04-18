@@ -434,7 +434,7 @@ public class TradeRepublicCSVExtractor implements Extractor
         addSignedFxUnitsIfNeeded(csvRecord, t, security, currency);
 
         var item = new TransactionItem(t);
-        item.setFailureMessage(Messages.TradeRepublicCSVMsgFailureCashDividendCorrectionUnmatched);
+        item.setFailureMessage(Messages.MsgErrorCashDividendCorrectionUnmatched);
         items.add(item);
     }
 
