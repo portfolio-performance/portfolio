@@ -640,6 +640,13 @@ public class Messages extends NLS
     public static String LabelClientFilterMenu;
     public static String LabelClientFilterNew;
     public static String LabelClientFilterNoCustomFilterExisting;
+    public static String LabelClientMergeConfirmTitel;
+    public static String LabelClientMergeConfirmMessage;
+    public static String LabelClientMergeFilename;
+    public static String LabelClientMergePasswordCancelled;
+    public static String LabelClientMergeFailed;
+    public static String LabelClientMergeSummaryMessage;
+    public static String LabelClientMergeSummaryTitle;
     public static String LabelClose;
     public static String LabelCoinGeckoCoinId;
     public static String LabelCoinGeckoCoinIdHint;

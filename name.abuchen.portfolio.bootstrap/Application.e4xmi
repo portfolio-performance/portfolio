@@ -26,6 +26,7 @@
           <children xsi:type="menu:MenuSeparator" xmi:id="_hC1qB0ARxEeaaR_cYBUBOZA" elementId="name.abuchen.portfolio.bootstrap.menuseparator.3"/>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_iYNVQARxEeaaR_cYBUBOZA" elementId="name.abuchen.portfolio.bootstrap.handledmenuitem.clearlist" label="%command.clearRecentFiles.name" tooltip="%command.clearRecentFiles.tooltip" mnemonics="" command="_UujAAATREeaaR_cYBUBOZA"/>
         </children>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_CawQ0Dl-EfGz9bjNQ6UGuA" elementId="name.abuchen.portfolio.ui.menu.file.mergePortfolio" label="%command.mergePortfolio" tooltip="%command.mergePortfolio.tooltip" command="_a-38UDl9EfGz9bjNQ6UGuA"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_Ks4qYPOjEeOtWc3KvKMOyw" elementId="name.abuchen.portfolio.ui.menuseparator.3"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_NkTjcPOjEeOtWc3KvKMOyw" elementId="name.abuchen.portfolio.ui.menu.file.save" label="%command.save.name" tooltip="" mnemonics="%command.save.mnemonic" command="_rzHrcPOjEeOHHf_SGgPLVA"/>
         <children xsi:type="menu:Menu" xmi:id="_MdglYPOhEeOnWptkJg3Yig" elementId="name.abuchen.portfolio.ui.menu.file.saveAs" label="%command.saveAs.name">
@@ -178,8 +179,8 @@
   </children>
   <handlers xmi:id="_3eERwBi8EeO8gYEHAOvLsA" elementId="name.abuchen.portfolio.ui.handler.quit" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.QuitHandler" command="_1mco0Bi8EeO8gYEHAOvLsA"/>
   <handlers xmi:id="_PGzpABiOEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.handler.newclient" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.NewFileHandler" command="_LiZuIBiOEeOR1rNFCzC82A"/>
-  <handlers xmi:id="_I4msUBfIEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.handler.open" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.OpenFileHandler" command="_3CjQwBfHEeOders_POVQHQ"/>
   <handlers xmi:id="_bpblsBfWEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.handler.export" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ExportHandler" command="_lcgCQBfWEeOders_POVQHQ"/>
+  <handlers xmi:id="_I4msUBfIEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.handler.open" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.OpenFileHandler" command="_3CjQwBfHEeOders_POVQHQ"/>
   <handlers xmi:id="_DRzO4BhXEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.handler.import" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ImportCSVHandler" command="_GgTyQBhXEeOR1rNFCzC82A"/>
   <handlers xmi:id="_ftWRYLYaEeeT6Pb7tGT2uw" elementId="name.abuchen.portfolio.ui.handler.import.pdf" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ImportPDFHandler" command="_pgC00EYREeSRXYVe298mXg"/>
   <handlers xmi:id="_SL7BYLptEeSHOs-ah25CLg" elementId="name.abuchen.portfolio.ui.handler.import.pdf.create-text" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.CreateTextFromPDFHandler" command="_Jw7yELptEeSHOs-ah25CLg"/>
@@ -220,6 +221,7 @@
   <handlers xmi:id="_aeDVIEzWEfCcpO9Ays2KhA" elementId="name.abuchen.portfolio.ui.handlers.tools.migratePortfolioReportHandler" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.tools.MigratePortfolioReportHandler" command="_gfBZEEzWEfCcpO9Ays2KhA"/>
   <handlers xmi:id="_3I8psIDTEfCu2LYuODFptg" elementId="name.abuchen.portfolio.ui.handler.importTaxonomies" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ImportTaxonomiesHandler" command="_zRHcgIDTEfCu2LYuODFptg"/>
   <handlers xmi:id="_k7AycID7EfCu2LYuODFptg" elementId="name.abuchen.portfolio.ui.handler.exportTaxonomies" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ExportTaxonomiesHandler" command="_nkxqAID7EfCu2LYuODFptg"/>
+  <handlers xmi:id="_wPWQUDl9EfGz9bjNQ6UGuA" elementId="name.abuchen.portfolio.ui.handler.mergePortfolio" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.MergePortfolioFilesHandler" command="_a-38UDl9EfGz9bjNQ6UGuA"/>
   <bindingTables xmi:id="_uK6dcBiSEeO8gYEHAOvLsA" elementId="" bindingContext="_7d8q4RjAEeO8gYEHAOvLsA">
     <bindings xmi:id="_yNkakBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+O" command="_3CjQwBfHEeOders_POVQHQ"/>
     <bindings xmi:id="_C46kcBi9EeO8gYEHAOvLsA" elementId="" keySequence="M1+Q" command="_1mco0Bi8EeO8gYEHAOvLsA"/>
@@ -335,6 +337,7 @@
   <commands xmi:id="_BackfillExDatesCommand" elementId="name.abuchen.portfolio.ui.command.tools.backfillExDates" commandName="%command.backfillExDates.name"/>
   <commands xmi:id="_zRHcgIDTEfCu2LYuODFptg" elementId="name.abuchen.portfolio.ui.command.importTaxonomies" commandName="importTaxonomies"/>
   <commands xmi:id="_nkxqAID7EfCu2LYuODFptg" elementId="name.abuchen.portfolio.ui.command.exportTaxonomies" commandName="exportTaxonomies"/>
+  <commands xmi:id="_a-38UDl9EfGz9bjNQ6UGuA" elementId="name.abuchen.portfolio.ui.command.mergePortfolio" commandName="mergePortfolio"/>
   <addons xmi:id="_4SwvYLOQEeWe1a5u3oOf1Q" elementId="name.abuchen.portfolio.ui.addon.proxy" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.ProxyAddon"/>
   <addons xmi:id="_B_-6cKH7EeO9F5tUX5UqjQ" elementId="name.abuchen.portfolio.ui.addon.log" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.StartupAddon"/>
   <addons xmi:id="_D8SDoRfFEeOders_POVQHQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
