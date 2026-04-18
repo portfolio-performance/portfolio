@@ -3511,6 +3511,77 @@ public class DegiroPDFExtractorTest
     }
 
     @Test
+    public void testAccountStatement_french01()
+    {
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement_french01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(5));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security1.getIsin(), is("CA11276H1064"));
+        assertThat(security1.getName(), is("BROOKFIELD INFRASTRUCTURE CORP"));
+        assertThat(security1.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        // check deposit transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2026-04-10T15:40")));
+        assertThat(transaction.getSource(), is("AccountStatement_french01.txt"));
+        assertThat(transaction.getNote(), is("Dépôt"));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1700.00))));
+
+        // check dividend transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2026-04-01T08:12")));
+        assertThat(transaction.getSource(), is("AccountStatement_french01.txt"));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.00))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.66))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.66))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnit(Unit.Type.GROSS_VALUE).get().getExchangeRate().doubleValue(),
+                        IsCloseTo.closeTo(0.8607333448, 0.000001));
+        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(7.74))));
+
+        // check fee transaction (exchange connection fee)
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(2)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2026-04-07T09:44")));
+        assertThat(transaction.getSource(), is("AccountStatement_french01.txt"));
+        assertThat(transaction.getNote(), is("Frais de connexion aux places boursières 2026"));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.50))));
+
+        // check fees refund transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(3)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2025-11-21T15:48")));
+        assertThat(transaction.getSource(), is("AccountStatement_french01.txt"));
+        assertThat(transaction.getNote(), is("Remboursement offre promotionnelle"));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.00))));
+    }
+
+    @Test
     public void testTransaktionsuebersicht01()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());

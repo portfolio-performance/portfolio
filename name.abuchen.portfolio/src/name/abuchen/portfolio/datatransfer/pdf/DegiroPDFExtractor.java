@@ -158,6 +158,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             + "|Valuta Debitering"
                             + "|Prelievo"
                             + "|Retirada Cambio de Divisa"
+                            + "|Op.ration de change \\- D.bit"
                             + "|FX vyu.tov.n. konverze m.ny).* "
                             + "(?<fxRate>[\\.,'\\d\\s]+) "
                             + "(?<currency>[\\w]{3}) "
@@ -202,6 +203,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             + "|Credito"
                             + "|Ingreso Cambio de Divisa"
                             + "|Prelievo FX"
+                            + "|Operation de change \\- Cr.dit"
                             + "|FX vyu.tov.ní konverze m.ny).* "
                             + "(?<currency>[\\w]{3}) "
                             + "(\\-)?(?<amount>[\\.,'\\d\\s]+) "
@@ -321,6 +323,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         + "(Einzahlung"
                         + "|Deposit"
                         + "|Deposito"
+                        + "|D.p.t"
                         + "|Storting"
                         + "|Ingreso"
                         + "|Vklad)"
@@ -342,6 +345,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "(Einzahlung"
                                         + "|Deposit"
                                         + "|Deposito"
+                                        + "|D.p.t"
                                         + "|Storting"
                                         + "|Ingreso"
                                         + "|Vklad))"
@@ -683,6 +687,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "|Dividend Tax"
                                         + "|Dividendbelasting"
                                         + "|Ritenuta sul dividendo"
+                                        + "|Imp.ts sur dividende"
                                         + "|Retenci.n del dividendo) "
                                         + "(?<currencyTax>[\\w]{3}) "
                                         + "\\-(?<tax>[\\.,'\\d\\s]+) "
@@ -799,6 +804,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         + "|Dividend Tax"
                         + "|Dividendbelasting"
                         + "|Ritenuta sul dividendo"
+                        + "|Imp.ts sur dividende"
                         + "|Retenci.n del dividendo) "
                         + ".*$");
         type.addBlock(blockDividendTax);
@@ -828,6 +834,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "|Dividend Tax"
                                         + "|Dividendbelasting"
                                         + "|Ritenuta sul dividendo"
+                                        + "|Imp.ts sur dividende"
                                         + "|Retenci.n del dividendo) "
                                         + "(?<currency>[\\w]{3})"
                                         + "(?<type>\\s(\\-)?)"
@@ -1060,6 +1067,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         + "|Giro Exchange Connection Fee"
                         + "|DEGIRO Costi di connessione"
                         + "|DEGIRO poplatek za Obchodování"
+                        + "|Frais de connexion aux places boursi.res"
                         + "|ADR\\/GDR Weitergabegeb.hr) "
                         + ".*$");
         type.addBlock(blockTrademodalities);
@@ -1101,6 +1109,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                     + "|DEGIRO Aansluitingskosten"
                                                     + "|Giro Exchange Connection Fee"
                                                     + "|DEGIRO Costi di connessione"
+                                                    + "|Frais de connexion aux places boursi.res"
                                                     + "|DEGIRO poplatek za Obchodov.n.)) .* "
                                                     + "(?<currency>[\\w]{3})"
                                                     + "(?<type>\\s(\\-)?)"
@@ -1125,6 +1134,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                     + "|DEGIRO Aansluitingskosten"
                                                     + "|Giro Exchange Connection Fee"
                                                     + "|DEGIRO Costi di connessione"
+                                                    + "|Frais de connexion aux places boursi.res"
                                                     + "|DEGIRO poplatek za Obchodov.n.)( [\\d]{4})?( \\(.*\\))?).* "
                                                     + "(?<currency>[\\w]{3})"
                                                     + "(?<type>\\s(\\-)?)"
@@ -1289,7 +1299,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         // 05-03-2019 15:37 28-02-2019 Rabatt für 500 Euro Aktion EUR 18,00 EUR 1.960,64
         // @formatter:on
         Block blockFeeReturn = new Block("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}:[\\d]{2}( [\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
-                        + "(Rabatt|Gutschrift) "
+                        + "(Rabatt|Gutschrift|Remboursement) "
                         + ".*$");
         type.addBlock(blockFeeReturn);
         blockFeeReturn.set(new Transaction<AccountTransaction>()
@@ -1303,7 +1313,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         .section("date", "time", "note", "currency", "amount")
                         .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                         + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
-                                        + "(?<note>(Rabatt|Gutschrift) .*) "
+                                        + "(?<note>(Rabatt|Gutschrift|Remboursement) .*) "
                                         + "(?<currency>[\\w]{3}) "
                                         + "(?<amount>[\\.,'\\d\\s]+) "
                                         + "[\\w]{3} "
