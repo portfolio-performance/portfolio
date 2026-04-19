@@ -45,8 +45,9 @@ public class ClientMergeService
             mergeInto(target, source);
         }
 
-        return new ClientMergeResult(target, files.size(), securitiesReused, securitiesAdded, accountsImported,
-                        portfoliosImported, investmentPlansImported, watchlistsImported);
+        return new ClientMergeResult(target, files.size(), securitiesReused, securitiesAdded,
+                        target.getAccounts().size(), target.getPortfolios().size(), target.getPlans().size(),
+                        target.getWatchlists().size());
     }
 
     private void mergeInto(Client target, Client source)
