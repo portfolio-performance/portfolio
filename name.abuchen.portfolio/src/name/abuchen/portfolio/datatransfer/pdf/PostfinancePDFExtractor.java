@@ -885,7 +885,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                                                         + "(?<note>(AUFTRAG .*LASTSCHRIFT" //
                                                                         + "|LASTSCHRIFT" //
                                                                         + "|ESR" //
-                                                                        + "|KAUF\\/DIENSTLEISTUNG(.*\\.[\\d]{4})?" //
+                                                                        + "|KAUF\\/DIENSTLEISTUNG( VOM)?(.*\\.[\\d]{4})?" //
                                                                         + "|GOOGLE PAY KAUF\\/DIENSTLEISTUNG" //
                                                                         + "|.BERTRAG (AUF|A UF) .*NTO" //
                                                                         + "|GIRO .*(OST|ANK|ONAL)( \\(SEPA\\))?" //
