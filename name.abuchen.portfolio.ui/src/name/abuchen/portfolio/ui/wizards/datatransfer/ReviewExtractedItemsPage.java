@@ -199,9 +199,9 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         return switch (code)
         {
             case WARNING -> Images.WARNING;
-            case ERROR -> Images.ERROR;
-            case SKIP -> Images.SKIP;
-            case OK -> Images.OK;
+            case ERROR -> Images.CIRCLE_X_MARK_FILLED;
+            case SKIP -> Images.CIRCLE_SLASH_FILLED;
+            case OK -> Images.CIRCLE_CHECK;
             default -> throw new IllegalArgumentException();
         };
     }
