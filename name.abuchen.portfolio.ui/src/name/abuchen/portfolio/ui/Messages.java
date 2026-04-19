@@ -714,13 +714,18 @@ public class Messages extends NLS
     public static String LabelFeesAccumulated;
     public static String LabelFIREAchieved;
     public static String LabelFIREClickToSet;
+    public static String LabelFIRECurrentMonthlyWithdrawal;
     public static String LabelFIRECurrentNetWorth;
+    public static String LabelFIRECurrentYearlyWithdrawal;
     public static String LabelFIREMonthlySavings;
+    public static String LabelFIREMonthlyWithdrawal;
     public static String LabelFIRENumber;
     public static String LabelFIREReturns;
     public static String LabelFIRETargetDate;
     public static String LabelFIRETimeToFIRE;
     public static String LabelFIREWidget;
+    public static String LabelFIREWithdrawal;
+    public static String LabelFIREYearlyWithdrawal;
     public static String LabelFirstDayOfWeek;
     public static String LabelFontSize;
     public static String LabelFormatJSON;
