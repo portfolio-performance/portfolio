@@ -15,9 +15,13 @@ public class ClientMergeService
 
     private int securitiesReused;
     private int securitiesAdded;
+    @SuppressWarnings("unused")
     private int accountsImported;
+    @SuppressWarnings("unused")
     private int portfoliosImported;
+    @SuppressWarnings("unused")
     private int investmentPlansImported;
+    @SuppressWarnings("unused")
     private int watchlistsImported;
 
     public ClientMergeResult merge(List<File> files, Map<File, char[]> passwords, IProgressMonitor monitor)
@@ -38,14 +42,44 @@ public class ClientMergeService
         File firstFile = files.get(0);
         Client target = ClientFactory.load(firstFile, passwords.get(firstFile), progress);
 
+        List<Client> sources = new java.util.ArrayList<>();
+
         for (int i = 1; i < files.size(); i++)
         {
             File sourceFile = files.get(i);
             Client source = ClientFactory.load(sourceFile, passwords.get(sourceFile), progress);
+            sources.add(source);
+        }
+
+        return new ClientMergeResult(target, sources.size() + 1, securitiesReused, securitiesAdded,
+                        target.getAccounts().size(), target.getPortfolios().size(), target.getPlans().size(),
+                        target.getWatchlists().size());
+    }
+
+    /* package */ ClientMergeResult mergeClients(Client target, List<Client> sources)
+    {
+        if (target == null)
+            throw new IllegalArgumentException("target must not be null"); //$NON-NLS-1$
+
+        if (sources == null)
+            throw new IllegalArgumentException("sources must not be null"); //$NON-NLS-1$
+
+        securitiesReused = 0;
+        securitiesAdded = 0;
+        accountsImported = 0;
+        portfoliosImported = 0;
+        investmentPlansImported = 0;
+        watchlistsImported = 0;
+
+        for (Client source : sources)
+        {
+            if (source == null)
+                throw new IllegalArgumentException("source client must not be null"); //$NON-NLS-1$
+
             mergeInto(target, source);
         }
 
-        return new ClientMergeResult(target, files.size(), securitiesReused, securitiesAdded,
+        return new ClientMergeResult(target, sources.size() + 1, securitiesReused, securitiesAdded,
                         target.getAccounts().size(), target.getPortfolios().size(), target.getPlans().size(),
                         target.getWatchlists().size());
     }
