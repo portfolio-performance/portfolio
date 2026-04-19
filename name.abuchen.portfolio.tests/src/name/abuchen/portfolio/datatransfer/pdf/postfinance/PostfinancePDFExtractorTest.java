@@ -1299,17 +1299,17 @@ public class PostfinancePDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(76L));
+        assertThat(countAccountTransactions(results), is(77L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(76));
+        assertThat(results.size(), is(77));
         new AssertImportActions().check(results, "CHF");
 
         // check transaction
         // get transactions
         var iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
-        assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(76L));
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(77L));
 
         var item = iter.next();
 
@@ -1670,6 +1670,16 @@ public class PostfinancePDFExtractorTest
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(250.00))));
         assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Kauf/Dienstleistung vom 08.04.2018"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-08T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(5.25))));
+        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getNote(), is("Kauf/Dienstleistung"));
 
         item = iter.next();
 
