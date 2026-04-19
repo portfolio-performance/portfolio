@@ -1,0 +1,91 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.82.2.qualifier
+System: macosx | aarch64 | 21.0.2+13-LTS | Amazon.com Inc.
+-----------------------------------------
+Scalable Capital Bank GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+MJyKbEms xEhGY rMWiZaCllbVl
+MTxtzaYCtSkHzYKqq 40 
+34435 zrxDfM Datum 18.02.2026
+Deutschland Seite 1 / 4
+Kontoauszug 
+Zeitraum 01.01.2026 - 31.01.2026 
+Auszug Nr. 1474211941 
+Verrechnungskonto kX79857492110967165367 (DEUTDEFFXXX) 
+Kontostand am 01.01.2026 100.370,69 EUR 
+Kontostand am 31.01.2026 40.856,45 EUR 
+Buchung Wertstellung Beschreibung Betrag 
+01.01.2026 31.12.2025 Auf Kundenebene einbehaltene oder erstattete Kapitalertragssteuer -0,02 EUR 
+01.01.2026 31.12.2025 Kapitalmaßnahme Ausschüttungen +0,17 EUR 
+NVIDIA (US67066G1040) 
+01.01.2026 31.12.2025 US Quellensteuer -0,03 EUR 
+01.01.2026 31.12.2025 Erhaltene Zinsen +503,31 EUR 
+01.01.2026 31.12.2025 Abgezogener oder erstatteter Solidaritätszuschlag auf Kundenebene -6,92 EUR 
+01.01.2026 31.12.2025 Auf Kundenebene einbehaltene oder erstattete Kapitalertragssteuer -125,82 EUR 
+02.01.2026 02.01.2026 Überweisung +829,31 EUR 
+Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 1 / 4
+Kontoauszug 
+Zeitraum 01.01.2026 - 31.01.2026 
+Buchung Wertstellung Beschreibung Betrag 
+24.01.2026 02.01.2026 Vorabpauschale 0,00 EUR 
+24.01.2026 02.01.2026 Abgezogener oder erstatteter Solidaritätszuschlag auf Kundenebene -0,22 EUR 
+24.01.2026 02.01.2026 Auf Kundenebene einbehaltene oder erstattete Kapitalertragssteuer -4,13 EUR 
+24.01.2026 02.01.2026 Vorabpauschale 0,00 EUR 
+24.01.2026 02.01.2026 Abgezogener oder erstatteter Solidaritätszuschlag auf Kundenebene -17,39 EUR 
+24.01.2026 02.01.2026 Auf Kundenebene einbehaltene oder erstattete Kapitalertragssteuer -316,11 EUR 
+04.01.2026 05.01.2026 Kapitalmaßnahme Ausschüttungen +201,05 EUR 
+Vanguard FTSE All-World High Dividend Yield (Dist) (IE00B8GKDB10) 
+02.01.2026 06.01.2026 Kauf eines Finanzinstruments -700,00 EUR 
+66,84 Stk. Scalable MSCI AC World Xtrackers (Acc) (LU2903252349) 
+02.01.2026 06.01.2026 Kauf eines Finanzinstruments -250,00 EUR 
+34,69 Stk. Invesco FTSE All-World (Acc) (IE000716YHJ7) 
+02.01.2026 06.01.2026 Kauf eines Finanzinstruments -150,00 EUR 
+2,14 Stk. Vanguard FTSE All-World High Dividend Yield (Dist) (IE00B8GKDB10) 
+02.01.2026 06.01.2026 Kauf eines Finanzinstruments -100,00 EUR 
+0,66 Stk. Xtrackers STOXX Europe 600 (Acc) (LU0328475792) 
+05.01.2026 06.01.2026 Abhebung vom Geldkonto -52.497,70 EUR 
+06.01.2026 07.01.2026 Abhebung vom Geldkonto -1.000,00 EUR 
+Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 2 / 4
+Kontoauszug 
+Zeitraum 01.01.2026 - 31.01.2026 
+Buchung Wertstellung Beschreibung Betrag 
+07.01.2026 09.01.2026 Kauf eines Finanzinstruments -1.039,86 EUR 
+18,00 Stk. Coca-Cola (US1912161007) 
+07.01.2026 09.01.2026 Handelsgebühr -0,99 EUR 
+09.01.2026 09.01.2026 Abhebung vom Geldkonto -4.000,00 EUR 
+21.01.2026 21.01.2026 Kapitalmaßnahme Ausschüttungen +13,45 EUR 
+Realty Income (US7561091049) 
+21.01.2026 21.01.2026 US Quellensteuer -2,02 EUR 
+21.01.2026 21.01.2026 US Quellensteuer -2,05 EUR 
+21.01.2026 21.01.2026 Kapitalmaßnahme Ausschüttungen +13,65 EUR 
+The Walt Disney Co (US2546871060) 
+20.01.2026 22.01.2026 Kauf eines Finanzinstruments -491,24 EUR 
+47,00 Stk. Scalable MSCI AC World Xtrackers (Acc) (LU2903252349) 
+Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 3 / 4
+Kontoauszug 
+Zeitraum 01.01.2026 - 31.01.2026 
+Verteilung Ihrer Einlagen 
+zum Wertstellungsdatum 31.01.2026 
+Absolut 
+Deutsche Managed Euro Fund 40.856,45 EUR 
+Kontostand 40.856,45 EUR 
+PRIME+ Broker Guthaben wird auf die Scalable Capital Bank sowie Partnerbanken verteilt. Dabei werden auch das bei der
+jeweiligen Bank durch Scalable verwahrte Guthaben, die jeweilige gesetzliche Einlagensicherung von 100.000 € pro Kunde und
+Bank und etwaige ergänzende Sicherungseinrichtungen berücksichtigt. Alle anderen Guthaben verteilen wir neben der Scalable
+Capital Bank auf Partnerbanken und qualifizierte Geldmarktfonds. Diese Regeln für die Verteilung von Guthaben können ohne
+Ankündigung geändert werden. Die Verteilung der Guthaben ist veränderlich und hängt unter anderem von den verfügbaren
+Kapazitäten und Konditionen ab. Kundengelder bei Banken sind durch die gesetzliche Einlagensicherung bis zu 100.000 € pro
+Kunde pro Bank geschützt. Statt der Einlagensicherung gelten bei qualifizierten Geldmarktfonds die OGAW-Schutzstandards
+unabhängig vom Anlagebetrag. Mehr Informationen finden Sie unter https://de.scalable.capital/dokumente-information
+Sofern Sie Credit nutzen, beträgt der Zinssatz für die eingeräumte Kontoüberziehung 4,24 %. Für eine Kontoüberziehung außerhalb der Credit-Nutzung fällt ein Zinssatz
+von 4,24 % an. 
+Bitte überprüfen Sie die Informationen auf Richtigkeit und melden Sie etwaige Einwände unverzüglich bei uns.
+Verwenden Sie dafür den Menüpunkt Support im Kundenbereich. 
+Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 4 / 4
