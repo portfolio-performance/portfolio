@@ -1,0 +1,13 @@
+{
+  "cash_in_outs": [
+    {
+      "type": "bank",
+      "datetime": "2026-02-14 11:30:00",
+      "currency": "EUR",
+      "amount": "-2500.75000000",
+      "transaction_id": 9876543210,
+      "comment": "Debit. Withdrawal of funds",
+      "offbalance": null
+    }
+  ]
+}
