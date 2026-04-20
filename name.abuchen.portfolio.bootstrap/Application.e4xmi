@@ -73,7 +73,7 @@
           <children xsi:type="menu:HandledMenuItem" xmi:id="_EbXUwAtwEeW4ucTlYYYvbw" elementId="name.abuchen.portfolio.ui.menu.file.import.ib" label="%command.import.xml.ib" tooltip="%command.import.xml.ib.tooltip" command="_QQsCcLCxEeefXq-wtldCQQ"/>
           <children xsi:type="menu:MenuSeparator" xmi:id="_gNzZUPr7EeS4ucTlYYYvbw" elementId="name.abuchen.portfolio.bootstrap.menuseparator.2"/>
           <children xsi:type="menu:DirectMenuItem" xmi:id="_46BO8DuBEfGqM-hYxeXWvw" elementId="name.abuchen.portfolio.ui.menu.file.import.import-json" label="%command.import.json.import-json" enabled="false"/>
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_5fGR8DuBEfGqM-hYxeXWvw" elementId="name.abuchen.portfolio.ui.menu.file.import.freedom24" label="%command.import.json.freedom24" tooltip="%command.import.json.freedom24.tooltip" command="_QsMngDt-EfGqM-hYxeXWvw"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_5fGR8DuBEfGqM-hYxeXWvw" elementId="name.abuchen.portfolio.ui.menu.file.import.freedom24" label="%command.import.json.freedom24" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/logos/freedom24.svg" tooltip="%command.import.json.freedom24.tooltip" command="_QsMngDt-EfGqM-hYxeXWvw"/>
           <children xsi:type="menu:MenuSeparator" xmi:id="_2yC10DuBEfGqM-hYxeXWvw" elementId="name.abuchen.portfolio.bootstrap.menuseparator.11"/>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_EXYZ4IDUEfCu2LYuODFptg" elementId="name.abuchen.portfolio.ui.menu.file.importTaxonomies" label="%command.import.taxonomy" command="_zRHcgIDTEfCu2LYuODFptg"/>
         </children>
