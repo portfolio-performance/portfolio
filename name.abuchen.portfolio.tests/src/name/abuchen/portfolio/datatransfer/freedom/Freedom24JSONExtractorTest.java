@@ -203,6 +203,46 @@ public class Freedom24JSONExtractorTest
     }
 
     @Test
+    public void testEinlieferung01_EN() throws IOException
+    {
+        // English export: in_outs_securities.detailed uses "Free stocks" instead of "Geschenkaktionen"
+        var extractor = new Freedom24JSONExtractor(new Client());
+        var errors = new ArrayList<Exception>();
+        var results = extractor.extract(null, createInputFile("Einlieferung01_EN.json"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(results.size(), is(2));
+
+        assertThat(results, hasItem(security(
+                        hasIsin("US67066G1040"),
+                        hasTicker("NVDA"),
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(inboundDelivery(
+                        hasDate("2026-02-01T08:30:00"),
+                        hasShares(1.0),
+                        hasAmount("USD", 0.00))));
+    }
+
+    @Test
+    public void testZinsen01_EN() throws IOException
+    {
+        // English export: type "Interest on the use of funds EUR" → INTEREST_CHARGE
+        var extractor = new Freedom24JSONExtractor(new Client());
+        var errors = new ArrayList<Exception>();
+        var results = extractor.extract(null, createInputFile("Zinsen01_EN.json"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+
+        assertThat(results, hasItem(interestCharge(
+                        hasDate("2026-02-15T03:00:00"),
+                        hasAmount("EUR", 0.03))));
+    }
+
+    @Test
     public void testWaehrungskonversion01() throws IOException
     {
         // BUY USD/EUR: pay EUR 2731.50, receive USD 3000.00 (rate 0.9105)
