@@ -102,6 +102,7 @@ public class ClientMergeServiceSecurityMatchingTest
         assertSame(baseSecurity, result.getClient().getSecurities().get(0));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldNotUseWknOnlyFallbackWhenAmbiguousInTarget() throws Exception
     {
@@ -121,6 +122,7 @@ public class ClientMergeServiceSecurityMatchingTest
         assertThat(result.getClient().getSecurities().size(), is(3));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldPreferStrongerMatchLevelBeforeFallingBackToWeakerOne() throws Exception
     {
@@ -145,6 +147,7 @@ public class ClientMergeServiceSecurityMatchingTest
         assertSame(strongMatch, result.getClient().getSecurities().get(0));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldRemapAccountTransactionToReusedSecurity() throws Exception
     {
@@ -179,6 +182,7 @@ public class ClientMergeServiceSecurityMatchingTest
         assertThat(result.getSecuritiesAdded(), is(0));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldRegenerateImportedAccountUuidEvenWhenSecurityIsReused() throws Exception
     {
