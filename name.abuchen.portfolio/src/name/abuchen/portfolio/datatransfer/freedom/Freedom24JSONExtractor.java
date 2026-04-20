@@ -103,7 +103,80 @@ public class Freedom24JSONExtractor implements Extractor
     private static final String CASHFLOW_BANK = "bank";
 
     private static final Set<String> STOCK_AWARD_TYPES = Set.of(
-                    "stock_award", "Geschenkaktionen", "Free stocks");
+                    "stock_award",
+                    "Geschenkaktionen",       // DE
+                    "Free stocks",            // EN
+                    "أسهم الهدايا",           // AR
+                    "Подаръчни акции",        // BG
+                    "Dárkové akcie",          // CS
+                    "Gratis aktier",          // DA
+                    "Δωρεάν μετοχές",         // EL
+                    "Las acciones gratuitas", // ES
+                    "Tasuta aktsiad",         // ET
+                    "Actions cadeaux",        // FR
+                    "Նվեր բաժնետոսեր",        // HY
+                    "Azioni in regalo",       // IT
+                    "Сыйлық акциялары",       // KK
+                    "Dovanojamos akcijos",    // LT
+                    "Gratis aandelen",        // NL
+                    "Akcje prezentowe",       // PL
+                    "Ações gratuitas",        // PT
+                    "Acțiuni libere",         // RO
+                    "Подарочные акции",       // RU
+                    "Саҳмияҳои тӯҳфавӣ",      // TG
+                    "Подарункові акції",      // UK
+                    "赠送股票");               // ZH
+
+    // Prefixes of interest-charge type strings; covers all Freedom24 UI languages.
+    // Prefix matching handles the trailing currency code (EUR / USD / …).
+    private static final Set<String> INTEREST_CHARGE_PREFIXES = Set.of(
+                    "Zinsen",       // DE
+                    "Interest",     // EN + ES ("Intereses" startsWith "Interest")
+                    "الفائدة",      // AR
+                    "Лихва",        // BG
+                    "Úroky",        // CS
+                    "Interesse",    // DA + IT (same prefix)
+                    "Ποσοστά",      // EL
+                    "Protsendid",   // ET
+                    "Intérêt",      // FR
+                    "Դրամային",     // HY
+                    "Ақша",         // KK
+                    "Palūkanos",    // LT
+                    "Procenten",    // NL
+                    "Odsetki",      // PL
+                    "Juros",        // PT
+                    "Dobândă",      // RO
+                    "Проценты",     // RU
+                    "Фоизҳо",       // TG
+                    "Відсотки",     // UK
+                    "资金使用利息"); // ZH
+
+    // Prefixes of trade-linked commission types; these are skipped in
+    // processRemainingCommissions() because they are already embedded as FEE
+    // units inside the corresponding BuySellEntry.
+    private static final Set<String> TRADE_COMMISSION_PREFIXES = Set.of(
+                    "Für eine Transaktion:", // DE
+                    "For trade:",            // EN
+                    "لكل معاملة:",           // AR
+                    "За сделка:",            // BG
+                    "Za transakce:",         // CS
+                    "Til handel:",           // DA
+                    "Για τη συναλλαγή:",     // EL
+                    "Por trato",             // ES (no colon in Freedom24 export)
+                    "Tehingu eest:",         // ET
+                    "Pour l'offre:",         // FR
+                    "Ըստ գործարքի՝",         // HY
+                    "Per operazione:",       // IT
+                    "Мәміле үшін:",          // KK
+                    "Už sandorį:",           // LT
+                    "Per transactie:",       // NL
+                    "Za transakcję:",        // PL
+                    "Para transação:",       // PT
+                    "Pentru tranzacționare:", // RO
+                    "За сделку:",            // RU
+                    "Барои муомила:",        // TG
+                    "За угоду:",             // UK
+                    "交易手续费：");           // ZH
 
     // Extracts the commission exchange rate from the Freedom24 trade comment, e.g.:
     // "Currency exchange of trade (USD) to a currency exchange of the service plan (EUR) is 0.8494"
@@ -593,7 +666,7 @@ public class Freedom24JSONExtractor implements Extractor
 
                 // Skip commissions that are already embedded in a trade
                 String type = getString(commission, "type", "");
-                if (type.startsWith("Für eine Transaktion:") || type.startsWith("For trade:"))
+                if (TRADE_COMMISSION_PREFIXES.stream().anyMatch(type::startsWith))
                     continue;
 
                 double sum = getDouble(commission, "sum", 0.0);
@@ -607,7 +680,7 @@ public class Freedom24JSONExtractor implements Extractor
                 AccountTransaction tx = new AccountTransaction();
                 tx.setDateTime(parseDateTime(dateStr));
                 tx.setMonetaryAmount(Money.of(currency, Values.Amount.factorize(sum)));
-                tx.setType(type.startsWith("Zinsen") || type.startsWith("Interest")
+                tx.setType(INTEREST_CHARGE_PREFIXES.stream().anyMatch(type::startsWith)
                                 ? AccountTransaction.Type.INTEREST_CHARGE
                                 : AccountTransaction.Type.FEES);
 

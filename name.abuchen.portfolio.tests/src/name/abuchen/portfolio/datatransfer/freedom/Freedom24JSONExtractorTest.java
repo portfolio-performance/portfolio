@@ -265,4 +265,94 @@ public class Freedom24JSONExtractorTest
         assertThat(entry.getTargetTransaction().getMonetaryAmount(),
                         is(Money.of("USD", Values.Amount.factorize(3000.00))));
     }
+
+    // -----------------------------------------------------------------------
+    // Multi-language helpers
+    // -----------------------------------------------------------------------
+
+    private void assertInboundDelivery(String resource) throws IOException
+    {
+        var extractor = new Freedom24JSONExtractor(new Client());
+        var errors = new ArrayList<Exception>();
+        var results = extractor.extract(null, createInputFile(resource), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(results.size(), is(2));
+
+        assertThat(results, hasItem(security(
+                        hasIsin("US67066G1040"),
+                        hasTicker("NVDA"),
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(inboundDelivery(
+                        hasDate("2026-02-01T08:30:00"),
+                        hasShares(1.0),
+                        hasAmount("USD", 0.00))));
+    }
+
+    private void assertInterestCharge(String resource) throws IOException
+    {
+        var extractor = new Freedom24JSONExtractor(new Client());
+        var errors = new ArrayList<Exception>();
+        var results = extractor.extract(null, createInputFile(resource), errors);
+
+        assertThat(errors, empty());
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+
+        assertThat(results, hasItem(interestCharge(
+                        hasDate("2026-02-15T03:00:00"),
+                        hasAmount("EUR", 0.03))));
+    }
+
+    // -----------------------------------------------------------------------
+    // Inbound delivery (gift shares) – all languages
+    // -----------------------------------------------------------------------
+
+    @Test public void testEinlieferung01_AR() throws IOException { assertInboundDelivery("Einlieferung01_AR.json"); }
+    @Test public void testEinlieferung01_BG() throws IOException { assertInboundDelivery("Einlieferung01_BG.json"); }
+    @Test public void testEinlieferung01_CS() throws IOException { assertInboundDelivery("Einlieferung01_CS.json"); }
+    @Test public void testEinlieferung01_DA() throws IOException { assertInboundDelivery("Einlieferung01_DA.json"); }
+    @Test public void testEinlieferung01_EL() throws IOException { assertInboundDelivery("Einlieferung01_EL.json"); }
+    @Test public void testEinlieferung01_ES() throws IOException { assertInboundDelivery("Einlieferung01_ES.json"); }
+    @Test public void testEinlieferung01_ET() throws IOException { assertInboundDelivery("Einlieferung01_ET.json"); }
+    @Test public void testEinlieferung01_FR() throws IOException { assertInboundDelivery("Einlieferung01_FR.json"); }
+    @Test public void testEinlieferung01_HY() throws IOException { assertInboundDelivery("Einlieferung01_HY.json"); }
+    @Test public void testEinlieferung01_IT() throws IOException { assertInboundDelivery("Einlieferung01_IT.json"); }
+    @Test public void testEinlieferung01_KK() throws IOException { assertInboundDelivery("Einlieferung01_KK.json"); }
+    @Test public void testEinlieferung01_LT() throws IOException { assertInboundDelivery("Einlieferung01_LT.json"); }
+    @Test public void testEinlieferung01_NL() throws IOException { assertInboundDelivery("Einlieferung01_NL.json"); }
+    @Test public void testEinlieferung01_PL() throws IOException { assertInboundDelivery("Einlieferung01_PL.json"); }
+    @Test public void testEinlieferung01_PT() throws IOException { assertInboundDelivery("Einlieferung01_PT.json"); }
+    @Test public void testEinlieferung01_RO() throws IOException { assertInboundDelivery("Einlieferung01_RO.json"); }
+    @Test public void testEinlieferung01_RU() throws IOException { assertInboundDelivery("Einlieferung01_RU.json"); }
+    @Test public void testEinlieferung01_TG() throws IOException { assertInboundDelivery("Einlieferung01_TG.json"); }
+    @Test public void testEinlieferung01_UK() throws IOException { assertInboundDelivery("Einlieferung01_UK.json"); }
+    @Test public void testEinlieferung01_ZH() throws IOException { assertInboundDelivery("Einlieferung01_ZH.json"); }
+
+    // -----------------------------------------------------------------------
+    // Interest charge – all languages
+    // -----------------------------------------------------------------------
+
+    @Test public void testZinsen01_AR() throws IOException { assertInterestCharge("Zinsen01_AR.json"); }
+    @Test public void testZinsen01_BG() throws IOException { assertInterestCharge("Zinsen01_BG.json"); }
+    @Test public void testZinsen01_CS() throws IOException { assertInterestCharge("Zinsen01_CS.json"); }
+    @Test public void testZinsen01_DA() throws IOException { assertInterestCharge("Zinsen01_DA.json"); }
+    @Test public void testZinsen01_EL() throws IOException { assertInterestCharge("Zinsen01_EL.json"); }
+    @Test public void testZinsen01_ES() throws IOException { assertInterestCharge("Zinsen01_ES.json"); }
+    @Test public void testZinsen01_ET() throws IOException { assertInterestCharge("Zinsen01_ET.json"); }
+    @Test public void testZinsen01_FR() throws IOException { assertInterestCharge("Zinsen01_FR.json"); }
+    @Test public void testZinsen01_HY() throws IOException { assertInterestCharge("Zinsen01_HY.json"); }
+    @Test public void testZinsen01_IT() throws IOException { assertInterestCharge("Zinsen01_IT.json"); }
+    @Test public void testZinsen01_KK() throws IOException { assertInterestCharge("Zinsen01_KK.json"); }
+    @Test public void testZinsen01_LT() throws IOException { assertInterestCharge("Zinsen01_LT.json"); }
+    @Test public void testZinsen01_NL() throws IOException { assertInterestCharge("Zinsen01_NL.json"); }
+    @Test public void testZinsen01_PL() throws IOException { assertInterestCharge("Zinsen01_PL.json"); }
+    @Test public void testZinsen01_PT() throws IOException { assertInterestCharge("Zinsen01_PT.json"); }
+    @Test public void testZinsen01_RO() throws IOException { assertInterestCharge("Zinsen01_RO.json"); }
+    @Test public void testZinsen01_RU() throws IOException { assertInterestCharge("Zinsen01_RU.json"); }
+    @Test public void testZinsen01_TG() throws IOException { assertInterestCharge("Zinsen01_TG.json"); }
+    @Test public void testZinsen01_UK() throws IOException { assertInterestCharge("Zinsen01_UK.json"); }
+    @Test public void testZinsen01_ZH() throws IOException { assertInterestCharge("Zinsen01_ZH.json"); }
 }
