@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>name.abuchen.portfolio</groupId>
+		<artifactId>portfolio-app</artifactId>
+		<version>0.83.3-SNAPSHOT</version>
+		<relativePath>../portfolio-app</relativePath>
+	</parent>
+
+	<artifactId>portfolio-build-tools</artifactId>
+	<packaging>jar</packaging>
+
+	<properties>
+		<portfolio.build.managed.bundles>
+name.abuchen.portfolio/src/name/abuchen/portfolio|messages
+name.abuchen.portfolio/src/name/abuchen/portfolio/util|holiday-names
+name.abuchen.portfolio/src/name/abuchen/portfolio/model|labels
+name.abuchen.portfolio/src/name/abuchen/portfolio/online/impl|exchange-labels
+name.abuchen.portfolio/src/name/abuchen/portfolio/online/impl|eurostathicp-labels
+name.abuchen.portfolio/src/name/abuchen/portfolio/snapshot|labels
+name.abuchen.portfolio.ui/src/name/abuchen/portfolio/ui|messages
+name.abuchen.portfolio.ui/src/name/abuchen/portfolio/ui/parts|samplemessages
+name.abuchen.portfolio.ui/src/name/abuchen/portfolio/ui/views/settings|labels
+name.abuchen.portfolio.ui/src/name/abuchen/portfolio/ui/views|labels
+name.abuchen.portfolio.ui/OSGI-INF/l10n|bundle
+name.abuchen.portfolio.bootstrap/src/name/abuchen/portfolio/bootstrap|messages
+name.abuchen.portfolio.bootstrap/OSGI-INF/l10n|bundle
+name.abuchen.portfolio/src/name/abuchen/portfolio/model/taxonomy_templates|security-type
+name.abuchen.portfolio/src/name/abuchen/portfolio/model/taxonomy_templates|kommer
+name.abuchen.portfolio/src/name/abuchen/portfolio/model/taxonomy_templates|assetclasses
+name.abuchen.portfolio/src/name/abuchen/portfolio/model/taxonomy_templates|regions
+name.abuchen.portfolio/src/name/abuchen/portfolio/model/taxonomy_templates|regions-msci
+		</portfolio.build.managed.bundles>
+	</properties>
+
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.13.2</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>

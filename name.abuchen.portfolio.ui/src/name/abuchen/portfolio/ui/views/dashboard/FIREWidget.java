@@ -35,6 +35,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.InfoToolTip;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.StringToCurrencyConverter;
@@ -302,8 +303,8 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(currentValueLabel);
 
         // FIRE Number (second row, editable)
-        EditableRow fireNumberRow = createEditableRow(Messages.LabelFIRENumber, this::commitFireNumber,
-                        this::cancelFireNumberEditing);
+        EditableRow fireNumberRow = createEditableRow(Messages.LabelFIRENumber, Messages.TooltipFIRENumber,
+                        this::commitFireNumber, this::cancelFireNumberEditing);
         fireNumberLabel = fireNumberRow.valueLabel();
         fireNumberInput = fireNumberRow.input();
 
@@ -321,8 +322,8 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         }
 
         // Est. Monthly Savings (editable)
-        EditableRow monthlySavingsRow = createEditableRow(Messages.LabelFIREMonthlySavings, this::commitMonthlySavings,
-                        this::cancelMonthlySavingsEditing);
+        EditableRow monthlySavingsRow = createEditableRow(Messages.LabelFIREMonthlySavings, null,
+                        this::commitMonthlySavings, this::cancelMonthlySavingsEditing);
         monthlySavingsLabel = monthlySavingsRow.valueLabel();
         monthlySavingsInput = monthlySavingsRow.input();
 
@@ -339,7 +340,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         }
 
         // Est. Returns (editable)
-        EditableRow returnsRow = createEditableRow(Messages.LabelFIREReturns, this::commitReturns,
+        EditableRow returnsRow = createEditableRow(Messages.LabelFIREReturns, null, this::commitReturns,
                         this::cancelReturnsEditing);
         twrorLabel = returnsRow.valueLabel();
         twrorInput = returnsRow.input();
@@ -619,17 +620,21 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         }
     }
 
-    private EditableRow createEditableRow(String rowLabelText, Runnable onCommit, Runnable onCancel)
+    private EditableRow createEditableRow(String rowLabelText, String toolTip, Runnable onCommit, Runnable onCancel)
     {
         new Label(container, SWT.NONE); // Empty sign column
         Label rowLabel = new Label(container, SWT.NONE);
         rowLabel.setText(MessageFormat.format(Messages.LabelColonSeparated, rowLabelText, "")); //$NON-NLS-1$
         rowLabel.setBackground(container.getBackground());
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(rowLabel);
+        if (toolTip != null)
+            InfoToolTip.attach(rowLabel, toolTip);
 
         ColoredLabel valueLabel = new ColoredLabel(container, SWT.RIGHT);
         valueLabel.setBackground(Colors.theme().defaultBackground());
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(valueLabel);
+        if (toolTip != null)
+            InfoToolTip.attach(valueLabel, toolTip);
 
         Text input = new Text(container, SWT.BORDER | SWT.RIGHT);
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(input);

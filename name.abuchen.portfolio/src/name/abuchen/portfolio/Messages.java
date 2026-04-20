@@ -262,6 +262,7 @@ public class Messages extends NLS
     public static String MsgErrorBaseAndTermCurrencyAreEqualWithInvalidExchangeRate;
     public static String MsgErrorCannotConvertToRequestedCurrency;
     public static String MsgErrorCannotRetrieveExchangeRateForCurrency;
+    public static String MsgErrorCashDividendCorrectionUnmatched;
     public static String MsgErrorDecrypting;
     public static String MsgErrorDownloadECBStatisticalDataWarehouse;
     public static String MsgErrorDownloadEurostatHICP;

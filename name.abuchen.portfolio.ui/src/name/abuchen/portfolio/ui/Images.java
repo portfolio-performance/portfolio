@@ -75,7 +75,7 @@ public enum Images
     VIEW_LINECHART("view_linechart.png"), //$NON-NLS-1$
 
     CHECK("check.png"), //$NON-NLS-1$
-    EDIT("edit.svg"),  //$NON-NLS-1$
+    EDIT("edit.svg"), //$NON-NLS-1$
     XMARK("xmark.png"), //$NON-NLS-1$
     QUICKFIX("quickfix.png"), //$NON-NLS-1$
     ADD("add.png"), //$NON-NLS-1$
@@ -106,13 +106,19 @@ public enum Images
     INFO("info.png"), //$NON-NLS-1$
     ONLINE("online.png"), //$NON-NLS-1$
     ERROR_NOTICE("error_notice.png"), //$NON-NLS-1$
-    SKIP("skip.svg"), //$NON-NLS-1$
 
     VISIBLE("visible.png"), //$NON-NLS-1$
     HIDDEN("hidden.png"), //$NON-NLS-1$
 
     ARROW_FORWARD("arrow_forward.png"), //$NON-NLS-1$
     ARROW_BACK("arrow_back.png"), //$NON-NLS-1$
+
+    CIRCLE_CHECK("circle_check.svg"), //$NON-NLS-1$
+    CIRCLE_SLASH("circle_slash.svg"), //$NON-NLS-1$
+    CIRCLE_X_MARK("circle_x_mark.svg"), //$NON-NLS-1$
+    CIRCLE_CHECK_FILLED("circle_check_filled.svg"), //$NON-NLS-1$
+    CIRCLE_SLASH_FILLED("circle_slash_filled.svg"), //$NON-NLS-1$
+    CIRCLE_X_MARK_FILLED("circle_x_mark_filled.svg"), //$NON-NLS-1$
 
     // 3rd party logos
 

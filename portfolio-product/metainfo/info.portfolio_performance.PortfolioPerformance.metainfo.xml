@@ -37,6 +37,26 @@
 	    <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.83.2" date="2026-04-19">
+      <description>
+        <ul>
+          <li>Improvement: Enhanced Trade Republic CSV importer to reconcile cash dividend corrections and book negative tax optimizations as taxes.</li>
+          <li>Improvement: Improved IBFlex cross-currency dividend import.</li>
+          <li>Improvement: Enhanced PDF importers for Scalable Capital and Liberty Vorsorge AG.</li>
+          <li>Improvement: Added a CSV import template for Scalable Capital.</li>
+          <li>Improvement: Added a tooltip for the FIRE widget.</li>
+          <li>Fix: Fixed the label background on Windows in the theme preferences page.</li>
+          <li>Fix: Reverted “Remember and preset the transaction date last entered” due to issues.</li>
+          <li xml:lang="de">Verbesserung: Trade-Republic-CSV-Importer verbessert, um Korrekturen von Dividenden abzugleichen und negative Steueroptimierungen als Steuern zu verbuchen.</li>
+          <li xml:lang="de">Verbesserung: IBFlex-Import für Dividenden in Fremdwährungen verbessert.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für Scalable Capital und Liberty Vorsorge AG verbessert.</li>
+          <li xml:lang="de">Verbesserung: CSV-Importvorlage für Scalable Capital hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: Tooltip für das FIRE-Widget hinzugefügt.</li>
+          <li xml:lang="de">Fehlerbehebung: Hintergrund von Labels unter Windows auf der Seite „Design-Einstellungen“ korrigiert.</li>
+          <li xml:lang="de">Fehlerbehebung: Das letzte Buchungsdatum wird nicht mehr für neue Buchungen vorbelegt, da es zu viele Usability-Probleme gab.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.83.1" date="2026-04-15">
       <description>
         <ul>

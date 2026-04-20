@@ -334,6 +334,7 @@ public final class ThemePreferencePage extends PreferencePage
 
         // Color preview composite
         var previewComposite = new Composite(parent, SWT.NONE);
+        previewComposite.setBackgroundMode(SWT.INHERIT_FORCE);
         GridLayoutFactory.fillDefaults().numColumns(4).margins(20, 5).spacing(10, 5).applyTo(previewComposite);
         GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(previewComposite);
 

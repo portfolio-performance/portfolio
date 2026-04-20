@@ -5,12 +5,14 @@
 
 	<groupId>name.abuchen.portfolio</groupId>
 	<artifactId>portfolio-app</artifactId>
-	<version>0.83.2-SNAPSHOT</version>
+	<version>0.83.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Portfolio Performance</name>
 
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<tycho-version>5.0.2</tycho-version>
 		<jarsigner.skip>true</jarsigner.skip>
 		<gpgsigner.skip>true</gpgsigner.skip>
@@ -26,6 +28,7 @@
 		<argLine>-ea</argLine>
 		<maven.compiler.source>21</maven.compiler.source>
 		<maven.compiler.target>21</maven.compiler.target>
+		<portfolio.build.command>check</portfolio.build.command>
 	</properties>
 
 	<modules>
@@ -39,6 +42,8 @@
 		<module>../name.abuchen.portfolio.ui.tests</module>
 		<module>../name.abuchen.portfolio.feature</module>
 		<module>../name.abuchen.portfolio.bootstrap</module>
+		<module>../portfolio-build-tools</module>
+		<module>../portfolio-build-tools-check</module>
 	</modules>
 
 	<repositories>
@@ -575,6 +580,14 @@
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>exec-maven-plugin</artifactId>
 					<version>3.6.3</version>
+					<configuration>
+						<mainClass>name.abuchen.portfolio.build.MessagesTool</mainClass>
+						<classpathScope>runtime</classpathScope>
+						<arguments>
+							<argument>${portfolio.build.command}</argument>
+							<argument>${project.parent.basedir}/..</argument>
+						</arguments>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.jacoco</groupId>

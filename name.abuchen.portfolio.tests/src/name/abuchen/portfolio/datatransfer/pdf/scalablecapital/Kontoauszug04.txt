@@ -1,0 +1,52 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.82.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital Bank GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+IDIuHb rosAEoZ
+Xxxstr. 18 
+11111 hHaJSPXrp Datum 18.02.2026
+Deutschland Seite 1 / 2
+Kontoauszug 
+Zeitraum 01.01.2026 - 31.01.2026 
+Auszug Nr. 6250104640 
+Verrechnungskonto oo14805149671297866946 (DEUTDEFFXXX) 
+Kontostand am 01.01.2026 22.535,54 EUR 
+Kontostand am 31.01.2026 27.535,54 EUR 
+Buchung Wertstellung Beschreibung Betrag 
+01.01.2026 31.12.2025 Auf Kundenebene einbehaltene oder erstattete Kirchensteuer -1,10 EUR 
+01.01.2026 31.12.2025 Auf Kundenebene einbehaltene oder erstattete Kapitalertragssteuer -12,31 EUR 
+01.01.2026 31.12.2025 Erhaltene Zinsen +50,36 EUR 
+01.01.2026 31.12.2025 Abgezogener oder erstatteter Solidaritätszuschlag auf Kundenebene -0,67 EUR 
+24.01.2026 02.01.2026 Vorabpauschale 0,00 EUR 
+24.01.2026 02.01.2026 Vorabpauschale 0,00 EUR 
+05.01.2026 06.01.2026 Lastschrift +1.000,00 EUR 
+07.01.2026 09.01.2026 Kauf eines Finanzinstruments -1.000,00 EUR 
+96,06 Stk. UBS MSCI World Small Cap Socially Responsible (Acc)
+(IE00BKSCBX74) 
+23.01.2026 23.01.2026 Überweisung +5.000,00 EUR 
+Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 1 / 2
+Kontoauszug 
+Zeitraum 01.01.2026 - 31.01.2026 
+Verteilung Ihrer Einlagen 
+zum Wertstellungsdatum 31.01.2026 
+Absolut 
+JPM EUR Liquidity LVNAV Select (dist.) 27.535,54 EUR 
+Kontostand 27.535,54 EUR 
+PRIME+ Broker Guthaben wird auf die Scalable Capital Bank sowie Partnerbanken verteilt. Dabei werden auch das bei der
+jeweiligen Bank durch Scalable verwahrte Guthaben, die jeweilige gesetzliche Einlagensicherung von 100.000 € pro Kunde und
+Bank und etwaige ergänzende Sicherungseinrichtungen berücksichtigt. Alle anderen Guthaben verteilen wir neben der Scalable
+Capital Bank auf Partnerbanken und qualifizierte Geldmarktfonds. Diese Regeln für die Verteilung von Guthaben können ohne
+Ankündigung geändert werden. Die Verteilung der Guthaben ist veränderlich und hängt unter anderem von den verfügbaren
+Kapazitäten und Konditionen ab. Kundengelder bei Banken sind durch die gesetzliche Einlagensicherung bis zu 100.000 € pro
+Kunde pro Bank geschützt. Statt der Einlagensicherung gelten bei qualifizierten Geldmarktfonds die OGAW-Schutzstandards
+unabhängig vom Anlagebetrag. Mehr Informationen finden Sie unter https://de.scalable.capital/dokumente-information
+Sofern Sie Credit nutzen, beträgt der Zinssatz für die eingeräumte Kontoüberziehung 4,24 %. Für eine Kontoüberziehung außerhalb der Credit-Nutzung fällt ein Zinssatz
+von 4,24 % an. 
+Bitte überprüfen Sie die Informationen auf Richtigkeit und melden Sie etwaige Einwände unverzüglich bei uns.
+Verwenden Sie dafür den Menüpunkt Support im Kundenbereich. 
+Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 2 / 2

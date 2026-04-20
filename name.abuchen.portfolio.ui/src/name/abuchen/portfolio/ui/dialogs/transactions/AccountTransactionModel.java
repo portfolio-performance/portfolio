@@ -50,7 +50,7 @@ public class AccountTransactionModel extends AbstractModel
 
     private Security security;
     private Account account;
-    private LocalDate date = PresetValues.getLastTransactionDate();
+    private LocalDate date = LocalDate.now();
     private LocalTime time = PresetValues.getTime();
     private LocalDateTime exDate;
     private long shares;
