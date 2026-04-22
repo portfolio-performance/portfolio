@@ -343,6 +343,9 @@ public class Messages extends NLS
     public static String PDFMsgExtracingFiles;
     public static String PDFMsgFileNotSupported;
     public static String QuoteFeedManual;
+    public static String BitvavoCSVLabel;
+    public static String BitvavoCSVMsgFileNotSupported;
+    public static String BitvavoCSVMsgUnsupportedTransactionType;
     public static String TradeRepublicCSVLabel;
     public static String TradeRepublicCSVMsgFileNotSupported;
     public static String TradeRepublicCSVMsgSkippedCoveredByOtherLines;

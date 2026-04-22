@@ -1,0 +1,2 @@
+Timezone,Date,Time,Type,Currency,Amount,Quote Currency,Quote Price,Received / Paid Currency,Received / Paid Amount,Fee currency,Fee amount,Status,Transaction ID,Address
+Europe/Berlin,2025-01-05,10:00:00,campaign_new_user_incentive,EUR,10,,,,,,,Completed,f6a7b8c9-d0e1-2345-fabc-456789012345,

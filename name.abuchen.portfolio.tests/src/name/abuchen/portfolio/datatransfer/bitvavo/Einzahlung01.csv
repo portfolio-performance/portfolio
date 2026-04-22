@@ -1,0 +1,2 @@
+Timezone,Date,Time,Type,Currency,Amount,Quote Currency,Quote Price,Received / Paid Currency,Received / Paid Amount,Fee currency,Fee amount,Status,Transaction ID,Address
+Europe/Berlin,2025-01-10,08:00:00,deposit,EUR,1000,,,,,EUR,0,Completed,c3d4e5f6-a7b8-9012-cdef-123456789012,DE11***22

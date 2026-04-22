@@ -1,0 +1,2 @@
+Timezone,Date,Time,Type,Currency,Amount,Quote Currency,Quote Price,Received / Paid Currency,Received / Paid Amount,Fee currency,Fee amount,Status,Transaction ID,Address
+Europe/Berlin,2025-01-16,09:45:00,sell,BTC,0.00500000,EUR,41000,EUR,204.49,EUR,0.51,Completed,b2c3d4e5-f6a7-8901-bcde-f12345678901,
