@@ -2,6 +2,8 @@ package name.abuchen.portfolio.datatransfer.bitvavo;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -40,12 +42,12 @@ import name.abuchen.portfolio.money.Values;
  *           Fee currency, Fee amount,
  *           Status, Transaction ID, Address
  *
- *           Handled types:
+ *           Handled transaction types:
  *           - buy / sell           → BuySellEntry
  *           - deposit              → AccountTransaction DEPOSIT
  *           - withdrawal (fiat)    → AccountTransaction REMOVAL
- *           - withdrawal (crypto)  → BuySellEntry SELL (fee shares at EUR 0)
- *                                  + PortfolioTransaction TRANSFER_OUT (net shares at EUR 0)
+ *           - withdrawal (crypto)  → BuySellEntry SELL (network fee shares at EUR 0)
+ *                                  + PortfolioTransferEntry TRANSFER_OUT (net shares at EUR 0)
  *           - rebate               → AccountTransaction FEES_REFUND
  *           - campaign_new_user_incentive → AccountTransaction DEPOSIT
  *
@@ -53,13 +55,13 @@ import name.abuchen.portfolio.money.Values;
  *           "Received / Paid Amount" already includes the fee
  *           (negative = paid for buy, positive = received for sell).
  *           PP amount = abs(Received/Paid Amount); FEE unit = Fee amount.
- *           Gross value is derived by PP as amount ∓ fee.
+ *           PP derives gross value as: amount ∓ fee.
  *
  *           Rebate correlation:
- *           Bitvavo issues a rebate row immediately after each trade to return
- *           the charged fee. After all rows are parsed, each rebate is matched
- *           to the temporally nearest trade (within 120 s) so that PP can show
- *           the refunded fee linked to the correct security.
+ *           Bitvavo issues a rebate row for each trade to refund the charged fee.
+ *           After all rows are parsed, each FEES_REFUND is matched to the nearest
+ *           regular buy/sell within {@value #REBATE_CORRELATION_WINDOW_SECONDS}
+ *           seconds so that PP can link the refund to the correct security.
  * @formatter:on
  */
 @SuppressWarnings("nls")
@@ -72,7 +74,7 @@ public class BitvavoCSVExtractor implements Extractor
     private static final String TYPE_REBATE = "rebate";
     private static final String TYPE_CAMPAIGN = "campaign_new_user_incentive";
 
-    // Maximum seconds between a rebate and its corresponding trade
+    /** Maximum seconds between a rebate and its corresponding trade. */
     private static final long REBATE_CORRELATION_WINDOW_SECONDS = 120;
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -98,8 +100,7 @@ public class BitvavoCSVExtractor implements Extractor
 
         try
         {
-            var content = java.nio.file.Files.readString(inputFile.getFile().toPath(),
-                            java.nio.charset.StandardCharsets.UTF_8);
+            var content = Files.readString(inputFile.getFile().toPath(), StandardCharsets.UTF_8);
 
             if (!tryParse(content, securityCache, source, items, errors))
             {
@@ -115,6 +116,11 @@ public class BitvavoCSVExtractor implements Extractor
         return items;
     }
 
+    /**
+     * Parses the CSV content and populates {@code items}. Returns {@code true} if
+     * the file looks like a Bitvavo export (required headers present), {@code false}
+     * if the file should be rejected as unsupported.
+     */
     private boolean tryParse(String content, SecurityCache securityCache, String source, List<Item> items,
                     List<Exception> errors)
     {
@@ -143,7 +149,6 @@ public class BitvavoCSVExtractor implements Extractor
                 }
             }
 
-            // Assign securities to rebates by matching the nearest trade in time
             correlateRebatesWithTrades(items);
 
             return true;
@@ -181,7 +186,7 @@ public class BitvavoCSVExtractor implements Extractor
                 break;
             default:
             {
-                // Unknown type: create a placeholder deposit with a failure message
+                // Unknown type: placeholder deposit with failure message for user review
                 var tx = new AccountTransaction();
                 tx.setType(AccountTransaction.Type.DEPOSIT);
                 tx.setDateTime(parseDateTime(record));
@@ -256,9 +261,15 @@ public class BitvavoCSVExtractor implements Extractor
     }
 
     // -----------------------------------------------------------------------
-    // Withdrawal (fiat → REMOVAL, crypto → DELIVERY_OUTBOUND)
+    // Withdrawal (fiat → REMOVAL, crypto → SELL fee + TRANSFER_OUT net)
     // -----------------------------------------------------------------------
 
+    /**
+     * Fiat withdrawals become a simple REMOVAL. Crypto withdrawals are split into
+     * two items: a SELL at EUR 0 for the network fee shares (to remove them from
+     * the portfolio without proceeds) and an outgoing portfolio transfer
+     * (Depotumbuchung ausgehend) for the remaining net shares.
+     */
     private void processWithdrawal(CSVRecord record, SecurityCache securityCache, String source, List<Item> items)
     {
         var currency = getField(record, "Currency");
@@ -287,7 +298,7 @@ public class BitvavoCSVExtractor implements Extractor
             var note = noteWithAddress(record);
             var dateTime = parseDateTime(record);
 
-            // Network fee: sell the fee shares at EUR 0 to remove them from the portfolio
+            // Network fee: sell fee shares at EUR 0 to write them off without proceeds
             if (feeShares > 0)
             {
                 var feeSell = new BuySellEntry();
@@ -363,7 +374,9 @@ public class BitvavoCSVExtractor implements Extractor
     /**
      * Bitvavo issues a rebate row for every fee charged on a trade. This method
      * links each FEES_REFUND transaction to the security of the temporally nearest
-     * buy/sell within {@value #REBATE_CORRELATION_WINDOW_SECONDS} seconds.
+     * regular buy/sell within {@value #REBATE_CORRELATION_WINDOW_SECONDS} seconds.
+     * Fee-sell entries created for crypto withdrawal network fees (amount = 0) are
+     * excluded from matching.
      */
     private void correlateRebatesWithTrades(List<Item> items)
     {
@@ -385,6 +398,11 @@ public class BitvavoCSVExtractor implements Extractor
                     continue;
 
                 var ptx = ((BuySellEntry) bsei.getSubject()).getPortfolioTransaction();
+
+                // Skip the synthetic fee-sell entries from crypto withdrawals (amount = 0)
+                if (ptx.getAmount() == 0)
+                    continue;
+
                 long diff = Math.abs(Duration.between(tx.getDateTime(), ptx.getDateTime()).toSeconds());
 
                 if (diff <= REBATE_CORRELATION_WINDOW_SECONDS && diff < bestDiff)
@@ -406,11 +424,11 @@ public class BitvavoCSVExtractor implements Extractor
     /**
      * Finds or creates a crypto security by ticker symbol. The ticker is used as
      * both the symbol and the display name since Bitvavo does not provide ISINs.
+     * Both parameters are passed to {@link SecurityCache#lookup} so it does not
+     * overwrite the name with {@code null} when registering a newly created security.
      */
     private Security lookupCryptoSecurity(String ticker, String currency, SecurityCache securityCache)
     {
-        // Pass ticker as both tickerSymbol and name so SecurityCache does not
-        // overwrite the name with null after the factory creates the security
         return securityCache.lookup(null, ticker, null, ticker, () -> {
             var s = new Security();
             s.setCurrencyCode(currency);
@@ -452,7 +470,7 @@ public class BitvavoCSVExtractor implements Extractor
         }
     }
 
-    /** Returns "txId | address" if an address is present, otherwise just txId. */
+    /** Returns "txId | address" if an on-chain address is present, otherwise just the txId. */
     private String noteWithAddress(CSVRecord record)
     {
         var txId = getField(record, "Transaction ID");
