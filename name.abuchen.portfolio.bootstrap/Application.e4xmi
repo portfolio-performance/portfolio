@@ -67,7 +67,7 @@
           <children xsi:type="menu:Menu" xmi:id="_Qdqi0BREEemo-IqrE7irYg" elementId="name.abuchen.portfolio.bootstrap.menu.importWithCSVConfiguration" label="%command.importWithCSVConfiguration.name">
             <children xsi:type="menu:DynamicMenuContribution" xmi:id="_fcsG4BREEemo-IqrE7irYg" elementId="name.abuchen.portfolio.bootstrap.dynamicmenucontribution.1" label="CSV Configurations" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.CSVConfigurationsMenuContribution"/>
           </children>
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_BitvavoCSVImportMenuItem" elementId="name.abuchen.portfolio.ui.menu.file.import.bitvavo" label="%command.import.bitvavo" command="_BitvavoCSVImportCommand"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_BitvavoCSVImportMenuItem" elementId="name.abuchen.portfolio.ui.menu.file.import.bitvavo" label="%command.import.bitvavo" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/logos/bitvavo.svg" command="_BitvavoCSVImportCommand"/>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_TRCSVImportMenuItem" elementId="name.abuchen.portfolio.ui.menu.file.import.traderepublic" label="%command.import.traderepublic" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/logos/traderepublic.svg" command="_TRCSVImportCommand"/>
           <children xsi:type="menu:MenuSeparator" xmi:id="_30NnAAtvEeW4ucTlYYYvbw" elementId="name.abuchen.portfolio.bootstrap.menuseparator.1"/>
           <children xsi:type="menu:DirectMenuItem" xmi:id="_24C5sAtvEeW4ucTlYYYvbw" elementId="name.abuchen.portfolio.ui.menu.file.import.import-xml" label="%command.import.xml.import-xml" tooltip="" enabled="false"/>
