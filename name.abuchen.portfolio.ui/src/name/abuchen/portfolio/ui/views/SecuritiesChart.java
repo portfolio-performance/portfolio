@@ -352,41 +352,41 @@ public class SecuritiesChart
         }
     }
 
-    private Color colorQuote = Colors.getColor(77, 52, 235); // #4D34EB
-    private Color colorQuoteAreaPositive = Colors.getColor(90, 114, 226); // #5A72E2
-    private Color colorQuoteAreaNegative = Colors.getColor(226, 91, 90); // #E25B5A
+    private Color colorQuote = Colors.GRAY;
+    private Color colorQuoteAreaPositive = Colors.GRAY;
+    private Color colorQuoteAreaNegative = Colors.GRAY;
 
-    private Color colorEventPurchase = Colors.getColor(26, 173, 33); // #1AAD21
-    private Color colorEventSale = Colors.getColor(255, 43, 48); // #FF2B30
-    private Color colorEventDividend = Colors.getColor(128, 99, 168); // #8063A8
+    private Color colorEventPurchase = Colors.GRAY;
+    private Color colorEventSale = Colors.GRAY;
+    private Color colorEventDividend = Colors.GRAY;
 
-    private Color colorExtremeMarkerHigh = Colors.getColor(0, 147, 15); // #00930F
-    private Color colorExtremeMarkerLow = Colors.getColor(168, 39, 42); // #A8272A
+    private Color colorExtremeMarkerHigh = Colors.GRAY;
+    private Color colorExtremeMarkerLow = Colors.GRAY;
 
-    private Color colorNonTradingDay = Colors.getColor(255, 137, 89); // #FF8959
+    private Color colorNonTradingDay = Colors.GRAY;
 
-    private Color colorSharesHeld = Colors.getColor(235, 201, 52); // #EBC934
+    private Color colorSharesHeld = Colors.GRAY;
 
-    private static final Color colorFifoPurchasePrice = Colors.getColor(226, 122, 121); // #E27A79
-    private static final Color colorMovingAveragePurchasePrice = Colors.getColor(150, 82, 81); // #965251
-    private static final Color colorBollingerBands = Colors.getColor(201, 141, 68); // #C98D44
-    private static final Color colorMACD = Colors.getColor(226, 155, 200); // #E29BC8
+    private Color colorFifoPurchasePrice = Colors.GRAY;
+    private Color colorMovingAveragePurchasePrice = Colors.GRAY;
+    private Color colorBollingerBands = Colors.GRAY;
+    private Color colorMACD = Colors.GRAY;
 
-    private static final Color colorSMA1 = Colors.getColor(179, 107, 107); // #B36B6B
-    private static final Color colorSMA2 = Colors.getColor(179, 167, 107); // #B3A76B
-    private static final Color colorSMA3 = Colors.getColor(131, 179, 107); // #83B36B
-    private static final Color colorSMA4 = Colors.getColor(107, 179, 143); // #6BB38F
-    private static final Color colorSMA5 = Colors.getColor(107, 155, 179); // #6B9BB3
-    private static final Color colorSMA6 = Colors.getColor(119, 107, 179); // #776BB3
-    private static final Color colorSMA7 = Colors.getColor(179, 107, 179); // #B36BB3
+    private Color colorSMA1 = Colors.GRAY;
+    private Color colorSMA2 = Colors.GRAY;
+    private Color colorSMA3 = Colors.GRAY;
+    private Color colorSMA4 = Colors.GRAY;
+    private Color colorSMA5 = Colors.GRAY;
+    private Color colorSMA6 = Colors.GRAY;
+    private Color colorSMA7 = Colors.GRAY;
 
-    private static final Color colorEMA1 = Colors.getColor(200, 107, 107); // #C86B6B
-    private static final Color colorEMA2 = Colors.getColor(200, 167, 107); // #C8A76B
-    private static final Color colorEMA3 = Colors.getColor(131, 200, 107); // #83C86B
-    private static final Color colorEMA4 = Colors.getColor(107, 200, 143); // #6BC88F
-    private static final Color colorEMA5 = Colors.getColor(107, 155, 200); // #6B9BC8
-    private static final Color colorEMA6 = Colors.getColor(119, 107, 200); // #776BC8
-    private static final Color colorEMA7 = Colors.getColor(200, 107, 200); // #C86BB3
+    private Color colorEMA1 = Colors.GRAY;
+    private Color colorEMA2 = Colors.GRAY;
+    private Color colorEMA3 = Colors.GRAY;
+    private Color colorEMA4 = Colors.GRAY;
+    private Color colorEMA5 = Colors.GRAY;
+    private Color colorEMA6 = Colors.GRAY;
+    private Color colorEMA7 = Colors.GRAY;
 
     private static final String PREF_KEY = "security-chart-details"; //$NON-NLS-1$
 
@@ -524,6 +524,96 @@ public class SecuritiesChart
     public void setSharesHeldColor(Color color)
     {
         this.colorSharesHeld = color;
+    }
+
+    public void setFifoPurchasePriceColor(Color color)
+    {
+        this.colorFifoPurchasePrice = color;
+    }
+
+    public void setMovingAveragePurchasePriceColor(Color color)
+    {
+        this.colorMovingAveragePurchasePrice = color;
+    }
+
+    public void setBollingerBandsColor(Color color)
+    {
+        this.colorBollingerBands = color;
+    }
+
+    public void setMacdColor(Color color)
+    {
+        this.colorMACD = color;
+    }
+
+    public void setSma1Color(Color color)
+    {
+        this.colorSMA1 = color;
+    }
+
+    public void setSma2Color(Color color)
+    {
+        this.colorSMA2 = color;
+    }
+
+    public void setSma3Color(Color color)
+    {
+        this.colorSMA3 = color;
+    }
+
+    public void setSma4Color(Color color)
+    {
+        this.colorSMA4 = color;
+    }
+
+    public void setSma5Color(Color color)
+    {
+        this.colorSMA5 = color;
+    }
+
+    public void setSma6Color(Color color)
+    {
+        this.colorSMA6 = color;
+    }
+
+    public void setSma7Color(Color color)
+    {
+        this.colorSMA7 = color;
+    }
+
+    public void setEma1Color(Color color)
+    {
+        this.colorEMA1 = color;
+    }
+
+    public void setEma2Color(Color color)
+    {
+        this.colorEMA2 = color;
+    }
+
+    public void setEma3Color(Color color)
+    {
+        this.colorEMA3 = color;
+    }
+
+    public void setEma4Color(Color color)
+    {
+        this.colorEMA4 = color;
+    }
+
+    public void setEma5Color(Color color)
+    {
+        this.colorEMA5 = color;
+    }
+
+    public void setEma6Color(Color color)
+    {
+        this.colorEMA6 = color;
+    }
+
+    public void setEma7Color(Color color)
+    {
+        this.colorEMA7 = color;
     }
 
     public Client getClient()

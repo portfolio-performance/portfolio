@@ -1,6 +1,27 @@
 
 /* Common LIGHT styles */
 
+* {
+	font-family: "#systemfont";
+}
+
+.heading1 {
+	font-family: "#org.eclipse.jface.headerfont";
+	font-weight: bold;
+	color: #393E42;
+}
+
+.heading2 {
+	font-family: "#systemfont";
+	font-weight: bold;
+	color: #393E42;
+}
+
+.kpi {
+	font-family: "#systemfont";
+	font-weight: normal;
+}
+
 .MPart Composite,
 .MPart Label {
 	background-color: white;
@@ -92,6 +113,8 @@ CustomColors {
 	red-foreground: #7f0000;
 	green-foreground: #377500;
 	gray-foreground: #707070;
+	
+	hyperlink: #6FC5EE;
 }
 
 ValueColorScheme.standard {
@@ -108,12 +131,6 @@ ValueColorScheme.blueorange {
 	down-arrow: "scheme/blueorange/light/down_arrow.svg";
 }
 
-ValueColorScheme.asia {
-	positive-foreground: #7f0000;
-	negative-foreground: #377500;
-	up-arrow: "scheme/asia/light/up_arrow.svg";
-	down-arrow: "scheme/asia/light/down_arrow.svg";
-}
 
 ValueColorScheme.vivid {
 	positive-foreground: #009B00;
@@ -122,6 +139,120 @@ ValueColorScheme.vivid {
 	down-arrow: "scheme/vivid/light/down_arrow.svg";
 }
 
+
+ValueColorScheme.asia {
+	positive-foreground: #7f0000;
+	negative-foreground: #377500;
+	up-arrow: "scheme/asia/light/up_arrow.svg";
+	down-arrow: "scheme/asia/light/down_arrow.svg";
+}
+
+PortfolioBalanceChart {
+	invested-capital-color: #EBC934;
+	absolute-delta-color: #6a58db;
+	delta-area-positive-color: #8396f2;
+	delta-area-negative-color: #ed6766;
+}
+
+PortfolioBalanceChart.asia {
+	delta-area-positive-color: #ed6766;
+	delta-area-negative-color: #8396f2;
+}
+
+DataSeries {
+	totals-color: #000000;
+
+	invested-capital-color: #EBC934;
+	absolute-invested-capital-color: #EBC934;
+
+	transferals-color: #A9A9A9;
+	transferals-accumulated-color: #FFFF00;
+
+	taxes-color: #FF0000;
+	taxes-accumulated-color: #FF0000;
+
+	absolute-delta-color: #0000FF;
+	absolute-delta-all-record-color: #0000FF;
+
+	dividends-color: #800080;
+	dividends-accumulated-color: #800080;
+
+	interest-color: #377500;
+	interest-accumulated-color: #377500;
+
+	interest-charge-color: #377500;
+	interest-charge-accumulated-color: #377500;
+
+	earnings-color: #377500;
+	earnings-accumulated-color: #377500;
+
+	fees-color: #808080;
+	fees-accumulated-color: #808080;
+
+	performance-entire-portfolio-color: #000000;
+	performance-positive-color: #3C97DA;
+	performance-negative-color: #FD9C52;
+}
+
+ColorPalette.payments {
+	color-0: #8C564B;
+	color-1: #E377C2;
+	color-2: #7F7F7F;
+	color-3: #BCBD22;
+	color-4: #17BECF;
+	color-5: #727CC9;
+	color-6: #FA735C;
+	color-7: #FDB667;
+	color-8: #8FCF70;
+	color-9: #57CFFD;
+	color-10: #1F77B4;
+	color-11: #FF7F0E;
+	color-12: #2CA02C;
+	color-13: #D62728;
+	color-14: #9467BD;
+}
+
+ColorGradient.red-to-green {
+	color-0: #C92E25;
+	color-1: #FD7F76;
+	color-2: #FD9A93;
+	color-3: #FCBBB7;
+	color-4: #E8E8E8;
+	color-5: #BBE491;
+	color-6: #A1D771;
+	color-7: #80C25E;
+	color-8: #397B27;
+}
+
+ColorGradient.orange-to-blue {
+	color-0: #B36E3A;
+	color-1: #FD9C52;
+	color-2: #FFCEAA;
+	color-3: #DDDDDD;
+	color-4: #9ECBEC;
+	color-5: #3C97DA;
+	color-6: #2A6999;
+}
+
+ColorGradient.green-yellow-red {
+	color-0: #FF2B30;
+	color-1: #FFD562;
+	color-2: #02F500;
+}
+
+ColorGradient.green-white-red {
+	color-0: #FF2B30;
+	color-1: #EEEEEE;
+	color-2: #02F500;
+}
+
+ColorGradient.yellow-white-black {
+	color-0: #EEEEEE;
+	color-1: #FFD562;
+	color-2: #808000;
+	color-3: #000000;
+}
+	
 SecuritiesChart {
 	quote-color: #6a58db;
 	quote-area-positive-color: #8396f2;
@@ -135,8 +266,28 @@ SecuritiesChart {
 	extreme-marker-low-color: #a30000;
 
 	non-trading-color: #FF8959;
-	
-	shares-held-color: #EBC934
+	shares-held-color: #EBC934;
+
+	fifo-purchase-price-color: #E27A79;
+	moving-average-purchase-price-color: #965251;
+	bollinger-bands-color: #C98D44;
+	macd-color: #E29BC8;
+
+	sma-1-color: #B36B6B;
+	sma-2-color: #B3A76B;
+	sma-3-color: #83B36B;
+	sma-4-color: #6BB38F;
+	sma-5-color: #6B9BB3;
+	sma-6-color: #776BB3;
+	sma-7-color: #B36BB3;
+
+	ema-1-color: #C86B6B;
+	ema-2-color: #C8A76B;
+	ema-3-color: #83C86B;
+	ema-4-color: #6BC88F;
+	ema-5-color: #6B9BC8;
+	ema-6-color: #776BC8;
+	ema-7-color: #C86BC8;
 }
 
 SecuritiesChart.blueorange {
@@ -158,37 +309,4 @@ SecuritiesChart.asia {
 
 	extreme-marker-high-color: #a30000;
 	extreme-marker-low-color: #377500;
-}
-
-PortfolioBalanceChart {
-	invested-capital-color: #EBC934;
-	absolute-delta-color: #6a58db;
-	delta-area-positive-color: #8396f2;
-	delta-area-negative-color: #ed6766;
-}
-
-PortfolioBalanceChart.asia {
-	delta-area-positive-color: #ed6766;
-	delta-area-negative-color: #8396f2;
-}
-
-* {
-	font-family: "#systemfont";
-}
-
-.heading1 {
-	font-family: "#org.eclipse.jface.headerfont";
-	font-weight: bold;
-	color: #393E42;
-}
-
-.heading2 {
-	font-family: "#systemfont";
-	font-weight: bold;
-	color: #393E42;
-}
-
-.kpi {
-	font-family: "#systemfont";
-	font-weight: normal;
 }

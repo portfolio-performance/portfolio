@@ -49,6 +49,30 @@ public class SecuritiesChartCSSHandler implements ICSSPropertyHandler
         propertyMap.put("extreme-marker-low-color", (chart, value) -> chart.setExtremeMarkerLowColor(getColor(value))); //$NON-NLS-1$
         propertyMap.put("non-trading-color", (chart, value) -> chart.setNonTradingColor(getColor(value))); //$NON-NLS-1$
         propertyMap.put("shares-held-color", (chart, value) -> chart.setSharesHeldColor(getColor(value))); //$NON-NLS-1$
+
+        propertyMap.put("fifo-purchase-price-color", //$NON-NLS-1$
+                        (chart, value) -> chart.setFifoPurchasePriceColor(getColor(value)));
+        propertyMap.put("moving-average-purchase-price-color", //$NON-NLS-1$
+                        (chart, value) -> chart.setMovingAveragePurchasePriceColor(getColor(value)));
+        propertyMap.put("bollinger-bands-color", //$NON-NLS-1$
+                        (chart, value) -> chart.setBollingerBandsColor(getColor(value)));
+        propertyMap.put("macd-color", (chart, value) -> chart.setMacdColor(getColor(value))); //$NON-NLS-1$
+
+        propertyMap.put("sma-1-color", (chart, value) -> chart.setSma1Color(getColor(value))); //$NON-NLS-1$
+        propertyMap.put("sma-2-color", (chart, value) -> chart.setSma2Color(getColor(value))); //$NON-NLS-1$
+        propertyMap.put("sma-3-color", (chart, value) -> chart.setSma3Color(getColor(value))); //$NON-NLS-1$
+        propertyMap.put("sma-4-color", (chart, value) -> chart.setSma4Color(getColor(value))); //$NON-NLS-1$
+        propertyMap.put("sma-5-color", (chart, value) -> chart.setSma5Color(getColor(value))); //$NON-NLS-1$
+        propertyMap.put("sma-6-color", (chart, value) -> chart.setSma6Color(getColor(value))); //$NON-NLS-1$
+        propertyMap.put("sma-7-color", (chart, value) -> chart.setSma7Color(getColor(value))); //$NON-NLS-1$
+
+        propertyMap.put("ema-1-color", (chart, value) -> chart.setEma1Color(getColor(value))); //$NON-NLS-1$
+        propertyMap.put("ema-2-color", (chart, value) -> chart.setEma2Color(getColor(value))); //$NON-NLS-1$
+        propertyMap.put("ema-3-color", (chart, value) -> chart.setEma3Color(getColor(value))); //$NON-NLS-1$
+        propertyMap.put("ema-4-color", (chart, value) -> chart.setEma4Color(getColor(value))); //$NON-NLS-1$
+        propertyMap.put("ema-5-color", (chart, value) -> chart.setEma5Color(getColor(value))); //$NON-NLS-1$
+        propertyMap.put("ema-6-color", (chart, value) -> chart.setEma6Color(getColor(value))); //$NON-NLS-1$
+        propertyMap.put("ema-7-color", (chart, value) -> chart.setEma7Color(getColor(value))); //$NON-NLS-1$
     }
 
     @Override

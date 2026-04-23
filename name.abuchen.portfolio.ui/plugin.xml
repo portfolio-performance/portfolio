@@ -152,15 +152,78 @@
          <property-name
                name="shares-held-color">
          </property-name>
+         <property-name
+               name="fifo-purchase-price-color">
+         </property-name>
+         <property-name
+               name="moving-average-purchase-price-color">
+         </property-name>
+         <property-name
+               name="bollinger-bands-color">
+         </property-name>
+         <property-name
+               name="macd-color">
+         </property-name>
+         <property-name
+               name="sma-1-color">
+         </property-name>
+         <property-name
+               name="sma-2-color">
+         </property-name>
+         <property-name
+               name="sma-3-color">
+         </property-name>
+         <property-name
+               name="sma-4-color">
+         </property-name>
+         <property-name
+               name="sma-5-color">
+         </property-name>
+         <property-name
+               name="sma-6-color">
+         </property-name>
+         <property-name
+               name="sma-7-color">
+         </property-name>
+         <property-name
+               name="ema-1-color">
+         </property-name>
+         <property-name
+               name="ema-2-color">
+         </property-name>
+         <property-name
+               name="ema-3-color">
+         </property-name>
+         <property-name
+               name="ema-4-color">
+         </property-name>
+         <property-name
+               name="ema-5-color">
+         </property-name>
+         <property-name
+               name="ema-6-color">
+         </property-name>
+         <property-name
+               name="ema-7-color">
+         </property-name>
       </handler>
       <handler
             adapter="name.abuchen.portfolio.ui.theme.PortfolioBalanceChartElementAdapter"
             handler="name.abuchen.portfolio.ui.theme.PortfolioBalanceChartCSSHandler">
          <property-name
+               name="totals-color">
+         </property-name>
+         <property-name
                name="invested-capital-color">
          </property-name>
          <property-name
                name="absolute-delta-color">
+         </property-name>
+         <property-name
+               name="taxes-accumulated-color">
+         </property-name>
+         <property-name
+               name="fees-accumulated-color">
          </property-name>
          <property-name
                name="delta-area-positive-color">
@@ -170,19 +233,153 @@
          </property-name>
       </handler>
       <handler
-            adapter="name.abuchen.portfolio.ui.theme.ValueColorSchemeElementAdapter"
-            handler="name.abuchen.portfolio.ui.theme.ValueColorSchemeCSSHandler">
+            adapter="name.abuchen.portfolio.ui.theme.PaymentsPaletteElementAdapter"
+            handler="name.abuchen.portfolio.ui.theme.PaymentsPaletteCSSHandler">
          <property-name
-               name="positive-foreground">
+               name="color-0">
          </property-name>
          <property-name
-               name="negative-foreground">
+               name="color-1">
          </property-name>
          <property-name
-               name="up-arrow">
+               name="color-2">
          </property-name>
          <property-name
-               name="down-arrow">
+               name="color-3">
+         </property-name>
+         <property-name
+               name="color-4">
+         </property-name>
+         <property-name
+               name="color-5">
+         </property-name>
+         <property-name
+               name="color-6">
+         </property-name>
+         <property-name
+               name="color-7">
+         </property-name>
+         <property-name
+               name="color-8">
+         </property-name>
+         <property-name
+               name="color-9">
+         </property-name>
+         <property-name
+               name="color-10">
+         </property-name>
+         <property-name
+               name="color-11">
+         </property-name>
+         <property-name
+               name="color-12">
+         </property-name>
+         <property-name
+               name="color-13">
+         </property-name>
+         <property-name
+               name="color-14">
+         </property-name>
+      </handler>
+      <handler
+            adapter="name.abuchen.portfolio.ui.theme.ColorGradientElementAdapter"
+            handler="name.abuchen.portfolio.ui.theme.ColorGradientCSSHandler">
+         <property-name
+               name="color-0">
+         </property-name>
+         <property-name
+               name="color-1">
+         </property-name>
+         <property-name
+               name="color-2">
+         </property-name>
+         <property-name
+               name="color-3">
+         </property-name>
+         <property-name
+               name="color-4">
+         </property-name>
+         <property-name
+               name="color-5">
+         </property-name>
+         <property-name
+               name="color-6">
+         </property-name>
+         <property-name
+               name="color-7">
+         </property-name>
+         <property-name
+               name="color-8">
+         </property-name>
+      </handler>
+      <handler
+            adapter="name.abuchen.portfolio.ui.theme.DataSeriesColorsElementAdapter"
+            handler="name.abuchen.portfolio.ui.theme.DataSeriesColorsCSSHandler">
+         <property-name
+               name="totals-color">
+         </property-name>
+         <property-name
+               name="invested-capital-color">
+         </property-name>
+         <property-name
+               name="absolute-invested-capital-color">
+         </property-name>
+         <property-name
+               name="transferals-color">
+         </property-name>
+         <property-name
+               name="transferals-accumulated-color">
+         </property-name>
+         <property-name
+               name="taxes-color">
+         </property-name>
+         <property-name
+               name="taxes-accumulated-color">
+         </property-name>
+         <property-name
+               name="absolute-delta-color">
+         </property-name>
+         <property-name
+               name="absolute-delta-all-record-color">
+         </property-name>
+         <property-name
+               name="dividends-color">
+         </property-name>
+         <property-name
+               name="dividends-accumulated-color">
+         </property-name>
+         <property-name
+               name="interest-color">
+         </property-name>
+         <property-name
+               name="interest-accumulated-color">
+         </property-name>
+         <property-name
+               name="interest-charge-color">
+         </property-name>
+         <property-name
+               name="interest-charge-accumulated-color">
+         </property-name>
+         <property-name
+               name="earnings-color">
+         </property-name>
+         <property-name
+               name="earnings-accumulated-color">
+         </property-name>
+         <property-name
+               name="fees-color">
+         </property-name>
+         <property-name
+               name="fees-accumulated-color">
+         </property-name>
+         <property-name
+               name="performance-entire-portfolio-color">
+         </property-name>
+         <property-name
+               name="performance-positive-color">
+         </property-name>
+         <property-name
+               name="performance-negative-color">
          </property-name>
       </handler>
    </extension>
@@ -222,6 +419,15 @@
          </widget>
          <widget
                class="name.abuchen.portfolio.ui.util.ValueColorScheme">
+         </widget>
+         <widget
+               class="name.abuchen.portfolio.ui.views.payments.PaymentsPalette">
+         </widget>
+         <widget
+               class="name.abuchen.portfolio.ui.util.DataSeriesColors">
+         </widget>
+         <widget
+               class="name.abuchen.portfolio.ui.util.ColorGradientDefinitions$Definition">
          </widget>
       </provider>
    </extension>

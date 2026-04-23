@@ -70,12 +70,13 @@ public class PortfolioBalanceChart
     private EnumSet<ChartDetails> chartConfig = EnumSet.of(ChartDetails.ABSOLUTE_INVESTED_CAPITAL,
                     ChartDetails.ABSOLUTE_DELTA);
 
-    private Color colorAbsoluteInvestedCapital = Colors.getColor(235, 201, 52); // #EBC934
-    private Color colorAbsoluteDelta = Colors.getColor(90, 114, 226); // #5A72E2
-    private static final Color colorTaxesAccumulated = Display.getDefault().getSystemColor(SWT.COLOR_RED);
-    private static final Color colorFeesAccumulated = Display.getDefault().getSystemColor(SWT.COLOR_GRAY);
-    private Color colorDeltaAreaPositive = Colors.getColor(90, 114, 226); // #5A72E2
-    private Color colorDeltaAreaNegative = Colors.getColor(226, 91, 90); // #E25B5A
+    private Color colorTotals = Colors.BLACK;
+    private Color colorAbsoluteInvestedCapital = Colors.GRAY;
+    private Color colorAbsoluteDelta = Colors.GRAY;
+    private Color colorTaxesAccumulated = Colors.GRAY;
+    private Color colorFeesAccumulated = Colors.GRAY;
+    private Color colorDeltaAreaPositive = Colors.GRAY;
+    private Color colorDeltaAreaNegative = Colors.GRAY;
 
     public PortfolioBalanceChart(Composite parent, Client client)
     {
@@ -280,7 +281,7 @@ public class PortfolioBalanceChart
             // reverse the order
 
             var lineSeries = chart.addDateSeries(portfolioUUID, index.getDates(),
-                            toDouble(index.getTotals(), Values.Amount.divider()), Colors.CASH, portfolioName);
+                            toDouble(index.getTotals(), Values.Amount.divider()), colorTotals, portfolioName);
             lineSeries.setAntialias(swtAntialias);
 
             if (chartConfig.contains(ChartDetails.ABSOLUTE_INVESTED_CAPITAL))
@@ -302,6 +303,7 @@ public class PortfolioBalanceChart
             chart.suspendUpdate(false);
         }
     }
+
 
     public void addButtons(ToolBarManager toolBar)
     {
@@ -461,9 +463,24 @@ public class PortfolioBalanceChart
         this.colorAbsoluteDelta = color;
     }
 
+    public void setTotalsColor(Color color)
+    {
+        this.colorTotals = color;
+    }
+
     public void setAbsoluteInvestedCapitalColor(Color color)
     {
         this.colorAbsoluteInvestedCapital = color;
+    }
+
+    public void setTaxesAccumulatedColor(Color color)
+    {
+        this.colorTaxesAccumulated = color;
+    }
+
+    public void setFeesAccumulatedColor(Color color)
+    {
+        this.colorFeesAccumulated = color;
     }
 
     public void setDeltaAreaNegative(Color color)

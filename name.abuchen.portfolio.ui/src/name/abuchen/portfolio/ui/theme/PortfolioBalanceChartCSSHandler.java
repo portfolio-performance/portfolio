@@ -38,11 +38,20 @@ public class PortfolioBalanceChartCSSHandler implements ICSSPropertyHandler
 
     private void initializePropertyMap()
     {
+        propertyMap.put("totals-color", //$NON-NLS-1$
+                        (chart, value) -> chart.setTotalsColor(getColor(value)));
         propertyMap.put("invested-capital-color", //$NON-NLS-1$
                         (chart, value) -> chart.setAbsoluteInvestedCapitalColor(getColor(value)));
-        propertyMap.put("absolute-delta-color", (chart, value) -> chart.setAbsoluteDeltaColor(getColor(value))); //$NON-NLS-1$
-        propertyMap.put("delta-area-positive-color", (chart, value) -> chart.setDeltaAreaPositive(getColor(value))); //$NON-NLS-1$
-        propertyMap.put("delta-area-negative-color", (chart, value) -> chart.setDeltaAreaNegative(getColor(value))); //$NON-NLS-1$
+        propertyMap.put("absolute-delta-color", //$NON-NLS-1$
+                        (chart, value) -> chart.setAbsoluteDeltaColor(getColor(value)));
+        propertyMap.put("taxes-accumulated-color", //$NON-NLS-1$
+                        (chart, value) -> chart.setTaxesAccumulatedColor(getColor(value)));
+        propertyMap.put("fees-accumulated-color", //$NON-NLS-1$
+                        (chart, value) -> chart.setFeesAccumulatedColor(getColor(value)));
+        propertyMap.put("delta-area-positive-color", //$NON-NLS-1$
+                        (chart, value) -> chart.setDeltaAreaPositive(getColor(value)));
+        propertyMap.put("delta-area-negative-color", //$NON-NLS-1$
+                        (chart, value) -> chart.setDeltaAreaNegative(getColor(value)));
     }
 
     @Override

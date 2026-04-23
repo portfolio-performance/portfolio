@@ -20,13 +20,13 @@ public final class Colors
     {
         private Color defaultForeground = Colors.BLACK;
         private Color defaultBackground = Colors.WHITE;
-        private Color chipBackground = Colors.WHITE;
-        private Color warningBackground = getColor(254, 223, 107); // FEDF6B
-        private Color redBackground = Colors.RED;
-        private Color greenBackground = Colors.GREEN;
-        private Color redForeground = Colors.DARK_RED;
-        private Color greenForeground = Colors.DARK_GREEN;
-        private Color grayForeground = getColor(112, 112, 112); // 707070
+        private Color chipBackground = Colors.LIGHT_GRAY;
+        private Color warningBackground = Colors.LIGHT_GRAY;
+        private Color redBackground = Colors.LIGHT_GRAY;
+        private Color greenBackground = Colors.LIGHT_GRAY;
+        private Color redForeground = Colors.BLACK;
+        private Color greenForeground = Colors.BLACK;
+        private Color grayForeground = Colors.GRAY;
         private Color hyperlink = Display.getDefault().getSystemColor(SWT.COLOR_LINK_FOREGROUND);
 
         public Color defaultForeground()
