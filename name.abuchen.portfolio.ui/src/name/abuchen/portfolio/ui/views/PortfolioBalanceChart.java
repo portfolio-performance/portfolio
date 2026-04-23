@@ -43,7 +43,6 @@ import name.abuchen.portfolio.snapshot.filter.ReadOnlyClient;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
-import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
@@ -70,13 +69,13 @@ public class PortfolioBalanceChart
     private EnumSet<ChartDetails> chartConfig = EnumSet.of(ChartDetails.ABSOLUTE_INVESTED_CAPITAL,
                     ChartDetails.ABSOLUTE_DELTA);
 
-    private Color colorTotals = Colors.BLACK;
-    private Color colorAbsoluteInvestedCapital = Colors.GRAY;
-    private Color colorAbsoluteDelta = Colors.GRAY;
-    private Color colorTaxesAccumulated = Colors.GRAY;
-    private Color colorFeesAccumulated = Colors.GRAY;
-    private Color colorDeltaAreaPositive = Colors.GRAY;
-    private Color colorDeltaAreaNegative = Colors.GRAY;
+    private Color colorTotals;
+    private Color colorAbsoluteInvestedCapital;
+    private Color colorAbsoluteDelta;
+    private Color colorTaxesAccumulated;
+    private Color colorFeesAccumulated;
+    private Color colorDeltaAreaPositive;
+    private Color colorDeltaAreaNegative;
 
     public PortfolioBalanceChart(Composite parent, Client client)
     {
@@ -281,7 +280,8 @@ public class PortfolioBalanceChart
             // reverse the order
 
             var lineSeries = chart.addDateSeries(portfolioUUID, index.getDates(),
-                            toDouble(index.getTotals(), Values.Amount.divider()), colorTotals, portfolioName);
+                            toDouble(index.getTotals(), Values.Amount.divider()),
+                            requireConfigured(colorTotals, "PortfolioBalanceChart.totals-color"), portfolioName); //$NON-NLS-1$
             lineSeries.setAntialias(swtAntialias);
 
             if (chartConfig.contains(ChartDetails.ABSOLUTE_INVESTED_CAPITAL))
@@ -365,7 +365,9 @@ public class PortfolioBalanceChart
         double[] values = toDouble(index.calculateAbsoluteInvestedCapital(), Values.Amount.divider());
         String lineID = Messages.LabelAbsoluteInvestedCapital;
 
-        var lineSeries = chart.addDateSeries(lineID, index.getDates(), values, colorAbsoluteInvestedCapital, lineID);
+        var lineSeries = chart.addDateSeries(lineID, index.getDates(), values,
+                        requireConfigured(colorAbsoluteInvestedCapital, "PortfolioBalanceChart.invested-capital-color"), //$NON-NLS-1$
+                        lineID);
         lineSeries.enableArea(true);
         lineSeries.setAntialias(swtAntialias);
     }
@@ -393,14 +395,16 @@ public class PortfolioBalanceChart
         String lineIDPos = Messages.LabelAbsoluteDelta + "Positive"; //$NON-NLS-1$
 
         var lineSeries2ndNegative = chart.addDateSeries(lineIDNeg, index.getDates(), valuesRelativeNegative,
-                        colorDeltaAreaNegative, lineIDNeg);
+                        requireConfigured(colorDeltaAreaNegative, "PortfolioBalanceChart.delta-area-negative-color"), //$NON-NLS-1$
+                        lineIDNeg);
         lineSeries2ndNegative.setAntialias(swtAntialias);
         lineSeries2ndNegative.enableArea(true);
         lineSeries2ndNegative.setVisibleInLegend(false);
         lineSeries2ndNegative.setLineWidth(1);
 
         var lineSeries2ndPositive = chart.addDateSeries(lineIDPos, index.getDates(), valuesRelativePositive,
-                        colorDeltaAreaPositive, lineIDPos);
+                        requireConfigured(colorDeltaAreaPositive, "PortfolioBalanceChart.delta-area-positive-color"), //$NON-NLS-1$
+                        lineIDPos);
         lineSeries2ndPositive.setAntialias(swtAntialias);
         lineSeries2ndPositive.enableArea(true);
         lineSeries2ndPositive.setVisibleInLegend(false);
@@ -408,7 +412,9 @@ public class PortfolioBalanceChart
 
         String lineID = Messages.LabelAbsoluteDelta;
 
-        var lineSeries = chart.addDateSeries(lineID, index.getDates(), values, colorAbsoluteDelta, lineID);
+        var lineSeries = chart.addDateSeries(lineID, index.getDates(), values,
+                        requireConfigured(colorAbsoluteDelta, "PortfolioBalanceChart.absolute-delta-color"), //$NON-NLS-1$
+                        lineID);
         lineSeries.setAntialias(swtAntialias);
     }
 
@@ -417,7 +423,9 @@ public class PortfolioBalanceChart
         double[] values = accumulateAndToDouble(index.getTaxes(), Values.Amount.divider());
         String lineID = Messages.LabelAccumulatedTaxes;
 
-        var lineSeries = chart.addDateSeries(lineID, index.getDates(), values, colorTaxesAccumulated, lineID);
+        var lineSeries = chart.addDateSeries(lineID, index.getDates(), values,
+                        requireConfigured(colorTaxesAccumulated, "PortfolioBalanceChart.taxes-accumulated-color"), //$NON-NLS-1$
+                        lineID);
         lineSeries.setAntialias(swtAntialias);
     }
 
@@ -426,8 +434,18 @@ public class PortfolioBalanceChart
         double[] values = accumulateAndToDouble(index.getFees(), Values.Amount.divider());
         String lineID = Messages.LabelFeesAccumulated;
 
-        var lineSeries = chart.addDateSeries(lineID, index.getDates(), values, colorFeesAccumulated, lineID);
+        var lineSeries = chart.addDateSeries(lineID, index.getDates(), values,
+                        requireConfigured(colorFeesAccumulated, "PortfolioBalanceChart.fees-accumulated-color"), //$NON-NLS-1$
+                        lineID);
         lineSeries.setAntialias(swtAntialias);
+    }
+
+    private Color requireConfigured(Color color, String property)
+    {
+        if (color == null)
+            throw new IllegalStateException("CSS portfolio balance chart color not configured: " + property); //$NON-NLS-1$
+
+        return color;
     }
 
     private enum ChartDetails

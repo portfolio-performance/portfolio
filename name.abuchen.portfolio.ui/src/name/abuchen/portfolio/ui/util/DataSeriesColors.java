@@ -7,38 +7,38 @@ public final class DataSeriesColors
 {
     private static final DataSeriesColors INSTANCE = new DataSeriesColors();
 
-    private Color totalsColor = Colors.BLACK;
+    private Color totalsColor;
 
-    private Color investedCapitalColor = Colors.GRAY;
-    private Color absoluteInvestedCapitalColor = Colors.GRAY;
+    private Color investedCapitalColor;
+    private Color absoluteInvestedCapitalColor;
 
-    private Color transferalsColor = Colors.GRAY;
-    private Color transferalsAccumulatedColor = Colors.LIGHT_GRAY;
+    private Color transferalsColor;
+    private Color transferalsAccumulatedColor;
 
-    private Color taxesColor = Colors.GRAY;
-    private Color taxesAccumulatedColor = Colors.GRAY;
+    private Color taxesColor;
+    private Color taxesAccumulatedColor;
 
-    private Color absoluteDeltaColor = Colors.GRAY;
-    private Color absoluteDeltaAllRecordColor = Colors.GRAY;
+    private Color absoluteDeltaColor;
+    private Color absoluteDeltaAllRecordColor;
 
-    private Color dividendsColor = Colors.GRAY;
-    private Color dividendsAccumulatedColor = Colors.GRAY;
+    private Color dividendsColor;
+    private Color dividendsAccumulatedColor;
 
-    private Color interestColor = Colors.GRAY;
-    private Color interestAccumulatedColor = Colors.GRAY;
+    private Color interestColor;
+    private Color interestAccumulatedColor;
 
-    private Color interestChargeColor = Colors.GRAY;
-    private Color interestChargeAccumulatedColor = Colors.GRAY;
+    private Color interestChargeColor;
+    private Color interestChargeAccumulatedColor;
 
-    private Color earningsColor = Colors.GRAY;
-    private Color earningsAccumulatedColor = Colors.GRAY;
+    private Color earningsColor;
+    private Color earningsAccumulatedColor;
 
-    private Color feesColor = Colors.GRAY;
-    private Color feesAccumulatedColor = Colors.GRAY;
+    private Color feesColor;
+    private Color feesAccumulatedColor;
 
-    private Color performanceEntirePortfolioColor = Colors.BLACK;
-    private Color performancePositiveColor = Colors.GRAY;
-    private Color performanceNegativeColor = Colors.GRAY;
+    private Color performanceEntirePortfolioColor;
+    private Color performancePositiveColor;
+    private Color performanceNegativeColor;
 
     private DataSeriesColors()
     {
@@ -49,9 +49,17 @@ public final class DataSeriesColors
         return INSTANCE;
     }
 
+    private Color requireConfigured(Color color, String property)
+    {
+        if (color == null)
+            throw new IllegalStateException("CSS data series color not configured: " + property); //$NON-NLS-1$
+
+        return color;
+    }
+
     public Color totalsColor()
     {
-        return totalsColor;
+        return requireConfigured(totalsColor, "DataSeries.totals-color"); //$NON-NLS-1$
     }
 
     public void setTotalsColor(RGBA color)
@@ -61,7 +69,7 @@ public final class DataSeriesColors
 
     public Color investedCapitalColor()
     {
-        return investedCapitalColor;
+        return requireConfigured(investedCapitalColor, "DataSeries.invested-capital-color"); //$NON-NLS-1$
     }
 
     public void setInvestedCapitalColor(RGBA color)
@@ -71,7 +79,7 @@ public final class DataSeriesColors
 
     public Color absoluteInvestedCapitalColor()
     {
-        return absoluteInvestedCapitalColor;
+        return requireConfigured(absoluteInvestedCapitalColor, "DataSeries.absolute-invested-capital-color"); //$NON-NLS-1$
     }
 
     public void setAbsoluteInvestedCapitalColor(RGBA color)
@@ -81,7 +89,7 @@ public final class DataSeriesColors
 
     public Color transferalsColor()
     {
-        return transferalsColor;
+        return requireConfigured(transferalsColor, "DataSeries.transferals-color"); //$NON-NLS-1$
     }
 
     public void setTransferalsColor(RGBA color)
@@ -91,7 +99,7 @@ public final class DataSeriesColors
 
     public Color transferalsAccumulatedColor()
     {
-        return transferalsAccumulatedColor;
+        return requireConfigured(transferalsAccumulatedColor, "DataSeries.transferals-accumulated-color"); //$NON-NLS-1$
     }
 
     public void setTransferalsAccumulatedColor(RGBA color)
@@ -101,7 +109,7 @@ public final class DataSeriesColors
 
     public Color taxesColor()
     {
-        return taxesColor;
+        return requireConfigured(taxesColor, "DataSeries.taxes-color"); //$NON-NLS-1$
     }
 
     public void setTaxesColor(RGBA color)
@@ -111,7 +119,7 @@ public final class DataSeriesColors
 
     public Color taxesAccumulatedColor()
     {
-        return taxesAccumulatedColor;
+        return requireConfigured(taxesAccumulatedColor, "DataSeries.taxes-accumulated-color"); //$NON-NLS-1$
     }
 
     public void setTaxesAccumulatedColor(RGBA color)
@@ -121,7 +129,7 @@ public final class DataSeriesColors
 
     public Color absoluteDeltaColor()
     {
-        return absoluteDeltaColor;
+        return requireConfigured(absoluteDeltaColor, "DataSeries.absolute-delta-color"); //$NON-NLS-1$
     }
 
     public void setAbsoluteDeltaColor(RGBA color)
@@ -131,7 +139,7 @@ public final class DataSeriesColors
 
     public Color absoluteDeltaAllRecordColor()
     {
-        return absoluteDeltaAllRecordColor;
+        return requireConfigured(absoluteDeltaAllRecordColor, "DataSeries.absolute-delta-all-record-color"); //$NON-NLS-1$
     }
 
     public void setAbsoluteDeltaAllRecordColor(RGBA color)
@@ -141,7 +149,7 @@ public final class DataSeriesColors
 
     public Color dividendsColor()
     {
-        return dividendsColor;
+        return requireConfigured(dividendsColor, "DataSeries.dividends-color"); //$NON-NLS-1$
     }
 
     public void setDividendsColor(RGBA color)
@@ -151,7 +159,7 @@ public final class DataSeriesColors
 
     public Color dividendsAccumulatedColor()
     {
-        return dividendsAccumulatedColor;
+        return requireConfigured(dividendsAccumulatedColor, "DataSeries.dividends-accumulated-color"); //$NON-NLS-1$
     }
 
     public void setDividendsAccumulatedColor(RGBA color)
@@ -161,7 +169,7 @@ public final class DataSeriesColors
 
     public Color interestColor()
     {
-        return interestColor;
+        return requireConfigured(interestColor, "DataSeries.interest-color"); //$NON-NLS-1$
     }
 
     public void setInterestColor(RGBA color)
@@ -171,7 +179,7 @@ public final class DataSeriesColors
 
     public Color interestAccumulatedColor()
     {
-        return interestAccumulatedColor;
+        return requireConfigured(interestAccumulatedColor, "DataSeries.interest-accumulated-color"); //$NON-NLS-1$
     }
 
     public void setInterestAccumulatedColor(RGBA color)
@@ -181,7 +189,7 @@ public final class DataSeriesColors
 
     public Color interestChargeColor()
     {
-        return interestChargeColor;
+        return requireConfigured(interestChargeColor, "DataSeries.interest-charge-color"); //$NON-NLS-1$
     }
 
     public void setInterestChargeColor(RGBA color)
@@ -191,7 +199,7 @@ public final class DataSeriesColors
 
     public Color interestChargeAccumulatedColor()
     {
-        return interestChargeAccumulatedColor;
+        return requireConfigured(interestChargeAccumulatedColor, "DataSeries.interest-charge-accumulated-color"); //$NON-NLS-1$
     }
 
     public void setInterestChargeAccumulatedColor(RGBA color)
@@ -201,7 +209,7 @@ public final class DataSeriesColors
 
     public Color earningsColor()
     {
-        return earningsColor;
+        return requireConfigured(earningsColor, "DataSeries.earnings-color"); //$NON-NLS-1$
     }
 
     public void setEarningsColor(RGBA color)
@@ -211,7 +219,7 @@ public final class DataSeriesColors
 
     public Color earningsAccumulatedColor()
     {
-        return earningsAccumulatedColor;
+        return requireConfigured(earningsAccumulatedColor, "DataSeries.earnings-accumulated-color"); //$NON-NLS-1$
     }
 
     public void setEarningsAccumulatedColor(RGBA color)
@@ -221,7 +229,7 @@ public final class DataSeriesColors
 
     public Color feesColor()
     {
-        return feesColor;
+        return requireConfigured(feesColor, "DataSeries.fees-color"); //$NON-NLS-1$
     }
 
     public void setFeesColor(RGBA color)
@@ -231,7 +239,7 @@ public final class DataSeriesColors
 
     public Color feesAccumulatedColor()
     {
-        return feesAccumulatedColor;
+        return requireConfigured(feesAccumulatedColor, "DataSeries.fees-accumulated-color"); //$NON-NLS-1$
     }
 
     public void setFeesAccumulatedColor(RGBA color)
@@ -241,7 +249,7 @@ public final class DataSeriesColors
 
     public Color performanceEntirePortfolioColor()
     {
-        return performanceEntirePortfolioColor;
+        return requireConfigured(performanceEntirePortfolioColor, "DataSeries.performance-entire-portfolio-color"); //$NON-NLS-1$
     }
 
     public void setPerformanceEntirePortfolioColor(RGBA color)
@@ -251,7 +259,7 @@ public final class DataSeriesColors
 
     public Color performancePositiveColor()
     {
-        return performancePositiveColor;
+        return requireConfigured(performancePositiveColor, "DataSeries.performance-positive-color"); //$NON-NLS-1$
     }
 
     public void setPerformancePositiveColor(RGBA color)
@@ -261,7 +269,7 @@ public final class DataSeriesColors
 
     public Color performanceNegativeColor()
     {
-        return performanceNegativeColor;
+        return requireConfigured(performanceNegativeColor, "DataSeries.performance-negative-color"); //$NON-NLS-1$
     }
 
     public void setPerformanceNegativeColor(RGBA color)

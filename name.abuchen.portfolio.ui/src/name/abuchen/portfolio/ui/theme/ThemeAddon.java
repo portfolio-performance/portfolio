@@ -31,6 +31,9 @@ public class ThemeAddon
         engine.applyStyles(PaymentsPalette.instance(), false);
         engine.applyStyles(ColorGradientDefinitions.redToGreen(), false);
         engine.applyStyles(ColorGradientDefinitions.orangeToBlue(), false);
+        engine.applyStyles(ColorGradientDefinitions.greenYellowRed(), false);
+        engine.applyStyles(ColorGradientDefinitions.greenWhiteRed(), false);
+        engine.applyStyles(ColorGradientDefinitions.yellowWhiteBlack(), false);
 
         for (var scheme : ValueColorScheme.getAvailableSchemes())
             engine.applyStyles(scheme, false);

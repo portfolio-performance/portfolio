@@ -352,41 +352,41 @@ public class SecuritiesChart
         }
     }
 
-    private Color colorQuote = Colors.GRAY;
-    private Color colorQuoteAreaPositive = Colors.GRAY;
-    private Color colorQuoteAreaNegative = Colors.GRAY;
+    private Color colorQuote;
+    private Color colorQuoteAreaPositive;
+    private Color colorQuoteAreaNegative;
 
-    private Color colorEventPurchase = Colors.GRAY;
-    private Color colorEventSale = Colors.GRAY;
-    private Color colorEventDividend = Colors.GRAY;
+    private Color colorEventPurchase;
+    private Color colorEventSale;
+    private Color colorEventDividend;
 
-    private Color colorExtremeMarkerHigh = Colors.GRAY;
-    private Color colorExtremeMarkerLow = Colors.GRAY;
+    private Color colorExtremeMarkerHigh;
+    private Color colorExtremeMarkerLow;
 
-    private Color colorNonTradingDay = Colors.GRAY;
+    private Color colorNonTradingDay;
 
-    private Color colorSharesHeld = Colors.GRAY;
+    private Color colorSharesHeld;
 
-    private Color colorFifoPurchasePrice = Colors.GRAY;
-    private Color colorMovingAveragePurchasePrice = Colors.GRAY;
-    private Color colorBollingerBands = Colors.GRAY;
-    private Color colorMACD = Colors.GRAY;
+    private Color colorFifoPurchasePrice;
+    private Color colorMovingAveragePurchasePrice;
+    private Color colorBollingerBands;
+    private Color colorMACD;
 
-    private Color colorSMA1 = Colors.GRAY;
-    private Color colorSMA2 = Colors.GRAY;
-    private Color colorSMA3 = Colors.GRAY;
-    private Color colorSMA4 = Colors.GRAY;
-    private Color colorSMA5 = Colors.GRAY;
-    private Color colorSMA6 = Colors.GRAY;
-    private Color colorSMA7 = Colors.GRAY;
+    private Color colorSMA1;
+    private Color colorSMA2;
+    private Color colorSMA3;
+    private Color colorSMA4;
+    private Color colorSMA5;
+    private Color colorSMA6;
+    private Color colorSMA7;
 
-    private Color colorEMA1 = Colors.GRAY;
-    private Color colorEMA2 = Colors.GRAY;
-    private Color colorEMA3 = Colors.GRAY;
-    private Color colorEMA4 = Colors.GRAY;
-    private Color colorEMA5 = Colors.GRAY;
-    private Color colorEMA6 = Colors.GRAY;
-    private Color colorEMA7 = Colors.GRAY;
+    private Color colorEMA1;
+    private Color colorEMA2;
+    private Color colorEMA3;
+    private Color colorEMA4;
+    private Color colorEMA5;
+    private Color colorEMA6;
+    private Color colorEMA7;
 
     private static final String PREF_KEY = "security-chart-details"; //$NON-NLS-1$
 

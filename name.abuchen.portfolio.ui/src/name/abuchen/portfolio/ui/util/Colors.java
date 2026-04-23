@@ -18,20 +18,28 @@ public final class Colors
      */
     public static class Theme
     {
-        private Color defaultForeground = Colors.BLACK;
-        private Color defaultBackground = Colors.WHITE;
-        private Color chipBackground = Colors.LIGHT_GRAY;
-        private Color warningBackground = Colors.LIGHT_GRAY;
-        private Color redBackground = Colors.LIGHT_GRAY;
-        private Color greenBackground = Colors.LIGHT_GRAY;
-        private Color redForeground = Colors.BLACK;
-        private Color greenForeground = Colors.BLACK;
-        private Color grayForeground = Colors.GRAY;
-        private Color hyperlink = Display.getDefault().getSystemColor(SWT.COLOR_LINK_FOREGROUND);
+        private Color defaultForeground;
+        private Color defaultBackground;
+        private Color chipBackground;
+        private Color warningBackground;
+        private Color redBackground;
+        private Color greenBackground;
+        private Color redForeground;
+        private Color greenForeground;
+        private Color grayForeground;
+        private Color hyperlink;
+
+        private Color requireConfigured(Color color, String property)
+        {
+            if (color == null)
+                throw new IllegalStateException("CSS theme color not configured: " + property); //$NON-NLS-1$
+
+            return color;
+        }
 
         public Color defaultForeground()
         {
-            return defaultForeground;
+            return requireConfigured(defaultForeground, "CustomColors.default-foreground"); //$NON-NLS-1$
         }
 
         public void setDefaultForeground(RGBA color)
@@ -41,7 +49,7 @@ public final class Colors
 
         public Color defaultBackground()
         {
-            return defaultBackground;
+            return requireConfigured(defaultBackground, "CustomColors.default-background"); //$NON-NLS-1$
         }
 
         public void setDefaultBackground(RGBA color)
@@ -51,7 +59,7 @@ public final class Colors
 
         public Color chipBackground()
         {
-            return chipBackground;
+            return requireConfigured(chipBackground, "CustomColors.chip-background"); //$NON-NLS-1$
         }
 
         public void setChipBackground(RGBA color)
@@ -61,7 +69,7 @@ public final class Colors
 
         public Color warningBackground()
         {
-            return warningBackground;
+            return requireConfigured(warningBackground, "CustomColors.warning-background"); //$NON-NLS-1$
         }
 
         public void setWarningBackground(RGBA color)
@@ -71,7 +79,7 @@ public final class Colors
 
         public Color redBackground()
         {
-            return redBackground;
+            return requireConfigured(redBackground, "CustomColors.red-background"); //$NON-NLS-1$
         }
 
         public void setRedBackground(RGBA color)
@@ -81,7 +89,7 @@ public final class Colors
 
         public Color greenBackground()
         {
-            return greenBackground;
+            return requireConfigured(greenBackground, "CustomColors.green-background"); //$NON-NLS-1$
         }
 
         public void setGreenBackground(RGBA color)
@@ -91,7 +99,7 @@ public final class Colors
 
         public Color redForeground()
         {
-            return redForeground;
+            return requireConfigured(redForeground, "CustomColors.red-foreground"); //$NON-NLS-1$
         }
 
         public void setRedForeground(RGBA color)
@@ -101,7 +109,7 @@ public final class Colors
 
         public Color greenForeground()
         {
-            return greenForeground;
+            return requireConfigured(greenForeground, "CustomColors.green-foreground"); //$NON-NLS-1$
         }
 
         public void setGreenForeground(RGBA color)
@@ -111,7 +119,7 @@ public final class Colors
 
         public Color grayForeground()
         {
-            return grayForeground;
+            return requireConfigured(grayForeground, "CustomColors.gray-foreground"); //$NON-NLS-1$
         }
 
         public void setGrayForeground(RGBA color)
@@ -121,7 +129,7 @@ public final class Colors
 
         public Color hyperlink()
         {
-            return hyperlink;
+            return requireConfigured(hyperlink, "CustomColors.hyperlink"); //$NON-NLS-1$
         }
 
         public void setHyperlink(RGBA color)

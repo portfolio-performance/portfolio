@@ -6,6 +6,7 @@ import org.eclipse.e4.ui.css.swt.helpers.CSSSWTColorHelper;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSValue;
 
+import name.abuchen.portfolio.ui.util.ColorSourceTracker;
 import name.abuchen.portfolio.ui.util.ValueColorScheme;
 
 @SuppressWarnings("restriction")
@@ -30,9 +31,11 @@ public class ValueColorSchemeCSSHandler implements ICSSPropertyHandler
         {
             case "positive-foreground": //$NON-NLS-1$
                 scheme.setPositiveForeground(CSSSWTColorHelper.getRGBA(value));
+                ColorSourceTracker.markCssApplied("ValueColorScheme." + scheme.getIdentifier(), "positive-foreground"); //$NON-NLS-1$ //$NON-NLS-2$
                 return true;
             case "negative-foreground": //$NON-NLS-1$
                 scheme.setNegativeForeground(CSSSWTColorHelper.getRGBA(value));
+                ColorSourceTracker.markCssApplied("ValueColorScheme." + scheme.getIdentifier(), "negative-foreground"); //$NON-NLS-1$ //$NON-NLS-2$
                 return true;
             case "up-arrow": //$NON-NLS-1$
                 var upArrow = getText(value);

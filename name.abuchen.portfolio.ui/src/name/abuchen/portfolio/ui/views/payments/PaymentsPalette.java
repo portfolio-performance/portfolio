@@ -11,22 +11,7 @@ public final class PaymentsPalette
 
     private static final PaymentsPalette INSTANCE = new PaymentsPalette();
 
-    private final Color[] colors = new Color[] { //
-                    Colors.getColor(140, 86, 75), //
-                    Colors.getColor(227, 119, 194), //
-                    Colors.getColor(127, 127, 127), //
-                    Colors.getColor(188, 189, 34), //
-                    Colors.getColor(23, 190, 207), //
-                    Colors.getColor(114, 124, 201), //
-                    Colors.getColor(250, 115, 92), //
-                    Colors.getColor(253, 182, 103), //
-                    Colors.getColor(143, 207, 112), //
-                    Colors.getColor(87, 207, 253), //
-                    Colors.getColor(31, 119, 180), //
-                    Colors.getColor(255, 127, 14), //
-                    Colors.getColor(44, 160, 44), //
-                    Colors.getColor(214, 39, 40), //
-                    Colors.getColor(148, 103, 189) }; //
+    private final Color[] colors = new Color[SIZE];
 
     private PaymentsPalette()
     {
@@ -44,12 +29,21 @@ public final class PaymentsPalette
 
     public Color get(int index)
     {
-        return colors[index];
+        return requireConfigured(index);
     }
 
     public Color getCyclic(int index)
     {
-        return colors[index % colors.length];
+        return requireConfigured(index % colors.length);
+    }
+
+    private Color requireConfigured(int index)
+    {
+        if (colors[index] == null)
+            throw new IllegalStateException(
+                            "CSS payments palette color not configured: ColorPalette.payments.color-" + index); //$NON-NLS-1$
+
+        return colors[index];
     }
 
     public void setColor(int index, RGBA color)

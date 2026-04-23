@@ -43,6 +43,7 @@ import name.abuchen.portfolio.ui.util.swt.ActiveShell;
 import name.abuchen.portfolio.ui.views.AccountListView;
 import name.abuchen.portfolio.ui.views.AllTransactionsView;
 import name.abuchen.portfolio.ui.views.BrowserTestView;
+import name.abuchen.portfolio.ui.views.ColorArchitectureDebugView;
 import name.abuchen.portfolio.ui.views.GroupedAccountsListView;
 import name.abuchen.portfolio.ui.views.InvestmentPlanListView;
 import name.abuchen.portfolio.ui.views.PerformanceChartView;
@@ -662,6 +663,9 @@ public final class Navigation
         section.add(progressView);
 
         if ("yes".equals(System.getProperty("name.abuchen.portfolio.debug"))) //$NON-NLS-1$ //$NON-NLS-2$
+        {
             section.add(new Item("Browser Test", BrowserTestView.class)); //$NON-NLS-1$
+            section.add(new Item("Color Architecture Debug", ColorArchitectureDebugView.class)); //$NON-NLS-1$
+        }
     }
 }
