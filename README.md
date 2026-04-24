@@ -27,6 +27,7 @@
 * [Interactive Flex Query Importers](CONTRIBUTING.md#interactive-flex-query-importers)
 * [PDF Importers](CONTRIBUTING.md#pdf-importers)
 * [Trade Calendars](CONTRIBUTING.md#trade-calendars)
+* [Centrally defining CSS colors for UI objects](CONTRIBUTING.md#Centrally-defining-CSS-colors-for-UI-objects)
 
 
 ## Public GPG Key

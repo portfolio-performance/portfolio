@@ -19,6 +19,7 @@
   - [Translations](#translations)
   - [Trade Calendars](#trade-calendars)
   - [Images and Icons](#images-and-icons)
+  - [Centrally defining CSS colors for UI objects](#centrally-defining-css-colors-for-ui-objects)
 - [Getting Help](#getting-help)
 - [Appendix](#appendix)
   - [Regular Expression Reference](#regular-expression-reference)
@@ -386,6 +387,314 @@ All images and icons must be [Creative Commons CC0](https://creativecommons.org/
 - **Error state**: #D11D1D (dark red)
 
 See [Color Code Reference](#color-code-reference) for exact colors.
+
+## Centrally defining CSS colors for UI objects
+
+### Goal
+
+A color should be defined centrally in `light.css` and `dark.css`.
+
+Java code should not decide the final design color.  
+Java should only receive, store, and use the color from CSS.
+
+This template can be used for charts, views, widgets, dialogs, and other UI classes.
+
+> This template uses one consistent example across all steps:
+>
+> | Item | Example |
+> |------|---------|
+> | CSS target name | `YourCssTarget` |
+> | CSS property | `your-color-property` |
+> | Target class | `YourTargetClass` |
+> | Target field | `yourColorProperty` |
+> | Target setter | `setYourColorProperty(Color color)` |
+> | Adapter | `YourElementAdapter` |
+> | Handler | `YourCSSHandler` |
+
+### Step 1: Define the color in CSS
+
+Files:
+
+`name.abuchen.portfolio.ui/css/shared/light.css`  
+`name.abuchen.portfolio.ui/css/shared/dark.css`
+
+Template:
+
+```css
+YourCssTarget {
+    your-color-property: #123456;
+}
+```
+
+Check:
+
+- `YourCssTarget` = CSS target name
+- `your-color-property` = CSS property
+- The same property should exist in both theme files
+
+Important:
+
+The property name does **not** decide which CSS block is used.  
+The CSS target name decides that.
+
+### Step 2: Register the property in `plugin.xml`
+
+File:
+
+`name.abuchen.portfolio.ui/plugin.xml`
+
+Template:
+
+```xml
+<extension point="org.eclipse.e4.ui.css.core.propertyHandler">
+   <handler
+         adapter="name.abuchen.portfolio.ui.theme.YourElementAdapter"
+         composite="false"
+         handler="name.abuchen.portfolio.ui.theme.YourCSSHandler">
+      <property-name name="your-color-property"/>
+   </handler>
+</extension>
+```
+
+Check:
+
+- `adapter` = the `ElementAdapter` class for the target object
+- `handler` = the Java class that processes the CSS property
+- `property-name` must match the CSS name exactly
+
+Important:
+
+If the property is not registered here, the handler will not process it.
+
+### Step 3: Check the CSS target name in the `ElementAdapter`
+
+File:
+
+`name.abuchen.portfolio.ui/src/name/abuchen/portfolio/ui/theme/YourElementAdapter.java`
+
+Open the adapter class from `plugin.xml`.
+
+In this project, the CSS target name is typically defined by:
+
+```java
+@Override
+public String getLocalName()
+{
+    return "YourCssTarget";
+}
+```
+
+Check:
+
+- The adapter must return the correct CSS target name
+- The CSS block in `light.css` and `dark.css` must use the same name
+
+Example rule:
+
+- If `getLocalName()` returns `"YourCssTarget"`, the CSS block must be:
+
+```css
+YourCssTarget {
+    your-color-property: #123456;
+}
+```
+
+Important:
+
+The property name does **not** select the CSS block.  
+The value from `getLocalName()` selects the CSS block.
+
+### Step 4: Check that the target class is connected in `ElementProvider`
+
+File:
+
+`name.abuchen.portfolio.ui/src/name/abuchen/portfolio/ui/theme/ElementProvider.java`
+
+Template:
+
+```java
+if (element instanceof YourTargetClass target)
+    return new YourElementAdapter(target, engine);
+```
+
+Check:
+
+- `YourTargetClass` is the real Java class that should receive the CSS color
+- `YourElementAdapter` is the adapter registered in `plugin.xml`
+- The adapter must wrap the same target object
+
+Important:
+
+This is the real connection between the final Java class and the CSS engine.
+
+If this entry is missing, the CSS engine may never create the adapter for your target class.
+
+### Step 5: Process the property in the CSS handler and pass it to the target class
+
+File:
+
+`name.abuchen.portfolio.ui/src/name/abuchen/portfolio/ui/theme/YourCSSHandler.java`
+
+Typical import:
+
+```java
+import your.package.path.YourTargetClass;
+```
+
+```java
+import org.eclipse.swt.graphics.Color;
+```
+
+Possible additional imports:
+
+```java
+import name.abuchen.portfolio.ui.theme.YourElementAdapter;
+import name.abuchen.portfolio.ui.theme.ColorSourceTracker;
+```
+
+Template:
+
+```java
+if (!(element instanceof YourElementAdapter adapter))
+    return false;
+
+YourTargetClass target = adapter.getYourTargetClass();
+
+switch (property)
+{
+    case "your-color-property":
+        target.setYourColorProperty(getColor(value));
+        return true;
+    default:
+        return false;
+}
+```
+
+Check:
+
+- The handler receives the `ElementAdapter`, not the raw target class
+- The handler must get the real target class from the adapter
+- The handler must read the CSS property
+- The handler must pass the color into the correct target object
+
+Important:
+
+The handler does **not** decide which CSS block is used.  
+It only processes a property that was already matched by the CSS engine.
+
+### Step 6: Store and use the color in the target class
+
+File:
+
+`name.abuchen.portfolio.ui/src/name/abuchen/portfolio/ui/.../YourTargetClass.java`
+
+In this project, the target class usually does both:
+
+1. store the CSS color
+2. later use the stored color on the real UI or chart object
+
+Example:
+
+```java
+private Color yourColorProperty;
+
+public void setYourColorProperty(Color color)
+{
+    this.yourColorProperty = color;
+}
+```
+
+Later in the same class:
+
+```java
+chartObject.setLineColor(yourColorProperty);
+```
+
+Or:
+
+```java
+uiObject.setForeground(yourColorProperty);
+```
+
+Check:
+
+- The CSS handler must write the color into a field or variable in the target class
+- The same field or variable must later be used by the visible UI or chart logic
+
+Important:
+
+In many cases, storing and using the color happens in the same target class.
+
+### Step 7: Check for hard-coded overrides
+
+Search for:
+
+```text
+Colors.
+SWT.COLOR_
+new RGB(
+Colors.getColor(
+setForeground(
+setBackground(
+setLineColor(
+```
+
+Check:
+
+- A later hard-coded color can override the CSS value
+- CSS may be loaded correctly, but Java may still win visually
+
+Important:
+
+The last applied color often decides the visible result.
+
+### Optional: Track CSS application for debugging
+
+Template:
+
+```java
+ColorSourceTracker.markCssApplied("YourCssTarget", "your-color-property");
+```
+
+Check:
+
+- Only mark CSS if the CSS property was really processed
+- Do not mark CSS if only a fallback color is used
+
+Important:
+
+Debug tracking should reflect the real source of the final visible color.
+
+### Full chain
+
+```text
+Java object
+-> ElementProvider creates ElementAdapter
+-> getLocalName() returns CSS target name
+-> CSS engine finds matching CSS block
+-> plugin.xml routes property to the CSS handler
+-> CSS handler gets the real target class from the adapter
+-> Target class stores color
+-> Target class uses color on the final UI object
+```
+
+### Quick validation
+
+A CSS color setup is complete only if all answers are **Yes**:
+
+1. Is the color defined in both `light.css` and `dark.css`?
+2. Is the property registered in `plugin.xml`?
+3. Does `getLocalName()` return the correct CSS target name?
+4. Does `ElementProvider` create the correct adapter for the target class?
+5. Does the CSS handler get the target class from the adapter?
+6. Does the target class store the color?
+7. Does the target class use the stored color on the final UI object?
+8. Is there no later hard-coded override?
+
+### Core rule
+
+**The property name does not select the CSS block.**  
+**`getLocalName()` in the `ElementAdapter` selects the CSS block.**
 
 ## Appendix
 
