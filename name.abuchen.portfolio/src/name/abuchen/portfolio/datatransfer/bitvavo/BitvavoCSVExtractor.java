@@ -12,6 +12,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -74,6 +75,17 @@ public class BitvavoCSVExtractor implements Extractor
     private static final String TYPE_REBATE = "rebate";
     private static final String TYPE_CAMPAIGN = "campaign_new_user_incentive";
 
+    private static final String COL_DATE = "Date";
+    private static final String COL_TIME = "Time";
+    private static final String COL_TYPE = "Type";
+    private static final String COL_CURRENCY = "Currency";
+    private static final String COL_AMOUNT = "Amount";
+    private static final String COL_QUOTE_CURRENCY = "Quote Currency";
+    private static final String COL_RECEIVED_PAID_AMOUNT = "Received / Paid Amount";
+    private static final String COL_FEE_AMOUNT = "Fee amount";
+    private static final String COL_TRANSACTION_ID = "Transaction ID";
+    private static final String COL_ADDRESS = "Address";
+
     /** Maximum seconds between a rebate and its corresponding trade. */
     private static final long REBATE_CORRELATION_WINDOW_SECONDS = 120;
 
@@ -132,22 +144,13 @@ public class BitvavoCSVExtractor implements Extractor
         try (var reader = new StringReader(content); var parser = CSVParser.parse(reader, format))
         {
             var headers = parser.getHeaderMap();
-            if (!headers.containsKey("Date") || !headers.containsKey("Type") //
-                            || !headers.containsKey("Currency") || !headers.containsKey("Amount") //
-                            || !headers.containsKey("Transaction ID"))
+            if (!headers.containsKey(COL_DATE) || !headers.containsKey(COL_TYPE) //
+                            || !headers.containsKey(COL_CURRENCY) || !headers.containsKey(COL_AMOUNT) //
+                            || !headers.containsKey(COL_TRANSACTION_ID))
                 return false;
 
-            for (CSVRecord record : parser)
-            {
-                try
-                {
-                    processRecord(record, securityCache, source, items);
-                }
-                catch (Exception e)
-                {
-                    errors.add(e);
-                }
-            }
+            for (CSVRecord row : parser)
+                processRecordSafely(row, securityCache, source, items, errors);
 
             correlateRebatesWithTrades(items);
 
@@ -160,45 +163,57 @@ public class BitvavoCSVExtractor implements Extractor
         }
     }
 
-    private void processRecord(CSVRecord record, SecurityCache securityCache, String source, List<Item> items)
+    /** Wraps {@link #processRecord} so a single bad row does not abort the import. */
+    private void processRecordSafely(CSVRecord row, SecurityCache securityCache, String source, List<Item> items,
+                    List<Exception> errors)
     {
-        var type = getField(record, "Type");
+        try
+        {
+            processRecord(row, securityCache, source, items);
+        }
+        catch (Exception e)
+        {
+            errors.add(e);
+        }
+    }
+
+    private void processRecord(CSVRecord row, SecurityCache securityCache, String source, List<Item> items)
+    {
+        var type = getField(row, COL_TYPE);
 
         switch (type)
         {
             case TYPE_BUY:
-                processBuySell(record, PortfolioTransaction.Type.BUY, securityCache, source, items);
+                processBuySell(row, PortfolioTransaction.Type.BUY, securityCache, source, items);
                 break;
             case TYPE_SELL:
-                processBuySell(record, PortfolioTransaction.Type.SELL, securityCache, source, items);
+                processBuySell(row, PortfolioTransaction.Type.SELL, securityCache, source, items);
                 break;
             case TYPE_DEPOSIT:
-                processDeposit(record, source, items);
+            case TYPE_CAMPAIGN:
+                processDeposit(row, source, items);
                 break;
             case TYPE_WITHDRAWAL:
-                processWithdrawal(record, securityCache, source, items);
+                processWithdrawal(row, securityCache, source, items);
                 break;
             case TYPE_REBATE:
-                processRebate(record, source, items);
-                break;
-            case TYPE_CAMPAIGN:
-                processCampaign(record, source, items);
+                processRebate(row, source, items);
                 break;
             default:
-                processUnknown(record, type, source, items);
+                processUnknown(row, type, source, items);
                 break;
         }
     }
 
-    private void processUnknown(CSVRecord record, String type, String source, List<Item> items)
+    private void processUnknown(CSVRecord row, String type, String source, List<Item> items)
     {
         // Unknown type: placeholder deposit with failure message for user review
         var tx = new AccountTransaction();
         tx.setType(AccountTransaction.Type.DEPOSIT);
-        tx.setDateTime(parseDateTime(record));
+        tx.setDateTime(parseDateTime(row));
         tx.setCurrencyCode(client.getBaseCurrency());
         tx.setAmount(0);
-        tx.setNote(noteWithAddress(record));
+        tx.setNote(noteWithAddress(row));
         tx.setSource(source);
         var item = new TransactionItem(tx);
         item.setFailureMessage(MessageFormat.format(Messages.BitvavoCSVMsgUnsupportedTransactionType, type));
@@ -209,32 +224,32 @@ public class BitvavoCSVExtractor implements Extractor
     // Buy / Sell
     // -----------------------------------------------------------------------
 
-    private void processBuySell(CSVRecord record, PortfolioTransaction.Type type, SecurityCache securityCache,
+    private void processBuySell(CSVRecord row, PortfolioTransaction.Type type, SecurityCache securityCache,
                     String source, List<Item> items)
     {
-        var ticker = getField(record, "Currency");
-        var accountCurrency = getField(record, "Quote Currency");
+        var ticker = getField(row, COL_CURRENCY);
+        var accountCurrency = getField(row, COL_QUOTE_CURRENCY);
         if (accountCurrency.isEmpty())
             accountCurrency = CurrencyUnit.EUR;
 
         // Share count from the crypto "Amount" column
-        var shares = Math.abs(Math.round(getDouble(record, "Amount") * Values.Share.factor()));
+        var shares = Math.abs(Math.round(getDouble(row, COL_AMOUNT) * Values.Share.factor()));
 
         // "Received / Paid Amount" is the total including fee (negative=buy, positive=sell)
         var totalAmount = Math.abs(
-                        Math.round(getDouble(record, "Received / Paid Amount") * Values.Amount.factor()));
-        var feeAmount = Math.abs(Math.round(getDouble(record, "Fee amount") * Values.Amount.factor()));
+                        Math.round(getDouble(row, COL_RECEIVED_PAID_AMOUNT) * Values.Amount.factor()));
+        var feeAmount = Math.abs(Math.round(getDouble(row, COL_FEE_AMOUNT) * Values.Amount.factor()));
 
         var security = lookupCryptoSecurity(ticker, accountCurrency, securityCache);
 
         var entry = new BuySellEntry();
         entry.setType(type);
         entry.setSecurity(security);
-        entry.setDate(parseDateTime(record));
+        entry.setDate(parseDateTime(row));
         entry.setCurrencyCode(accountCurrency);
         entry.setShares(shares);
         entry.setAmount(totalAmount);
-        entry.setNote(noteWithAddress(record));
+        entry.setNote(noteWithAddress(row));
         entry.setSource(source);
 
         if (feeAmount > 0)
@@ -247,17 +262,17 @@ public class BitvavoCSVExtractor implements Extractor
     // Deposit
     // -----------------------------------------------------------------------
 
-    private void processDeposit(CSVRecord record, String source, List<Item> items)
+    private void processDeposit(CSVRecord row, String source, List<Item> items)
     {
-        var currency = getField(record, "Currency");
-        var amount = Math.abs(Math.round(getDouble(record, "Amount") * Values.Amount.factor()));
+        var currency = getField(row, COL_CURRENCY);
+        var amount = Math.abs(Math.round(getDouble(row, COL_AMOUNT) * Values.Amount.factor()));
 
         var tx = new AccountTransaction();
         tx.setType(AccountTransaction.Type.DEPOSIT);
-        tx.setDateTime(parseDateTime(record));
+        tx.setDateTime(parseDateTime(row));
         tx.setCurrencyCode(currency);
         tx.setAmount(amount);
-        tx.setNote(noteWithAddress(record));
+        tx.setNote(noteWithAddress(row));
         tx.setSource(source);
 
         items.add(new TransactionItem(tx));
@@ -267,106 +282,93 @@ public class BitvavoCSVExtractor implements Extractor
     // Withdrawal (fiat → REMOVAL, crypto → SELL fee + TRANSFER_OUT net)
     // -----------------------------------------------------------------------
 
-    /**
-     * Fiat withdrawals become a simple REMOVAL. Crypto withdrawals are split into
-     * two items: a SELL at EUR 0 for the network fee shares (to remove them from
-     * the portfolio without proceeds) and an outgoing portfolio transfer
-     * (Depotumbuchung ausgehend) for the remaining net shares.
-     */
-    private void processWithdrawal(CSVRecord record, SecurityCache securityCache, String source, List<Item> items)
+    private void processWithdrawal(CSVRecord row, SecurityCache securityCache, String source, List<Item> items)
     {
-        var currency = getField(record, "Currency");
+        var currency = getField(row, COL_CURRENCY);
 
         // ISO 4217 currencies are fiat; crypto tickers like BTC return null
         if (CurrencyUnit.getInstance(currency) != null)
-        {
-            var amount = Math.abs(Math.round(getDouble(record, "Amount") * Values.Amount.factor()));
-
-            var tx = new AccountTransaction();
-            tx.setType(AccountTransaction.Type.REMOVAL);
-            tx.setDateTime(parseDateTime(record));
-            tx.setCurrencyCode(currency);
-            tx.setAmount(amount);
-            tx.setNote(noteWithAddress(record));
-            tx.setSource(source);
-
-            items.add(new TransactionItem(tx));
-        }
+            processFiatWithdrawal(row, currency, source, items);
         else
+            processCryptoWithdrawal(row, currency, securityCache, source, items);
+    }
+
+    private void processFiatWithdrawal(CSVRecord row, String currency, String source, List<Item> items)
+    {
+        var amount = Math.abs(Math.round(getDouble(row, COL_AMOUNT) * Values.Amount.factor()));
+
+        var tx = new AccountTransaction();
+        tx.setType(AccountTransaction.Type.REMOVAL);
+        tx.setDateTime(parseDateTime(row));
+        tx.setCurrencyCode(currency);
+        tx.setAmount(amount);
+        tx.setNote(noteWithAddress(row));
+        tx.setSource(source);
+
+        items.add(new TransactionItem(tx));
+    }
+
+    /**
+     * Crypto withdrawals are split into two items: a SELL at EUR 0 for the network
+     * fee shares (to remove them from the portfolio without proceeds) and an
+     * outgoing portfolio transfer (Depotumbuchung ausgehend) for the remaining net
+     * shares.
+     */
+    private void processCryptoWithdrawal(CSVRecord row, String currency, SecurityCache securityCache, String source,
+                    List<Item> items)
+    {
+        var totalShares = Math.abs(Math.round(getDouble(row, COL_AMOUNT) * Values.Share.factor()));
+        var feeShares = Math.abs(Math.round(getDouble(row, COL_FEE_AMOUNT) * Values.Share.factor()));
+        var netShares = totalShares - feeShares;
+        var security = lookupCryptoSecurity(currency, CurrencyUnit.EUR, securityCache);
+        var note = noteWithAddress(row);
+        var dateTime = parseDateTime(row);
+
+        // Network fee: sell fee shares at EUR 0 to write them off without proceeds
+        if (feeShares > 0)
         {
-            var totalShares = Math.abs(Math.round(getDouble(record, "Amount") * Values.Share.factor()));
-            var feeShares = Math.abs(Math.round(getDouble(record, "Fee amount") * Values.Share.factor()));
-            var netShares = totalShares - feeShares;
-            var security = lookupCryptoSecurity(currency, CurrencyUnit.EUR, securityCache);
-            var note = noteWithAddress(record);
-            var dateTime = parseDateTime(record);
-
-            // Network fee: sell fee shares at EUR 0 to write them off without proceeds
-            if (feeShares > 0)
-            {
-                var feeSell = new BuySellEntry();
-                feeSell.setType(PortfolioTransaction.Type.SELL);
-                feeSell.setSecurity(security);
-                feeSell.setDate(dateTime);
-                feeSell.setCurrencyCode(CurrencyUnit.EUR);
-                feeSell.setShares(feeShares);
-                feeSell.setAmount(0);
-                feeSell.setNote(note);
-                feeSell.setSource(source);
-                items.add(new BuySellEntryItem(feeSell));
-            }
-
-            // Net withdrawal: outgoing portfolio transfer (Depotumbuchung ausgehend)
-            var transfer = new PortfolioTransferEntry();
-            transfer.setSecurity(security);
-            transfer.setDate(dateTime);
-            transfer.setCurrencyCode(CurrencyUnit.EUR);
-            transfer.setAmount(0);
-            transfer.setShares(netShares > 0 ? netShares : totalShares);
-            transfer.setNote(note);
-
-            items.add(new PortfolioTransferItem(transfer));
+            var feeSell = new BuySellEntry();
+            feeSell.setType(PortfolioTransaction.Type.SELL);
+            feeSell.setSecurity(security);
+            feeSell.setDate(dateTime);
+            feeSell.setCurrencyCode(CurrencyUnit.EUR);
+            feeSell.setShares(feeShares);
+            feeSell.setAmount(0);
+            feeSell.setNote(note);
+            feeSell.setSource(source);
+            items.add(new BuySellEntryItem(feeSell));
         }
+
+        // Net withdrawal: outgoing portfolio transfer (Depotumbuchung ausgehend)
+        var transfer = new PortfolioTransferEntry();
+        transfer.setSecurity(security);
+        transfer.setDate(dateTime);
+        transfer.setCurrencyCode(CurrencyUnit.EUR);
+        transfer.setAmount(0);
+        transfer.setShares(netShares > 0 ? netShares : totalShares);
+        transfer.setNote(note);
+
+        items.add(new PortfolioTransferItem(transfer));
     }
 
     // -----------------------------------------------------------------------
     // Rebate → FEES_REFUND
     // -----------------------------------------------------------------------
 
-    private void processRebate(CSVRecord record, String source, List<Item> items)
+    private void processRebate(CSVRecord row, String source, List<Item> items)
     {
-        var currency = getField(record, "Currency");
-        var amount = Math.abs(Math.round(getDouble(record, "Amount") * Values.Amount.factor()));
+        var currency = getField(row, COL_CURRENCY);
+        var amount = Math.abs(Math.round(getDouble(row, COL_AMOUNT) * Values.Amount.factor()));
 
         var tx = new AccountTransaction();
         tx.setType(AccountTransaction.Type.FEES_REFUND);
-        tx.setDateTime(parseDateTime(record));
+        tx.setDateTime(parseDateTime(row));
         tx.setCurrencyCode(currency);
         tx.setAmount(amount);
-        tx.setNote(noteWithAddress(record));
+        tx.setNote(noteWithAddress(row));
         tx.setSource(source);
 
         // Security is assigned later by correlateRebatesWithTrades()
-        items.add(new TransactionItem(tx));
-    }
-
-    // -----------------------------------------------------------------------
-    // Campaign / new-user incentive → DEPOSIT
-    // -----------------------------------------------------------------------
-
-    private void processCampaign(CSVRecord record, String source, List<Item> items)
-    {
-        var currency = getField(record, "Currency");
-        var amount = Math.abs(Math.round(getDouble(record, "Amount") * Values.Amount.factor()));
-
-        var tx = new AccountTransaction();
-        tx.setType(AccountTransaction.Type.DEPOSIT);
-        tx.setDateTime(parseDateTime(record));
-        tx.setCurrencyCode(currency);
-        tx.setAmount(amount);
-        tx.setNote(noteWithAddress(record));
-        tx.setSource(source);
-
         items.add(new TransactionItem(tx));
     }
 
@@ -378,46 +380,56 @@ public class BitvavoCSVExtractor implements Extractor
      * Bitvavo issues a rebate row for every fee charged on a trade. This method
      * links each FEES_REFUND transaction to the security of the temporally nearest
      * regular buy/sell within {@value #REBATE_CORRELATION_WINDOW_SECONDS} seconds.
-     * Fee-sell entries created for crypto withdrawal network fees (amount = 0) are
-     * excluded from matching.
      */
     private void correlateRebatesWithTrades(List<Item> items)
     {
         for (var item : items)
         {
-            if (!(item instanceof TransactionItem ti))
-                continue;
-            if (!(ti.getSubject() instanceof AccountTransaction tx))
-                continue;
-            if (tx.getType() != AccountTransaction.Type.FEES_REFUND)
+            var rebate = asRebateTransaction(item);
+            if (rebate.isEmpty())
                 continue;
 
-            Security best = null;
-            long bestDiff = Long.MAX_VALUE;
-
-            for (var other : items)
-            {
-                if (!(other instanceof BuySellEntryItem bsei))
-                    continue;
-
-                var ptx = ((BuySellEntry) bsei.getSubject()).getPortfolioTransaction();
-
-                // Skip the synthetic fee-sell entries from crypto withdrawals (amount = 0)
-                if (ptx.getAmount() == 0)
-                    continue;
-
-                long diff = Math.abs(Duration.between(tx.getDateTime(), ptx.getDateTime()).toSeconds());
-
-                if (diff <= REBATE_CORRELATION_WINDOW_SECONDS && diff < bestDiff)
-                {
-                    bestDiff = diff;
-                    best = ptx.getSecurity();
-                }
-            }
-
-            if (best != null)
-                tx.setSecurity(best);
+            findNearestTradeSecurity(rebate.get().getDateTime(), items)
+                            .ifPresent(rebate.get()::setSecurity);
         }
+    }
+
+    private Optional<AccountTransaction> asRebateTransaction(Item item)
+    {
+        if (item instanceof TransactionItem ti && ti.getSubject() instanceof AccountTransaction tx
+                        && tx.getType() == AccountTransaction.Type.FEES_REFUND)
+            return Optional.of(tx);
+        return Optional.empty();
+    }
+
+    /**
+     * Returns the security of the regular buy/sell entry whose date-time is
+     * closest to {@code rebateTime}, within the correlation window. Synthetic
+     * fee-sell entries from crypto withdrawals (amount = 0) are excluded.
+     */
+    private Optional<Security> findNearestTradeSecurity(LocalDateTime rebateTime, List<Item> items)
+    {
+        Security best = null;
+        long bestDiff = Long.MAX_VALUE;
+
+        for (var other : items)
+        {
+            if (!(other instanceof BuySellEntryItem bsei))
+                continue;
+
+            var ptx = ((BuySellEntry) bsei.getSubject()).getPortfolioTransaction();
+            if (ptx.getAmount() == 0)
+                continue;
+
+            long diff = Math.abs(Duration.between(rebateTime, ptx.getDateTime()).toSeconds());
+            if (diff <= REBATE_CORRELATION_WINDOW_SECONDS && diff < bestDiff)
+            {
+                bestDiff = diff;
+                best = ptx.getSecurity();
+            }
+        }
+
+        return Optional.ofNullable(best);
     }
 
     // -----------------------------------------------------------------------
@@ -432,21 +444,17 @@ public class BitvavoCSVExtractor implements Extractor
      */
     private Security lookupCryptoSecurity(String ticker, String currency, SecurityCache securityCache)
     {
-        return securityCache.lookup(null, ticker, null, ticker, () -> {
-            var s = new Security();
-            s.setCurrencyCode(currency);
-            return s;
-        });
+        return securityCache.lookup(null, ticker, null, ticker, () -> new Security(ticker, currency));
     }
 
     // -----------------------------------------------------------------------
     // Parsing helpers
     // -----------------------------------------------------------------------
 
-    private LocalDateTime parseDateTime(CSVRecord record)
+    private LocalDateTime parseDateTime(CSVRecord row)
     {
-        var dateStr = getField(record, "Date");
-        var timeStr = getField(record, "Time");
+        var dateStr = getField(row, COL_DATE);
+        var timeStr = getField(row, COL_TIME);
 
         var date = LocalDate.parse(dateStr, DATE_FORMAT);
 
@@ -458,9 +466,9 @@ public class BitvavoCSVExtractor implements Extractor
         return LocalDateTime.of(date, time);
     }
 
-    private double getDouble(CSVRecord record, String column)
+    private double getDouble(CSVRecord row, String column)
     {
-        var value = getField(record, column);
+        var value = getField(row, column);
         if (value.isEmpty())
             return 0.0;
         try
@@ -474,20 +482,20 @@ public class BitvavoCSVExtractor implements Extractor
     }
 
     /** Returns "txId | address" if an on-chain address is present, otherwise just the txId. */
-    private String noteWithAddress(CSVRecord record)
+    private String noteWithAddress(CSVRecord row)
     {
-        var txId = getField(record, "Transaction ID");
-        var address = getField(record, "Address");
+        var txId = getField(row, COL_TRANSACTION_ID);
+        var address = getField(row, COL_ADDRESS);
         if (!address.isEmpty())
             return txId + " | " + address;
         return txId;
     }
 
-    private String getField(CSVRecord record, String column)
+    private String getField(CSVRecord row, String column)
     {
-        if (!record.isSet(column))
+        if (!row.isSet(column))
             return "";
-        var value = record.get(column);
+        var value = row.get(column);
         return value == null ? "" : value.trim();
     }
 }
