@@ -185,21 +185,24 @@ public class BitvavoCSVExtractor implements Extractor
                 processCampaign(record, source, items);
                 break;
             default:
-            {
-                // Unknown type: placeholder deposit with failure message for user review
-                var tx = new AccountTransaction();
-                tx.setType(AccountTransaction.Type.DEPOSIT);
-                tx.setDateTime(parseDateTime(record));
-                tx.setCurrencyCode(client.getBaseCurrency());
-                tx.setAmount(0);
-                tx.setNote(noteWithAddress(record));
-                tx.setSource(source);
-                var item = new TransactionItem(tx);
-                item.setFailureMessage(MessageFormat.format(Messages.BitvavoCSVMsgUnsupportedTransactionType, type));
-                items.add(item);
+                processUnknown(record, type, source, items);
                 break;
-            }
         }
+    }
+
+    private void processUnknown(CSVRecord record, String type, String source, List<Item> items)
+    {
+        // Unknown type: placeholder deposit with failure message for user review
+        var tx = new AccountTransaction();
+        tx.setType(AccountTransaction.Type.DEPOSIT);
+        tx.setDateTime(parseDateTime(record));
+        tx.setCurrencyCode(client.getBaseCurrency());
+        tx.setAmount(0);
+        tx.setNote(noteWithAddress(record));
+        tx.setSource(source);
+        var item = new TransactionItem(tx);
+        item.setFailureMessage(MessageFormat.format(Messages.BitvavoCSVMsgUnsupportedTransactionType, type));
+        items.add(item);
     }
 
     // -----------------------------------------------------------------------
