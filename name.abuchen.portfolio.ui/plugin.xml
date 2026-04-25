@@ -185,6 +185,77 @@
                name="down-arrow">
          </property-name>
       </handler>
+
+      <handler
+            adapter="name.abuchen.portfolio.ui.theme.DataSeriesColorsElementAdapter"
+            handler="name.abuchen.portfolio.ui.theme.DataSeriesColorsCSSHandler">
+         <property-name
+               name="totals-color">
+         </property-name>
+         <property-name
+               name="invested-capital-color">
+         </property-name>
+         <property-name
+               name="absolute-invested-capital-color">
+         </property-name>
+         <property-name
+               name="transferals-color">
+         </property-name>
+         <property-name
+               name="transferals-accumulated-color">
+         </property-name>
+         <property-name
+               name="taxes-color">
+         </property-name>
+         <property-name
+               name="taxes-accumulated-color">
+         </property-name>
+         <property-name
+               name="absolute-delta-color">
+         </property-name>
+         <property-name
+               name="absolute-delta-all-record-color">
+         </property-name>
+         <property-name
+               name="dividends-color">
+         </property-name>
+         <property-name
+               name="dividends-accumulated-color">
+         </property-name>
+         <property-name
+               name="interest-color">
+         </property-name>
+         <property-name
+               name="interest-accumulated-color">
+         </property-name>
+         <property-name
+               name="interest-charge-color">
+         </property-name>
+         <property-name
+               name="interest-charge-accumulated-color">
+         </property-name>
+         <property-name
+               name="earnings-color">
+         </property-name>
+         <property-name
+               name="earnings-accumulated-color">
+         </property-name>
+         <property-name
+               name="fees-color">
+         </property-name>
+         <property-name
+               name="fees-accumulated-color">
+         </property-name>
+         <property-name
+               name="performance-entire-portfolio-color">
+         </property-name>
+         <property-name
+               name="performance-positive-color">
+         </property-name>
+         <property-name
+               name="performance-negative-color">
+         </property-name>
+      </handler>
    </extension>
    <extension
          point="org.eclipse.e4.ui.css.core.elementProvider">
@@ -222,6 +293,9 @@
          </widget>
          <widget
                class="name.abuchen.portfolio.ui.util.ValueColorScheme">
+         </widget>
+         <widget
+               class="name.abuchen.portfolio.ui.util.DataSeriesColors">
          </widget>
       </provider>
    </extension>

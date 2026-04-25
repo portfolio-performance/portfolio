@@ -13,7 +13,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Dashboard;
@@ -21,7 +20,7 @@ import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.DataSeriesColors;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.format.AmountNumberFormat;
 import name.abuchen.portfolio.ui.util.format.ThousandsNumberFormat;
@@ -40,25 +39,7 @@ import name.abuchen.portfolio.util.TextUtil;
 
 public class ClientDataSeriesChartWidget extends WidgetDelegate<PerformanceIndex>
 {
-    private static final Color colorTotals = Colors.BLACK;
-    private static final Color colorInvestedCapital = Colors.getColor(235, 201, 52); // #EBC934
-    private static final Color colorAbsoluteInvestedCapital = Colors.getColor(235, 201, 52); // #EBC934
-    private static final Color colorTransferals = Colors.DARK_GRAY;
-    private static final Color colorTransferalsAccumulated = Display.getDefault().getSystemColor(SWT.COLOR_YELLOW);
-    private static final Color colorTaxes = Colors.RED;
-    private static final Color colorTaxesAccumulated = Colors.RED;
-    private static final Color colorAbsoluteDelta = Display.getDefault().getSystemColor(SWT.COLOR_BLUE);
-    private static final Color colorAbsoluteDeltaAllRecord = Display.getDefault().getSystemColor(SWT.COLOR_BLUE);
-    private static final Color colorDividends = Display.getDefault().getSystemColor(SWT.COLOR_DARK_MAGENTA);
-    private static final Color colorDividendsAccumulated = Display.getDefault().getSystemColor(SWT.COLOR_DARK_MAGENTA);
-    private static final Color colorInterest = Colors.DARK_GREEN;
-    private static final Color colorInterestAccumulated = Colors.DARK_GREEN;
-    private static final Color colorInterestCharge = Colors.DARK_GREEN;
-    private static final Color colorInterestChargeAccumulated = Colors.DARK_GREEN;
-    private static final Color colorEarnings = Colors.DARK_GREEN;
-    private static final Color colorEarningsAccumulated = Colors.DARK_GREEN;
-    private static final Color colorFees = Colors.GRAY;
-    private static final Color colorFeesAccumulated = Colors.GRAY;
+    private final DataSeriesColors colors = DataSeriesColors.instance();
 
     private Label title;
     private TimelineChart chart;
@@ -195,120 +176,126 @@ public class ClientDataSeriesChartWidget extends WidgetDelegate<PerformanceIndex
             if (metrics.contains(ClientDataSeriesType.INVESTED_CAPITAL))
             {
                 double[] values = toDouble(index.calculateInvestedCapital(), Values.Amount.divider());
-                addLineSerie(values, index.getDates(), colorInvestedCapital, Messages.LabelInvestedCapital, true);
+                addLineSerie(values, index.getDates(), colors.investedCapitalColor(), Messages.LabelInvestedCapital,
+                                true);
             }
 
             if (metrics.contains(ClientDataSeriesType.ABSOLUTE_INVESTED_CAPITAL))
             {
                 double[] values = toDouble(index.calculateAbsoluteInvestedCapital(), Values.Amount.divider());
-                addLineSerie(values, index.getDates(), colorAbsoluteInvestedCapital,
+                addLineSerie(values, index.getDates(), colors.absoluteInvestedCapitalColor(),
                                 Messages.LabelAbsoluteInvestedCapital, true);
             }
 
             if (metrics.contains(ClientDataSeriesType.TRANSFERALS))
             {
                 double[] values = toDouble(index.getTransferals(), Values.Amount.divider());
-                addBarSerie(values, index.getDates(), colorTransferals, Messages.LabelTransferals);
+                addBarSerie(values, index.getDates(), colors.transferalsColor(), Messages.LabelTransferals);
             }
 
             if (metrics.contains(ClientDataSeriesType.TRANSFERALS_ACCUMULATED))
             {
                 double[] values = accumulateAndToDouble(index.getTransferals(), Values.Amount.divider());
-                addLineSerie(values, index.getDates(), colorTransferalsAccumulated,
+                addLineSerie(values, index.getDates(), colors.transferalsAccumulatedColor(),
                                 Messages.LabelAccumulatedTransferals, true);
             }
 
             if (metrics.contains(ClientDataSeriesType.TAXES))
             {
                 double[] values = toDouble(index.getTaxes(), Values.Amount.divider());
-                addBarSerie(values, index.getDates(), colorTaxes, Messages.ColumnTaxes);
+                addBarSerie(values, index.getDates(), colors.taxesColor(), Messages.ColumnTaxes);
             }
 
             if (metrics.contains(ClientDataSeriesType.TAXES_ACCUMULATED))
             {
                 double[] values = accumulateAndToDouble(index.getTaxes(), Values.Amount.divider());
-                addLineSerie(values, index.getDates(), colorTaxesAccumulated, Messages.LabelAccumulatedTaxes, true);
+                addLineSerie(values, index.getDates(), colors.taxesAccumulatedColor(), Messages.LabelAccumulatedTaxes,
+                                true);
             }
 
             if (metrics.contains(ClientDataSeriesType.ABSOLUTE_DELTA))
             {
                 double[] values = toDouble(index.calculateDelta(), Values.Amount.divider());
-                addLineSerie(values, index.getDates(), colorAbsoluteDelta, Messages.LabelDelta);
+                addLineSerie(values, index.getDates(), colors.absoluteDeltaColor(), Messages.LabelDelta);
             }
 
             if (metrics.contains(ClientDataSeriesType.ABSOLUTE_DELTA_ALL_RECORDS))
             {
                 double[] values = toDouble(index.calculateAbsoluteDelta(), Values.Amount.divider());
-                addLineSerie(values, index.getDates(), colorAbsoluteDeltaAllRecord, Messages.LabelAbsoluteDelta);
+                addLineSerie(values, index.getDates(), colors.absoluteDeltaAllRecordColor(),
+                                Messages.LabelAbsoluteDelta);
             }
 
             if (metrics.contains(ClientDataSeriesType.DIVIDENDS))
             {
                 double[] values = toDouble(index.getDividends(), Values.Amount.divider());
-                addBarSerie(values, index.getDates(), colorDividends, Messages.LabelDividends);
+                addBarSerie(values, index.getDates(), colors.dividendsColor(), Messages.LabelDividends);
             }
 
             if (metrics.contains(ClientDataSeriesType.DIVIDENDS_ACCUMULATED))
             {
                 double[] values = accumulateAndToDouble(index.getDividends(), Values.Amount.divider());
-                addLineSerie(values, index.getDates(), colorDividendsAccumulated, Messages.LabelAccumulatedDividends);
+                addLineSerie(values, index.getDates(), colors.dividendsAccumulatedColor(),
+                                Messages.LabelAccumulatedDividends);
             }
 
             if (metrics.contains(ClientDataSeriesType.INTEREST))
             {
                 double[] values = toDouble(index.getInterest(), Values.Amount.divider());
-                addBarSerie(values, index.getDates(), colorInterest, Messages.LabelInterest);
+                addBarSerie(values, index.getDates(), colors.interestColor(), Messages.LabelInterest);
             }
 
             if (metrics.contains(ClientDataSeriesType.INTEREST_ACCUMULATED))
             {
                 double[] values = accumulateAndToDouble(index.getInterest(), Values.Amount.divider());
-                addLineSerie(values, index.getDates(), colorInterestAccumulated, Messages.LabelAccumulatedInterest);
+                addLineSerie(values, index.getDates(), colors.interestAccumulatedColor(),
+                                Messages.LabelAccumulatedInterest);
             }
 
             if (metrics.contains(ClientDataSeriesType.INTEREST_CHARGE))
             {
                 double[] values = toDouble(index.getInterestCharge(), Values.Amount.divider());
-                addBarSerie(values, index.getDates(), colorInterestCharge, Messages.LabelInterestCharge);
+                addBarSerie(values, index.getDates(), colors.interestChargeColor(), Messages.LabelInterestCharge);
             }
 
             if (metrics.contains(ClientDataSeriesType.INTEREST_CHARGE_ACCUMULATED))
             {
                 double[] values = accumulateAndToDouble(index.getInterestCharge(), Values.Amount.divider());
-                addLineSerie(values, index.getDates(), colorInterestChargeAccumulated,
+                addLineSerie(values, index.getDates(), colors.interestChargeAccumulatedColor(),
                                 Messages.LabelAccumulatedInterestCharge);
             }
 
             if (metrics.contains(ClientDataSeriesType.EARNINGS))
             {
                 double[] values = toDouble(add(index.getDividends(), index.getInterest()), Values.Amount.divider());
-                addBarSerie(values, index.getDates(), colorEarnings, Messages.LabelEarnings);
+                addBarSerie(values, index.getDates(), colors.earningsColor(), Messages.LabelEarnings);
             }
 
             if (metrics.contains(ClientDataSeriesType.EARNINGS_ACCUMULATED))
             {
                 double[] values = accumulateAndToDouble(add(index.getDividends(), index.getInterest()),
                                 Values.Amount.divider());
-                addLineSerie(values, index.getDates(), colorEarningsAccumulated, Messages.LabelAccumulatedEarnings);
+                addLineSerie(values, index.getDates(), colors.earningsAccumulatedColor(),
+                                Messages.LabelAccumulatedEarnings);
             }
 
             if (metrics.contains(ClientDataSeriesType.FEES))
             {
                 double[] values = toDouble(index.getFees(), Values.Amount.divider());
-                addBarSerie(values, index.getDates(), colorFees, Messages.LabelFees);
+                addBarSerie(values, index.getDates(), colors.feesColor(), Messages.LabelFees);
             }
 
             if (metrics.contains(ClientDataSeriesType.FEES_ACCUMULATED))
             {
                 double[] values = accumulateAndToDouble(index.getFees(), Values.Amount.divider());
-                addLineSerie(values, index.getDates(), colorFeesAccumulated, Messages.LabelFeesAccumulated);
+                addLineSerie(values, index.getDates(), colors.feesAccumulatedColor(), Messages.LabelFeesAccumulated);
             }
 
             // Totals at the end to be plotted in front of all the other
             if (metrics.contains(ClientDataSeriesType.TOTALS))
             {
                 double[] values = toDouble(index.getTotals(), Values.Amount.divider());
-                addLineSerie(values, index.getDates(), colorTotals, Messages.LabelTotalSum);
+                addLineSerie(values, index.getDates(), colors.totalsColor(), Messages.LabelTotalSum);
             }
 
             chart.adjustRange();
