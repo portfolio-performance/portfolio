@@ -1,0 +1,104 @@
+package name.abuchen.portfolio.ui.theme;
+
+import org.eclipse.e4.ui.css.core.dom.properties.ICSSPropertyHandler;
+import org.eclipse.e4.ui.css.core.engine.CSSEngine;
+import org.eclipse.e4.ui.css.swt.helpers.CSSSWTColorHelper;
+import org.w3c.dom.css.CSSValue;
+
+import name.abuchen.portfolio.ui.util.ColorSourceTracker;
+import name.abuchen.portfolio.ui.views.payments.PaymentsPalette;
+
+@SuppressWarnings("restriction")
+public class PaymentsPaletteCSSHandler implements ICSSPropertyHandler
+{
+    @Override
+    public boolean applyCSSProperty(Object element, String property, CSSValue value, String pseudo, CSSEngine engine)
+                    throws Exception
+    {
+        if (!(element instanceof PaymentsPaletteElementAdapter adapter))
+            return false;
+
+        PaymentsPalette palette = adapter.getPalette();
+
+        switch (property)
+        {
+            case "color-0": //$NON-NLS-1$
+                palette.setColor(0, CSSSWTColorHelper.getRGBA(value));
+                ColorSourceTracker.markCssApplied("PaymentsPalette", "color-0"); //$NON-NLS-1$ //$NON-NLS-2$
+                return true;
+
+            case "color-1": //$NON-NLS-1$
+                palette.setColor(1, CSSSWTColorHelper.getRGBA(value));
+                ColorSourceTracker.markCssApplied("PaymentsPalette", "color-1"); //$NON-NLS-1$ //$NON-NLS-2$
+                return true;
+
+            case "color-2": //$NON-NLS-1$
+                palette.setColor(2, CSSSWTColorHelper.getRGBA(value));
+                ColorSourceTracker.markCssApplied("PaymentsPalette", "color-2"); //$NON-NLS-1$ //$NON-NLS-2$
+                return true;
+
+            case "color-3": //$NON-NLS-1$
+                palette.setColor(3, CSSSWTColorHelper.getRGBA(value));
+                ColorSourceTracker.markCssApplied("PaymentsPalette", "color-3"); //$NON-NLS-1$ //$NON-NLS-2$
+                return true;
+
+            case "color-4": //$NON-NLS-1$
+                palette.setColor(4, CSSSWTColorHelper.getRGBA(value));
+                ColorSourceTracker.markCssApplied("PaymentsPalette", "color-4"); //$NON-NLS-1$ //$NON-NLS-2$
+                return true;
+
+            case "color-5": //$NON-NLS-1$
+                palette.setColor(5, CSSSWTColorHelper.getRGBA(value));
+                ColorSourceTracker.markCssApplied("PaymentsPalette", "color-5"); //$NON-NLS-1$ //$NON-NLS-2$
+                return true;
+
+            case "color-6": //$NON-NLS-1$
+                palette.setColor(6, CSSSWTColorHelper.getRGBA(value));
+                ColorSourceTracker.markCssApplied("PaymentsPalette", "color-6"); //$NON-NLS-1$ //$NON-NLS-2$
+                return true;
+
+            case "color-7": //$NON-NLS-1$
+                palette.setColor(7, CSSSWTColorHelper.getRGBA(value));
+                ColorSourceTracker.markCssApplied("PaymentsPalette", "color-7"); //$NON-NLS-1$ //$NON-NLS-2$
+                return true;
+
+            case "color-8": //$NON-NLS-1$
+                palette.setColor(8, CSSSWTColorHelper.getRGBA(value));
+                ColorSourceTracker.markCssApplied("PaymentsPalette", "color-8"); //$NON-NLS-1$ //$NON-NLS-2$
+                return true;
+
+            case "color-9": //$NON-NLS-1$
+                palette.setColor(9, CSSSWTColorHelper.getRGBA(value));
+                ColorSourceTracker.markCssApplied("PaymentsPalette", "color-9"); //$NON-NLS-1$ //$NON-NLS-2$
+                return true;
+
+            case "color-10": //$NON-NLS-1$
+                palette.setColor(10, CSSSWTColorHelper.getRGBA(value));
+                ColorSourceTracker.markCssApplied("PaymentsPalette", "color-10"); //$NON-NLS-1$ //$NON-NLS-2$
+                return true;
+
+            case "color-11": //$NON-NLS-1$
+                palette.setColor(11, CSSSWTColorHelper.getRGBA(value));
+                ColorSourceTracker.markCssApplied("PaymentsPalette", "color-11"); //$NON-NLS-1$ //$NON-NLS-2$
+                return true;
+
+            case "color-12": //$NON-NLS-1$
+                palette.setColor(12, CSSSWTColorHelper.getRGBA(value));
+                ColorSourceTracker.markCssApplied("PaymentsPalette", "color-12"); //$NON-NLS-1$ //$NON-NLS-2$
+                return true;
+
+            case "color-13": //$NON-NLS-1$
+                palette.setColor(13, CSSSWTColorHelper.getRGBA(value));
+                ColorSourceTracker.markCssApplied("PaymentsPalette", "color-13"); //$NON-NLS-1$ //$NON-NLS-2$
+                return true;
+
+            case "color-14": //$NON-NLS-1$
+                palette.setColor(14, CSSSWTColorHelper.getRGBA(value));
+                ColorSourceTracker.markCssApplied("PaymentsPalette", "color-14"); //$NON-NLS-1$ //$NON-NLS-2$
+                return true;
+
+            default:
+                return false;
+        }
+    }
+}

@@ -1,66 +1,71 @@
 package name.abuchen.portfolio.ui.theme;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.e4.ui.css.core.dom.properties.ICSSPropertyHandler;
 import org.eclipse.e4.ui.css.core.engine.CSSEngine;
 import org.eclipse.e4.ui.css.swt.helpers.CSSSWTColorHelper;
 import org.eclipse.swt.graphics.Color;
 import org.w3c.dom.css.CSSValue;
 
+import name.abuchen.portfolio.ui.util.ColorSourceTracker;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.views.PortfolioBalanceChart;
 
 /**
  * The PortfolioChartCSSHandler class is responsible for customizing the visual
- * appearance of PortfolioChart elements using CSS properties. It uses a mapping
- * of CSS properties to color setters to apply the specified colors to
- * corresponding elements within the chart.
+ * appearance of PortfolioChart elements using CSS properties.
  */
 @SuppressWarnings("restriction")
 public class PortfolioBalanceChartCSSHandler implements ICSSPropertyHandler
 {
-    private interface ColorSetter
-    {
-        /**
-         * Sets the color on the PortfolioChart element.
-         */
-        void setColor(PortfolioBalanceChart chart, CSSValue value);
-    }
-
-    private final Map<String, ColorSetter> propertyMap = new HashMap<>();
-
-    public PortfolioBalanceChartCSSHandler()
-    {
-        initializePropertyMap();
-    }
-
-    private void initializePropertyMap()
-    {
-        propertyMap.put("invested-capital-color", //$NON-NLS-1$
-                        (chart, value) -> chart.setAbsoluteInvestedCapitalColor(getColor(value)));
-        propertyMap.put("absolute-delta-color", (chart, value) -> chart.setAbsoluteDeltaColor(getColor(value))); //$NON-NLS-1$
-        propertyMap.put("delta-area-positive-color", (chart, value) -> chart.setDeltaAreaPositive(getColor(value))); //$NON-NLS-1$
-        propertyMap.put("delta-area-negative-color", (chart, value) -> chart.setDeltaAreaNegative(getColor(value))); //$NON-NLS-1$
-    }
-
     @Override
     public boolean applyCSSProperty(Object element, String property, CSSValue value, String pseudo, CSSEngine engine)
                     throws Exception
     {
-        if (element instanceof PortfolioBalanceChartElementAdapter adapter)
+        if (!(element instanceof PortfolioBalanceChartElementAdapter adapter))
+            return false;
+
+        PortfolioBalanceChart chart = adapter.getPortfolioChart();
+
+        switch (property)
         {
-            PortfolioBalanceChart chart = adapter.getPortfolioChart();
-            ColorSetter colorSetter = propertyMap.get(property);
+            case "totals-color": //$NON-NLS-1$
+                chart.setTotalsColor(getColor(value));
+                ColorSourceTracker.markCssApplied("PortfolioBalanceChart", "totals-color"); //$NON-NLS-1$ //$NON-NLS-2$
+                return true;
 
-            if (colorSetter != null)
-            {
-                colorSetter.setColor(chart, value);
-            }
+            case "invested-capital-color": //$NON-NLS-1$
+                chart.setAbsoluteInvestedCapitalColor(getColor(value));
+                ColorSourceTracker.markCssApplied("PortfolioBalanceChart", "invested-capital-color"); //$NON-NLS-1$ //$NON-NLS-2$
+                return true;
+
+            case "absolute-delta-color": //$NON-NLS-1$
+                chart.setAbsoluteDeltaColor(getColor(value));
+                ColorSourceTracker.markCssApplied("PortfolioBalanceChart", "absolute-delta-color"); //$NON-NLS-1$ //$NON-NLS-2$
+                return true;
+
+            case "taxes-accumulated-color": //$NON-NLS-1$
+                chart.setTaxesAccumulatedColor(getColor(value));
+                ColorSourceTracker.markCssApplied("PortfolioBalanceChart", "taxes-accumulated-color"); //$NON-NLS-1$ //$NON-NLS-2$
+                return true;
+
+            case "fees-accumulated-color": //$NON-NLS-1$
+                chart.setFeesAccumulatedColor(getColor(value));
+                ColorSourceTracker.markCssApplied("PortfolioBalanceChart", "fees-accumulated-color"); //$NON-NLS-1$ //$NON-NLS-2$
+                return true;
+
+            case "delta-area-positive-color": //$NON-NLS-1$
+                chart.setDeltaAreaPositive(getColor(value));
+                ColorSourceTracker.markCssApplied("PortfolioBalanceChart", "delta-area-positive-color"); //$NON-NLS-1$ //$NON-NLS-2$
+                return true;
+
+            case "delta-area-negative-color": //$NON-NLS-1$
+                chart.setDeltaAreaNegative(getColor(value));
+                ColorSourceTracker.markCssApplied("PortfolioBalanceChart", "delta-area-negative-color"); //$NON-NLS-1$ //$NON-NLS-2$
+                return true;
+
+            default:
+                return false;
         }
-
-        return false;
     }
 
     /**
@@ -70,5 +75,4 @@ public class PortfolioBalanceChartCSSHandler implements ICSSPropertyHandler
     {
         return Colors.getColor(CSSSWTColorHelper.getRGBA(value).rgb);
     }
-
 }
