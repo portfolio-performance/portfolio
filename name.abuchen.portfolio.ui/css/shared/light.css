@@ -92,6 +92,8 @@ CustomColors {
 	red-foreground: #7f0000;
 	green-foreground: #377500;
 	gray-foreground: #707070;
+	
+	hyperlink: "#COLOR_LINK_FOREGROUND";
 }
 
 ValueColorScheme.standard {
