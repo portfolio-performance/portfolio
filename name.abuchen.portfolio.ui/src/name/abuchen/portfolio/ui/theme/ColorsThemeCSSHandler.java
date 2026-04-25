@@ -14,47 +14,45 @@ public class ColorsThemeCSSHandler implements ICSSPropertyHandler
     public boolean applyCSSProperty(Object element, String property, CSSValue value, String pseudo, CSSEngine engine)
                     throws Exception
     {
-        if (element instanceof ColorsThemeElementAdapter colorsThemeAdapter)
+        if (!(element instanceof ColorsThemeElementAdapter colorsThemeAdapter))
+            return false;
+
+        Colors.Theme theme = colorsThemeAdapter.getColorsTheme();
+
+        switch (property)
         {
-            Colors.Theme theme = colorsThemeAdapter.getColorsTheme();
-
-            switch (property)
-            {
-                case "default-foreground": //$NON-NLS-1$
-                    theme.setDefaultForeground(CSSSWTColorHelper.getRGBA(value));
-                    break;
-                case "default-background": //$NON-NLS-1$
-                    theme.setDefaultBackground(CSSSWTColorHelper.getRGBA(value));
-                    break;
-                case "chip-background": //$NON-NLS-1$
-                    theme.setChipBackground(CSSSWTColorHelper.getRGBA(value));
-                    break;
-                case "warning-background": //$NON-NLS-1$
-                    theme.setWarningBackground(CSSSWTColorHelper.getRGBA(value));
-                    break;
-                case "red-background": //$NON-NLS-1$
-                    theme.setRedBackground(CSSSWTColorHelper.getRGBA(value));
-                    break;
-                case "green-background": //$NON-NLS-1$
-                    theme.setGreenBackground(CSSSWTColorHelper.getRGBA(value));
-                    break;
-                case "red-foreground": //$NON-NLS-1$
-                    theme.setRedForeground(CSSSWTColorHelper.getRGBA(value));
-                    break;
-                case "green-foreground": //$NON-NLS-1$
-                    theme.setGreenForeground(CSSSWTColorHelper.getRGBA(value));
-                    break;
-                case "gray-foreground": //$NON-NLS-1$
-                    theme.setGrayForeground(CSSSWTColorHelper.getRGBA(value));
-                    break;
-                case "hyperlink": //$NON-NLS-1$
-                    theme.setHyperlink(CSSSWTColorHelper.getRGBA(value));
-                    break;
-                default:
-            }
+            case "default-foreground": //$NON-NLS-1$
+                theme.setDefaultForeground(CSSSWTColorHelper.getRGBA(value));
+                return true;
+            case "default-background": //$NON-NLS-1$
+                theme.setDefaultBackground(CSSSWTColorHelper.getRGBA(value));
+                return true;
+            case "chip-background": //$NON-NLS-1$
+                theme.setChipBackground(CSSSWTColorHelper.getRGBA(value));
+                return true;
+            case "warning-background": //$NON-NLS-1$
+                theme.setWarningBackground(CSSSWTColorHelper.getRGBA(value));
+                return true;
+            case "red-background": //$NON-NLS-1$
+                theme.setRedBackground(CSSSWTColorHelper.getRGBA(value));
+                return true;
+            case "green-background": //$NON-NLS-1$
+                theme.setGreenBackground(CSSSWTColorHelper.getRGBA(value));
+                return true;
+            case "red-foreground": //$NON-NLS-1$
+                theme.setRedForeground(CSSSWTColorHelper.getRGBA(value));
+                return true;
+            case "green-foreground": //$NON-NLS-1$
+                theme.setGreenForeground(CSSSWTColorHelper.getRGBA(value));
+                return true;
+            case "gray-foreground": //$NON-NLS-1$
+                theme.setGrayForeground(CSSSWTColorHelper.getRGBA(value));
+                return true;
+            case "hyperlink": //$NON-NLS-1$
+                theme.setHyperlink(CSSSWTColorHelper.getRGBA(value));
+                return true;
+            default:
+                return false;
         }
-
-        return false;
     }
-
 }
