@@ -5,8 +5,6 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
@@ -16,7 +14,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
-import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.DataSeriesColors;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries.ClientDataSeries;
 import name.abuchen.portfolio.util.ColorConversion;
 
@@ -143,104 +141,106 @@ public class DataSeriesSet
 
     private void buildStatementOfAssetsDataSeries()
     {
+        var colors = DataSeriesColors.instance();
+
         availableSeries.add(new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TOTALS, Messages.LabelTotalSum,
-                        Colors.TOTALS.getRGB()));
+                        colors.totalsColor().getRGB()));
 
         DataSeries series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TRANSFERALS,
-                        Messages.LabelTransferals, Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY).getRGB());
+                        Messages.LabelTransferals, colors.transferalsColor().getRGB());
         series.setLineChart(false);
         availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TRANSFERALS_ACCUMULATED,
-                        Messages.LabelAccumulatedTransferals,
-                        Display.getDefault().getSystemColor(SWT.COLOR_YELLOW).getRGB());
+                        Messages.LabelAccumulatedTransferals, colors.transferalsAccumulatedColor().getRGB());
         series.setShowArea(true);
         availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.INVESTED_CAPITAL,
-                        Messages.LabelInvestedCapital, Display.getDefault().getSystemColor(SWT.COLOR_GRAY).getRGB());
+                        Messages.LabelInvestedCapital, colors.investedCapitalColor().getRGB());
         series.setShowArea(true);
         availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.ABSOLUTE_INVESTED_CAPITAL,
-                        Messages.LabelAbsoluteInvestedCapital,
-                        Display.getDefault().getSystemColor(SWT.COLOR_GRAY).getRGB());
+                        Messages.LabelAbsoluteInvestedCapital, colors.absoluteInvestedCapitalColor().getRGB());
         series.setShowArea(true);
         availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.ABSOLUTE_DELTA, Messages.LabelDelta,
-                        Display.getDefault().getSystemColor(SWT.COLOR_GRAY).getRGB());
+                        colors.absoluteDeltaColor().getRGB());
         availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.ABSOLUTE_DELTA_ALL_RECORDS,
-                        Messages.LabelAbsoluteDelta, Display.getDefault().getSystemColor(SWT.COLOR_GRAY).getRGB());
+                        Messages.LabelAbsoluteDelta, colors.absoluteDeltaAllRecordColor().getRGB());
         availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TAXES, Messages.ColumnTaxes,
-                        Display.getDefault().getSystemColor(SWT.COLOR_RED).getRGB());
+                        colors.taxesColor().getRGB());
         series.setLineChart(false);
         availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TAXES_ACCUMULATED,
-                        Messages.LabelAccumulatedTaxes, Display.getDefault().getSystemColor(SWT.COLOR_RED).getRGB());
+                        Messages.LabelAccumulatedTaxes, colors.taxesAccumulatedColor().getRGB());
         availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.DIVIDENDS, Messages.LabelDividends,
-                        Display.getDefault().getSystemColor(SWT.COLOR_DARK_MAGENTA).getRGB());
+                        colors.dividendsColor().getRGB());
         series.setLineChart(false);
         availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.DIVIDENDS_ACCUMULATED,
-                        Messages.LabelAccumulatedDividends,
-                        Display.getDefault().getSystemColor(SWT.COLOR_DARK_MAGENTA).getRGB());
+                        Messages.LabelAccumulatedDividends, colors.dividendsAccumulatedColor().getRGB());
         availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.INTEREST, Messages.LabelInterest,
-                        Colors.DARK_GREEN.getRGB());
+                        colors.interestColor().getRGB());
         series.setLineChart(false);
         availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.INTEREST_ACCUMULATED,
-                        Messages.LabelAccumulatedInterest, Colors.DARK_GREEN.getRGB());
+                        Messages.LabelAccumulatedInterest, colors.interestAccumulatedColor().getRGB());
         availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.INTEREST_CHARGE, Messages.LabelInterestCharge,
-                        Colors.DARK_GREEN.getRGB());
+                        colors.interestChargeColor().getRGB());
         series.setLineChart(false);
         availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.INTEREST_CHARGE_ACCUMULATED,
-                        Messages.LabelAccumulatedInterestCharge, Colors.DARK_GREEN.getRGB());
+                        Messages.LabelAccumulatedInterestCharge, colors.interestChargeAccumulatedColor().getRGB());
         availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.EARNINGS, Messages.LabelEarnings,
-                        Colors.DARK_GREEN.getRGB());
+                        colors.earningsColor().getRGB());
         series.setLineChart(false);
         availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.EARNINGS_ACCUMULATED,
-                        Messages.LabelAccumulatedEarnings, Colors.DARK_GREEN.getRGB());
+                        Messages.LabelAccumulatedEarnings, colors.earningsAccumulatedColor().getRGB());
         availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.FEES, Messages.LabelFees,
-                        Colors.GRAY.getRGB());
+                        colors.feesColor().getRGB());
         series.setLineChart(false);
         availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.FEES_ACCUMULATED,
-                        Messages.LabelFeesAccumulated, Colors.GRAY.getRGB());
+                        Messages.LabelFeesAccumulated, colors.feesAccumulatedColor().getRGB());
         availableSeries.add(series);
     }
 
     private void buildPerformanceDataSeries(Client client, IPreferenceStore preferences, ColorWheel wheel)
     {
+        var colors = DataSeriesColors.instance();
+
         // accumulated performance
         availableSeries.add(new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TOTALS,
-                        Messages.PerformanceChartLabelEntirePortfolio, Colors.TOTALS.getRGB()));
+                        Messages.PerformanceChartLabelEntirePortfolio,
+                        colors.performanceEntirePortfolioColor().getRGB()));
 
         DataSeries series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.DELTA_PERCENTAGE,
-                        Messages.LabelAggregationDaily, Colors.getColor(60, 151, 218).getRGB());
-        series.setColorNegative(Colors.getColor(253, 156, 82).getRGB());
+                        Messages.LabelAggregationDaily, colors.performancePositiveColor().getRGB());
+        series.setColorNegative(colors.performanceNegativeColor().getRGB());
         series.setLineChart(false);
         availableSeries.add(series);
 
@@ -258,9 +258,12 @@ public class DataSeriesSet
 
     private void buildReturnVolatilitySeries(Client client, IPreferenceStore preferences, ColorWheel wheel)
     {
+        var colors = DataSeriesColors.instance();
+
         // accumulated performance
         availableSeries.add(new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TOTALS,
-                        Messages.PerformanceChartLabelEntirePortfolio, Colors.TOTALS.getRGB()));
+                        Messages.PerformanceChartLabelEntirePortfolio,
+                        colors.performanceEntirePortfolioColor().getRGB()));
 
         // securities as benchmark
         for (Security security : client.getSecurities())
