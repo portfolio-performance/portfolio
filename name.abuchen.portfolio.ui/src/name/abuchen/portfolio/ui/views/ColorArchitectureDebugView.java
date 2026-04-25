@@ -113,7 +113,6 @@ public class ColorArchitectureDebugView extends AbstractFinanceView
         createSecuritiesChartSection(content, securitiesSnapshot);
         createPortfolioBalanceSection(content, portfolioSnapshot);
         createRenderPreviewSection(content, securitiesSnapshot, portfolioSnapshot);
-        createRestSection(content);
 
         scrolled.setMinSize(content.computeSize(SWT.DEFAULT, SWT.DEFAULT));
         content.addListener(SWT.Resize, e -> scrolled.setMinSize(content.computeSize(SWT.DEFAULT, SWT.DEFAULT)));
@@ -214,7 +213,7 @@ public class ColorArchitectureDebugView extends AbstractFinanceView
         var palette = PaymentsPalette.instance();
         for (int ii = 0; ii < palette.size(); ii++)
         {
-            addTrackedColorRow(table, "PaymentsPalette", "color-" + ii, palette.get(ii), "Palette index " + ii); //$NON-NLS-1$ //$NON-NLS-2$
+            addTrackedColorRow(table, "PaymentsPalette", "color-" + ii, palette.get(ii), "Palette index " + ii); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
     }
 
@@ -285,10 +284,10 @@ public class ColorArchitectureDebugView extends AbstractFinanceView
     private void createRenderPreviewSection(Composite parent, SecuritiesChartSnapshot securitiesSnapshot,
                     PortfolioBalanceChartSnapshot portfolioSnapshot)
     {
-        var section = createSection(parent, "Echte Render-Beispiele"); //$NON-NLS-1$
+        var section = createSection(parent, "Echte Render-Beispiele aus CSS-/Domain-Farben"); //$NON-NLS-1$
 
         var lineTitle = new Label(section, SWT.NONE);
-        lineTitle.setText("LineSeries / Marker / Event-Farben"); //$NON-NLS-1$
+        lineTitle.setText("SecuritiesChart-nahe LineSeries / Marker / Event-Farben"); //$NON-NLS-1$
         GridDataFactory.fillDefaults().grab(true, false).applyTo(lineTitle);
 
         var lineChart = new TimelineChart(section);
@@ -306,21 +305,32 @@ public class ColorArchitectureDebugView extends AbstractFinanceView
         double[] quoteValues = new double[] { 100, 103, 102, 106, 108, 107, 111 };
         double[] holdingsValues = new double[] { 10, 10, 11, 11, 12, 12, 12 };
 
-        var quoteSeries = lineChart.addDateSeries("debug-quote", dates, quoteValues, //$NON-NLS-1$
-                        notNull(securitiesSnapshot.quoteColor, Colors.GRAY), "Quote"); //$NON-NLS-1$
-        quoteSeries.enableArea(true);
+        lineChart.addDateSeries("debug-quote", dates, quoteValues, //$NON-NLS-1$
+                        cssOrDomainFallback("SecuritiesChart", "quote-color", securitiesSnapshot.quoteColor), "Quote"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
         lineChart.addDateSeries("debug-shares-held", dates, holdingsValues, //$NON-NLS-1$
-                        notNull(securitiesSnapshot.sharesHeldColor, Colors.BLUE), "Shares Held"); //$NON-NLS-1$
+                        cssOrDomainFallback("SecuritiesChart", "shares-held-color", securitiesSnapshot.sharesHeldColor), //$NON-NLS-1$ //$NON-NLS-2$
+                        "Shares Held"); //$NON-NLS-1$
 
-        lineChart.addMarkerLine(dates[1], notNull(securitiesSnapshot.purchaseEventColor, Colors.DARK_GREEN), "BUY"); //$NON-NLS-1$
-        lineChart.addMarkerLine(dates[3], notNull(securitiesSnapshot.dividendEventColor, Colors.BLUE), "DIV"); //$NON-NLS-1$
-        lineChart.addMarkerLine(dates[5], notNull(securitiesSnapshot.saleEventColor, Colors.DARK_RED), "SELL"); //$NON-NLS-1$
-        lineChart.addNonTradingDayMarker(dates[2], notNull(securitiesSnapshot.nonTradingColor, Colors.LIGHT_GRAY));
+        lineChart.addMarkerLine(dates[1],
+                        cssOrDomainFallback("SecuritiesChart", "purchase-event-color", //$NON-NLS-1$ //$NON-NLS-2$
+                                        securitiesSnapshot.purchaseEventColor),
+                        "BUY"); //$NON-NLS-1$
+        lineChart.addMarkerLine(dates[3],
+                        cssOrDomainFallback("SecuritiesChart", "dividend-event-color", //$NON-NLS-1$ //$NON-NLS-2$
+                                        snapshotFallback(securitiesSnapshot.dividendEventColor,
+                                                        PaymentsPalette.instance().get(0))), // $NON-NLS-1$
+                        "DIV"); //$NON-NLS-1$
+        lineChart.addMarkerLine(dates[5],
+                        cssOrDomainFallback("SecuritiesChart", "sale-event-color", securitiesSnapshot.saleEventColor), //$NON-NLS-1$ //$NON-NLS-2$
+                        "SELL"); //$NON-NLS-1$
+
+        lineChart.addNonTradingDayMarker(dates[2], cssOrDomainFallback("SecuritiesChart", "non-trading-color", //$NON-NLS-1$ //$NON-NLS-2$
+                        securitiesSnapshot.nonTradingColor));
         lineChart.adjustRange();
 
         var barTitle = new Label(section, SWT.NONE);
-        barTitle.setText("BarSeries / PortfolioBalanceChart-nahe Farben"); //$NON-NLS-1$
+        barTitle.setText("PortfolioBalanceChart-nahe BarSeries-Farben"); //$NON-NLS-1$
         GridDataFactory.fillDefaults().grab(true, false).applyTo(barTitle);
 
         var barChart = new BarChart(section, "Debug"); //$NON-NLS-1$
@@ -328,13 +338,16 @@ public class ColorArchitectureDebugView extends AbstractFinanceView
 
         barChart.setCategories(java.util.List.of("A", "B", "C", "D")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         barChart.addSeries("totals", "Totals", new double[] { 50, 60, 55, 70 }, //$NON-NLS-1$ //$NON-NLS-2$
-                        notNull(portfolioSnapshot.totalsColor, Colors.BLACK), true);
+                        cssOrDomainFallback("PortfolioBalanceChart", "totals-color", portfolioSnapshot.totalsColor), //$NON-NLS-1$ //$NON-NLS-2$
+                        true);
         barChart.addSeries("delta", "Absolute Delta", new double[] { 5, -3, 4, -2 }, //$NON-NLS-1$ //$NON-NLS-2$
-                        notNull(portfolioSnapshot.absoluteDeltaColor, Colors.GRAY), true);
+                        cssOrDomainFallback("PortfolioBalanceChart", "absolute-delta-color", //$NON-NLS-1$ //$NON-NLS-2$
+                                        portfolioSnapshot.absoluteDeltaColor),
+                        true);
         barChart.adjustRange();
 
         var paletteTitle = new Label(section, SWT.NONE);
-        paletteTitle.setText("PaymentsPalette als Liste"); //$NON-NLS-1$
+        paletteTitle.setText("PaymentsPalette aus Runtime-Palette"); //$NON-NLS-1$
         GridDataFactory.fillDefaults().grab(true, false).applyTo(paletteTitle);
 
         var paletteComposite = new Composite(section, SWT.NONE);
@@ -345,7 +358,7 @@ public class ColorArchitectureDebugView extends AbstractFinanceView
             createSwatch(paletteComposite, PaymentsPalette.instance().get(ii));
 
         var gradientTitle = new Label(section, SWT.NONE);
-        gradientTitle.setText("Gradients als Vorschau"); //$NON-NLS-1$
+        gradientTitle.setText("Gradients aus ColorGradientDefinitions"); //$NON-NLS-1$
         GridDataFactory.fillDefaults().grab(true, false).applyTo(gradientTitle);
 
         createGradientPreview(section, ColorGradientDefinitions.redToGreen());
@@ -355,27 +368,17 @@ public class ColorArchitectureDebugView extends AbstractFinanceView
         createGradientPreview(section, ColorGradientDefinitions.yellowWhiteBlack());
     }
 
-    private void createRestSection(Composite parent)
+    private Color cssOrDomainFallback(String domain, String property, Color color)
     {
-        var section = createSection(parent, "Separate Reststellen-Sektion"); //$NON-NLS-1$
-        var table = new Composite(section, SWT.NONE);
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(table);
-        GridLayoutFactory.fillDefaults().numColumns(3).spacing(10, 6).margins(0, 0).applyTo(table);
+        if (color != null)
+            return color;
 
-        createHeader(table, "Klasse"); //$NON-NLS-1$
-        createHeader(table, "Status"); //$NON-NLS-1$
-        createHeader(table, "Reale Einordnung"); //$NON-NLS-1$
+        return Colors.theme().defaultForeground();
+    }
 
-        addRestRow(table, "RebalancingChartWidget", STATUS_MIXED, //$NON-NLS-1$
-                        "actual/target nutzen feste RGB-Werte, diff nutzt Colors.theme().redForeground()"); //$NON-NLS-1$
-        addRestRow(table, "DrawdownChartWidget", STATUS_HARD_CODED, //$NON-NLS-1$
-                        "colorDrawdown = SWT.COLOR_RED"); //$NON-NLS-1$
-        addRestRow(table, "CSVImportDefinitionPage", STATUS_MIXED, //$NON-NLS-1$
-                        "GREEN/LIGHTGREEN/ERROR sind fest; warningBackground kommt aus Theme"); //$NON-NLS-1$
-        addRestRow(table, "CircularChart", STATUS_ALGORITHMIC, //$NON-NLS-1$
-                        "Slice-Farben werden per HSB/Schrittalgorithmus erzeugt; Text nutzt teils Theme"); //$NON-NLS-1$
-        addRestRow(table, "ColorSchema", STATUS_MIXED, //$NON-NLS-1$
-                        "teils HSB-Berechnung, teils Gradients, teils Theme-Hintergrund"); //$NON-NLS-1$
+    private Color snapshotFallback(Color preferred, Color fallback)
+    {
+        return preferred != null ? preferred : fallback;
     }
 
     private SecuritiesChartSnapshot buildSecuritiesChartSnapshot(Composite parent)
