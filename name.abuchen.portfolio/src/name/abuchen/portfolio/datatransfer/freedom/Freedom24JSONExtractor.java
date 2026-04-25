@@ -102,6 +102,14 @@ public class Freedom24JSONExtractor implements Extractor
     // -----------------------------------------------------------------------
     private static final String CASHFLOW_BANK = "bank";
 
+    // -----------------------------------------------------------------------
+    // JSON field names used in multiple places
+    // -----------------------------------------------------------------------
+    private static final String JSON_COMMENT = "comment";
+    private static final String JSON_CURRENCY = "currency";
+    private static final String JSON_DATETIME = "datetime";
+    private static final String JSON_DETAILED = "detailed";
+
     private static final Set<String> STOCK_AWARD_TYPES = Set.of(
                     "stock_award",
                     "Geschenkaktionen",       // DE
@@ -270,14 +278,14 @@ public class Freedom24JSONExtractor implements Extractor
      * Each trade is either:
      * <ul>
      *   <li>a stock trade (instr_type == 1) → {@link BuySellEntry}</li>
-     *   <li>a currency conversion (instr_type == 6) → skipped for now; TODO AccountTransferEntry</li>
+     *   <li>a currency conversion (instr_type == 6) → {@link AccountTransferEntry}</li>
      * </ul>
      * The commission is embedded directly into the trade as a {@link Unit}
      * of type FEE so no separate fee transaction is needed.
      */
     private void processTradesDetailed(JsonObject root, List<Item> results, List<Exception> errors)
     {
-        JsonArray trades = getArray(root, "trades", "detailed");
+        JsonArray trades = getArray(root, "trades", JSON_DETAILED);
         if (trades == null)
             return;
 
@@ -365,47 +373,7 @@ public class Freedom24JSONExtractor implements Extractor
         entry.setShares(shares);
 
         // --- fee -----------------------------------------------------------
-        // PP requires FEE units to be in the same currency as the portfolio
-        // transaction.  Freedom24 always charges commissions in EUR even when
-        // the trade is in USD, so a cross-currency unit would be rejected.
-        // In that case the commission is emitted as a separate FEES transaction.
-        if (commissionAmt > 0.0)
-        {
-            if (commissionCurrency.equals(tradeCurrency))
-            {
-                entry.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, commission));
-            }
-            else
-            {
-                AccountTransaction feeTx = new AccountTransaction();
-                feeTx.setType(AccountTransaction.Type.FEES);
-                feeTx.setDateTime(entry.getPortfolioTransaction().getDateTime());
-                feeTx.setMonetaryAmount(commission);
-                feeTx.setSecurity(entry.getPortfolioTransaction().getSecurity());
-                feeTx.setNote(buildTradeNote(trade));
-
-                // PP requires a GROSS_VALUE unit when the fee transaction
-                // references a security whose currency differs from the
-                // account currency.  The exchange rate is embedded by
-                // Freedom24 in the trade comment field.
-                String tradeComment = getString(trade, "comment", "");
-                Matcher m = FX_RATE_PATTERN.matcher(tradeComment);
-                if (m.find())
-                {
-                    double commCcyPerTradeCcy = Double.parseDouble(m.group(1)); // e.g. 0.8494 EUR/USD
-                    double feeInTradeCcy = commissionAmt / commCcyPerTradeCcy;
-                    Money feeInTradeCurrency = Money.of(tradeCurrency,
-                                    Values.Amount.factorize(feeInTradeCcy));
-                    // PP validates: forex × rate = amount  →  USD × rate = EUR
-                    // so rate = commissionCurrency per tradeCurrency (e.g. EUR/USD)
-                    BigDecimal rate = BigDecimal.valueOf(commCcyPerTradeCcy)
-                                    .setScale(10, RoundingMode.HALF_UP);
-                    feeTx.addUnit(new Unit(Unit.Type.GROSS_VALUE, commission, feeInTradeCurrency, rate));
-                }
-
-                results.add(new TransactionItem(feeTx));
-            }
-        }
+        addCommission(trade, entry, commission, commissionAmt, commissionCurrency, tradeCurrency, results);
 
         // --- note (trade-id / order-id) ------------------------------------
         entry.setNote(buildTradeNote(trade));
@@ -413,6 +381,50 @@ public class Freedom24JSONExtractor implements Extractor
         ExtractorUtils.fixGrossValueBuySell().accept(entry);
 
         results.add(new BuySellEntryItem(entry));
+    }
+
+    /**
+     * Adds the commission to the trade. PP requires FEE units to be in the same
+     * currency as the portfolio transaction. Freedom24 always charges commissions
+     * in EUR even when the trade is in USD; in that cross-currency case the
+     * commission is emitted as a separate FEES transaction with a GROSS_VALUE
+     * unit carrying the FX rate.
+     */
+    private void addCommission(JsonObject trade, BuySellEntry entry, Money commission, double commissionAmt,
+                    String commissionCurrency, String tradeCurrency, List<Item> results)
+    {
+        if (commissionAmt <= 0.0)
+            return;
+
+        if (commissionCurrency.equals(tradeCurrency))
+        {
+            entry.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, commission));
+            return;
+        }
+
+        AccountTransaction feeTx = new AccountTransaction();
+        feeTx.setType(AccountTransaction.Type.FEES);
+        feeTx.setDateTime(entry.getPortfolioTransaction().getDateTime());
+        feeTx.setMonetaryAmount(commission);
+        feeTx.setSecurity(entry.getPortfolioTransaction().getSecurity());
+        feeTx.setNote(buildTradeNote(trade));
+
+        // PP requires a GROSS_VALUE unit when the fee transaction references a
+        // security whose currency differs from the account currency. The exchange
+        // rate is embedded by Freedom24 in the trade comment field.
+        Matcher m = FX_RATE_PATTERN.matcher(getString(trade, JSON_COMMENT, ""));
+        if (m.find())
+        {
+            double commCcyPerTradeCcy = Double.parseDouble(m.group(1)); // e.g. 0.8494 EUR/USD
+            double feeInTradeCcy = commissionAmt / commCcyPerTradeCcy;
+            Money feeInTradeCurrency = Money.of(tradeCurrency, Values.Amount.factorize(feeInTradeCcy));
+            // PP validates: forex × rate = amount  →  USD × rate = EUR
+            // so rate = commissionCurrency per tradeCurrency (e.g. EUR/USD)
+            BigDecimal rate = BigDecimal.valueOf(commCcyPerTradeCcy).setScale(10, RoundingMode.HALF_UP);
+            feeTx.addUnit(new Unit(Unit.Type.GROSS_VALUE, commission, feeInTradeCurrency, rate));
+        }
+
+        results.add(new TransactionItem(feeTx));
     }
 
     /**
@@ -510,18 +522,24 @@ public class Freedom24JSONExtractor implements Extractor
 
         results.add(new AccountTransferItem(transfer, true));
 
-        // commission (FX trades at Freedom24 are typically free, but handle defensively)
+        addFxCommission(trade, transfer, sourceCurrency, instrNm, results);
+    }
+
+    /** FX trades at Freedom24 are typically free, but handle a charged commission defensively. */
+    private void addFxCommission(JsonObject trade, AccountTransferEntry transfer, String sourceCurrency,
+                    String instrNm, List<Item> results)
+    {
         double commissionAmt = getDouble(trade, "commission", 0.0);
-        if (commissionAmt > 0.0)
-        {
-            String commCcy = asCurrencyCode(getString(trade, "commission_currency", sourceCurrency));
-            AccountTransaction feeTx = new AccountTransaction();
-            feeTx.setType(AccountTransaction.Type.FEES);
-            feeTx.setDateTime(transfer.getSourceTransaction().getDateTime());
-            feeTx.setMonetaryAmount(Money.of(commCcy, Values.Amount.factorize(commissionAmt)));
-            feeTx.setNote("FX commission: " + instrNm);
-            results.add(new TransactionItem(feeTx));
-        }
+        if (commissionAmt <= 0.0)
+            return;
+
+        String commCcy = asCurrencyCode(getString(trade, "commission_currency", sourceCurrency));
+        AccountTransaction feeTx = new AccountTransaction();
+        feeTx.setType(AccountTransaction.Type.FEES);
+        feeTx.setDateTime(transfer.getSourceTransaction().getDateTime());
+        feeTx.setMonetaryAmount(Money.of(commCcy, Values.Amount.factorize(commissionAmt)));
+        feeTx.setNote("FX commission: " + instrNm);
+        results.add(new TransactionItem(feeTx));
     }
 
     /**
@@ -540,22 +558,12 @@ public class Freedom24JSONExtractor implements Extractor
         JsonArray cashInOuts = getArray(root, "cash_in_outs");
         if (cashInOuts != null)
         {
-            for (JsonElement el : cashInOuts)
-            {
-                try
-                {
-                    processCashInOut(el.getAsJsonObject(), results);
-                }
-                catch (Exception e)
-                {
-                    errors.add(e);
-                }
-            }
+            processCashInOutArray(cashInOuts, results, errors);
             return;
         }
 
         // Fallback: use cash_flows.detailed
-        JsonArray flows = getArray(root, "cash_flows", "detailed");
+        JsonArray flows = getArray(root, "cash_flows", JSON_DETAILED);
         if (flows == null)
             return;
 
@@ -563,18 +571,36 @@ public class Freedom24JSONExtractor implements Extractor
         {
             try
             {
-                JsonObject flow = el.getAsJsonObject();
-                String typeId = getString(flow, "type_id", "");
-                if (!CASHFLOW_BANK.equals(typeId))
-                    continue; // skip internal block/unblock entries
-
-                processCashFlowEntry(flow, results);
+                processCashFlowFiltered(el.getAsJsonObject(), results);
             }
             catch (Exception e)
             {
                 errors.add(e);
             }
         }
+    }
+
+    private void processCashInOutArray(JsonArray cashInOuts, List<Item> results, List<Exception> errors)
+    {
+        for (JsonElement el : cashInOuts)
+        {
+            try
+            {
+                processCashInOut(el.getAsJsonObject(), results);
+            }
+            catch (Exception e)
+            {
+                errors.add(e);
+            }
+        }
+    }
+
+    /** Skips internal block/unblock entries; only "bank" rows reach processCashFlowEntry. */
+    private void processCashFlowFiltered(JsonObject flow, List<Item> results)
+    {
+        String typeId = getString(flow, "type_id", "");
+        if (CASHFLOW_BANK.equals(typeId))
+            processCashFlowEntry(flow, results);
     }
 
     /**
@@ -596,15 +622,15 @@ public class Freedom24JSONExtractor implements Extractor
         if (amount == 0.0)
             return;
 
-        String currency = asCurrencyCode(getString(entry, "currency", ""));
-        String dateStr = getString(entry, "datetime", getString(entry, "pay_d", ""));
+        String currency = asCurrencyCode(getString(entry, JSON_CURRENCY, ""));
+        String dateStr = getString(entry, JSON_DATETIME, getString(entry, "pay_d", ""));
 
         AccountTransaction tx = new AccountTransaction();
         tx.setDateTime(parseDateTime(dateStr));
         tx.setMonetaryAmount(Money.of(currency, Values.Amount.factorize(Math.abs(amount))));
         tx.setType(amount > 0.0 ? AccountTransaction.Type.DEPOSIT : AccountTransaction.Type.REMOVAL);
 
-        String comment = getString(entry, "comment", "");
+        String comment = getString(entry, JSON_COMMENT, "");
         String txId = getString(entry, "transaction_id", "");
         tx.setNote(concatenate(
             txId.isEmpty() ? null : "Transaction-ID: " + txId,
@@ -623,7 +649,7 @@ public class Freedom24JSONExtractor implements Extractor
         if (amount == 0.0)
             return;
 
-        String currency = asCurrencyCode(getString(flow, "currency", ""));
+        String currency = asCurrencyCode(getString(flow, JSON_CURRENCY, ""));
         String dateStr = getString(flow, "date", "");
 
         AccountTransaction tx = new AccountTransaction();
@@ -631,7 +657,7 @@ public class Freedom24JSONExtractor implements Extractor
         tx.setMonetaryAmount(Money.of(currency, Values.Amount.factorize(Math.abs(amount))));
         tx.setType(amount > 0.0 ? AccountTransaction.Type.DEPOSIT : AccountTransaction.Type.REMOVAL);
 
-        String comment = getString(flow, "comment", "");
+        String comment = getString(flow, JSON_COMMENT, "");
         if (!comment.isBlank())
             tx.setNote(comment.trim());
 
@@ -654,7 +680,7 @@ public class Freedom24JSONExtractor implements Extractor
      */
     private void processRemainingCommissions(JsonObject root, List<Item> results, List<Exception> errors)
     {
-        JsonArray commissions = getArray(root, "commissions", "detailed");
+        JsonArray commissions = getArray(root, "commissions", JSON_DETAILED);
         if (commissions == null)
             return;
 
@@ -662,39 +688,39 @@ public class Freedom24JSONExtractor implements Extractor
         {
             try
             {
-                JsonObject commission = el.getAsJsonObject();
-
-                // Skip commissions that are already embedded in a trade
-                String type = getString(commission, "type", "");
-                if (TRADE_COMMISSION_PREFIXES.stream().anyMatch(type::startsWith))
-                    continue;
-
-                double sum = getDouble(commission, "sum", 0.0);
-                if (sum == 0.0)
-                    continue;
-
-                String currency = asCurrencyCode(getString(commission, "currency", ""));
-                String dateStr = getString(commission, "datetime", "");
-                String comment = getString(commission, "comment", "");
-
-                AccountTransaction tx = new AccountTransaction();
-                tx.setDateTime(parseDateTime(dateStr));
-                tx.setMonetaryAmount(Money.of(currency, Values.Amount.factorize(sum)));
-                tx.setType(INTEREST_CHARGE_PREFIXES.stream().anyMatch(type::startsWith)
-                                ? AccountTransaction.Type.INTEREST_CHARGE
-                                : AccountTransaction.Type.FEES);
-
-                String note = concatenate(type.isBlank() ? null : type.trim(),
-                    comment.isBlank() ? null : comment.trim(), " | ");
-                tx.setNote(note);
-
-                results.add(new TransactionItem(tx));
+                processCommission(el.getAsJsonObject(), results);
             }
             catch (Exception e)
             {
                 errors.add(e);
             }
         }
+    }
+
+    private void processCommission(JsonObject commission, List<Item> results)
+    {
+        // Skip commissions that are already embedded in a trade
+        String type = getString(commission, "type", "");
+        double sum = getDouble(commission, "sum", 0.0);
+        if (sum == 0.0 || TRADE_COMMISSION_PREFIXES.stream().anyMatch(type::startsWith))
+            return;
+
+        String currency = asCurrencyCode(getString(commission, JSON_CURRENCY, ""));
+        String dateStr = getString(commission, JSON_DATETIME, "");
+        String comment = getString(commission, JSON_COMMENT, "");
+
+        AccountTransaction tx = new AccountTransaction();
+        tx.setDateTime(parseDateTime(dateStr));
+        tx.setMonetaryAmount(Money.of(currency, Values.Amount.factorize(sum)));
+        tx.setType(INTEREST_CHARGE_PREFIXES.stream().anyMatch(type::startsWith)
+                        ? AccountTransaction.Type.INTEREST_CHARGE
+                        : AccountTransaction.Type.FEES);
+
+        String note = concatenate(type.isBlank() ? null : type.trim(),
+                        comment.isBlank() ? null : comment.trim(), " | ");
+        tx.setNote(note);
+
+        results.add(new TransactionItem(tx));
     }
 
     /**
@@ -712,20 +738,8 @@ public class Freedom24JSONExtractor implements Extractor
     private void processSecurityInOuts(JsonObject root, List<Item> results, List<Exception> errors)
     {
         // Build ISIN lookup from in_outs_securities.detailed (ticker|date -> isin)
-        Map<String, String> isinByTickerDate = new HashMap<>();
-        JsonArray isinSource = getArray(root, "in_outs_securities", "detailed");
-        if (isinSource != null)
-        {
-            for (JsonElement el : isinSource)
-            {
-                JsonObject e = el.getAsJsonObject();
-                String t = getString(e, "ticker", "");
-                String d = getString(e, "date", "");
-                String isin = getString(e, "isin", "");
-                if (!t.isEmpty() && !d.isEmpty() && !isin.isEmpty())
-                    isinByTickerDate.put(t + "|" + d, isin);
-            }
-        }
+        JsonArray isinSource = getArray(root, "in_outs_securities", JSON_DETAILED);
+        Map<String, String> isinByTickerDate = buildIsinByTickerDateMap(isinSource);
 
         // Primary source: securities_in_outs (has transaction_id, balance_currency)
         // Fallback: in_outs_securities.detailed (when the other key is absent)
@@ -739,40 +753,60 @@ public class Freedom24JSONExtractor implements Extractor
         {
             try
             {
-                JsonObject entry = el.getAsJsonObject();
-
-                String type = getString(entry, "type", "");
-                if (!STOCK_AWARD_TYPES.contains(type))
-                    continue;
-
-                String ticker = getString(entry, "ticker", "");
-                String dateStr = getString(entry, "datetime", getString(entry, "date", ""));
-                // Prefer ISIN from the detailed section; fall back to whatever the entry provides
-                String isin = isinByTickerDate.getOrDefault(ticker + "|" + dateStr,
-                                getString(entry, "isin", ""));
-                double qty = getDouble(entry, "quantity", 0.0);
-                String comment = getString(entry, "comment", "");
-                String currency = asCurrencyCode(getString(entry, "balance_currency", "USD"));
-
-                Security security = getOrCreateSecurityByTickerIsin(ticker, isin, currency, results);
-
-                PortfolioTransaction tx = new PortfolioTransaction();
-                tx.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
-                tx.setDateTime(parseDateTime(dateStr));
-                tx.setShares(Math.round(qty * Values.Share.factor()));
-                tx.setSecurity(security);
-                tx.setMonetaryAmount(Money.of(currency, 0));
-                tx.setNote(comment.isBlank() ? null : comment.trim());
-
-                TransactionItem txItem = new TransactionItem(tx);
-                txItem.setPortfolioPrimary(portfolio);
-                results.add(txItem);
+                processSecurityInOutEntry(el.getAsJsonObject(), isinByTickerDate, results);
             }
             catch (Exception e)
             {
                 errors.add(e);
             }
         }
+    }
+
+    private static Map<String, String> buildIsinByTickerDateMap(JsonArray isinSource)
+    {
+        Map<String, String> map = new HashMap<>();
+        if (isinSource == null)
+            return map;
+
+        for (JsonElement el : isinSource)
+        {
+            JsonObject e = el.getAsJsonObject();
+            String t = getString(e, "ticker", "");
+            String d = getString(e, "date", "");
+            String isin = getString(e, "isin", "");
+            if (!t.isEmpty() && !d.isEmpty() && !isin.isEmpty())
+                map.put(t + "|" + d, isin);
+        }
+        return map;
+    }
+
+    private void processSecurityInOutEntry(JsonObject entry, Map<String, String> isinByTickerDate, List<Item> results)
+    {
+        String type = getString(entry, "type", "");
+        if (!STOCK_AWARD_TYPES.contains(type))
+            return;
+
+        String ticker = getString(entry, "ticker", "");
+        String dateStr = getString(entry, JSON_DATETIME, getString(entry, "date", ""));
+        // Prefer ISIN from the detailed section; fall back to whatever the entry provides
+        String isin = isinByTickerDate.getOrDefault(ticker + "|" + dateStr, getString(entry, "isin", ""));
+        double qty = getDouble(entry, "quantity", 0.0);
+        String comment = getString(entry, JSON_COMMENT, "");
+        String currency = asCurrencyCode(getString(entry, "balance_currency", "USD"));
+
+        Security security = getOrCreateSecurityByTickerIsin(ticker, isin, currency, results);
+
+        PortfolioTransaction tx = new PortfolioTransaction();
+        tx.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+        tx.setDateTime(parseDateTime(dateStr));
+        tx.setShares(Math.round(qty * Values.Share.factor()));
+        tx.setSecurity(security);
+        tx.setMonetaryAmount(Money.of(currency, 0));
+        tx.setNote(comment.isBlank() ? null : comment.trim());
+
+        TransactionItem txItem = new TransactionItem(tx);
+        txItem.setPortfolioPrimary(portfolio);
+        results.add(txItem);
     }
 
     // -----------------------------------------------------------------------
@@ -822,11 +856,7 @@ public class Freedom24JSONExtractor implements Extractor
         String yahooTicker = toYahooTicker(ticker);
         for (Security s : allSecurities)
         {
-            if (!isin.isEmpty() && isin.equals(s.getIsin()) && currency.equals(s.getCurrencyCode()))
-                return s;
-            if (!ticker.isEmpty() && ticker.equals(s.getTickerSymbol()))
-                return s;
-            if (!yahooTicker.isEmpty() && !yahooTicker.equals(ticker) && yahooTicker.equals(s.getTickerSymbol()))
+            if (matchesSecurity(s, ticker, isin, currency, yahooTicker))
                 return s;
         }
 
@@ -842,6 +872,15 @@ public class Freedom24JSONExtractor implements Extractor
         results.add(new SecurityItem(security));
 
         return security;
+    }
+
+    private static boolean matchesSecurity(Security s, String ticker, String isin, String currency, String yahooTicker)
+    {
+        if (!isin.isEmpty() && isin.equals(s.getIsin()) && currency.equals(s.getCurrencyCode()))
+            return true;
+        if (!ticker.isEmpty() && ticker.equals(s.getTickerSymbol()))
+            return true;
+        return !yahooTicker.isEmpty() && !yahooTicker.equals(ticker) && yahooTicker.equals(s.getTickerSymbol());
     }
 
     /**

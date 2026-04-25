@@ -67,7 +67,7 @@ public class ImportFreedom24Handler
 
             FileDialog fileDialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
             fileDialog.setText(MessageFormat.format("{0} ({1})", extractor.getLabel(), "*.json")); //$NON-NLS-1$ //$NON-NLS-2$
-            fileDialog.setFilterExtensions(new String[] { "*.json;*.JSON" }); //$NON-NLS-1$
+            fileDialog.setFilterExtensions("*.json;*.JSON"); //$NON-NLS-1$
             fileDialog.open();
 
             String[] filenames = fileDialog.getFileNames();
