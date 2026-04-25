@@ -157,10 +157,19 @@
             adapter="name.abuchen.portfolio.ui.theme.PortfolioBalanceChartElementAdapter"
             handler="name.abuchen.portfolio.ui.theme.PortfolioBalanceChartCSSHandler">
          <property-name
+               name="totals-color">
+         </property-name>
+         <property-name
                name="invested-capital-color">
          </property-name>
          <property-name
                name="absolute-delta-color">
+         </property-name>
+         <property-name
+               name="taxes-accumulated-color">
+         </property-name>
+         <property-name
+               name="fees-accumulated-color">
          </property-name>
          <property-name
                name="delta-area-positive-color">
