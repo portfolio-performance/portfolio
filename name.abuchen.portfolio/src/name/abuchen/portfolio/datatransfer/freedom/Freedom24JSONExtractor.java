@@ -139,7 +139,8 @@ public class Freedom24JSONExtractor implements Extractor
     // Prefix matching handles the trailing currency code (EUR / USD / …).
     private static final Set<String> INTEREST_CHARGE_PREFIXES = Set.of(
                     "Zinsen",       // DE
-                    "Interest",     // EN + ES ("Intereses" startsWith "Interest")
+                    "Interest",     // EN
+                    "Intereses",    // ES
                     "الفائدة",      // AR
                     "Лихва",        // BG
                     "Úroky",        // CS
