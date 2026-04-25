@@ -14,6 +14,7 @@ import org.eclipse.swtchart.Chart;
 import org.w3c.dom.Element;
 
 import name.abuchen.portfolio.ui.editor.Sidebar;
+import name.abuchen.portfolio.ui.util.ColorGradientDefinitions;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ValueColorScheme;
 import name.abuchen.portfolio.ui.views.PortfolioBalanceChart;
@@ -47,6 +48,8 @@ public class ElementProvider implements IElementProvider
             return new PortfolioBalanceChartElementAdapter(portfolioBalanceChart, engine);
         if (element instanceof ValueColorScheme scheme)
             return new ValueColorSchemeElementAdapter(scheme, engine);
+        if (element instanceof ColorGradientDefinitions.Definition definition)
+            return new ColorGradientElementAdapter(definition, engine);
 
         return null;
     }

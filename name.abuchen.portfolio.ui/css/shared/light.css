@@ -122,6 +122,47 @@ ValueColorScheme.vivid {
 	down-arrow: "scheme/vivid/light/down_arrow.svg";
 }
 
+ColorGradient.red-to-green {
+	color-0: #A8272A;
+	color-1: #E25B5A;
+	color-2: #F08A89;
+	color-3: #F2B6B5;
+	color-4: #606060;
+	color-5: #8DCB72;
+	color-6: #5EC45B;
+	color-7: #23B0D7;
+	color-8: #1AAD21;
+}
+
+ColorGradient.orange-to-blue {
+	color-0: #FF7A00;
+	color-1: #FFB366;
+	color-2: #FFD3A1;
+	color-3: #606060;
+	color-4: #8ACBFF;
+	color-5: #4DA6FF;
+	color-6: #2D9CFF;
+}
+
+ColorGradient.green-yellow-red {
+	color-0: #FF2B30;
+	color-1: #FFD562;
+	color-2: #02F500;
+}
+
+ColorGradient.green-white-red {
+	color-0: #FF2B30;
+	color-1: #EEEEEE;
+	color-2: #02F500;
+}
+
+ColorGradient.yellow-white-black {
+	color-0: #EEEEEE;
+	color-1: #FFD562;
+	color-2: #808000;
+	color-3: #000000;
+}
+
 SecuritiesChart {
 	quote-color: #6a58db;
 	quote-area-positive-color: #8396f2;

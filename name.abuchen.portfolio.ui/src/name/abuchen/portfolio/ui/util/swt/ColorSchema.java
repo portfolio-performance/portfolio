@@ -4,12 +4,9 @@ import java.util.function.DoubleFunction;
 
 import org.eclipse.jface.resource.ResourceManager;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.RGB;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.ColorGradient;
-import name.abuchen.portfolio.ui.util.ColorGradient.ColorPoint;
-import name.abuchen.portfolio.ui.util.Colors;
 
 public enum ColorSchema
 {
@@ -33,23 +30,13 @@ public enum ColorSchema
         return switch (this)
         {
             case GREEN_YELLOW_RED -> performance -> {
-                // Normalize performance between -0.07 and +0.07 and map it to a
-                // hue-like scale between 0 (red) and 60 (yellow) or 120
-                // (green).
                 var p = normalizePerformance(performance);
-                var hue = p * 120f;
-
-                return resourceManager.createColor(new RGB(hue, 0.9f, 1f));
+                return ColorGradient.GREEN_YELLOW_RED.getColorAt(p);
             };
 
             case GREEN_WHITE_RED -> performance -> {
                 var p = normalizePerformance(performance);
-
-                return new ColorGradient(//
-                                Colors.RED, //
-                                Colors.theme().defaultBackground(), //
-                                Colors.HEATMAP_DARK_GREEN //
-                ).getColorAt(p);
+                return ColorGradient.GREEN_WHITE_RED.getColorAt(p);
             };
 
             case GREEN_GRAY_RED -> performance -> {
@@ -64,16 +51,7 @@ public enum ColorSchema
 
             case YELLOW_WHITE_BLACK -> performance -> {
                 var p = normalizePerformance(performance);
-
-                // cutover from yellow to black at +0.05 performance
-                var cutover = (MAX_PERFORMANCE + 0.05f) / (2f * MAX_PERFORMANCE);
-
-                return new ColorGradient(//
-                                new ColorPoint(Colors.theme().defaultBackground(), 0), //
-                                new ColorPoint(Colors.YELLOW, cutover), //
-                                new ColorPoint(Colors.getColor(91, 91, 0), cutover), //
-                                new ColorPoint(Colors.BLACK, 1) //
-                ).getColorAt(p);
+                return ColorGradient.YELLOW_WHITE_BLACK.getColorAt(p);
             };
 
             default -> throw new IllegalArgumentException("Unsupported color schema: " + this); //$NON-NLS-1$

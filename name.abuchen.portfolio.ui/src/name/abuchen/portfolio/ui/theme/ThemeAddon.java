@@ -9,6 +9,7 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 import org.osgi.service.event.Event;
 
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.util.ColorGradientDefinitions;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ValueColorScheme;
 
@@ -24,6 +25,11 @@ public class ThemeAddon
     {
         IThemeEngine engine = (IThemeEngine) event.getProperty(IThemeEngine.Events.THEME_ENGINE);
         engine.applyStyles(Colors.theme(), false);
+        engine.applyStyles(ColorGradientDefinitions.redToGreen(), false);
+        engine.applyStyles(ColorGradientDefinitions.orangeToBlue(), false);
+        engine.applyStyles(ColorGradientDefinitions.greenYellowRed(), false);
+        engine.applyStyles(ColorGradientDefinitions.greenWhiteRed(), false);
+        engine.applyStyles(ColorGradientDefinitions.yellowWhiteBlack(), false);
 
         for (var scheme : ValueColorScheme.getAvailableSchemes())
             engine.applyStyles(scheme, false);
