@@ -135,6 +135,9 @@ PortfolioBalanceChart {
 	absolute-delta-color: #4ddaff;
 	delta-area-positive-color: #23b0d7;
 	delta-area-negative-color: #e25b5a;
+	taxes-accumulated-color: #FF0000;
+	fees-accumulated-color: #C0C0C0;
+	totals-color: #C437C2;
 }
 
 PortfolioBalanceChart.asia {
