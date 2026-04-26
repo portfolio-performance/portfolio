@@ -44,9 +44,9 @@ public class TestExtractorHelper
         try (InputStream is = testClass.getResourceAsStream(resourceName))
         {
             if (is == null)
-                throw new IOException("Test resource not found: " + resourceName);
+                throw new IOException("Test resource not found: " + resourceName); //$NON-NLS-1$
 
-            var tempFile = Files.createTempFile("pp-test-", "-" + resourceName).toFile();
+            var tempFile = Files.createTempFile("pp-test-", "-" + resourceName).toFile(); //$NON-NLS-1$ //$NON-NLS-2$
             tempFile.deleteOnExit();
             Files.copy(is, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
