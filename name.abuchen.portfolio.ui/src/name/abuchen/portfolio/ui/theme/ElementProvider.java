@@ -49,7 +49,7 @@ public class ElementProvider implements IElementProvider
         if (element instanceof ValueColorScheme scheme)
             return new ValueColorSchemeElementAdapter(scheme, engine);
         if (element instanceof ColorGradientDefinitions.Definition definition)
-            return new ColorGradientElementAdapter(definition, engine);
+            return new ColorGradientCSS.ElementAdapter(definition, engine);
 
         return null;
     }

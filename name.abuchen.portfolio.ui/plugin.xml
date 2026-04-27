@@ -186,8 +186,8 @@
          </property-name>
       </handler>
       <handler
-            adapter="name.abuchen.portfolio.ui.theme.ColorGradientElementAdapter"
-            handler="name.abuchen.portfolio.ui.theme.ColorGradientCSSHandler">
+            adapter="name.abuchen.portfolio.ui.theme.ColorGradientCSS$ElementAdapter"
+            handler="name.abuchen.portfolio.ui.theme.ColorGradientCSS$Handler">
          <property-name
                name="color-0">
          </property-name>
