@@ -187,8 +187,8 @@
       </handler>
 
       <handler
-            adapter="name.abuchen.portfolio.ui.theme.DataSeriesColorsElementAdapter"
-            handler="name.abuchen.portfolio.ui.theme.DataSeriesColorsCSSHandler">
+            adapter="name.abuchen.portfolio.ui.theme.DataSeriesColorsCSS$ElementAdapter"
+            handler="name.abuchen.portfolio.ui.theme.DataSeriesColorsCSS$Handler">
          <property-name
                name="totals-color">
          </property-name>

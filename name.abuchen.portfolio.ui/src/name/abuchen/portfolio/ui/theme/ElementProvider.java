@@ -39,7 +39,7 @@ public class ElementProvider implements IElementProvider
         if (element instanceof Colors.Theme colorsTheme)
             return new ColorsThemeElementAdapter(colorsTheme, engine);
         if (element instanceof DataSeriesColors dataSeriesColors)
-            return new DataSeriesColorsElementAdapter(dataSeriesColors, engine);
+            return new DataSeriesColorsCSS.ElementAdapter(dataSeriesColors, engine);
         if (element instanceof Table table)
             return new TableElementAdapter(table, engine);
         if (element instanceof Tree tree)
