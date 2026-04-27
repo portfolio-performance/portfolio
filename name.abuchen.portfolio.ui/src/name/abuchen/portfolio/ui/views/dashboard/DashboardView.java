@@ -164,6 +164,10 @@ public class DashboardView extends AbstractHistoricView
 
             oldParent.layout();
             newParent.layout();
+
+            SectionHeaderWidget.applySectionVisibility(oldParent);
+            if (newParent != oldParent)
+                SectionHeaderWidget.applySectionVisibility(newParent);
         }
 
         private void doDropCopy(Dashboard.Widget copiedWidget, Dashboard.Column newColumn, Composite newParent)
@@ -313,7 +317,8 @@ public class DashboardView extends AbstractHistoricView
 
     private static final String SELECTED_DASHBOARD_KEY = "selected-dashboard"; //$NON-NLS-1$
     /* package */ static final String DELEGATE_KEY = "$delegate"; //$NON-NLS-1$
-    private static final String FILLER_KEY = "$filler"; //$NON-NLS-1$
+    /* package */ static final String FILLER_KEY = "$filler"; //$NON-NLS-1$
+    /* package */ static final String VIEW_KEY = "$view"; //$NON-NLS-1$
 
     @Inject
     private PartPersistedState persistedState;
@@ -459,6 +464,7 @@ public class DashboardView extends AbstractHistoricView
         container = new Composite(scrolledComposite, SWT.NONE);
         container.setLayout(new DashboardLayout());
         container.setData(UIConstants.CSS.CLASS_NAME, "dashboard"); //$NON-NLS-1$
+        container.setData(VIEW_KEY, this);
 
         selectDashboard(dashboard);
 
@@ -548,6 +554,8 @@ public class DashboardView extends AbstractHistoricView
                 // do nothing -> just skip the unknown widget type
             }
         }
+
+        SectionHeaderWidget.applySectionVisibility(columnControl);
 
         return columnControl;
     }
@@ -853,6 +861,7 @@ public class DashboardView extends AbstractHistoricView
 
         getClient().touch();
         delegate.update();
+        SectionHeaderWidget.applySectionVisibility(columnControl);
         columnControl.layout(true);
         updateScrolledCompositeMinSize();
     }

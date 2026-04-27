@@ -901,6 +901,7 @@ public class Messages extends NLS
     public static String LabelSecurityLatestPrice;
     public static String LabelSecurityPerformance;
     public static String LabelSecurityTransfer;
+    public static String LabelSectionHeader;
     public static String LabelSelectedTransactions;
     public static String LabelSelectYear;
     public static String LabelSelectYearSince;
