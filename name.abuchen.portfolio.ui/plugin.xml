@@ -154,8 +154,8 @@
          </property-name>
       </handler>
       <handler
-            adapter="name.abuchen.portfolio.ui.theme.PortfolioBalanceChartElementAdapter"
-            handler="name.abuchen.portfolio.ui.theme.PortfolioBalanceChartCSSHandler">
+            adapter="name.abuchen.portfolio.ui.theme.PortfolioBalanceChartCSS$ElementAdapter"
+            handler="name.abuchen.portfolio.ui.theme.PortfolioBalanceChartCSS$Handler">
          <property-name
                name="totals-color">
          </property-name>
