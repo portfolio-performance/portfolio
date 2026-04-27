@@ -31,7 +31,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
@@ -195,9 +194,6 @@ public class Freedom24JSONExtractor implements Extractor
 
     private final Client client;
     private List<Security> allSecurities = new ArrayList<>();
-
-    /** Pre-selected depot for the import wizard, or {@code null}. */
-    private Portfolio portfolio = null;
 
     // -----------------------------------------------------------------------
 
@@ -806,7 +802,6 @@ public class Freedom24JSONExtractor implements Extractor
         tx.setNote(comment.isBlank() ? null : comment.trim());
 
         TransactionItem txItem = new TransactionItem(tx);
-        txItem.setPortfolioPrimary(portfolio);
         results.add(txItem);
     }
 
