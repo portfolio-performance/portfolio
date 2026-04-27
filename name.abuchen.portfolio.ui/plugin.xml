@@ -120,8 +120,8 @@
          </property-name>
       </handler>
       <handler
-            adapter="name.abuchen.portfolio.ui.theme.SecuritiesChartElementAdapter"
-            handler="name.abuchen.portfolio.ui.theme.SecuritiesChartCSSHandler">
+            adapter="name.abuchen.portfolio.ui.theme.SecuritiesChartCSS$ElementAdapter"
+            handler="name.abuchen.portfolio.ui.theme.SecuritiesChartCSS$Handler">
          <property-name
                name="quote-color">
          </property-name>
