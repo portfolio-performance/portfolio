@@ -172,6 +172,24 @@ PortfolioBalanceChart.asia {
 	delta-area-negative-color: #8396f2;
 }
 
+ColorPalette {
+	color-0: #8C564B;
+	color-1: #E377C2;
+	color-2: #7F7F7F;
+	color-3: #BCBD22;
+	color-4: #17BECF;
+	color-5: #727CC9;
+	color-6: #FA735C;
+	color-7: #FDB667;
+	color-8: #8FCF70;
+	color-9: #57CFFD;
+	color-10: #1F77B4;
+	color-11: #FF7F0E;
+	color-12: #2CA02C;
+	color-13: #D62728;
+	color-14: #9467BD;
+}
+
 * {
 	font-family: "#systemfont";
 }
