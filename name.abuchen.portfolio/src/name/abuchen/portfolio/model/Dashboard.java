@@ -15,7 +15,9 @@ public final class Dashboard
         ATTRIBUTE_UUID, URL, SHOW_Y_AXIS, TAXONOMY, FLAG_INCLUDE_UNASSIGNED, FLAG_INCLUDE_SECURITIES, //
         FLAG_USE_SECURITY_CURRENCY, SORT_DIRECTION, START_YEAR, TRANSACTION_FILTER, CLIENT_DATA_SERIES, //
         EVENT_TYPE, COST_METHOD, DATE_TYPE_FILTER, SECURITY_FILTER, FIRE_NUMBER, FIRE_MONTHLY_SAVINGS, FIRE_RETURNS, //
-        COUNT;
+        COUNT,
+        /** collapsed state (true/false) of widgets */
+        COLLAPSED;
     }
 
     public static final class Column
