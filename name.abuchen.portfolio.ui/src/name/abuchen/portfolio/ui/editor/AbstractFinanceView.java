@@ -249,7 +249,7 @@ public abstract class AbstractFinanceView
     private final Control createHeader(Composite parent)
     {
         Composite header = new Composite(parent, SWT.NONE);
-        header.setBackground(Colors.WHITE);
+        header.setBackground(Colors.theme().defaultBackground());
 
         titleText = getDefaultTitle();
         title = new Label(header, SWT.NONE);

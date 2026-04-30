@@ -50,7 +50,7 @@ public class PortfolioReportNotificationPopup extends AbstractNotificationPopup
     protected void createContentArea(Composite parent)
     {
         var messageComposite = new Composite(parent, SWT.NONE);
-        messageComposite.setBackground(Colors.WHITE);
+        messageComposite.setBackground(Colors.theme().defaultBackground());
         messageComposite.setLayout(new GridLayout(1, false));
         messageComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
@@ -60,7 +60,7 @@ public class PortfolioReportNotificationPopup extends AbstractNotificationPopup
         GridDataFactory.fillDefaults().grab(true, false).hint(300, SWT.DEFAULT).applyTo(messageLabel);
 
         var actionLink = new Link(messageComposite, SWT.NONE);
-        actionLink.setBackground(Colors.WHITE);
+        actionLink.setBackground(Colors.theme().defaultBackground());
         actionLink.setText("<a>" + Messages.CmdMigratePortfolioReport + "</a>"); //$NON-NLS-1$ //$NON-NLS-2$
         actionLink.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
             close();
@@ -68,7 +68,7 @@ public class PortfolioReportNotificationPopup extends AbstractNotificationPopup
         }));
 
         var infoLink = new Link(messageComposite, SWT.NONE);
-        infoLink.setBackground(Colors.WHITE);
+        infoLink.setBackground(Colors.theme().defaultBackground());
         infoLink.setText("<a>" + Messages.LabelInfo + "</a>"); //$NON-NLS-1$ //$NON-NLS-2$
         infoLink.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
             DesktopAPI.browse(Messages.SiteInfoPortfolioReportMigration);

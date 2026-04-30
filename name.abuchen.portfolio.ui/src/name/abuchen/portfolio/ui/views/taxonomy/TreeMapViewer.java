@@ -37,6 +37,7 @@ import de.engehausen.treemap.swt.TreeMap;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SWTHelper;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -346,7 +347,7 @@ import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNodeRenderer.Performance
         sash.setLayout(new SashLayout(sash, SWT.HORIZONTAL | SWT.END));
 
         Composite container = new Composite(sash, SWT.NONE);
-        container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+        container.setBackground(Colors.theme().defaultBackground());
 
         treeMap = new XTreeMap(container);
 

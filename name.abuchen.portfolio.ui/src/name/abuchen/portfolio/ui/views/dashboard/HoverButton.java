@@ -80,12 +80,12 @@ public class HoverButton
         {
             hoverShell = new Shell(leadingControl.getShell(), SWT.MODELESS | SWT.SHADOW_OUT);
             hoverShell.setData(UIConstants.CSS.CLASS_NAME, "hoverbutton"); //$NON-NLS-1$
-            hoverShell.setBackground(Colors.WHITE);
+            hoverShell.setBackground(Colors.theme().defaultBackground());
             hoverShell.setLayout(new FillLayout());
             ImageHyperlink button = new ImageHyperlink(hoverShell, SWT.NONE);
             button.setImage(Images.VIEW_SHARE.image());
             button.setData(UIConstants.CSS.CLASS_NAME, "hoverbutton"); //$NON-NLS-1$
-            button.setBackground(Colors.WHITE);
+            button.setBackground(Colors.theme().defaultBackground());
             button.addHyperlinkListener(listener);
             hoverShell.pack();
 

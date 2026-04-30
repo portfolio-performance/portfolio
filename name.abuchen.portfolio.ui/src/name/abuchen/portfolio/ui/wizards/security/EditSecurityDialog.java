@@ -142,7 +142,7 @@ public class EditSecurityDialog extends Dialog
     private void createUpperArea(Composite container)
     {
         Composite header = new Composite(container, SWT.NONE);
-        header.setBackground(container.getDisplay().getSystemColor(SWT.COLOR_WHITE));
+        header.setBackground(Colors.theme().defaultBackground());
         header.setLayout(new FormLayout());
         GridDataFactory.fillDefaults().grab(true, false).applyTo(header);
 

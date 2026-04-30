@@ -71,7 +71,7 @@ public class HistoricalPricesDataQualityPane implements InformationPanePage
     public Control createViewControl(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NONE);
-        container.setBackground(Colors.WHITE);
+        container.setBackground(Colors.theme().defaultBackground());
         FormLayout layout = new FormLayout();
         layout.marginHeight = layout.marginWidth = 5;
         container.setLayout(layout);
