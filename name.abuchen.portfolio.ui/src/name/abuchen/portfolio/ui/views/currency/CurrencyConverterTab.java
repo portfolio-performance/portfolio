@@ -215,7 +215,7 @@ public class CurrencyConverterTab implements AbstractTabbedView.Tab
     public Composite createTab(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NONE);
-        container.setBackground(Colors.WHITE);
+        container.setBackground(Colors.theme().defaultBackground());
 
         FormLayout layout = new FormLayout();
         layout.marginLeft = 20;
@@ -230,7 +230,8 @@ public class CurrencyConverterTab implements AbstractTabbedView.Tab
         bindings.bindCurrencyCodeCombo(editArea, Messages.ColumnBaseCurrency, "baseCurrency", false); //$NON-NLS-1$
         bindings.bindMandatoryAmountInput(editArea, Messages.ColumnConvertedAmount, "termValue", SWT.READ_ONLY, 10); //$NON-NLS-1$
         bindings.bindCurrencyCodeCombo(editArea, Messages.ColumnTermCurrency, "termCurrency", false); //$NON-NLS-1$
-        bindings.bindDatePicker(editArea, Messages.ColumnDate, "date").setBackground(Colors.WHITE); //$NON-NLS-1$
+        bindings.bindDatePicker(editArea, Messages.ColumnDate, "date") //$NON-NLS-1$
+                        .setBackground(Colors.theme().defaultBackground());
 
         new Label(editArea, SWT.NONE);
         Button b = new Button(editArea, SWT.PUSH | SWT.FLAT);

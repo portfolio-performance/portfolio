@@ -74,7 +74,7 @@ public class WelcomePart
     public void createComposite(Composite parent)
     {
         container = new Composite(parent, SWT.NONE);
-        container.setBackground(Colors.WHITE);
+        container.setBackground(Colors.theme().defaultBackground());
         GridLayoutFactory.fillDefaults().margins(20, 20).applyTo(container);
 
         createHeader(container);
