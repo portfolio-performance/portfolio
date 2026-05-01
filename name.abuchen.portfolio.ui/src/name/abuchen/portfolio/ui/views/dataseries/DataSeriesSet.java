@@ -45,6 +45,9 @@ public class DataSeriesSet
             case RETURN_VOLATILITY:
                 buildReturnVolatilitySeries(client, preferences, wheel);
                 break;
+            case CORRELATION_MATRIX:
+                buildReturnVolatilitySeries(client, preferences, wheel);
+                break;
             default:
                 throw new IllegalArgumentException(useCase.name());
         }
