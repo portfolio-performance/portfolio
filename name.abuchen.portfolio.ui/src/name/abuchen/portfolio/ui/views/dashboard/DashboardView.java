@@ -166,9 +166,9 @@ public class DashboardView extends AbstractHistoricView
             oldParent.layout();
             newParent.layout();
 
-            SectionHeaderWidget.applySectionVisibility(oldParent);
+            CollapsibleSectionWidget.applySectionVisibility(oldParent);
             if (newParent != oldParent)
-                SectionHeaderWidget.applySectionVisibility(newParent);
+                CollapsibleSectionWidget.applySectionVisibility(newParent);
         }
 
         private void doDropCopy(Dashboard.Widget copiedWidget, Dashboard.Column newColumn, Composite newParent)
@@ -556,7 +556,7 @@ public class DashboardView extends AbstractHistoricView
             }
         }
 
-        SectionHeaderWidget.applySectionVisibility(columnControl);
+        CollapsibleSectionWidget.applySectionVisibility(columnControl);
 
         return columnControl;
     }
@@ -868,7 +868,7 @@ public class DashboardView extends AbstractHistoricView
 
         getClient().touch();
         delegate.update();
-        SectionHeaderWidget.applySectionVisibility(columnControl);
+        CollapsibleSectionWidget.applySectionVisibility(columnControl);
         columnControl.layout(true);
         updateScrolledCompositeMinSize();
     }

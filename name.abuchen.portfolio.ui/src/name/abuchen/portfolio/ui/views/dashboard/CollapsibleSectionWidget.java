@@ -23,13 +23,13 @@ import name.abuchen.portfolio.util.TextUtil;
  * below this header (within the same column) are hidden when the section is
  * collapsed. The collapsed state is persisted in the widget configuration map.
  */
-public class SectionHeaderWidget extends WidgetDelegate<Object>
+public class CollapsibleSectionWidget extends WidgetDelegate<Object>
 {
     private Label title;
     private Hyperlink toggleButton;
     private Composite container;
 
-    public SectionHeaderWidget(Widget widget, DashboardData data)
+    public CollapsibleSectionWidget(Widget widget, DashboardData data)
     {
         super(widget, data);
     }
@@ -93,7 +93,7 @@ public class SectionHeaderWidget extends WidgetDelegate<Object>
                 if (!(child instanceof Composite))
                     continue;
                 Object delegate = child.getData(DashboardView.DELEGATE_KEY);
-                if (delegate instanceof SectionHeaderWidget other && thisLabel.equals(other.getWidget().getLabel()))
+                if (delegate instanceof CollapsibleSectionWidget other && thisLabel.equals(other.getWidget().getLabel()))
                 {
                     other.setCollapsed(newCollapsed);
                     other.update(null);
@@ -155,7 +155,7 @@ public class SectionHeaderWidget extends WidgetDelegate<Object>
 
             var delegate = child.getData(DashboardView.DELEGATE_KEY);
 
-            if (delegate instanceof SectionHeaderWidget sectionWidget)
+            if (delegate instanceof CollapsibleSectionWidget sectionWidget)
             {
                 collapsed = sectionWidget.isCollapsed();
                 setVisible(child, true); // header itself is always visible

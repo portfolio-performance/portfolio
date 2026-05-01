@@ -435,7 +435,7 @@ public enum WidgetFactory
 
     CURRENT_DATE(Messages.LabelCurrentDate, Messages.LabelCommon, CurrentDateWidget::new),
 
-    COLLAPSIPLE_SECTION(Messages.LabelCollapsibleSection, Messages.LabelCommon, SectionHeaderWidget::new),
+    COLLAPSIPLE_SECTION(Messages.LabelCollapsibleSection, Messages.LabelCommon, CollapsibleSectionWidget::new),
 
     EXCHANGE_RATE(Messages.LabelExchangeRate, Messages.LabelCommon, ExchangeRateWidget::new),
 
