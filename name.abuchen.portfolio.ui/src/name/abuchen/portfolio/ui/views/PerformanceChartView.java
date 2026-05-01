@@ -21,7 +21,6 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swtchart.ISeries;
 
@@ -35,6 +34,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
@@ -110,7 +110,7 @@ public class PerformanceChartView extends AbstractHistoricView
     protected Composite createBody(Composite parent)
     {
         Composite composite = new Composite(parent, SWT.NONE);
-        composite.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+        composite.setBackground(Colors.theme().defaultBackground());
 
         chart = new TimelineChart(composite);
         chart.getTitle().setText(getTitle());
