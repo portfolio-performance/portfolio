@@ -35,6 +35,7 @@ import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
+import name.abuchen.portfolio.ui.util.swt.CorrelationColorSchema;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator;
@@ -220,7 +221,7 @@ public class CorrelationListView extends AbstractHistoricView
                     return Colors.theme().defaultForeground();
                 else if (Double.isNaN(data.get().getR()))
                     return Colors.theme().grayForeground();
-                return super.getBackground(element);
+                return COLOR_SCHEMA.getColor(data.get().getR());
             }
 
             @Override
@@ -290,4 +291,5 @@ public class CorrelationListView extends AbstractHistoricView
         }
     }
 
+    private static final CorrelationColorSchema COLOR_SCHEMA = CorrelationColorSchema.SUBTLE_RED_WHITE_GREEN;
 }
