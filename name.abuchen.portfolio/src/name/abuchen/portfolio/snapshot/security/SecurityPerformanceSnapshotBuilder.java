@@ -46,8 +46,10 @@ import name.abuchen.portfolio.util.Interval;
             addPseudoValuationTansactions(portfolio, transactions);
         }
 
-        transactions.values()
-                        .forEach(item -> Collections.sort(item.getLineItems(), new CalculationLineItemComparator()));
+        transactions.values().forEach(item -> {
+            Collections.sort(item.getLineItems(), new CalculationLineItemComparator());
+            Collections.sort(item.getPrePeriodLineItems(), new CalculationLineItemComparator());
+        });
 
         return transactions.values().stream().filter(item -> !item.getLineItems().isEmpty()).toList();
     }
@@ -80,8 +82,10 @@ import name.abuchen.portfolio.util.Interval;
             }
         }
 
-        transactions.values()
-                        .forEach(item -> Collections.sort(item.getLineItems(), new CalculationLineItemComparator()));
+        transactions.values().forEach(item -> {
+            Collections.sort(item.getLineItems(), new CalculationLineItemComparator());
+            Collections.sort(item.getPrePeriodLineItems(), new CalculationLineItemComparator());
+        });
 
         return transactions.values().stream().filter(item -> !item.getLineItems().isEmpty()).toList();
     }
@@ -135,29 +139,36 @@ import name.abuchen.portfolio.util.Interval;
     private void extractSecurityRelatedPortfolioTransactions(Class<T> type, Portfolio portfolio,
                     Map<Security, T> records)
     {
-        portfolio.getTransactions().stream() //
-                        .filter(t -> interval.contains(t.getDateTime())) //
-                        .forEach(t -> records.computeIfAbsent(t.getSecurity(), s -> {
+        portfolio.getTransactions().forEach(t -> {
+            T record = records.computeIfAbsent(t.getSecurity(), s -> {
 
-                            // must not happen because the records map is filled
-                            // with _all_ securities of the client. However,
-                            // #1836 reports a NPE exception here. Create a
-                            // builder object to collect the transaction anyway.
+                // must not happen because the records map is filled
+                // with _all_ securities of the client. However,
+                // #1836 reports a NPE exception here. Create a
+                // builder object to collect the transaction anyway.
 
-                            PortfolioLog.warning(MessageFormat.format("Unidentified security ''{0}'' with UUID {1}", //$NON-NLS-1$
-                                            s.getName(), s.getUUID()));
+                PortfolioLog.warning(MessageFormat.format("Unidentified security ''{0}'' with UUID {1}", //$NON-NLS-1$
+                                s.getName(), s.getUUID()));
 
-                            try
-                            {
-                                var typeConstructor = type.getDeclaredConstructor(Client.class, Security.class,
-                                                CurrencyConverter.class, Interval.class);
-                                return typeConstructor.newInstance(client, s, converter, interval);
-                            }
-                            catch (ReflectiveOperationException e)
-                            {
-                                throw new IllegalArgumentException(e);
-                            }
-                        }).addLineItem(CalculationLineItem.of(portfolio, t)));
+                try
+                {
+                    var typeConstructor = type.getDeclaredConstructor(Client.class, Security.class,
+                                    CurrencyConverter.class, Interval.class);
+                    return typeConstructor.newInstance(client, s, converter, interval);
+                }
+                catch (ReflectiveOperationException e)
+                {
+                    throw new IllegalArgumentException(e);
+                }
+            });
+
+            CalculationLineItem item = CalculationLineItem.of(portfolio, t);
+
+            if (!t.getDateTime().toLocalDate().isAfter(interval.getStart()))
+                record.addPrePeriodLineItem(item);
+            else if (interval.contains(t.getDateTime()))
+                record.addLineItem(item);
+        });
     }
 
     private void addPseudoValuationTansactions(Portfolio portfolio, Map<Security, T> records)

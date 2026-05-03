@@ -279,6 +279,45 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
     private final LazyValue<CapitalGainsRecord> unrealizedCapitalGainsMovingAvg = new LazyValue<>(
                     () -> capitalGainsMovingAvg.get().getUnrealizedCapitalGains());
 
+    private final LazyValue<CapitalGainsCalculation> capitalGainsHistoricCostBasis = new LazyValue<>(() -> Calculation
+                    .perform(CapitalGainsCalculation.class, converter, security, lineItems, prePeriodLineItems));
+
+    private final LazyValue<CapitalGainsRecord> realizedCapitalGainsHistoricCostBasis = new LazyValue<>(
+                    () -> capitalGainsHistoricCostBasis.get().getRealizedCapitalGains());
+
+    private final LazyValue<CapitalGainsRecord> unrealizedCapitalGainsHistoricCostBasis = new LazyValue<>(
+                    () -> capitalGainsHistoricCostBasis.get().getUnrealizedCapitalGains());
+
+    private final LazyValue<CapitalGainsCalculationMovingAverage> capitalGainsMovingAvgHistoricCostBasis = new LazyValue<>(
+                    () -> Calculation.perform(CapitalGainsCalculationMovingAverage.class, converter, security,
+                                    lineItems, prePeriodLineItems));
+
+    private final LazyValue<CapitalGainsRecord> realizedCapitalGainsMovingAvgHistoricCostBasis = new LazyValue<>(
+                    () -> capitalGainsMovingAvgHistoricCostBasis.get().getRealizedCapitalGains());
+
+    private final LazyValue<CapitalGainsRecord> unrealizedCapitalGainsMovingAvgHistoricCostBasis = new LazyValue<>(
+                    () -> capitalGainsMovingAvgHistoricCostBasis.get().getUnrealizedCapitalGains());
+
+    public CapitalGainsRecord getRealizedCapitalGainsHistoricCostBasis()
+    {
+        return realizedCapitalGainsHistoricCostBasis.get();
+    }
+
+    public CapitalGainsRecord getUnrealizedCapitalGainsHistoricCostBasis()
+    {
+        return unrealizedCapitalGainsHistoricCostBasis.get();
+    }
+
+    public CapitalGainsRecord getRealizedCapitalGainsMovingAvgHistoricCostBasis()
+    {
+        return realizedCapitalGainsMovingAvgHistoricCostBasis.get();
+    }
+
+    public CapitalGainsRecord getUnrealizedCapitalGainsMovingAvgHistoricCostBasis()
+    {
+        return unrealizedCapitalGainsMovingAvgHistoricCostBasis.get();
+    }
+
     /* package */ LazySecurityPerformanceRecord(Client client, Security security, CurrencyConverter converter,
                     Interval interval)
     {

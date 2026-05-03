@@ -27,6 +27,8 @@ public class Messages extends NLS
     public static String ColumnInitialValue;
     public static String ColumnPaidFees;
     public static String ColumnPaidTaxes;
+    public static String ColumnRealizedCapitalGainsAdjustment;
+    public static String ColumnRealizedCapitalGainsAdjustmentTooltip;
     public static String ColumnTransfers;
     public static String CSVColumn_AccountName;
     public static String CSVColumn_AccountName2nd;

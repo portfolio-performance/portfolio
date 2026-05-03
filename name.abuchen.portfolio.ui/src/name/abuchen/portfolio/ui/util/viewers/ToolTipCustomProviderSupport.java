@@ -46,9 +46,32 @@ public class ToolTipCustomProviderSupport extends ColumnViewerToolTipSupport
         if (answer)
             return true;
 
-        // check if column has tooltip provider
-        return Column.lookup(event.widget, viewer.getCell(new Point(event.x, event.y))) //
-                        .map(Column::getToolTipProvider).isPresent();
+        var cell = viewer.getCell(new Point(event.x, event.y));
+        if (cell == null)
+            return false;
+
+        var toolTipProvider = Column.lookup(event.widget, cell).map(Column::getToolTipProvider).orElse(null);
+
+        if (toolTipProvider == null)
+            return false;
+
+        Object option = null;
+
+        if (cell.getControl() instanceof Table table)
+            option = table.getColumn(cell.getColumnIndex()).getData(ShowHideColumnHelper.OPTIONS_KEY);
+        else if (cell.getControl() instanceof Tree tree)
+            option = tree.getColumn(cell.getColumnIndex()).getData(ShowHideColumnHelper.OPTIONS_KEY);
+
+        Object toolTip = toolTipProvider.apply(cell.getElement(), option);
+
+        // HIER ist der entscheidende Fix
+        if (toolTip == null)
+            return false;
+
+        if (toolTip instanceof String s && s.trim().isEmpty())
+            return false;
+
+        return true;
     }
 
     @Override

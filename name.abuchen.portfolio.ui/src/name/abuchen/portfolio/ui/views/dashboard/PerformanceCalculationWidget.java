@@ -83,6 +83,18 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
             if (category == null)
                 return null;
 
+            if (category.getTooltip() != null && !category.getTooltip().isEmpty())
+            {
+                Composite container = new Composite(parent, SWT.NONE);
+                GridLayoutFactory.fillDefaults().numColumns(1).margins(10, 10).applyTo(container);
+
+                Label tooltip = new Label(container, SWT.WRAP);
+                tooltip.setText(category.getTooltip());
+                GridDataFactory.fillDefaults().hint(350, SWT.DEFAULT).applyTo(tooltip);
+
+                return container;
+            }
+
             List<Position> positions = new ArrayList<>(category.getPositions());
             Collections.sort(positions, (r, l) -> l.getValue().compareTo(r.getValue()));
 
@@ -332,11 +344,11 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
         for (int i = 1; i < 7; i++)
         {
             ClientPerformanceSnapshot.Category category = categories.get(i);
-            signs[i].setText(category.getSign());
+            signs[i].setText(category.getDisplaySign());
             labels[i].setText(category.getLabel());
             labels[i].setData(category);
             labels[i].setData(ClientPerformanceSnapshot.class.getSimpleName(), snapshot);
-            values[i].setText(Values.Money.format(category.getValuation(), getClient().getBaseCurrency()));
+            values[i].setText(Values.Money.format(category.getDisplayValuation(), getClient().getBaseCurrency()));
             values[i].setData(category);
             values[i].setData(ClientPerformanceSnapshot.class.getSimpleName(), snapshot);
         }
@@ -368,14 +380,14 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
 
         for (ClientPerformanceSnapshot.Category category : categories)
         {
-            String sign = category.getSign();
+            String sign = category.getDisplaySign();
             switch (sign)
             {
                 case "+": //$NON-NLS-1$
-                    totalMoney.add(category.getValuation());
+                    totalMoney.add(category.getDisplayValuation());
                     break;
                 case "-": //$NON-NLS-1$
-                    totalMoney.subtract(category.getValuation());
+                    totalMoney.subtract(category.getDisplayValuation());
                     break;
                 default:
                     throw new IllegalArgumentException("unsupported sign " + sign); //$NON-NLS-1$
@@ -391,11 +403,11 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
         int ii = startIndex;
         for (ClientPerformanceSnapshot.Category category : categories)
         {
-            signs[ii].setText(category.getSign());
+            signs[ii].setText(category.getDisplaySign());
             labels[ii].setText(category.getLabel());
             labels[ii].setData(category);
             labels[ii].setData(ClientPerformanceSnapshot.class.getSimpleName(), snapshot);
-            values[ii].setText(Values.Money.format(category.getValuation(), getClient().getBaseCurrency()));
+            values[ii].setText(Values.Money.format(category.getDisplayValuation(), getClient().getBaseCurrency()));
             values[ii].setData(category);
             values[ii].setData(ClientPerformanceSnapshot.class.getSimpleName(), snapshot);
 

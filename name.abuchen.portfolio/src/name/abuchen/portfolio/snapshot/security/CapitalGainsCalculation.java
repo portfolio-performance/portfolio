@@ -28,6 +28,7 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
         private LocalDate date;
         private long value;
 
+
         private final TrailRecord trail;
 
         /**
@@ -51,6 +52,7 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
     }
 
     private List<LineItem> fifo = new ArrayList<>();
+    private boolean useHistoricCostBasis = false;
 
     private CapitalGainsRecord realizedCapitalGains;
     private CapitalGainsRecord unrealizedCapitalGains;
@@ -63,8 +65,23 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
     }
 
     @Override
+    public void preload(CurrencyConverter converter, List<CalculationLineItem> lineItems)
+    {
+        this.useHistoricCostBasis = true;
+
+        visitAll(converter, lineItems);
+
+        // Keep the FIFO state, but discard gains from the preload phase.
+        this.realizedCapitalGains = new CapitalGainsRecord(getSecurity(), getTermCurrency());
+        this.unrealizedCapitalGains = new CapitalGainsRecord(getSecurity(), getTermCurrency());
+    }
+
+    @Override
     public void visit(CurrencyConverter converter, CalculationLineItem.ValuationAtStart valuation)
     {
+        if (useHistoricCostBasis)
+            return;
+
         SecurityPosition position = valuation.getSecurityPosition().orElseThrow(IllegalArgumentException::new);
 
         Money value = valuation.getValue();

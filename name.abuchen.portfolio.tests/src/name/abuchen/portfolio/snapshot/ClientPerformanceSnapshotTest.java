@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -66,7 +67,8 @@ public class ClientPerformanceSnapshotTest
 
         List<Category> categories = snapshot.getCategories();
         assertNotNull(categories);
-        assertThat(categories.size(), is(ClientPerformanceSnapshot.CategoryType.values().length));
+        assertThat(categories.size(), is((int) Arrays.stream(ClientPerformanceSnapshot.CategoryType.values())
+                        .filter(type -> snapshot.getCategoryByType(type).isVisibleInCalculation()).count()));
 
         assertThat(snapshot.getValue(CategoryType.INITIAL_VALUE), is(Money.of(CurrencyUnit.EUR, 1000_00)));
         assertThat(snapshot.getValue(CategoryType.EARNINGS), is(Money.of(CurrencyUnit.EUR, 50_00)));
@@ -189,9 +191,12 @@ public class ClientPerformanceSnapshotTest
 
         assertThat(snapshot.getValue(CategoryType.INITIAL_VALUE), is(Money.of(CurrencyUnit.EUR, 1000_00)));
         assertThat(snapshot.getValue(CategoryType.EARNINGS), is(Money.of(CurrencyUnit.EUR, 0)));
-        assertThat(snapshot.getValue(CategoryType.CAPITAL_GAINS), is(Money.of(CurrencyUnit.EUR, 100_00)));
+        assertThat(snapshot.getValue(CategoryType.CAPITAL_GAINS),
+                        is(Money.of(CurrencyUnit.EUR, 100_00)));
+        assertThat(snapshot.getValue(CategoryType.REALIZED_CAPITAL_GAINS_PURCHASE), is(Money.of(CurrencyUnit.EUR, 0)));
+        assertThat(snapshot.getValue(CategoryType.REALIZED_CAPITAL_GAINS_ADJUSTMENT),
+                        is(Money.of(CurrencyUnit.EUR, 0)));
         assertThat(snapshot.getValue(CategoryType.FINAL_VALUE), is(Money.of(CurrencyUnit.EUR, 1100_00)));
-
         assertThat(snapshot.getAbsoluteDelta(),
                         is(snapshot.getValue(CategoryType.FINAL_VALUE)
                                         .subtract(snapshot.getValue(CategoryType.TRANSFERS))
@@ -226,6 +231,12 @@ public class ClientPerformanceSnapshotTest
         assertThat(snapshot.getValue(CategoryType.CAPITAL_GAINS),
                         is(Money.of(CurrencyUnit.EUR, 100_00 + (110_00 - 99_00))));
         assertThat(snapshot.getValue(CategoryType.FINAL_VALUE), is(Money.of(CurrencyUnit.EUR, 1210_00)));
+
+        assertThat(snapshot.getValue(CategoryType.REALIZED_CAPITAL_GAINS),
+                        is(Money.of(CurrencyUnit.EUR, 0)));
+        assertThat(snapshot.getValue(CategoryType.REALIZED_CAPITAL_GAINS_PURCHASE), is(Money.of(CurrencyUnit.EUR, 0)));
+        assertThat(snapshot.getValue(CategoryType.REALIZED_CAPITAL_GAINS_ADJUSTMENT),
+                        is(Money.of(CurrencyUnit.EUR, 0)));
 
         assertThat(snapshot.getAbsoluteDelta(),
                         is(snapshot.getValue(CategoryType.FINAL_VALUE)
@@ -264,6 +275,11 @@ public class ClientPerformanceSnapshotTest
 
         assertThat(snapshot.getValue(CategoryType.REALIZED_CAPITAL_GAINS),
                         is(Money.of(CurrencyUnit.EUR, Values.Money.factorize(99.0 - 100.0))));
+        assertThat(snapshot.getValue(CategoryType.REALIZED_CAPITAL_GAINS_PURCHASE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Money.factorize(99.0 - 0.10))));
+
+        assertThat(snapshot.getValue(CategoryType.REALIZED_CAPITAL_GAINS_ADJUSTMENT),
+                        is(Money.of(CurrencyUnit.EUR, Values.Money.factorize((99.0 - 100.0) - (99.0 - 0.10)))));
 
         assertThat(snapshot.getValue(CategoryType.FINAL_VALUE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(110.0 * 9))));
@@ -302,6 +318,10 @@ public class ClientPerformanceSnapshotTest
 
         assertThat(snapshot.getValue(CategoryType.REALIZED_CAPITAL_GAINS),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(99.0 + 0.01 - 100))));
+        assertThat(snapshot.getValue(CategoryType.REALIZED_CAPITAL_GAINS_PURCHASE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(99.0 + 0.01 - 0.10))));
+        assertThat(snapshot.getValue(CategoryType.REALIZED_CAPITAL_GAINS_ADJUSTMENT), is(Money.of(CurrencyUnit.EUR,
+                        Values.Amount.factorize((99.0 + 0.01 - 100.0) - (99.0 + 0.01 - 0.10)))));
 
         assertThat(snapshot.getValue(CategoryType.FEES), is(Money.of(CurrencyUnit.EUR, 1)));
 
@@ -526,6 +546,8 @@ public class ClientPerformanceSnapshotTest
                                         // price at start * exchange rate at
                                         // start period
                                         - (100.0 * 5 / 1.1915)))));
+        assertThat(snapshot.getValue(CategoryType.REALIZED_CAPITAL_GAINS_ADJUSTMENT), is(Money.of(CurrencyUnit.EUR,
+                        Values.Amount.factorize(((100.0 * 5) - (100.0 * 5 / 1.1915)) - ((100.0 * 5) - (90.0 * 5))))));
 
         assertThat(snapshot.getCategoryByType(CategoryType.CAPITAL_GAINS).getPositions().get(0).getForexGain(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(
@@ -558,6 +580,9 @@ public class ClientPerformanceSnapshotTest
                                                         // exchange rate at
                                                         // start
                                                         - (100.0 * 5 / 1.1915)))));
+
+        assertThat(snapshot.getValue(CategoryType.REALIZED_CAPITAL_GAINS_PURCHASE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize((100.0 * 5) - (90.0 * 5)))));
 
         assertThat(snapshot.getAbsoluteDelta(),
                         is(snapshot.getValue(CategoryType.FINAL_VALUE)
@@ -629,6 +654,9 @@ public class ClientPerformanceSnapshotTest
                                         // start -> back to EUR with rate at end
                                         // -> minus start value
                                         Values.Amount.factorize((90.0 * 5 * 1.2043 / 1.1813) - (90.0 * 5)))));
+
+        assertThat(snapshot.getValue(CategoryType.REALIZED_CAPITAL_GAINS_PURCHASE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize((100.0 * 5) - (90.0 * 5)))));
 
         assertThat(snapshot.getAbsoluteDelta(),
                         is(snapshot.getValue(CategoryType.FINAL_VALUE)
@@ -710,7 +738,8 @@ public class ClientPerformanceSnapshotTest
         MutableMoney valueAtEndOfPeriod = MutableMoney.of(converter.getTermCurrency());
         valueAtEndOfPeriod.add(snapshot.getValue(CategoryType.INITIAL_VALUE));
         valueAtEndOfPeriod.add(snapshot.getValue(CategoryType.CAPITAL_GAINS));
-        valueAtEndOfPeriod.add(snapshot.getValue(CategoryType.REALIZED_CAPITAL_GAINS));
+        valueAtEndOfPeriod.add(snapshot.getValue(CategoryType.REALIZED_CAPITAL_GAINS_ADJUSTMENT));
+        valueAtEndOfPeriod.add(snapshot.getValue(CategoryType.REALIZED_CAPITAL_GAINS_PURCHASE));
         valueAtEndOfPeriod.add(snapshot.getValue(CategoryType.EARNINGS));
         valueAtEndOfPeriod.subtract(snapshot.getValue(CategoryType.FEES));
         valueAtEndOfPeriod.subtract(snapshot.getValue(CategoryType.TAXES));

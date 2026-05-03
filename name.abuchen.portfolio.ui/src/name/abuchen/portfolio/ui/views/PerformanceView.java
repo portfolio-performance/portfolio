@@ -329,6 +329,7 @@ public class PerformanceView extends AbstractHistoricView
                 return null;
             }
 
+
             @Override
             public Font getFont(Object element)
             {
@@ -337,6 +338,13 @@ public class PerformanceView extends AbstractHistoricView
                 return null;
             }
         });
+        column.setToolTipProvider(element -> {
+            if (element instanceof ClientPerformanceSnapshot.Category category)
+                return tooltip(category);
+
+            return null;
+        });
+
         column.getEditingSupport().addListener(new MarkDirtyClientListener(getClient()));
         support.addColumn(column);
 
@@ -361,13 +369,15 @@ public class PerformanceView extends AbstractHistoricView
                 return null;
             }
         });
-        column.setToolTipProvider(element -> {
-            if (!(element instanceof ClientPerformanceSnapshot.Position position))
-                return null;
 
-            return position.explain(ClientPerformanceSnapshot.Position.TRAIL_VALUE).map(MoneyTrailDataSource::new)
-                            .orElseGet(() -> null);
+        column.setToolTipProvider(element -> {
+            if (element instanceof ClientPerformanceSnapshot.Position position)
+                return position.explain(ClientPerformanceSnapshot.Position.TRAIL_VALUE).map(MoneyTrailDataSource::new)
+                                .orElse(null);
+
+            return null;
         });
+
         column.setSorter(ColumnViewerSorter.create(o -> {
             if (o instanceof ClientPerformanceSnapshot.Position pos)
                 return pos.getValue();
@@ -1043,5 +1053,11 @@ public class PerformanceView extends AbstractHistoricView
                             ? ValueColorScheme.current().positiveForeground()
                             : ValueColorScheme.current().negativeForeground();
         }
+    }
+
+    private static String tooltip(ClientPerformanceSnapshot.Category category)
+    {
+        String tooltip = category.getTooltip();
+        return tooltip == null || tooltip.trim().isEmpty() ? null : tooltip;
     }
 }

@@ -21,6 +21,14 @@ import name.abuchen.portfolio.money.CurrencyConverter;
     }
 
     /**
+     * Preload historical line items before the reporting period. Used by
+     * calculations that need historical state, e.g. capital gains.
+     */
+    public void preload(CurrencyConverter converter, List<CalculationLineItem> lineItems)
+    {
+    }
+
+    /**
      * Finish up all calculations.
      */
     public void finish(CurrencyConverter converter, List<CalculationLineItem> lineItems)
@@ -112,6 +120,26 @@ import name.abuchen.portfolio.money.CurrencyConverter;
             thing.setSecurity(security);
             thing.setTermCurrency(converter.getTermCurrency());
             thing.prepare();
+            thing.visitAll(converter, lineItems);
+            thing.finish(converter, lineItems);
+            return thing;
+        }
+        catch (Exception e)
+        {
+            throw new UnsupportedOperationException(e);
+        }
+    }
+
+    public static <T extends Calculation> T perform(Class<T> type, CurrencyConverter converter, Security security,
+                    List<CalculationLineItem> lineItems, List<CalculationLineItem> prePeriodLineItems)
+    {
+        try
+        {
+            T thing = type.getDeclaredConstructor().newInstance();
+            thing.setSecurity(security);
+            thing.setTermCurrency(converter.getTermCurrency());
+            thing.prepare();
+            thing.preload(converter, prePeriodLineItems);
             thing.visitAll(converter, lineItems);
             thing.finish(converter, lineItems);
             return thing;

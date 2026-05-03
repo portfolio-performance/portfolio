@@ -177,6 +177,10 @@ public final class SecurityPerformanceRecord extends BaseSecurityPerformanceReco
     private CapitalGainsRecord unrealizedCapitalGains;
     private CapitalGainsRecord realizedCapitalGainsMovingAvg;
     private CapitalGainsRecord unrealizedCapitalGainsMovingAvg;
+    private CapitalGainsRecord realizedCapitalGainsHistoricCostBasis;
+    private CapitalGainsRecord unrealizedCapitalGainsHistoricCostBasis;
+    private CapitalGainsRecord realizedCapitalGainsMovingAvgHistoricCostBasis;
+    private CapitalGainsRecord unrealizedCapitalGainsMovingAvgHistoricCostBasis;
 
     /* package */ SecurityPerformanceRecord(Client client, Security security, CurrencyConverter converter,
                     Interval interval)
@@ -558,14 +562,47 @@ public final class SecurityPerformanceRecord extends BaseSecurityPerformanceReco
     {
         CapitalGainsCalculation calculation = Calculation.perform(CapitalGainsCalculation.class, converter, security,
                         lineItems);
+
         this.realizedCapitalGains = calculation.getRealizedCapitalGains();
         this.unrealizedCapitalGains = calculation.getUnrealizedCapitalGains();
 
         CapitalGainsCalculationMovingAverage calculationMovingAvg = Calculation
-                        .perform(CapitalGainsCalculationMovingAverage.class,
-                        converter, security, lineItems);
+                        .perform(CapitalGainsCalculationMovingAverage.class, converter, security, lineItems);
 
         this.realizedCapitalGainsMovingAvg = calculationMovingAvg.getRealizedCapitalGains();
         this.unrealizedCapitalGainsMovingAvg = calculationMovingAvg.getUnrealizedCapitalGains();
+
+        CapitalGainsCalculation historicCalculation = Calculation.perform(CapitalGainsCalculation.class, converter,
+                        security, lineItems, prePeriodLineItems);
+
+        this.realizedCapitalGainsHistoricCostBasis = historicCalculation.getRealizedCapitalGains();
+        this.unrealizedCapitalGainsHistoricCostBasis = historicCalculation.getUnrealizedCapitalGains();
+
+        CapitalGainsCalculationMovingAverage historicCalculationMovingAvg = Calculation.perform(
+                        CapitalGainsCalculationMovingAverage.class, converter, security, lineItems, prePeriodLineItems);
+
+        this.realizedCapitalGainsMovingAvgHistoricCostBasis = historicCalculationMovingAvg.getRealizedCapitalGains();
+        this.unrealizedCapitalGainsMovingAvgHistoricCostBasis = historicCalculationMovingAvg
+                        .getUnrealizedCapitalGains();
+    }
+
+    public CapitalGainsRecord getRealizedCapitalGainsHistoricCostBasis()
+    {
+        return realizedCapitalGainsHistoricCostBasis;
+    }
+
+    public CapitalGainsRecord getUnrealizedCapitalGainsHistoricCostBasis()
+    {
+        return unrealizedCapitalGainsHistoricCostBasis;
+    }
+
+    public CapitalGainsRecord getRealizedCapitalGainsMovingAvgHistoricCostBasis()
+    {
+        return realizedCapitalGainsMovingAvgHistoricCostBasis;
+    }
+
+    public CapitalGainsRecord getUnrealizedCapitalGainsMovingAvgHistoricCostBasis()
+    {
+        return unrealizedCapitalGainsMovingAvgHistoricCostBasis;
     }
 }

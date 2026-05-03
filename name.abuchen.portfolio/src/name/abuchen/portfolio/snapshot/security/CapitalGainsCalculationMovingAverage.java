@@ -20,6 +20,7 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
     private long heldShares = 0;
     private long movingAverageNetCost = 0;
     private long movingAverageNetCostForex = 0;
+    private boolean useHistoricCostBasis = false;
 
     private CapitalGainsRecord realizedCapitalGains;
     private CapitalGainsRecord unrealizedCapitalGains;
@@ -32,8 +33,24 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
     }
 
     @Override
+    public void preload(CurrencyConverter converter, List<CalculationLineItem> lineItems)
+    {
+        this.useHistoricCostBasis = true;
+
+        visitAll(converter, lineItems);
+
+        // Keep moving average cost state, but discard gains from the preload
+        // phase.
+        this.realizedCapitalGains = new CapitalGainsRecord(getSecurity(), getTermCurrency());
+        this.unrealizedCapitalGains = new CapitalGainsRecord(getSecurity(), getTermCurrency());
+    }
+
+    @Override
     public void visit(CurrencyConverter converter, CalculationLineItem.ValuationAtStart valuation)
     {
+        if (useHistoricCostBasis)
+            return;
+
         SecurityPosition position = valuation.getSecurityPosition().orElseThrow(IllegalArgumentException::new);
 
         Money value = valuation.getValue();

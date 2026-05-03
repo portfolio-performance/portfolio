@@ -47,6 +47,10 @@ public class ClientPerformanceSnapshotTestCase
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(21.35))));
         assertThat(performance.getValue(CategoryType.REALIZED_CAPITAL_GAINS),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.69))));
+        assertThat(performance.getValue(CategoryType.REALIZED_CAPITAL_GAINS_PURCHASE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.77))));
+        assertThat(performance.getValue(CategoryType.REALIZED_CAPITAL_GAINS_ADJUSTMENT),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.92))));
         assertThat(performance.getValue(CategoryType.EARNINGS),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(28.54))));
         assertThat(performance.getValue(CategoryType.FEES),

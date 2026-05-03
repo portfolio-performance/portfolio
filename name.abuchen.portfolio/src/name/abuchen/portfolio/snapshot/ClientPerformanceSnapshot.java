@@ -53,6 +53,7 @@ public class ClientPerformanceSnapshot
         private final Money forexGain;
         private final TrailRecord forexGainTrail;
 
+
         private Position(Security security, Money value, TrailRecord trail)
         {
             this(security.getName(), security, value, trail, null, null);
@@ -129,12 +130,26 @@ public class ClientPerformanceSnapshot
         private String label;
         private String sign;
         private Money valuation;
+        private String tooltip;
+        private boolean visibleInCalculation;
 
         public Category(String label, String sign, Money valuation)
+        {
+            this(label, sign, valuation, null, true);
+        }
+
+        public Category(String label, String sign, Money valuation, String tooltip)
+        {
+            this(label, sign, valuation, tooltip, true);
+        }
+
+        public Category(String label, String sign, Money valuation, String tooltip, boolean visibleInCalculation)
         {
             this.label = label;
             this.sign = sign;
             this.valuation = valuation;
+            this.tooltip = tooltip;
+            this.visibleInCalculation = visibleInCalculation;
         }
 
         public Money getValuation()
@@ -152,15 +167,41 @@ public class ClientPerformanceSnapshot
             return sign;
         }
 
+        public String getDisplaySign()
+        {
+            if (valuation != null && valuation.isNegative())
+                return "-"; //$NON-NLS-1$
+
+            return sign;
+        }
+
         public List<Position> getPositions()
         {
             return positions;
+        }
+
+        public Money getDisplayValuation()
+        {
+            if (valuation != null && valuation.isNegative())
+                return valuation.multiply(-1);
+
+            return valuation;
+        }
+
+        public String getTooltip()
+        {
+            return tooltip;
+        }
+
+        public boolean isVisibleInCalculation()
+        {
+            return visibleInCalculation;
         }
     }
 
     public enum CategoryType
     {
-        INITIAL_VALUE, CAPITAL_GAINS, REALIZED_CAPITAL_GAINS, EARNINGS, FEES, TAXES, CURRENCY_GAINS, TRANSFERS, FINAL_VALUE
+        INITIAL_VALUE, CAPITAL_GAINS, REALIZED_CAPITAL_GAINS, REALIZED_CAPITAL_GAINS_PURCHASE, REALIZED_CAPITAL_GAINS_ADJUSTMENT, EARNINGS, FEES, TAXES, CURRENCY_GAINS, TRANSFERS, FINAL_VALUE
     }
 
     private final Client client;
@@ -215,7 +256,7 @@ public class ClientPerformanceSnapshot
 
     public List<Category> getCategories()
     {
-        return new ArrayList<>(categories.values());
+        return categories.values().stream().filter(Category::isVisibleInCalculation).collect(Collectors.toList());
     }
 
     public Category getCategoryByType(CategoryType type)
@@ -269,7 +310,8 @@ public class ClientPerformanceSnapshot
             switch (entry.getKey())
             {
                 case CAPITAL_GAINS:
-                case REALIZED_CAPITAL_GAINS:
+                case REALIZED_CAPITAL_GAINS_ADJUSTMENT:
+                case REALIZED_CAPITAL_GAINS_PURCHASE:
                 case EARNINGS:
                 case CURRENCY_GAINS:
                     delta.add(entry.getValue().getValuation());
@@ -338,7 +380,13 @@ public class ClientPerformanceSnapshot
 
         categories.put(CategoryType.CAPITAL_GAINS, new Category(Messages.ColumnCapitalGains, "+", zero)); //$NON-NLS-1$
         categories.put(CategoryType.REALIZED_CAPITAL_GAINS,
-                        new Category(Messages.LabelRealizedCapitalGains, "+", zero)); //$NON-NLS-1$
+                        new Category(Messages.LabelRealizedCapitalGains, "+", zero, null, false)); //$NON-NLS-1$
+        categories.put(CategoryType.REALIZED_CAPITAL_GAINS_PURCHASE,
+                        new Category(Messages.LabelRealizedCapitalGains, "+", //$NON-NLS-1$
+                        zero, null, true));
+        categories.put(CategoryType.REALIZED_CAPITAL_GAINS_ADJUSTMENT,
+                        new Category(Messages.ColumnRealizedCapitalGainsAdjustment, "+", zero, //$NON-NLS-1$
+                                        Messages.ColumnRealizedCapitalGainsAdjustmentTooltip, true));
         categories.put(CategoryType.EARNINGS, new Category(Messages.ColumnEarnings, "+", zero)); //$NON-NLS-1$
         categories.put(CategoryType.FEES, new Category(Messages.ColumnPaidFees, "-", zero)); //$NON-NLS-1$
         categories.put(CategoryType.TAXES, new Category(Messages.ColumnPaidTaxes, "-", zero)); //$NON-NLS-1$
@@ -372,13 +420,20 @@ public class ClientPerformanceSnapshot
         SecurityPerformanceSnapshot securityPerformance = SecurityPerformanceSnapshot.create(client, converter, period,
                         snapshotStart, snapshotEnd, SecurityPerformanceIndicator.CapitalGains.class);
 
+        Category capitalGains = categories.get(CategoryType.CAPITAL_GAINS);
+        addCapitalGains(capitalGains, securityPerformance, record -> record.getUnrealizedCapitalGains());
+
         Category realizedCapitalGains = categories.get(CategoryType.REALIZED_CAPITAL_GAINS);
         addCapitalGains(realizedCapitalGains, securityPerformance, record -> record.getRealizedCapitalGains());
 
-        // create position for unrealized capital gains
+        Category realizedCapitalGainsAdjustment = categories.get(CategoryType.REALIZED_CAPITAL_GAINS_ADJUSTMENT);
+        addCapitalGainsAdjustment(realizedCapitalGainsAdjustment, securityPerformance,
+                        record -> record.getRealizedCapitalGains(),
+                        record -> record.getRealizedCapitalGainsHistoricCostBasis());
 
-        Category capitalGains = categories.get(CategoryType.CAPITAL_GAINS);
-        addCapitalGains(capitalGains, securityPerformance, record -> record.getUnrealizedCapitalGains());
+        Category realizedCapitalGainsFifo = categories.get(CategoryType.REALIZED_CAPITAL_GAINS_PURCHASE);
+        addCapitalGains(realizedCapitalGainsFifo, securityPerformance,
+                        record -> record.getRealizedCapitalGainsHistoricCostBasis());
     }
 
     /**
@@ -392,13 +447,20 @@ public class ClientPerformanceSnapshot
         SecurityPerformanceSnapshot securityPerformance = SecurityPerformanceSnapshot.create(client, converter, period,
                         snapshotStart, snapshotEnd, SecurityPerformanceIndicator.CapitalGains.class);
 
+        Category capitalGains = categories.get(CategoryType.CAPITAL_GAINS);
+        addCapitalGains(capitalGains, securityPerformance, record -> record.getUnrealizedCapitalGainsMovingAvg());
+
         Category realizedCapitalGains = categories.get(CategoryType.REALIZED_CAPITAL_GAINS);
         addCapitalGains(realizedCapitalGains, securityPerformance, record -> record.getRealizedCapitalGainsMovingAvg());
 
-        // create position for unrealized capital gains
+        Category realizedCapitalGainsAdjustment = categories.get(CategoryType.REALIZED_CAPITAL_GAINS_ADJUSTMENT);
+        addCapitalGainsAdjustment(realizedCapitalGainsAdjustment, securityPerformance,
+                        record -> record.getRealizedCapitalGainsMovingAvg(),
+                        record -> record.getRealizedCapitalGainsMovingAvgHistoricCostBasis());
 
-        Category capitalGains = categories.get(CategoryType.CAPITAL_GAINS);
-        addCapitalGains(capitalGains, securityPerformance, record -> record.getUnrealizedCapitalGainsMovingAvg());
+        Category realizedCapitalGainsFifo = categories.get(CategoryType.REALIZED_CAPITAL_GAINS_PURCHASE);
+        addCapitalGains(realizedCapitalGainsFifo, securityPerformance,
+                        record -> record.getRealizedCapitalGainsMovingAvgHistoricCostBasis());
     }
 
     private void addCapitalGains(Category category, SecurityPerformanceSnapshot securityPerformance,
@@ -415,6 +477,25 @@ public class ClientPerformanceSnapshot
 
         category.valuation = category.positions.stream() //
                         .map(Position::getValue) //
+                        .collect(MoneyCollectors.sum(converter.getTermCurrency()));
+    }
+
+    private void addCapitalGainsAdjustment(Category category, SecurityPerformanceSnapshot securityPerformance,
+                    Function<SecurityPerformanceRecord, CapitalGainsRecord> periodicMapper,
+                    Function<SecurityPerformanceRecord, CapitalGainsRecord> historicMapper)
+    {
+        category.positions = securityPerformance.getRecords().stream()
+                        .sorted((p1, p2) -> TextUtil.compare(p1.getSecurityName(), p2.getSecurityName()))
+                        .map(record -> {
+                            CapitalGainsRecord periodic = periodicMapper.apply(record);
+                            CapitalGainsRecord historic = historicMapper.apply(record);
+
+                            Money adjustment = periodic.getCapitalGains().subtract(historic.getCapitalGains());
+
+                            return new Position(record.getSecurity(), adjustment, null);
+                        }).filter(position -> !position.getValue().isZero()).collect(Collectors.toList());
+
+        category.valuation = category.positions.stream().map(Position::getValue)
                         .collect(MoneyCollectors.sum(converter.getTermCurrency()));
     }
 
