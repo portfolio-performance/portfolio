@@ -8,5 +8,9 @@
 *.csv text
 *.xml text
 
+# managed properties files must be checked out with LF on every platform
+# (the check-managed-bundles build step requires LF — see issue #5670)
+*.properties text eol=lf
+
 # some files are definitely not text:
 *.png binary
