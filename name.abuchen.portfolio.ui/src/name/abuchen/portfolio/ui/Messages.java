@@ -691,6 +691,7 @@ public class Messages extends NLS
     public static String LabelEarningsPerMonth;
     public static String LabelEarningsPerQuarter;
     public static String LabelEarningsPerYear;
+    public static String LabelEarningsPercentageChangeYoY;
     public static String LabelEarningsTransactionList;
     public static String LabelEmptyDashboard;
     public static String LabelEmptyTaxonomy;
@@ -830,6 +831,7 @@ public class Messages extends NLS
     public static String LabelPaymentsSelectStartYear;
     public static String LabelPaymentsTradeProfitLoss;
     public static String LabelPaymentsUseConsolidateRetired;
+    public static String LabelPercentageChange;
     public static String LabelPerformanceCalculation;
     public static String LabelPerformanceChart;
     public static String LabelPerformanceIRR;
