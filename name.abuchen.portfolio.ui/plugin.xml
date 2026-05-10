@@ -185,6 +185,56 @@
                name="down-arrow">
          </property-name>
       </handler>
+
+      <handler
+            adapter="name.abuchen.portfolio.ui.theme.PaymentsPaletteCSS$ElementAdapter"
+            handler="name.abuchen.portfolio.ui.theme.PaymentsPaletteCSS$Handler">
+         <property-name
+               name="color-0">
+         </property-name>
+         <property-name
+               name="color-1">
+         </property-name>
+         <property-name
+               name="color-2">
+         </property-name>
+         <property-name
+               name="color-3">
+         </property-name>
+         <property-name
+               name="color-4">
+         </property-name>
+         <property-name
+               name="color-5">
+         </property-name>
+         <property-name
+               name="color-6">
+         </property-name>
+         <property-name
+               name="color-7">
+         </property-name>
+         <property-name
+               name="color-8">
+         </property-name>
+         <property-name
+               name="color-9">
+         </property-name>
+         <property-name
+               name="color-10">
+         </property-name>
+         <property-name
+               name="color-11">
+         </property-name>
+         <property-name
+               name="color-12">
+         </property-name>
+         <property-name
+               name="color-13">
+         </property-name>
+         <property-name
+               name="color-14">
+         </property-name>
+      </handler>
    </extension>
    <extension
          point="org.eclipse.e4.ui.css.core.elementProvider">

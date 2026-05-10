@@ -18,6 +18,7 @@ import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ValueColorScheme;
 import name.abuchen.portfolio.ui.views.PortfolioBalanceChart;
 import name.abuchen.portfolio.ui.views.SecuritiesChart;
+import name.abuchen.portfolio.ui.views.payments.PaymentsPalette;
 
 @SuppressWarnings("restriction")
 public class ElementProvider implements IElementProvider
@@ -47,6 +48,8 @@ public class ElementProvider implements IElementProvider
             return new PortfolioBalanceChartElementAdapter(portfolioBalanceChart, engine);
         if (element instanceof ValueColorScheme scheme)
             return new ValueColorSchemeElementAdapter(scheme, engine);
+        if (element instanceof PaymentsPalette palette)
+            return new PaymentsPaletteCSS.ElementAdapter(palette, engine);
 
         return null;
     }
