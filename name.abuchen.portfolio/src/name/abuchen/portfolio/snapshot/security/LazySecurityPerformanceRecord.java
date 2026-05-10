@@ -13,10 +13,12 @@ import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
@@ -164,96 +166,19 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
                     () -> Calculation.perform(CostCalculation.class, converter, security, lineItems).getResult());
 
     /**
-     * fifo cost of shares held
+     * cost of shares held
      */
-    private final LazyValue<Money> fifoCost = new LazyValue<>(() -> costCalculation.get().fifoCost());
+    private Money getCostMoney(CostMethod costMethod, TaxesAndFees taxesAndFees)
+    {
+        return switch (costMethod)
+        {
+            case FIFO -> taxesAndFees == TaxesAndFees.INCLUDED ? costCalculation.get().fifoCost()
+                            : costCalculation.get().netFifoCost();
 
-    /**
-     * moving average cost of shares held
-     */
-    private final LazyValue<Money> movingAverageCost = new LazyValue<>(() -> costCalculation.get().movingAverageCost());
-
-    /**
-     * moving average cost of shares held without fees or taxes
-     */
-    private final LazyValue<Money> movingAverageCostWithoutTaxesAndFees = new LazyValue<>(
-                    () -> costCalculation.get().netMovingAverageCost());
-
-    /**
-     * market value - fifo cost of shares held
-     */
-    private final LazyValue<Money> capitalGainsOnHoldings = new LazyValue<>(
-                    () -> marketValue.get().subtract(costCalculation.get().fifoCost()));
-
-    /**
-     * {@link capitalGainsOnHoldings} in percent
-     */
-    private final LazyValue<Double> capitalGainsOnHoldingsPercent = new LazyValue<>(() -> {
-        var mv = marketValue.get();
-        var cost = costCalculation.get().fifoCost();
-
-        if (mv.getAmount() == 0L && cost.getAmount() == 0L)
-            return 0d;
-        else
-            return ((double) mv.getAmount() / (double) cost.getAmount()) - 1;
-    });
-
-    /**
-     * market value - moving average cost of shares held
-     */
-    private final LazyValue<Money> capitalGainsOnHoldingsMovingAverage = new LazyValue<>(
-                    () -> marketValue.get().subtract(costCalculation.get().movingAverageCost()));
-
-    /**
-     * {@link capitalGainsOnHoldingsMovingAverage} in percent
-     */
-    private final LazyValue<Double> capitalGainsOnHoldingsMovingAveragePercent = new LazyValue<>(() -> {
-        var mv = marketValue.get();
-        var cost = costCalculation.get().movingAverageCost();
-
-        if (mv.getAmount() == 0L && cost.getAmount() == 0L)
-            return 0d;
-        else
-            return ((double) mv.getAmount() / (double) cost.getAmount()) - 1;
-    });
-
-    /**
-     * cost per shares held
-     */
-    private final LazyValue<Quote> fifoCostPerSharesHeld = new LazyValue<>(() -> {
-        var costs = costCalculation.get();
-        return Quote.of(costs.netFifoCost().getCurrencyCode(), Math.round(costs.netFifoCost().getAmount()
-                        / (double) costs.sharesHeld() * Values.Share.factor() * Values.Quote.factorToMoney()));
-    });
-
-    /**
-     * cost per shares held
-     */
-    private final LazyValue<Quote> movingAverageCostPerSharesHeld = new LazyValue<>(() -> {
-        var costs = costCalculation.get();
-
-        Money netMovingAverageCost = costs.netMovingAverageCost();
-        return Quote.of(netMovingAverageCost.getCurrencyCode(), Math.round(netMovingAverageCost.getAmount()
-                        / (double) costs.sharesHeld() * Values.Share.factor() * Values.Quote.factorToMoney()));
-    });
-
-    /**
-     * cost per shares held including fee
-     */
-    private final LazyValue<Quote> grossFifoCostPerSharesHeld = new LazyValue<>(() -> {
-        var costs = costCalculation.get();
-        return Quote.of(costs.fifoCost().getCurrencyCode(), Math.round(costs.fifoCost().getAmount()
-                        / (double) costs.sharesHeld() * Values.Share.factor() * Values.Quote.factorToMoney()));
-    });
-
-    /**
-     * cost per shares held including fee
-     */
-    private final LazyValue<Quote> grossMovingAverageCostPerSharesHeld = new LazyValue<>(() -> {
-        var costs = costCalculation.get();
-        return Quote.of(costs.movingAverageCost().getCurrencyCode(), Math.round(costs.movingAverageCost().getAmount()
-                        / (double) costs.sharesHeld() * Values.Share.factor() * Values.Quote.factorToMoney()));
-    });
+            case MOVING_AVERAGE -> taxesAndFees == TaxesAndFees.INCLUDED ? costCalculation.get().movingAverageCost()
+                            : costCalculation.get().netMovingAverageCost();
+        };
+    }
 
     private final LazyValue<DividendCalculationResult> dividendCalculation = new LazyValue<>(() -> {
         // ensure cost calculation is done (and has calculated
@@ -265,19 +190,9 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
     private final LazyValue<CapitalGainsCalculation> capitalGains = new LazyValue<>(
                     () -> Calculation.perform(CapitalGainsCalculation.class, converter, security, lineItems));
 
-    private final LazyValue<CapitalGainsRecord> realizedCapitalGains = new LazyValue<>(
-                    () -> capitalGains.get().getRealizedCapitalGains());
-    private final LazyValue<CapitalGainsRecord> unrealizedCapitalGains = new LazyValue<>(
-                    () -> capitalGains.get().getUnrealizedCapitalGains());
-
     private final LazyValue<CapitalGainsCalculationMovingAverage> capitalGainsMovingAvg = new LazyValue<>(
                     () -> Calculation.perform(CapitalGainsCalculationMovingAverage.class, converter, security,
                                     lineItems));
-
-    private final LazyValue<CapitalGainsRecord> realizedCapitalGainsMovingAvg = new LazyValue<>(
-                    () -> capitalGainsMovingAvg.get().getRealizedCapitalGains());
-    private final LazyValue<CapitalGainsRecord> unrealizedCapitalGainsMovingAvg = new LazyValue<>(
-                    () -> capitalGainsMovingAvg.get().getUnrealizedCapitalGains());
 
     /* package */ LazySecurityPerformanceRecord(Client client, Security security, CurrencyConverter converter,
                     Interval interval)
@@ -340,39 +255,30 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
         return quote;
     }
 
-    public LazyValue<Money> getFifoCost()
+    /**
+     * cost of shares held
+     */
+    public Money getCost(CostMethod costMethod, TaxesAndFees taxesAndFees)
     {
-        return fifoCost;
+        return getCostMoney(costMethod, taxesAndFees);
     }
 
-    public LazyValue<Money> getMovingAverageCost()
+    public LazyValue<Money> getCapitalGainsOnHoldings(CostMethod costMethod)
     {
-        return movingAverageCost;
+        return new LazyValue<>(() -> marketValue.get().subtract(getCostMoney(costMethod, TaxesAndFees.INCLUDED)));
     }
 
-    public LazyValue<Money> getMovingAverageCostWithoutTaxesAndFees()
+    public LazyValue<Double> getCapitalGainsOnHoldingsPercent(CostMethod costMethod)
     {
-        return movingAverageCostWithoutTaxesAndFees;
-    }
+        return new LazyValue<>(() -> {
+            var mv = marketValue.get();
+            var cost = getCostMoney(costMethod, TaxesAndFees.INCLUDED);
 
-    public LazyValue<Money> getCapitalGainsOnHoldings()
-    {
-        return capitalGainsOnHoldings;
-    }
-
-    public LazyValue<Double> getCapitalGainsOnHoldingsPercent()
-    {
-        return capitalGainsOnHoldingsPercent;
-    }
-
-    public LazyValue<Money> getCapitalGainsOnHoldingsMovingAverage()
-    {
-        return capitalGainsOnHoldingsMovingAverage;
-    }
-
-    public LazyValue<Double> getCapitalGainsOnHoldingsMovingAveragePercent()
-    {
-        return capitalGainsOnHoldingsMovingAveragePercent;
+            if (mv.getAmount() == 0L && cost.getAmount() == 0L)
+                return 0d;
+            else
+                return ((double) mv.getAmount() / (double) cost.getAmount()) - 1;
+        });
     }
 
     public LazyValue<Money> getFees()
@@ -390,24 +296,26 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
         return new LazyValue<>(() -> costCalculation.get().sharesHeld());
     }
 
-    public LazyValue<Quote> getFifoCostPerSharesHeld()
+    public LazyValue<Quote> getCostPerSharesHeld(CostMethod costMethod)
     {
-        return fifoCostPerSharesHeld;
+        return new LazyValue<>(() -> {
+            var costs = costCalculation.get();
+            Money cost = getCostMoney(costMethod, TaxesAndFees.NOT_INCLUDED);
+
+            return Quote.of(cost.getCurrencyCode(), Math.round(cost.getAmount() / (double) costs.sharesHeld()
+                            * Values.Share.factor() * Values.Quote.factorToMoney()));
+        });
     }
 
-    public LazyValue<Quote> getMovingAverageCostPerSharesHeld()
+    public LazyValue<Quote> getGrossCostPerSharesHeld(CostMethod costMethod)
     {
-        return movingAverageCostPerSharesHeld;
-    }
+        return new LazyValue<>(() -> {
+            var costs = costCalculation.get();
+            var cost = getCostMoney(costMethod, TaxesAndFees.INCLUDED);
 
-    public LazyValue<Quote> getGrossFifoCostPerSharesHeld()
-    {
-        return grossFifoCostPerSharesHeld;
-    }
-
-    public LazyValue<Quote> getGrossMovingAverageCostPerSharesHeld()
-    {
-        return grossMovingAverageCostPerSharesHeld;
+            return Quote.of(cost.getCurrencyCode(), Math.round(cost.getAmount() / (double) costs.sharesHeld()
+                            * Values.Share.factor() * Values.Quote.factorToMoney()));
+        });
     }
 
     public LazyValue<Money> getSumOfDividends()
@@ -441,46 +349,34 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
         return new LazyValue<>(() -> dividendCalculation.get().rateOfReturnPerYear());
     }
 
-    public LazyValue<Double> getTotalRateOfReturnDiv()
+    public LazyValue<Double> getTotalRateOfReturnDiv(CostMethod costMethod)
     {
         return new LazyValue<>(() -> {
             var costs = costCalculation.get();
+            var cost = getCostMoney(costMethod, TaxesAndFees.INCLUDED);
+
             return costs.sharesHeld() > 0
-                            ? (double) dividendCalculation.get().sum().getAmount()
-                                            / (double) costs.fifoCost().getAmount()
+                            ? (double) dividendCalculation.get().sum().getAmount() / (double) cost.getAmount()
                             : 0;
         });
     }
 
-    public LazyValue<Double> getTotalRateOfReturnDivMovingAverage()
+    public LazyValue<CapitalGainsRecord> getRealizedCapitalGains(CostMethod costMethod)
     {
-        return new LazyValue<>(() -> {
-            var costs = costCalculation.get();
-            return costs.sharesHeld() > 0
-                            ? (double) dividendCalculation.get().sum().getAmount()
-                                            / (double) costs.movingAverageCost().getAmount()
-                            : 0;
+        return new LazyValue<>(() -> switch (costMethod)
+        {
+            case FIFO -> capitalGains.get().getRealizedCapitalGains();
+            case MOVING_AVERAGE -> capitalGainsMovingAvg.get().getRealizedCapitalGains();
         });
     }
 
-    public LazyValue<CapitalGainsRecord> getRealizedCapitalGains()
+    public LazyValue<CapitalGainsRecord> getUnrealizedCapitalGains(CostMethod costMethod)
     {
-        return realizedCapitalGains;
-    }
-
-    public LazyValue<CapitalGainsRecord> getUnrealizedCapitalGains()
-    {
-        return unrealizedCapitalGains;
-    }
-
-    public LazyValue<CapitalGainsRecord> getRealizedCapitalGainsMovingAvg()
-    {
-        return realizedCapitalGainsMovingAvg;
-    }
-
-    public LazyValue<CapitalGainsRecord> getUnrealizedCapitalGainsMovingAvg()
-    {
-        return unrealizedCapitalGainsMovingAvg;
+        return new LazyValue<>(() -> switch (costMethod)
+        {
+            case FIFO -> capitalGains.get().getUnrealizedCapitalGains();
+            case MOVING_AVERAGE -> capitalGainsMovingAvg.get().getUnrealizedCapitalGains();
+        });
     }
 
     @Override
@@ -508,13 +404,17 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
             case Trails.FIFO_COST:
                 return Trail.of(getSecurityName(), costCalculation.get().fifoCostTrail());
             case Trails.REALIZED_CAPITAL_GAINS:
-                return Trail.of(getSecurityName(), getRealizedCapitalGains().get().getCapitalGainsTrail());
+                return Trail.of(getSecurityName(),
+                                getRealizedCapitalGains(CostMethod.FIFO).get().getCapitalGainsTrail());
             case Trails.REALIZED_CAPITAL_GAINS_FOREX:
-                return Trail.of(getSecurityName(), getRealizedCapitalGains().get().getForexCapitalGainsTrail());
+                return Trail.of(getSecurityName(),
+                                getRealizedCapitalGains(CostMethod.FIFO).get().getForexCapitalGainsTrail());
             case Trails.UNREALIZED_CAPITAL_GAINS:
-                return Trail.of(getSecurityName(), getUnrealizedCapitalGains().get().getCapitalGainsTrail());
+                return Trail.of(getSecurityName(),
+                                getUnrealizedCapitalGains(CostMethod.FIFO).get().getCapitalGainsTrail());
             case Trails.UNREALIZED_CAPITAL_GAINS_FOREX:
-                return Trail.of(getSecurityName(), getUnrealizedCapitalGains().get().getForexCapitalGainsTrail());
+                return Trail.of(getSecurityName(),
+                                getUnrealizedCapitalGains(CostMethod.FIFO).get().getForexCapitalGainsTrail());
             default:
                 return Optional.empty();
         }

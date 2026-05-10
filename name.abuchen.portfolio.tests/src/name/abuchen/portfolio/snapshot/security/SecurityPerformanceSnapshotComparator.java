@@ -3,6 +3,9 @@ package name.abuchen.portfolio.snapshot.security;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import name.abuchen.portfolio.model.CostMethod;
+import name.abuchen.portfolio.model.TaxesAndFees;
+
 /**
  * Compares the result of security with the result of the lazy security
  * performance snapshot.
@@ -44,29 +47,30 @@ public class SecurityPerformanceSnapshotComparator
             assertThat(left.getLastDividendPayment(), is(right.getLastDividendPayment().get()));
             assertThat(left.getPeriodicity(), is(right.getPeriodicity().get()));
             
-            assertThat(left.getTotalRateOfReturnDiv(), is(right.getTotalRateOfReturnDiv().get()));
+            assertThat(left.getTotalRateOfReturnDiv(), is(right.getTotalRateOfReturnDiv(CostMethod.FIFO).get()));
             assertThat(left.getTotalRateOfReturnDivMovingAverage(),
-                            is(right.getTotalRateOfReturnDivMovingAverage().get()));
+                            is(right.getTotalRateOfReturnDiv(CostMethod.MOVING_AVERAGE).get()));
 
             assertThat(left.getRealizedCapitalGains().getCapitalGains(),
-                            is(right.getRealizedCapitalGains().get().getCapitalGains()));
+                            is(right.getRealizedCapitalGains(CostMethod.FIFO).get().getCapitalGains()));
             assertThat(left.getRealizedCapitalGains().getForexCaptialGains(),
-                            is(right.getRealizedCapitalGains().get().getForexCaptialGains()));
+                            is(right.getRealizedCapitalGains(CostMethod.FIFO).get().getForexCaptialGains()));
 
             assertThat(left.getUnrealizedCapitalGains().getCapitalGains(),
-                            is(right.getUnrealizedCapitalGains().get().getCapitalGains()));
+                            is(right.getUnrealizedCapitalGains(CostMethod.FIFO).get().getCapitalGains()));
             assertThat(left.getUnrealizedCapitalGains().getForexCaptialGains(),
-                            is(right.getUnrealizedCapitalGains().get().getForexCaptialGains()));
+                            is(right.getUnrealizedCapitalGains(CostMethod.FIFO).get().getForexCaptialGains()));
 
             assertThat(left.getRealizedCapitalGainsMovingAvg().getCapitalGains(),
-                            is(right.getRealizedCapitalGainsMovingAvg().get().getCapitalGains()));
+                            is(right.getRealizedCapitalGains(CostMethod.MOVING_AVERAGE).get().getCapitalGains()));
             assertThat(left.getRealizedCapitalGainsMovingAvg().getForexCaptialGains(),
-                            is(right.getRealizedCapitalGainsMovingAvg().get().getForexCaptialGains()));
+                            is(right.getRealizedCapitalGains(CostMethod.MOVING_AVERAGE).get()
+                                            .getForexCaptialGains()));
 
             assertThat(left.getUnrealizedCapitalGainsMovingAvg().getCapitalGains(),
-                            is(right.getUnrealizedCapitalGainsMovingAvg().get().getCapitalGains()));
+                            is(right.getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE).get().getCapitalGains()));
             assertThat(left.getUnrealizedCapitalGainsMovingAvg().getForexCaptialGains(),
-                            is(right.getUnrealizedCapitalGainsMovingAvg().get().getForexCaptialGains()));
+                            is(right.getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE).get().getForexCaptialGains()));
 
             assertCosts(left, right);
 
@@ -89,15 +93,22 @@ public class SecurityPerformanceSnapshotComparator
         assertThat(left.getMarketValue(), is(right.getMarketValue().get()));
         assertThat(left.getQuote(), is(right.getQuote().get()));
 
-        assertThat(left.getFifoCost(), is(right.getFifoCost().get()));
-        assertThat(left.getMovingAverageCost(), is(right.getMovingAverageCost().get()));
-        assertThat(left.getCapitalGainsOnHoldings(), is(right.getCapitalGainsOnHoldings().get()));
-        assertThat(left.getCapitalGainsOnHoldingsPercent(), is(right.getCapitalGainsOnHoldingsPercent().get()));
+        assertThat(left.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
+                        is(right.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED)));
+        assertThat(left.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED),
+                        is(right.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED)));
+
+        assertThat(left.getCapitalGainsOnHoldings(), is(right.getCapitalGainsOnHoldings(CostMethod.FIFO).get()));
+        assertThat(left.getCapitalGainsOnHoldingsPercent(),
+                        is(right.getCapitalGainsOnHoldingsPercent(CostMethod.FIFO).get()));
+
         assertThat(left.getCapitalGainsOnHoldingsMovingAverage(),
-                        is(right.getCapitalGainsOnHoldingsMovingAverage().get()));
+                        is(right.getCapitalGainsOnHoldings(CostMethod.MOVING_AVERAGE).get()));
         assertThat(left.getCapitalGainsOnHoldingsMovingAveragePercent(),
-                        is(right.getCapitalGainsOnHoldingsMovingAveragePercent().get()));
-        assertThat(left.getFifoCostPerSharesHeld(), is(right.getFifoCostPerSharesHeld().get()));
+                        is(right.getCapitalGainsOnHoldingsPercent(CostMethod.MOVING_AVERAGE).get()));
+
+        assertThat(left.getCostPerSharesHeld(CostMethod.FIFO), is(right.getCostPerSharesHeld(CostMethod.FIFO).get()));
+
         assertThat(left.getSharesHeld(), is(right.getSharesHeld().get()));
         assertThat(left.getFees(), is(right.getFees().get()));
         assertThat(left.getTaxes(), is(right.getTaxes().get()));

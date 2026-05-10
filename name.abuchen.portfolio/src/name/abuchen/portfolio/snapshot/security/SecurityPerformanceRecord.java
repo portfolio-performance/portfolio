@@ -17,10 +17,12 @@ import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
@@ -37,6 +39,9 @@ import name.abuchen.portfolio.util.Interval;
 public final class SecurityPerformanceRecord extends BaseSecurityPerformanceRecord
                 implements Adaptable, TrailProvider, SecurityPerformanceIndicator.Costs
 {
+    private Money netFifoCost;
+    private Money netMovingAverageCost;
+
     /**
      * internal rate of return of security {@link #calculateIRR()}
      */
@@ -89,14 +94,13 @@ public final class SecurityPerformanceRecord extends BaseSecurityPerformanceReco
     private SecurityPrice quote;
 
     /**
-     * fifo cost of shares held {@link #calculateFifoAndMovingAverageCosts()}
+     * fifo cost of shares held {@link #calculateCosts()}
      */
     private Money fifoCost;
     private TrailRecord fifoCostTrail;
 
     /**
-     * moving average cost of shares held
-     * {@link #calculateFifoAndMovingAverageCosts()}
+     * moving average cost of shares held {@link #calculateCosts()}
      */
     private Money movingAverageCost;
 
@@ -111,17 +115,17 @@ public final class SecurityPerformanceRecord extends BaseSecurityPerformanceReco
     private Money taxes;
 
     /**
-     * shares held {@link #calculateFifoAndMovingAverageCosts()}
+     * shares held {@link #calculateCosts()}
      */
     private long sharesHeld;
 
     /**
-     * cost per shares held {@link #calculateFifoAndMovingAverageCosts()}
+     * cost per shares held {@link #calculateCosts()}
      */
     private Quote fifoCostPerSharesHeld;
 
     /**
-     * cost per shares held {@link #calculateFifoAndMovingAverageCosts()}
+     * cost per shares held {@link #calculateCosts()}
      */
     private Quote movingAverageCostPerSharesHeld;
 
@@ -152,8 +156,7 @@ public final class SecurityPerformanceRecord extends BaseSecurityPerformanceReco
     private double rateOfReturnPerYear;
 
     /**
-     * market value - fifo cost of shares held
-     * {@link #calculateFifoAndMovingAverageCosts()}
+     * market value - fifo cost of shares held {@link #calculateCosts()}
      */
     private Money capitalGainsOnHoldings;
 
@@ -164,7 +167,7 @@ public final class SecurityPerformanceRecord extends BaseSecurityPerformanceReco
 
     /**
      * market value - moving average cost of shares held
-     * {@link #calculateFifoAndMovingAverageCosts()}
+     * {@link #calculateCosts()}
      */
     private Money capitalGainsOnHoldingsMovingAverage;
 
@@ -250,15 +253,23 @@ public final class SecurityPerformanceRecord extends BaseSecurityPerformanceReco
     }
 
     @Override
-    public Money getFifoCost()
+    public Money getCost(CostMethod method, TaxesAndFees taxesAndFees)
     {
-        return fifoCost;
+        return switch (method)
+        {
+            case FIFO -> taxesAndFees == TaxesAndFees.INCLUDED ? fifoCost : netFifoCost;
+            case MOVING_AVERAGE -> taxesAndFees == TaxesAndFees.INCLUDED ? movingAverageCost : netMovingAverageCost;
+        };
     }
 
     @Override
-    public Money getMovingAverageCost()
+    public Quote getCostPerSharesHeld(CostMethod method)
     {
-        return movingAverageCost;
+        return switch (method)
+        {
+            case FIFO -> fifoCostPerSharesHeld;
+            case MOVING_AVERAGE -> movingAverageCostPerSharesHeld;
+        };
     }
 
     public Money getCapitalGainsOnHoldings()
@@ -294,18 +305,6 @@ public final class SecurityPerformanceRecord extends BaseSecurityPerformanceReco
     public long getSharesHeld()
     {
         return sharesHeld;
-    }
-
-    @Override
-    public Quote getFifoCostPerSharesHeld()
-    {
-        return fifoCostPerSharesHeld;
-    }
-
-    @Override
-    public Quote getMovingAverageCostPerSharesHeld()
-    {
-        return movingAverageCostPerSharesHeld;
     }
 
     public Money getSumOfDividends()
@@ -434,7 +433,7 @@ public final class SecurityPerformanceRecord extends BaseSecurityPerformanceReco
 
             if (flags.isEmpty() || flags.contains(SecurityPerformanceIndicator.Costs.class))
             {
-                calculateFifoAndMovingAverageCosts(converter);
+                calculateCosts(converter);
             }
 
             if (flags.isEmpty())
@@ -492,20 +491,22 @@ public final class SecurityPerformanceRecord extends BaseSecurityPerformanceReco
         this.deltaPercent = calculation.getDeltaPercent();
     }
 
-    private void calculateFifoAndMovingAverageCosts(CurrencyConverter converter)
+    private void calculateCosts(CurrencyConverter converter)
     {
         CostCalculation cost = Calculation.perform(CostCalculation.class, converter, security, lineItems);
-        this.fifoCost = cost.getFifoCost();
+        this.fifoCost = cost.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED);
+        this.netFifoCost = cost.getCost(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED);
+
         this.fifoCostTrail = cost.getFifoCostTrail();
-        this.movingAverageCost = cost.getMovingAverageCost();
+        this.movingAverageCost = cost.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED);
+        this.netMovingAverageCost = cost.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.NOT_INCLUDED);
 
-        Money netFifoCost = cost.getNetFifoCost();
+        this.fifoCostPerSharesHeld = Quote.of(this.netFifoCost.getCurrencyCode(),
+                        Math.round(this.netFifoCost.getAmount() / (double) sharesHeld * Values.Share.factor()
+                                        * Values.Quote.factorToMoney()));
 
-        this.fifoCostPerSharesHeld = Quote.of(netFifoCost.getCurrencyCode(), Math.round(netFifoCost.getAmount()
-                        / (double) sharesHeld * Values.Share.factor() * Values.Quote.factorToMoney()));
-        Money netMovingAverageCost = cost.getNetMovingAverageCost();
-        this.movingAverageCostPerSharesHeld = Quote.of(netMovingAverageCost.getCurrencyCode(),
-                        Math.round(netMovingAverageCost.getAmount() / (double) sharesHeld * Values.Share.factor()
+        this.movingAverageCostPerSharesHeld = Quote.of(this.netMovingAverageCost.getCurrencyCode(),
+                        Math.round(this.netMovingAverageCost.getAmount() / (double) sharesHeld * Values.Share.factor()
                                         * Values.Quote.factorToMoney()));
 
         this.fees = cost.getFees();

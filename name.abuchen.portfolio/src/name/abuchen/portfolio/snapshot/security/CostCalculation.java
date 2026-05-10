@@ -7,8 +7,10 @@ import java.util.List;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -249,27 +251,19 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
         taxes += t.getTransaction().orElseThrow(IllegalArgumentException::new).getUnitSum(Unit.Type.TAX, converter)
                         .getAmount();
 
-        t.setFifoCost(getFifoCost());
-        t.setMovingAverageCost(getMovingAverageCost());
+        t.setFifoCost(getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED));
+        t.setMovingAverageCost(getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED));
         t.setTotalShares(getSharesHeld());
     }
 
     public CostCalculationResult getResult()
     {
-        return new CostCalculationResult(getSharesHeld(), getFifoCost(), getFifoCostTrail(), getNetFifoCost(),
-                        getMovingAverageCost(), getNetMovingAverageCost(), getFees(), getTaxes());
+        return new CostCalculationResult(getSharesHeld(), getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
+                        getFifoCostTrail(), getCost(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED),
+                        getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED),
+                        getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.NOT_INCLUDED), getFees(), getTaxes());
     }
 
-    /**
-     * gross investment
-     */
-    public Money getFifoCost()
-    {
-        long cost = 0;
-        for (LineItem entry : fifo)
-            cost += entry.grossAmount;
-        return Money.of(getTermCurrency(), cost);
-    }
 
     public TrailRecord getFifoCostTrail()
     {
@@ -277,33 +271,6 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                         .map(entry -> entry.trail.fraction(Money.of(getTermCurrency(), entry.grossAmount), entry.shares,
                                         entry.originalShares))
                         .toList());
-    }
-
-    /**
-     * net investment, i.e. without fees and taxes
-     */
-    public Money getNetFifoCost()
-    {
-        long cost = 0;
-        for (LineItem entry : fifo)
-            cost += entry.netAmount;
-        return Money.of(getTermCurrency(), cost);
-    }
-
-    /**
-     * gross investment
-     */
-    public Money getMovingAverageCost()
-    {
-        return Money.of(getTermCurrency(), movingRelativeCost);
-    }
-
-    /**
-     * net investment, i.e. without fees and taxes
-     */
-    public Money getNetMovingAverageCost()
-    {
-        return Money.of(getTermCurrency(), movingRelativeNetCost);
     }
 
     private long getSharesHeld()
@@ -324,4 +291,20 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
         return Money.of(getTermCurrency(), taxes);
     }
 
+    public Money getCost(CostMethod method, TaxesAndFees taxesAndFees)
+    {
+        return Money.of(getTermCurrency(), switch (method)
+        {
+            case FIFO -> sumFifo(taxesAndFees);
+            case MOVING_AVERAGE -> taxesAndFees == TaxesAndFees.INCLUDED ? movingRelativeCost : movingRelativeNetCost;
+        });
+    }
+
+    private long sumFifo(TaxesAndFees taxesAndFees)
+    {
+        long cost = 0;
+        for (LineItem entry : fifo)
+            cost += taxesAndFees == TaxesAndFees.INCLUDED ? entry.grossAmount : entry.netAmount;
+        return cost;
+    }
 }

@@ -11,7 +11,9 @@ import org.junit.Test;
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
@@ -48,7 +50,8 @@ public class Issue1498FifoCrossPortfolioTest
         SecurityPerformanceSnapshot securitySnapshot = SecurityPerformanceSnapshot.create(client, converter, period);
         SecurityPerformanceRecord securityRecord = securitySnapshot.getRecords().get(0);
         assertThat(securityRecord.getSecurity(), is(lufthansa));
-        assertThat(securityRecord.getFifoCost(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1150))));
+        assertThat(securityRecord.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1150))));
         
         new SecurityPerformanceSnapshotComparator(securitySnapshot,
                         LazySecurityPerformanceSnapshot.create(client, converter, period)).compare();

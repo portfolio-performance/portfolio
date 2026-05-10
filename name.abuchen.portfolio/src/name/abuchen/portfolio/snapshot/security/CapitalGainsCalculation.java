@@ -20,7 +20,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 
-/* package */class CapitalGainsCalculation extends Calculation
+/* package */class CapitalGainsCalculation extends AbstractCapitalGainsCalculation
 {
     private static class LineItem
     {
@@ -51,16 +51,6 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
     }
 
     private List<LineItem> fifo = new ArrayList<>();
-
-    private CapitalGainsRecord realizedCapitalGains;
-    private CapitalGainsRecord unrealizedCapitalGains;
-
-    @Override
-    public void prepare()
-    {
-        this.realizedCapitalGains = new CapitalGainsRecord(getSecurity(), getTermCurrency());
-        this.unrealizedCapitalGains = new CapitalGainsRecord(getSecurity(), getTermCurrency());
-    }
 
     @Override
     public void visit(CurrencyConverter converter, CalculationLineItem.ValuationAtStart valuation)
@@ -392,15 +382,4 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
         fifo.removeAll(itemsToSquash);
         fifo.add(0, replacement);
     }
-
-    public CapitalGainsRecord getRealizedCapitalGains()
-    {
-        return realizedCapitalGains;
-    }
-
-    public CapitalGainsRecord getUnrealizedCapitalGains()
-    {
-        return unrealizedCapitalGains;
-    }
-
 }

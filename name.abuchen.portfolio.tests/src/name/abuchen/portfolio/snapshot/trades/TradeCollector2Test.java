@@ -15,8 +15,10 @@ import org.junit.Test;
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
@@ -96,7 +98,9 @@ public class TradeCollector2Test
                         Interval.of(LocalDate.MIN, LocalDate.now()));
         var securityRecord = snapshot.getRecord(att).get();
 
-        assertThat(secondTrade.getEntryValue(), is(securityRecord.getFifoCost().get()));
-        assertThat(secondTrade.getEntryValueMovingAverage(), is(securityRecord.getMovingAverageCost().get()));
+        assertThat(secondTrade.getEntryValue(),
+                        is(securityRecord.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED)));
+        assertThat(secondTrade.getEntryValueMovingAverage(),
+                        is(securityRecord.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED)));
     }
 }

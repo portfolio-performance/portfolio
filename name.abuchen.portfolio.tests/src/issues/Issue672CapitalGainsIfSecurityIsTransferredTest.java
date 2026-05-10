@@ -12,7 +12,9 @@ import org.junit.Test;
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
@@ -50,7 +52,8 @@ public class Issue672CapitalGainsIfSecurityIsTransferredTest
         SecurityPerformanceRecord record = snapshot.getRecords().get(0);
 
         assertThat(record.getMarketValue(), is(Money.of(CurrencyUnit.EUR, Values.Money.factorize(971.41))));
-        assertThat(record.getFifoCost(), is(Money.of(CurrencyUnit.EUR, Values.Money.factorize(883.1))));
+        assertThat(record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
+                        is(Money.of(CurrencyUnit.EUR, Values.Money.factorize(883.1))));
         assertThat(record.getCapitalGainsOnHoldings(), is(Money.of(CurrencyUnit.EUR, Values.Money.factorize(88.31))));
         assertThat(record.getCapitalGainsOnHoldingsPercent(), is(IsCloseTo.closeTo(0.1d, 0.0000000001)));
     }

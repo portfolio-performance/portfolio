@@ -11,9 +11,11 @@ import org.junit.Test;
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
@@ -62,6 +64,7 @@ public class Issue371PurchaseValueWithTransfersTest
         assertThat(securityPosition.getShares(), is(securityRecord.getSharesHeld()));
         assertThat(securityPosition.calculateValue(), is(securityRecord.getMarketValue()));
 
-        assertThat(securityRecord.getFifoCost(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2397.6))));
+        assertThat(securityRecord.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2397.6))));
     }
 }
