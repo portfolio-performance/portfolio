@@ -1933,10 +1933,10 @@ public class SecuritiesChart
         switch (costMethod)
         {
             case FIFO:
-                purchasePricePerShare = r.get().getFifoCostPerSharesHeld().get();
+                purchasePricePerShare = r.get().getCostPerSharesHeld(CostMethod.FIFO).get();
                 break;
             case MOVING_AVERAGE:
-                purchasePricePerShare = r.get().getMovingAverageCostPerSharesHeld().get();
+                purchasePricePerShare = r.get().getCostPerSharesHeld(CostMethod.MOVING_AVERAGE).get();
                 break;
             default:
                 throw new IllegalArgumentException("unsupported cost method: " + costMethod); //$NON-NLS-1$

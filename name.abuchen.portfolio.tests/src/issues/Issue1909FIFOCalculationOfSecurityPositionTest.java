@@ -11,7 +11,9 @@ import org.junit.Test;
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
@@ -50,11 +52,14 @@ public class Issue1909FIFOCalculationOfSecurityPositionTest
 
         assertThat(record.getSecurity(), is(security));
 
-        assertThat(record.getFifoCost(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2000))));
-        assertThat(record.getFifoCostPerSharesHeld(), is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(200))));
+        assertThat(record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2000))));
+        assertThat(record.getCostPerSharesHeld(CostMethod.FIFO),
+                        is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(200))));
 
-        assertThat(record.getMovingAverageCost(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1500))));
-        assertThat(record.getMovingAverageCostPerSharesHeld(),
+        assertThat(record.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1500))));
+        assertThat(record.getCostPerSharesHeld(CostMethod.MOVING_AVERAGE),
                         is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(150))));
 
         assertThat(record.getCapitalGainsOnHoldings(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(805))));
