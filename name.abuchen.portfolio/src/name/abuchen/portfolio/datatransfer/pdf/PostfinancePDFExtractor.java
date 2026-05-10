@@ -892,6 +892,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                                                         + "|(KAUF\\/)?ONLINE( S.*|-S.*)(.*\\.[\\d]{4})?" //
                                                                         + "|BARGELDBEZUG( VOM)?(.*\\.[\\d]{4})?" //
                                                                         + "|TWINT .*(ENDEN|DIENSTLEISTUNG)( VOM)?" //
+                                                                        + "|PF PAY KAUF\\/ONLINE( S.*|-S.*)( VOM)?(.*\\.[\\d]{4})?" //
                                                                         + "|E\\-FINANCE .*\\-[\\d]+" //
                                                                         + "|AUFTRAG DEBIT DIRECT" //
                                                                         + "|.BERWEISUNG AUF KONTO)) " //
@@ -932,6 +933,18 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                                                     note = "Giro Bank";
                                                                 else
                                                                     note = "";
+                                                            }
+                                                            else if (note.contains("PF PAY KAUF/ONLINE"))
+                                                            {
+                                                                if (note.matches("^.*\\.[\\d]{4}$"))
+                                                                {
+                                                                    var parts = note.split("OM");
+                                                                    note = concatenate("PF Pay Kauf/Online Shopping vom", stripBlanks(parts[1]), " ");
+                                                                }
+                                                                else
+                                                                {
+                                                                    note = "PF Pay Kauf/Online Shopping";
+                                                                }
                                                             }
                                                             else if (note.contains("KAUF/ONLINE"))
                                                             {
