@@ -43,6 +43,7 @@ import name.abuchen.portfolio.ui.util.swt.ActiveShell;
 import name.abuchen.portfolio.ui.views.AccountListView;
 import name.abuchen.portfolio.ui.views.AllTransactionsView;
 import name.abuchen.portfolio.ui.views.BrowserTestView;
+import name.abuchen.portfolio.ui.views.CorrelationListView;
 import name.abuchen.portfolio.ui.views.GroupedAccountsListView;
 import name.abuchen.portfolio.ui.views.InvestmentPlanListView;
 import name.abuchen.portfolio.ui.views.PerformanceChartView;
@@ -503,6 +504,7 @@ public final class Navigation
         performance.add(new Item(Messages.LabelSecurities, SecuritiesPerformanceView.class));
         performance.add(new Item(Messages.LabelPayments, PaymentsView.class, true));
         performance.add(new Item(Messages.LabelTrades, TradeDetailsView.class));
+        performance.add(new Item(Messages.LabelCorrelationMatrix, CorrelationListView.class));
     }
 
     private void createTaxonomyDataSection(Client client)
