@@ -42,8 +42,8 @@ public class PaymentsYearlyOverviewTab implements PaymentsTab
     @Inject
     private PaymentsViewModel model;
 
-    private DateTimeFormatter formatterM = DateTimeFormatter.ofPattern("MMMM"); //$NON-NLS-1$
-    private DateTimeFormatter formatterMY = DateTimeFormatter.ofPattern("MMMM yyyy"); //$NON-NLS-1$
+    private DateTimeFormatter formatterM = DateTimeFormatter.ofPattern("LLLL"); //$NON-NLS-1$
+    private DateTimeFormatter formatterMY = DateTimeFormatter.ofPattern("LLLL yyyy"); //$NON-NLS-1$
 
     private Composite container;
     private ScrolledComposite scrolledComposite;
