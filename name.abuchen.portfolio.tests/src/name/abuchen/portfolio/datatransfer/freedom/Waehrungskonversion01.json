@@ -1,0 +1,19 @@
+{
+  "trades": {
+    "detailed": [
+      {
+        "trade_id": 700123456,
+        "order_id": "600456789",
+        "date": "2026-02-05 10:17:43",
+        "instr_nm": "USD/EUR",
+        "instr_type": 6,
+        "operation": "buy",
+        "curr_c": "EUR",
+        "p": 0.91050,
+        "q": 3000.00,
+        "summ": 2731.50,
+        "commission": 0
+      }
+    ]
+  }
+}

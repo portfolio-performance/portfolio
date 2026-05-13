@@ -4,7 +4,6 @@ Bundle-Name: Portfolio Performance Bootstrap
 Bundle-SymbolicName: name.abuchen.portfolio.bootstrap;singleton:=true
 Bundle-Version: 0.83.3.qualifier
 Export-Package: name.abuchen.portfolio.bootstrap
-Import-Package: jakarta.inject
 Bundle-RequiredExecutionEnvironment: JavaSE-21
 Require-Bundle: org.eclipse.emf.common,
  org.eclipse.e4.ui.workbench.addons.swt,
@@ -25,5 +24,6 @@ Require-Bundle: org.eclipse.emf.common,
  org.eclipse.core.runtime,
  org.eclipse.e4.core.di.annotations,
  org.osgi.service.event,
- org.eclipse.e4.ui.services
+ org.eclipse.e4.ui.services,
+ jakarta.inject.jakarta.inject-api;bundle-version="2.0.1"
 Automatic-Module-Name: name.abuchen.portfolio.bootstrap

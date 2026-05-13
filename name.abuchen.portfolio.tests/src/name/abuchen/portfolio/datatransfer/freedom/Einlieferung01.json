@@ -1,0 +1,24 @@
+{
+  "securities_in_outs": [
+    {
+      "datetime": "2026-02-01 08:30:00",
+      "ticker": "NVDA.US",
+      "quantity": "1.00000000",
+      "type": "stock_award",
+      "balance_currency": "USD",
+      "comment": "Account credited with stocks: Promo 200:WELCOME"
+    }
+  ],
+  "in_outs_securities": {
+    "detailed": [
+      {
+        "date": "2026-02-01 08:30:00",
+        "ticker": "NVDA.US",
+        "isin": "US67066G1040",
+        "type": "Geschenkaktionen",
+        "quantity": 1,
+        "comment": "Account credited with stocks: Promo 200:WELCOME"
+      }
+    ]
+  }
+}
