@@ -7,10 +7,12 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.function.DoubleBinaryOperator;
 import java.util.function.ToDoubleFunction;
 
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.views.dashboard.ClientFilterConfig;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardData;
 import name.abuchen.portfolio.ui.views.dashboard.DataSeriesConfig;
 import name.abuchen.portfolio.ui.views.dashboard.ReportingPeriodConfig;
@@ -25,6 +27,7 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget<Double>
 
         addConfig(new ColorSchemaConfig(this));
         addConfig(new HeatmapOrnamentConfig(this));
+        addConfig(new ClientFilterConfig(this));
         addConfig(new DataSeriesConfig(this, true));
         addConfig(new ExcessReturnDataSeriesConfig(this));
         addConfig(new ExcessReturnOperatorConfig(this));
@@ -45,7 +48,12 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget<Double>
                         interval.getEnd().with(TemporalAdjusters.lastDayOfMonth()));
 
         DataSeries dataSeries = get(DataSeriesConfig.class).getDataSeries();
-        PerformanceIndex performanceIndex = getDashboardData().calculate(dataSeries, calcInterval);
+
+        var selectedFilter = get(ClientFilterConfig.class).getSelectedFilter();
+        Client filteredClient = selectedFilter.filter(getClient());
+
+        PerformanceIndex performanceIndex = getDashboardData().getDataSeriesCache().lookup(dataSeries, filteredClient,
+                        selectedFilter.toString(), interval);
 
         // build functions to calculate performance and sum values
 
