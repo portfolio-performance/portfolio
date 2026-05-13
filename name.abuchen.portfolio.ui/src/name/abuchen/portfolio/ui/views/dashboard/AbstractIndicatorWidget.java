@@ -34,7 +34,25 @@ public abstract class AbstractIndicatorWidget<D> extends WidgetDelegate<D>
     {
         super(widget, dashboardData);
 
-        addConfig(new DataSeriesConfig(this, supportsBenchmarks, predicate));
+        addConfig(new ClientFilterConfig(this));
+        addConfig(new DataSeriesConfig(this, supportsBenchmarks, dataSeries -> {
+            if (predicate != null && !predicate.test(dataSeries))
+                return false;
+
+            switch (dataSeries.getType())
+            {
+                case CLIENT:
+                case CLIENT_PRETAX:
+                case SECURITY:
+                case CLASSIFICATION:
+                case SECURITY_BENCHMARK:
+                case DERIVED_DATA_SERIES:
+                    return true;
+
+                default:
+                    return false;
+            }
+        }));
         addConfig(new ReportingPeriodConfig(this));
     }
 
