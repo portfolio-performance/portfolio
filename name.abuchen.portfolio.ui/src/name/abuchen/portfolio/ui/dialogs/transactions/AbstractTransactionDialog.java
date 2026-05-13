@@ -42,8 +42,8 @@ import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -53,9 +53,11 @@ import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.CurrencyUnitResolver;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -73,6 +75,13 @@ import name.abuchen.portfolio.ui.util.text.DecimalKeypadSupport;
 
 public abstract class AbstractTransactionDialog extends TitleAreaDialog
 {
+    private Client client;
+
+    protected void setClient(Client client)
+    {
+        this.client = client;
+    }
+
     public class Input
     {
         public final Label label;
@@ -204,7 +213,7 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
         public CurrencyInput(Composite editArea)
         {
             List<CurrencyUnit> units = new ArrayList<>();
-            units.addAll(CurrencyUnit.getAvailableCurrencyUnits());
+            units.addAll(CurrencyUnitResolver.getAvailableCurrencyUnits(client));
 
             currencyCode = new Text(editArea, SWT.BORDER);
             currencyCode.setTextLimit(3);
@@ -226,7 +235,7 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
 
             currencyCode.addModifyListener(e -> {
                 String code = currencyCode.getText();
-                CurrencyUnit unit = CurrencyUnit.getInstance(code);
+                CurrencyUnit unit = CurrencyUnitResolver.resolve(client, code);
                 description.setText(unit != null ? unit.getDisplayName() : ""); //$NON-NLS-1$
             });
         }
@@ -234,11 +243,13 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
         public IObservableValue<String> bindValue(String property)
         {
             UpdateValueStrategy<String, CurrencyUnit> fieldToModel = new UpdateValueStrategy<>();
-            fieldToModel.setAfterGetValidator(c -> CurrencyUnit.getInstance(c) != null ? ValidationStatus.ok()
+            fieldToModel.setAfterGetValidator(c -> CurrencyUnitResolver.resolve(client, c) != null
+                            ? ValidationStatus.ok()
                             : ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired,
                                             Messages.ColumnCurrency)));
             fieldToModel.setConverter(IConverter
-                            .create(selected -> selected.isEmpty() ? null : CurrencyUnit.getInstance(selected)));
+                            .create(selected -> selected.isEmpty() ? null
+                                            : CurrencyUnitResolver.resolve(client, selected)));
 
             UpdateValueStrategy<CurrencyUnit, String> modelToField = new UpdateValueStrategy<>();
             modelToField.setConverter(IConverter.create(unit -> unit != null ? unit.getCurrencyCode() : null));

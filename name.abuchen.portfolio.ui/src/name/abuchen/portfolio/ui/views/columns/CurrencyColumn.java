@@ -2,16 +2,17 @@ package name.abuchen.portfolio.ui.views.columns;
 
 import java.util.stream.Collectors;
 
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.swt.SWT;
+
 import name.abuchen.portfolio.model.Adaptor;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentVehicle;
-import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.CurrencyUnitResolver;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.ListEditingSupport;
-
-import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.swt.SWT;
 
 public class CurrencyColumn extends Column
 {
@@ -29,11 +30,15 @@ public class CurrencyColumn extends Column
     {
         public CurrencyEditingSupport()
         {
-            super(InvestmentVehicle.class, "currencyCode", //$NON-NLS-1$
-                            CurrencyUnit.getAvailableCurrencyUnits().stream() //
-                                            .map(u -> u.getCurrencyCode()).sorted().collect(Collectors.toList()));
+            this(null);
         }
 
+        public CurrencyEditingSupport(Client client)
+        {
+            super(InvestmentVehicle.class, "currencyCode", //$NON-NLS-1$
+                            CurrencyUnitResolver.getAvailableCurrencyUnits(client).stream() //
+                                            .map(u -> u.getCurrencyCode()).sorted().collect(Collectors.toList()));
+        }
     }
 
     public CurrencyColumn()

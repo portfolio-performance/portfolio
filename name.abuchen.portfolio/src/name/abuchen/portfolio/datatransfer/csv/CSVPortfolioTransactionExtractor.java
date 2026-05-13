@@ -23,7 +23,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.CurrencyUnitResolver;
 import name.abuchen.portfolio.money.Money;
 
 /* package */class CSVPortfolioTransactionExtractor extends BaseCSVExtractor
@@ -75,7 +75,7 @@ import name.abuchen.portfolio.money.Money;
 
             if (currency != null)
             {
-                var unit = CurrencyUnit.getInstance(currency.trim());
+                var unit = CurrencyUnitResolver.resolve(getClient(), currency.trim());
                 s.setCurrencyCode(unit == null ? getClient().getBaseCurrency() : unit.getCurrencyCode());
             }
         });

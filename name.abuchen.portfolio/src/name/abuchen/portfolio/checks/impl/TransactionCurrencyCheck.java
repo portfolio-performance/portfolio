@@ -24,6 +24,7 @@ import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.CurrencyUnitResolver;
 
 /**
  * Checks if there is at least one account or security without a currency.
@@ -34,10 +35,12 @@ public class TransactionCurrencyCheck implements Check
     {
         private TransactionPair<?> pair;
         private String currencyCode;
+        private Client client;
 
         public TransactionCurrencyQuickFix(Client client, TransactionPair<?> pair)
         {
             this.pair = pair;
+            this.client = client;
 
             // either take currency from account or from security. Use base
             // currency as a fallback
@@ -49,7 +52,8 @@ public class TransactionCurrencyCheck implements Check
         @Override
         public String getLabel()
         {
-            return CurrencyUnit.getInstance(currencyCode).getLabel();
+            CurrencyUnit unit = CurrencyUnitResolver.resolve(client, currencyCode);
+            return unit != null ? unit.getLabel() : currencyCode;
         }
 
         @Override

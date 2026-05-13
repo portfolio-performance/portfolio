@@ -8,6 +8,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.CurrencyUnitResolver;
 import name.abuchen.portfolio.ui.Messages;
 
 public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
@@ -50,7 +51,7 @@ public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
 
         this.type = tx.getTransaction().getType();
         this.portfolio = (Portfolio) tx.getOwner();
-        this.transactionCurrency = CurrencyUnit.getInstance(tx.getTransaction().getCurrencyCode());
+        this.transactionCurrency = CurrencyUnitResolver.resolve(client, tx.getTransaction().getCurrencyCode());
         fillFromTransaction(tx.getTransaction());
     }
 
@@ -119,7 +120,7 @@ public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
     @Override
     public void setPortfolio(Portfolio portfolio)
     {
-        setTransactionCurrency(CurrencyUnit.getInstance(portfolio.getReferenceAccount().getCurrencyCode()));
+        setTransactionCurrency(CurrencyUnitResolver.resolve(client, portfolio.getReferenceAccount().getCurrencyCode()));
         super.setPortfolio(portfolio);
     }
 

@@ -17,6 +17,9 @@ public class CurrencyView extends AbstractTabbedView<AbstractTabbedView.Tab>
     @Override
     protected List<AbstractTabbedView.Tab> createTabs()
     {
-        return Arrays.asList(make(ExchangeRatesListTab.class), make(CurrencyConverterTab.class));
+        return Arrays.asList( //
+                        make(ExchangeRatesListTab.class), //
+                        make(CurrencyConverterTab.class), //
+                        make(CustomCurrenciesListTab.class));
     }
 }
