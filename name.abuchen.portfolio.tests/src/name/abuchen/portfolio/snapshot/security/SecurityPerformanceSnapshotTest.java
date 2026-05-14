@@ -5,12 +5,16 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -99,5 +103,40 @@ public class SecurityPerformanceSnapshotTest
 
         assertThat(position.getShares(), is(record.getSharesHeld()));
         assertThat(position.calculateValue(), is(record.getMarketValue()));
+    }
+
+    @Test
+    public void testDividendIsAttributedToExDateWithinInterval()
+    {
+        Client client = new Client();
+
+        Security security = new SecurityBuilder().addTo(client);
+        Account account = new AccountBuilder().addTo(client);
+
+        AccountTransaction withExDate = new AccountTransaction();
+        withExDate.setType(AccountTransaction.Type.DIVIDENDS);
+        withExDate.setSecurity(security);
+        withExDate.setDateTime(LocalDateTime.parse("2020-01-15T00:00"));
+        withExDate.setExDate(LocalDateTime.parse("2019-12-20T00:00"));
+        withExDate.setMonetaryAmount(Money.of(CurrencyUnit.EUR, 10_00));
+
+        AccountTransaction withoutExDate = new AccountTransaction();
+        withoutExDate.setType(AccountTransaction.Type.DIVIDENDS);
+        withoutExDate.setSecurity(security);
+        withoutExDate.setDateTime(LocalDateTime.parse("2020-01-15T00:00"));
+        withoutExDate.setMonetaryAmount(Money.of(CurrencyUnit.EUR, 5_00));
+
+        account.addTransaction(withExDate);
+        account.addTransaction(withoutExDate);
+
+        Interval interval = Interval.of(LocalDate.parse("2019-12-01"), LocalDate.parse("2019-12-31"));
+        SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(),
+                        interval);
+
+        assertThat(snapshot.getRecords(), hasSize(1));
+        SecurityPerformanceRecord record = snapshot.getRecords().get(0);
+        assertThat(record.getSumOfDividends(), is(Money.of(CurrencyUnit.EUR, 10_00)));
+        assertThat(record.getDividendEventCount(), is(1));
+        assertThat(record.getLastDividendPayment(), is(LocalDate.parse("2019-12-20")));
     }
 }

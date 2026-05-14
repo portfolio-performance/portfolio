@@ -216,4 +216,31 @@ public class DividendTransactionTest
 
         assertEquals(0.06666, result, 0.001d);
     }
+
+    @Test
+    public void testGetDateTimeUsesExDateForDividends()
+    {
+        AccountTransaction t = new AccountTransaction();
+        t.setType(AccountTransaction.Type.DIVIDENDS);
+        t.setSecurity(security);
+        t.setDateTime(LocalDateTime.parse("2020-05-20T00:00"));
+        t.setExDate(LocalDateTime.parse("2020-05-15T00:00"));
+        t.setAmount(100L);
+        t.setShares(10);
+        t.setCurrencyCode(security.getCurrencyCode());
+
+        CalculationLineItem.DividendPayment payment = (CalculationLineItem.DividendPayment) CalculationLineItem
+                        .of(account, t);
+
+        assertEquals(LocalDateTime.parse("2020-05-15T00:00"), payment.getDateTime());
+    }
+
+    @Test
+    public void testGetDateTimeFallsBackToBookingDateWithoutExDate()
+    {
+        CalculationLineItem.DividendPayment payment = this.createDividendTransaction(100L, 10L, 0L,
+                        LocalDateTime.parse("2020-05-20T00:00"));
+
+        assertEquals(LocalDateTime.parse("2020-05-20T00:00"), payment.getDateTime());
+    }
 }
