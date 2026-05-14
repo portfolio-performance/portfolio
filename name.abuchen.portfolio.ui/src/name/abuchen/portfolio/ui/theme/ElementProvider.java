@@ -15,6 +15,7 @@ import org.w3c.dom.Element;
 
 import name.abuchen.portfolio.ui.editor.Sidebar;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.DataSeriesColors;
 import name.abuchen.portfolio.ui.util.ValueColorScheme;
 import name.abuchen.portfolio.ui.views.PortfolioBalanceChart;
 import name.abuchen.portfolio.ui.views.SecuritiesChart;
@@ -37,6 +38,8 @@ public class ElementProvider implements IElementProvider
             return new ChartElementAdapter(chart, engine);
         if (element instanceof Colors.Theme colorsTheme)
             return new ColorsThemeElementAdapter(colorsTheme, engine);
+        if (element instanceof DataSeriesColors dataSeriesColors)
+            return new DataSeriesColorsCSS.ElementAdapter(dataSeriesColors, engine);
         if (element instanceof Table table)
             return new TableElementAdapter(table, engine);
         if (element instanceof Tree tree)

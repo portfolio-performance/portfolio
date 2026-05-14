@@ -174,6 +174,41 @@ PortfolioBalanceChart.asia {
 	delta-area-negative-color: #8396f2;
 }
 
+
+DataSeries {
+	totals-color: #000000;
+
+	invested-capital-color: #EBC934;
+	absolute-invested-capital-color: #EBC934;
+
+	transferals-color: #A9A9A9;
+	transferals-accumulated-color: #FFFF00;
+
+	taxes-color: #FF0000;
+	taxes-accumulated-color: #FF0000;
+
+	absolute-delta-color: #0000FF;
+	absolute-delta-all-record-color: #0000FF;
+
+	dividends-color: #800080;
+	dividends-accumulated-color: #800080;
+
+	interest-color: #377500;
+	interest-accumulated-color: #377500;
+
+	interest-charge-color: #377500;
+	interest-charge-accumulated-color: #377500;
+
+	earnings-color: #377500;
+	earnings-accumulated-color: #377500;
+
+	fees-color: #808080;
+	fees-accumulated-color: #808080;
+
+	performance-entire-portfolio-color: #000000;
+	performance-positive-color: #3C97DA;
+	performance-negative-color: #FD9C52;
+}
 * {
 	font-family: "#systemfont";
 }
