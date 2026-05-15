@@ -121,4 +121,28 @@ import name.abuchen.portfolio.money.CurrencyConverter;
             throw new UnsupportedOperationException(e);
         }
     }
+
+    public static <T extends Calculation> T perform(Class<T> type, CurrencyConverter converter, Security security,
+                    List<CalculationLineItem> lineItems, List<CalculationLineItem> prePeriodLineItems)
+    {
+        try
+        {
+            T calculation = type.getDeclaredConstructor().newInstance();
+            calculation.setSecurity(security);
+            calculation.setTermCurrency(converter.getTermCurrency());
+            calculation.prepare();
+            calculation.preload(converter, prePeriodLineItems);
+            calculation.visitAll(converter, lineItems);
+            calculation.finish(converter, lineItems);
+            return calculation;
+        }
+        catch (Exception e)
+        {
+            throw new UnsupportedOperationException(e);
+        }
+    }
+
+    public void preload(CurrencyConverter converter, List<CalculationLineItem> lineItems)
+    {
+    }
 }

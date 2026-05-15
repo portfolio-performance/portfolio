@@ -42,6 +42,8 @@ public class BaseSecurityPerformanceRecord
 
     protected final List<CalculationLineItem> lineItems = new ArrayList<>();
 
+    protected final List<CalculationLineItem> prePeriodLineItems = new ArrayList<>();
+
     public BaseSecurityPerformanceRecord(Client client, Security security, CurrencyConverter converter,
                     Interval interval)
     {
@@ -72,4 +74,13 @@ public class BaseSecurityPerformanceRecord
         return lineItems;
     }
 
+    /* package */ void addPrePeriodLineItem(CalculationLineItem item)
+    {
+        this.prePeriodLineItems.add(item);
+    }
+
+    public List<CalculationLineItem> getPrePeriodLineItems()
+    {
+        return prePeriodLineItems;
+    }
 }

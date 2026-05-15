@@ -138,9 +138,10 @@ public class CostCalculationTest
 
         SecurityPerformanceRecord record = snapshot.getRecords().get(0);
 
-        // 1.1588 = exchange rate of test currency converter on 2015-01-16
-        assertThat(record.getFifoCost(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize((1000 / 1.1588) + 1100))));
+        // Historic cost basis: the inbound delivery before the reporting period
+        // keeps its original EUR value instead of being revalued at the start
+        // date.
+        assertThat(record.getFifoCost(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2200))));
 
         assertThat(record.getFifoCost(), is(record.explain(SecurityPerformanceRecord.Trails.FIFO_COST)
                         .orElseThrow(IllegalArgumentException::new).getRecord().getValue()));

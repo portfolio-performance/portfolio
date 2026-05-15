@@ -7,11 +7,9 @@ import java.util.Collections;
 import java.util.List;
 
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
-import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.security.BaseSecurityPerformanceRecord.Periodicity;
 import name.abuchen.portfolio.util.Dates;
 
@@ -42,7 +40,7 @@ import name.abuchen.portfolio.util.Dates;
         /**
          * Rate of return for this payment.
          */
-        public final double rateOfReturn;
+        public final long costBaseAmount;
 
         /**
          * Constructs an instance.
@@ -54,49 +52,32 @@ import name.abuchen.portfolio.util.Dates;
          * @param security
          *            {@link Security}
          */
-        public Payment(CurrencyConverter converter, CalculationLineItem.DividendPayment t, Security security)
+        public Payment(CurrencyConverter converter, CalculationLineItem.DividendPayment t)
         {
             this.amount = t.getGrossValue().with(converter.at(t.getDateTime()));
+
             LocalDateTime time = t.getDateTime();
             this.year = time.getYear();
             this.date = time.toLocalDate();
 
-            // try to set rate of return, default is NaN
-            double rr = Double.NaN;
-            if (security != null)
+            Money movingAverageCost = t.getMovingAverageCost();
+            long costBase = 0;
+
+            if (movingAverageCost != null && !movingAverageCost.isZero())
             {
-                // calculate the rate of return, but do NOT use the method on
-                // the DividendPayment class. Why? The DividendPayment looks
-                // only at the payment, but the payment might only be for a
-                // partial position (for example if the security is held in
-                // multiple accounts). The moving average cost is always the
-                // total costs.
+                costBase = movingAverageCost.getAmount();
 
-                Money movingAverageCost = t.getMovingAverageCost();
-                if (movingAverageCost != null && !movingAverageCost.isZero())
+                if (t.getTransaction().isPresent() //
+                                && t.getTransaction().get().getShares() > 0 //
+                                && t.getTotalShares() > 0 //
+                                && t.getTransaction().get().getShares() < t.getTotalShares())
                 {
-                    // Use converted amount (in term currency) instead of raw amount (in transaction currency)
-                    // to ensure both values are in the same currency for correct calculation
-                    rr = this.amount.getAmount() / (double) movingAverageCost.getAmount();
-                }
-
-                // check if it is valid (non 0)
-                if (rr == 0)
-                {
-                    // else use the security price at that date
-                    SecurityPrice p = security.getSecurityPrice(date);
-                    // getSecurityPrice may return an empty price value, so
-                    // check that
-                    long pValue = p.getValue();
-                    if (pValue != 0)
-                    {
-                        double sharePriceAmount = ((double) pValue) / Values.Quote.factor()
-                                        * Values.AmountFraction.factor();
-                        rr = t.getDividendPerShare() / sharePriceAmount;
-                    }
+                    costBase = Math.round(movingAverageCost.getAmount()
+                                    * (t.getTransaction().get().getShares() / (double) t.getTotalShares()));
                 }
             }
-            this.rateOfReturn = rr;
+
+            this.costBaseAmount = costBase;
         }
     }
 
@@ -127,22 +108,18 @@ import name.abuchen.portfolio.util.Dates;
 
         int significantCount = 0;
         int insignificantYears = 0;
-        double sumRateOfReturn = 0;
 
         // first calc total sum of all payments
         for (Payment p : payments)
         {
             // add to total sum
             sum.add(p.amount);
-            sumRateOfReturn += p.rateOfReturn;
         }
 
-        int years = 0;
 
         // now walk through individual years
         for (int year = firstPayment.getYear(); year <= lastPayment.getYear(); year++)
         {
-            years++;
             int countPerYear = 0;
             long sumPerYear = 0;
             LocalDate lastDate = null;
@@ -190,7 +167,7 @@ import name.abuchen.portfolio.util.Dates;
             }
         }
 
-        this.rateOfReturnPerYear = sumRateOfReturn / years;
+        this.rateOfReturnPerYear = calculateRateOfReturnPerYear(firstPayment.getYear(), lastPayment.getYear());
 
         // determine periodicity?
         if (significantCount > 0)
@@ -220,6 +197,64 @@ import name.abuchen.portfolio.util.Dates;
                 }
             }
         }
+    }
+
+    private double calculateRateOfReturnPerYear(int firstYear, int lastYear)
+    {
+        double sumYearlyRateOfReturn = 0;
+        int yearsWithValidRateOfReturn = 0;
+
+        for (int year = firstYear; year <= lastYear; year++)
+        {
+            double yearlyRateOfReturn = 0;
+            boolean hasValidRateOfReturn = false;
+
+            LocalDate currentDate = null;
+            long dividendAmountOnDate = 0;
+            long costBaseAmountOnDate = 0;
+
+            for (Payment p : payments)
+            {
+                if (p.year != year)
+                    continue;
+
+                if (currentDate == null)
+                {
+                    currentDate = p.date;
+                }
+                else if (!currentDate.equals(p.date))
+                {
+                    if (dividendAmountOnDate > 0 && costBaseAmountOnDate > 0)
+                    {
+                        yearlyRateOfReturn += dividendAmountOnDate / (double) costBaseAmountOnDate;
+                        hasValidRateOfReturn = true;
+                    }
+
+                    currentDate = p.date;
+                    dividendAmountOnDate = 0;
+                    costBaseAmountOnDate = 0;
+                }
+
+                dividendAmountOnDate += p.amount.getAmount();
+
+                if (p.costBaseAmount > 0)
+                    costBaseAmountOnDate += p.costBaseAmount;
+            }
+
+            if (dividendAmountOnDate > 0 && costBaseAmountOnDate > 0)
+            {
+                yearlyRateOfReturn += dividendAmountOnDate / (double) costBaseAmountOnDate;
+                hasValidRateOfReturn = true;
+            }
+
+            if (hasValidRateOfReturn)
+            {
+                sumYearlyRateOfReturn += yearlyRateOfReturn;
+                yearsWithValidRateOfReturn++;
+            }
+        }
+
+        return yearsWithValidRateOfReturn > 0 ? sumYearlyRateOfReturn / yearsWithValidRateOfReturn : Double.NaN;
     }
 
     public DividendCalculationResult getResult()
@@ -269,6 +304,6 @@ import name.abuchen.portfolio.util.Dates;
     public void visit(CurrencyConverter converter, CalculationLineItem.DividendPayment t)
     {
         // construct new payment and add it to the list
-        payments.add(new Payment(converter, t, getSecurity()));
+        payments.add(new Payment(converter, t));
     }
 }
