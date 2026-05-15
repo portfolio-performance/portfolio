@@ -156,6 +156,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             + "|FX Debit"
                             + "|Valuta Creditering"
                             + "|Valuta Debitering"
+                            + "|Operation de change - Cr.dit"
+                            + "|Op.ration de change - D.bit"
                             + "|Prelievo"
                             + "|Retirada Cambio de Divisa"
                             + "|FX vyu.tov.n. konverze m.ny).* "
@@ -200,6 +202,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             + "|Valuta Creditering"
                             + "|Valuta Debitering"
                             + "|Credito"
+                            + "|Operation de change - Cr.dit"
+                            + "|Op.ration de change - D.bit"
                             + "|Ingreso Cambio de Divisa"
                             + "|Prelievo FX"
                             + "|FX vyu.tov.ní konverze m.ny).* "
@@ -275,8 +279,27 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
             DividendTransactionHelper dividendeTransactionHelper = new DividendTransactionHelper();
             context.putType(dividendeTransactionHelper);
 
-            for (String line : lines)
+            DividendTaxHelper dividendTaxHelper = new DividendTaxHelper();
+            context.putType(dividendTaxHelper);
+
+            Pattern pDividendTaxTransactions = Pattern.compile("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
+                            + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
+                            + ".* "
+                            + "(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*"
+                            + "(Dividendensteuer"
+                            + "|Dividend Tax"
+                            + "|Dividendbelasting"
+                            + "|Ritenuta sul dividendo"
+                            + "|Retenci.n del dividendo"
+                            + "|Imp.ts sur dividende) "
+                            + "(?<currencyTax>[\\w]{3}) "
+                            + "\\-(?<tax>[\\.,'\\d\\s]+) "
+                            + "[\\w]{3} "
+                            + "(\\-)?[\\.,'\\d\\s]+$");
+
+            for (int i = 0; i < lines.length; i++)
             {
+                String line = lines[i];
                 Matcher m = pDividendeTransactions.matcher(line);
                 if (m.matches())
                 {
@@ -284,6 +307,17 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                     item.dateTime = asDate(m.group("date"), m.group("time"));
                     item.isin = m.group("isin");
                     dividendeTransactionHelper.items.add(item);
+                }
+
+                m = pDividendTaxTransactions.matcher(line);
+                if (m.matches())
+                {
+                    DividendTaxItem item = new DividendTaxItem();
+                    item.lineNo = i;
+                    item.dateTime = asDate(m.group("date"), m.group("time"));
+                    item.isin = m.group("isin");
+                    item.tax = Money.of(asCurrencyCode(m.group("currencyTax")), asAmount(m.group("tax")));
+                    dividendTaxHelper.items.add(item);
                 }
             }
         });
@@ -321,6 +355,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         + "(Einzahlung"
                         + "|Deposit"
                         + "|Deposito"
+                        + "|D.p.t"
                         + "|Storting"
                         + "|Ingreso"
                         + "|Vklad)"
@@ -342,6 +377,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "(Einzahlung"
                                         + "|Deposit"
                                         + "|Deposito"
+                                        + "|D.p.t"
                                         + "|Storting"
                                         + "|Ingreso"
                                         + "|Vklad))"
@@ -594,6 +630,11 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                             {
                                                 t.setMonetaryAmount(money);
                                             }
+
+                                            context.getType(DividendTaxHelper.class)
+                                                            .flatMap(helper -> helper.findPreviousItem(v.getStartLineNumber(),
+                                                                            t.getDateTime(), t.getSecurity().getIsin()))
+                                                            .ifPresent(item -> addTaxUnit(t, item.tax, context));
                                         })
                                         ,
                                         // @formatter:off
@@ -663,6 +704,13 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                     {
                                                         t.setMonetaryAmount(money);
                                                     }
+
+                                                    context.getType(DividendTaxHelper.class)
+                                                                    .flatMap(helper -> helper.findPreviousItem(
+                                                                                    v.getStartLineNumber(),
+                                                                                    t.getDateTime(),
+                                                                                    t.getSecurity().getIsin()))
+                                                                    .ifPresent(item -> addTaxUnit(t, item.tax, context));
                                                 })
                                 )
 
@@ -683,7 +731,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "|Dividend Tax"
                                         + "|Dividendbelasting"
                                         + "|Ritenuta sul dividendo"
-                                        + "|Retenci.n del dividendo) "
+                                        + "|Retenci.n del dividendo"
+                                        + "|Imp.ts sur dividende) "
                                         + "(?<currencyTax>[\\w]{3}) "
                                         + "\\-(?<tax>[\\.,'\\d\\s]+) "
                                         + "[\\w]{3} "
@@ -799,7 +848,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         + "|Dividend Tax"
                         + "|Dividendbelasting"
                         + "|Ritenuta sul dividendo"
-                        + "|Retenci.n del dividendo) "
+                        + "|Retenci.n del dividendo"
+                        + "|Imp.ts sur dividende) "
                         + ".*$");
         type.addBlock(blockDividendTax);
         blockDividendTax.set(new Transaction<AccountTransaction>()
@@ -828,7 +878,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "|Dividend Tax"
                                         + "|Dividendbelasting"
                                         + "|Ritenuta sul dividendo"
-                                        + "|Retenci.n del dividendo) "
+                                        + "|Retenci.n del dividendo"
+                                        + "|Imp.ts sur dividende) "
                                         + "(?<currency>[\\w]{3})"
                                         + "(?<type>\\s(\\-)?)"
                                         + "(?<amount>[\\.,'\\d\\s]+) "
@@ -1060,6 +1111,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         + "|Giro Exchange Connection Fee"
                         + "|DEGIRO Costi di connessione"
                         + "|DEGIRO poplatek za Obchodování"
+                        + "|Frais de connexion aux places boursi.res"
                         + "|ADR\\/GDR Weitergabegeb.hr) "
                         + ".*$");
         type.addBlock(blockTrademodalities);
@@ -1101,7 +1153,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                     + "|DEGIRO Aansluitingskosten"
                                                     + "|Giro Exchange Connection Fee"
                                                     + "|DEGIRO Costi di connessione"
-                                                    + "|DEGIRO poplatek za Obchodov.n.)) .* "
+                                                    + "|DEGIRO poplatek za Obchodov.n."
+                                                    + "|Frais de connexion aux places boursi.res)) .* "
                                                     + "(?<currency>[\\w]{3})"
                                                     + "(?<type>\\s(\\-)?)"
                                                     + "(?<amount>[\\.,'\\d\\s]+) "
@@ -1125,7 +1178,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                     + "|DEGIRO Aansluitingskosten"
                                                     + "|Giro Exchange Connection Fee"
                                                     + "|DEGIRO Costi di connessione"
-                                                    + "|DEGIRO poplatek za Obchodov.n.)( [\\d]{4})?( \\(.*\\))?).* "
+                                                    + "|DEGIRO poplatek za Obchodov.n."
+                                                    + "|Frais de connexion aux places boursi.res)( [\\d]{4})?( \\(.*\\))?).* "
                                                     + "(?<currency>[\\w]{3})"
                                                     + "(?<type>\\s(\\-)?)"
                                                     + "(?<amount>[\\.,'\\d\\s]+) "
@@ -1289,7 +1343,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         // 05-03-2019 15:37 28-02-2019 Rabatt für 500 Euro Aktion EUR 18,00 EUR 1.960,64
         // @formatter:on
         Block blockFeeReturn = new Block("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}:[\\d]{2}( [\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
-                        + "(Rabatt|Gutschrift) "
+                        + "(Rabatt|Gutschrift|Remboursement) "
                         + ".*$");
         type.addBlock(blockFeeReturn);
         blockFeeReturn.set(new Transaction<AccountTransaction>()
@@ -1303,7 +1357,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         .section("date", "time", "note", "currency", "amount")
                         .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                         + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
-                                        + "(?<note>(Rabatt|Gutschrift) .*) "
+                                        + "(?<note>(Rabatt|Gutschrift|Remboursement) .*) "
                                         + "(?<currency>[\\w]{3}) "
                                         + "(?<amount>[\\.,'\\d\\s]+) "
                                         + "[\\w]{3} "
@@ -2142,6 +2196,25 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
+    private void addTaxUnit(AccountTransaction transaction, Money tax, DocumentContext context)
+    {
+        Optional<CurrencyExchangeItem> item = context.getType(CurrencyExchangeItem.class);
+        if (item.isPresent())
+        {
+            Money converted = Money.of(item.get().baseCurrency, BigDecimal.valueOf(tax.getAmount())
+                            .divide(item.get().rate, Values.MC).setScale(0, RoundingMode.HALF_UP).longValue());
+
+            Unit unit = new Unit(Unit.Type.TAX, converted, tax, BigDecimal.ONE.divide(item.get().rate, Values.MC));
+            transaction.addUnit(unit);
+            transaction.setAmount(transaction.getAmount() - converted.getAmount());
+        }
+        else if (tax.getCurrencyCode().equals(transaction.getCurrencyCode()))
+        {
+            transaction.addUnit(new Unit(Unit.Type.TAX, tax));
+            transaction.setAmount(transaction.getAmount() - tax.getAmount());
+        }
+    }
+
     private static class ExchangeRateHelper
     {
         private List<CurrencyExchangeItem> items = new ArrayList<>();
@@ -2190,6 +2263,22 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         }
     }
 
+    private static class DividendTaxHelper
+    {
+        private List<DividendTaxItem> items = new ArrayList<>();
+
+        public Optional<DividendTaxItem> findPreviousItem(int lineNumber, LocalDateTime dateTime, String isin)
+        {
+            for (DividendTaxItem item : items)
+            {
+                if (item.lineNo < lineNumber && item.dateTime.equals(dateTime) && item.isin.equals(isin))
+                    return Optional.of(item);
+            }
+
+            return Optional.empty();
+        }
+    }
+
     /**
      * Represents two lines in the account statement for a currency exchange
      * ("Währungswechsel" or "FX Debit").
@@ -2228,6 +2317,21 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         public String toString()
         {
             return "DividendeTransactionsItem [dateTime=" + dateTime + ", isin=" + isin + "]";
+        }
+    }
+
+    private static class DividendTaxItem
+    {
+        int lineNo;
+        LocalDateTime dateTime;
+        String isin;
+        Money tax;
+
+        @Override
+        public String toString()
+        {
+            return "DividendTaxItem [lineNo=" + lineNo + ", dateTime=" + dateTime + ", isin=" + isin + ", tax="
+                            + tax + "]";
         }
     }
 

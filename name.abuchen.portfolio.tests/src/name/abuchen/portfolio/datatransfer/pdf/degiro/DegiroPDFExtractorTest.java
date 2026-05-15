@@ -14,6 +14,10 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.feeRefund;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
@@ -901,7 +905,7 @@ public class DegiroPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(4L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(countAccountTransactions(results), is(6L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
@@ -1395,7 +1399,7 @@ public class DegiroPDFExtractorTest
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(6));
+        assertThat(results.size(), is(8));
         new AssertImportActions().check(results, "CHF");
 
         List<Item> transactionList = results.stream().filter(TransactionItem.class::isInstance)
@@ -8051,6 +8055,77 @@ public class DegiroPDFExtractorTest
                         hasTaxes("EUR", 0.00), hasFees("EUR", 2.00), 
                         hasForexGrossValue("USD", 353.24))));
                 
+    }
+
+    @Test
+    public void testAccountStatement_french01()
+    {
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement_french01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(3L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(7L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(10));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("SE0020050417"), //
+                        hasName("BOLIDEN AB"), //
+                        hasCurrencyCode("SEK"))));
+        assertThat(results, hasItem(security( //
+                        hasIsin("FI0009003727"), //
+                        hasName("WARTSILA OYJ ABP"), //
+                        hasCurrencyCode("EUR"))));
+        assertThat(results, hasItem(security( //
+                        hasIsin("US02079K3059"), //
+                        hasName("ALPHABET INC CLASS A"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2025-10-08T14:50"), //
+                        hasSource("AccountStatement_french01.txt"), //
+                        hasAmount("EUR", 9500.00), //
+                        hasNote("Dépôt flatex"))));
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2025-10-07T21:51"), //
+                        hasSource("AccountStatement_french01.txt"), //
+                        hasAmount("EUR", 500.00), //
+                        hasNote("Dépôt flatex"))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-05-07T07:10"), //
+                        hasSource("AccountStatement_french01.txt"), //
+                        hasAmount("EUR", 22.59), hasGrossValue("EUR", 32.27), //
+                        hasTaxes("EUR", 9.68), hasForexGrossValue("SEK", 352.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-03-24T07:04"), //
+                        hasSource("AccountStatement_french01.txt"), //
+                        hasAmount("EUR", 15.92), hasGrossValue("EUR", 24.49), //
+                        hasTaxes("EUR", 8.57))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-12-16T07:13"), //
+                        hasSource("AccountStatement_french01.txt"), //
+                        hasAmount("EUR", 1.06), hasGrossValue("EUR", 1.25), //
+                        hasTaxes("EUR", 0.19), hasForexGrossValue("USD", 1.47))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2026-04-07T09:44"), //
+                        hasSource("AccountStatement_french01.txt"), //
+                        hasAmount("EUR", 2.50), //
+                        hasNote("Frais de connexion aux places boursières 2026 (London Stock Exchange (LSE) - LSE)"))));
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2026-02-25T16:19"), //
+                        hasSource("AccountStatement_french01.txt"), //
+                        hasAmount("EUR", 100.00), //
+                        hasNote("Remboursement offre promotionnelle"))));
     }
 
     @Test
