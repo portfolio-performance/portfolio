@@ -1,0 +1,19 @@
+```
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.83.3.qualifier
+System: linux | x86_64 | 21.0.11 | Red Hat, Inc.
+-----------------------------------------
+Mr Max Mustermann
+Musterstr. 4
+54321 Musterhausen
+User name: ***ner
+Transactions from 12-03-2026 until 12-03-2026
+Transaction
+Date Time Product ISIN Reference
+exchange Venue Quantity Price Local value Value EUR Exchange AutoFX and/or third
+rate Fee party fees Total EUR
+EUR
+12-03-2026 14:57 ENERGY FUELS INC CA2926717083 ASE CDED -73 19,3700 USD 1 414,01 USD 1 226,81 1,1526 -3,07 -2,00 1 221,74
+flatexDEGIRO Bank Dutch Branch, trading under the name DEGIRO.
+Page 1 / 1
+```

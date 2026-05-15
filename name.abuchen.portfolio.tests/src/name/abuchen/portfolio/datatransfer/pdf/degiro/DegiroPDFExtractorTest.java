@@ -8101,6 +8101,8 @@ public class DegiroPDFExtractorTest
                         hasSource("Transactions_french03.txt"), //
                         hasAmount("EUR", 537.70), hasGrossValue("EUR", 532.80), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 4.90))));
+        assertThat(findBuySellEntry(results, "2026-04-10T16:05").getPortfolioTransaction()
+                        .getUnit(Unit.Type.GROSS_VALUE).isPresent(), is(false));
         assertThat(results, hasItem(sale( //
                         hasDate("2026-04-08T09:16"), hasShares(59.00), //
                         hasSource("Transactions_french03.txt"), //
@@ -8129,11 +8131,91 @@ public class DegiroPDFExtractorTest
                         hasSource("Transactions_french03.txt"), //
                         hasAmount("EUR", 374.06), hasGrossValue("EUR", 375.06), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 1.00))));
+        assertThat(findBuySellEntry(results, "2025-10-09T19:54").getPortfolioTransaction()
+                        .getUnit(Unit.Type.GROSS_VALUE).isPresent(), is(false));
         assertThat(results, hasItem(purchase( //
                         hasDate("2025-10-08T16:58"), hasShares(6.00), //
                         hasSource("Transactions_french03.txt"), //
                         hasAmount("EUR", 320.50), hasGrossValue("EUR", 319.50), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 1.00))));
+        assertThat(findBuySellEntry(results, "2025-10-08T16:58").getPortfolioTransaction()
+                        .getUnit(Unit.Type.GROSS_VALUE).isPresent(), is(false));
+    }
+
+    @Test
+    public void testTransactions_chfAutoFx01()
+    {
+        Client client = new Client();
+
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Transactions_chf_autofx01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US88160R1014"), //
+                        hasName("TESLA INC"), //
+                        hasCurrencyCode("USD"))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-01-10T10:00"), hasShares(2.00), //
+                        hasSource("Transactions_chf_autofx01.txt"), //
+                        hasAmount("CHF", 437.62), hasGrossValue("CHF", 436.53), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.09), //
+                        hasForexGrossValue("USD", 480.00))));
+
+        BuySellEntry entry = findBuySellEntry(results, "2026-01-10T10:00");
+        Unit grossValue = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+                        .orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValue.getAmount(), is(Money.of("CHF", Values.Amount.factorize(436.53))));
+        assertThat(grossValue.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(480.00))));
+    }
+
+    @Test
+    public void testTransactions_crosslisting01()
+    {
+        Security security = new Security("ENERGY FUELS INC", "CAD"); //$NON-NLS-1$ //$NON-NLS-2$
+        security.setIsin("CA2926717083"); //$NON-NLS-1$
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Transactions_crosslisting01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-03-12T14:57"), hasShares(73.00), //
+                        hasSource("Transactions_crosslisting01.txt"), //
+                        hasAmount("EUR", 1221.74), hasGrossValue("EUR", 1226.81), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.07))));
+
+        BuySellEntry entry = findBuySellEntry(results, "2026-03-12T14:57"); //$NON-NLS-1$
+        assertThat(entry.getPortfolioTransaction().getSecurity(), is(security));
+        assertThat(entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE).isPresent(), is(false));
     }
 
     @Test
@@ -9684,5 +9766,17 @@ public class DegiroPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
-   
+
+    private BuySellEntry findBuySellEntry(List<Item> results, String date)
+    {
+        return (BuySellEntry) results.stream() //
+                        .filter(BuySellEntryItem.class::isInstance) //
+                        .map(Item::getSubject) //
+                        .filter(BuySellEntry.class::isInstance) //
+                        .filter(entry -> ((BuySellEntry) entry).getPortfolioTransaction().getDateTime()
+                                        .equals(LocalDateTime.parse(date))) //
+                        .findFirst() //
+                        .orElseThrow(IllegalArgumentException::new);
+    }
+
 }
