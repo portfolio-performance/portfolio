@@ -273,7 +273,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
             }
 
             Pattern pDividendeTransactions = Pattern.compile("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
-                            + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
+                            + "(?<valueDate>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
                             + ".* "
                             + "(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) "
                             + "(Dividende"
@@ -293,7 +293,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
             context.putType(dividendTaxHelper);
 
             Pattern pDividendTaxTransactions = Pattern.compile("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
-                            + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
+                            + "(?<valueDate>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
                             + ".* "
                             + "(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*"
                             + "(Dividendensteuer"
@@ -315,6 +315,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                 {
                     DividendeTransactionsItem item = new DividendeTransactionsItem();
                     item.dateTime = asDate(m.group("date"), m.group("time"));
+                    item.valueDate = asValueDate(m.group("date"), m.group("valueDate"));
                     item.isin = m.group("isin");
                     dividendeTransactionHelper.items.add(item);
                 }
@@ -325,6 +326,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                     DividendTaxItem item = new DividendTaxItem();
                     item.lineNo = i;
                     item.dateTime = asDate(m.group("date"), m.group("time"));
+                    item.valueDate = asValueDate(m.group("date"), m.group("valueDate"));
                     item.isin = m.group("isin");
                     item.tax = Money.of(asCurrencyCode(m.group("currencyTax")), asAmount(m.group("tax")));
                     dividendTaxHelper.items.add(item);
@@ -677,8 +679,10 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                             }
 
                                             context.getType(DividendTaxHelper.class)
-                                                            .flatMap(helper -> helper.findPreviousItem(v.getStartLineNumber(),
-                                                                            t.getDateTime(), t.getSecurity().getIsin()))
+                                                            .flatMap(helper -> helper.consumeItem(
+                                                                            v.getStartLineNumber(),
+                                                                            LocalDate.parse(v.get("valueDate"), DATEFORMAT),
+                                                                            t.getSecurity().getIsin()))
                                                             .ifPresent(item -> addTaxUnit(t, item.tax, context));
                                         })
                                         ,
@@ -751,9 +755,9 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                     }
 
                                                     context.getType(DividendTaxHelper.class)
-                                                                    .flatMap(helper -> helper.findPreviousItem(
+                                                                    .flatMap(helper -> helper.consumeItem(
                                                                                     v.getStartLineNumber(),
-                                                                                    t.getDateTime(),
+                                                                                    t.getDateTime().toLocalDate(),
                                                                                     t.getSecurity().getIsin()))
                                                                     .ifPresent(item -> addTaxUnit(t, item.tax, context));
                                                 })
@@ -787,21 +791,21 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             Money tax = Money.of(asCurrencyCode(v.get("currencyTax")), asAmount(v.get("tax")));
 
                             Optional<CurrencyExchangeItem> item = context.getType(CurrencyExchangeItem.class);
-                            if (item.isPresent() && v.get("isin").equalsIgnoreCase(t.getSecurity().getIsin()))
+                            if (tax.getCurrencyCode().equals(t.getCurrencyCode()))
+                            {
+                                t.addUnit(new Unit(Unit.Type.TAX, tax));
+                                t.setAmount(t.getAmount() - tax.getAmount());
+                            }
+                            else if (item.isPresent() && v.get("isin").equalsIgnoreCase(t.getSecurity().getIsin())
+                                            && tax.getCurrencyCode().equals(item.get().termCurrency))
                             {
                                 Money converted = Money.of(item.get().baseCurrency,
                                                 BigDecimal.valueOf(tax.getAmount()).divide(item.get().rate, Values.MC)
                                                                 .setScale(0, RoundingMode.HALF_UP).longValue());
 
-                                Unit unit = new Unit(Unit.Type.TAX, converted, tax,
-                                                BigDecimal.ONE.divide(item.get().rate, Values.MC));
+                                Unit unit = new Unit(Unit.Type.TAX, converted);
                                 t.addUnit(unit);
                                 t.setAmount(t.getAmount() - converted.getAmount());
-                            }
-                            else if (tax.getCurrencyCode().equals(t.getCurrencyCode()))
-                            {
-                                t.addUnit(new Unit(Unit.Type.TAX, tax));
-                                t.setAmount(t.getAmount() - tax.getAmount());
                             }
                         })
 
@@ -914,9 +918,9 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         // 02-05-2019 08:20 02-05-2019 ING GROEP NV EO -,01 NL0011821202 Dividendensteuer EUR 2,20 EUR 129,07
                         // 02-05-2019 08:20 02-05-2019 ING GROEP NV EO -,01 NL0011821202 Dividendensteuer EUR -1,25 EUR 126,87
                         // @formatter:on
-                        .section("date", "time", "name", "isin", "note", "currency", "type", "amount").optional()
+                        .section("date", "time", "valueDate", "name", "isin", "note", "currency", "type", "amount").optional()
                         .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
-                                        + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
+                                        + "(?<valueDate>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
                                         + "(?<name>.*) "
                                         + "(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*"
                                         + "(?<note>Dividendensteuer"
@@ -949,7 +953,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // @formatter:on
 
                             DividendTransactionHelper dividendTransactionHelper = context.getType(DividendTransactionHelper.class).orElseGet(DividendTransactionHelper::new);
-                            Optional<DividendeTransactionsItem> dividendTransaction = dividendTransactionHelper.findItem(t.getDateTime(), t.getSecurity().getIsin());
+                            LocalDate valueDate = asValueDate(v.get("date"), v.get("valueDate"));
+                            Optional<DividendeTransactionsItem> dividendTransaction = dividendTransactionHelper.findItem(valueDate, t.getSecurity().getIsin());
 
                             if (!dividendTransaction.isPresent())
                             {
@@ -1271,7 +1276,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
 
                                         DividendTransactionHelper dividendTransactionHelper = context.getType(DividendTransactionHelper.class).orElseGet(DividendTransactionHelper::new);
-                                        Optional<DividendeTransactionsItem> dividendTransaction = dividendTransactionHelper.findItem(t.getDateTime(), t.getSecurity().getIsin());
+                                        Optional<DividendeTransactionsItem> dividendTransaction = dividendTransactionHelper.findItem(t.getDateTime().toLocalDate(), t.getSecurity().getIsin());
 
                                         if (!dividendTransaction.isPresent())
                                         {
@@ -2487,6 +2492,11 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         }
     }
 
+    private LocalDate asValueDate(String bookingDate, String valueDate)
+    {
+        return LocalDate.parse(valueDate != null ? valueDate.trim() : bookingDate, DATEFORMAT);
+    }
+
     private static class ExchangeRateHelper
     {
         private List<CurrencyExchangeItem> items = new ArrayList<>();
@@ -2550,14 +2560,13 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
     {
         private List<DividendeTransactionsItem> items = new ArrayList<>();
 
-        public Optional<DividendeTransactionsItem> findItem(LocalDateTime dateTime, String isin)
+        public Optional<DividendeTransactionsItem> findItem(LocalDate valueDate, String isin)
         {
-            // Search date and time of dividend transaction using date+time and
-            // ISIN.
+            // Search date of dividend transaction using value date and ISIN.
 
             for (DividendeTransactionsItem item : items)
             {
-                if (item.dateTime.equals(dateTime) && item.isin.equals(isin))
+                if (item.valueDate.equals(valueDate) && item.isin.equals(isin))
                     return Optional.of(item);
             }
 
@@ -2569,12 +2578,16 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
     {
         private List<DividendTaxItem> items = new ArrayList<>();
 
-        public Optional<DividendTaxItem> findPreviousItem(int lineNumber, LocalDateTime dateTime, String isin)
+        public Optional<DividendTaxItem> consumeItem(int lineNumber, LocalDate valueDate, String isin)
         {
-            for (DividendTaxItem item : items)
+            for (int index = items.size() - 1; index >= 0; index--)
             {
-                if (item.lineNo < lineNumber && item.dateTime.equals(dateTime) && item.isin.equals(isin))
+                DividendTaxItem item = items.get(index);
+                if (!item.used && item.lineNo < lineNumber && item.valueDate.equals(valueDate) && item.isin.equals(isin))
+                {
+                    item.used = true;
                     return Optional.of(item);
+                }
             }
 
             return Optional.empty();
@@ -2613,12 +2626,14 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
     private static class DividendeTransactionsItem
     {
         LocalDateTime dateTime;
+        LocalDate valueDate;
         String isin;
 
         @Override
         public String toString()
         {
-            return "DividendeTransactionsItem [dateTime=" + dateTime + ", isin=" + isin + "]";
+            return "DividendeTransactionsItem [dateTime=" + dateTime + ", valueDate=" + valueDate + ", isin=" + isin
+                            + "]";
         }
     }
 
@@ -2626,14 +2641,16 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
     {
         int lineNo;
         LocalDateTime dateTime;
+        LocalDate valueDate;
         String isin;
         Money tax;
+        boolean used;
 
         @Override
         public String toString()
         {
-            return "DividendTaxItem [lineNo=" + lineNo + ", dateTime=" + dateTime + ", isin=" + isin + ", tax="
-                            + tax + "]";
+            return "DividendTaxItem [lineNo=" + lineNo + ", dateTime=" + dateTime + ", valueDate=" + valueDate
+                            + ", isin=" + isin + ", tax=" + tax + ", used=" + used + "]";
         }
     }
 

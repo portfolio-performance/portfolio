@@ -8195,6 +8195,19 @@ public class DegiroPDFExtractorTest
                         hasSource("AccountStatement_french01.txt"), //
                         hasAmount("EUR", 1.06), hasGrossValue("EUR", 1.25), //
                         hasTaxes("EUR", 0.19), hasForexGrossValue("USD", 1.47))));
+        AccountTransaction alphabetDividend = (AccountTransaction) results.stream() //
+                        .filter(TransactionItem.class::isInstance) //
+                        .map(TransactionItem.class::cast) //
+                        .map(TransactionItem::getSubject) //
+                        .filter(AccountTransaction.class::isInstance) //
+                        .map(AccountTransaction.class::cast) //
+                        .filter(t -> t.getType() == AccountTransaction.Type.DIVIDENDS) //
+                        .filter(t -> t.getDateTime().equals(LocalDateTime.parse("2025-12-16T07:13"))) //
+                        .findFirst().orElseThrow(IllegalArgumentException::new);
+        Unit tax = alphabetDividend.getUnit(Unit.Type.TAX).orElseThrow(IllegalArgumentException::new);
+        assertThat(tax.getAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.19))));
+        assertNull(tax.getForex());
+        assertNull(tax.getExchangeRate());
         assertThat(results, hasItem(fee( //
                         hasDate("2026-04-07T09:44"), //
                         hasSource("AccountStatement_french01.txt"), //
