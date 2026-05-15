@@ -51,6 +51,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.forms.events.IHyperlinkListener;
 
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
@@ -628,7 +629,15 @@ public class DashboardView extends AbstractHistoricView
         if (elementToMoveAbove != null)
             element.moveAbove(elementToMoveAbove);
 
-        new ContextMenu(delegate.getTitleControl(), manager -> widgetMenuAboutToShow(manager, delegate)).hook();
+        ContextMenu contextMenu = new ContextMenu(delegate.getTitleControl(),
+                        manager -> widgetMenuAboutToShow(manager, delegate)).hook();
+
+        HoverWidgetToolbar toolbar = HoverWidgetToolbar.build(delegate.getTitleControl(), contextMenu.getMenu());
+
+        Object viewListener = delegate.getTitleControl().getData(HoverWidgetToolbar.VIEW_LISTENER_KEY);
+        if (viewListener instanceof IHyperlinkListener listener)
+            toolbar.withViewListener(listener);
+
         InfoToolTip.attach(delegate.getTitleControl(), () -> buildToolTip(delegate));
 
         addDragListener(element);

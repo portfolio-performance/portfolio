@@ -16,7 +16,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.views.dashboard.ClientFilterConfig;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardData;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardResources;
-import name.abuchen.portfolio.ui.views.dashboard.HoverButton;
+import name.abuchen.portfolio.ui.views.dashboard.HoverWidgetToolbar;
 import name.abuchen.portfolio.ui.views.dashboard.ReportingPeriodConfig;
 import name.abuchen.portfolio.util.Interval;
 
@@ -36,7 +36,7 @@ public abstract class AbstractMonthlyHeatmapWidget extends AbstractHeatmapWidget
     {
         var composite = super.createControl(parent, resources);
 
-        HoverButton.build(title, table).withListener(new HyperlinkAdapter()
+        HoverWidgetToolbar.attachViewListener(title, new HyperlinkAdapter()
         {
             @Override
             public void linkActivated(HyperlinkEvent e)
