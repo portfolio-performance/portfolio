@@ -18,6 +18,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.security.BaseSecurityPerformanceRecord.Periodicity;
 
@@ -25,6 +26,7 @@ import name.abuchen.portfolio.snapshot.security.BaseSecurityPerformanceRecord.Pe
 public class DividendCalculationTest
 {
     Account account;
+    Portfolio portfolio;
     Security security;
     CurrencyConverter converter;
 
@@ -32,6 +34,7 @@ public class DividendCalculationTest
     public void setup()
     {
         this.account = new Account();
+        this.portfolio = new Portfolio();
         this.security = new Security("ADIDAS ORD", "EUR");
         this.converter = new TestCurrencyConverter();
     }
@@ -254,5 +257,219 @@ public class DividendCalculationTest
         // This test will FAIL with the buggy code (~0.0588) and PASS with the fix (~0.05)
         // Tolerance is tight (0.005) to catch the bug: 0.0588 - 0.05 = 0.0088 > 0.005
         assertEquals(0.05, dividends.getRateOfReturnPerYear(), 0.005);
+    }
+
+    @Test
+    public void rateOfReturnWithDividendCurrencyDifferentFromSecurityCurrency()
+    {
+        Security eurSecurity = new Security("EUR Security", CurrencyUnit.EUR);
+
+        List<CalculationLineItem> transactions = new ArrayList<>();
+
+        transactions.add(CalculationLineItem.of(portfolio,
+                        new PortfolioTransaction(LocalDateTime.of(2015, 1, 14, 12, 0), eurSecurity.getCurrencyCode(),
+                                        Values.Amount.factorize(1000), eurSecurity, Values.Share.factorize(10),
+                                        Type.BUY, 0L, 0L)));
+
+        AccountTransaction dividend = new AccountTransaction();
+        dividend.setType(AccountTransaction.Type.DIVIDENDS);
+        dividend.setSecurity(eurSecurity);
+        dividend.setDateTime(LocalDateTime.of(2015, 1, 15, 12, 0));
+        dividend.setAmount(Values.Amount.factorize(50));
+        dividend.setShares(Values.Share.factorize(10));
+        dividend.setCurrencyCode(CurrencyUnit.USD);
+
+        transactions.add(CalculationLineItem.of(account, dividend));
+
+        CurrencyConverter eurConverter = new TestCurrencyConverter().with(CurrencyUnit.EUR);
+
+        Calculation.perform(CostCalculation.class, eurConverter, eurSecurity, transactions);
+        DividendCalculation dividends = Calculation.perform(DividendCalculation.class, eurConverter, eurSecurity,
+                        transactions);
+
+        /*
+         * Expected: dividend converted from USD to EUR at dividend date divided
+         * by EUR cost basis.
+         */
+        assertEquals(0.0427, dividends.getRateOfReturnPerYear(), 0.005);
+    }
+
+    private CalculationLineItem buy(LocalDateTime date, double amount, double shares)
+    {
+        return CalculationLineItem.of(portfolio, new PortfolioTransaction(date, security.getCurrencyCode(),
+                        Values.Amount.factorize(amount), security, Values.Share.factorize(shares), Type.BUY, 0L, 0L));
+    }
+
+    @SuppressWarnings("unused")
+    private CalculationLineItem buy(LocalDateTime date, double amount, double shares, double fees)
+    {
+        return CalculationLineItem.of(portfolio,
+                        new PortfolioTransaction(date, security.getCurrencyCode(), Values.Amount.factorize(amount),
+                                        security, Values.Share.factorize(shares), Type.BUY,
+                                        Values.Amount.factorize(fees), 0L));
+    }
+
+    private CalculationLineItem sell(LocalDateTime date, double amount, double shares)
+    {
+        return CalculationLineItem.of(portfolio, new PortfolioTransaction(date, security.getCurrencyCode(),
+                        Values.Amount.factorize(amount), security, Values.Share.factorize(shares), Type.SELL, 0L, 0L));
+    }
+
+    private CalculationLineItem dividend(LocalDateTime date, double amount, double shares)
+    {
+        return dividend(account, date, amount, shares);
+    }
+
+    private CalculationLineItem dividend(Account dividendAccount, LocalDateTime date, double amount, double shares)
+    {
+        AccountTransaction t = new AccountTransaction();
+        t.setType(AccountTransaction.Type.DIVIDENDS);
+        t.setSecurity(security);
+        t.setDateTime(date);
+        t.setAmount(Values.Amount.factorize(amount));
+        t.setShares(Values.Share.factorize(shares));
+        t.setCurrencyCode(security.getCurrencyCode());
+
+        return CalculationLineItem.of(dividendAccount, t);
+    }
+
+    private DividendCalculation calculate(List<CalculationLineItem> transactions)
+    {
+        Calculation.perform(CostCalculation.class, converter, security, transactions);
+        return Calculation.perform(DividendCalculation.class, converter, security, transactions);
+    }
+
+    @Test
+    public void rateOfReturnThreeYearsWithConstantPosition()
+    {
+        List<CalculationLineItem> transactions = new ArrayList<>();
+
+        transactions.add(buy(LocalDateTime.of(2019, 1, 7, 12, 0), 1330.25, 61));
+
+        transactions.add(dividend(LocalDateTime.of(2019, 6, 15, 12, 0), 17.49, 61));
+        transactions.add(dividend(LocalDateTime.of(2020, 6, 15, 12, 0), 17.49, 61));
+        transactions.add(dividend(LocalDateTime.of(2021, 6, 15, 12, 0), 17.49, 61));
+
+        DividendCalculation dividends = calculate(transactions);
+
+        assertEquals(52.47 / 1330.25 / 3, dividends.getRateOfReturnPerYear(), 0.00001);
+    }
+
+    @Test
+    public void rateOfReturnThreeYearsWithSavingsPlan()
+    {
+        List<CalculationLineItem> transactions = new ArrayList<>();
+
+        transactions.add(buy(LocalDateTime.of(2019, 1, 1, 12, 0), 1000, 10));
+        transactions.add(dividend(LocalDateTime.of(2019, 6, 15, 12, 0), 10, 10));
+
+        transactions.add(buy(LocalDateTime.of(2020, 1, 1, 12, 0), 1000, 10));
+        transactions.add(dividend(LocalDateTime.of(2020, 6, 15, 12, 0), 20, 20));
+
+        transactions.add(buy(LocalDateTime.of(2021, 1, 1, 12, 0), 1000, 10));
+        transactions.add(dividend(LocalDateTime.of(2021, 6, 15, 12, 0), 30, 30));
+
+        DividendCalculation dividends = calculate(transactions);
+
+        assertEquals(0.01, dividends.getRateOfReturnPerYear(), 0.00001);
+    }
+
+    @Test
+    public void rateOfReturnThreeYearsWithAdditionalPurchaseDuringPeriod()
+    {
+        List<CalculationLineItem> transactions = new ArrayList<>();
+
+        transactions.add(buy(LocalDateTime.of(2019, 1, 1, 12, 0), 1000, 10));
+        transactions.add(dividend(LocalDateTime.of(2019, 6, 15, 12, 0), 100, 10));
+
+        transactions.add(buy(LocalDateTime.of(2020, 1, 1, 12, 0), 1000, 10));
+        transactions.add(dividend(LocalDateTime.of(2020, 6, 15, 12, 0), 100, 20));
+        transactions.add(dividend(LocalDateTime.of(2021, 6, 15, 12, 0), 100, 20));
+
+        DividendCalculation dividends = calculate(transactions);
+
+        assertEquals((0.10 + 0.05 + 0.05) / 3, dividends.getRateOfReturnPerYear(), 0.00001);
+    }
+
+    @Test
+    public void rateOfReturnThreeYearsWithPartialSaleDuringPeriod()
+    {
+        List<CalculationLineItem> transactions = new ArrayList<>();
+
+        transactions.add(buy(LocalDateTime.of(2019, 1, 1, 12, 0), 1000, 100));
+        transactions.add(dividend(LocalDateTime.of(2019, 6, 15, 12, 0), 100, 100));
+
+        transactions.add(sell(LocalDateTime.of(2020, 1, 1, 12, 0), 500, 50));
+        transactions.add(dividend(LocalDateTime.of(2020, 6, 15, 12, 0), 50, 50));
+        transactions.add(dividend(LocalDateTime.of(2021, 6, 15, 12, 0), 50, 50));
+
+        DividendCalculation dividends = calculate(transactions);
+
+        assertEquals(0.10, dividends.getRateOfReturnPerYear(), 0.00001);
+    }
+
+    @Test
+    public void rateOfReturnThreeYearsWithFullSaleAfterLastDividend()
+    {
+        List<CalculationLineItem> transactions = new ArrayList<>();
+
+        transactions.add(buy(LocalDateTime.of(2019, 1, 1, 12, 0), 1000, 100));
+        transactions.add(dividend(LocalDateTime.of(2019, 6, 15, 12, 0), 100, 100));
+        transactions.add(dividend(LocalDateTime.of(2020, 6, 15, 12, 0), 100, 100));
+        transactions.add(dividend(LocalDateTime.of(2021, 6, 15, 12, 0), 100, 100));
+        transactions.add(sell(LocalDateTime.of(2021, 12, 31, 12, 0), 1000, 100));
+
+        DividendCalculation dividends = calculate(transactions);
+
+        assertEquals(0.10, dividends.getRateOfReturnPerYear(), 0.00001);
+    }
+
+    @Test
+    public void rateOfReturnThreeYearsWithSaleAndRepurchase()
+    {
+        List<CalculationLineItem> transactions = new ArrayList<>();
+
+        transactions.add(buy(LocalDateTime.of(2019, 1, 1, 12, 0), 1000, 100));
+        transactions.add(dividend(LocalDateTime.of(2019, 6, 15, 12, 0), 100, 100));
+
+        transactions.add(sell(LocalDateTime.of(2019, 12, 31, 12, 0), 1000, 100));
+
+        transactions.add(buy(LocalDateTime.of(2020, 1, 1, 12, 0), 2000, 100));
+        transactions.add(dividend(LocalDateTime.of(2020, 6, 15, 12, 0), 100, 100));
+        transactions.add(dividend(LocalDateTime.of(2021, 6, 15, 12, 0), 100, 100));
+
+        DividendCalculation dividends = calculate(transactions);
+
+        assertEquals((0.10 + 0.05 + 0.05) / 3, dividends.getRateOfReturnPerYear(), 0.00001);
+    }
+
+    @Test
+    public void rateOfReturnWithMultipleAccountsOnSameDividendDate()
+    {
+        List<CalculationLineItem> transactions = new ArrayList<>();
+
+        Account secondAccount = new Account();
+
+        transactions.add(buy(LocalDateTime.of(2019, 1, 1, 12, 0), 1000, 100));
+
+        transactions.add(dividend(account, LocalDateTime.of(2019, 6, 15, 12, 0), 40, 40));
+        transactions.add(dividend(secondAccount, LocalDateTime.of(2019, 6, 15, 12, 0), 60, 60));
+
+        DividendCalculation dividends = calculate(transactions);
+
+        assertEquals(0.10, dividends.getRateOfReturnPerYear(), 0.00001);
+    }
+
+    @Test
+    public void rateOfReturnWithDividendForPartialPosition()
+    {
+        List<CalculationLineItem> transactions = new ArrayList<>();
+
+        transactions.add(buy(LocalDateTime.of(2019, 1, 1, 12, 0), 1000, 100));
+        transactions.add(dividend(LocalDateTime.of(2019, 6, 15, 12, 0), 40, 40));
+
+        DividendCalculation dividends = calculate(transactions);
+
+        assertEquals(0.10, dividends.getRateOfReturnPerYear(), 0.00001);
     }
 }

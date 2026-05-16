@@ -81,7 +81,7 @@ public interface CalculationLineItem
 
     public static class DividendPayment extends TransactionItem
     {
-        private long totalShares;
+        long totalShares;
         private Money fifoCost;
         private Money movingAverageCost;
 
@@ -130,6 +130,11 @@ public interface CalculationLineItem
         /* package */ void setTotalShares(long totalShares)
         {
             this.totalShares = totalShares;
+        }
+
+        /* package */ long getTotalShares()
+        {
+            return totalShares;
         }
 
         public double getPersonalDividendYield()

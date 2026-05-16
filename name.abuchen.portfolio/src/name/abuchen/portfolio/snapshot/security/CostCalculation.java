@@ -60,9 +60,25 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
     private long fees;
     private long taxes;
 
+    private boolean useHistoricCostBasis = false;
+
+    @Override
+    public void preload(CurrencyConverter converter, List<CalculationLineItem> lineItems)
+    {
+        this.useHistoricCostBasis = true;
+
+        visitAll(converter, lineItems);
+
+        this.fees = 0;
+        this.taxes = 0;
+    }
+
     @Override
     public void visit(CurrencyConverter converter, CalculationLineItem.ValuationAtStart item)
     {
+        if (useHistoricCostBasis)
+            return;
+
         Money valuation = item.getValue();
         SecurityPosition position = item.getSecurityPosition().orElseThrow(IllegalArgumentException::new);
 

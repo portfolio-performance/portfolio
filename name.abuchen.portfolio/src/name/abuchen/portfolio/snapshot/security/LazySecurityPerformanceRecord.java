@@ -160,8 +160,11 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
         return converter.convert(price.getDate(), Quote.of(security.getCurrencyCode(), price.getValue()));
     });
 
-    private final LazyValue<CostCalculationResult> costCalculation = new LazyValue<>(
-                    () -> Calculation.perform(CostCalculation.class, converter, security, lineItems).getResult());
+    private final LazyValue<CostCalculationResult> costCalculation = new LazyValue<CostCalculationResult>(() -> {
+        CostCalculation calculation = Calculation.perform(CostCalculation.class, converter, security, lineItems,
+                        prePeriodLineItems);
+        return calculation.getResult();
+    });
 
     /**
      * fifo cost of shares held

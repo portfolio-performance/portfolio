@@ -494,7 +494,8 @@ public final class SecurityPerformanceRecord extends BaseSecurityPerformanceReco
 
     private void calculateFifoAndMovingAverageCosts(CurrencyConverter converter)
     {
-        CostCalculation cost = Calculation.perform(CostCalculation.class, converter, security, lineItems);
+        CostCalculation cost = Calculation.perform(CostCalculation.class, converter, security, lineItems,
+                        prePeriodLineItems);
         this.fifoCost = cost.getFifoCost();
         this.fifoCostTrail = cost.getFifoCostTrail();
         this.movingAverageCost = cost.getMovingAverageCost();
