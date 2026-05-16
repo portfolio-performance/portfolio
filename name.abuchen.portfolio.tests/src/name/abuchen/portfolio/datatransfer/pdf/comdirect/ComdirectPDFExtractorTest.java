@@ -977,7 +977,7 @@ public class ComdirectPDFExtractorTest
         assertThat(results, hasItem(purchase( //
                         hasDate("2026-05-04T00:00"), hasShares(0.193), //
                         hasSource("KaufMitSteuerbehandlung17.txt"), //
-                        hasNote("R.-Nr.: 705006160048DB25"), //
+                        hasNote("Ord.-Nr.: 119817162670 | R.-Nr.: 705006160048DB25"), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 24.63), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.37))));
     }
