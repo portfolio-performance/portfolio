@@ -453,10 +453,11 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // Ordernummer       : 000117637940-001  Rechnungsnummer   : 508104401078D295
                                         //                     592581219254      Rechnungsnummer   : 878649826981vsP4
+                                        // 119817162670 Rechnungsnummer : 705006160048DB25
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
-                                                        .match("^.* (?<note>[\\-\\d]+)[\\s]{1,}Rechnungsnummer.*$") //
+                                                        .match("^(?:.* )?(?<note>[\\-\\d]+)[\\s]{1,}Rechnungsnummer.*$") //
                                                         .assign((t, v) -> t.setNote("Ord.-Nr.: " + v.get("note"))),
                                         // @formatter:off
                                         // Geschäftstag : 08.06.2015         Order-Nr.   : 71871368321 / 001
@@ -1040,7 +1041,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Stk\\.[\\-\\s]{1,}[\\.,\\d]+ (?<name>.*), WKN \\/ ISIN: (?<wkn>[A-Z0-9]{6})[\\s]{1,}\\/[\\s]{1,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*" //
                                                                         + "(G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n|L[\\s]*a[\\s]*s[\\s]*t[\\s]*e[\\s]*n)" //
-                                                                        + "[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?:[A-Z][\\s]*){3}[\\s]{1,}[\\.,\\d\\s]+[\\s]{1,}(?<currency>(?:[A-Z][\\s]*){3})[\\s]{1,}[\\.,\\d\\s]+.*$") //
+                                                                        + "[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?:[A-Z][\\s]*){3}[\\s]{1,}[\\.,\\d\\s]+[\\s]{1,}(?<currency>(?:[A-Z][\\s]*){3})[\\-\\s]{1,}[\\.,\\d\\s]+.*$") //
                                                         .assign((t, v) -> {
                                                             v.put("currency", stripBlanks(v.get("currency")));
                                                             v.put("name", trim(replaceMultipleBlanks(v.get("name"))));
@@ -1053,13 +1054,16 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         //
                                         // Stk.               8,544 ARERO-WELTFDS-ESG LC , WKN / ISIN: DWS26Y  / LU2114851830
                                         //  Zu  Ih r e n L a s te n  v o r  S te u e r n:
+                                        //
+                                        // Stk. 0,193 PALANTIR TECHNOLOGIES INC , WKN / ISIN: A2QA4J / US69608A1088
+                                        // Zu Ihren Lasten vor Steuern: EUR -25,00
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "wkn", "isin", "currency") //
                                                         .match("^Stk\\.[\\-\\s]{1,}[\\.,\\d]+ (?<name>.*), WKN \\/ ISIN: (?<wkn>[A-Z0-9]{6})[\\s]{1,}\\/[\\s]{1,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*" //
                                                                         + "(G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n|L[\\s]*a[\\s]*s[\\s]*t[\\s]*e[\\s]*n)" //
-                                                                        + "[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?<currency>(?:[A-Z][\\s]*){3})[\\s]{1,}[\\.,\\d\\s]+.*$") //
+                                                                        + "[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?<currency>(?:[A-Z][\\s]*){3})[\\-\\s]{1,}[\\.,\\d\\s]+.*$") //
                                                         .assign((t, v) -> {
                                                             v.put("currency", stripBlanks(v.get("currency")));
                                                             v.put("name", trim(replaceMultipleBlanks(v.get("name"))));
@@ -1075,7 +1079,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<currency>[A-Z]{3})[\\-\\s]{1,}(?<shares>[\\.,\\d]+) (?<name>.*), WKN \\/ ISIN: (?<wkn>[A-Z0-9]{6})[\\s]{1,}\\/[\\s]{1,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*" //
                                                                         + "(G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n|L[\\s]*a[\\s]*s[\\s]*t[\\s]*e[\\s]*n)" //
-                                                                        + "[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?:[A-Z][\\s]*){3}[\\s]{1,}[\\.,\\d\\s]+.*$") //
+                                                                        + "[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?:[A-Z][\\s]*){3}[\\-\\s]{1,}[\\.,\\d\\s]+.*$") //
                                                         .assign((t, v) -> {
                                                             v.put("currency", stripBlanks(v.get("currency")));
                                                             v.put("name", trim(replaceMultipleBlanks(v.get("name"))));
