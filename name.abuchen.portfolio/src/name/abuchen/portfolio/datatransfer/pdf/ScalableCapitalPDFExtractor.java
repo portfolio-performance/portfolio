@@ -292,7 +292,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^.*(Seite|Pagina) 1 \\/ [\\d]$");
+        var firstRelevantLine = new Block("^.*(Seite|Pagina|Page) 1 \\/ [\\d]$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -330,6 +330,17 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Berechtigtes[\\s]*Wertpapier (?<name>.*)$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Gutschrift [\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Entitled security E.ON SE
+                                        // ISIN DE000ENAG999
+                                        // 27.04.2026 28.04.2026 Credit 0.57 EUR 17 9.69 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .match("^Entitled security (?<name>.*)$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Credit [\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         .oneOf( //
@@ -343,12 +354,20 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                                                         asShares(v.get("shares"), "en", "US"))),
                                         // @formatter:off
                                         // Berechtigte Anzahl 0,663129
-                                        // Berechtigte Anzahl 1.200 
+                                        // Berechtigte Anzahl 1.200
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^Berechtigte Anzahl (?<shares>[\\.,\\d]+).*$") //
-                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // Entitled quantity 17
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^Entitled quantity (?<shares>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> t.setShares(
+                                                                        asShares(v.get("shares"), "en", "US"))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -364,25 +383,34 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Gutschrift [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [\\.,\\d]+ [A-Z]{3}.*$")
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // 27.04.2026 28.04.2026 Credit 0.57 EUR 17 9.69 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Credit [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [\\.,\\d]+ [A-Z]{3}.*$")
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
                         .optionalOneOf(//
                         // @formatter:off
-                                        // Ex Tag 12.12.2025 
-                                        // Ex-dag 04.06.2025 
+                                        // Ex Tag 12.12.2025
+                                        // Ex-dag 04.06.2025
+                                        // Ex day 24.04.2026
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("exDate") //
-                                                        .match("^(Ex Tag|Ex-dag) (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})[\\s]*$")
+                                                        .match("^(Ex Tag|Ex-dag|Ex day) (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})[\\s]*$")
                                                         .assign((t, v) -> t.setExDate(asDate(v.get("exDate")))))
                         .oneOf( //
                                         // @formatter:off
                                         // Gesamtbetrag 0,07 EUR
                                         // Totaal 2.12 EUR
+                                        // Total 7.14 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount", "currency") //
-                                                        .match("^(Gesamtbetrag|Totaal) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .match("^(Gesamtbetrag|Totaal|Total) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
