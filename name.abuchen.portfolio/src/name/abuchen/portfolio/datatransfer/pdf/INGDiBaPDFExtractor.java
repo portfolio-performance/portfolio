@@ -52,6 +52,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         addDividendeTransaction();
         addAdvanceTaxTransaction();
         addAccountStatementTransaction();
+        addDeliveryInOutTransaction();
         addNonImportableTransaction();
     }
 
@@ -937,6 +938,69 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> v.markAsFailure(Messages.MsgErrorTransactionSplitUnsupported))
 
                         .wrap(TransactionItem::new);
+    }
+
+    private void addDeliveryInOutTransaction()
+    {
+        addDeliveryTransaction("Übertrag Ausgang", PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+        addDeliveryTransaction("Wertpapier Eingang", PortfolioTransaction.Type.DELIVERY_INBOUND);
+    }
+
+    private void addDeliveryTransaction(String label, PortfolioTransaction.Type transactionType)
+    {
+        final var type = new DocumentType(label);
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<PortfolioTransaction>();
+
+        var firstRelevantLine = new Block("^[\\.,\\d]+ St.ck .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var portfolioTransaction = new PortfolioTransaction();
+                            portfolioTransaction.setType(transactionType);
+                            return portfolioTransaction;
+                        })
+
+                        // @formatter:off
+                        // 1,00 Stück Ford Motor Co. 18.03.2026 0027023852
+                        // Registered Shares DL -,01
+                        // ISIN (WKN): US3453708600 (502391)
+                        // @formatter:on
+                        .section("shares", "date", "note", "name", "nameContinued", "isin", "wkn") //
+                        .match("^(?<shares>[\\.,\\d]+) St.ck (?<name>.*) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<note>[\\d]+)$") //
+                        .match("^(?<nameContinued>.*)$") //
+                        .match("^ISIN \\(WKN\\): (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
+                        .assign((t, v) -> {
+                            v.put("name", trim(v.get("name")) + " " + trim(v.get("nameContinued")));
+                            v.put("currency", guessCurrencyCode(v.get("isin")));
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setShares(asShares(v.get("shares")));
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setCurrencyCode(t.getSecurity().getCurrencyCode());
+                            t.setAmount(0L);
+                            t.setNote("Auftragsnummer " + v.get("note"));
+                        })
+
+                        .wrap(TransactionItem::new);
+    }
+
+    private String guessCurrencyCode(String isin)
+    {
+        if (isin == null || isin.length() < 2)
+            return "EUR";
+
+        return switch (isin.substring(0, 2))
+        {
+            case "CA" -> "CAD";
+            case "GB" -> "GBP";
+            case "US" -> "USD";
+            default -> "EUR";
+        };
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
