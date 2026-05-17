@@ -135,22 +135,30 @@ public class CostCalculationTest
         CurrencyConverter converter = new TestCurrencyConverter().with(CurrencyUnit.EUR);
 
         var interval = Interval.of(LocalDate.parse("2015-01-16"), LocalDate.parse("2015-12-31"));
-        SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, converter, interval);
-
-        new SecurityPerformanceSnapshotComparator(snapshot,
-                        LazySecurityPerformanceSnapshot.create(client, converter, interval)).compare();
+        LazySecurityPerformanceSnapshot snapshot = LazySecurityPerformanceSnapshot.create(client, converter, interval);
 
         assertThat(snapshot.getRecords().size(), is(1));
 
-        SecurityPerformanceRecord record = snapshot.getRecords().get(0);
+        LazySecurityPerformanceRecord record = snapshot.getRecords().get(0);
 
+<<<<<<< HEAD
         // 1.1588 = exchange rate of test currency converter on 2015-01-16
+=======
+        // Historic cost basis: the inbound delivery before the reporting period
+        // keeps its original EUR value instead of being revalued at the start
+        // date.
+>>>>>>> 109cdb01f (Fix annual dividend yield aggregation)
         assertThat(record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize((1000 / 1.1588) + 1100))));
 
         assertThat(record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
+<<<<<<< HEAD
                         is(record.explain(SecurityPerformanceRecord.Trails.FIFO_COST)
                         .orElseThrow(IllegalArgumentException::new).getRecord().getValue()));
+=======
+                        is(record.explain(BaseSecurityPerformanceRecord.Trails.FIFO_COST)
+                                        .orElseThrow(IllegalArgumentException::new).getRecord().getValue()));
+>>>>>>> 109cdb01f (Fix annual dividend yield aggregation)
     }
 
     @Test
