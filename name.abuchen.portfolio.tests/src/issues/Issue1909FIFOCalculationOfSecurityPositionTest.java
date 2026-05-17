@@ -49,12 +49,12 @@ public class Issue1909FIFOCalculationOfSecurityPositionTest
 
         assertThat(record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2000))));
-        assertThat(record.getCostPerSharesHeld(CostMethod.FIFO),
+        assertThat(record.getCostPerSharesHeld(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED),
                         is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(200))));
 
         assertThat(record.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1500))));
-        assertThat(record.getCostPerSharesHeld(CostMethod.MOVING_AVERAGE),
+        assertThat(record.getCostPerSharesHeld(CostMethod.MOVING_AVERAGE, TaxesAndFees.NOT_INCLUDED),
                         is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(150))));
 
         assertThat(record.getCapitalGainsOnHoldings(CostMethod.FIFO),

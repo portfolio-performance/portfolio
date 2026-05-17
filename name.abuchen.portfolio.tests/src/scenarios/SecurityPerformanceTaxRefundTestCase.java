@@ -118,7 +118,8 @@ public class SecurityPerformanceTaxRefundTestCase
         assertThat(record.getQuote(), is(Quote.of("EUR", 7430000000L)));
         assertThat(record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of("EUR", 765800L)));
         assertThat(record.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), is(Money.of("EUR", 765800L)));
-        assertThat(record.getCostPerSharesHeld(CostMethod.FIFO), is(Quote.of("EUR", 7638000000L)));
+        assertThat(record.getCostPerSharesHeld(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED),
+                        is(Quote.of("EUR", 7638000000L)));
         assertThat(record.getDelta(), is(Money.of("EUR", -22300L)));
         assertThat(record.getDeltaPercent(), closeTo(-0.029119874640898408, 0.0001));
         assertThat(record.getCapitalGainsOnHoldings(CostMethod.FIFO), is(Money.of("EUR", -22800L)));
@@ -201,7 +202,7 @@ public class SecurityPerformanceTaxRefundTestCase
         assertThat(record.getQuote(), is(Quote.of("EUR", 7430000000L)));
         assertThat(record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of("EUR", 0L)));
         assertThat(record.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), is(Money.of("EUR", 0L)));
-        assertThat(record.getCostPerSharesHeld(CostMethod.FIFO), is(Quote.of("EUR", 0L)));
+        assertThat(record.getCostPerSharesHeld(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED), is(Quote.of("EUR", 0L)));
         assertThat(record.getDelta(), is(Money.of("EUR", -24300L)));
         assertThat(record.getDeltaPercent(), closeTo(-0.03173152259075477, 0.0001));
         assertThat(record.getCapitalGainsOnHoldings(CostMethod.FIFO), is(Money.of("EUR", 0L)));

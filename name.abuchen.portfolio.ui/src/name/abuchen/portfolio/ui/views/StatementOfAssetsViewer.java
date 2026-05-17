@@ -644,8 +644,9 @@ public class StatementOfAssetsViewer
         column.setGroupLabel(Messages.LabelPurchasePrice);
         column.setMenuLabel(Messages.ColumnPurchasePrice_MenuLabel);
         column.setDescription(Messages.ColumnPurchasePrice_Description);
-        labelProvider = new ReportingPeriodLabelProvider(
-                        new ElementValueProvider(record -> record.getCostPerSharesHeld(CostMethod.FIFO), null), false);
+        labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
+                        record -> record.getCostPerSharesHeld(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED), null),
+                        false);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
@@ -657,7 +658,8 @@ public class StatementOfAssetsViewer
         column.setMenuLabel(Messages.ColumnPurchasePriceMovingAverage_MenuLabel);
         column.setDescription(Messages.ColumnPurchasePriceMovingAverage_Description);
         labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
-                        record -> record.getCostPerSharesHeld(CostMethod.MOVING_AVERAGE), null), false);
+                        record -> record.getCostPerSharesHeld(CostMethod.MOVING_AVERAGE, TaxesAndFees.NOT_INCLUDED),
+                        null), false);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
@@ -669,9 +671,8 @@ public class StatementOfAssetsViewer
         column.setGroupLabel(Messages.LabelPurchasePrice);
         column.setMenuLabel(Messages.ColumnPurchasePrice_MenuLabel);
         column.setDescription(Messages.ColumnGrossPurchasePriceFIFO_Description);
-        labelProvider = new ReportingPeriodLabelProvider(
-                        new ElementValueProvider(record -> record.getGrossCostPerSharesHeld(CostMethod.FIFO), null),
-                        false);
+        labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
+                        record -> record.getCostPerSharesHeld(CostMethod.FIFO, TaxesAndFees.INCLUDED), null), false);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
@@ -683,7 +684,8 @@ public class StatementOfAssetsViewer
         column.setMenuLabel(Messages.ColumnPurchasePriceMovingAverage_MenuLabel);
         column.setDescription(Messages.ColumnGrossPurchasePriceMovingAverage_Description);
         labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
-                        record -> record.getGrossCostPerSharesHeld(CostMethod.MOVING_AVERAGE), null), false);
+                        record -> record.getCostPerSharesHeld(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), null),
+                        false);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
@@ -1023,8 +1025,8 @@ public class StatementOfAssetsViewer
                         Messages.ColumnPurchasePrice + Messages.BaseCurrencyCue, SWT.RIGHT, 80);
         column.setDescription(Messages.ColumnPurchasePriceBaseCurrency);
         column.setGroupLabel(Messages.ColumnForeignCurrencies);
-        labelProvider = new ReportingPeriodLabelProvider(
-                        new ElementValueProvider(record -> record.getCostPerSharesHeld(CostMethod.FIFO), null),
+        labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
+                        record -> record.getCostPerSharesHeld(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED), null),
                         e -> e.isSecurity() ? e.getSecurity().getCurrencyCode()
                                         : model.getCurrencyConverter().getTermCurrency(),
                         false);
@@ -1562,7 +1564,8 @@ public class StatementOfAssetsViewer
             // every value is retrieved from a LazySecurityPerformanceRecord
             // (the logic for that is inside the ElementValueProvider class)
 
-            // the LazySecurityPerformanceRecord are determined based on this logic:
+            // the LazySecurityPerformanceRecord are determined based on this
+            // logic:
             // - if given as an option to column (i.e. the user chooses an
             // interval explicitly), then this interval is used
             // - if no option is present, then the "global interval" is used,
