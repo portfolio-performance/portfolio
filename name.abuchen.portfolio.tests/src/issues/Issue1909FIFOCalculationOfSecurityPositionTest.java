@@ -19,11 +19,8 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceIndicator;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshotComparator;
 import name.abuchen.portfolio.util.Interval;
 
 public class Issue1909FIFOCalculationOfSecurityPositionTest
@@ -41,14 +38,10 @@ public class Issue1909FIFOCalculationOfSecurityPositionTest
 
         LocalDate date = LocalDate.parse("2020-12-31"); //$NON-NLS-1$
 
-        SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, converter,
-                        Interval.of(LocalDate.MIN, date), SecurityPerformanceIndicator.Costs.class);
+        LazySecurityPerformanceSnapshot snapshot = LazySecurityPerformanceSnapshot.create(client, converter,
+                        Interval.of(LocalDate.MIN, date));
 
-        new SecurityPerformanceSnapshotComparator(snapshot,
-                        LazySecurityPerformanceSnapshot.create(client, converter, Interval.of(LocalDate.MIN, date)))
-                                        .compareCosts();
-
-        SecurityPerformanceRecord record = snapshot.getRecords().get(0);
+        LazySecurityPerformanceRecord record = snapshot.getRecords().get(0);
 
         assertThat(record.getSecurity(), is(security));
 
@@ -62,7 +55,8 @@ public class Issue1909FIFOCalculationOfSecurityPositionTest
         assertThat(record.getCostPerSharesHeld(CostMethod.MOVING_AVERAGE),
                         is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(150))));
 
-        assertThat(record.getCapitalGainsOnHoldings(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(805))));
+        assertThat(record.getCapitalGainsOnHoldings(CostMethod.FIFO),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(805))));
 
     }
 }

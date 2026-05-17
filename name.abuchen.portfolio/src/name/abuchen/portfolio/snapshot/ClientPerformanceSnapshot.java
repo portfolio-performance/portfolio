@@ -29,10 +29,10 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.snapshot.security.CapitalGainsRecord;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceIndicator;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.trail.Trail;
 import name.abuchen.portfolio.snapshot.trail.TrailProvider;
 import name.abuchen.portfolio.snapshot.trail.TrailRecord;
@@ -369,16 +369,17 @@ public class ClientPerformanceSnapshot
      */
     private void addCapitalGainsFifo()
     {
-        SecurityPerformanceSnapshot securityPerformance = SecurityPerformanceSnapshot.create(client, converter, period,
-                        snapshotStart, snapshotEnd, SecurityPerformanceIndicator.CapitalGains.class);
+        LazySecurityPerformanceSnapshot securityPerformance = LazySecurityPerformanceSnapshot.create(client, converter,
+                        period, snapshotStart, snapshotEnd);
 
         Category realizedCapitalGains = categories.get(CategoryType.REALIZED_CAPITAL_GAINS);
-        addCapitalGains(realizedCapitalGains, securityPerformance, record -> record.getRealizedCapitalGains());
+        addCapitalGains(realizedCapitalGains, securityPerformance,
+                        record -> record.getRealizedCapitalGains(CostMethod.FIFO));
 
         // create position for unrealized capital gains
 
         Category capitalGains = categories.get(CategoryType.CAPITAL_GAINS);
-        addCapitalGains(capitalGains, securityPerformance, record -> record.getUnrealizedCapitalGains());
+        addCapitalGains(capitalGains, securityPerformance, record -> record.getUnrealizedCapitalGains(CostMethod.FIFO));
     }
 
     /**
@@ -389,20 +390,22 @@ public class ClientPerformanceSnapshot
      */
     private void addCapitalGainsMovingAverage()
     {
-        SecurityPerformanceSnapshot securityPerformance = SecurityPerformanceSnapshot.create(client, converter, period,
-                        snapshotStart, snapshotEnd, SecurityPerformanceIndicator.CapitalGains.class);
+        LazySecurityPerformanceSnapshot securityPerformance = LazySecurityPerformanceSnapshot.create(client, converter,
+                        period, snapshotStart, snapshotEnd);
 
         Category realizedCapitalGains = categories.get(CategoryType.REALIZED_CAPITAL_GAINS);
-        addCapitalGains(realizedCapitalGains, securityPerformance, record -> record.getRealizedCapitalGainsMovingAvg());
+        addCapitalGains(realizedCapitalGains, securityPerformance,
+                        record -> record.getRealizedCapitalGains(CostMethod.MOVING_AVERAGE));
 
         // create position for unrealized capital gains
 
         Category capitalGains = categories.get(CategoryType.CAPITAL_GAINS);
-        addCapitalGains(capitalGains, securityPerformance, record -> record.getUnrealizedCapitalGainsMovingAvg());
+        addCapitalGains(capitalGains, securityPerformance,
+                        record -> record.getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE));
     }
 
-    private void addCapitalGains(Category category, SecurityPerformanceSnapshot securityPerformance,
-                    Function<SecurityPerformanceRecord, CapitalGainsRecord> mapper)
+    private void addCapitalGains(Category category, LazySecurityPerformanceSnapshot securityPerformance,
+                    Function<LazySecurityPerformanceRecord, CapitalGainsRecord> mapper)
     {
         category.positions = securityPerformance.getRecords().stream()
                         .sorted((p1, p2) -> TextUtil.compare(p1.getSecurityName(), p2.getSecurityName())) //

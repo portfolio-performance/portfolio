@@ -7,11 +7,11 @@ import java.util.function.Supplier;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
 import name.abuchen.portfolio.util.TextUtil;
 
-public class TopContributorsReturnWidget extends AbstractTopContributorsWidget<List<SecurityPerformanceRecord>>
+public class TopContributorsReturnWidget extends AbstractTopContributorsWidget<List<LazySecurityPerformanceRecord>>
 {
     public TopContributorsReturnWidget(Widget widget, DashboardData dashboardData)
     {
@@ -23,7 +23,7 @@ public class TopContributorsReturnWidget extends AbstractTopContributorsWidget<L
     }
 
     @Override
-    public Supplier<List<SecurityPerformanceRecord>> getUpdateTask()
+    public Supplier<List<LazySecurityPerformanceRecord>> getUpdateTask()
     {
         return () -> {
             var interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now());
@@ -34,13 +34,13 @@ public class TopContributorsReturnWidget extends AbstractTopContributorsWidget<L
             var client = snapshot.getClient();
             var converter = getDashboardData().getCurrencyConverter();
 
-            var secSnapshot = SecurityPerformanceSnapshot.create(client, converter, interval);
+            var secSnapshot = LazySecurityPerformanceSnapshot.create(client, converter, interval);
             return new ArrayList<>(secSnapshot.getRecords());
         };
     }
 
     @Override
-    protected List<DisplayRow> buildDisplayRows(List<SecurityPerformanceRecord> records)
+    protected List<DisplayRow> buildDisplayRows(List<LazySecurityPerformanceRecord> records)
     {
         records.sort((a, b) -> Double.compare(b.getTrueTimeWeightedRateOfReturn(),
                         a.getTrueTimeWeightedRateOfReturn()));

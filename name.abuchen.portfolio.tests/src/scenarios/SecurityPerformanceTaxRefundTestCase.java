@@ -33,10 +33,8 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.security.CalculationLineItem;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshotComparator;
 import name.abuchen.portfolio.util.Interval;
 
 @SuppressWarnings("nls")
@@ -58,11 +56,9 @@ public class SecurityPerformanceTaxRefundTestCase
         PortfolioTransaction delivery = portfolio.getTransactions().get(0);
         Interval period = Interval.of(LocalDate.parse("2013-12-06"), LocalDate.parse("2014-12-06"));
         TestCurrencyConverter converter = new TestCurrencyConverter();
-        SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, converter, period);
-        new SecurityPerformanceSnapshotComparator(snapshot,
-                        LazySecurityPerformanceSnapshot.create(client, converter, period)).compare();
+        LazySecurityPerformanceSnapshot snapshot = LazySecurityPerformanceSnapshot.create(client, converter, period);
 
-        SecurityPerformanceRecord record = snapshot.getRecords().get(0);
+        LazySecurityPerformanceRecord record = snapshot.getRecords().get(0);
 
         assertThat(record.getSecurity().getName(), is("Basf SE"));
 
@@ -129,11 +125,9 @@ public class SecurityPerformanceTaxRefundTestCase
         PortfolioTransaction sell = portfolio.getTransactions().get(1);
         Interval period = Interval.of(LocalDate.parse("2013-12-06"), LocalDate.parse("2014-12-06"));
         TestCurrencyConverter converter = new TestCurrencyConverter();
-        SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, converter, period);
-        new SecurityPerformanceSnapshotComparator(snapshot,
-                        LazySecurityPerformanceSnapshot.create(client, converter, period)).compare();
+        LazySecurityPerformanceSnapshot snapshot = LazySecurityPerformanceSnapshot.create(client, converter, period);
 
-        SecurityPerformanceRecord record = snapshot.getRecords().get(0);
+        LazySecurityPerformanceRecord record = snapshot.getRecords().get(0);
 
         assertThat(record.getSecurity().getName(), is("Basf SE"));
         assertThat(record.getSharesHeld(), is(0L));

@@ -40,16 +40,12 @@ public class SecurityPerformanceSnapshotTest
                         .addTo(client);
 
         final Interval interval = Interval.of(LocalDate.parse("2018-04-01"), LocalDate.parse("2018-06-01"));
-        SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(),
-                        interval);
-
-        new SecurityPerformanceSnapshotComparator(snapshot,
-                        LazySecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(), interval))
-                                        .compare();
+        LazySecurityPerformanceSnapshot snapshot = LazySecurityPerformanceSnapshot.create(client,
+                        new TestCurrencyConverter(), interval);
 
         assertThat(snapshot.getRecords(), hasSize(1));
 
-        SecurityPerformanceRecord record = snapshot.getRecords().get(0);
+        LazySecurityPerformanceRecord record = snapshot.getRecords().get(0);
         assertThat(record.getSecurity(), is(security));
 
         assertThat(record.getSharesHeld(), is(0L));
@@ -74,16 +70,12 @@ public class SecurityPerformanceSnapshotTest
                         .addTo(client);
 
         Interval reportingPeriod = Interval.of(LocalDate.parse("2018-04-01"), LocalDate.parse("2018-06-01"));
-        SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(),
-                        reportingPeriod);
-
-        new SecurityPerformanceSnapshotComparator(snapshot,
-                        LazySecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(), reportingPeriod))
-                                        .compare();
+        LazySecurityPerformanceSnapshot snapshot = LazySecurityPerformanceSnapshot.create(client,
+                        new TestCurrencyConverter(), reportingPeriod);
 
         assertThat(snapshot.getRecords(), hasSize(1));
 
-        SecurityPerformanceRecord record = snapshot.getRecords().get(0);
+        LazySecurityPerformanceRecord record = snapshot.getRecords().get(0);
         assertThat(record.getSecurity(), is(security));
 
         assertThat(record.getSharesHeld(), is(Values.Share.factorize(499999)));
