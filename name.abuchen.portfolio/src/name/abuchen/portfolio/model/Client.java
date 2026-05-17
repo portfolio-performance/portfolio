@@ -22,6 +22,7 @@ import com.google.protobuf.Any;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.CurrencyUnitResolver;
 
 public class Client
 {
@@ -29,9 +30,10 @@ public class Client
     {
         String TAXONOMIES = "taxonomies"; //$NON-NLS-1$
         String WATCHLISTS = "watchlists"; //$NON-NLS-1$
+        String CUSTOM_CURRENCIES = "customCurrencies"; //$NON-NLS-1$
     }
 
-    public static final int CURRENT_VERSION = 69;
+    public static final int CURRENT_VERSION = 71;
     public static final int VERSION_WITH_CURRENCY_SUPPORT = 29;
     public static final int VERSION_WITH_UNIQUE_FILTER_KEY = 57;
 
@@ -50,6 +52,7 @@ public class Client
     private transient int fileVersionAfterRead = CURRENT_VERSION; // NOSONAR
 
     private String baseCurrency = CurrencyUnit.EUR;
+    private List<CustomCurrency> customCurrencies = new ArrayList<>();
 
     private List<Security> securities = new ArrayList<>();
     private List<Watchlist> watchlists;
@@ -117,6 +120,9 @@ public class Client
         else
             settings.doPostLoadInitialization();
 
+        if (customCurrencies == null)
+            customCurrencies = new ArrayList<>();
+
         // Add this missing initialization:
         if (extensions == null)
             extensions = new ArrayList<>();
@@ -156,6 +162,26 @@ public class Client
     public void setBaseCurrency(String baseCurrency)
     {
         propertyChangeSupport.firePropertyChange("baseCurrency", this.baseCurrency, this.baseCurrency = baseCurrency); //$NON-NLS-1$ //NOSONAR
+    }
+
+    public List<CustomCurrency> getCustomCurrencies()
+    {
+        return Collections.unmodifiableList(customCurrencies);
+    }
+
+    public void addCustomCurrency(CustomCurrency currency)
+    {
+        Objects.requireNonNull(currency);
+
+        customCurrencies.add(currency);
+
+        propertyChangeSupport.firePropertyChange(Properties.CUSTOM_CURRENCIES, null, currency);
+    }
+
+    public void removeCustomCurrency(CustomCurrency currency)
+    {
+        if (customCurrencies.remove(currency))
+            propertyChangeSupport.firePropertyChange(Properties.CUSTOM_CURRENCIES, currency, null);
     }
 
     /**
@@ -286,7 +312,7 @@ public class Client
         List<CurrencyUnit> lUnits = new ArrayList<>();
         for (String code : hsUsedCodes)
         {
-            CurrencyUnit unit = CurrencyUnit.getInstance(code);
+            CurrencyUnit unit = CurrencyUnitResolver.resolve(this, code);
             if (unit != null)
             {
                 lUnits.add(unit);

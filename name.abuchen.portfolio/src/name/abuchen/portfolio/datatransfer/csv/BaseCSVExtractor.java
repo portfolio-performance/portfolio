@@ -27,7 +27,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.CurrencyUnitResolver;
 import name.abuchen.portfolio.money.Money;
 
 /* package */ abstract class BaseCSVExtractor extends CSVExtractor
@@ -149,7 +149,7 @@ import name.abuchen.portfolio.money.Money;
         if (value == null)
             return client.getBaseCurrency();
 
-        CurrencyUnit unit = CurrencyUnit.getInstance(value.trim());
+        var unit = CurrencyUnitResolver.resolve(client, value.trim());
         return unit == null ? client.getBaseCurrency() : unit.getCurrencyCode();
     }
 

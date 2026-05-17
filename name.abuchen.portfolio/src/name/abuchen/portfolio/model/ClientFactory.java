@@ -1833,6 +1833,7 @@ public class ClientFactory
 
             xstreamWriter.addImmutableType(Money.class, false);
             xstreamWriter.addImmutableType(ClientSettings.class, false);
+            xstreamWriter.addImmutableType(CustomCurrency.class, false);
             xstreamWriter.addImmutableType(Bookmark.class, false);
             xstreamWriter.addImmutableType(Transaction.Unit.class, false);
             xstreamWriter.addImmutableType(LatestSecurityPrice.class, false);
@@ -1884,6 +1885,14 @@ public class ClientFactory
 
         xstream.alias("account", Account.class);
         xstream.alias("client", Client.class);
+        xstream.alias("custom-currency", CustomCurrency.class);
+        xstream.addImplicitCollection(Client.class, "customCurrencies");
+        xstream.useAttributeFor(CustomCurrency.class, "currencyCode");
+        xstream.aliasAttribute(CustomCurrency.class, "currencyCode", "code");
+        xstream.useAttributeFor(CustomCurrency.class, "displayName");
+        xstream.aliasAttribute(CustomCurrency.class, "displayName", "name");
+        xstream.useAttributeFor(CustomCurrency.class, "currencySymbol");
+        xstream.aliasAttribute(CustomCurrency.class, "currencySymbol", "symbol");
         xstream.alias("settings", ClientSettings.class);
         xstream.alias("bookmark", Bookmark.class);
         xstream.alias("portfolio", Portfolio.class);

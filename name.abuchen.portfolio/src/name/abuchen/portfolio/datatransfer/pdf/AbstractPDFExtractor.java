@@ -33,6 +33,7 @@ import name.abuchen.portfolio.model.CrossEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.CurrencyUnitResolver;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.Factory;
@@ -325,7 +326,7 @@ public abstract class AbstractPDFExtractor implements Extractor
         if (currency == null)
             return client.getBaseCurrency();
 
-        var unit = CurrencyUnit.getInstance(currency.trim());
+        var unit = CurrencyUnitResolver.resolve(client, currency.trim());
         if (unit != null)
             return unit.getCurrencyCode();
 

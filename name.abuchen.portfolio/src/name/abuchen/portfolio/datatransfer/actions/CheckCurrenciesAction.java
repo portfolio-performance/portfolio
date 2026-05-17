@@ -11,13 +11,14 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.CurrencyUnitResolver;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.Values;
@@ -26,12 +27,23 @@ public class CheckCurrenciesAction implements ImportAction
 {
     private static final Set<AccountTransaction.Type> TRANSACTIONS_WO_UNITS = EnumSet.of(AccountTransaction.Type.BUY,
                     AccountTransaction.Type.SELL, AccountTransaction.Type.TRANSFER_IN);
+    private final Client client;
+
+    public CheckCurrenciesAction()
+    {
+        this(null);
+    }
+
+    public CheckCurrenciesAction(Client client)
+    {
+        this.client = client;
+    }
 
     @Override
     public Status process(Security security)
     {
         String currency = security.getCurrencyCode();
-        CurrencyUnit unit = CurrencyUnit.getInstance(currency);
+        var unit = CurrencyUnitResolver.resolve(client, currency);
         return unit != null ? Status.OK_STATUS
                         : new Status(Status.Code.ERROR,
                                         MessageFormat.format(Messages.MsgCheckUnsupportedCurrency, currency));
