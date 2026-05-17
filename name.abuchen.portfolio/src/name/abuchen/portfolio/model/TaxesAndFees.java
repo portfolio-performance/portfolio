@@ -7,4 +7,9 @@ package name.abuchen.portfolio.model;
 public enum TaxesAndFees
 {
     INCLUDED, NOT_INCLUDED;
+
+    public boolean isIncluded()
+    {
+        return this == INCLUDED;
+    }
 }

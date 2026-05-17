@@ -264,7 +264,6 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                         getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.NOT_INCLUDED), getFees(), getTaxes());
     }
 
-
     public TrailRecord getFifoCostTrail()
     {
         return TrailRecord.of(fifo.stream().filter(entry -> entry.grossAmount > 0) //
@@ -296,7 +295,7 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
         return Money.of(getTermCurrency(), switch (method)
         {
             case FIFO -> sumFifo(taxesAndFees);
-            case MOVING_AVERAGE -> taxesAndFees == TaxesAndFees.INCLUDED ? movingRelativeCost : movingRelativeNetCost;
+            case MOVING_AVERAGE -> taxesAndFees.isIncluded() ? movingRelativeCost : movingRelativeNetCost;
         });
     }
 
@@ -304,7 +303,7 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
     {
         long cost = 0;
         for (LineItem entry : fifo)
-            cost += taxesAndFees == TaxesAndFees.INCLUDED ? entry.grossAmount : entry.netAmount;
+            cost += taxesAndFees.isIncluded() ? entry.grossAmount : entry.netAmount;
         return cost;
     }
 }

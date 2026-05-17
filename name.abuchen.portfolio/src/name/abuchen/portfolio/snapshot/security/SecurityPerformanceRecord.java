@@ -257,8 +257,8 @@ public final class SecurityPerformanceRecord extends BaseSecurityPerformanceReco
     {
         return switch (method)
         {
-            case FIFO -> taxesAndFees == TaxesAndFees.INCLUDED ? fifoCost : netFifoCost;
-            case MOVING_AVERAGE -> taxesAndFees == TaxesAndFees.INCLUDED ? movingAverageCost : netMovingAverageCost;
+            case FIFO -> taxesAndFees.isIncluded() ? fifoCost : netFifoCost;
+            case MOVING_AVERAGE -> taxesAndFees.isIncluded() ? movingAverageCost : netMovingAverageCost;
         };
     }
 

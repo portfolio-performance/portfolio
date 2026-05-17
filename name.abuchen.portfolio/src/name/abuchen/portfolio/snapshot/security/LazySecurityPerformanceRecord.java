@@ -172,10 +172,10 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
     {
         return switch (costMethod)
         {
-            case FIFO -> taxesAndFees == TaxesAndFees.INCLUDED ? costCalculation.get().fifoCost()
+            case FIFO -> taxesAndFees.isIncluded() ? costCalculation.get().fifoCost()
                             : costCalculation.get().netFifoCost();
 
-            case MOVING_AVERAGE -> taxesAndFees == TaxesAndFees.INCLUDED ? costCalculation.get().movingAverageCost()
+            case MOVING_AVERAGE -> taxesAndFees.isIncluded() ? costCalculation.get().movingAverageCost()
                             : costCalculation.get().netMovingAverageCost();
         };
     }
