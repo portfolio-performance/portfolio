@@ -31,46 +31,46 @@ public class SecurityPerformanceSnapshotComparator
         {
             var right = lazy.getRecord(left.getSecurity()).get();
 
-            assertThat(left.getIrr(), is(right.getIrr().get()));
-            assertThat(left.getTrueTimeWeightedRateOfReturn(), is(right.getTrueTimeWeightedRateOfReturn().get()));
+            assertThat(left.getIrr(), is(right.getIrr()));
+            assertThat(left.getTrueTimeWeightedRateOfReturn(), is(right.getTrueTimeWeightedRateOfReturn()));
             assertThat(left.getTrueTimeWeightedRateOfReturnAnnualized(),
-                            is(right.getTrueTimeWeightedRateOfReturnAnnualized().get()));
-            assertThat(left.getMaxDrawdown(), is(right.getDrawdown().get().getMaxDrawdown()));
-            assertThat(left.getMaxDrawdownDuration(), is(right.getDrawdown().get().getMaxDrawdownDuration().getDays()));
-            assertThat(left.getVolatility(), is(right.getVolatility().get().getStandardDeviation()));
-            assertThat(left.getSemiVolatility(), is(right.getVolatility().get().getSemiDeviation()));
-            assertThat(left.getDelta(), is(right.getDelta().get()));
-            assertThat(left.getDeltaPercent(), is(right.getDeltaPercent().get()));
-            assertThat(left.getSumOfDividends(), is(right.getSumOfDividends().get()));
+                            is(right.getTrueTimeWeightedRateOfReturnAnnualized()));
+            assertThat(left.getMaxDrawdown(), is(right.getDrawdown().getMaxDrawdown()));
+            assertThat(left.getMaxDrawdownDuration(), is(right.getDrawdown().getMaxDrawdownDuration().getDays()));
+            assertThat(left.getVolatility(), is(right.getVolatility().getStandardDeviation()));
+            assertThat(left.getSemiVolatility(), is(right.getVolatility().getSemiDeviation()));
+            assertThat(left.getDelta(), is(right.getDelta()));
+            assertThat(left.getDeltaPercent(), is(right.getDeltaPercent()));
+            assertThat(left.getSumOfDividends(), is(right.getSumOfDividends()));
 
-            assertThat(left.getDividendEventCount(), is(right.getDividendEventCount().get()));
-            assertThat(left.getLastDividendPayment(), is(right.getLastDividendPayment().get()));
-            assertThat(left.getPeriodicity(), is(right.getPeriodicity().get()));
+            assertThat(left.getDividendEventCount(), is(right.getDividendEventCount()));
+            assertThat(left.getLastDividendPayment(), is(right.getLastDividendPayment()));
+            assertThat(left.getPeriodicity(), is(right.getPeriodicity()));
             
-            assertThat(left.getTotalRateOfReturnDiv(), is(right.getTotalRateOfReturnDiv(CostMethod.FIFO).get()));
+            assertThat(left.getTotalRateOfReturnDiv(), is(right.getTotalRateOfReturnDiv(CostMethod.FIFO)));
             assertThat(left.getTotalRateOfReturnDivMovingAverage(),
-                            is(right.getTotalRateOfReturnDiv(CostMethod.MOVING_AVERAGE).get()));
+                            is(right.getTotalRateOfReturnDiv(CostMethod.MOVING_AVERAGE)));
 
             assertThat(left.getRealizedCapitalGains().getCapitalGains(),
-                            is(right.getRealizedCapitalGains(CostMethod.FIFO).get().getCapitalGains()));
+                            is(right.getRealizedCapitalGains(CostMethod.FIFO).getCapitalGains()));
             assertThat(left.getRealizedCapitalGains().getForexCaptialGains(),
-                            is(right.getRealizedCapitalGains(CostMethod.FIFO).get().getForexCaptialGains()));
+                            is(right.getRealizedCapitalGains(CostMethod.FIFO).getForexCaptialGains()));
 
             assertThat(left.getUnrealizedCapitalGains().getCapitalGains(),
-                            is(right.getUnrealizedCapitalGains(CostMethod.FIFO).get().getCapitalGains()));
+                            is(right.getUnrealizedCapitalGains(CostMethod.FIFO).getCapitalGains()));
             assertThat(left.getUnrealizedCapitalGains().getForexCaptialGains(),
-                            is(right.getUnrealizedCapitalGains(CostMethod.FIFO).get().getForexCaptialGains()));
+                            is(right.getUnrealizedCapitalGains(CostMethod.FIFO).getForexCaptialGains()));
 
             assertThat(left.getRealizedCapitalGainsMovingAvg().getCapitalGains(),
-                            is(right.getRealizedCapitalGains(CostMethod.MOVING_AVERAGE).get().getCapitalGains()));
+                            is(right.getRealizedCapitalGains(CostMethod.MOVING_AVERAGE).getCapitalGains()));
             assertThat(left.getRealizedCapitalGainsMovingAvg().getForexCaptialGains(),
-                            is(right.getRealizedCapitalGains(CostMethod.MOVING_AVERAGE).get()
+                            is(right.getRealizedCapitalGains(CostMethod.MOVING_AVERAGE)
                                             .getForexCaptialGains()));
 
             assertThat(left.getUnrealizedCapitalGainsMovingAvg().getCapitalGains(),
-                            is(right.getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE).get().getCapitalGains()));
+                            is(right.getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE).getCapitalGains()));
             assertThat(left.getUnrealizedCapitalGainsMovingAvg().getForexCaptialGains(),
-                            is(right.getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE).get().getForexCaptialGains()));
+                            is(right.getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE).getForexCaptialGains()));
 
             assertCosts(left, right);
 
@@ -90,27 +90,27 @@ public class SecurityPerformanceSnapshotComparator
 
     private void assertCosts(SecurityPerformanceRecord left, LazySecurityPerformanceRecord right)
     {
-        assertThat(left.getMarketValue(), is(right.getMarketValue().get()));
-        assertThat(left.getQuote(), is(right.getQuote().get()));
+        assertThat(left.getMarketValue(), is(right.getMarketValue()));
+        assertThat(left.getQuote(), is(right.getQuote()));
 
         assertThat(left.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
                         is(right.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED)));
         assertThat(left.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED),
                         is(right.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED)));
 
-        assertThat(left.getCapitalGainsOnHoldings(), is(right.getCapitalGainsOnHoldings(CostMethod.FIFO).get()));
+        assertThat(left.getCapitalGainsOnHoldings(), is(right.getCapitalGainsOnHoldings(CostMethod.FIFO)));
         assertThat(left.getCapitalGainsOnHoldingsPercent(),
-                        is(right.getCapitalGainsOnHoldingsPercent(CostMethod.FIFO).get()));
+                        is(right.getCapitalGainsOnHoldingsPercent(CostMethod.FIFO)));
 
         assertThat(left.getCapitalGainsOnHoldingsMovingAverage(),
-                        is(right.getCapitalGainsOnHoldings(CostMethod.MOVING_AVERAGE).get()));
+                        is(right.getCapitalGainsOnHoldings(CostMethod.MOVING_AVERAGE)));
         assertThat(left.getCapitalGainsOnHoldingsMovingAveragePercent(),
-                        is(right.getCapitalGainsOnHoldingsPercent(CostMethod.MOVING_AVERAGE).get()));
+                        is(right.getCapitalGainsOnHoldingsPercent(CostMethod.MOVING_AVERAGE)));
 
-        assertThat(left.getCostPerSharesHeld(CostMethod.FIFO), is(right.getCostPerSharesHeld(CostMethod.FIFO).get()));
+        assertThat(left.getCostPerSharesHeld(CostMethod.FIFO), is(right.getCostPerSharesHeld(CostMethod.FIFO)));
 
-        assertThat(left.getSharesHeld(), is(right.getSharesHeld().get()));
-        assertThat(left.getFees(), is(right.getFees().get()));
-        assertThat(left.getTaxes(), is(right.getTaxes().get()));
+        assertThat(left.getSharesHeld(), is(right.getSharesHeld()));
+        assertThat(left.getFees(), is(right.getFees()));
+        assertThat(left.getTaxes(), is(right.getTaxes()));
     }
 }

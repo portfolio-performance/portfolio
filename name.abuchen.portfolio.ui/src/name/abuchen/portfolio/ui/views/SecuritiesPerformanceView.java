@@ -584,8 +584,8 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
 
     private class FilterDropDown extends DropDown implements IMenuListener
     {
-        private final Predicate<LazySecurityPerformanceRecord> sharesNotZero = r -> r.getSharesHeld().get() != 0;
-        private final Predicate<LazySecurityPerformanceRecord> sharesEqualZero = r -> r.getSharesHeld().get() == 0;
+        private final Predicate<LazySecurityPerformanceRecord> sharesNotZero = r -> r.getSharesHeld() != 0;
+        private final Predicate<LazySecurityPerformanceRecord> sharesEqualZero = r -> r.getSharesHeld() == 0;
 
         public FilterDropDown(IPreferenceStore preferenceStore)
         {
@@ -926,10 +926,10 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
             public Long getValue(Object e)
             {
                 var row = (RowElement) e;
-                return row.performanceRecord != null ? row.performanceRecord.getSharesHeld().get() : null;
+                return row.performanceRecord != null ? row.performanceRecord.getSharesHeld() : null;
             }
         });
-        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getSharesHeld().get()));
+        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getSharesHeld()));
         recordColumns.addColumn(column);
 
         // security name
@@ -948,7 +948,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
             public String getText(Object element)
             {
                 LazySecurityPerformanceRecord entry = (LazySecurityPerformanceRecord) element;
-                return Values.Quote.format(entry.getQuote().get(), getClient().getBaseCurrency());
+                return Values.Quote.format(entry.getQuote(), getClient().getBaseCurrency());
             }
 
             @Override
@@ -957,10 +957,10 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
                 LazySecurityPerformanceRecord entry = (LazySecurityPerformanceRecord) element;
 
                 return MessageFormat.format(Messages.TooltipQuoteAtDate, getText(element),
-                                Values.Date.format(entry.getLatestSecurityPrice().get().getDate()));
+                                Values.Date.format(entry.getLatestSecurityPrice().getDate()));
             }
         }));
-        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getQuote().get()));
+        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getQuote()));
         recordColumns.addColumn(column);
 
         // change to previous day percent value
@@ -1095,11 +1095,11 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         // market value
         column = new Column("mv", Messages.ColumnMarketValue, SWT.RIGHT, 75); //$NON-NLS-1$
         column.setLabelProvider(new RowElementLabelProvider(
-                        r -> Values.Money.format(r.getMarketValue().get(), getClient().getBaseCurrency()),
+                        r -> Values.Money.format(r.getMarketValue(), getClient().getBaseCurrency()),
                         aggregate -> Values.Money.format(
-                                        aggregate.sum(getClient().getBaseCurrency(), r -> r.getMarketValue().get()),
+                                        aggregate.sum(getClient().getBaseCurrency(), r -> r.getMarketValue()),
                                         getClient().getBaseCurrency())));
-        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getMarketValue().get()));
+        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getMarketValue()));
         recordColumns.addColumn(column);
 
         addPurchaseCostColumns();
@@ -1112,17 +1112,19 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setDescription(Messages.ColumnPurchaseValue_Description + TextUtil.PARAGRAPH_BREAK
                         + Messages.DescriptionDataRelativeToReportingPeriod);
         column.setImage(Images.INTERVAL);
-        column.setLabelProvider(new RowElementLabelProvider(
-                        r -> Values.Money.format(r.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
-                                        getClient().getBaseCurrency()),
-                        aggregate -> Values.Money.format(
-                                        aggregate.sum(getClient().getBaseCurrency(),
-                                                        r -> r.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED)),
-                                        getClient().getBaseCurrency())));
+        column.setLabelProvider(
+                        new RowElementLabelProvider(
+                                        r -> Values.Money.format(r.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
+                                                        getClient().getBaseCurrency()),
+                                        aggregate -> Values.Money.format(
+                                                        aggregate.sum(getClient().getBaseCurrency(),
+                                                                        r -> r.getCost(CostMethod.FIFO,
+                                                                                        TaxesAndFees.INCLUDED)),
+                                                        getClient().getBaseCurrency())));
         column.setToolTipProvider(
                         element -> ((RowElement) element).explain(LazySecurityPerformanceRecord.Trails.FIFO_COST));
-        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e)
-                        .getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED)));
+        column.setSorter(ColumnViewerSorter.create(
+                        e -> ((LazySecurityPerformanceRecord) e).getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED)));
         recordColumns.addColumn(column);
 
         // cost value - moving average
@@ -1133,17 +1135,15 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
                         + Messages.DescriptionDataRelativeToReportingPeriod);
         column.setImage(Images.INTERVAL);
         column.setLabelProvider(new RowElementLabelProvider(
-                        r -> Values.Money.format(
-                                        r.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED),
+                        r -> Values.Money.format(r.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED),
                                         getClient().getBaseCurrency()),
                         aggregate -> Values.Money.format(
                                         aggregate.sum(getClient().getBaseCurrency(),
                                                         r -> r.getCost(CostMethod.MOVING_AVERAGE,
                                                                         TaxesAndFees.INCLUDED)),
                                         getClient().getBaseCurrency())));
-        column.setSorter(ColumnViewerSorter
-                        .create(e -> ((LazySecurityPerformanceRecord) e)
-                                        .getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED)));
+        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e)
+                        .getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED)));
         column.setVisible(false);
         recordColumns.addColumn(column);
 
@@ -1151,22 +1151,21 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column = new Column("fees", Messages.ColumnFees, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setDescription(Messages.ColumnFees_Description);
         column.setLabelProvider(new RowElementLabelProvider(
-                        r -> Values.Money.format(r.getFees().get(), getClient().getBaseCurrency()),
-                        aggregate -> Values.Money.format(
-                                        aggregate.sum(getClient().getBaseCurrency(), r -> r.getFees().get()),
+                        r -> Values.Money.format(r.getFees(), getClient().getBaseCurrency()),
+                        aggregate -> Values.Money.format(aggregate.sum(getClient().getBaseCurrency(), r -> r.getFees()),
                                         getClient().getBaseCurrency())));
-        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getFees().get()));
+        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getFees()));
         column.setVisible(false);
         recordColumns.addColumn(column);
 
         // taxes paid
         column = new Column("taxes", Messages.ColumnTaxes, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new RowElementLabelProvider(
-                        r -> Values.Money.format(r.getTaxes().get(), getClient().getBaseCurrency()),
+                        r -> Values.Money.format(r.getTaxes(), getClient().getBaseCurrency()),
                         aggregate -> Values.Money.format(
-                                        aggregate.sum(getClient().getBaseCurrency(), r -> r.getTaxes().get()),
+                                        aggregate.sum(getClient().getBaseCurrency(), r -> r.getTaxes()),
                                         getClient().getBaseCurrency())));
-        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getTaxes().get()));
+        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getTaxes()));
         column.setVisible(false);
         recordColumns.addColumn(column);
 
@@ -1206,9 +1205,9 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
                         + Messages.DescriptionDataRelativeToReportingPeriod);
         column.setImage(Images.INTERVAL);
         column.setLabelProvider(new RowElementLabelProvider(r -> Values.CalculatedQuote
-                        .format(r.getCostPerSharesHeld(CostMethod.FIFO).get(), getClient().getBaseCurrency())));
+                        .format(r.getCostPerSharesHeld(CostMethod.FIFO), getClient().getBaseCurrency())));
         column.setSorter(ColumnViewerSorter
-                        .create(e -> ((LazySecurityPerformanceRecord) e).getCostPerSharesHeld(CostMethod.FIFO).get()));
+                        .create(e -> ((LazySecurityPerformanceRecord) e).getCostPerSharesHeld(CostMethod.FIFO)));
         recordColumns.addColumn(column);
 
         // cost value per share - moving average
@@ -1219,11 +1218,9 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
                         + Messages.DescriptionDataRelativeToReportingPeriod);
         column.setImage(Images.INTERVAL);
         column.setLabelProvider(new RowElementLabelProvider(r -> Values.CalculatedQuote
-                        .format(r.getCostPerSharesHeld(CostMethod.MOVING_AVERAGE).get(),
-                                        getClient().getBaseCurrency())));
-        column.setSorter(ColumnViewerSorter
-                        .create(e -> ((LazySecurityPerformanceRecord) e).getCostPerSharesHeld(CostMethod.MOVING_AVERAGE)
-                                        .get()));
+                        .format(r.getCostPerSharesHeld(CostMethod.MOVING_AVERAGE), getClient().getBaseCurrency())));
+        column.setSorter(ColumnViewerSorter.create(
+                        e -> ((LazySecurityPerformanceRecord) e).getCostPerSharesHeld(CostMethod.MOVING_AVERAGE)));
         column.setVisible(false);
         recordColumns.addColumn(column);
 
@@ -1236,10 +1233,9 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
                         + Messages.DescriptionDataRelativeToReportingPeriod);
         column.setImage(Images.INTERVAL);
         column.setLabelProvider(new RowElementLabelProvider(r -> Values.CalculatedQuote
-                        .format(r.getGrossCostPerSharesHeld(CostMethod.FIFO).get(), getClient().getBaseCurrency())));
+                        .format(r.getGrossCostPerSharesHeld(CostMethod.FIFO), getClient().getBaseCurrency())));
         column.setSorter(ColumnViewerSorter
-                        .create(e -> ((LazySecurityPerformanceRecord) e).getGrossCostPerSharesHeld(CostMethod.FIFO)
-                                        .get()));
+                        .create(e -> ((LazySecurityPerformanceRecord) e).getGrossCostPerSharesHeld(CostMethod.FIFO)));
         recordColumns.addColumn(column);
 
         // cost value per share including fees and taxes - moving average
@@ -1249,12 +1245,10 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setDescription(Messages.ColumnGrossPurchasePriceMovingAverage_Description + TextUtil.PARAGRAPH_BREAK
                         + Messages.DescriptionDataRelativeToReportingPeriod);
         column.setImage(Images.INTERVAL);
-        column.setLabelProvider(new RowElementLabelProvider(r -> Values.CalculatedQuote
-                        .format(r.getGrossCostPerSharesHeld(CostMethod.MOVING_AVERAGE).get(),
-                                        getClient().getBaseCurrency())));
+        column.setLabelProvider(new RowElementLabelProvider(r -> Values.CalculatedQuote.format(
+                        r.getGrossCostPerSharesHeld(CostMethod.MOVING_AVERAGE), getClient().getBaseCurrency())));
         column.setSorter(ColumnViewerSorter.create(
-                        e -> ((LazySecurityPerformanceRecord) e).getGrossCostPerSharesHeld(CostMethod.MOVING_AVERAGE)
-                                        .get()));
+                        e -> ((LazySecurityPerformanceRecord) e).getGrossCostPerSharesHeld(CostMethod.MOVING_AVERAGE)));
         column.setVisible(false);
         recordColumns.addColumn(column);
     }
@@ -1265,19 +1259,19 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setMenuLabel(Messages.LabelTTWROR);
         column.setLabelProvider(new RowElementLabelProvider(new NumberColorLabelProvider<>(Values.Percent2,
-                        r -> ((LazySecurityPerformanceRecord) r).getTrueTimeWeightedRateOfReturn().get())));
+                        r -> ((LazySecurityPerformanceRecord) r).getTrueTimeWeightedRateOfReturn())));
         column.setSorter(ColumnViewerSorter
-                        .create(e -> ((LazySecurityPerformanceRecord) e).getTrueTimeWeightedRateOfReturn().get()));
+                        .create(e -> ((LazySecurityPerformanceRecord) e).getTrueTimeWeightedRateOfReturn()));
         recordColumns.addColumn(column);
 
         column = new Column("ttwror_pa", Messages.ColumnTTWRORpa, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setMenuLabel(Messages.LabelTTWROR_Annualized);
         column.setLabelProvider(new RowElementLabelProvider(new NumberColorLabelProvider<>(Values.Percent2,
-                        r -> ((LazySecurityPerformanceRecord) r).getTrueTimeWeightedRateOfReturnAnnualized().get())));
+                        r -> ((LazySecurityPerformanceRecord) r).getTrueTimeWeightedRateOfReturnAnnualized())));
         column.setVisible(false);
-        column.setSorter(ColumnViewerSorter.create(
-                        e -> ((LazySecurityPerformanceRecord) e).getTrueTimeWeightedRateOfReturnAnnualized().get()));
+        column.setSorter(ColumnViewerSorter
+                        .create(e -> ((LazySecurityPerformanceRecord) e).getTrueTimeWeightedRateOfReturnAnnualized()));
         recordColumns.addColumn(column);
 
         // internal rate of return
@@ -1285,8 +1279,8 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setMenuLabel(Messages.ColumnIRR_MenuLabel);
         column.setLabelProvider(new RowElementLabelProvider(new NumberColorLabelProvider<>(Values.Percent2,
-                        r -> ((LazySecurityPerformanceRecord) r).getIrr().get())));
-        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getIrr().get()));
+                        r -> ((LazySecurityPerformanceRecord) r).getIrr())));
+        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getIrr()));
         recordColumns.addColumn(column);
 
         column = new Column("capitalgains", Messages.ColumnCapitalGains, SWT.RIGHT, 80); //$NON-NLS-1$
@@ -1296,30 +1290,26 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
                         new RowElementLabelProvider(
                                         new MoneyColorLabelProvider(
                                                         element -> ((LazySecurityPerformanceRecord) element)
-                                                                        .getCapitalGainsOnHoldings(CostMethod.FIFO)
-                                                                        .get(),
+                                                                        .getCapitalGainsOnHoldings(CostMethod.FIFO),
                                                         getClient()),
                                         aggregate -> Values.Money.format(
                                                         aggregate.sum(getClient().getBaseCurrency(),
                                                                         r -> r.getCapitalGainsOnHoldings(
-                                                                                        CostMethod.FIFO).get()),
+                                                                                        CostMethod.FIFO)),
                                                         getClient().getBaseCurrency())));
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter
-                        .create(e -> ((LazySecurityPerformanceRecord) e).getCapitalGainsOnHoldings(CostMethod.FIFO)
-                                        .get()));
+                        .create(e -> ((LazySecurityPerformanceRecord) e).getCapitalGainsOnHoldings(CostMethod.FIFO)));
         recordColumns.addColumn(column);
 
         column = new Column("capitalgains%", Messages.ColumnCapitalGainsPercent, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnCapitalGainsPercent_Description);
         column.setLabelProvider(new RowElementLabelProvider(new NumberColorLabelProvider<>(Values.Percent2,
-                        r -> ((LazySecurityPerformanceRecord) r).getCapitalGainsOnHoldingsPercent(CostMethod.FIFO)
-                                        .get())));
+                        r -> ((LazySecurityPerformanceRecord) r).getCapitalGainsOnHoldingsPercent(CostMethod.FIFO))));
         column.setVisible(false);
-        column.setSorter(ColumnViewerSorter
-                        .create(e -> ((LazySecurityPerformanceRecord) e)
-                                        .getCapitalGainsOnHoldingsPercent(CostMethod.FIFO).get()));
+        column.setSorter(ColumnViewerSorter.create(
+                        e -> ((LazySecurityPerformanceRecord) e).getCapitalGainsOnHoldingsPercent(CostMethod.FIFO)));
         recordColumns.addColumn(column);
 
         column = new Column("capitalgainsmvavg", Messages.ColumnCapitalGainsMovingAverage, SWT.RIGHT, 80); //$NON-NLS-1$
@@ -1328,22 +1318,17 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setDescription(Messages.ColumnCapitalGainsMovingAverage_Description);
         column.setLabelProvider(
                         new RowElementLabelProvider(
-                                        new MoneyColorLabelProvider(
-                                                        element -> ((LazySecurityPerformanceRecord) element)
-                                                                        .getCapitalGainsOnHoldings(
-                                                                                        CostMethod.MOVING_AVERAGE)
-                                                                        .get(),
+                                        new MoneyColorLabelProvider(element -> ((LazySecurityPerformanceRecord) element)
+                                                        .getCapitalGainsOnHoldings(CostMethod.MOVING_AVERAGE),
                                                         getClient()),
                                         aggregate -> Values.Money.format(
                                                         aggregate.sum(getClient().getBaseCurrency(),
                                                                         r -> r.getCapitalGainsOnHoldings(
-                                                                                        CostMethod.MOVING_AVERAGE)
-                                                                                        .get()),
+                                                                                        CostMethod.MOVING_AVERAGE)),
                                                         getClient().getBaseCurrency())));
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter.create(
-                        e -> ((LazySecurityPerformanceRecord) e).getCapitalGainsOnHoldings(CostMethod.MOVING_AVERAGE)
-                                        .get()));
+                        e -> ((LazySecurityPerformanceRecord) e).getCapitalGainsOnHoldings(CostMethod.MOVING_AVERAGE)));
         recordColumns.addColumn(column);
 
         column = new Column("capitalgainsmvavg%", Messages.ColumnCapitalGainsMovingAveragePercent, SWT.RIGHT, 80); //$NON-NLS-1$
@@ -1352,10 +1337,10 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setDescription(Messages.ColumnCapitalGainsMovingAveragePercent_Description);
         column.setLabelProvider(new RowElementLabelProvider(
                         new NumberColorLabelProvider<>(Values.Percent2, r -> ((LazySecurityPerformanceRecord) r)
-                                        .getCapitalGainsOnHoldingsPercent(CostMethod.MOVING_AVERAGE).get())));
+                                        .getCapitalGainsOnHoldingsPercent(CostMethod.MOVING_AVERAGE))));
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e)
-                        .getCapitalGainsOnHoldingsPercent(CostMethod.MOVING_AVERAGE).get()));
+                        .getCapitalGainsOnHoldingsPercent(CostMethod.MOVING_AVERAGE)));
         recordColumns.addColumn(column);
 
         // delta
@@ -1363,12 +1348,13 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setDescription(Messages.ColumnAbsolutePerformance_Description);
         column.setMenuLabel(Messages.ColumnAbsolutePerformance_MenuLabel);
         column.setGroupLabel(Messages.GroupLabelPerformance);
-        column.setLabelProvider(new RowElementLabelProvider(new MoneyColorLabelProvider(
-                        element -> ((LazySecurityPerformanceRecord) element).getDelta().get(), getClient()),
+        column.setLabelProvider(new RowElementLabelProvider(
+                        new MoneyColorLabelProvider(element -> ((LazySecurityPerformanceRecord) element).getDelta(),
+                                        getClient()),
                         aggregate -> Values.Money.format(
-                                        aggregate.sum(getClient().getBaseCurrency(), r -> r.getDelta().get()),
+                                        aggregate.sum(getClient().getBaseCurrency(), r -> r.getDelta()),
                                         getClient().getBaseCurrency())));
-        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getDelta().get()));
+        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getDelta()));
         recordColumns.addColumn(column);
 
         // delta percent
@@ -1377,8 +1363,8 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setMenuLabel(Messages.ColumnAbsolutePerformancePercent_MenuLabel);
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setLabelProvider(new RowElementLabelProvider(new NumberColorLabelProvider<>(Values.Percent2,
-                        r -> ((LazySecurityPerformanceRecord) r).getDeltaPercent().get())));
-        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getDeltaPercent().get()));
+                        r -> ((LazySecurityPerformanceRecord) r).getDeltaPercent())));
+        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getDeltaPercent()));
         column.setVisible(false);
         recordColumns.addColumn(column);
     }
@@ -1392,45 +1378,39 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setGroupLabel(Messages.LabelCapitalGains);
         column.setDescription(Messages.ColumnRealizedCapitalGains_Description + TextUtil.PARAGRAPH_BREAK
                         + Messages.ColumnCapitalGainsGeneric_Description);
-        column.setLabelProvider(
-                        new RowElementLabelProvider(
-                                        new MoneyColorLabelProvider(element -> ((LazySecurityPerformanceRecord) element)
-                                                        .getRealizedCapitalGains(CostMethod.FIFO).get()
-                                                        .getCapitalGains(),
-                                                        getClient()),
-                                        aggregate -> Values.Money.format(
-                                                        aggregate.sum(getClient().getBaseCurrency(),
-                                                                        r -> r.getRealizedCapitalGains(CostMethod.FIFO)
-                                                                                        .get()
-                                                                                        .getCapitalGains()),
-                                                        getClient().getBaseCurrency())));
+        column.setLabelProvider(new RowElementLabelProvider(
+                        new MoneyColorLabelProvider(
+                                        element -> ((LazySecurityPerformanceRecord) element)
+                                                        .getRealizedCapitalGains(CostMethod.FIFO).getCapitalGains(),
+                                        getClient()),
+                        aggregate -> Values.Money.format(
+                                        aggregate.sum(getClient().getBaseCurrency(),
+                                                        r -> r.getRealizedCapitalGains(CostMethod.FIFO)
+                                                                        .getCapitalGains()),
+                                        getClient().getBaseCurrency())));
         column.setToolTipProvider(element -> ((RowElement) element)
                         .explain(LazySecurityPerformanceRecord.Trails.REALIZED_CAPITAL_GAINS));
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter.create(element -> ((LazySecurityPerformanceRecord) element)
-                        .getRealizedCapitalGains(CostMethod.FIFO).get().getCapitalGains()));
+                        .getRealizedCapitalGains(CostMethod.FIFO).getCapitalGains()));
         recordColumns.addColumn(column);
 
         column = new Column("cgforex", //$NON-NLS-1$
                         Messages.ColumnCurrencyGains + " / " + Messages.ColumnRealizedCapitalGains, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.LabelCapitalGains);
-        column.setLabelProvider(
-                        new RowElementLabelProvider(
-                                        new MoneyColorLabelProvider(element -> ((LazySecurityPerformanceRecord) element)
-                                                        .getRealizedCapitalGains(CostMethod.FIFO).get()
-                                                        .getForexCaptialGains(),
-                                                        getClient()),
-                                        aggregate -> Values.Money.format(
-                                                        aggregate.sum(getClient().getBaseCurrency(),
-                                                                        r -> r.getRealizedCapitalGains(CostMethod.FIFO)
-                                                                                        .get()
-                                                                                        .getForexCaptialGains()),
-                                                        getClient().getBaseCurrency())));
+        column.setLabelProvider(new RowElementLabelProvider(
+                        new MoneyColorLabelProvider(element -> ((LazySecurityPerformanceRecord) element)
+                                        .getRealizedCapitalGains(CostMethod.FIFO).getForexCaptialGains(), getClient()),
+                        aggregate -> Values.Money.format(
+                                        aggregate.sum(getClient().getBaseCurrency(),
+                                                        r -> r.getRealizedCapitalGains(CostMethod.FIFO)
+                                                                        .getForexCaptialGains()),
+                                        getClient().getBaseCurrency())));
         column.setToolTipProvider(element -> ((RowElement) element)
                         .explain(LazySecurityPerformanceRecord.Trails.REALIZED_CAPITAL_GAINS_FOREX));
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter.create(element -> ((LazySecurityPerformanceRecord) element)
-                        .getRealizedCapitalGains(CostMethod.FIFO).get().getCapitalGains()));
+                        .getRealizedCapitalGains(CostMethod.FIFO).getCapitalGains()));
         recordColumns.addColumn(column);
 
         column = new Column("ucg", //$NON-NLS-1$
@@ -1442,39 +1422,42 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setLabelProvider(
                         new RowElementLabelProvider(
                                         new MoneyColorLabelProvider(element -> ((LazySecurityPerformanceRecord) element)
-                                                        .getUnrealizedCapitalGains(CostMethod.FIFO).get()
-                                                        .getCapitalGains(),
+                                                        .getUnrealizedCapitalGains(CostMethod.FIFO).getCapitalGains(),
                                                         getClient()),
                                         aggregate -> Values.Money.format(
                                                         aggregate.sum(getClient().getBaseCurrency(),
                                                                         r -> r.getUnrealizedCapitalGains(
-                                                                                        CostMethod.FIFO).get()
+                                                                                        CostMethod.FIFO)
                                                                                         .getCapitalGains()),
                                                         getClient().getBaseCurrency())));
         column.setToolTipProvider(element -> ((RowElement) element)
                         .explain(LazySecurityPerformanceRecord.Trails.UNREALIZED_CAPITAL_GAINS));
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter.create(element -> ((LazySecurityPerformanceRecord) element)
-                        .getUnrealizedCapitalGains(CostMethod.FIFO).get().getCapitalGains()));
+                        .getUnrealizedCapitalGains(CostMethod.FIFO).getCapitalGains()));
         recordColumns.addColumn(column);
 
         column = new Column("ucgforex", //$NON-NLS-1$
                         Messages.ColumnCurrencyGains + " / " + Messages.ColumnUnrealizedCapitalGains, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.LabelCapitalGains);
-        column.setLabelProvider(new RowElementLabelProvider(
-                        new MoneyColorLabelProvider(element -> ((LazySecurityPerformanceRecord) element)
-                                        .getUnrealizedCapitalGains(CostMethod.FIFO).get().getForexCaptialGains(),
-                                        getClient()),
-                        aggregate -> Values.Money.format(
-                                        aggregate.sum(getClient().getBaseCurrency(),
-                                                        r -> r.getUnrealizedCapitalGains(CostMethod.FIFO).get()
-                                                                        .getForexCaptialGains()),
-                                        getClient().getBaseCurrency())));
+        column.setLabelProvider(
+                        new RowElementLabelProvider(
+                                        new MoneyColorLabelProvider(
+                                                        element -> ((LazySecurityPerformanceRecord) element)
+                                                                        .getUnrealizedCapitalGains(CostMethod.FIFO)
+                                                                        .getForexCaptialGains(),
+                                                        getClient()),
+                                        aggregate -> Values.Money.format(
+                                                        aggregate.sum(getClient().getBaseCurrency(),
+                                                                        r -> r.getUnrealizedCapitalGains(
+                                                                                        CostMethod.FIFO)
+                                                                                        .getForexCaptialGains()),
+                                                        getClient().getBaseCurrency())));
         column.setToolTipProvider(element -> ((RowElement) element)
                         .explain(LazySecurityPerformanceRecord.Trails.UNREALIZED_CAPITAL_GAINS_FOREX));
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter.create(element -> ((LazySecurityPerformanceRecord) element)
-                        .getUnrealizedCapitalGains(CostMethod.FIFO).get().getCapitalGains()));
+                        .getUnrealizedCapitalGains(CostMethod.FIFO).getCapitalGains()));
         recordColumns.addColumn(column);
 
         // Moving Average
@@ -1488,20 +1471,23 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setDescription(Messages.ColumnRealizedCapitalGainsMA_Description + TextUtil.PARAGRAPH_BREAK
                         + Messages.ColumnCapitalGainsGeneric_Description);
 
-        column.setLabelProvider(new RowElementLabelProvider(
-                        new MoneyColorLabelProvider(
-                                        element -> ((LazySecurityPerformanceRecord) element)
-                                                        .getRealizedCapitalGains(CostMethod.MOVING_AVERAGE).get()
-                                                        .getCapitalGains(),
-                                        getClient()),
-                        aggregate -> Values.Money.format(
-                                        aggregate.sum(getClient().getBaseCurrency(),
-                                                        r -> r.getRealizedCapitalGains(CostMethod.MOVING_AVERAGE).get()
-                                                                        .getCapitalGains()),
-                                        getClient().getBaseCurrency())));
+        column.setLabelProvider(
+                        new RowElementLabelProvider(
+                                        new MoneyColorLabelProvider(
+                                                        element -> ((LazySecurityPerformanceRecord) element)
+                                                                        .getRealizedCapitalGains(
+                                                                                        CostMethod.MOVING_AVERAGE)
+                                                                        .getCapitalGains(),
+                                                        getClient()),
+                                        aggregate -> Values.Money.format(
+                                                        aggregate.sum(getClient().getBaseCurrency(),
+                                                                        r -> r.getRealizedCapitalGains(
+                                                                                        CostMethod.MOVING_AVERAGE)
+                                                                                        .getCapitalGains()),
+                                                        getClient().getBaseCurrency())));
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter.create(element -> ((LazySecurityPerformanceRecord) element)
-                        .getRealizedCapitalGains(CostMethod.MOVING_AVERAGE).get().getCapitalGains()));
+                        .getRealizedCapitalGains(CostMethod.MOVING_AVERAGE).getCapitalGains()));
         recordColumns.addColumn(column);
 
         column = new Column("cgforexMA", //$NON-NLS-1$
@@ -1510,18 +1496,23 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
                         SWT.RIGHT, 80);
         column.setGroupLabel(Messages.LabelCapitalGains);
         column.setMenuLabel(Messages.ColumnCurrencyGains + " / " + Messages.ColumnRealizedCapitalGains); //$NON-NLS-1$
-        column.setLabelProvider(new RowElementLabelProvider(
-                        new MoneyColorLabelProvider(element -> ((LazySecurityPerformanceRecord) element)
-                                        .getRealizedCapitalGains(CostMethod.MOVING_AVERAGE).get()
-                                        .getForexCaptialGains(), getClient()),
-                        aggregate -> Values.Money.format(
-                                        aggregate.sum(getClient().getBaseCurrency(),
-                                                        r -> r.getRealizedCapitalGains(CostMethod.MOVING_AVERAGE).get()
-                                                                        .getForexCaptialGains()),
-                                        getClient().getBaseCurrency())));
+        column.setLabelProvider(
+                        new RowElementLabelProvider(
+                                        new MoneyColorLabelProvider(
+                                                        element -> ((LazySecurityPerformanceRecord) element)
+                                                                        .getRealizedCapitalGains(
+                                                                                        CostMethod.MOVING_AVERAGE)
+                                                                        .getForexCaptialGains(),
+                                                        getClient()),
+                                        aggregate -> Values.Money.format(
+                                                        aggregate.sum(getClient().getBaseCurrency(),
+                                                                        r -> r.getRealizedCapitalGains(
+                                                                                        CostMethod.MOVING_AVERAGE)
+                                                                                        .getForexCaptialGains()),
+                                                        getClient().getBaseCurrency())));
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter.create(element -> ((LazySecurityPerformanceRecord) element)
-                        .getRealizedCapitalGains(CostMethod.MOVING_AVERAGE).get().getCapitalGains()));
+                        .getRealizedCapitalGains(CostMethod.MOVING_AVERAGE).getCapitalGains()));
         recordColumns.addColumn(column);
 
         column = new Column("ucgMA", //$NON-NLS-1$
@@ -1533,21 +1524,23 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setDescription(Messages.ColumnUnrealizedCapitalGainsMA_Description + TextUtil.PARAGRAPH_BREAK
                         + Messages.ColumnCapitalGainsGeneric_Description);
 
-        column.setLabelProvider(new RowElementLabelProvider(
-                        new MoneyColorLabelProvider(
-                                        element -> ((LazySecurityPerformanceRecord) element)
-                                                        .getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE).get()
-                                                        .getCapitalGains(),
-                                        getClient()),
-                        aggregate -> Values.Money.format(
-                                        aggregate.sum(getClient().getBaseCurrency(),
-                                                        r -> r.getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE)
-                                                                        .get()
-                                                                        .getCapitalGains()),
-                                        getClient().getBaseCurrency())));
+        column.setLabelProvider(
+                        new RowElementLabelProvider(
+                                        new MoneyColorLabelProvider(
+                                                        element -> ((LazySecurityPerformanceRecord) element)
+                                                                        .getUnrealizedCapitalGains(
+                                                                                        CostMethod.MOVING_AVERAGE)
+                                                                        .getCapitalGains(),
+                                                        getClient()),
+                                        aggregate -> Values.Money.format(
+                                                        aggregate.sum(getClient().getBaseCurrency(),
+                                                                        r -> r.getUnrealizedCapitalGains(
+                                                                                        CostMethod.MOVING_AVERAGE)
+                                                                                        .getCapitalGains()),
+                                                        getClient().getBaseCurrency())));
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter.create(element -> ((LazySecurityPerformanceRecord) element)
-                        .getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE).get().getCapitalGains()));
+                        .getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE).getCapitalGains()));
         recordColumns.addColumn(column);
 
         column = new Column("ucgforexMA", //$NON-NLS-1$
@@ -1556,20 +1549,23 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
                         SWT.RIGHT, 80);
         column.setGroupLabel(Messages.LabelCapitalGains);
         column.setMenuLabel(Messages.ColumnCurrencyGains + " / " + Messages.ColumnUnrealizedCapitalGains); //$NON-NLS-1$
-        column.setLabelProvider(new RowElementLabelProvider(
-                        new MoneyColorLabelProvider(element -> ((LazySecurityPerformanceRecord) element)
-                                        .getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE).get()
-                                        .getForexCaptialGains(),
-                                        getClient()),
-                        aggregate -> Values.Money.format(
-                                        aggregate.sum(getClient().getBaseCurrency(),
-                                                        r -> r.getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE)
-                                                                        .get()
-                                                                        .getForexCaptialGains()),
-                                        getClient().getBaseCurrency())));
+        column.setLabelProvider(
+                        new RowElementLabelProvider(
+                                        new MoneyColorLabelProvider(
+                                                        element -> ((LazySecurityPerformanceRecord) element)
+                                                                        .getUnrealizedCapitalGains(
+                                                                                        CostMethod.MOVING_AVERAGE)
+                                                                        .getForexCaptialGains(),
+                                                        getClient()),
+                                        aggregate -> Values.Money.format(
+                                                        aggregate.sum(getClient().getBaseCurrency(),
+                                                                        r -> r.getUnrealizedCapitalGains(
+                                                                                        CostMethod.MOVING_AVERAGE)
+                                                                                        .getForexCaptialGains()),
+                                                        getClient().getBaseCurrency())));
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter.create(element -> ((LazySecurityPerformanceRecord) element)
-                        .getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE).get().getCapitalGains()));
+                        .getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE).getCapitalGains()));
         recordColumns.addColumn(column);
     }
 
@@ -1580,11 +1576,11 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setMenuLabel(Messages.ColumnDividendSum_MenuLabel);
         column.setGroupLabel(Messages.GroupLabelDividends);
         column.setLabelProvider(new RowElementLabelProvider(
-                        r -> Values.Money.format(r.getSumOfDividends().get(), getClient().getBaseCurrency()),
+                        r -> Values.Money.format(r.getSumOfDividends(), getClient().getBaseCurrency()),
                         aggregate -> Values.Money.format(
-                                        aggregate.sum(getClient().getBaseCurrency(), r -> r.getSumOfDividends().get()),
+                                        aggregate.sum(getClient().getBaseCurrency(), r -> r.getSumOfDividends()),
                                         getClient().getBaseCurrency())));
-        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getSumOfDividends().get()));
+        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getSumOfDividends()));
         recordColumns.addColumn(column);
 
         // Rendite insgesamt
@@ -1593,10 +1589,9 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setDescription(Messages.ColumnDividendTotalRateOfReturn_Description);
         column.setVisible(false);
         column.setLabelProvider(new RowElementLabelProvider(
-                        r -> Values.Percent2.formatNonZero(r.getTotalRateOfReturnDiv(CostMethod.FIFO).get())));
+                        r -> Values.Percent2.formatNonZero(r.getTotalRateOfReturnDiv(CostMethod.FIFO))));
         column.setSorter(ColumnViewerSorter
-                        .create(e -> ((LazySecurityPerformanceRecord) e).getTotalRateOfReturnDiv(CostMethod.FIFO)
-                                        .get()));
+                        .create(e -> ((LazySecurityPerformanceRecord) e).getTotalRateOfReturnDiv(CostMethod.FIFO)));
         recordColumns.addColumn(column);
 
         // Rendite insgesamt, nach gleitendem Durchschnitt
@@ -1606,11 +1601,9 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setDescription(Messages.ColumnDividendMovingAverageTotalRateOfReturn_Description);
         column.setVisible(false);
         column.setLabelProvider(new RowElementLabelProvider(
-                        r -> Values.Percent2
-                                        .formatNonZero(r.getTotalRateOfReturnDiv(CostMethod.MOVING_AVERAGE).get())));
-        column.setSorter(ColumnViewerSorter
-                        .create(e -> ((LazySecurityPerformanceRecord) e)
-                                        .getTotalRateOfReturnDiv(CostMethod.MOVING_AVERAGE).get()));
+                        r -> Values.Percent2.formatNonZero(r.getTotalRateOfReturnDiv(CostMethod.MOVING_AVERAGE))));
+        column.setSorter(ColumnViewerSorter.create(
+                        e -> ((LazySecurityPerformanceRecord) e).getTotalRateOfReturnDiv(CostMethod.MOVING_AVERAGE)));
         recordColumns.addColumn(column);
 
         // Rendite pro Jahr
@@ -1618,10 +1611,9 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setGroupLabel(Messages.GroupLabelDividends);
         column.setDescription(Messages.ColumnDividendRateOfReturnPerYear_Description);
         column.setVisible(false);
-        column.setLabelProvider(new RowElementLabelProvider(
-                        r -> Values.Percent2.formatNonZero(r.getRateOfReturnPerYear().get())));
-        column.setSorter(ColumnViewerSorter
-                        .create(e -> ((LazySecurityPerformanceRecord) e).getRateOfReturnPerYear().get()));
+        column.setLabelProvider(
+                        new RowElementLabelProvider(r -> Values.Percent2.formatNonZero(r.getRateOfReturnPerYear())));
+        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getRateOfReturnPerYear()));
         recordColumns.addColumn(column);
 
         // Anzahl der Dividendenereignisse
@@ -1629,10 +1621,9 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setGroupLabel(Messages.GroupLabelDividends);
         column.setMenuLabel(Messages.ColumnDividendPaymentCount_MenuLabel);
         column.setVisible(false);
-        column.setLabelProvider(new RowElementLabelProvider(r -> Values.Id.format(r.getDividendEventCount().get()),
-                        aggregate -> Values.Id.format(aggregate.sum(r -> r.getDividendEventCount().get()))));
-        column.setSorter(ColumnViewerSorter
-                        .create(e -> ((LazySecurityPerformanceRecord) e).getDividendEventCount().get()));
+        column.setLabelProvider(new RowElementLabelProvider(r -> Values.Id.format(r.getDividendEventCount()),
+                        aggregate -> Values.Id.format(aggregate.sum(r -> r.getDividendEventCount()))));
+        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getDividendEventCount()));
         recordColumns.addColumn(column);
 
         // Datum der letzten Dividendenzahlung
@@ -1640,10 +1631,9 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setMenuLabel(Messages.ColumnLastDividendPayment_MenuLabel);
         column.setGroupLabel(Messages.GroupLabelDividends);
         column.setVisible(false);
-        column.setLabelProvider(new RowElementLabelProvider(new DateLabelProvider(
-                        r -> ((LazySecurityPerformanceRecord) r).getLastDividendPayment().get())));
-        column.setSorter(ColumnViewerSorter
-                        .create(e -> ((LazySecurityPerformanceRecord) e).getLastDividendPayment().get()));
+        column.setLabelProvider(new RowElementLabelProvider(
+                        new DateLabelProvider(r -> ((LazySecurityPerformanceRecord) r).getLastDividendPayment())));
+        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getLastDividendPayment()));
         recordColumns.addColumn(column);
 
         // Periodizität der Dividendenzahlungen
@@ -1651,9 +1641,9 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setGroupLabel(Messages.GroupLabelDividends);
         column.setDescription(Messages.ColumnDividendPeriodicity_Description);
         column.setVisible(false);
-        column.setLabelProvider(new RowElementLabelProvider(r -> r.getPeriodicity().get().toString()));
-        column.setSorter(ColumnViewerSorter
-                        .create(e -> ((LazySecurityPerformanceRecord) e).getPeriodicity().get().ordinal()));
+        column.setLabelProvider(new RowElementLabelProvider(r -> r.getPeriodicity().toString()));
+        column.setSorter(
+                        ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getPeriodicity().ordinal()));
         recordColumns.addColumn(column);
 
         DividendPaymentColumns.createFor(getClient()).forEach(c -> {
@@ -1669,9 +1659,9 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setGroupLabel(Messages.LabelRiskIndicators);
         column.setVisible(false);
         column.setLabelProvider(new RowElementLabelProvider(
-                        r -> Values.Percent2.formatNonZero(r.getDrawdown().get().getMaxDrawdown())));
+                        r -> Values.Percent2.formatNonZero(r.getDrawdown().getMaxDrawdown())));
         column.setSorter(ColumnViewerSorter
-                        .create(e -> ((LazySecurityPerformanceRecord) e).getDrawdown().get().getMaxDrawdown()));
+                        .create(e -> ((LazySecurityPerformanceRecord) e).getDrawdown().getMaxDrawdown()));
         recordColumns.addColumn(column);
 
         column = new Column("mddduration", Messages.ColumnMaxDrawdownDuration, SWT.RIGHT, 60); //$NON-NLS-1$
@@ -1683,36 +1673,36 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
             @Override
             public String getText(Object r)
             {
-                return String.valueOf(((LazySecurityPerformanceRecord) r).getDrawdown().get().getMaxDrawdownDuration()
-                                .getDays());
+                return String.valueOf(
+                                ((LazySecurityPerformanceRecord) r).getDrawdown().getMaxDrawdownDuration().getDays());
             }
 
             @Override
             public String getToolTipText(Object r)
             {
-                return ((LazySecurityPerformanceRecord) r).getDrawdown().get().getMaxDrawdownDuration().toString();
+                return ((LazySecurityPerformanceRecord) r).getDrawdown().getMaxDrawdownDuration().toString();
             }
         }));
-        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getDrawdown().get()
-                        .getMaxDrawdownDuration().getDays()));
+        column.setSorter(ColumnViewerSorter.create(
+                        e -> ((LazySecurityPerformanceRecord) e).getDrawdown().getMaxDrawdownDuration().getDays()));
         recordColumns.addColumn(column);
 
         column = new Column("vola", Messages.LabelVolatility, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.LabelRiskIndicators);
         column.setVisible(false);
         column.setLabelProvider(new RowElementLabelProvider(
-                        r -> Values.Percent2.format(r.getVolatility().get().getStandardDeviation())));
+                        r -> Values.Percent2.format(r.getVolatility().getStandardDeviation())));
         column.setSorter(ColumnViewerSorter
-                        .create(e -> ((LazySecurityPerformanceRecord) e).getVolatility().get().getStandardDeviation()));
+                        .create(e -> ((LazySecurityPerformanceRecord) e).getVolatility().getStandardDeviation()));
         recordColumns.addColumn(column);
 
         column = new Column("semivola", Messages.LabelSemiVolatility, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.LabelRiskIndicators);
         column.setVisible(false);
-        column.setLabelProvider(new RowElementLabelProvider(
-                        r -> Values.Percent2.format(r.getVolatility().get().getSemiDeviation())));
+        column.setLabelProvider(
+                        new RowElementLabelProvider(r -> Values.Percent2.format(r.getVolatility().getSemiDeviation())));
         column.setSorter(ColumnViewerSorter
-                        .create(e -> ((LazySecurityPerformanceRecord) e).getVolatility().get().getSemiDeviation()));
+                        .create(e -> ((LazySecurityPerformanceRecord) e).getVolatility().getSemiDeviation()));
         recordColumns.addColumn(column);
     }
 
@@ -1728,8 +1718,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
             public String getText(Object element)
             {
                 LazySecurityPerformanceRecord entry = (LazySecurityPerformanceRecord) element;
-                return Values.CalculatedQuote.format(entry.getQuoteInTermCurrency().get(),
-                                getClient().getBaseCurrency());
+                return Values.CalculatedQuote.format(entry.getQuoteInTermCurrency(), getClient().getBaseCurrency());
             }
 
             @Override
@@ -1738,11 +1727,10 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
                 LazySecurityPerformanceRecord entry = (LazySecurityPerformanceRecord) element;
 
                 return MessageFormat.format(Messages.TooltipQuoteAtDate, getText(element),
-                                Values.Date.format(entry.getLatestSecurityPrice().get().getDate()));
+                                Values.Date.format(entry.getLatestSecurityPrice().getDate()));
             }
         }));
-        column.setSorter(ColumnViewerSorter
-                        .create(e -> ((LazySecurityPerformanceRecord) e).getQuoteInTermCurrency().get()));
+        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getQuoteInTermCurrency()));
         column.setVisible(false);
         recordColumns.addColumn(column);
     }
@@ -1774,15 +1762,14 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setOptions(new ClientFilterColumnOptions(Messages.ColumnSharesOwned + suffix,
                         new ClientFilterMenu(getClient(), getPreferenceStore())));
         column.setGroupLabel(Messages.LabelClientFilterMenu);
-        column.setLabelProvider(
-                        new RowElementOptionLabelProvider(r -> Values.Share.formatNonZero(r.getSharesHeld().get())));
+        column.setLabelProvider(new RowElementOptionLabelProvider(r -> Values.Share.formatNonZero(r.getSharesHeld())));
         column.setSorter(ColumnViewerSorter.createWithOption((element, option) -> {
             // important: because we wrap all sorters centrally, we only have
             // the unwrapped record here -> use the model to resolve the correct
             // record
             var dataRecord = model.getRecord(((LazySecurityPerformanceRecord) element).getSecurity(),
                             (ClientFilterMenu.Item) option);
-            return dataRecord == null ? null : dataRecord.getSharesHeld().get();
+            return dataRecord == null ? null : dataRecord.getSharesHeld();
         }));
 
         column.setVisible(false);
@@ -1796,13 +1783,15 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
                         + Messages.DescriptionDataRelativeToReportingPeriod);
         column.setGroupLabel(Messages.LabelClientFilterMenu);
         column.setImage(Images.INTERVAL);
-        column.setLabelProvider(new RowElementOptionLabelProvider(
-                        r -> Values.Money.format(r.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
-                                        getClient().getBaseCurrency()),
-                        aggregate -> Values.Money.format(
-                                        aggregate.sum(getClient().getBaseCurrency(),
-                                                        r -> r.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED)),
-                                        getClient().getBaseCurrency())));
+        column.setLabelProvider(
+                        new RowElementOptionLabelProvider(
+                                        r -> Values.Money.format(r.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
+                                                        getClient().getBaseCurrency()),
+                                        aggregate -> Values.Money.format(
+                                                        aggregate.sum(getClient().getBaseCurrency(),
+                                                                        r -> r.getCost(CostMethod.FIFO,
+                                                                                        TaxesAndFees.INCLUDED)),
+                                                        getClient().getBaseCurrency())));
         column.setToolTipProvider((element, option) -> {
             var row = (RowElement) element;
             if (!row.isRecord())
@@ -1813,8 +1802,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setSorter(ColumnViewerSorter.createWithOption((element, option) -> {
             var dataRecord = model.getRecord(((LazySecurityPerformanceRecord) element).getSecurity(),
                             (ClientFilterMenu.Item) option);
-            return dataRecord == null ? null
-                            : dataRecord.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED);
+            return dataRecord == null ? null : dataRecord.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED);
         }));
         column.setVisible(false);
         recordColumns.addColumn(column);
@@ -1825,14 +1813,14 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
                         new ClientFilterMenu(getClient(), getPreferenceStore())));
         column.setGroupLabel(Messages.LabelClientFilterMenu);
         column.setLabelProvider(new RowElementOptionLabelProvider(
-                        r -> Values.Money.format(r.getMarketValue().get(), getClient().getBaseCurrency()),
+                        r -> Values.Money.format(r.getMarketValue(), getClient().getBaseCurrency()),
                         aggregate -> Values.Money.format(
-                                        aggregate.sum(getClient().getBaseCurrency(), r -> r.getMarketValue().get()),
+                                        aggregate.sum(getClient().getBaseCurrency(), r -> r.getMarketValue()),
                                         getClient().getBaseCurrency())));
         column.setSorter(ColumnViewerSorter.createWithOption((element, option) -> {
             var dataRecord = model.getRecord(((LazySecurityPerformanceRecord) element).getSecurity(),
                             (ClientFilterMenu.Item) option);
-            return dataRecord == null ? null : dataRecord.getMarketValue().get();
+            return dataRecord == null ? null : dataRecord.getMarketValue();
         }));
         column.setVisible(false);
         recordColumns.addColumn(column);
@@ -1844,14 +1832,14 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setMenuLabel(Messages.ColumnDividendSum_MenuLabel);
         column.setGroupLabel(Messages.LabelClientFilterMenu);
         column.setLabelProvider(new RowElementOptionLabelProvider(
-                        r -> Values.Money.format(r.getSumOfDividends().get(), getClient().getBaseCurrency()),
+                        r -> Values.Money.format(r.getSumOfDividends(), getClient().getBaseCurrency()),
                         aggregate -> Values.Money.format(
-                                        aggregate.sum(getClient().getBaseCurrency(), r -> r.getSumOfDividends().get()),
+                                        aggregate.sum(getClient().getBaseCurrency(), r -> r.getSumOfDividends()),
                                         getClient().getBaseCurrency())));
         column.setSorter(ColumnViewerSorter.createWithOption((element, option) -> {
             var dataRecord = model.getRecord(((LazySecurityPerformanceRecord) element).getSecurity(),
                             (ClientFilterMenu.Item) option);
-            return dataRecord == null ? null : dataRecord.getSumOfDividends().get();
+            return dataRecord == null ? null : dataRecord.getSumOfDividends();
         }));
         column.setVisible(false);
         recordColumns.addColumn(column);
@@ -1862,11 +1850,11 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
                         new ClientFilterMenu(getClient(), getPreferenceStore())));
         column.setGroupLabel(Messages.LabelClientFilterMenu);
         column.setLabelProvider(new RowElementOptionLabelProvider(
-                        r -> Values.Percent2.format(r.getTrueTimeWeightedRateOfReturn().get())));
+                        r -> Values.Percent2.format(r.getTrueTimeWeightedRateOfReturn())));
         column.setSorter(ColumnViewerSorter.createWithOption((element, option) -> {
             var dataRecord = model.getRecord(((LazySecurityPerformanceRecord) element).getSecurity(),
                             (ClientFilterMenu.Item) option);
-            return dataRecord == null ? null : dataRecord.getTrueTimeWeightedRateOfReturn().get();
+            return dataRecord == null ? null : dataRecord.getTrueTimeWeightedRateOfReturn();
         }));
         column.setVisible(false);
         recordColumns.addColumn(column);
@@ -1876,11 +1864,11 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setOptions(new ClientFilterColumnOptions(Messages.ColumnIRR + suffix,
                         new ClientFilterMenu(getClient(), getPreferenceStore())));
         column.setGroupLabel(Messages.LabelClientFilterMenu);
-        column.setLabelProvider(new RowElementOptionLabelProvider(r -> Values.Percent2.format(r.getIrr().get())));
+        column.setLabelProvider(new RowElementOptionLabelProvider(r -> Values.Percent2.format(r.getIrr())));
         column.setSorter(ColumnViewerSorter.createWithOption((element, option) -> {
             var dataRecord = model.getRecord(((LazySecurityPerformanceRecord) element).getSecurity(),
                             (ClientFilterMenu.Item) option);
-            return dataRecord == null ? null : dataRecord.getIrr().get();
+            return dataRecord == null ? null : dataRecord.getIrr();
         }));
         column.setVisible(false);
         recordColumns.addColumn(column);
@@ -1907,7 +1895,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
                 if (dive == null)
                     return null;
 
-                var marketValue = dataRecord.getMarketValue().get();
+                var marketValue = dataRecord.getMarketValue();
 
                 double expected = marketValue.getAmount() * dive;
                 if (attribute.get().getConverter().getClass() == AttributeType.PercentPlainConverter.class)

@@ -61,7 +61,7 @@ import name.abuchen.portfolio.util.ColorConversion;
 
                 if (r.isPresent())
                 {
-                    var performance = r.get().getTrueTimeWeightedRateOfReturn().get();
+                    var performance = r.get().getTrueTimeWeightedRateOfReturn();
                     return new String[] { node.getBackingSecurity().getName(nameConfig),
                                     Values.PercentWithSign.format(performance) };
                 }
@@ -85,7 +85,7 @@ import name.abuchen.portfolio.util.ColorConversion;
 
                 if (r.isPresent())
                 {
-                    var performance = r.get().getTrueTimeWeightedRateOfReturn().get();
+                    var performance = r.get().getTrueTimeWeightedRateOfReturn();
                     return colorSchema.apply(performance);
                 }
                 else
