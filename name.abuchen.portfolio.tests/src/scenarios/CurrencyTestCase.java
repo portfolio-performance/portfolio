@@ -23,6 +23,7 @@ import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
+import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.AccountSnapshot;
 import name.abuchen.portfolio.snapshot.AssetCategory;
@@ -32,6 +33,7 @@ import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.GroupByTaxonomy;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.snapshot.security.BaseSecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.trail.Trail;
@@ -235,6 +237,44 @@ public class CurrencyTestCase
         assertThat(record.getSharesHeld(), is(Values.Share.factorize(15)));
         assertThat(record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
                         is(Money.of(CurrencyUnit.EUR, 454_60L + 471_05 + 498_45)));
+
+        // pinned values previously verified via SecurityPerformanceSnapshotComparator
+        assertThat(record.getMarketValue(), is(Money.of("EUR", 149534L)));
+        assertThat(record.getQuote(), is(Quote.of("USD", 11552000000L)));
+        assertThat(record.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), is(Money.of("EUR", 142410L)));
+        assertThat(record.getCostPerSharesHeld(CostMethod.FIFO), is(Quote.of("EUR", 9384200000L)));
+        assertThat(record.getFees(), is(Money.of("EUR", 824L)));
+        assertThat(record.getTaxes(), is(Money.of("EUR", 824L)));
+        assertThat(record.getDelta(), is(Money.of("EUR", 7124L)));
+        assertThat(record.getDeltaPercent(), IsCloseTo.closeTo(0.050024576925777685, 0.0001));
+        assertThat(record.getCapitalGainsOnHoldings(CostMethod.FIFO), is(Money.of("EUR", 7124L)));
+        assertThat(record.getCapitalGainsOnHoldings(CostMethod.MOVING_AVERAGE), is(Money.of("EUR", 7124L)));
+        assertThat(record.getCapitalGainsOnHoldingsPercent(CostMethod.FIFO),
+                        IsCloseTo.closeTo(0.050024576925777664, 0.0001));
+        assertThat(record.getCapitalGainsOnHoldingsPercent(CostMethod.MOVING_AVERAGE),
+                        IsCloseTo.closeTo(0.050024576925777664, 0.0001));
+        assertThat(record.getIrr(), IsCloseTo.closeTo(0.1446282845545095, 0.0001));
+        assertThat(record.getTrueTimeWeightedRateOfReturn(), IsCloseTo.closeTo(0.10417377427377805, 0.0001));
+        assertThat(record.getTrueTimeWeightedRateOfReturnAnnualized(),
+                        IsCloseTo.closeTo(0.17695466576686947, 0.0001));
+        assertThat(record.getDrawdown().getMaxDrawdown(), IsCloseTo.closeTo(0.12421268652674962, 0.0001));
+        assertThat(record.getDrawdown().getMaxDrawdownDuration().getDays(), is(168L));
+        assertThat(record.getVolatility().getStandardDeviation(), IsCloseTo.closeTo(0.17746878011093473, 0.0001));
+        assertThat(record.getVolatility().getSemiDeviation(), IsCloseTo.closeTo(0.12318433923170118, 0.0001));
+        assertThat(record.getSumOfDividends(), is(Money.of("EUR", 0L)));
+        assertThat(record.getDividendEventCount(), is(0));
+        assertThat(record.getLastDividendPayment(), is((LocalDate) null));
+        assertThat(record.getPeriodicity(), is(BaseSecurityPerformanceRecord.Periodicity.NONE));
+        assertThat(record.getRealizedCapitalGains(CostMethod.FIFO).getCapitalGains(), is(Money.of("EUR", 0L)));
+        assertThat(record.getRealizedCapitalGains(CostMethod.MOVING_AVERAGE).getCapitalGains(),
+                        is(Money.of("EUR", 0L)));
+        assertThat(record.getUnrealizedCapitalGains(CostMethod.FIFO).getCapitalGains(), is(Money.of("EUR", 8771L)));
+        assertThat(record.getUnrealizedCapitalGains(CostMethod.FIFO).getForexCaptialGains(),
+                        is(Money.of("EUR", 4339L)));
+        assertThat(record.getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE).getCapitalGains(),
+                        is(Money.of("EUR", 8771L)));
+        assertThat(record.getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE).getForexCaptialGains(),
+                        is(Money.of("EUR", 4335L)));
     }
 
     private AccountSnapshot lookupAccountSnapshot(ClientSnapshot snapshot, Account account)
