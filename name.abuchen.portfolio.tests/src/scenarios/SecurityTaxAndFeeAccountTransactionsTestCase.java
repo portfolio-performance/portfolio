@@ -22,16 +22,20 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.filter.ClientClassificationFilter;
 import name.abuchen.portfolio.snapshot.filter.ClientSecurityFilter;
 import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
+import name.abuchen.portfolio.snapshot.security.BaseSecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
 import name.abuchen.portfolio.util.Interval;
@@ -133,6 +137,34 @@ public class SecurityTaxAndFeeAccountTransactionsTestCase
         filteredClient = new ClientClassificationFilter(classification).filter(client);
         checkFilteredClientAdidas(filteredClient, 0.5);
 
+        // pinned values previously verified via SecurityPerformanceSnapshotComparator
+        assertThat(record.getSharesHeld(), is(1000000000L));
+        assertThat(record.getMarketValue(), is(Money.of("EUR", 145650L)));
+        assertThat(record.getQuote(), is(Quote.of("EUR", 14565000000L)));
+        assertThat(record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of("EUR", 153300L)));
+        assertThat(record.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), is(Money.of("EUR", 153300L)));
+        assertThat(record.getCostPerSharesHeld(CostMethod.FIFO), is(Quote.of("EUR", 15130000000L)));
+        assertThat(record.getCapitalGainsOnHoldings(CostMethod.FIFO), is(Money.of("EUR", -7650L)));
+        assertThat(record.getCapitalGainsOnHoldings(CostMethod.MOVING_AVERAGE), is(Money.of("EUR", -7650L)));
+        assertThat(record.getCapitalGainsOnHoldingsPercent(CostMethod.FIFO), closeTo(-0.049902152641878694, 0.0001));
+        assertThat(record.getCapitalGainsOnHoldingsPercent(CostMethod.MOVING_AVERAGE),
+                        closeTo(-0.049902152641878694, 0.0001));
+        assertThat(record.getTrueTimeWeightedRateOfReturn(), closeTo(-0.046943437929795495, 0.0001));
+        assertThat(record.getTrueTimeWeightedRateOfReturnAnnualized(), closeTo(-0.4322733920528049, 0.0001));
+        assertThat(record.getDrawdown().getMaxDrawdown(), closeTo(0.06274131274131266, 0.0001));
+        assertThat(record.getDrawdown().getMaxDrawdownDuration().getDays(), is(17L));
+        assertThat(record.getVolatility().getStandardDeviation(), closeTo(0.06268369541611717, 0.0001));
+        assertThat(record.getVolatility().getSemiDeviation(), closeTo(0.04665934705209871, 0.0001));
+        assertThat(record.getSumOfDividends(), is(Money.of("EUR", 0L)));
+        assertThat(record.getDividendEventCount(), is(0));
+        assertThat(record.getLastDividendPayment(), is((LocalDate) null));
+        assertThat(record.getPeriodicity(), is(BaseSecurityPerformanceRecord.Periodicity.NONE));
+        assertThat(record.getRealizedCapitalGains(CostMethod.FIFO).getCapitalGains(), is(Money.of("EUR", 0L)));
+        assertThat(record.getRealizedCapitalGains(CostMethod.MOVING_AVERAGE).getCapitalGains(),
+                        is(Money.of("EUR", 0L)));
+        assertThat(record.getUnrealizedCapitalGains(CostMethod.FIFO).getCapitalGains(), is(Money.of("EUR", -5650L)));
+        assertThat(record.getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE).getCapitalGains(),
+                        is(Money.of("EUR", -5650L)));
     }
 
     private void checkFilteredClientAdidas(Client filteredClient, double weight)
