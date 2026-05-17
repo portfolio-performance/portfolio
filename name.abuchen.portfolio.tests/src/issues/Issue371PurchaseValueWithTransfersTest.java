@@ -22,10 +22,8 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshotComparator;
 import name.abuchen.portfolio.util.Interval;
 
 public class Issue371PurchaseValueWithTransfersTest
@@ -53,12 +51,10 @@ public class Issue371PurchaseValueWithTransfersTest
         ClientSnapshot snapshot = ClientSnapshot.create(client, converter, period.getEnd());
         SecurityPosition securityPosition = snapshot.getPositionsByVehicle().get(adidas).getPosition();
 
-        SecurityPerformanceSnapshot securitySnapshot = SecurityPerformanceSnapshot.create(client, converter, period);
+        LazySecurityPerformanceSnapshot securitySnapshot = LazySecurityPerformanceSnapshot.create(client, converter,
+                        period);
 
-        new SecurityPerformanceSnapshotComparator(securitySnapshot,
-                        LazySecurityPerformanceSnapshot.create(client, converter, period)).compare();
-
-        SecurityPerformanceRecord securityRecord = securitySnapshot.getRecords().get(0);
+        LazySecurityPerformanceRecord securityRecord = securitySnapshot.getRecords().get(0);
         assertThat(securityRecord.getSecurity(), is(adidas));
 
         assertThat(securityPosition.getShares(), is(securityRecord.getSharesHeld()));

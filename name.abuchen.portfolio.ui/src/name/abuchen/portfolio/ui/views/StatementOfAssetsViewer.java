@@ -1559,10 +1559,10 @@ public class StatementOfAssetsViewer
 
         private Object getValue(Object e, ReportingPeriod option)
         {
-            // every value is retrieved from a SecurityPerformanceRecord (the
-            // logic for that is inside the ElementValueProvider class)
+            // every value is retrieved from a LazySecurityPerformanceRecord
+            // (the logic for that is inside the ElementValueProvider class)
 
-            // the SecurityPerformanceRecord are determined based on this logic:
+            // the LazySecurityPerformanceRecord are determined based on this logic:
             // - if given as an option to column (i.e. the user chooses an
             // interval explicitly), then this interval is used
             // - if no option is present, then the "global interval" is used,

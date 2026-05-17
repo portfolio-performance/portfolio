@@ -32,11 +32,8 @@ import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.GroupByTaxonomy;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceIndicator;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshotComparator;
 import name.abuchen.portfolio.snapshot.trail.Trail;
 import name.abuchen.portfolio.util.Interval;
 
@@ -135,15 +132,13 @@ public class CurrencyTestCase
         assertThat(equityUSD.getPosition().getShares(), is(Values.Share.factorize(10)));
 
         Interval interval = Interval.of(LocalDate.MIN, grouping.getDate());
-        SecurityPerformanceRecord recordUSD = SecurityPerformanceSnapshot
-                        .create(client, converter.with(CurrencyUnit.USD), interval,
-                                        SecurityPerformanceIndicator.Costs.class)
-                        .getRecord(securityUSD).orElseThrow(IllegalArgumentException::new);
+        LazySecurityPerformanceRecord recordUSD = LazySecurityPerformanceSnapshot
+                        .create(client, converter.with(CurrencyUnit.USD), interval).getRecord(securityUSD)
+                        .orElseThrow(IllegalArgumentException::new);
 
-        SecurityPerformanceRecord recordEUR = SecurityPerformanceSnapshot
-                        .create(client, converter.with(CurrencyUnit.EUR), interval,
-                                        SecurityPerformanceIndicator.Costs.class)
-                        .getRecord(securityUSD).orElseThrow(IllegalArgumentException::new);
+        LazySecurityPerformanceRecord recordEUR = LazySecurityPerformanceSnapshot
+                        .create(client, converter.with(CurrencyUnit.EUR), interval).getRecord(securityUSD)
+                        .orElseThrow(IllegalArgumentException::new);
 
         // purchase value must be sum of both purchases:
         // the one in EUR account and the one in USD account
@@ -164,11 +159,11 @@ public class CurrencyTestCase
 
         assertThat(equityUSD.getValuation(), is(recordEUR.getMarketValue()));
 
-        assertThat(recordEUR.getCapitalGainsOnHoldings(),
+        assertThat(recordEUR.getCapitalGainsOnHoldings(CostMethod.FIFO),
                         is(equityUSD.getValuation()
                                         .subtract(recordEUR.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED))));
 
-        assertThat(recordUSD.getCapitalGainsOnHoldings(),
+        assertThat(recordUSD.getCapitalGainsOnHoldings(CostMethod.FIFO),
                         is(equityUSD.getPosition().calculateValue()
                                         .subtract(recordUSD.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED))));
 
@@ -224,22 +219,19 @@ public class CurrencyTestCase
         assertThat(position.getPosition().getShares(), is(Values.Share.factorize(15)));
 
         Interval inteval = Interval.of(LocalDate.MIN, snapshot.getTime());
-        SecurityPerformanceRecord recordEUR = SecurityPerformanceSnapshot
-                        .create(client, converter.with(CurrencyUnit.EUR), inteval,
-                                        SecurityPerformanceIndicator.Costs.class)
-                        .getRecord(securityUSD).orElseThrow(IllegalArgumentException::new);
+        LazySecurityPerformanceRecord recordEUR = LazySecurityPerformanceSnapshot
+                        .create(client, converter.with(CurrencyUnit.EUR), inteval).getRecord(securityUSD)
+                        .orElseThrow(IllegalArgumentException::new);
 
         assertThat(recordEUR.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
                         is(Money.of(CurrencyUnit.EUR, 454_60L + 471_05 + 498_45)));
 
         Interval period = Interval.of(LocalDate.parse("2014-12-31"), LocalDate.parse("2015-08-10"));
-        SecurityPerformanceSnapshot performance = SecurityPerformanceSnapshot.create(client, converter, period);
-        
-        new SecurityPerformanceSnapshotComparator(performance,
-                        LazySecurityPerformanceSnapshot.create(client, converter, period)).compare();
-        
-        SecurityPerformanceRecord record = performance.getRecords().stream().filter(r -> r.getSecurity() == securityUSD)
-                        .findAny().orElseThrow(IllegalArgumentException::new);
+        LazySecurityPerformanceSnapshot performance = LazySecurityPerformanceSnapshot.create(client, converter, period);
+
+        LazySecurityPerformanceRecord record = performance.getRecords().stream()
+                        .filter(r -> r.getSecurity() == securityUSD).findAny()
+                        .orElseThrow(IllegalArgumentException::new);
         assertThat(record.getSharesHeld(), is(Values.Share.factorize(15)));
         assertThat(record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
                         is(Money.of(CurrencyUnit.EUR, 454_60L + 471_05 + 498_45)));

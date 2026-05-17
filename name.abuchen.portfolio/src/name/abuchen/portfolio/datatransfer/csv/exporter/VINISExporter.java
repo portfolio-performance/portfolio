@@ -25,8 +25,7 @@ import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceIndicator;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
 import name.abuchen.portfolio.util.Interval;
 
 /**
@@ -74,8 +73,8 @@ public class VINISExporter
         var buyTotalValue = MutableMoney.of(baseCurrency);
         var currentTotalValue = MutableMoney.of(baseCurrency);
 
-        var securityPerformance = SecurityPerformanceSnapshot.create(client, converter,
-                        Interval.of(LocalDate.MIN, LocalDate.now()), SecurityPerformanceIndicator.Costs.class);
+        var securityPerformance = LazySecurityPerformanceSnapshot.create(client, converter,
+                        Interval.of(LocalDate.MIN, LocalDate.now()));
 
         var assets = performanceCurrentYear.getEndClientSnapshot().getAssetPositions().toList();
 

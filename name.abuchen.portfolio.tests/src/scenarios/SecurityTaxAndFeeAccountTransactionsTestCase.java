@@ -32,10 +32,8 @@ import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.filter.ClientClassificationFilter;
 import name.abuchen.portfolio.snapshot.filter.ClientSecurityFilter;
 import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshotComparator;
 import name.abuchen.portfolio.util.Interval;
 
 @SuppressWarnings("nls")
@@ -62,13 +60,11 @@ public class SecurityTaxAndFeeAccountTransactionsTestCase
     @Test
     public void testAdidas()
     {
-        SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, converter, interval);
+        LazySecurityPerformanceSnapshot snapshot = LazySecurityPerformanceSnapshot.create(client, converter, interval);
 
-        new SecurityPerformanceSnapshotComparator(snapshot,
-                        LazySecurityPerformanceSnapshot.create(client, converter, interval)).compare();
-
-        SecurityPerformanceRecord record = snapshot.getRecords().stream().filter(r -> r.getSecurity().equals(adidas))
-                        .findAny().orElseThrow(IllegalArgumentException::new);
+        LazySecurityPerformanceRecord record = snapshot.getRecords().stream()
+                        .filter(r -> r.getSecurity().equals(adidas)).findAny()
+                        .orElseThrow(IllegalArgumentException::new);
 
         assertThat(record.getLineItems().size(), is(6));
 

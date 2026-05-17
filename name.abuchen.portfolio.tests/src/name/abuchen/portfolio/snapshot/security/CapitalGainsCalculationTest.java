@@ -15,6 +15,7 @@ import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
@@ -54,19 +55,15 @@ public class CapitalGainsCalculationTest
         transfer.insert();
 
         var interval = Interval.of(LocalDate.parse("2020-12-31"), LocalDate.parse("2021-01-31"));
-        SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(),
-                        interval);
+        LazySecurityPerformanceSnapshot snapshot = LazySecurityPerformanceSnapshot.create(client,
+                        new TestCurrencyConverter(), interval);
 
-        new SecurityPerformanceSnapshotComparator(snapshot,
-                        LazySecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(), interval))
-                                        .compare();
-
-        SecurityPerformanceRecord record = snapshot.getRecord(security).orElseThrow(IllegalArgumentException::new);
+        LazySecurityPerformanceRecord record = snapshot.getRecord(security).orElseThrow(IllegalArgumentException::new);
 
         Money eur100 = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100));
-        assertThat(record.getCapitalGainsOnHoldings(), is(eur100));
+        assertThat(record.getCapitalGainsOnHoldings(CostMethod.FIFO), is(eur100));
 
-        CapitalGainsRecord unrealizedCapitalGains = record.getUnrealizedCapitalGains();
+        CapitalGainsRecord unrealizedCapitalGains = record.getUnrealizedCapitalGains(CostMethod.FIFO);
         assertThat(unrealizedCapitalGains.getCapitalGains(), is(eur100));
         assertThat(unrealizedCapitalGains.getCapitalGainsTrail().getValue(), is(eur100));
 
@@ -88,31 +85,31 @@ public class CapitalGainsCalculationTest
                         .addTo(client);
 
         var interval = Interval.of(LocalDate.parse("2009-12-31"), LocalDate.parse("2021-01-31"));
-        SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(),
-                        interval);
-        SecurityPerformanceRecord record = snapshot.getRecord(security).orElseThrow(IllegalArgumentException::new);
+        LazySecurityPerformanceSnapshot snapshot = LazySecurityPerformanceSnapshot.create(client,
+                        new TestCurrencyConverter(), interval);
+        LazySecurityPerformanceRecord record = snapshot.getRecord(security).orElseThrow(IllegalArgumentException::new);
 
         // expected Realized Gains for FIFO :
         // 531.5 - 3149.20 * 15/109 = 98,1238532110092
         Money expectedGains = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(98.12));
-        CapitalGainsRecord realizedCapitalGains = record.getRealizedCapitalGains();
+        CapitalGainsRecord realizedCapitalGains = record.getRealizedCapitalGains(CostMethod.FIFO);
         assertThat(realizedCapitalGains.getCapitalGains(), is(expectedGains));
 
         // expected Realized Gains for moving average is identical because it is
         // only one buy
-        CapitalGainsRecord realizedCapitalGainsMovingAvg = record.getRealizedCapitalGainsMovingAvg();
+        CapitalGainsRecord realizedCapitalGainsMovingAvg = record.getRealizedCapitalGains(CostMethod.MOVING_AVERAGE);
         assertThat(realizedCapitalGainsMovingAvg.getCapitalGains(), is(expectedGains));
 
         // expected Unrealized Gains for FIFO :
         // 100 * 178 - [3149.2 * (109-15) / 109 + 1684.92 + 959.3] =
         // 12439,956146789
         Money expectedUnrealizedGains = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12439.96));
-        CapitalGainsRecord unRealizedCapitalGains = record.getUnrealizedCapitalGains();
+        CapitalGainsRecord unRealizedCapitalGains = record.getUnrealizedCapitalGains(CostMethod.FIFO);
         assertThat(unRealizedCapitalGains.getCapitalGains(), is(expectedUnrealizedGains));
 
         // expected Unrealized Gains for moving average is identical because it
         // is only one buy
-        CapitalGainsRecord unRealizedCapitalGainsMovingAvg = record.getUnrealizedCapitalGainsMovingAvg();
+        CapitalGainsRecord unRealizedCapitalGainsMovingAvg = record.getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE);
         assertThat(unRealizedCapitalGainsMovingAvg.getCapitalGains(), is(expectedUnrealizedGains));
 
     }
@@ -131,33 +128,33 @@ public class CapitalGainsCalculationTest
                         .addTo(client);
 
         var interval = Interval.of(LocalDate.parse("2009-12-31"), LocalDate.parse("2021-01-31"));
-        SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(),
-                        interval);
-        SecurityPerformanceRecord record = snapshot.getRecord(security).orElseThrow(IllegalArgumentException::new);
+        LazySecurityPerformanceSnapshot snapshot = LazySecurityPerformanceSnapshot.create(client,
+                        new TestCurrencyConverter(), interval);
+        LazySecurityPerformanceRecord record = snapshot.getRecord(security).orElseThrow(IllegalArgumentException::new);
 
         // expected Realized Gains for FIFO :
         // 531.5 - 3149.20 * 15/109 = 98,1238532110092
         Money expectedGains = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(98.12));
-        CapitalGainsRecord realizedCapitalGains = record.getRealizedCapitalGains();
+        CapitalGainsRecord realizedCapitalGains = record.getRealizedCapitalGains(CostMethod.FIFO);
         assertThat(realizedCapitalGains.getCapitalGains(), is(expectedGains));
 
         // expected Realized Gains for Moving average
         // 531.5 - (3149.20 + 1684.92) * 15/(109 + 52) = 81,116149068323
         Money expectedGainsMovingAvg = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(81.12));
-        CapitalGainsRecord realizedCapitalGainsMovingAvg = record.getRealizedCapitalGainsMovingAvg();
+        CapitalGainsRecord realizedCapitalGainsMovingAvg = record.getRealizedCapitalGains(CostMethod.MOVING_AVERAGE);
         assertThat(realizedCapitalGainsMovingAvg.getCapitalGains(), is(expectedGainsMovingAvg));
 
         // expected Unrealized Gains for FIFO :
         // 146 * 100 - [3149,20 + 1684,92 - (3149,20 * 15/109)] =
         // 10199,256146789
         Money expectedUnrealizedGains = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10199.26));
-        CapitalGainsRecord unRealizedCapitalGainsFiFO = record.getUnrealizedCapitalGains();
+        CapitalGainsRecord unRealizedCapitalGainsFiFO = record.getUnrealizedCapitalGains(CostMethod.FIFO);
         assertThat(unRealizedCapitalGainsFiFO.getCapitalGains(), is(expectedUnrealizedGains));
 
         // expected Unrealized Gains for Moving average
         // 146 * 100 - (3149.20 + 1684.92) * 146 / (109 + 52) = 10216,2638509317
         Money expectedUnrealizedGainsMovingAvg = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10216.26));
-        CapitalGainsRecord unRealizedCapitalGainsMovingAvg = record.getUnrealizedCapitalGainsMovingAvg();
+        CapitalGainsRecord unRealizedCapitalGainsMovingAvg = record.getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE);
         assertThat(unRealizedCapitalGainsMovingAvg.getCapitalGains(), is(expectedUnrealizedGainsMovingAvg));
     }
 
@@ -199,12 +196,12 @@ public class CapitalGainsCalculationTest
                         ).addTo(client);
 
         var interval = Interval.of(LocalDate.parse("2023-12-31"), LocalDate.parse("2024-12-31"));
-        SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(),
-                        interval);
-        SecurityPerformanceRecord record = snapshot.getRecord(security).orElseThrow(IllegalArgumentException::new);
+        LazySecurityPerformanceSnapshot snapshot = LazySecurityPerformanceSnapshot.create(client,
+                        new TestCurrencyConverter(), interval);
+        LazySecurityPerformanceRecord record = snapshot.getRecord(security).orElseThrow(IllegalArgumentException::new);
 
         // FIFO
-        var usingFIFO = record.getRealizedCapitalGains();
+        var usingFIFO = record.getRealizedCapitalGains(CostMethod.FIFO);
 
         // expected realized gains for FIFO
         // [revenue in EUR] - [partial cost of first buy]
@@ -213,7 +210,7 @@ public class CapitalGainsCalculationTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(830))));
 
         // moving average
-        var usingMovingAverage = record.getRealizedCapitalGainsMovingAvg();
+        var usingMovingAverage = record.getRealizedCapitalGains(CostMethod.MOVING_AVERAGE);
 
         // expected realized gains
         // [revenue in EUR] - [average costs of first and second buy]
@@ -229,7 +226,7 @@ public class CapitalGainsCalculationTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(-3.33))));
 
         // moving average for unrealized gains
-        var realizedUsingMovingAverage = record.getUnrealizedCapitalGainsMovingAvg();
+        var realizedUsingMovingAverage = record.getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE);
 
         // expected realized gains
         // [current valuation in EUR] - [average costs of first and second buy]

@@ -20,10 +20,8 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshotComparator;
 import name.abuchen.portfolio.util.Interval;
 
 public class Issue1498FifoCrossPortfolioTest
@@ -47,14 +45,12 @@ public class Issue1498FifoCrossPortfolioTest
         // fifo cost must be 1150 EUR of the purchase on portfolio 1 as trade on
         // portfolio 2 has been closed
 
-        SecurityPerformanceSnapshot securitySnapshot = SecurityPerformanceSnapshot.create(client, converter, period);
-        SecurityPerformanceRecord securityRecord = securitySnapshot.getRecords().get(0);
+        LazySecurityPerformanceSnapshot securitySnapshot = LazySecurityPerformanceSnapshot.create(client, converter,
+                        period);
+        LazySecurityPerformanceRecord securityRecord = securitySnapshot.getRecords().get(0);
         assertThat(securityRecord.getSecurity(), is(lufthansa));
         assertThat(securityRecord.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1150))));
-        
-        new SecurityPerformanceSnapshotComparator(securitySnapshot,
-                        LazySecurityPerformanceSnapshot.create(client, converter, period)).compare();
 
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, period);
 
