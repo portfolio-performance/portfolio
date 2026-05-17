@@ -2,6 +2,10 @@ package name.abuchen.portfolio.ui.views.dashboard;
 
 import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,13 +25,13 @@ import jakarta.inject.Inject;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.ui.di.UISynchronize;
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.util.LocalSelectionTransfer;
@@ -51,9 +55,12 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
 
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
+import name.abuchen.portfolio.model.DashboardTemplateExporter;
+import name.abuchen.portfolio.model.DashboardTemplateImporter;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -64,6 +71,7 @@ import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.InfoToolTip;
+import name.abuchen.portfolio.ui.util.JSONExporterDialog;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.views.AbstractHistoricView;
 import name.abuchen.portfolio.ui.views.panes.HistoricalPricesDataQualityPane;
@@ -391,9 +399,12 @@ public class DashboardView extends AbstractHistoricView
         int[] index = { 0 };
         getClient().getDashboards().forEach(board -> toolBar.add(createToolItem(index[0]++, board)));
 
-        Action newAction = new SimpleAction(Messages.MenuNewDashboard, a -> createNewDashboard());
-        newAction.setImageDescriptor(Images.VIEW_PLUS.descriptor());
-        toolBar.add(newAction);
+        DropDown newDashboardMenu = new DropDown(Messages.MenuNewDashboard, Images.VIEW_PLUS, SWT.NONE, manager -> {
+            manager.add(new SimpleAction(Messages.MenuNewDashboard, a -> createNewDashboard()));
+            manager.add(new SimpleAction(Messages.MenuImportDashboardTemplate, a -> importDashboardTemplate()));
+        });
+        newDashboardMenu.setDefaultAction(new SimpleAction(Messages.MenuNewDashboard, a -> createNewDashboard()));
+        toolBar.add(newDashboardMenu);
     }
 
     private ContributionItem createToolItem(int index, Dashboard board)
@@ -413,6 +424,10 @@ public class DashboardView extends AbstractHistoricView
             manager.add(new ConfirmAction(Messages.ConfigurationDelete,
                             MessageFormat.format(Messages.ConfigurationDeleteConfirm, board.getName()),
                             a -> deleteDashboard(board)));
+
+            manager.add(new Separator());
+            manager.add(new SimpleAction(Messages.MenuExportDashboardTemplate,
+                            a -> exportDashboardTemplate(board)));
 
             if (index > 0)
             {
@@ -456,7 +471,6 @@ public class DashboardView extends AbstractHistoricView
                             Dashboard newDashboard = createDefaultDashboard();
                             getClient().addDashboard(newDashboard);
                             markDirty();
-                            createDashboardToolItems(getToolBarManager());
                             return newDashboard;
                         });
 
@@ -792,6 +806,13 @@ public class DashboardView extends AbstractHistoricView
         if (dialog.open() != Window.OK)
             return;
 
+        String importPath = dialog.getImportFilePath();
+        if (importPath != null)
+        {
+            importDashboardTemplateFromPath(importPath);
+            return;
+        }
+
         Dashboard newDashboard = dialog.createDashboard();
 
         getClient().addDashboard(newDashboard);
@@ -855,6 +876,43 @@ public class DashboardView extends AbstractHistoricView
         getClient().touch();
 
         recreateDashboardToolItems();
+    }
+
+    private void exportDashboardTemplate(Dashboard board)
+    {
+        new JSONExporterDialog(Display.getCurrent().getActiveShell(),
+                        new DashboardTemplateExporter(board)).export();
+    }
+
+    private void importDashboardTemplate()
+    {
+        FileDialog dialog = new FileDialog(Display.getCurrent().getActiveShell(), SWT.OPEN);
+        dialog.setFilterNames(new String[] { Messages.CSVConfigCSVImportLabelFileJSON });
+        dialog.setFilterExtensions(new String[] { "*.json;*.JSON" }); //$NON-NLS-1$
+
+        String path = dialog.open();
+        if (path == null)
+            return;
+
+        importDashboardTemplateFromPath(path);
+    }
+
+    private void importDashboardTemplateFromPath(String path)
+    {
+        try (var reader = new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8))
+        {
+            Dashboard newDashboard = new DashboardTemplateImporter().importDashboard(reader);
+
+            getClient().addDashboard(newDashboard);
+            getClient().touch();
+
+            selectDashboard(newDashboard);
+        }
+        catch (IOException e)
+        {
+            PortfolioPlugin.log(e);
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.LabelError, e.getMessage());
+        }
     }
 
     private void addNewWidget(Composite columnControl, WidgetFactory widgetType)

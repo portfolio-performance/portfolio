@@ -2,6 +2,7 @@ package fileversions;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -10,9 +11,22 @@ import java.util.stream.Stream;
 
 public class FileHelper
 {
-    private static Path testDir = Paths.get(new File(
-                    ReadingHistoricClientFilesTest.class.getProtectionDomain().getCodeSource().getLocation().getFile())
-                                    .toURI());
+    private static Path testDir = resolveTestDir();
+
+    private static Path resolveTestDir()
+    {
+        try
+        {
+            return Paths.get(ReadingHistoricClientFilesTest.class.getProtectionDomain().getCodeSource().getLocation()
+                            .toURI());
+        }
+        catch (URISyntaxException e)
+        {
+            // fallback for environments where toURI() fails
+            return Paths.get(new File(ReadingHistoricClientFilesTest.class.getProtectionDomain().getCodeSource()
+                            .getLocation().getFile()).toURI());
+        }
+    }
 
     private FileHelper()
     {
