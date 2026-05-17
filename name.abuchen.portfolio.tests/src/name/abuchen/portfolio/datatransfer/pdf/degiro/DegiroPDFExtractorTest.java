@@ -14,6 +14,10 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.feeRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
@@ -901,7 +905,7 @@ public class DegiroPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(4L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(countAccountTransactions(results), is(6L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
@@ -1395,7 +1399,7 @@ public class DegiroPDFExtractorTest
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(6));
+        assertThat(results.size(), is(8));
         new AssertImportActions().check(results, "CHF");
 
         List<Item> transactionList = results.stream().filter(TransactionItem.class::isInstance)
@@ -8050,7 +8054,252 @@ public class DegiroPDFExtractorTest
                         hasAmount("EUR", 322.22), hasGrossValue("EUR", 324.22), 
                         hasTaxes("EUR", 0.00), hasFees("EUR", 2.00), 
                         hasForexGrossValue("USD", 353.24))));
-                
+
+    }
+
+    @Test
+    public void testTransactions_french03()
+    {
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Transactions_french03.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(7L));
+        assertThat(countBuySell(results), is(8L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(15));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US29280W1099"), //
+                        hasName("ENERGY VAULT HOLDINGS INC"), //
+                        hasCurrencyCode("USD"))));
+        assertThat(results, hasItem(security( //
+                        hasIsin("XS2872233403"), //
+                        hasName("WISDOMTREE EUROPEAN NATURAL GAS ETC"), //
+                        hasCurrencyCode("EUR"))));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE000M7V94E1"), //
+                        hasName("VANECK URANIUM AND NUCLEAR TECHNOLOGIES UCITS ETF"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-04-20T19:53"), hasShares(135.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasAmount("EUR", 419.51), hasGrossValue("EUR", 416.47), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.04), //
+                        hasForexGrossValue("USD", 490.72))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-04-10T16:05"), hasShares(15.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasAmount("EUR", 537.70), hasGrossValue("EUR", 532.80), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 4.90))));
+        assertThat(findBuySellEntry(results, "2026-04-10T16:05").getPortfolioTransaction()
+                        .getUnit(Unit.Type.GROSS_VALUE).isPresent(), is(false));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-04-08T09:16"), hasShares(59.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasAmount("EUR", 1768.18), hasGrossValue("EUR", 1771.18), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-03-24T20:57"), hasShares(10.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasAmount("EUR", 1093.32), hasGrossValue("EUR", 1098.06), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 4.75), //
+                        hasForexGrossValue("USD", 1272.10))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-10-16T15:30"), hasShares(68.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasAmount("EUR", 979.40), hasGrossValue("EUR", 981.85), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 2.45), //
+                        hasForexGrossValue("USD", 1144.44))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-10-14T20:51"), hasShares(25.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasAmount("EUR", 217.15), hasGrossValue("EUR", 216.61), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.54), //
+                        hasForexGrossValue("USD", 251.38))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-10-09T19:54"), hasShares(7.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasAmount("EUR", 374.06), hasGrossValue("EUR", 375.06), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.00))));
+        assertThat(findBuySellEntry(results, "2025-10-09T19:54").getPortfolioTransaction()
+                        .getUnit(Unit.Type.GROSS_VALUE).isPresent(), is(false));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-10-08T16:58"), hasShares(6.00), //
+                        hasSource("Transactions_french03.txt"), //
+                        hasAmount("EUR", 320.50), hasGrossValue("EUR", 319.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.00))));
+        assertThat(findBuySellEntry(results, "2025-10-08T16:58").getPortfolioTransaction()
+                        .getUnit(Unit.Type.GROSS_VALUE).isPresent(), is(false));
+    }
+
+    @Test
+    public void testTransactions_chfAutoFx01()
+    {
+        Client client = new Client();
+
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Transactions_chf_autofx01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US88160R1014"), //
+                        hasName("TESLA INC"), //
+                        hasCurrencyCode("USD"))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-01-10T10:00"), hasShares(2.00), //
+                        hasSource("Transactions_chf_autofx01.txt"), //
+                        hasAmount("CHF", 437.62), hasGrossValue("CHF", 436.53), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 1.09), //
+                        hasForexGrossValue("USD", 480.00))));
+
+        BuySellEntry entry = findBuySellEntry(results, "2026-01-10T10:00");
+        Unit grossValue = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+                        .orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValue.getAmount(), is(Money.of("CHF", Values.Amount.factorize(436.53))));
+        assertThat(grossValue.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(480.00))));
+    }
+
+    @Test
+    public void testTransactions_crosslisting01()
+    {
+        Security security = new Security("ENERGY FUELS INC", "CAD"); //$NON-NLS-1$ //$NON-NLS-2$
+        security.setIsin("CA2926717083"); //$NON-NLS-1$
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Transactions_crosslisting01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-03-12T14:57"), hasShares(73.00), //
+                        hasSource("Transactions_crosslisting01.txt"), //
+                        hasAmount("EUR", 1221.74), hasGrossValue("EUR", 1226.81), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.07))));
+
+        BuySellEntry entry = findBuySellEntry(results, "2026-03-12T14:57"); //$NON-NLS-1$
+        assertThat(entry.getPortfolioTransaction().getSecurity(), is(security));
+        assertThat(entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE).isPresent(), is(false));
+    }
+
+    @Test
+    public void testAccountStatement_french01()
+    {
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement_french01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(3L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(7L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(10));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("SE0020050417"), //
+                        hasName("BOLIDEN AB"), //
+                        hasCurrencyCode("SEK"))));
+        assertThat(results, hasItem(security( //
+                        hasIsin("FI0009003727"), //
+                        hasName("WARTSILA OYJ ABP"), //
+                        hasCurrencyCode("EUR"))));
+        assertThat(results, hasItem(security( //
+                        hasIsin("US02079K3059"), //
+                        hasName("ALPHABET INC CLASS A"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2025-10-08T14:50"), //
+                        hasSource("AccountStatement_french01.txt"), //
+                        hasAmount("EUR", 9500.00), //
+                        hasNote("Dépôt flatex"))));
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2025-10-07T21:51"), //
+                        hasSource("AccountStatement_french01.txt"), //
+                        hasAmount("EUR", 500.00), //
+                        hasNote("Dépôt flatex"))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-05-07T07:10"), //
+                        hasSource("AccountStatement_french01.txt"), //
+                        hasAmount("EUR", 22.59), hasGrossValue("EUR", 32.27), //
+                        hasTaxes("EUR", 9.68), hasForexGrossValue("SEK", 352.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-03-24T07:04"), //
+                        hasSource("AccountStatement_french01.txt"), //
+                        hasAmount("EUR", 15.92), hasGrossValue("EUR", 24.49), //
+                        hasTaxes("EUR", 8.57))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-12-16T07:13"), //
+                        hasSource("AccountStatement_french01.txt"), //
+                        hasAmount("EUR", 1.06), hasGrossValue("EUR", 1.25), //
+                        hasTaxes("EUR", 0.19), hasForexGrossValue("USD", 1.47))));
+        AccountTransaction alphabetDividend = (AccountTransaction) results.stream() //
+                        .filter(TransactionItem.class::isInstance) //
+                        .map(TransactionItem.class::cast) //
+                        .map(TransactionItem::getSubject) //
+                        .filter(AccountTransaction.class::isInstance) //
+                        .map(AccountTransaction.class::cast) //
+                        .filter(t -> t.getType() == AccountTransaction.Type.DIVIDENDS) //
+                        .filter(t -> t.getDateTime().equals(LocalDateTime.parse("2025-12-16T07:13"))) //
+                        .findFirst().orElseThrow(IllegalArgumentException::new);
+        Unit tax = alphabetDividend.getUnit(Unit.Type.TAX).orElseThrow(IllegalArgumentException::new);
+        assertThat(tax.getAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.19))));
+        assertNull(tax.getForex());
+        assertNull(tax.getExchangeRate());
+        assertThat(results, hasItem(fee( //
+                        hasDate("2026-04-07T09:44"), //
+                        hasSource("AccountStatement_french01.txt"), //
+                        hasAmount("EUR", 2.50), //
+                        hasNote("Frais de connexion aux places boursières 2026 (London Stock Exchange (LSE) - LSE)"))));
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2026-02-25T16:19"), //
+                        hasSource("AccountStatement_french01.txt"), //
+                        hasAmount("EUR", 100.00), //
+                        hasNote("Remboursement offre promotionnelle"))));
     }
 
     @Test
@@ -9517,5 +9766,17 @@ public class DegiroPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
-   
+
+    private BuySellEntry findBuySellEntry(List<Item> results, String date)
+    {
+        return (BuySellEntry) results.stream() //
+                        .filter(BuySellEntryItem.class::isInstance) //
+                        .map(Item::getSubject) //
+                        .filter(BuySellEntry.class::isInstance) //
+                        .filter(entry -> ((BuySellEntry) entry).getPortfolioTransaction().getDateTime()
+                                        .equals(LocalDateTime.parse(date))) //
+                        .findFirst() //
+                        .orElseThrow(IllegalArgumentException::new);
+    }
+
 }

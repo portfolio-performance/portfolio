@@ -1,0 +1,19 @@
+```
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.83.3.qualifier
+System: linux | x86_64 | 21.0.11 | Red Hat, Inc.
+-----------------------------------------
+Mr Max Mustermann
+Musterstr. 4
+54321 Musterhausen
+User name: ***ner
+Transactions from 10-01-2026 until 10-01-2026
+Transaction
+Date Time Product ISIN Reference
+exchange Venue Quantity Price Local value Value CHF Exchange AutoFX and/or third
+rate Fee party fees Total CHF
+CHF
+10-01-2026 10:00 TESLA INC US88160R1014 NDQ XNAS 2 240,0000 USD -480,00 USD -436,53 1,0996 -1,09 -437,62
+flatexDEGIRO Bank Dutch Branch, trading under the name DEGIRO.
+Page 1 / 1
+```
