@@ -55,10 +55,12 @@ import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -78,7 +80,6 @@ import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.snapshot.filter.ReadOnlyAccount;
 import name.abuchen.portfolio.snapshot.filter.ReadOnlyPortfolio;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
-import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord.LazyValue;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
@@ -119,6 +120,7 @@ import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
 import name.abuchen.portfolio.util.Interval;
+import name.abuchen.portfolio.util.LazyValue;
 
 public class StatementOfAssetsViewer
 {
@@ -555,8 +557,8 @@ public class StatementOfAssetsViewer
         column.setHeading(Messages.LabelTaxesAndFeesIncluded);
         column.setMenuLabel(Messages.ColumnPurchaseValue_MenuLabel);
         column.setDescription(Messages.ColumnPurchaseValue_Description);
-        labelProvider = new ReportingPeriodLabelProvider(
-                        new ElementValueProvider(LazySecurityPerformanceRecord::getFifoCost, withSum()), false);
+        labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
+                        record -> record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED), withSum()), false);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
@@ -567,18 +569,16 @@ public class StatementOfAssetsViewer
         column.setGroupLabel(Messages.ColumnPurchaseValue);
         column.setMenuLabel(Messages.ColumnPurchaseValueMovingAverage_MenuLabel);
         column.setDescription(Messages.ColumnPurchaseValueMovingAverage_Description);
-        labelProvider = new ReportingPeriodLabelProvider(
-                        new ElementValueProvider(LazySecurityPerformanceRecord::getMovingAverageCost, withSum()),
-                        false);
+        labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
+                        record -> record.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), withSum()), false);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
         support.addColumn(column);
 
         column = new Column("9", Messages.ColumnProfitLoss, SWT.RIGHT, 80); //$NON-NLS-1$
-        labelProvider = new ReportingPeriodLabelProvider(
-                        new ElementValueProvider(LazySecurityPerformanceRecord::getCapitalGainsOnHoldings, withSum()),
-                        true);
+        labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
+                        record -> record.getCapitalGainsOnHoldings(CostMethod.FIFO), withSum()), true);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
@@ -645,7 +645,7 @@ public class StatementOfAssetsViewer
         column.setMenuLabel(Messages.ColumnPurchasePrice_MenuLabel);
         column.setDescription(Messages.ColumnPurchasePrice_Description);
         labelProvider = new ReportingPeriodLabelProvider(
-                        new ElementValueProvider(LazySecurityPerformanceRecord::getFifoCostPerSharesHeld, null), false);
+                        new ElementValueProvider(record -> record.getCostPerSharesHeld(CostMethod.FIFO), null), false);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
@@ -657,7 +657,7 @@ public class StatementOfAssetsViewer
         column.setMenuLabel(Messages.ColumnPurchasePriceMovingAverage_MenuLabel);
         column.setDescription(Messages.ColumnPurchasePriceMovingAverage_Description);
         labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
-                        LazySecurityPerformanceRecord::getMovingAverageCostPerSharesHeld, null), false);
+                        record -> record.getCostPerSharesHeld(CostMethod.MOVING_AVERAGE), null), false);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
@@ -670,7 +670,7 @@ public class StatementOfAssetsViewer
         column.setMenuLabel(Messages.ColumnPurchasePrice_MenuLabel);
         column.setDescription(Messages.ColumnGrossPurchasePriceFIFO_Description);
         labelProvider = new ReportingPeriodLabelProvider(
-                        new ElementValueProvider(LazySecurityPerformanceRecord::getGrossFifoCostPerSharesHeld, null),
+                        new ElementValueProvider(record -> record.getGrossCostPerSharesHeld(CostMethod.FIFO), null),
                         false);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
@@ -683,7 +683,7 @@ public class StatementOfAssetsViewer
         column.setMenuLabel(Messages.ColumnPurchasePriceMovingAverage_MenuLabel);
         column.setDescription(Messages.ColumnGrossPurchasePriceMovingAverage_Description);
         labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
-                        LazySecurityPerformanceRecord::getGrossMovingAverageCostPerSharesHeld, null), false);
+                        record -> record.getGrossCostPerSharesHeld(CostMethod.MOVING_AVERAGE), null), false);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
@@ -729,7 +729,7 @@ public class StatementOfAssetsViewer
         support.addColumn(column);
 
         column = new Column("capitalgains", Messages.ColumnCapitalGains, SWT.RIGHT, 80); //$NON-NLS-1$
-        labelProvider = new ReportingPeriodLabelProvider(LazySecurityPerformanceRecord::getCapitalGainsOnHoldings,
+        labelProvider = new ReportingPeriodLabelProvider(record -> record.getCapitalGainsOnHoldings(CostMethod.FIFO),
                         withSum(), true);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnCapitalGains_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
@@ -741,7 +741,7 @@ public class StatementOfAssetsViewer
 
         column = new Column("capitalgains%", Messages.ColumnCapitalGainsPercent, SWT.RIGHT, 80); //$NON-NLS-1$
         labelProvider = new ReportingPeriodLabelProvider(
-                        LazySecurityPerformanceRecord::getCapitalGainsOnHoldingsPercent);
+                        record -> record.getCapitalGainsOnHoldingsPercent(CostMethod.FIFO));
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnCapitalGainsPercent_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnCapitalGainsPercent_Description);
@@ -752,7 +752,7 @@ public class StatementOfAssetsViewer
 
         column = new Column("capitalgainsmvavg", Messages.ColumnCapitalGainsMovingAverage, SWT.RIGHT, 80); //$NON-NLS-1$
         labelProvider = new ReportingPeriodLabelProvider(
-                        LazySecurityPerformanceRecord::getCapitalGainsOnHoldingsMovingAverage, withSum(), true);
+                        record -> record.getCapitalGainsOnHoldings(CostMethod.MOVING_AVERAGE), withSum(), true);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnCapitalGainsMovingAverage_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnCapitalGainsMovingAverage_Description);
@@ -763,7 +763,7 @@ public class StatementOfAssetsViewer
 
         column = new Column("capitalgainsmvavg%", Messages.ColumnCapitalGainsMovingAveragePercent, SWT.RIGHT, 80); //$NON-NLS-1$
         labelProvider = new ReportingPeriodLabelProvider(
-                        LazySecurityPerformanceRecord::getCapitalGainsOnHoldingsMovingAveragePercent);
+                        record -> record.getCapitalGainsOnHoldingsPercent(CostMethod.MOVING_AVERAGE));
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnCapitalGainsMovingAveragePercent_Option,
                         options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
@@ -811,8 +811,8 @@ public class StatementOfAssetsViewer
         support.addColumn(column);
 
         column = new Column("d%", Messages.ColumnDividendTotalRateOfReturn, SWT.RIGHT, 80); //$NON-NLS-1$
-        labelProvider = new ReportingPeriodLabelProvider(LazySecurityPerformanceRecord::getTotalRateOfReturnDiv, null,
-                        false);
+        labelProvider = new ReportingPeriodLabelProvider(record -> record.getTotalRateOfReturnDiv(CostMethod.FIFO),
+                        null, false);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnDividendTotalRateOfReturn + " {0}", options)); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelDividends);
         column.setDescription(Messages.ColumnDividendTotalRateOfReturn_Description);
@@ -823,7 +823,7 @@ public class StatementOfAssetsViewer
 
         column = new Column("d%mvavg", Messages.ColumnDividendMovingAverageTotalRateOfReturn, SWT.RIGHT, 80); //$NON-NLS-1$
         labelProvider = new ReportingPeriodLabelProvider(
-                        LazySecurityPerformanceRecord::getTotalRateOfReturnDivMovingAverage, null, false);
+                        record -> record.getTotalRateOfReturnDiv(CostMethod.MOVING_AVERAGE), null, false);
         column.setOptions(new ReportingPeriodColumnOptions(
                         Messages.ColumnDividendMovingAverageTotalRateOfReturn + " {0}", options)); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelDividends);
@@ -1009,7 +1009,8 @@ public class StatementOfAssetsViewer
         column.setDescription(Messages.ColumnPurchaseValueBaseCurrency);
         column.setGroupLabel(Messages.ColumnForeignCurrencies);
         labelProvider = new ReportingPeriodLabelProvider(
-                        new ElementValueProvider(LazySecurityPerformanceRecord::getFifoCost, null),
+                        new ElementValueProvider(record -> record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
+                                        null),
                         e -> e.isSecurity() ? e.getSecurity().getCurrencyCode()
                                         : model.getCurrencyConverter().getTermCurrency(),
                         false);
@@ -1023,7 +1024,7 @@ public class StatementOfAssetsViewer
         column.setDescription(Messages.ColumnPurchasePriceBaseCurrency);
         column.setGroupLabel(Messages.ColumnForeignCurrencies);
         labelProvider = new ReportingPeriodLabelProvider(
-                        new ElementValueProvider(LazySecurityPerformanceRecord::getFifoCostPerSharesHeld, null),
+                        new ElementValueProvider(record -> record.getCostPerSharesHeld(CostMethod.FIFO), null),
                         e -> e.isSecurity() ? e.getSecurity().getCurrencyCode()
                                         : model.getCurrencyConverter().getTermCurrency(),
                         false);
@@ -1037,7 +1038,7 @@ public class StatementOfAssetsViewer
         column.setDescription(Messages.ColumnProfitLossBaseCurrency);
         column.setGroupLabel(Messages.ColumnForeignCurrencies);
         labelProvider = new ReportingPeriodLabelProvider(
-                        new ElementValueProvider(LazySecurityPerformanceRecord::getCapitalGainsOnHoldings, null),
+                        new ElementValueProvider(record -> record.getCapitalGainsOnHoldings(CostMethod.FIFO), null),
                         e -> e.isSecurity() ? e.getSecurity().getCurrencyCode()
                                         : model.getCurrencyConverter().getTermCurrency(),
                         false);
@@ -1421,11 +1422,11 @@ public class StatementOfAssetsViewer
 
     /* testing */ static class ElementValueProvider
     {
-        private final Function<LazySecurityPerformanceRecord, LazyValue<?>> valueProvider;
+        private final Function<LazySecurityPerformanceRecord, ?> valueProvider;
         private final Function<Stream<Object>, Object> collector;
         private final Function<PerformanceIndex, ?> valueProviderTotal;
 
-        public ElementValueProvider(Function<LazySecurityPerformanceRecord, LazyValue<?>> valueProvider,
+        public ElementValueProvider(Function<LazySecurityPerformanceRecord, ?> valueProvider,
                         Function<Stream<Object>, Object> collector)
         {
             this.valueProvider = valueProvider;
@@ -1433,7 +1434,7 @@ public class StatementOfAssetsViewer
             this.valueProviderTotal = null;
         }
 
-        public ElementValueProvider(Function<LazySecurityPerformanceRecord, LazyValue<?>> valueProvider,
+        public ElementValueProvider(Function<LazySecurityPerformanceRecord, ?> valueProvider,
                         Function<Stream<Object>, Object> collector, Function<PerformanceIndex, ?> valueProviderTotal)
         {
             this.valueProvider = valueProvider;
@@ -1453,7 +1454,7 @@ public class StatementOfAssetsViewer
                 if (record == null)
                     return null;
 
-                Object value = valueProvider.apply(record).get();
+                Object value = valueProvider.apply(record);
 
                 // if not a monetary value, no splitting is supported
                 if (!(value instanceof Money))
@@ -1526,18 +1527,18 @@ public class StatementOfAssetsViewer
         private ElementValueProvider valueProvider;
         private Function<Element, String> currencyProvider;
 
-        public ReportingPeriodLabelProvider(Function<LazySecurityPerformanceRecord, LazyValue<?>> valueProvider)
+        public ReportingPeriodLabelProvider(Function<LazySecurityPerformanceRecord, ?> valueProvider)
         {
             this(new ElementValueProvider(valueProvider, null), null, true);
         }
 
-        public ReportingPeriodLabelProvider(Function<LazySecurityPerformanceRecord, LazyValue<?>> valueProvider,
+        public ReportingPeriodLabelProvider(Function<LazySecurityPerformanceRecord, ?> valueProvider,
                         Function<Stream<Object>, Object> collector, boolean showUpAndDownArrows)
         {
             this(new ElementValueProvider(valueProvider, collector), null, showUpAndDownArrows);
         }
 
-        public ReportingPeriodLabelProvider(Function<LazySecurityPerformanceRecord, LazyValue<?>> valueProvider,
+        public ReportingPeriodLabelProvider(Function<LazySecurityPerformanceRecord, ?> valueProvider,
                         boolean showUpAndDownArrows, Function<PerformanceIndex, ?> valueProviderTotal)
         {
             this(new ElementValueProvider(valueProvider, null, valueProviderTotal), null, showUpAndDownArrows);

@@ -17,7 +17,9 @@ import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
@@ -149,24 +151,26 @@ public class CurrencyTestCase
         // must take the inverse of the exchange used within the transaction
         BigDecimal rate = BigDecimal.ONE.divide(BigDecimal.valueOf(0.8237), 10, RoundingMode.HALF_DOWN);
 
-        assertThat(recordUSD.getFifoCost(),
+        assertThat(recordUSD.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
                         is(Money.of(CurrencyUnit.USD, Math.round(454_60 * rate.doubleValue()) + 571_90)));
 
         // price per share is the total purchase price minus 20 USD fees and
         // taxes divided by the number of shares
-        Money pricePerShare = recordUSD.getFifoCost() //
+        Money pricePerShare = recordUSD.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED) //
                         .subtract(Money.of(CurrencyUnit.USD, 20_00)).divide(10);
-        assertThat(recordUSD.getFifoCostPerSharesHeld().toMoney(), is(pricePerShare));
+        assertThat(recordUSD.getCostPerSharesHeld(CostMethod.FIFO).toMoney(), is(pricePerShare));
 
         // profit loss w/o rounding differences
 
         assertThat(equityUSD.getValuation(), is(recordEUR.getMarketValue()));
 
         assertThat(recordEUR.getCapitalGainsOnHoldings(),
-                        is(equityUSD.getValuation().subtract(recordEUR.getFifoCost())));
+                        is(equityUSD.getValuation()
+                                        .subtract(recordEUR.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED))));
 
         assertThat(recordUSD.getCapitalGainsOnHoldings(),
-                        is(equityUSD.getPosition().calculateValue().subtract(recordUSD.getFifoCost())));
+                        is(equityUSD.getPosition().calculateValue()
+                                        .subtract(recordUSD.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED))));
 
     }
 
@@ -225,7 +229,8 @@ public class CurrencyTestCase
                                         SecurityPerformanceIndicator.Costs.class)
                         .getRecord(securityUSD).orElseThrow(IllegalArgumentException::new);
 
-        assertThat(recordEUR.getFifoCost(), is(Money.of(CurrencyUnit.EUR, 454_60L + 471_05 + 498_45)));
+        assertThat(recordEUR.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
+                        is(Money.of(CurrencyUnit.EUR, 454_60L + 471_05 + 498_45)));
 
         Interval period = Interval.of(LocalDate.parse("2014-12-31"), LocalDate.parse("2015-08-10"));
         SecurityPerformanceSnapshot performance = SecurityPerformanceSnapshot.create(client, converter, period);
@@ -236,7 +241,8 @@ public class CurrencyTestCase
         SecurityPerformanceRecord record = performance.getRecords().stream().filter(r -> r.getSecurity() == securityUSD)
                         .findAny().orElseThrow(IllegalArgumentException::new);
         assertThat(record.getSharesHeld(), is(Values.Share.factorize(15)));
-        assertThat(record.getFifoCost(), is(Money.of(CurrencyUnit.EUR, 454_60L + 471_05 + 498_45)));
+        assertThat(record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
+                        is(Money.of(CurrencyUnit.EUR, 454_60L + 471_05 + 498_45)));
     }
 
     private AccountSnapshot lookupAccountSnapshot(ClientSnapshot snapshot, Account account)

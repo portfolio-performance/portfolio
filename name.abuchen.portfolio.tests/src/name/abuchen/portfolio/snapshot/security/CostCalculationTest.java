@@ -15,9 +15,11 @@ import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -52,15 +54,17 @@ public class CostCalculationTest
         // expected:
         // 3149,20 - round(3149,20 * 15/109) + 1684,92 + 959,30 = 5360,04385
 
-        assertThat(cost.getFifoCost(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5360.04))));
+        assertThat(cost.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5360.04))));
 
-        assertThat(cost.getFifoCostTrail().getValue(), is(cost.getFifoCost()));
+        assertThat(cost.getFifoCostTrail().getValue(), is(cost.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED)));
 
         // expected moving average is identical because it is only one buy
         // transaction
         // 3149,20 * 94/109 + 1684.92 + 959.30 = 5360,04385
 
-        assertThat(cost.getMovingAverageCost(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5360.04))));
+        assertThat(cost.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5360.04))));
     }
 
     @Test
@@ -85,14 +89,16 @@ public class CostCalculationTest
         // expected:
         // 3149,20 + 1684,92 - round(3149,20 * 15/109) = 4400,743853211009174
 
-        assertThat(cost.getFifoCost(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4400.74))));
+        assertThat(cost.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4400.74))));
 
-        assertThat(cost.getFifoCostTrail().getValue(), is(cost.getFifoCost()));
+        assertThat(cost.getFifoCostTrail().getValue(), is(cost.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED)));
 
         // transaction
         // (3149,20 + 1684.92) * 146/161 = 4383,736149068322981
 
-        assertThat(cost.getMovingAverageCost(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4383.74))));
+        assertThat(cost.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4383.74))));
     }
 
     @Test
@@ -139,10 +145,11 @@ public class CostCalculationTest
         SecurityPerformanceRecord record = snapshot.getRecords().get(0);
 
         // 1.1588 = exchange rate of test currency converter on 2015-01-16
-        assertThat(record.getFifoCost(),
+        assertThat(record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize((1000 / 1.1588) + 1100))));
 
-        assertThat(record.getFifoCost(), is(record.explain(SecurityPerformanceRecord.Trails.FIFO_COST)
+        assertThat(record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
+                        is(record.explain(SecurityPerformanceRecord.Trails.FIFO_COST)
                         .orElseThrow(IllegalArgumentException::new).getRecord().getValue()));
     }
 
@@ -166,9 +173,9 @@ public class CostCalculationTest
         cost.visitAll(new TestCurrencyConverter(), portfolio.getTransactions().stream()
                         .map(t -> CalculationLineItem.of(portfolio, t)).collect(Collectors.toList()));
 
-        assertThat(cost.getFifoCost(), is(Money.of(CurrencyUnit.EUR, 0L)));
+        assertThat(cost.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, 0L)));
         assertThat(cost.getFifoCostTrail(), is(TrailRecord.empty()));
-        assertThat(cost.getMovingAverageCost(), is(Money.of(CurrencyUnit.EUR, 0L)));
+        assertThat(cost.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, 0L)));
     }
 
     @Test
@@ -191,9 +198,9 @@ public class CostCalculationTest
         cost.visitAll(new TestCurrencyConverter(), portfolio.getTransactions().stream()
                         .map(t -> CalculationLineItem.of(portfolio, t)).collect(Collectors.toList()));
 
-        assertThat(cost.getFifoCost(), is(Money.of(CurrencyUnit.EUR, 0L)));
+        assertThat(cost.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, 0L)));
         assertThat(cost.getFifoCostTrail(), is(TrailRecord.empty()));
-        assertThat(cost.getMovingAverageCost(), is(Money.of(CurrencyUnit.EUR, 0L)));
+        assertThat(cost.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, 0L)));
     }
 
 }

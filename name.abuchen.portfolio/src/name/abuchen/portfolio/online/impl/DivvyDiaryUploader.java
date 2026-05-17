@@ -19,6 +19,7 @@ import com.google.common.base.Strings;
 
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.TransactionPair;
@@ -90,12 +91,12 @@ public class DivvyDiaryUploader
             item.put("isin", security.getIsin());
 
             // fill in current holdings
-            item.put("quantity", performanceRecord.getSharesHeld().get() / Values.Share.divider());
+            item.put("quantity", performanceRecord.getSharesHeld() / Values.Share.divider());
 
             // Add the "buyin" (the FIFO cost). Used if no transactions are
             // transmitted. Add for backward compatibility in case transactions
             // are transmitted.
-            Quote fifo = performanceRecord.getFifoCostPerSharesHeld().get();
+            Quote fifo = performanceRecord.getCostPerSharesHeld(CostMethod.FIFO);
             if (fifo.isNotZero())
             {
                 JSONObject buyin = new JSONObject();

@@ -1,0 +1,39 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.83.2
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital Bank GmbH • Seitzstraße 8e • 80538 Munich • Germany
+dLzRZ XszyB
+taY cm NQkbKurlXhMK 40
+48123 JIhtuUy Date 27.04.2026
+France Page 1 / 2
+Dividend
+for period 01.01.2025 - 31.12.2025
+Entitled security E.ON SE
+ISIN DE000ENAG999
+Entitled quantity 17
+Ex day 24.04.2026
+Clearing account ix10185353971233341028 (OUYFdFAsDrh)
+Clearing account movement
+Booking Value date Type Amount / pcs. Entitled quantity Total amount
+27.04.2026 28.04.2026 Credit 0.57 EUR 17 9.69 EUR
+Taxes -2.55 EUR
+Total 7.14 EUR
+Please ensure your compliance with the German foreign trade reporting regulations to the German Bundesbank (AWV-Meldung).
+Please note that the income from capital assets are fully subject to income tax in Germany.
+Calculation of tax-relevant income
+Type Amount
+Profit or loss 9.69 EUR
+Taxable amount 9.69 EUR
+Scalable Capital Bank GmbH • Seitzstraße 8e, 80538 Munich, Germany • HRB 217778 • Amtsgericht München • VAT ID: DE300434774 Page
+Managing Directors: Florian Prucker, Martin Krebs, Dirk Franzmeyer, Dr. Andreas Schranzhofer 1 / 2
+Supervisory Board: Patrick Olson (Chairman)
+Dividend
+Taxes incurred
+Type Amount
+Capital gains tax 2.42 EUR
+Solidarity surcharge 0.13 EUR
+Taxes incurred 2.55 EUR
+Scalable Capital Bank GmbH • Seitzstraße 8e, 80538 Munich, Germany • HRB 217778 • Amtsgericht München • VAT ID: DE300434774 Page
+Managing Directors: Florian Prucker, Martin Krebs, Dirk Franzmeyer, Dr. Andreas Schranzhofer 2 / 2
+Supervisory Board: Patrick Olson (Chairman)
