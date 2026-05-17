@@ -26,10 +26,10 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.filter.ClientTransactionFilter;
-import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord.LazyValue;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
 import name.abuchen.portfolio.util.Dates;
 import name.abuchen.portfolio.util.Interval;
+import name.abuchen.portfolio.util.LazyValue;
 
 public class Trade implements Adaptable
 {
@@ -443,7 +443,7 @@ public class Trade implements Adaptable
         // sold
 
         Money totalCosts = r.get().getCost(CostMethod.MOVING_AVERAGE, taxesAndFees);
-        var totalShares = r.get().getSharesHeld().get();
+        var totalShares = r.get().getSharesHeld();
 
         if (totalShares <= 0)
             return Money.of(totalCosts.getCurrencyCode(), 0);

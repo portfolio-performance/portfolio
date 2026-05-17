@@ -30,28 +30,11 @@ import name.abuchen.portfolio.snapshot.security.DividendCalculation.DividendCalc
 import name.abuchen.portfolio.snapshot.trail.Trail;
 import name.abuchen.portfolio.snapshot.trail.TrailProvider;
 import name.abuchen.portfolio.util.Interval;
+import name.abuchen.portfolio.util.LazyValue;
 
 public final class LazySecurityPerformanceRecord extends BaseSecurityPerformanceRecord
                 implements Adaptable, TrailProvider
 {
-    public static final class LazyValue<V>
-    {
-        private V value;
-        private final Supplier<V> computeFunction;
-
-        public LazyValue(Supplier<V> computeFunction)
-        {
-            this.computeFunction = computeFunction;
-        }
-
-        public V get()
-        {
-            if (value == null)
-                value = computeFunction.get();
-            return value;
-        }
-    }
-
     /**
      * The lazy weak value computes the value only when needed but also keeps
      * only a weak reference to it.
@@ -200,59 +183,59 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
         super(client, security, converter, interval);
     }
 
-    public LazyValue<Double> getIrr()
+    public Double getIrr()
     {
-        return irr;
+        return irr.get();
     }
 
-    public LazyValue<Double> getTrueTimeWeightedRateOfReturn()
+    public Double getTrueTimeWeightedRateOfReturn()
     {
-        return twror;
+        return twror.get();
     }
 
-    public LazyValue<Double> getTrueTimeWeightedRateOfReturnAnnualized()
+    public Double getTrueTimeWeightedRateOfReturnAnnualized()
     {
-        return twrorpa;
+        return twrorpa.get();
     }
 
-    public LazyValue<Drawdown> getDrawdown()
+    public Drawdown getDrawdown()
     {
-        return drawdown;
+        return drawdown.get();
     }
 
-    public LazyValue<Volatility> getVolatility()
+    public Volatility getVolatility()
     {
-        return volatility;
+        return volatility.get();
     }
 
-    public LazyValue<Money> getDelta()
+    public Money getDelta()
     {
-        return delta;
+        return delta.get();
     }
 
-    public LazyValue<Double> getDeltaPercent()
+    public Double getDeltaPercent()
     {
-        return deltaPercent;
+        return deltaPercent.get();
     }
 
-    public LazyValue<Money> getMarketValue()
+    public Money getMarketValue()
     {
-        return marketValue;
+        return marketValue.get();
     }
 
-    public LazyValue<Quote> getQuote()
+    public Quote getQuote()
     {
-        return new LazyValue<>(() -> Quote.of(security.getCurrencyCode(), quote.get().getValue()));
+        return Quote.of(security.getCurrencyCode(), quote.get().getValue());
     }
 
-    public LazyValue<Quote> getQuoteInTermCurrency()
+    public Quote getQuoteInTermCurrency()
     {
-        return quoteInTermCurrency;
+        return quoteInTermCurrency.get();
     }
 
-    public LazyValue<SecurityPrice> getLatestSecurityPrice()
+    public SecurityPrice getLatestSecurityPrice()
     {
-        return quote;
+        return quote.get();
     }
 
     /**
@@ -263,120 +246,111 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
         return getCostMoney(costMethod, taxesAndFees);
     }
 
-    public LazyValue<Money> getCapitalGainsOnHoldings(CostMethod costMethod)
+    public Money getCapitalGainsOnHoldings(CostMethod costMethod)
     {
-        return new LazyValue<>(() -> marketValue.get().subtract(getCostMoney(costMethod, TaxesAndFees.INCLUDED)));
+        return marketValue.get().subtract(getCostMoney(costMethod, TaxesAndFees.INCLUDED));
     }
 
-    public LazyValue<Double> getCapitalGainsOnHoldingsPercent(CostMethod costMethod)
+    public Double getCapitalGainsOnHoldingsPercent(CostMethod costMethod)
     {
-        return new LazyValue<>(() -> {
-            var mv = marketValue.get();
-            var cost = getCostMoney(costMethod, TaxesAndFees.INCLUDED);
+        var mv = marketValue.get();
+        var cost = getCostMoney(costMethod, TaxesAndFees.INCLUDED);
 
-            if (mv.getAmount() == 0L && cost.getAmount() == 0L)
-                return 0d;
-            else
-                return ((double) mv.getAmount() / (double) cost.getAmount()) - 1;
-        });
+        if (mv.getAmount() == 0L && cost.getAmount() == 0L)
+            return 0d;
+        else
+            return ((double) mv.getAmount() / (double) cost.getAmount()) - 1;
     }
 
-    public LazyValue<Money> getFees()
+    public Money getFees()
     {
-        return new LazyValue<>(() -> costCalculation.get().fees());
+        return costCalculation.get().fees();
     }
 
-    public LazyValue<Money> getTaxes()
+    public Money getTaxes()
     {
-        return new LazyValue<>(() -> costCalculation.get().taxes());
+        return costCalculation.get().taxes();
     }
 
-    public LazyValue<Long> getSharesHeld()
+    public Long getSharesHeld()
     {
-        return new LazyValue<>(() -> costCalculation.get().sharesHeld());
+        return costCalculation.get().sharesHeld();
     }
 
-    public LazyValue<Quote> getCostPerSharesHeld(CostMethod costMethod)
+    public Quote getCostPerSharesHeld(CostMethod costMethod)
     {
-        return new LazyValue<>(() -> {
-            var costs = costCalculation.get();
-            Money cost = getCostMoney(costMethod, TaxesAndFees.NOT_INCLUDED);
+        var costs = costCalculation.get();
+        Money cost = getCostMoney(costMethod, TaxesAndFees.NOT_INCLUDED);
 
-            return Quote.of(cost.getCurrencyCode(), Math.round(cost.getAmount() / (double) costs.sharesHeld()
-                            * Values.Share.factor() * Values.Quote.factorToMoney()));
-        });
+        return Quote.of(cost.getCurrencyCode(), Math.round(cost.getAmount() / (double) costs.sharesHeld()
+                        * Values.Share.factor() * Values.Quote.factorToMoney()));
     }
 
-    public LazyValue<Quote> getGrossCostPerSharesHeld(CostMethod costMethod)
+    public Quote getGrossCostPerSharesHeld(CostMethod costMethod)
     {
-        return new LazyValue<>(() -> {
-            var costs = costCalculation.get();
-            var cost = getCostMoney(costMethod, TaxesAndFees.INCLUDED);
+        var costs = costCalculation.get();
+        var cost = getCostMoney(costMethod, TaxesAndFees.INCLUDED);
 
-            return Quote.of(cost.getCurrencyCode(), Math.round(cost.getAmount() / (double) costs.sharesHeld()
-                            * Values.Share.factor() * Values.Quote.factorToMoney()));
-        });
+        return Quote.of(cost.getCurrencyCode(), Math.round(cost.getAmount() / (double) costs.sharesHeld()
+                        * Values.Share.factor() * Values.Quote.factorToMoney()));
     }
 
-    public LazyValue<Money> getSumOfDividends()
+    public Money getSumOfDividends()
     {
-        return new LazyValue<>(() -> dividendCalculation.get().sum());
+        return dividendCalculation.get().sum();
     }
 
-    public LazyValue<Integer> getDividendEventCount()
+    public Integer getDividendEventCount()
     {
-        return new LazyValue<>(() -> dividendCalculation.get().numOfEvents());
+        return dividendCalculation.get().numOfEvents();
     }
 
-    public LazyValue<LocalDate> getLastDividendPayment()
+    public LocalDate getLastDividendPayment()
     {
-        return new LazyValue<>(() -> dividendCalculation.get().lastDividendPayment());
+        return dividendCalculation.get().lastDividendPayment();
     }
 
-    public LazyValue<Periodicity> getPeriodicity()
+    public Periodicity getPeriodicity()
     {
-        return new LazyValue<>(() -> dividendCalculation.get().periodicity());
+        return dividendCalculation.get().periodicity();
     }
 
     /**
      * Gets the rate of return of dividends per year as a percentage of
      * invested.
-     * 
+     *
      * @return rate of return per year on success, else 0
      */
-    public LazyValue<Double> getRateOfReturnPerYear()
+    public Double getRateOfReturnPerYear()
     {
-        return new LazyValue<>(() -> dividendCalculation.get().rateOfReturnPerYear());
+        return dividendCalculation.get().rateOfReturnPerYear();
     }
 
-    public LazyValue<Double> getTotalRateOfReturnDiv(CostMethod costMethod)
+    public Double getTotalRateOfReturnDiv(CostMethod costMethod)
     {
-        return new LazyValue<>(() -> {
-            var costs = costCalculation.get();
-            var cost = getCostMoney(costMethod, TaxesAndFees.INCLUDED);
+        var costs = costCalculation.get();
+        var cost = getCostMoney(costMethod, TaxesAndFees.INCLUDED);
 
-            return costs.sharesHeld() > 0
-                            ? (double) dividendCalculation.get().sum().getAmount() / (double) cost.getAmount()
-                            : 0;
-        });
+        return costs.sharesHeld() > 0 ? (double) dividendCalculation.get().sum().getAmount() / (double) cost.getAmount()
+                        : 0;
     }
 
-    public LazyValue<CapitalGainsRecord> getRealizedCapitalGains(CostMethod costMethod)
+    public CapitalGainsRecord getRealizedCapitalGains(CostMethod costMethod)
     {
-        return new LazyValue<>(() -> switch (costMethod)
+        return switch (costMethod)
         {
             case FIFO -> capitalGains.get().getRealizedCapitalGains();
             case MOVING_AVERAGE -> capitalGainsMovingAvg.get().getRealizedCapitalGains();
-        });
+        };
     }
 
-    public LazyValue<CapitalGainsRecord> getUnrealizedCapitalGains(CostMethod costMethod)
+    public CapitalGainsRecord getUnrealizedCapitalGains(CostMethod costMethod)
     {
-        return new LazyValue<>(() -> switch (costMethod)
+        return switch (costMethod)
         {
             case FIFO -> capitalGains.get().getUnrealizedCapitalGains();
             case MOVING_AVERAGE -> capitalGainsMovingAvg.get().getUnrealizedCapitalGains();
-        });
+        };
     }
 
     @Override
@@ -404,17 +378,15 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
             case Trails.FIFO_COST:
                 return Trail.of(getSecurityName(), costCalculation.get().fifoCostTrail());
             case Trails.REALIZED_CAPITAL_GAINS:
-                return Trail.of(getSecurityName(),
-                                getRealizedCapitalGains(CostMethod.FIFO).get().getCapitalGainsTrail());
+                return Trail.of(getSecurityName(), getRealizedCapitalGains(CostMethod.FIFO).getCapitalGainsTrail());
             case Trails.REALIZED_CAPITAL_GAINS_FOREX:
                 return Trail.of(getSecurityName(),
-                                getRealizedCapitalGains(CostMethod.FIFO).get().getForexCapitalGainsTrail());
+                                getRealizedCapitalGains(CostMethod.FIFO).getForexCapitalGainsTrail());
             case Trails.UNREALIZED_CAPITAL_GAINS:
-                return Trail.of(getSecurityName(),
-                                getUnrealizedCapitalGains(CostMethod.FIFO).get().getCapitalGainsTrail());
+                return Trail.of(getSecurityName(), getUnrealizedCapitalGains(CostMethod.FIFO).getCapitalGainsTrail());
             case Trails.UNREALIZED_CAPITAL_GAINS_FOREX:
                 return Trail.of(getSecurityName(),
-                                getUnrealizedCapitalGains(CostMethod.FIFO).get().getForexCapitalGainsTrail());
+                                getUnrealizedCapitalGains(CostMethod.FIFO).getForexCapitalGainsTrail());
             default:
                 return Optional.empty();
         }

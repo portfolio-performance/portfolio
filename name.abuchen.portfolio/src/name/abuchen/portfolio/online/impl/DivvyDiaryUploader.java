@@ -91,12 +91,12 @@ public class DivvyDiaryUploader
             item.put("isin", security.getIsin());
 
             // fill in current holdings
-            item.put("quantity", performanceRecord.getSharesHeld().get() / Values.Share.divider());
+            item.put("quantity", performanceRecord.getSharesHeld() / Values.Share.divider());
 
             // Add the "buyin" (the FIFO cost). Used if no transactions are
             // transmitted. Add for backward compatibility in case transactions
             // are transmitted.
-            Quote fifo = performanceRecord.getCostPerSharesHeld(CostMethod.FIFO).get();
+            Quote fifo = performanceRecord.getCostPerSharesHeld(CostMethod.FIFO);
             if (fifo.isNotZero())
             {
                 JSONObject buyin = new JSONObject();
