@@ -1,0 +1,9 @@
+Baden-Württembergische Bank
+Depotinhaber: Max Mustermann
+Depot-Umbuchungsanzeige
+Der folgende obligatorische Wertpapierumtausch wurde in Ihrem Depot gebucht.
+Stück 26,0000 SHELL PLC A EO-07 Kenn-Nr. GB00B03MLX29
+Umtausch obligatorisch
+Stück 26,0000 SHELL PLC EO-07 Kenn-Nr. GB00BP6MXD84
+Schlusstag 03.02.2022
+Depotnummer 1234567890
