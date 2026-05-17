@@ -1,0 +1,13 @@
+ING-DiBa AG
+Depotinhaber: Max Mustermann
+Direkt-Depot Nr.: 1234567890
+Datum: 15.10.2025
+Wertpapier Eingang
+Sehr geehrte Kundin, sehr geehrter Kunde,
+nachstehende Wertpapiere haben wir Ihrem Depot gutgeschrieben:
+Nominale / Stück Wertpapier-Informationen Schlusstag Auftragsnummer
+0,50 Stück Brookfield Corp. 10.10.2025 0025830418
+Registered Shares Cl.A o.N.
+ISIN (WKN): CA11271J1075 (A3D3EV)
+Wertpapierrechnung Kanada
+Die Gesellschaft hat einen Aktiensplit durchgeführt.

@@ -975,7 +975,6 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<nameContinued>.*)$") //
                         .match("^ISIN \\(WKN\\): (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                         .assign((t, v) -> {
-                            v.put("name", trim(v.get("name")) + " " + trim(v.get("nameContinued")));
                             v.put("currency", guessCurrencyCode(v.get("isin")));
 
                             t.setDateTime(asDate(v.get("date")));

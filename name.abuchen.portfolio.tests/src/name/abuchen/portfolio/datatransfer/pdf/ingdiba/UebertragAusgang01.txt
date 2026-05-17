@@ -1,0 +1,13 @@
+ING-DiBa AG
+Depotinhaber: Max Mustermann
+Direkt-Depot Nr.: 1234567890
+Datum: 19.03.2026
+Übertrag Ausgang
+Sehr geehrte Kundin, sehr geehrter Kunde,
+nachstehende Wertpapiere haben wir Ihrem Depot entnommen:
+Nominale / Stück Wertpapier-Informationen Schlusstag Auftragsnummer
+1,00 Stück Ford Motor Co. 18.03.2026 0027023852
+Registered Shares DL -,01
+ISIN (WKN): US3453708600 (502391)
+Girosammelverwahrung
+Taxbox-ID: 2026031800000384

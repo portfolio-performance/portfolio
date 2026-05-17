@@ -4166,6 +4166,68 @@ public class INGDiBaPDFExtractorTest
     }
 
     @Test
+    public void testUebertragAusgang01()
+    {
+        var extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "UebertragAusgang01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US3453708600"), hasWkn("502391"), hasTicker(null), //
+                        hasName("Ford Motor Co. Registered Shares DL -,01"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(outboundDelivery( //
+                        hasDate("2026-03-18T00:00"), hasShares(1.00), //
+                        hasSource("UebertragAusgang01.txt"), hasNote("Auftragsnummer 0027023852"), //
+                        hasAmount("USD", 0.00), hasGrossValue("USD", 0.00), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierEingang01()
+    {
+        var extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "WertpapierEingang01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("CA11271J1075"), hasWkn("A3D3EV"), hasTicker(null), //
+                        hasName("Brookfield Corp. Registered Shares Cl.A o.N."), //
+                        hasCurrencyCode("CAD"))));
+
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2025-10-10T00:00"), hasShares(0.50), //
+                        hasSource("WertpapierEingang01.txt"), hasNote("Auftragsnummer 0025830418"), //
+                        hasAmount("CAD", 0.00), hasGrossValue("CAD", 0.00), //
+                        hasTaxes("CAD", 0.00), hasFees("CAD", 0.00))));
+    }
+
+    @Test
     public void testGiroKontoauszug01()
     {
         var extractor = new INGDiBaPDFExtractor(new Client());
