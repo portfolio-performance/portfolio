@@ -155,7 +155,8 @@ public class CurrencyTestCase
         // taxes divided by the number of shares
         Money pricePerShare = recordUSD.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED) //
                         .subtract(Money.of(CurrencyUnit.USD, 20_00)).divide(10);
-        assertThat(recordUSD.getCostPerSharesHeld(CostMethod.FIFO).toMoney(), is(pricePerShare));
+        assertThat(recordUSD.getCostPerSharesHeld(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED).toMoney(),
+                        is(pricePerShare));
 
         // profit loss w/o rounding differences
 
@@ -242,7 +243,8 @@ public class CurrencyTestCase
         assertThat(record.getMarketValue(), is(Money.of("EUR", 149534L)));
         assertThat(record.getQuote(), is(Quote.of("USD", 11552000000L)));
         assertThat(record.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), is(Money.of("EUR", 142410L)));
-        assertThat(record.getCostPerSharesHeld(CostMethod.FIFO), is(Quote.of("EUR", 9384200000L)));
+        assertThat(record.getCostPerSharesHeld(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED),
+                        is(Quote.of("EUR", 9384200000L)));
         assertThat(record.getFees(), is(Money.of("EUR", 824L)));
         assertThat(record.getTaxes(), is(Money.of("EUR", 824L)));
         assertThat(record.getDelta(), is(Money.of("EUR", 7124L)));

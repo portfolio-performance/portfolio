@@ -64,7 +64,8 @@ public class SecurityTestCase
         assertThat(record.getQuote(), is(Quote.of("EUR", 7288000000L)));
         assertThat(record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of("EUR", 774800L)));
         assertThat(record.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), is(Money.of("EUR", 774800L)));
-        assertThat(record.getCostPerSharesHeld(CostMethod.FIFO), is(Quote.of("EUR", 7748000000L)));
+        assertThat(record.getCostPerSharesHeld(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED),
+                        is(Quote.of("EUR", 7748000000L)));
         assertThat(record.getFees(), is(Money.of("EUR", 0L)));
         assertThat(record.getTaxes(), is(Money.of("EUR", 0L)));
         assertThat(record.getDelta(), is(Money.of("EUR", -46000L)));
