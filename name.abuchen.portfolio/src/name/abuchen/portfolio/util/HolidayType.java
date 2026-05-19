@@ -3,10 +3,15 @@ package name.abuchen.portfolio.util;
 import static java.time.temporal.TemporalAdjusters.dayOfWeekInMonth;
 import static java.time.temporal.TemporalAdjusters.nextOrSame;
 
+import java.time.DateTimeException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.chrono.HijrahDate;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -389,6 +394,70 @@ import name.abuchen.portfolio.util.HebrewCalendar.HebrewDate;
         }
     }
 
+    private static final class IslamicMonthHolidayType extends HolidayType
+    {
+        private final int islamicMonth;
+        private final int startDay;
+        private final int endDay;
+
+        private IslamicMonthHolidayType(HolidayName name, int islamicMonth, int startDay, int endDay)
+        {
+            super(name);
+            this.islamicMonth = islamicMonth;
+            this.startDay = startDay;
+            this.endDay = endDay;
+        }
+
+        @Override
+        public Collection<Holiday> getHolidays(int year)
+        {
+            if (!isValidYear(year))
+                return Collections.emptyList();
+
+            List<Holiday> holidays = new ArrayList<>();
+
+            int hijriYearAtStart;
+            int hijriYearAtEnd;
+
+            try
+            {
+                hijriYearAtStart = HijrahDate.from(LocalDate.of(year, 1, 1)).get(ChronoField.YEAR_OF_ERA);
+                hijriYearAtEnd = HijrahDate.from(LocalDate.of(year, 12, 31)).get(ChronoField.YEAR_OF_ERA);
+            }
+            catch (DateTimeException ignore)
+            {
+                // catch years outside the JDK's supported Hijrah calendar range
+                return Collections.emptyList();
+            }
+
+            for (var hijriYear = hijriYearAtStart; hijriYear <= hijriYearAtEnd; hijriYear++)
+            {
+                for (var day = startDay; day <= endDay; day++)
+                {
+                    try
+                    {
+                        var date = LocalDate.from(HijrahDate.of(hijriYear, islamicMonth, day));
+
+                        if (date.getYear() == year)
+                            holidays.add(new Holiday(getName(), date));
+                    }
+                    catch (DateTimeException ignore)
+                    {
+                        // Islamic months can have 29 or 30 days.
+                    }
+                }
+            }
+
+            return holidays;
+        }
+
+        @Override
+        protected Holiday doGetHoliday(int year)
+        {
+            return null;
+        }
+    }
+
     // Instance variables
     private final HolidayName name;
     private int validFrom = -1;
@@ -483,13 +552,7 @@ import name.abuchen.portfolio.util.HebrewCalendar.HebrewDate;
 
     public Holiday getHoliday(int year)
     {
-        if (validFrom != -1 && year < validFrom)
-            return null;
-
-        if (validTo != -1 && year > validTo)
-            return null;
-
-        if (exceptIn.contains(year))
+        if (!isValidYear(year))
             return null;
 
         Holiday answer = doGetHoliday(year);
@@ -508,5 +571,27 @@ import name.abuchen.portfolio.util.HebrewCalendar.HebrewDate;
         return new Holiday(answer.getName(), date);
     }
 
+    public Collection<Holiday> getHolidays(int year)
+    {
+        var holiday = getHoliday(year);
+        return holiday == null ? Collections.emptyList() : Collections.singletonList(holiday);
+    }
+
+    public static HolidayType islamicDateRange(HolidayName name, int islamicMonth, int startDay, int endDay)
+    {
+        return new IslamicMonthHolidayType(name, islamicMonth, startDay, endDay);
+    }
+
     protected abstract Holiday doGetHoliday(int year);
+
+    protected boolean isValidYear(int year)
+    {
+        if (validFrom != -1 && year < validFrom)
+            return false;
+
+        if (validTo != -1 && year > validTo)
+            return false;
+
+        return !exceptIn.contains(year);
+    }
 }

@@ -32,8 +32,9 @@ public class TradeCalendar implements Comparable<TradeCalendar>
         @Override
         public Map<LocalDate, Holiday> get(Object key)
         {
-            return super.computeIfAbsent((Integer) key, year -> holidayTypes.stream().map(type -> type.getHoliday(year))
-                            .filter(Objects::nonNull).collect(Collectors.toMap(Holiday::getDate, t -> t, (r, l) -> r)));
+            return super.computeIfAbsent((Integer) key, year -> holidayTypes.stream()
+                            .map(type -> type.getHolidays(year)).flatMap(Collection::stream).filter(Objects::nonNull)
+                            .collect(Collectors.toMap(Holiday::getDate, holiday -> holiday, (right, left) -> right)));
         }
 
     };
