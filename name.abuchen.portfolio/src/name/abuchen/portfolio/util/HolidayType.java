@@ -3,10 +3,15 @@ package name.abuchen.portfolio.util;
 import static java.time.temporal.TemporalAdjusters.dayOfWeekInMonth;
 import static java.time.temporal.TemporalAdjusters.nextOrSame;
 
+import java.time.DateTimeException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.chrono.HijrahDate;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -47,7 +52,7 @@ import name.abuchen.portfolio.util.HebrewCalendar.HebrewDate;
         @Override
         protected Holiday doGetHoliday(int year)
         {
-            LocalDate date = LocalDate.of(year, month.getValue(), dayOfMonth);
+            var date = LocalDate.of(year, month.getValue(), dayOfMonth);
             return new Holiday(getName(), date);
         }
     }
@@ -69,7 +74,7 @@ import name.abuchen.portfolio.util.HebrewCalendar.HebrewDate;
         @Override
         protected Holiday doGetHoliday(int year)
         {
-            LocalDate date = LocalDate.of(year, month, 1);
+            var date = LocalDate.of(year, month, 1);
             return new Holiday(getName(), date.with(dayOfWeekInMonth(which, weekday)));
         }
     }
@@ -87,7 +92,7 @@ import name.abuchen.portfolio.util.HebrewCalendar.HebrewDate;
         @Override
         protected Holiday doGetHoliday(int year)
         {
-            LocalDate easterSunday = calculateEasterSunday(year);
+            var easterSunday = calculateEasterSunday(year);
 
             return new Holiday(getName(), easterSunday.plusDays(daysToAdd));
         }
@@ -100,7 +105,7 @@ import name.abuchen.portfolio.util.HebrewCalendar.HebrewDate;
             // http://www.java2s.com/Code/Java/Data-Type/CalculateHolidays.htm
             // and published under the
             // GNU General Public License version 2
-            
+
             /*  Calculate Easter Sunday
             Written by Gregory N. Mirsky
             Source: 2nd Edition by Peter Duffett-Smith. It was originally from
@@ -128,25 +133,25 @@ import name.abuchen.portfolio.util.HebrewCalendar.HebrewDate;
                   Easter Date=p+1     (date in Easter Month)
             Note: Integer truncation is already factored into the
             calculations. Using higher precision variables will cause
-            inaccurate calculations. 
+            inaccurate calculations.
             */
             // @formatter:on
 
-            int nA = 0;
-            int nB = 0;
-            int nC = 0;
-            int nD = 0;
-            int nE = 0;
-            int nF = 0;
-            int nG = 0;
-            int nH = 0;
-            int nI = 0;
-            int nK = 0;
-            int nL = 0;
-            int nM = 0;
-            int nP = 0;
-            int nEasterMonth = 0;
-            int nEasterDay = 0;
+            var nA = 0;
+            var nB = 0;
+            var nC = 0;
+            var nD = 0;
+            var nE = 0;
+            var nF = 0;
+            var nG = 0;
+            var nH = 0;
+            var nI = 0;
+            var nK = 0;
+            var nL = 0;
+            var nM = 0;
+            var nP = 0;
+            var nEasterMonth = 0;
+            var nEasterDay = 0;
 
             nA = nYear % 19;
             nB = nYear / 100;
@@ -389,6 +394,59 @@ import name.abuchen.portfolio.util.HebrewCalendar.HebrewDate;
         }
     }
 
+    private static final class IslamicMonthHolidayType extends HolidayType
+    {
+        private final int islamicMonth;
+        private final int startDay;
+        private final int endDay;
+
+        private IslamicMonthHolidayType(HolidayName name, int islamicMonth, int startDay, int endDay)
+        {
+            super(name);
+            this.islamicMonth = islamicMonth;
+            this.startDay = startDay;
+            this.endDay = endDay;
+        }
+
+        @Override
+        public Collection<Holiday> getHolidays(int year)
+        {
+            if (!isValidYear(year))
+                return Collections.emptyList();
+
+            List<Holiday> holidays = new ArrayList<>();
+
+            var hijriYearAtStart = HijrahDate.from(LocalDate.of(year, 1, 1)).get(ChronoField.YEAR_OF_ERA);
+            var hijriYearAtEnd = HijrahDate.from(LocalDate.of(year, 12, 31)).get(ChronoField.YEAR_OF_ERA);
+
+            for (var hijriYear = hijriYearAtStart; hijriYear <= hijriYearAtEnd; hijriYear++)
+            {
+                for (var day = startDay; day <= endDay; day++)
+                {
+                    try
+                    {
+                        var date = LocalDate.from(HijrahDate.of(hijriYear, islamicMonth, day));
+
+                        if (date.getYear() == year)
+                            holidays.add(new Holiday(getName(), date));
+                    }
+                    catch (DateTimeException ignore)
+                    {
+                        // Islamic months can have 29 or 30 days.
+                    }
+                }
+            }
+
+            return holidays;
+        }
+
+        @Override
+        protected Holiday doGetHoliday(int year)
+        {
+            return null;
+        }
+    }
+
     // Instance variables
     private final HolidayName name;
     private int validFrom = -1;
@@ -492,12 +550,12 @@ import name.abuchen.portfolio.util.HebrewCalendar.HebrewDate;
         if (exceptIn.contains(year))
             return null;
 
-        Holiday answer = doGetHoliday(year);
+        var answer = doGetHoliday(year);
 
         if (moveIf.isEmpty() && moveTo == null)
             return answer;
 
-        LocalDate date = answer.getDate();
+        var date = answer.getDate();
 
         for (MoveIf mv : moveIf)
             date = mv.apply(date);
@@ -508,5 +566,27 @@ import name.abuchen.portfolio.util.HebrewCalendar.HebrewDate;
         return new Holiday(answer.getName(), date);
     }
 
+    public Collection<Holiday> getHolidays(int year)
+    {
+        var holiday = getHoliday(year);
+        return holiday == null ? Collections.emptyList() : Collections.singletonList(holiday);
+    }
+
+    public static HolidayType islamicDateRange(HolidayName name, int islamicMonth, int startDay, int endDay)
+    {
+        return new IslamicMonthHolidayType(name, islamicMonth, startDay, endDay);
+    }
+
     protected abstract Holiday doGetHoliday(int year);
+
+    protected boolean isValidYear(int year)
+    {
+        if (validFrom != -1 && year < validFrom)
+            return false;
+
+        if (validTo != -1 && year > validTo)
+            return false;
+
+        return !exceptIn.contains(year);
+    }
 }

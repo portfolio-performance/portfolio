@@ -14,7 +14,7 @@ public class TradeCalendarTest
     @Test
     public void testEasterHolidays()
     {
-        TradeCalendar calendar = TradeCalendarManager.getInstance("de");
+        var calendar = TradeCalendarManager.getInstance("de");
 
         assertThat(calendar.isHoliday(LocalDate.parse("2015-04-02")), is(false));
         assertThat(calendar.isHoliday(LocalDate.parse("2015-04-03")), is(true));
@@ -29,7 +29,7 @@ public class TradeCalendarTest
     @Test
     public void testWeekends()
     {
-        TradeCalendar calendar = TradeCalendarManager.getInstance("de");
+        var calendar = TradeCalendarManager.getInstance("de");
 
         assertThat(calendar.isHoliday(LocalDate.parse("2015-01-31")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2015-02-01")), is(true));
@@ -38,7 +38,7 @@ public class TradeCalendarTest
     @Test
     public void testFixedPublicHolidays()
     {
-        TradeCalendar calendar = TradeCalendarManager.getInstance("de");
+        var calendar = TradeCalendarManager.getInstance("de");
 
         assertThat(calendar.isHoliday(LocalDate.parse("2015-01-01")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2015-05-01")), is(true));
@@ -60,7 +60,7 @@ public class TradeCalendarTest
     @Test
     public void testDayOfRepentanceAndPrayer()
     {
-        TradeCalendar calendar = TradeCalendarManager.getInstance("de");
+        var calendar = TradeCalendarManager.getInstance("de");
 
         assertThat(calendar.isHoliday(LocalDate.parse("1989-11-22")), is(true)); // latest possible day
         assertThat(calendar.isHoliday(LocalDate.parse("1990-11-21")), is(true));
@@ -74,7 +74,7 @@ public class TradeCalendarTest
     @Test
     public void testGermanHolidaysWithTrading()
     {
-        TradeCalendar calendar = TradeCalendarManager.getInstance("de");
+        var calendar = TradeCalendarManager.getInstance("de");
 
         // Ascension
         assertThat(calendar.isHoliday(LocalDate.parse("1999-05-13")), is(true));
@@ -117,7 +117,7 @@ public class TradeCalendarTest
     @Test
     public void testHolidaysWithCondition()
     {
-        TradeCalendar calendar = TradeCalendarManager.getInstance("nyse");
+        var calendar = TradeCalendarManager.getInstance("nyse");
 
         assertThat(calendar.isHoliday(LocalDate.parse("2019-10-29")), is(false));
         assertThat(calendar.isHoliday(LocalDate.parse("2013-10-29")), is(false));
@@ -129,7 +129,7 @@ public class TradeCalendarTest
     @Test
     public void testMovingHolidays()
     {
-        TradeCalendar calendar = TradeCalendarManager.getInstance("nyse");
+        var calendar = TradeCalendarManager.getInstance("nyse");
 
         assertThat(calendar.isHoliday(LocalDate.parse("2018-12-25")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2018-12-26")), is(false));
@@ -162,7 +162,7 @@ public class TradeCalendarTest
     {
         // See https://www.nyse.com/markets/hours-calendars
 
-        TradeCalendar calendar = TradeCalendarManager.getInstance("nyse");
+        var calendar = TradeCalendarManager.getInstance("nyse");
 
         // New Year
         assertThat(calendar.isHoliday(LocalDate.parse("2020-01-01")), is(true));
@@ -242,7 +242,7 @@ public class TradeCalendarTest
     {
         // See https://www.londonstockexchange.com/trade/trading-access/business-days
 
-        TradeCalendar calendar = TradeCalendarManager.getInstance("lse");
+        var calendar = TradeCalendarManager.getInstance("lse");
 
         // New Year
         assertThat(calendar.isHoliday(LocalDate.parse("2019-01-01")), is(true));
@@ -316,7 +316,7 @@ public class TradeCalendarTest
     {
         // See https://www.euronext.com/en/trading-calendars-hours
 
-        TradeCalendar calendar = TradeCalendarManager.getInstance("euronext");
+        var calendar = TradeCalendarManager.getInstance("euronext");
 
         // New Year
         assertThat(calendar.isHoliday(LocalDate.parse("2019-01-01")), is(true));
@@ -351,7 +351,7 @@ public class TradeCalendarTest
     {
         // See https://www.tsx.com/trading/calendars-and-trading-hours/calendar
 
-        TradeCalendar calendar = TradeCalendarManager.getInstance("tsx");
+        var calendar = TradeCalendarManager.getInstance("tsx");
 
         // New Year
         assertThat(calendar.isHoliday(LocalDate.parse("2011-01-03")), is(true));
@@ -431,7 +431,7 @@ public class TradeCalendarTest
     {
         // See https://www.b3.com.br/pt_br/solucoes/plataformas/puma-trading-system/para-participantes-e-traders/calendario-de-negociacao/feriados/
 
-        TradeCalendar calendar = TradeCalendarManager.getInstance("ibov");
+        var calendar = TradeCalendarManager.getInstance("ibov");
 
         // New Year
         assertThat(calendar.isHoliday(LocalDate.parse("2023-01-01")), is(true));
@@ -485,7 +485,7 @@ public class TradeCalendarTest
     {
         // See https://six-group.com/exchanges/exchange_traded_products/trading/trading_and_settlement_calendar_de.html
 
-        TradeCalendar calendar = TradeCalendarManager.getInstance("six");
+        var calendar = TradeCalendarManager.getInstance("six");
 
         // New Year
         assertThat(calendar.isHoliday(LocalDate.parse("2023-01-01")), is(true));
@@ -538,7 +538,7 @@ public class TradeCalendarTest
     {
         // See https://www.borsaitaliana.it/borsaitaliana/calendario-e-orari-di-negoziazione/calendario-borsa-orari-di-negoziazione.en.htm
 
-        TradeCalendar calendar = TradeCalendarManager.getInstance("ise");
+        var calendar = TradeCalendarManager.getInstance("ise");
 
         // New Year
         assertThat(calendar.isHoliday(LocalDate.parse("2022-12-31")), is(true));
@@ -574,7 +574,7 @@ public class TradeCalendarTest
     {
         // See https://www.wienerborse.at/handel/handelsinformationen/handelskalender/
 
-        TradeCalendar calendar = TradeCalendarManager.getInstance("vse");
+        var calendar = TradeCalendarManager.getInstance("vse");
 
         // New Year
         assertThat(calendar.isHoliday(LocalDate.parse("2022-12-31")), is(true));
@@ -610,7 +610,7 @@ public class TradeCalendarTest
     @Test
     public void testTradeCalenderMICEXRTS()
     {
-        TradeCalendar calendar = TradeCalendarManager.getInstance("MICEX-RTS");
+        var calendar = TradeCalendarManager.getInstance("MICEX-RTS");
 
         // New Year
         assertThat(calendar.isHoliday(LocalDate.parse("2023-01-01")), is(true));
@@ -661,7 +661,7 @@ public class TradeCalendarTest
     public void testTradeCalendarSSE()
     {
         // Initialize the trade calendar for "sse"
-        TradeCalendar calendar = TradeCalendarManager.getInstance("sse");
+        var calendar = TradeCalendarManager.getInstance("sse");
 
 
         // Test New Year
@@ -748,13 +748,13 @@ public class TradeCalendarTest
     @Test
     public void testEmptyCalendar()
     {
-        TradeCalendar calendar = TradeCalendarManager.getInstance("empty");
+        var calendar = TradeCalendarManager.getInstance("empty");
 
         // we generate a random day
-        long minDay = LocalDate.of(2000, 1, 1).toEpochDay();
-        long maxDay = LocalDate.of(2020, 12, 31).toEpochDay();
-        long randomDay = ThreadLocalRandom.current().nextLong(minDay, maxDay);
-        LocalDate randomDate = LocalDate.ofEpochDay(randomDay);
+        var minDay = LocalDate.of(2000, 1, 1).toEpochDay();
+        var maxDay = LocalDate.of(2020, 12, 31).toEpochDay();
+        var randomDay = ThreadLocalRandom.current().nextLong(minDay, maxDay);
+        var randomDate = LocalDate.ofEpochDay(randomDay);
 
         // in the empty calendar, every day is a (potential) trading day
         assertThat(calendar.isHoliday(randomDate), is(false));
