@@ -8502,4 +8502,41 @@ public class ComdirectPDFExtractorTest
                                         hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
                                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
+
+
+    @Test
+    public void testDividende41MitSteuerbehandlungVonDividende41()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "Dividende41.txt", "Dividende41MitSteuerbehandlung.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0000120271"), hasWkn("850727"), hasTicker(null), //
+                        hasName("TotalEnergies SE Actions au Porteur EO 2,50"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-04-02T00:00"), hasShares(220.000), //
+                        hasSource("Dividende41.txt; Dividende41MitSteuerbehandlung.txt"), //
+                        hasNote("Ref.-Nr.: 3cfTL5t0xMT71563"), //
+                        hasAmount("EUR", 116.19), hasGrossValue("EUR", 187), //
+                        hasTaxes("EUR", 70.81), hasFees("EUR", 0.00))));
+    }
 }
