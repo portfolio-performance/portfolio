@@ -71,6 +71,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
     private static final String ATTRIBUTE_GROSS_TAXES_TREATMENT = "gross_taxes_treatment";
     private static final String ATTRIBUTE_GROSS_TAX_BASE_BEFORE_LOST_OFFSET = "gross_tax_base_before_lost_offset";
+    private static final String ATTRIBUTE_WITHHOLDING_TAX_FROM_DIVIDENDS = "withholding_tax_from_dividends";
+    private static final String ATTRIBUTE_WITHHOLDING_TAX_FROM_TAX = "withholding_tax_from_tax";
 
     public ComdirectPDFExtractor(Client client)
     {
@@ -929,7 +931,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                         .match("^[\\.,\\d]+ % Quellensteuer[\\s]{1,}(?<currency>[A-Z]{3})[\\s]{1,}(?<withHoldingTax>[\\.,\\d]+) \\-.*$") //
                                                         .assign((t, v) -> {
                                                             var withHoldingTax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("withHoldingTax")));
-
+                                                            v.getTransactionContext().put(ATTRIBUTE_WITHHOLDING_TAX_FROM_DIVIDENDS, withHoldingTax);
                                                             if (t.getMonetaryAmount().getCurrencyCode().equals(withHoldingTax.getCurrencyCode()))
                                                                 t.setMonetaryAmount(t.getMonetaryAmount().add(withHoldingTax));
                                                         }))
@@ -984,7 +986,14 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         + ".*$") //
                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
-                        .wrap(TransactionItem::new);
+                        .wrap((t, ctx) -> {
+                            var item = new TransactionItem(t);
+
+                            // Store withholding tax for later use in post processing
+                            item.setData(ATTRIBUTE_WITHHOLDING_TAX_FROM_DIVIDENDS, ctx.get(ATTRIBUTE_WITHHOLDING_TAX_FROM_DIVIDENDS));
+
+                            return item;
+                        });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -1167,6 +1176,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                             // Initially set total taxes (German deducted taxes + foreign withholding tax)
                                                             var totalDeductedTaxes = deductedTaxes.add(foreignWithholdingTax);
                                                             t.setMonetaryAmount(totalDeductedTaxes);
+                                                            
+                                                            v.getTransactionContext().put(ATTRIBUTE_WITHHOLDING_TAX_FROM_TAX, foreignWithholdingTax);
 
                                                             // Use tax base before loss offset if it's higher than regular assessment basis
                                                             if (v.getTransactionContext().get(ATTRIBUTE_GROSS_TAX_BASE_BEFORE_LOST_OFFSET) != null)
@@ -1430,6 +1441,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                             // Store attribute in item data map
                             item.setData(ATTRIBUTE_GROSS_TAXES_TREATMENT, ctx.get(ATTRIBUTE_GROSS_TAXES_TREATMENT));
+                            // Store withholding tax for later use in post processing
+                            item.setData(ATTRIBUTE_WITHHOLDING_TAX_FROM_TAX, ctx.get(ATTRIBUTE_WITHHOLDING_TAX_FROM_TAX));
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
                                 ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
@@ -2144,10 +2157,22 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                 ExtractorUtils.fixGrossValue().accept(dividendTransaction);
 
-                dividendTransaction.setMonetaryAmount(dividendTransaction.getMonetaryAmount() //
-                                .subtract(taxesTransaction.getMonetaryAmount()));
+                var taxesTotal = taxesTransaction.getMonetaryAmount();
 
-                dividendTransaction.addUnit(new Unit(Unit.Type.TAX, taxesTransaction.getMonetaryAmount()));
+                // detect if withholding taxes were not completely regarded and add the missing amount if needed
+                var withholdTaxPa1 = (Money) pair.transaction().getData(ATTRIBUTE_WITHHOLDING_TAX_FROM_DIVIDENDS);
+                var withholdTaxPa2 = (Money) pair.tax().getData(ATTRIBUTE_WITHHOLDING_TAX_FROM_TAX);
+
+                if (withholdTaxPa1 != null && withholdTaxPa2 != null && withholdTaxPa1 != withholdTaxPa2)
+                {
+                    taxesTotal = taxesTotal.add(withholdTaxPa1.subtract(withholdTaxPa2));
+                }
+                // end of: detect if withholding taxes were not completely regarded and add the missing amount if needed
+
+                dividendTransaction.setMonetaryAmount(dividendTransaction.getMonetaryAmount() //
+                                .subtract(taxesTotal));
+
+                dividendTransaction.addUnit(new Unit(Unit.Type.TAX, taxesTotal));
 
                 dividendTransaction.setSource(
                                 concatenate(dividendTransaction.getSource(), taxesTransaction.getSource(), "; "));
