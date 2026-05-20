@@ -1043,7 +1043,7 @@ public class StatementOfAssetsViewer
                         new ElementValueProvider(record -> record.getCapitalGainsOnHoldings(CostMethod.FIFO), null),
                         e -> e.isSecurity() ? e.getSecurity().getCurrencyCode()
                                         : model.getCurrencyConverter().getTermCurrency(),
-                        false);
+                        true);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
