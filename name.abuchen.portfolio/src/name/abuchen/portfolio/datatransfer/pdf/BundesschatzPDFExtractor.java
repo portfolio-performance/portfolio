@@ -67,6 +67,31 @@ public class BundesschatzPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new));
 
         // @formatter:off
+        // 05.05.2026 Einzahlung AT74 5170 3423 1048 4364 41 1.000,00
+        // @formatter:on
+        var depositBlock2 = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Einzahlung .* [\\.,\\d]+$");
+        type.addBlock(depositBlock2);
+        depositBlock2.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
+
+                        .section("date", "amount", "note") //
+                        .documentContext("currency") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Einzahlung (?<note>.*) (?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(trim(v.get("note")));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
         // 12.01.2026 Auszahlung -2.531,91 AT811215280026188132
         // @formatter:on
         var removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Auszahlung -[\\.,\\d]+ .*$");

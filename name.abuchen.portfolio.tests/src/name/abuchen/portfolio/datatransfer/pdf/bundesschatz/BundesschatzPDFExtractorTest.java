@@ -62,6 +62,29 @@ public class BundesschatzPDFExtractorTest
     }
 
     @Test
+    public void testEinUndAuszahlungen02()
+    {
+        var extractor = new BundesschatzPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "EinUndAuszahlungen02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        assertThat(results, hasItem(deposit(hasDate("2026-05-05"), hasAmount("EUR", 1000.00), //
+                        hasSource("EinUndAuszahlungen02.txt"), hasNote("AT74 5170 3423 1048 4364 41"))));
+    }
+
+    @Test
     public void testKontoauszug01()
     {
         var extractor = new BundesschatzPDFExtractor(new Client());
