@@ -43,7 +43,7 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        var type = new DocumentType("Wertpapier Abrechnung Kauf");
+        final var type = new DocumentType("Wertpapier Abrechnung Kauf");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
@@ -54,11 +54,7 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // @formatter:off
                         // Stück 2 3M CO. US88579Y1010 (851745)
@@ -117,7 +113,7 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        var type = new DocumentType("(Dividendengutschrift|Aussch.ttung Investmentfonds)");
+        final var type = new DocumentType("(Dividendengutschrift|Aussch.ttung Investmentfonds)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -128,11 +124,7 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         // @formatter:off
                         // Nominale Wertpapierbezeichnung ISIN (WKN)
@@ -250,11 +242,7 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .section("date", "amount", "note") //
                         .documentContext("currency") //
@@ -270,7 +258,7 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?(?<tax>[\\.,\\d]+) [\\.,\\d]+ Kapitalertrags(s)?teuer.*$") //
                         .assign((t, v) -> {
-                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
 
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
                             t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
@@ -280,7 +268,7 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?(?<tax>[\\.,\\d]+) [\\.,\\d]+ Solidarit.tszuschlag.*$") //
                         .assign((t, v) -> {
-                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
 
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
                             t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
@@ -290,7 +278,7 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?(?<tax>[\\.,\\d]+) [\\.,\\d]+ Kirchensteuer.*$") //
                         .assign((t, v) -> {
-                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
 
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
                             t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
@@ -305,11 +293,7 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(depositBlock_Format01);
         depositBlock_Format01.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "amount", "note") //
                         .documentContext("currency") //
@@ -336,11 +320,7 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(depositBlock_Format02);
         depositBlock_Format02.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("note", "date", "amount") //
                         .documentContext("currency") //
@@ -362,11 +342,7 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.REMOVAL);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
 
                         .section("date", "amount", "note") //
                         .documentContext("currency") //
@@ -409,11 +385,7 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "amount", "note") //
                         .documentContext("year", "currency") //
@@ -434,11 +406,7 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .section("date", "amount", "note") //
                         .documentContext("year", "currency") //

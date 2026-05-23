@@ -44,7 +44,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction_Format01()
     {
-        var type = new DocumentType("Wertpapierabrechnung");
+        final var type = new DocumentType("Wertpapierabrechnung");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
@@ -55,11 +55,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
@@ -121,7 +117,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction_Format02()
     {
-        var type = new DocumentType("Abrechnungskonditionen");
+        final var type = new DocumentType("Abrechnungskonditionen");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
@@ -135,11 +131,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
@@ -274,7 +266,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction_Format01()
     {
-        var type = new DocumentType("F.r aus Ihrem Depot f.llig gewordene Ertr.gnisse", "Vorabpauschale");
+        final var type = new DocumentType("F.r aus Ihrem Depot f.llig gewordene Ertr.gnisse", "Vorabpauschale");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -285,11 +277,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         .oneOf( //
                                         // @formatter:off
@@ -385,7 +373,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction_Format02()
     {
-        var type = new DocumentType("(Dividendenabrechnung" //
+        final var type = new DocumentType("(Dividendenabrechnung" //
                         + "|Ertrag aus Investments)");
         this.addDocumentTyp(type);
 
@@ -398,11 +386,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         .oneOf( //
                                         // @formatter:off
@@ -516,7 +500,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addAdvanceTaxTransaction()
     {
-        var type = new DocumentType("Vorabpauschale");
+        final var type = new DocumentType("Vorabpauschale");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -527,11 +511,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         .oneOf( //
                                         // @formatter:off
@@ -594,7 +574,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addDepotStatementTransaction()
     {
-        var type = new DocumentType("Kontoauszug");
+        final var type = new DocumentType("Kontoauszug");
         this.addDocumentTyp(type);
 
         // @formatter:off
@@ -613,11 +593,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
         depositBlock.setMaxSize(5);
         depositBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("note1", "note2", "date", "amount", "currency") //
                         .match("^(?<note1>(Konto.bertrag [\\d]+" //
@@ -644,11 +620,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
         removalBlock.setMaxSize(5);
         removalBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.REMOVAL);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
 
                         .oneOf( //
                                         // @formatter:off
@@ -698,11 +670,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
         taxesBlock.setMaxSize(3);
         taxesBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         .section("note1", "note2", "date", "amount", "currency").optional() //
                         .match("^(?<note1>Steuerbuchung Abgeltungsteuer),[\\s]{1,}.*: (?<note2>.*) " //
@@ -732,11 +700,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
         taxRefundBlock01.setMaxSize(5);
         taxRefundBlock01.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                         .section("note1", "note2", "date", "amount", "currency") //
                         .match("^(?<note1>Steueroptimierung) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
@@ -761,11 +725,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
         taxRefundBlock02.setMaxSize(3);
         taxRefundBlock02.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                         .section("note1", "note2", "date", "amount", "currency").optional() //
                         .match("^(?<note1>Steuerbuchung Abgeltungsteuer),[\\s]{1,}.*: (?<note2>.*) " //
@@ -795,11 +755,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
         taxesBlock01.setMaxSize(5);
         taxesBlock01.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         .section("note1", "note2", "date", "amount", "currency") //
                         .match("^(?<note1>Steueroptimierung) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
@@ -824,11 +780,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
         feesBlock01.setMaxSize(5);
         feesBlock01.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .section("note1", "date", "amount", "currency", "note2") //
                         .match("^(?<note1>Verm.gensverwaltungshonorar).* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\- )?" //
@@ -853,11 +805,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
         feesBlock02.setMaxSize(5);
         feesBlock02.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .section("note1", "note2", "date", "amount", "currency", "note3") //
                         .match("^(?<note1>Flatrate),[\\s]{1,}.*: (?<note2>.*) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\- )?" //
@@ -881,11 +829,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
         type.addBlock(feesBlock03);
         feesBlock03.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .section("note1", "note2", "date", "amount", "currency", "note3", "note4") //
                         .match("^(?<note1>Volumen Fee),[\\s]{1,}.*: (?<note2>.*) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\- )?" //
@@ -912,11 +856,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
         feeBlock04.setMaxSize(5);
         feeBlock04.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES_REFUND);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES_REFUND))
 
                         .section("note1", "note2", "date", "amount", "currency", "note3", "note4") //
                         .match("^[\\d]+ (?<note1>Bestandsprovision), "
@@ -943,11 +883,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
         type.addBlock(feesBlock05);
         feesBlock05.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .section("note1", "note2", "date", "amount", "currency", "note3") //
                         .match("^(?<note1>Honorar),[\\s]{1,}.*: (?<note2>.*) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\- )?" //
@@ -973,11 +909,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
         feeRefundBlock.setMaxSize(5);
         feeRefundBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES_REFUND);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES_REFUND))
 
                         .section("note1", "note2", "date", "amount", "currency", "note3") //
                         .match("^R.ckverg.tung (?<note1>Bestand.*), .*: (?<note2>.*) " //
@@ -1001,11 +933,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .section("note1", "note2", "date", "amount", "currency") //
                         .match("^(?<note1>Haben\\-Zinsen Kontoabschluss), " //
@@ -1032,11 +960,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         // @formatter:off
                         // Verrechnungstopf Sonstige  0,00 EUR Steuerbetrag  0,05 EUR

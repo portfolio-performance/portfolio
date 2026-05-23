@@ -46,7 +46,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        var type = new DocumentType("Dividendengutschrift");
+        final var type = new DocumentType("Dividendengutschrift");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -57,11 +57,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         // @formatter:off
                         // Nominale Wertpapierbezeichnung ISIN (WKN)
@@ -132,7 +128,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
     private void addDepotStatement_BuySellTransaction()
     {
-        var type = new DocumentType("(Umsatzabrechnung|Depotauszug)\\-Nr\\.");
+        final var type = new DocumentType("(Umsatzabrechnung|Depotauszug)\\-Nr\\.");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
@@ -153,11 +149,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
@@ -483,7 +475,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
     private void addDepotStatement_DividendeTransaction()
     {
-        var type = new DocumentType("(Umsatzabrechnung|Depotauszug)\\-Nr\\.");
+        final var type = new DocumentType("(Umsatzabrechnung|Depotauszug)\\-Nr\\.");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -498,11 +490,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         // @formatter:off
                         // Fondsertrag (Ausschüttung) mit Bestandsdatum 11.12.2019 in Depotposition 1234567890.31
@@ -677,7 +665,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
         // Vorabpauschale zum Stichtag 31.12.2020 aus Depotposition xxx.25
         // @formatter:on
 
-        var type = new DocumentType("(Umsatzabrechnung|Depotauszug)\\-Nr\\.");
+        final var type = new DocumentType("(Umsatzabrechnung|Depotauszug)\\-Nr\\.");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -688,11 +676,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         // @formatter:off
                         // Vorabpauschale zum Stichtag 31.12.2019 aus Depotposition XXXXXXXXXX.05
@@ -757,7 +741,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
     private void addDepotStatement_DeliveryInOutBoundTransaction()
     {
-        var type = new DocumentType("(Umsatzabrechnung|Depotauszug)\\-Nr\\.");
+        final var type = new DocumentType("(Umsatzabrechnung|Depotauszug)\\-Nr\\.");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<PortfolioTransaction>();
@@ -768,11 +752,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new PortfolioTransaction();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new PortfolioTransaction(PortfolioTransaction.Type.DELIVERY_OUTBOUND))
 
                         // @formatter:off
                         // Is type --> "Eingang" change from DELIVERY_OUTBOUND to DELIVERY_INBOUND
@@ -850,7 +830,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
     private void addDepotStatement_FeesWithSecurityTransaction()
     {
-        var type = new DocumentType("(Umsatzabrechnung|Depotauszug)\\-Nr\\.");
+        final var type = new DocumentType("(Umsatzabrechnung|Depotauszug)\\-Nr\\.");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -861,11 +841,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         // @formatter:off
                         // Entgelt Verkauf mit Kursdatum 20.12.2017 aus Depotposition 11111111111.01
@@ -955,7 +931,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
     private void addDepotStatement_FeesWithDeliveryInOutBoundTransaction()
     {
-        var type = new DocumentType("(Umsatzabrechnung|Depotauszug)\\-Nr\\.");
+        final var type = new DocumentType("(Umsatzabrechnung|Depotauszug)\\-Nr\\.");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -966,11 +942,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .oneOf( //
                                         // @formatter:off
@@ -1066,7 +1038,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        var type = new DocumentType("Kontoauszug\\-Nr\\. [\\d]+");
+        final var type = new DocumentType("Kontoauszug\\-Nr\\. [\\d]+");
         this.addDocumentTyp(type);
 
         // @formatter:off
@@ -1077,11 +1049,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "note1", "note2", "amount", "currency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
@@ -1107,11 +1075,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.REMOVAL);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
 
                         .section("date", "note1", "note2", "amount", "currency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
@@ -1135,11 +1099,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
         type.addBlock(feeBlock);
         feeBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .section("date", "note1", "note2", "amount", "currency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //

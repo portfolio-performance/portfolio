@@ -19,8 +19,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.datatransfer.DocumentContext;
-import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -28,7 +26,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -60,17 +57,13 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(LASTSCHRIFTEINZUG|VERKAUF|KAUF|KAUF AUS ERTRAG)");
+        final var type = new DocumentType("(LASTSCHRIFTEINZUG|VERKAUF|KAUF|KAUF AUS ERTRAG)");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
-        pdfTransaction.subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.BUY);
-            return entry;
-        });
+        var pdfTransaction = new Transaction<BuySellEntry>();
+        pdfTransaction.subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY));
 
-        Block firstRelevantLine = new Block("^(LASTSCHRIFTEINZUG|VERKAUF|KAUF|KAUF AUS ERTRAG) .*$");
+        var firstRelevantLine = new Block("^(LASTSCHRIFTEINZUG|VERKAUF|KAUF|KAUF AUS ERTRAG) .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -159,17 +152,13 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
 
     private void addSwapBuyTransaction()
     {
-        DocumentType type = new DocumentType("TAUSCH\\/KAUF");
+        final var type = new DocumentType("TAUSCH\\/KAUF");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
-        pdfTransaction.subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.BUY);
-            return entry;
-        });
+        var pdfTransaction = new Transaction<BuySellEntry>();
+        pdfTransaction.subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY));
 
-        Block firstRelevantLine = new Block("^TAUSCH\\/KAUF.*$", "^Bestand neu:.*$");
+        var firstRelevantLine = new Block("^TAUSCH\\/KAUF.*$", "^Bestand neu:.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -244,11 +233,11 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     v.put("baseCurrency", asCurrencyCode(v.get("currency")));
 
-                    ExtrExchangeRate rate = asExchangeRate(v);
+                    var rate = asExchangeRate(v);
                     type.getCurrentContext().putType(rate);
 
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                    var gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                    var fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
 
                     checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
@@ -267,17 +256,13 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
 
     private void addSwapSellTransaction()
     {
-        DocumentType type = new DocumentType("TAUSCH\\/VERKAUF");
+        final var type = new DocumentType("TAUSCH\\/VERKAUF");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
-        pdfTransaction.subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.SELL);
-            return entry;
-        });
+        var pdfTransaction = new Transaction<BuySellEntry>();
+        pdfTransaction.subject(() -> new BuySellEntry(PortfolioTransaction.Type.SELL));
 
-        Block firstRelevantLine = new Block("^TAUSCH\\/VERKAUF.*$", "^Bestand neu:.*$");
+        var firstRelevantLine = new Block("^TAUSCH\\/VERKAUF.*$", "^Bestand neu:.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -355,17 +340,13 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
 
     private void addReinvestTransaction()
     {
-        DocumentType type = new DocumentType("(ERTRAGSAUSSCH.TTUNG \\/ KAUF AUS ERTRAG|ERTRAGSABRECHNUNG|ERTRAGSAUSSCH.TTUNG)");
+        final var type = new DocumentType("(ERTRAGSAUSSCH.TTUNG \\/ KAUF AUS ERTRAG|ERTRAGSABRECHNUNG|ERTRAGSAUSSCH.TTUNG)");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
-        pdfTransaction.subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.BUY);
-            return entry;
-        });
+        var pdfTransaction = new Transaction<BuySellEntry>();
+        pdfTransaction.subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY));
 
-        Block firstRelevantLine = new Block("^(ERTRAGSAUSSCH.TTUNG \\/ KAUF AUS ERTRAG|ERTRAGSABRECHNUNG|ERTRAGSAUSSCH.TTUNG)$");
+        var firstRelevantLine = new Block("^(ERTRAGSAUSSCH.TTUNG \\/ KAUF AUS ERTRAG|ERTRAGSABRECHNUNG|ERTRAGSAUSSCH.TTUNG)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -443,16 +424,12 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(ERTRAGSAUSSCH.TTUNG|ERTRAGSABRECHNUNG)");
+        final var type = new DocumentType("(ERTRAGSAUSSCH.TTUNG|ERTRAGSABRECHNUNG)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(ERTRAGSAUSSCH.TTUNG|ERTRAGSABRECHNUNG).*$");
+        var block = new Block("^(ERTRAGSAUSSCH.TTUNG|ERTRAGSABRECHNUNG).*$");
         type.addBlock(block);
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction entry = new AccountTransaction();
-            entry.setType(AccountTransaction.Type.DIVIDENDS);
-            return entry;
-        });
+        var pdfTransaction = new Transaction<AccountTransaction>().subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS));
 
         pdfTransaction
                 .oneOf(
@@ -525,7 +502,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "tax").optional()
                 .match("^\\-.*Verrechnete Steuern (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
-                    Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                    var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
                     t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                 })
 
@@ -561,17 +538,13 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDeliveryInOutBoundTransaction()
     {
-        DocumentType type = new DocumentType("AUSLIEFERUNG");
+        final var type = new DocumentType("AUSLIEFERUNG");
         this.addDocumentTyp(type);
 
-        Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
-        pdfTransaction.subject(() -> {
-            PortfolioTransaction entry = new PortfolioTransaction();
-            entry.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
-            return entry;
-        });
+        var pdfTransaction = new Transaction<PortfolioTransaction>();
+        pdfTransaction.subject(() -> new PortfolioTransaction(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        Block firstRelevantLine = new Block("^AUSLIEFERUNG.*$");
+        var firstRelevantLine = new Block("^AUSLIEFERUNG.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -587,7 +560,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                     t.setSecurity(getOrCreateSecurity(v));
 
                     v.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
-                    t.setCurrencyCode(CurrencyUnit.EUR);
+                    t.setCurrencyCode(asCurrencyCode("EUR"));
                     t.setAmount(0L);
                 })
 
@@ -612,12 +585,20 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                 .match("^.* (?<note>Auftragsnummer: .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                .wrap(TransactionItem::new);
+                .wrap((t, ctx) -> {
+                    if (ctx.getFailureReason() != null)
+                        return new TransactionItem(t);
+
+                    if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                        return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                    return new TransactionItem(t);
+                });
     }
 
     public void addDepotStatementTransaction()
     {
-        final DocumentType type = new DocumentType("(Quartalsbericht|Umsatz\\-Jahres.bersicht)", (context, lines) -> {
+        final var type = new DocumentType("(Quartalsbericht|Umsatz\\-Jahres.bersicht)", (context, lines) -> {
 
             Pattern pSecurity = Pattern.compile("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])( [\\d]+)? ([\\s]+)?[\\d]{2}( \\-)?( .*: )?(?<name>.*) ([\\s]+)?[\\.,\\d]+( [\\.,\\d]+ [\\w]{3})? ([\\-|\\+])?[\\.,\\d]+$");
             Pattern pISIN = Pattern.compile("^((?<name>.*)\\/ )?ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$");
@@ -827,7 +808,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
         });
         this.addDocumentTyp(type);
 
-        Block buySellBlock = new Block("^(Lastschrifteinzug"
+        var buySellBlock = new Block("^(Lastschrifteinzug"
                         + "|Storno Lastschrifteinzug"
                         + "|Verkauf( \\/ Tausch)?(?! aus Ertrag)"
                         + "|Zulagenr.ckforderung"
@@ -844,13 +825,11 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                         + ")"
                         + " .*$");
         type.addBlock(buySellBlock);
-        buySellBlock.set(new Transaction<BuySellEntry>().subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.BUY);
-            return entry;
-        })
+        buySellBlock.set(new Transaction<BuySellEntry>()
 
-            .oneOf(
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
+
+                        .oneOf(
                             // @formatter:off
                             // Lastschrifteinzug 250,00 198,660000 +1,258 01.04.2021 01.04.2021
                             // Lastschrifteinzug 1.000,00 59,320000 + 16,858 28.06.2005 28.06.2005
@@ -888,7 +867,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                                     + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
                                                     + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                                     .assign((t, v) -> {
-                                        DocumentContext context = type.getCurrentContext();
+                                        var context = type.getCurrentContext();
 
                                         // Is type --> "-" change from BUY to SELL
                                         if ("-".equals(trim(v.get("type"))))
@@ -897,8 +876,8 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         if ("Storno Lastschrifteinzug".equals(v.get("type")))
                                             v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported);
 
-                                        SecurityListHelper securityListHelper = context.getType(SecurityListHelper.class).orElseGet(SecurityListHelper::new);
-                                        Optional<SecurityItem> securityItem = securityListHelper.findItemByLineNoStart(v.getStartLineNumber());
+                                        var securityListHelper = context.getType(SecurityListHelper.class).orElseGet(SecurityListHelper::new);
+                                        var securityItem = securityListHelper.findItemByLineNoStart(v.getStartLineNumber());
 
                                         if (securityItem.isPresent())
                                         {
@@ -907,7 +886,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         }
                                         else
                                         {
-                                            Optional<SecurityItem> securityItemByName = securityListHelper.findItemByName(trim(v.get("name")));
+                                            var securityItemByName = securityListHelper.findItemByName(trim(v.get("name")));
                                             if (securityItemByName.isPresent())
                                             {
                                                 v.put("name", securityItemByName.get().name);
@@ -919,7 +898,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         t.setDate(asDate(v.get("date")));
                                         t.setShares(asShares(v.get("shares")));
                                         t.setAmount(asAmount(v.get("amount")));
-                                        t.setCurrencyCode(CurrencyUnit.EUR);
+                                        t.setCurrencyCode(asCurrencyCode("EUR"));
 
                                         // @formatter:off
                                         // Deka indicates only up to 3 digits after the decimal point.
@@ -934,10 +913,10 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                             if (trim(v.get("note")).startsWith("Verkauf"))
                                                 t.setType(PortfolioTransaction.Type.SELL);
 
-                                            BigDecimal amountPerShare = BigDecimal.valueOf(asAmount(v.get("amountPerShare")));
-                                            BigDecimal amount = BigDecimal.valueOf(asAmount(v.get("amount")));
+                                            var amountPerShare = BigDecimal.valueOf(asAmount(v.get("amountPerShare")));
+                                            var amount = BigDecimal.valueOf(asAmount(v.get("amount")));
 
-                                            BigDecimal shares = amount.divide(amountPerShare, Values.Share.precision(), RoundingMode.HALF_UP);
+                                            var shares = amount.divide(amountPerShare, Values.Share.precision(), RoundingMode.HALF_UP);
                                             t.setShares(shares.movePointRight(Values.Share.precision()).longValue());
                                         }
 
@@ -996,7 +975,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                                     + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
                                                     + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                                     .assign((t, v) -> {
-                                        DocumentContext context = type.getCurrentContext();
+                                        var context = type.getCurrentContext();
 
                                         // Is type --> "-" change from BUY to SELL
                                         if ("-".equals(trim(v.get("type"))))
@@ -1005,8 +984,8 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         if ("Storno Lastschrifteinzug".equals(v.get("note")))
                                             v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported);
 
-                                        SecurityListHelper securityListHelper = context.getType(SecurityListHelper.class).orElseGet(SecurityListHelper::new);
-                                        Optional<SecurityItem> securityItem = securityListHelper.findItemByLineNoStart(v.getStartLineNumber());
+                                        var securityListHelper = context.getType(SecurityListHelper.class).orElseGet(SecurityListHelper::new);
+                                        var securityItem = securityListHelper.findItemByLineNoStart(v.getStartLineNumber());
 
                                         if (securityItem.isPresent())
                                         {
@@ -1015,7 +994,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         }
                                         else
                                         {
-                                            Optional<SecurityItem> securityItemByName = securityListHelper.findItemByName(trim(v.get("name")));
+                                            var securityItemByName = securityListHelper.findItemByName(trim(v.get("name")));
                                             if (securityItemByName.isPresent())
                                             {
                                                 v.put("name", securityItemByName.get().name);
@@ -1027,7 +1006,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         t.setDate(asDate(v.get("date")));
                                         t.setShares(asShares(v.get("shares")));
                                         t.setAmount(asAmount(v.get("amount")));
-                                        t.setCurrencyCode(CurrencyUnit.EUR);
+                                        t.setCurrencyCode(asCurrencyCode("EUR"));
 
                                         // @formatter:off
                                         // Deka indicates only up to 3 digits after the decimal point.
@@ -1042,10 +1021,10 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                             if (trim(v.get("note")).startsWith("Verkauf"))
                                                 t.setType(PortfolioTransaction.Type.SELL);
 
-                                            BigDecimal amountPerShare = BigDecimal.valueOf(asAmount(v.get("amountPerShare")));
-                                            BigDecimal amount = BigDecimal.valueOf(asAmount(v.get("amount")));
+                                            var amountPerShare = BigDecimal.valueOf(asAmount(v.get("amountPerShare")));
+                                            var amount = BigDecimal.valueOf(asAmount(v.get("amount")));
 
-                                            BigDecimal shares = amount.divide(amountPerShare, Values.Share.precision(), RoundingMode.HALF_UP);
+                                            var shares = amount.divide(amountPerShare, Values.Share.precision(), RoundingMode.HALF_UP);
                                             t.setShares(shares.movePointRight(Values.Share.precision()).longValue());
                                         }
 
@@ -1068,14 +1047,27 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                     )
 
             .wrap((t, ctx) -> {
-                if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() == 0)
-                    ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                var item = new BuySellEntryItem(t);
 
-                return new BuySellEntryItem(t);
+                if (ctx.getFailureReason() != null)
+                    return item;
+
+                if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() == 0)
+                {
+                    if (t.getPortfolioTransaction().getShares() != 0)
+                    {
+                        item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                        return item;
+                    }
+                    return new SkippedItem(item, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                }
+
+                return item;
             }));
 
-        Block deliveryInOutbondblock = new Block("^(Einbuchung"
-                        + "|Ausbuchung|Auslieferung"
+        var deliveryInOutbondblock = new Block("^(Einbuchung"
+                        + "|Ausbuchung"
+                        + "|Auslieferung"
                         + "|Zulagenzahlung"
                         + "|Zulagenr.ckzahlung"
                         + "|Korrekturbuchung"
@@ -1084,12 +1076,11 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                         + "|Kauf (aus )?(Zulagenzahlung|Steuererstattung))"
                         + " .*$");
         type.addBlock(deliveryInOutbondblock);
-        deliveryInOutbondblock.set(new Transaction<PortfolioTransaction>().subject(() -> {
-            PortfolioTransaction transaction = new PortfolioTransaction();
-            transaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
-            return transaction;
-        })
-                .oneOf(
+        deliveryInOutbondblock.set(new Transaction<PortfolioTransaction>()
+                        
+                        .subject(() -> new PortfolioTransaction(PortfolioTransaction.Type.DELIVERY_INBOUND))
+
+                        .oneOf(
                             // @formatter:off
                             // Kauf aus Steuererstattung 12,29 47,355000 +0,260 19.08.2020 19.08.2020
                             // Kauf Zulagenzahlung 354,00 32,950000  +10,744 17.11.2009 17.11.2009
@@ -1110,14 +1101,14 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                                     + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
                                                     + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                                     .assign((t, v) -> {
-                                        DocumentContext context = type.getCurrentContext();
+                                        var context = type.getCurrentContext();
 
                                         // Is type --> "-" change from BUY to SELL
                                         if ("-".equals(trim(v.get("type"))))
                                             t.setType(PortfolioTransaction.Type.SELL);
 
-                                        SecurityListHelper securityListHelper = context.getType(SecurityListHelper.class).orElseGet(SecurityListHelper::new);
-                                        Optional<SecurityItem> securityItem = securityListHelper.findItemByLineNoStart(v.getStartLineNumber());
+                                        var securityListHelper = context.getType(SecurityListHelper.class).orElseGet(SecurityListHelper::new);
+                                        var securityItem = securityListHelper.findItemByLineNoStart(v.getStartLineNumber());
 
                                         if (securityItem.isPresent())
                                         {
@@ -1126,7 +1117,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         }
                                         else
                                         {
-                                            Optional<SecurityItem> securityItemByName = securityListHelper.findItemByName(trim(v.get("name")));
+                                            var securityItemByName = securityListHelper.findItemByName(trim(v.get("name")));
                                             if (securityItemByName.isPresent())
                                             {
                                                 v.put("name", securityItemByName.get().name);
@@ -1138,7 +1129,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         t.setDateTime(asDate(v.get("date")));
                                         t.setShares(asShares(v.get("shares")));
                                         t.setAmount(asAmount(v.get("amount")));
-                                        t.setCurrencyCode(CurrencyUnit.EUR);
+                                        t.setCurrencyCode(asCurrencyCode("EUR"));
                                         t.setNote(trim(replaceMultipleBlanks(v.get("note"))));
                                     })
                             ,
@@ -1168,14 +1159,14 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                                     + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
                                                     + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                                     .assign((t, v) -> {
-                                        DocumentContext context = type.getCurrentContext();
+                                        var context = type.getCurrentContext();
 
                                         // Is type --> "-" change from DELIVERY_INBOUND to DELIVERY_OUTBOUND
                                         if ("-".equals(trim(v.get("type"))))
                                             t.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
 
-                                        SecurityListHelper securityListHelper = context.getType(SecurityListHelper.class).orElseGet(SecurityListHelper::new);
-                                        Optional<SecurityItem> securityItem = securityListHelper.findItemByLineNoStart(v.getStartLineNumber());
+                                        var securityListHelper = context.getType(SecurityListHelper.class).orElseGet(SecurityListHelper::new);
+                                        var securityItem = securityListHelper.findItemByLineNoStart(v.getStartLineNumber());
 
                                         if (securityItem.isPresent())
                                         {
@@ -1184,7 +1175,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         }
                                         else
                                         {
-                                            Optional<SecurityItem> securityItemByName = securityListHelper.findItemByName(trim(v.get("name")));
+                                            var securityItemByName = securityListHelper.findItemByName(trim(v.get("name")));
                                             if (securityItemByName.isPresent())
                                             {
                                                 v.put("name", securityItemByName.get().name);
@@ -1196,7 +1187,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         t.setDateTime(asDate(v.get("date")));
                                         t.setShares(asShares(v.get("shares")));
                                         t.setAmount(asAmount(v.get("amount")));
-                                        t.setCurrencyCode(CurrencyUnit.EUR);
+                                        t.setCurrencyCode(asCurrencyCode("EUR"));
                                         t.setNote(trim(replaceMultipleBlanks(v.get("note"))));
                                     })
                             ,
@@ -1213,14 +1204,14 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                                     + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
                                                     + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                                     .assign((t, v) -> {
-                                        DocumentContext context = type.getCurrentContext();
+                                        var context = type.getCurrentContext();
 
                                         // Is type --> "-" change from DELIVERY_INBOUND to DELIVERY_OUTBOUND
                                         if ("-".equals(v.get("type")))
                                             t.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
 
-                                        SecurityListHelper securityListHelper = context.getType(SecurityListHelper.class).orElseGet(SecurityListHelper::new);
-                                        Optional<SecurityItem> securityItem = securityListHelper.findItemByLineNoStart(v.getStartLineNumber());
+                                        var securityListHelper = context.getType(SecurityListHelper.class).orElseGet(SecurityListHelper::new);
+                                        var securityItem = securityListHelper.findItemByLineNoStart(v.getStartLineNumber());
 
                                         if (securityItem.isPresent())
                                         {
@@ -1229,7 +1220,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         }
                                         else
                                         {
-                                            Optional<SecurityItem> securityItemByName = securityListHelper.findItemByName(trim(v.get("name")));
+                                            var securityItemByName = securityListHelper.findItemByName(trim(v.get("name")));
                                             if (securityItemByName.isPresent())
                                             {
                                                 v.put("name", securityItemByName.get().name);
@@ -1241,7 +1232,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         t.setDateTime(asDate(v.get("date")));
                                         t.setShares(asShares(v.get("shares")));
                                         t.setAmount(0L);
-                                        t.setCurrencyCode(CurrencyUnit.EUR);
+                                        t.setCurrencyCode(asCurrencyCode("EUR"));
                                     })
                     )
 
@@ -1254,13 +1245,25 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap((t, ctx) -> {
-                    if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                        ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                    var item = new TransactionItem(t);
 
-                    return new TransactionItem(t);
+                    if (ctx.getFailureReason() != null)
+                        return item;
+
+                    if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                    {
+                        if (t.getShares() != 0)
+                        {
+                            item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                            return item;
+                        }
+                        return new SkippedItem(item, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                    }
+
+                    return item;
                 }));
 
-        Block dividendeBlock = new Block("^(Verkauf aus Ertrag"
+        var dividendeBlock = new Block("^(Verkauf aus Ertrag"
                         + "|Aussch.ttung \\/ Kauf aus Ertrag"
                         + "|Abrechnungsbetrag Ausschüttung"
                         + "|Abrechnungsbetrag Thesaurierung"
@@ -1268,13 +1271,11 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                         + "|Kauf aus Ertrag"
                         + "|Thesaurierung \\/ Kauf aus Ertrag) .*$");
         type.addBlock(dividendeBlock);
-        dividendeBlock.set(new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction entry = new AccountTransaction();
-            entry.setType(AccountTransaction.Type.DIVIDENDS);
-            return entry;
-        })
+        dividendeBlock.set(new Transaction<AccountTransaction>()
+                        
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
-            .oneOf(
+                        .oneOf(
                             // @formatter:off
                             // Verkauf aus Ertrag 33,43 177,600000 +0,000 20.05.2022 20.05.2022
                             // Ausschüttung / Kauf aus Ertrag 1,46 179,310000 +0,008 15.02.2019 15.02.2019
@@ -1283,7 +1284,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                             // Ertragsausschüttung-Storno 1,05 41,970000 - 0,025 07.09.2005 22.08.2005
                             // @formatter:on
                             section -> section
-                                    .attributes("type", "amount", "shares", "date")
+                                    .attributes("type", "amount", "shares", "date", "exDate")
                                     .match("^(?<type>(Verkauf aus Ertrag"
                                                     + "|Aussch.ttung \\/ Kauf aus Ertrag"
                                                     + "|Abrechnungsbetrag Ausschüttung"
@@ -1294,25 +1295,25 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                                     + "(?<amount>[\\.,\\d]+) "
                                                     + "[\\.,\\d]+"
                                                     + "([\\+\\-\\s]+)?(?<shares>[\\.,\\d]+) "
-                                                    + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
-                                                    + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
+                                                    + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) "
+                                                    + "(?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                                     .assign((t, v) -> {
-                                        DocumentContext context = type.getCurrentContext();
+                                        var context = type.getCurrentContext();
 
                                         if ("Ertragsausschüttung-Storno".equals(v.get("type")))
                                             v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported);
 
-                                        SecurityListHelper securityListHelper = context.getType(SecurityListHelper.class).orElseGet(SecurityListHelper::new);
-                                        SharesListHelper sharesListHelper = context.getType(SharesListHelper.class).orElseGet(SharesListHelper::new);
+                                        var securityListHelper = context.getType(SecurityListHelper.class).orElseGet(SecurityListHelper::new);
+                                        var sharesListHelper = context.getType(SharesListHelper.class).orElseGet(SharesListHelper::new);
 
-                                        Optional<SecurityItem> securityItem = securityListHelper.findItemByLineNoStart(v.getStartLineNumber());
+                                        var securityItem = securityListHelper.findItemByLineNoStart(v.getStartLineNumber());
 
                                         if (securityItem.isPresent())
                                         {
                                             v.put("name", securityItem.get().name);
                                             v.put("isin", securityItem.get().isin);
 
-                                            Optional<ShareItem> shareItem = sharesListHelper.findItem(v.get("isin"), //
+                                            var shareItem = sharesListHelper.findItem(v.get("isin"), //
                                                             securityItem.get().lineNoEnd, //
                                                             LocalDate.parse(v.get("date"), DATEFORMAT), //
                                                             asShares(v.get("shares")));
@@ -1322,13 +1323,13 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         }
                                         else
                                         {
-                                            Optional<SecurityItem> securityItemByName = securityListHelper.findItemByName(trim(v.get("name")));
+                                            var securityItemByName = securityListHelper.findItemByName(trim(v.get("name")));
                                             if (securityItemByName.isPresent())
                                             {
                                                 v.put("name", securityItemByName.get().name);
                                                 v.put("isin", securityItemByName.get().isin);
 
-                                                Optional<ShareItem> shareItem = sharesListHelper.findItem(v.get("isin"), //
+                                                var shareItem = sharesListHelper.findItem(v.get("isin"), //
                                                                 securityItemByName.get().lineNoEnd, //
                                                                 LocalDate.parse(v.get("date"), DATEFORMAT), //
                                                                 asShares(v.get("shares")));
@@ -1340,8 +1341,9 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
 
                                         t.setSecurity(getOrCreateSecurity(v));
                                         t.setDateTime(asDate(v.get("date")));
+                                        t.setExDate(asDate(v.get("exDate")));
                                         t.setAmount(asAmount(v.get("amount")));
-                                        t.setCurrencyCode(CurrencyUnit.EUR);
+                                        t.setCurrencyCode(asCurrencyCode("EUR"));
                                     })
                             ,
                             // @formatter:off
@@ -1350,7 +1352,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                             // Thesaurierung / Kauf aus Ertrag Deka-BR 100 0,00 72,270000 +0,000 12.01.2018 29.12.2017
                             // @formatter:on
                             section -> section
-                                    .attributes("name", "amount", "shares", "date")
+                                    .attributes("name", "amount", "shares", "date", "exDate")
                                     .match("^(?<type>(Verkauf aus Ertrag"
                                                     + "|Aussch.ttung \\/ Kauf aus Ertrag"
                                                     + "|Abrechnungsbetrag Ausschüttung"
@@ -1362,25 +1364,25 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                                     + "(?<amount>[\\.,\\d]+) "
                                                     + "[\\.,\\d]+"
                                                     + "([\\+\\-\\s]+)?(?<shares>[\\.,\\d]+) "
-                                                    + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
-                                                    + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
+                                                    + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) "
+                                                    + "(?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                                     .assign((t, v) -> {
-                                        DocumentContext context = type.getCurrentContext();
+                                        var context = type.getCurrentContext();
 
                                         if ("Ertragsausschüttung-Storno".equals(v.get("type")))
                                             v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported);
 
-                                        SecurityListHelper securityListHelper = context.getType(SecurityListHelper.class).orElseGet(SecurityListHelper::new);
-                                        SharesListHelper sharesListHelper = context.getType(SharesListHelper.class).orElseGet(SharesListHelper::new);
+                                        var securityListHelper = context.getType(SecurityListHelper.class).orElseGet(SecurityListHelper::new);
+                                        var sharesListHelper = context.getType(SharesListHelper.class).orElseGet(SharesListHelper::new);
 
-                                        Optional<SecurityItem> securityItem = securityListHelper.findItemByLineNoStart(v.getStartLineNumber());
+                                        var securityItem = securityListHelper.findItemByLineNoStart(v.getStartLineNumber());
 
                                         if (securityItem.isPresent())
                                         {
                                             v.put("name", securityItem.get().name);
                                             v.put("isin", securityItem.get().isin);
 
-                                            Optional<ShareItem> shareItem = sharesListHelper.findItem(v.get("isin"), //
+                                            var shareItem = sharesListHelper.findItem(v.get("isin"), //
                                                             securityItem.get().lineNoEnd, //
                                                             LocalDate.parse(v.get("date"), DATEFORMAT), //
                                                             asShares(v.get("shares")));
@@ -1391,13 +1393,13 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         else
                                         {
 
-                                            Optional<SecurityItem> securityItemByName = securityListHelper.findItemByName(trim(v.get("name")));
+                                            var securityItemByName = securityListHelper.findItemByName(trim(v.get("name")));
                                             if (securityItemByName.isPresent())
                                             {
                                                 v.put("name", securityItemByName.get().name);
                                                 v.put("isin", securityItemByName.get().isin);
 
-                                                Optional<ShareItem> shareItem = sharesListHelper.findItem(v.get("isin"), //
+                                                var shareItem = sharesListHelper.findItem(v.get("isin"), //
                                                                 securityItemByName.get().lineNoEnd, //
                                                                 LocalDate.parse(v.get("date"), DATEFORMAT), //
                                                                 asShares(v.get("shares")));
@@ -1409,19 +1411,32 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
 
                                         t.setSecurity(getOrCreateSecurity(v));
                                         t.setDateTime(asDate(v.get("date")));
+                                        t.setExDate(asDate(v.get("exDate")));
                                         t.setAmount(asAmount(v.get("amount")));
-                                        t.setCurrencyCode(CurrencyUnit.EUR);
+                                        t.setCurrencyCode(asCurrencyCode("EUR"));
                                     })
                     )
 
                 .wrap((t, ctx) -> {
-                    if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                        ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                    var item = new TransactionItem(t);
 
-                    return new TransactionItem(t);
+                    if (ctx.getFailureReason() != null)
+                        return item;
+
+                    if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                    {
+                        if (t.getShares() != 0)
+                        {
+                            item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                            return item;
+                        }
+                        return new SkippedItem(item, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                    }
+
+                    return item;
                 }));
 
-        Block feesBlock = new Block("^.*(Vertragsgeb.hr in [\\d]{4}"
+        var feesBlock = new Block("^.*(Vertragsgeb.hr in [\\d]{4}"
                         + "|.* (inkl|incl)\\.( [\\d]+%)? (Mehrwertsteuer \\(MwSt\\)|MwSt|MWSt)"
                         + "|Entgelt Aufl.sung "
                         + "|Vertragspreis(?!.*gesamt) "
@@ -1429,13 +1444,11 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                         + "|Abschluss\\- und Vertriebskosten(?!.*gesamt) "
                         + ").*$");
         type.addBlock(feesBlock);
-        feesBlock.set(new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction entry = new AccountTransaction();
-            entry.setType(AccountTransaction.Type.FEES);
-            return entry;
-        })
+        feesBlock.set(new Transaction<AccountTransaction>()
+                        
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
-                .oneOf(
+                        .oneOf(
                                 // @formatter:off
                                 // Vertragspreis (zu Lasten Girokonto) -10,00
                                 // Vertragspreis (zu Lasten Vertrag)  0,00
@@ -1457,7 +1470,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
 
                                             t.setDateTime(asDate(context.get("documentDate")));
                                             t.setAmount(asAmount(v.get("amount")));
-                                            t.setCurrencyCode(CurrencyUnit.EUR);
+                                            t.setCurrencyCode(asCurrencyCode("EUR"));
                                             t.setNote(trim(v.get("note")));
 
                                             // Formatting some notes
@@ -1483,7 +1496,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> {
                                             t.setDateTime(asDate(v.get("date")));
                                             t.setAmount(asAmount(v.get("amount")));
-                                            t.setCurrencyCode(CurrencyUnit.EUR);
+                                            t.setCurrencyCode(asCurrencyCode("EUR"));
                                             t.setNote(trim(v.get("note")));
 
                                             // Formatting some note
@@ -1506,7 +1519,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                                 t.setDateTime(asDate(context.get("documentDate")));
 
                                             t.setAmount(asAmount(v.get("amount")));
-                                            t.setCurrencyCode(CurrencyUnit.EUR);
+                                            t.setCurrencyCode(asCurrencyCode("EUR"));
                                             t.setNote(v.get("note") + " " + t.getDateTime().getYear());
                                         })
                                 ,
@@ -1526,7 +1539,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                                 t.setDateTime(asDate(context.get("documentDate")));
 
                                             t.setAmount(asAmount(v.get("amount")));
-                                            t.setCurrencyCode(CurrencyUnit.EUR);
+                                            t.setCurrencyCode(asCurrencyCode("EUR"));
                                             t.setNote(v.get("note") + " " + t.getDateTime().getYear());
                                         })
                                 ,
@@ -1584,65 +1597,74 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                         )
 
                 .wrap((t, ctx) -> {
+                    var item = new TransactionItem(t);
+
+                    if (ctx.getFailureReason() != null)
+                        return item;
+
                     if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                        ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
-                    return new TransactionItem(t);
+                    {
+                        if (t.getShares() != 0)
+                        {
+                            item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                            return item;
+                        }
+                        return new SkippedItem(item, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                    }
+
+                    return item;
                 }));
     }
 
     private void addTaxReturnBlock(DocumentType type)
     {
-        Block block = new Block("^(ERTRAGSAUSSCH.TTUNG|ERTRAGSABRECHNUNG)$");
+        var block = new Block("^(ERTRAGSAUSSCH.TTUNG|ERTRAGSABRECHNUNG)$");
         type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction t = new AccountTransaction();
-            t.setType(AccountTransaction.Type.TAX_REFUND);
-            return t;
-        })
+        block.set(new Transaction<AccountTransaction>()
+                        
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
-            .oneOf(
-                            // @formatter:off
-                            // Ausschüttung (pro Anteil EUR 0,2292000): EUR 0,14
-                            // Bezeichnung: iShares J.P. Morgan USD EM Bond EUR Hedged UCITS ETF (Dist)
-                            // ISIN: IE00B9M6RS56 Unterdepot: 00 Auftragsnummer: 9302 2538
-                            // @formatter:on
-                            section -> section
-                                    .attributes("currency", "name", "isin")
-                                    .match("^Aussch.ttung .* (?<currency>[\\w]{3}) [\\.,\\d]+$")
-                                    .match("^Bezeichnung: (?<name>.*)$")
-                                    .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$")
-                                    .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-                            ,
-                            // @formatter:off
-                            // Fondsbezeichnung: AriDeka CF
-                            // ISIN: DE0008474511 Unterkonto: 00 Auftragsnummer: 9387 9103
-                            // +Verrechnete Steuern EUR 1,43 EUR 29,15 EUR 33,420000 Anteilumsatz: 0,872
-                            // @formatter:on
-                            section -> section
-                                    .attributes("name", "isin", "currency")
-                                    .match("^Fondsbezeichnung: (?<name>.*)$")
-                                    .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$")
-                                    .match("^.*(?<currency>[\\w]{3}) [\\.,\\d]+ Anteilumsatz: [\\.,\\d]+$")
-                                    .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-                    )
+                        .oneOf(
+                                // @formatter:off
+                                // Ausschüttung (pro Anteil EUR 0,2292000): EUR 0,14
+                                // Bezeichnung: iShares J.P. Morgan USD EM Bond EUR Hedged UCITS ETF (Dist)
+                                // ISIN: IE00B9M6RS56 Unterdepot: 00 Auftragsnummer: 9302 2538
+                                // @formatter:on
+                                section -> section
+                                        .attributes("currency", "name", "isin")
+                                        .match("^Aussch.ttung .* (?<currency>[\\w]{3}) [\\.,\\d]+$")
+                                        .match("^Bezeichnung: (?<name>.*)$")
+                                        .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$")
+                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                                ,
+                                // @formatter:off
+                                // Fondsbezeichnung: AriDeka CF
+                                // ISIN: DE0008474511 Unterkonto: 00 Auftragsnummer: 9387 9103
+                                // +Verrechnete Steuern EUR 1,43 EUR 29,15 EUR 33,420000 Anteilumsatz: 0,872
+                                // @formatter:on
+                                section -> section
+                                        .attributes("name", "isin", "currency")
+                                        .match("^Fondsbezeichnung: (?<name>.*)$")
+                                        .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$")
+                                        .match("^.*(?<currency>[\\w]{3}) [\\.,\\d]+ Anteilumsatz: [\\.,\\d]+$")
+                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
-            .oneOf(
-                            // @formatter:off
-                            // Anteilbestand am Ertragstermin: 0,619
-                            // @formatter:on
-                            section -> section
-                                    .attributes("shares")
-                                    .match("^Anteilbestand am Ertragstermin: (?<shares>[\\.,\\d]+)$")
-                                    .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-                            ,
-                            // @formatter:off
-                            //  Ausschüttung EUR 27,72 Preis Bestand alt: 29,811
-                            // @formatter:on
-                            section -> section
-                                    .attributes("shares")
-                                    .match("^.* Bestand alt: (?<shares>[\\.,\\d]+)$")
-                                    .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-                    )
+                        .oneOf(
+                                // @formatter:off
+                                // Anteilbestand am Ertragstermin: 0,619
+                                // @formatter:on
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^Anteilbestand am Ertragstermin: (?<shares>[\\.,\\d]+)$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                                ,
+                                // @formatter:off
+                                //  Ausschüttung EUR 27,72 Preis Bestand alt: 29,811
+                                // @formatter:on
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^.* Bestand alt: (?<shares>[\\.,\\d]+)$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
             // @formatter:off
             // Verwahrart: GiroSammel Abrechnungstag: 31.03.2022
@@ -1702,20 +1724,20 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                 .match("^Ausgabeaufschlag: (?<percentageFee>[\\.,\\d]+)%$")
                 .match("^.*(Einzugsbetrag|Auszahlungsbetrag|Abrechnungsbetrag) [\\w]{3} [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
-                    BigDecimal percentageFee = asBigDecimal(v.get("percentageFee"));
-                    BigDecimal amount = asBigDecimal(v.get("amount"));
+                    var percentageFee = asBigDecimal(v.get("percentageFee"));
+                    var amount = asBigDecimal(v.get("amount"));
 
                     if (percentageFee.compareTo(BigDecimal.ZERO) != 0)
                     {
                         // @formatter:off
                         // fxFee = (amount / (1 + percentageFee / 100)) * (percentageFee / 100)
                         // @formatter:on
-                        BigDecimal fxFee = amount
+                        var fxFee = amount
                                         .divide(percentageFee.divide(BigDecimal.valueOf(100))
                                                         .add(BigDecimal.ONE), Values.MC)
                                         .multiply(percentageFee, Values.MC);
 
-                        Money fee = Money.of(asCurrencyCode(v.get("currency")),
+                        var fee = Money.of(asCurrencyCode(v.get("currency")),
                                         fxFee.setScale(0, Values.MC.getRoundingMode()).longValue());
 
                         checkAndSetFee(fee, t, type.getCurrentContext());
@@ -1734,9 +1756,9 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
             if (items.isEmpty())
                 return Optional.empty();
 
-            for (int i = items.size() - 1; i >= 0; i--) // NOSONAR
+            for (var i = items.size() - 1; i >= 0; i--) // NOSONAR
             {
-                SecurityItem item = items.get(i);
+                var item = items.get(i);
 
                 if ((item.lineNoStart > lineNo) || (item.lineNoEnd < lineNo))
                     continue;
@@ -1753,9 +1775,9 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
             if (items.isEmpty())
                 return Optional.empty();
 
-            for (int i = items.size() - 1; i >= 0; i--) // NOSONAR
+            for (var i = items.size() - 1; i >= 0; i--) // NOSONAR
             {
-                SecurityItem item = items.get(i);
+                var item = items.get(i);
 
                 // We cannot take "equals" because the security names continue
                 // on the next line as well. Therefore we take "contains".
@@ -1793,18 +1815,15 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
             if (items.isEmpty())
                 return Optional.empty();
 
-            for (int i = items.size() - 1; i >= 0; i--) // NOSONAR
+            for (var i = items.size() - 1; i >= 0; i--) // NOSONAR
             {
-                ShareItem item = items.get(i);
+                var item = items.get(i);
 
                 if (!item.isin.equals(isin))
                     continue;
 
-                if (securitylineNoEnd != 0)
-                {
-                    if (item.lineNo >= securitylineNoEnd)
-                        continue;
-                }
+                if ((securitylineNoEnd != 0) && (item.lineNo >= securitylineNoEnd))
+                    continue;
 
                 if (!item.date.equals(date))
                     continue;

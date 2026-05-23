@@ -31,7 +31,7 @@ public class SchelhammerCapitalBankAG extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        var type = new DocumentType("Gesch.ftsart: (Kauf|Verkauf|Ausgabe Fonds aus Dauerauftrag)");
+        final var type = new DocumentType("Gesch.ftsart: (Kauf|Verkauf|Ausgabe Fonds aus Dauerauftrag)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
@@ -42,11 +42,7 @@ public class SchelhammerCapitalBankAG extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
@@ -119,7 +115,7 @@ public class SchelhammerCapitalBankAG extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        var type = new DocumentType("Geschäftsart: Ertrag");
+        final var type = new DocumentType("Geschäftsart: Ertrag");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -130,11 +126,7 @@ public class SchelhammerCapitalBankAG extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         .oneOf( //
                                         // @formatter:off

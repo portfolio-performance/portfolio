@@ -102,11 +102,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
         type.addBlock(depositRemovalBlock_Format01);
         depositRemovalBlock_Format01.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "note", "amount", "type") //
                         .documentContext("currency", "year") //
@@ -134,11 +130,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
         type.addBlock(depositRemovalBlock_Format02);
         depositRemovalBlock_Format02.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "amount", "type") //
                         .documentContext("currency", "year") //
@@ -165,11 +157,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
         type.addBlock(depositRemovalBlock_Format03);
         depositRemovalBlock_Format03.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("type", "amount", "date") //
                         .documentContext("currency") //
@@ -196,11 +184,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
         type.addBlock(interestBlock_Format01);
         interestBlock_Format01.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .section("date", "note", "amount", "type") //
                         .documentContext("currency", "year") //
@@ -250,11 +234,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
         type.addBlock(interestBlock_Format02);
         interestBlock_Format02.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         // @formatter:off
                         // 05.08. 31.07. Storno Abschluss                                                      3,59 S
@@ -333,11 +313,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
         type.addBlock(interestBlock_Format03);
         interestBlock_Format03.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .section("note", "amount", "date") //
                         .documentContext("currency") //
@@ -363,11 +339,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
         type.addBlock(interestBlock_Format04);
         interestBlock_Format04.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .section("type", "amount", "date") //
                         .documentContext("currency") //

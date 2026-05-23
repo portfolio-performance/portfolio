@@ -40,11 +40,7 @@ public class CreditMutuelAllianceFederalePDFExtractor extends AbstractPDFExtract
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // @formatter:off
                         // Montant brut (frais inclus) : 3 000,00 €

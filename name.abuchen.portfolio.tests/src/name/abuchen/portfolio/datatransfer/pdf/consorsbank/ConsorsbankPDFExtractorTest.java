@@ -23,6 +23,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.skippedItem;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
@@ -1706,11 +1707,11 @@ public class ConsorsbankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
-        assertThat(countBuySell(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(1L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1720,8 +1721,8 @@ public class ConsorsbankPDFExtractorTest
                         hasName("X(IE)-MSCI WORLD 1D"), //
                         hasCurrencyCode("EUR"))));
 
-        // check buy sell transaction
-        assertThat(results, hasItem(withFailureMessage( //
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         purchase( //
                                         hasDate("2024-06-03T09:30:09"), hasShares(4.09855), //

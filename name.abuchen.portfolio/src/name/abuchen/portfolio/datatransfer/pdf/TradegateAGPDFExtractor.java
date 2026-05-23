@@ -13,7 +13,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
@@ -51,11 +50,7 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
@@ -79,7 +74,7 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .oneOf(
-                        // @formatter:off
+                                        // @formatter:off
                                         // Daraus ergibt sich ein Mischkurs von 19,3500 EUR für insgesamt 1.560 Stück.
                                         // @formatter:on
                                         section -> section //
@@ -147,11 +142,7 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         // @formatter:off
                         // Wertpapier Vanguard EUR Corp.Bond U.ETF Registered Shares EUR Dis.oN
@@ -239,11 +230,7 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         // @formatter:off
                         // Wertpapier PFI ETFs-EO Sh.Mat.UC.ETF Registered Shares EUR Acc.o.N.
@@ -290,13 +277,11 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
                         .match("^.*(?<note>Order\\-\\/Ref\\.nr\\. .*)$")
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                        .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
-                            if (t.getAmount() == 0)
-                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
-
-                            return item;
+                            return new TransactionItem(t);
                         });
     }
 
@@ -313,11 +298,7 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                         // Is type --> "Belastung" change from TAX_REFUND to TAXES
                         .section("type").optional() //
@@ -341,7 +322,7 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
                         .section("amount") //
                         .match("^(Gutgeschriebener Betrag|Belastung) (\\-)?(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setCurrencyCode(CurrencyUnit.EUR);
+                            t.setCurrencyCode(asCurrencyCode("EUR"));
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
@@ -417,11 +398,7 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
         type.addBlock(depositAndWithdrawalBlock);
         depositAndWithdrawalBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("note", "type", "date", "amount") //
                         .documentContext("currency") //
@@ -433,7 +410,7 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
                                 t.setType(AccountTransaction.Type.REMOVAL);
 
                             t.setDateTime(asDate(v.get("date")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote("Ref.nr. " + v.get("note"));
                         })

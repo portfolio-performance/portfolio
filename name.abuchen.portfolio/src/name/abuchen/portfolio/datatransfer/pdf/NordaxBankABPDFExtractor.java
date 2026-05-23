@@ -47,11 +47,7 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .oneOf(
                                         //
@@ -92,10 +88,7 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
         type.addBlock(transferBlock);
         transferBlock.set(new Transaction<AccountTransferEntry>()
 
-                        .subject(() -> {
-                            var accountTransferEntry = new AccountTransferEntry();
-                            return accountTransferEntry;
-                        })
+                        .subject(AccountTransferEntry::new)
 
                         .section("date", "amount") //
                         .documentContext("currency") //
@@ -117,11 +110,7 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
         depositRemovalBlock.setMaxSize(3);
         depositRemovalBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "type", "amount") //
                         .documentContext("currency") //

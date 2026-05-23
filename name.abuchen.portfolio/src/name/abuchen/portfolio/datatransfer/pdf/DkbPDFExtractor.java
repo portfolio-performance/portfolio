@@ -117,11 +117,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
@@ -338,11 +334,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         .oneOf( //
                                         // @formatter:off
@@ -492,11 +484,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.TRANSFER_OUT);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.TRANSFER_OUT))
 
                         // @formatter:off
                         // Nominale Wertpapierbezeichnung ISIN (WKN)
@@ -556,11 +544,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         // @formatter:off
                         // Nominale Wertpapierbezeichnung ISIN (WKN)
@@ -640,9 +624,9 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .match("^.*(?<note>Abrechnungsnr\\. [\\d]+).*$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                        .wrap((t, ctx) -> {
+                        .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             return new TransactionItem(t);
                         });
@@ -680,11 +664,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         .oneOf( //
                                         // @formatter:off
@@ -776,11 +756,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         type.addBlock(interestChargeBlock);
         interestChargeBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .section("note", "amount", "type").optional() //
                         .documentContext("date", "currency") //
@@ -803,7 +779,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^Kapitalertrags(s)?teuer[\\s]{1,}(?<tax>[\\.,\\d]+)\\-$") //
                         .assign((t, v) -> {
-                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
 
                             if (t.getType() == AccountTransaction.Type.INTEREST)
@@ -816,7 +792,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^Solidarit.tszuschlag[\\s]{1,}(?<tax>[\\.,\\d]+)\\-$") //
                         .assign((t, v) -> {
-                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
 
                             if (t.getType() == AccountTransaction.Type.INTEREST)
@@ -829,7 +805,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^Kirchensteuer[\\s]{1,}(?<tax>[\\.,\\d]+)\\-$") //
                         .assign((t, v) -> {
-                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
 
                             if (t.getType() == AccountTransaction.Type.INTEREST)
@@ -848,11 +824,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         type.addBlock(interestChargeCreditBlock);
         interestChargeCreditBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST_CHARGE);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST_CHARGE))
 
                         .section("note", "amount", "type") //
                         .documentContext("date", "currency") //
@@ -881,11 +853,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.REMOVAL);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
 
                         .section("month1", "day", "month2", "note", "amount") //
                         .documentContext("nr", "year", "currency") //
@@ -943,11 +911,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("month1", "day", "month2", "note", "amount") //
                         .documentContext("nr", "year", "currency") //
@@ -982,11 +946,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         type.addBlock(taxReturnBlock);
         taxReturnBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                         .section("month1", "day", "month2", "note", "amount") //
                         .documentContext("nr", "year", "currency") //
@@ -1011,11 +971,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         type.addBlock(feesBlock);
         feesBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .section("month1", "day", "month2", "note1", "amount", "note2") //
                         .documentContext("nr", "year", "currency") //
@@ -1083,11 +1039,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         depositRemovalBlock_Format01.setMaxSize(2);
         depositRemovalBlock_Format01.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("type", "amount", "date", "note").optional() //
                         .documentContext("currency") //
@@ -1173,11 +1125,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         depositRemovalBlock_Format02.setMaxSize(1);
         depositRemovalBlock_Format02.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "note", "type", "amount").optional() //
                         .documentContext("currency") //
@@ -1282,11 +1230,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         depositRemovalBlock_Format03.setMaxSize(2);
         depositRemovalBlock_Format03.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "note", "type", "amount").optional() //
                         .documentContext("currency") //
@@ -1364,11 +1308,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         feesBlock.setMaxSize(3);
         feesBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES_REFUND);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES_REFUND))
 
                         .section("type", "amount", "date", "note1", "note2").optional() //
                         .documentContext("currency") //
@@ -1427,11 +1367,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         type.addBlock(interestChargeBlock);
         interestChargeBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .section("note", "amount", "type").optional() //
                         .documentContext("currency", "date") //
@@ -1454,7 +1390,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^Kapitalertrags(s)?teuer[\\s]{1,}(?<tax>[\\.,\\d]+)\\-$") //
                         .assign((t, v) -> {
-                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
 
                             if (t.getType() == AccountTransaction.Type.INTEREST)
@@ -1467,7 +1403,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^Solidarit.tszuschlag[\\s]{1,}(?<tax>[\\.,\\d]+)\\-$") //
                         .assign((t, v) -> {
-                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
 
                             if (t.getType() == AccountTransaction.Type.INTEREST)
@@ -1480,7 +1416,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^Kirchensteuer[\\s]{1,}(?<tax>[\\.,\\d]+)\\-$") //
                         .assign((t, v) -> {
-                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
 
                             if (t.getType() == AccountTransaction.Type.INTEREST)
@@ -1503,11 +1439,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         type.addBlock(interestStorno);
         interestStorno.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .section("amount", "date", "note").optional() //
                         .documentContext("currency") //
@@ -1561,11 +1493,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .oneOf( //
                                         section -> section //
@@ -1631,11 +1559,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .section("date", "note", "amount") //
                         .documentContext("currency") //
@@ -1655,11 +1579,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         type.addBlock(taxesBlock);
         taxesBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         .section("date", "note", "amount") //
                         .documentContext("currency") //
@@ -1679,11 +1599,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.REMOVAL);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
 
                         .oneOf( //
 
@@ -1738,11 +1654,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         type.addBlock(feeBlock);
         feeBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .section("date", "note", "amount") //
                         .documentContext("currency") //
@@ -1768,11 +1680,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                         // @formatter:off
                         // Ausmachender Betrag 56,57 EUR
@@ -1846,12 +1754,12 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                             {
                                 // Account 1
-                                v.put("currency", v.get("currency1"));
+                                v.put("currency", asCurrencyCode(v.get("currency1")));
                                 v.put("tax", v.get("tax1"));
                                 processTaxEntries(t, v, type);
 
                                 // Account 2
-                                v.put("currency", v.get("currency2"));
+                                v.put("currency", asCurrencyCode(v.get("currency2")));
                                 v.put("tax", v.get("tax2"));
                                 processTaxEntries(t, v, type);
                             }
@@ -1882,12 +1790,12 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                             {
                                 // Account 1
-                                v.put("currency", v.get("currency1"));
+                                v.put("currency", asCurrencyCode(v.get("currency1")));
                                 v.put("tax", v.get("tax1"));
                                 processTaxEntries(t, v, type);
 
                                 // Account 2
-                                v.put("currency", v.get("currency2"));
+                                v.put("currency", asCurrencyCode(v.get("currency2")));
                                 v.put("tax", v.get("tax2"));
                                 processTaxEntries(t, v, type);
                             }
@@ -1917,12 +1825,12 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                             {
                                 // Account 1
-                                v.put("currency", v.get("currency1"));
+                                v.put("currency", asCurrencyCode(v.get("currency1")));
                                 v.put("tax", v.get("tax1"));
                                 processTaxEntries(t, v, type);
 
                                 // Account 2
-                                v.put("currency", v.get("currency2"));
+                                v.put("currency", asCurrencyCode(v.get("currency2")));
                                 v.put("tax", v.get("tax2"));
                                 processTaxEntries(t, v, type);
                             }
