@@ -1,0 +1,11 @@
+Baden-Württembergische Bank
+Dividendengutschrift
+ISIN Währung Dividende Wertpapierbezeichnung
+DE0007100000 EUR 0,90 Daimler AG
+Namens-Aktien o.N.
+Stück Stichtag Zahltag Zahlungszeitraum
+10 08.07.20 13.07.20 01.01.2019-31.12.2019
+Bruttoertrag: 9,00 EUR H
+Kapitalertragsteuer aus: 9,00 EUR 25,00% 2,25 EUR S
+Solidaritätszuschlag aus: 2,25 EUR 5,50% 0,12 EUR S
+Gutschrift Wert 13.07.20 6,63 EUR H

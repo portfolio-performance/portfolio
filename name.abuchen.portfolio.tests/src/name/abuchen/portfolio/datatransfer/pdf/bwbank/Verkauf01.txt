@@ -1,0 +1,16 @@
+Baden-Württembergische Bank
+STUTTGART, 24.06.2020
+Depotinhaber: Max Mustermann
+Wertpapierabrechnung Verkauf
+Stück 10 Daimler AG Namens-Aktien o.N. Kenn-Nr. DE0007100000
+Kurs 36,156 EUR / Kurs variabel Depotnummer 1234567890
+Börse STUTTGART Ordernummer 726V908
+Schlusstag 24.06.2020 17:26
+Kurswert 361,58 EUR H
+Transaktionsentgelt der Börse 2,49 EUR S
+Clearinggebühren 2,81 EUR S
+Kapitalertragsteuer aus: 11,00 EUR 25,00% 2,75 EUR S
+Solidaritätszuschlag aus: 2,75 EUR 5,50% 0,18 EUR S
+IBAN DE00123456781234567890 Wert 26.06.2020 353,35 EUR H
+Gesamtkosten 5,30 EUR
+Limit: Billigst
