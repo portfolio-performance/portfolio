@@ -38,7 +38,7 @@ public class BundesschatzPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         .section("currency") //
                                         .match("^W.hrung: (?<currency>[A-Z]{3}) Erstellt am:.*$") //
-                                        .assign((ctx, v) -> ctx.put("currency", v.get("currency"))));
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
         this.addDocumentTyp(type);
 
         // @formatter:off
@@ -48,11 +48,7 @@ public class BundesschatzPDFExtractor extends AbstractPDFExtractor
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "amount", "note") //
                         .documentContext("currency") //
@@ -73,11 +69,7 @@ public class BundesschatzPDFExtractor extends AbstractPDFExtractor
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.REMOVAL);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
 
                         .section("date", "amount", "note") //
                         .documentContext("currency") //
@@ -102,7 +94,7 @@ public class BundesschatzPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         .section("currency") //
                                         .match("^W.hrung: (?<currency>[A-Z]{3}) Erstellt am:.*$") //
-                                        .assign((ctx, v) -> ctx.put("currency", v.get("currency"))));
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
         this.addDocumentTyp(type);
 
         // @formatter:off
@@ -121,11 +113,7 @@ public class BundesschatzPDFExtractor extends AbstractPDFExtractor
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .section("note1", "note2", "date", "tax", "amount") //
                         .documentContext("currency") //
@@ -145,7 +133,7 @@ public class BundesschatzPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note2") + " - " + v.get("date") + " (" + trim(v.get("note1")) + ")");
 
-                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
                         })
 
@@ -158,11 +146,7 @@ public class BundesschatzPDFExtractor extends AbstractPDFExtractor
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.REMOVAL);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
 
                         .section("date", "note", "amount") //
                         .documentContext("currency") //

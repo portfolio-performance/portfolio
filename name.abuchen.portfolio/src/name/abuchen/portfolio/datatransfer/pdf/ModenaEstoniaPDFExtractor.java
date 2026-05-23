@@ -45,11 +45,7 @@ public class ModenaEstoniaPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .optionalOneOf( //
                                         // @formatter:off
@@ -103,9 +99,9 @@ public class ModenaEstoniaPDFExtractor extends AbstractPDFExtractor
                             t.setNote(trim(v.get("note")));
                         })
 
-                        .wrap((t, ctx) -> {
+                        .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             return new TransactionItem(t);
                         });

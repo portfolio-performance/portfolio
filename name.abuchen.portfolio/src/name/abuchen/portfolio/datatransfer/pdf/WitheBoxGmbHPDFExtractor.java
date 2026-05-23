@@ -44,11 +44,7 @@ public class WitheBoxGmbHPDFExtractor extends AbstractPDFExtractor
         feesBlock01.setMaxSize(1);
         feesBlock01.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .section("currency", "amount") //
                         .documentContext("date") //

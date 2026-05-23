@@ -83,11 +83,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
@@ -187,11 +183,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         .oneOf( //
                                         // @formatter:off
@@ -316,11 +308,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         // @formatter:off
                         // Nominale Wertpapierbezeichnung ISIN (WKN)
@@ -367,9 +355,9 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                         .match("^.*(?<note>Abrechnungsnr\\. [\\d]+).*$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                        .wrap((t, ctx) -> {
+                        .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             return new TransactionItem(t);
                         });
@@ -529,11 +517,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
         // 01.03.2022 Anlage 4,24 25,5849 0,166
         // @formatter:on
         Transaction<BuySellEntry> pdfTransaction1 = new Transaction<>();
-        pdfTransaction1.subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.BUY);
-            return entry;
-        });
+        pdfTransaction1.subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY));
 
         Block firstRelevantLine1 = new Block("^[\\s\\d]{2,3}\\.[\\d]{2}\\.[\\d]{4} (Kauf|Wiederanlage|Verkauf|Anlage) .*$");
         type.addBlock(firstRelevantLine1);
@@ -683,11 +667,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
         // 1 0.12.2020 Wiederanlage 362,80 0,00 53,91 6,730
         // @formatter:on
         Transaction<AccountTransaction> pdfTransaction2 = new Transaction<>();
-        pdfTransaction2.subject(() -> {
-            AccountTransaction transaction = new AccountTransaction();
-            transaction.setType(AccountTransaction.Type.DIVIDENDS);
-            return transaction;
-        });
+        pdfTransaction2.subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS));
 
         Block firstRelevantLine2 = new Block("^(Gesamtaussch.ttung|Aussch.ttung) \\*[\\d]+ [\\.,\\d]+$", "^Bestand .*$");
         type.addBlock(firstRelevantLine2);
@@ -735,11 +715,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
         // Anlage 2,09 0,00 241,88 0,009
         // @formatter:on
         Transaction<PortfolioTransaction> pdfTransaction3 = new Transaction<>();
-        pdfTransaction3.subject(() -> {
-            PortfolioTransaction transaction = new PortfolioTransaction();
-            transaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
-            return transaction;
-        });
+        pdfTransaction3.subject(() -> new PortfolioTransaction(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
         Block firstRelevantLine3 = new Block("^[\\s\\d]{2,3}\\.[\\d]{2}\\.[\\d]{4} Ausgleichsbuchung Steuer.* .*$");
         type.addBlock(firstRelevantLine3);
@@ -789,11 +765,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
         // Anlage 458,99 0,00 37,77 12,152
         // @formatter:on
         Transaction<PortfolioTransaction> pdfTransaction4 = new Transaction<>();
-        pdfTransaction4.subject(() -> {
-            PortfolioTransaction transaction = new PortfolioTransaction();
-            transaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
-            return transaction;
-        });
+        pdfTransaction4.subject(() -> new PortfolioTransaction(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
         Block firstRelevantLine4 = new Block("^[\\s\\d]{2,3}\\.[\\d]{2}\\.[\\d]{4} Umtausch .*$");
         type.addBlock(firstRelevantLine4);
@@ -866,11 +838,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
         // Postbox
         // @formatter:on
         Transaction<AccountTransaction> pdfTransaction5 = new Transaction<>();
-        pdfTransaction5.subject(() -> {
-            AccountTransaction transaction = new AccountTransaction();
-            transaction.setType(AccountTransaction.Type.FEES);
-            return transaction;
-        });
+        pdfTransaction5.subject(() -> new AccountTransaction(AccountTransaction.Type.FEES));
 
         Block firstRelevantLine5 = new Block("^Depotgeb.hr .*$", "^Bestand .*$");
         type.addBlock(firstRelevantLine5);
@@ -900,11 +868,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
         // inklusive Solidaritätszuschlag
         // @formatter:on
         Transaction<AccountTransaction> pdfTransaction6 = new Transaction<>();
-        pdfTransaction6.subject(() -> {
-            AccountTransaction transaction = new AccountTransaction();
-            transaction.setType(AccountTransaction.Type.TAX_REFUND);
-            return transaction;
-        });
+        pdfTransaction6.subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND));
 
         Block firstRelevantLine6 = new Block("^Erstattung Kapitalertragsteuer .*$", "^Bestand .*$");
         type.addBlock(firstRelevantLine6);
@@ -933,11 +897,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
         // Erstattung Kirchensteuer 1,27
         // @formatter:on
         Transaction<AccountTransaction> pdfTransaction7 = new Transaction<>();
-        pdfTransaction7.subject(() -> {
-            AccountTransaction transaction = new AccountTransaction();
-            transaction.setType(AccountTransaction.Type.TAX_REFUND);
-            return transaction;
-        });
+        pdfTransaction7.subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND));
 
         Block firstRelevantLine7 = new Block("^Erstattung Kirchensteuer .*$", "^Bestand .*$");
         type.addBlock(firstRelevantLine7);
@@ -973,11 +933,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                         // @formatter:off
                         // Ausmachender Betrag 29,57 EUR
@@ -1044,12 +1000,12 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                             if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                             {
                                 // Account 1
-                                v.put("currency", v.get("currency1"));
+                                v.put("currency", asCurrencyCode(v.get("currency1")));
                                 v.put("tax", v.get("tax1"));
                                 processTaxEntries(t, v, type);
 
                                 // Account 2
-                                v.put("currency", v.get("currency2"));
+                                v.put("currency", asCurrencyCode(v.get("currency2")));
                                 v.put("tax", v.get("tax2"));
                                 processTaxEntries(t, v, type);
                             }
@@ -1079,12 +1035,12 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                             if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                             {
                                 // Account 1
-                                v.put("currency", v.get("currency1"));
+                                v.put("currency", asCurrencyCode(v.get("currency1")));
                                 v.put("tax", v.get("tax1"));
                                 processTaxEntries(t, v, type);
 
                                 // Account 2
-                                v.put("currency", v.get("currency2"));
+                                v.put("currency", asCurrencyCode(v.get("currency2")));
                                 v.put("tax", v.get("tax2"));
                                 processTaxEntries(t, v, type);
                             }
@@ -1113,12 +1069,12 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                             if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                             {
                                 // Account 1
-                                v.put("currency", v.get("currency1"));
+                                v.put("currency", asCurrencyCode(v.get("currency1")));
                                 v.put("tax", v.get("tax1"));
                                 processTaxEntries(t, v, type);
 
                                 // Account 2
-                                v.put("currency", v.get("currency2"));
+                                v.put("currency", asCurrencyCode(v.get("currency2")));
                                 v.put("tax", v.get("tax2"));
                                 processTaxEntries(t, v, type);
                             }

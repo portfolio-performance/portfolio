@@ -13,7 +13,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -34,6 +33,8 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
 {
+    private static final String USD = "USD";
+
     public LimeTradingCorpPDFExtractor(Client client)
     {
         super(client);
@@ -79,11 +80,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
         type.addBlock(blockBuySell);
         blockBuySell.set(new Transaction<BuySellEntry>()
 
-                        .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         .section("month", "day", "name", "wkn", "type", "shares", "amount", "nameContinued") //
                         .documentContext("year") //
@@ -95,7 +92,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                                 t.setType(PortfolioTransaction.Type.SELL);
 
                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
-                            v.put("currency", CurrencyUnit.USD);
+                            v.put("currency", asCurrencyCode(USD));
 
                             t.setDate(asDate(v.get("date")));
                             t.setShares(asShares(v.get("shares")));
@@ -130,11 +127,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
         type.addBlock(blockDividende);
         blockDividende.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         .oneOf( //
                                         section -> section //
@@ -144,7 +137,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                                                         .match("^[\\w]{3} [\\d]{2} .* [\\w]{9} (NRA Withhold|Foreign Withholding) \\((?<tax>[\\.,\\d]+)\\)$") //
                                                         .assign((t, v) -> {
                                                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
-                                                            v.put("currency", CurrencyUnit.USD);
+                                                            v.put("currency", asCurrencyCode(USD));
 
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
@@ -152,7 +145,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setSecurity(getOrCreateSecurity(v));
 
-                                                            Money tax = Money.of(CurrencyUnit.USD,
+                                                            Money tax = Money.of(USD,
                                                                             asAmount(v.get("tax")));
                                                             checkAndSetTax(tax, t, type.getCurrentContext());
                                                         }),
@@ -163,7 +156,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                                                         .match("^[\\w]{3} [\\d]{2} .* [\\w]{9} (NRA Withhold|Foreign Withholding) \\((?<tax>[\\.,\\d]+)\\)$") //
                                                         .assign((t, v) -> {
                                                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
-                                                            v.put("currency", CurrencyUnit.USD);
+                                                            v.put("currency", asCurrencyCode(USD));
 
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
@@ -171,7 +164,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setSecurity(getOrCreateSecurity(v));
 
-                                                            Money tax = Money.of(CurrencyUnit.USD,
+                                                            Money tax = Money.of(USD,
                                                                             asAmount(v.get("tax")));
 
                                                             checkAndSetTax(tax, t, type.getCurrentContext());
@@ -182,7 +175,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<month>.*) (?<day>[\\d]{1,2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>(?!Qualified).{9}) (Qualified )?Dividend (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
-                                                            v.put("currency", CurrencyUnit.USD);
+                                                            v.put("currency", asCurrencyCode(USD));
 
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
@@ -198,11 +191,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
         blockWithholdTaxForDividende.setMaxSize(2);
         blockWithholdTaxForDividende.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                         .oneOf( //
                                         section -> section //
@@ -212,7 +201,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<name>.*)$") //
                                                         .assign((t, v) -> {
                                                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
-                                                            v.put("currency", CurrencyUnit.USD);
+                                                            v.put("currency", asCurrencyCode(USD));
 
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setShares(0L);
@@ -237,11 +226,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
         type.addBlock(blockDeliveryInBound);
         blockDeliveryInBound.set(new Transaction<PortfolioTransaction>()
 
-                        .subject(() -> {
-                            PortfolioTransaction portfolioTransaction = new PortfolioTransaction();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new PortfolioTransaction(PortfolioTransaction.Type.DELIVERY_INBOUND))
 
                         .section("month", "day", "name", "wkn", "shares", "nameContinued") //
                         .documentContext("year") //
@@ -249,7 +234,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                         .match("(?<nameContinued>.*)") //
                         .assign((t, v) -> {
                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
-                            v.put("currency", CurrencyUnit.USD);
+                            v.put("currency", asCurrencyCode(USD));
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setShares(asShares(v.get("shares")));
@@ -271,18 +256,14 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
         type.addBlock(blockFees);
         blockFees.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .section("month", "day", "name", "wkn", "amount") //
                         .documentContext("year") //
                         .match("^(?<month>[\\w]{3}) (?<day>[\\d]{1,2}) Ca Fee_spinoff.* (?<name>.*) (?<wkn>.*) Journal \\((?<amount>[\\.,\\d]+)\\)$") //
                         .assign((t, v) -> {
                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
-                            v.put("currency", CurrencyUnit.USD);
+                            v.put("currency", asCurrencyCode(USD));
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -308,11 +289,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
         type.addBlock(blockCashAllocation);
         blockCashAllocation.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         .section("month", "day", "name", "wkn", "amount") //
                         .documentContext("year") //
@@ -320,7 +297,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<name>.*)$") //
                         .assign((t, v) -> {
                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
-                            v.put("currency", CurrencyUnit.USD);
+                            v.put("currency", asCurrencyCode(USD));
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setShares(0L);
@@ -341,18 +318,14 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
         type.addBlock(blockDeposit);
         blockDeposit.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("month", "day", "amount") //
                         .documentContext("year") //
                         .match("^(?<month>[\\w]{3}) (?<day>[\\d]{1,2}) Wire .* (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
-                            v.put("currency", CurrencyUnit.USD);
+                            v.put("currency", asCurrencyCode(USD));
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -371,18 +344,14 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
         type.addBlock(blockInterest);
         blockInterest.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .section("month", "day", "amount") //
                         .documentContext("year") //
                         .match("^(?<month>[\\w]{3}) (?<day>[\\d]{1,2}) .* Credit Interest (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
-                            v.put("currency", CurrencyUnit.USD);
+                            v.put("currency", asCurrencyCode(USD));
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));

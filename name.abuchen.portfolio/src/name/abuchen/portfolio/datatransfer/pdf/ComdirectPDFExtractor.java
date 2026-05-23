@@ -94,7 +94,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        var type = new DocumentType("(Wertpapierkauf" //
+        final var type = new DocumentType("(Wertpapierkauf" //
                         + "|Wertpapierverkauf" //
                         + "|Verkauf .* B.rsenplatz" //
                         + "|Wertpapierumtausch)");
@@ -112,11 +112,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "Wertpapierverkauf" change from BUY to SELL
                         .section("type").optional() //
@@ -490,7 +486,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
     private void addSellWithNegativeAmountTransaction()
     {
-        var type = new DocumentType("Wertpapierverkauf");
+        final var type = new DocumentType("Wertpapierverkauf");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -501,11 +497,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .oneOf( //
                                         // @formatter:off
@@ -698,7 +690,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        var type = new DocumentType("(Dividendengutschrift" //
+        final var type = new DocumentType("(Dividendengutschrift" //
                         + "|Ertragsgutschrift" //
                         + "|Zinsgutschrift" //
                         + "|Ertragsthesaurierung)");
@@ -715,11 +707,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         .oneOf( //
                                         // @formatter:off
@@ -810,7 +798,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             v.put("wkn", stripBlanks(v.get("wkn")));
                                                             v.put("isin", stripBlanks(v.get("isin")));
-                                                            v.put("currency", stripBlanks(v.get("currency")));
+                                                            v.put("currency", asCurrencyCode(stripBlanks(v.get("currency"))));
                                                             v.put("name", trim(replaceMultipleBlanks(v.get("name"))));
                                                             v.put("nameContinued", trim(replaceMultipleBlanks(v.get("nameContinued"))));
 
@@ -1004,7 +992,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
     private void addTaxesTreatmentTransaction()
     {
-        var type = new DocumentType("Steuerliche Behandlung: " //
+        final var type = new DocumentType("Steuerliche Behandlung: " //
                         + "(Wertpapierkauf" //
                         + "|Verkauf" //
                         + "|Wertpapierverkauf" //
@@ -1025,11 +1013,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         .oneOf( //
                                         // @formatter:off
@@ -1043,7 +1027,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                                         + "(G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n|L[\\s]*a[\\s]*s[\\s]*t[\\s]*e[\\s]*n)" //
                                                                         + "[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?:[A-Z][\\s]*){3}[\\s]{1,}[\\.,\\d\\s]+[\\s]{1,}(?<currency>(?:[A-Z][\\s]*){3})[\\-\\s]{1,}[\\.,\\d\\s]+.*$") //
                                                         .assign((t, v) -> {
-                                                            v.put("currency", stripBlanks(v.get("currency")));
+                                                            v.put("currency", asCurrencyCode(stripBlanks(v.get("currency"))));
                                                             v.put("name", trim(replaceMultipleBlanks(v.get("name"))));
 
                                                             t.setSecurity(getOrCreateSecurity(v));
@@ -1065,7 +1049,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                                         + "(G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n|L[\\s]*a[\\s]*s[\\s]*t[\\s]*e[\\s]*n)" //
                                                                         + "[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?<currency>(?:[A-Z][\\s]*){3})[\\-\\s]{1,}[\\.,\\d\\s]+.*$") //
                                                         .assign((t, v) -> {
-                                                            v.put("currency", stripBlanks(v.get("currency")));
+                                                            v.put("currency", asCurrencyCode(stripBlanks(v.get("currency"))));
                                                             v.put("name", trim(replaceMultipleBlanks(v.get("name"))));
 
                                                             t.setSecurity(getOrCreateSecurity(v));
@@ -1081,7 +1065,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                                         + "(G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n|L[\\s]*a[\\s]*s[\\s]*t[\\s]*e[\\s]*n)" //
                                                                         + "[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?:[A-Z][\\s]*){3}[\\-\\s]{1,}[\\.,\\d\\s]+.*$") //
                                                         .assign((t, v) -> {
-                                                            v.put("currency", stripBlanks(v.get("currency")));
+                                                            v.put("currency", asCurrencyCode(stripBlanks(v.get("currency"))));
                                                             v.put("name", trim(replaceMultipleBlanks(v.get("name"))));
 
                                                             t.setSecurity(getOrCreateSecurity(v));
@@ -1456,7 +1440,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
     private void addDepositoryFeeTransaction()
     {
-        var type = new DocumentType("Verwahrentgelt", "Finanzreport");
+        final var type = new DocumentType("Verwahrentgelt", "Finanzreport");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -1467,11 +1451,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         // @formatter:off
                         // Abrechnung Verwahrentgelt Xetra Gold, WKN A0S9GB 06.01.2020
@@ -1529,7 +1509,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
     private void addFinancialReport()
     {
-        var type = new DocumentType("Finanzreport", (context, lines) -> {
+        final var type = new DocumentType("Finanzreport", (context, lines) -> {
             var pCurrency = Pattern.compile("^Kontow.hrung (?<currency>[A-Z]{3})$");
             var pForeignCurrencyAccount = Pattern.compile("^W.hrungsanlagekonto \\((?<foreignCurrency>[A-Z]{3})\\) .*$");
             var pAccountingBillDate = Pattern.compile("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Kontoabschluss .*$");
@@ -1609,11 +1589,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         removalBlock.setMaxSize(3);
         removalBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.REMOVAL);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
 
                         .section("note1", "note2", "amount", "date") //
                         .match("(^|^A)[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
@@ -1685,11 +1661,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         depositBlock.setMaxSize(3);
         depositBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("note1", "note2", "amount", "date") //
                         .match("(^|^A)[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
@@ -1763,11 +1735,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         type.addBlock(feesBlock);
         feesBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .section("date", "amount", "note") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
@@ -1797,11 +1765,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         type.addBlock(accountingBillFeeBlock);
         accountingBillFeeBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .section("note", "amount", "currency") //
                         .match("^(?<note>Versandpauschale) " //
@@ -1834,11 +1798,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .section("date", "type", "amount") //
                         .documentContext("currency") //
@@ -1894,11 +1854,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         type.addBlock(taxesBlock);
         taxesBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                         .section("date", "type", "amount") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //

@@ -52,11 +52,7 @@ public class BarclaysBankIrelandPLCPDFExtractor extends AbstractPDFExtractor
         type.addBlock(depositRemovalBlock);
         depositRemovalBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "note", "amount", "type") //
                         .documentContext("currency") //
@@ -84,11 +80,7 @@ public class BarclaysBankIrelandPLCPDFExtractor extends AbstractPDFExtractor
         interestBlock.setMaxSize(4);
         interestBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         // @formatter:off
                         // 31.12.2023 31.12.2023 Habenzinsen 4,80
@@ -112,7 +104,7 @@ public class BarclaysBankIrelandPLCPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Abgeltungsteuer \\-(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            Money tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
 
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
                             t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
@@ -125,7 +117,7 @@ public class BarclaysBankIrelandPLCPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Solidarit.tszuschlag \\-(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            Money tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
 
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
                             t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));

@@ -5,6 +5,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
@@ -16,9 +17,11 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundDelivery;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.skippedItem;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
@@ -5606,87 +5609,25 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check delivery inbound (Einlieferung) transaction
-        var deliveryTransaction = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        inboundDelivery( //
+                                        hasDate("2021-05-28T00:00"), hasShares(1.315), //
+                                        hasSource("Quartalsbericht01.txt"), //
+                                        hasNote("Fusion"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
-        assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2021-05-28T00:00")));
-        assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(1.315)));
-        assertThat(deliveryTransaction.getSource(), is("Quartalsbericht01.txt"));
-        assertThat(deliveryTransaction.getNote(), is("Fusion"));
-
-        assertThat(deliveryTransaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check delivery outbound (Auslieferung) transaction
-        deliveryTransaction = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2021-05-28T00:00")));
-        assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(2.140)));
-        assertThat(deliveryTransaction.getSource(), is("Quartalsbericht01.txt"));
-        assertThat(deliveryTransaction.getNote(), is("Fusion"));
-
-        assertThat(deliveryTransaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 1st cancellation transaction
-        var cancellation = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((PortfolioTransaction) cancellation.getSubject()).getType(),
-                        is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2021-05-28T00:00")));
-        assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(1.315)));
-        assertThat(((Transaction) cancellation.getSubject()).getSource(), is("Quartalsbericht01.txt"));
-        assertThat(((Transaction) cancellation.getSubject()).getNote(), is("Fusion"));
-
-        assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 2nd cancellation transaction
-        cancellation = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((PortfolioTransaction) cancellation.getSubject()).getType(),
-                        is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2021-05-28T00:00")));
-        assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(2.140)));
-        assertThat(((Transaction) cancellation.getSubject()).getSource(), is("Quartalsbericht01.txt"));
-        assertThat(((Transaction) cancellation.getSubject()).getNote(), is("Fusion"));
-
-        assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        outboundDelivery( //
+                                        hasDate("2021-05-28T00:00"), hasShares(2.140), //
+                                        hasSource("Quartalsbericht01.txt"), //
+                                        hasNote("Fusion"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -5704,11 +5645,11 @@ public class DekaBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(3L));
-        assertThat(countBuySell(results), is(10L));
+        assertThat(countBuySell(results), is(9L));
         assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(2L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(15));
         new AssertImportActions().check(results, "EUR");
 
@@ -5779,56 +5720,18 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2022-05-20T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht02.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+
         // check 1st security buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(2).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-05-20T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht02.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 1st cancellation transaction
-        var cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2022-05-20T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht02.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 1st security buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -5849,7 +5752,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 2nd security buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(4).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -5870,7 +5773,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 2nd security buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(5).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(4).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -5891,7 +5794,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 2nd security buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(6).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(5).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -5912,7 +5815,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 3rd security buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(7).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(6).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -5933,7 +5836,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 3rd security buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(8).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(7).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -5954,7 +5857,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 3rd security buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(9).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(8).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -5974,23 +5877,22 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2022-05-20T00:00"), hasExDate("2022-05-20T00:00"), //
+                                        hasShares(15.396 + 0.255 + 0.268), //
+                                        hasSource("Quartalsbericht02.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+
         // check 1st dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-20T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(16.190 - 0.271 + 0.000 + 0.000)));
-        assertThat(transaction.getSource(), is("Quartalsbericht02.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 2nd dividends transaction
+        // check 1nd dividends transaction
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
@@ -6005,31 +5907,6 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(33.43))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        var cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2022-05-20T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(),
-                        is(Values.Share.factorize(15.396 + 0.255 + 0.268)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht02.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -7081,11 +6958,11 @@ public class DekaBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(9L));
-        assertThat(countBuySell(results), is(10L));
+        assertThat(countBuySell(results), is(4L));
         assertThat(countAccountTransactions(results), is(11L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(12L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(6L));
+        assertThat(countSkippedItems(results), is(6L));
         assertThat(results.size(), is(30));
         new AssertImportActions().check(results, "EUR");
 
@@ -7162,68 +7039,38 @@ public class DekaBankPDFExtractorTest
         assertThat(security9.getName(), is("Deka-BR 100"));
         assertThat(security9.getCurrencyCode(), is("EUR"));
 
-        // check 1st buy sell transaction
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2012-07-02T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht06.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2012-12-28T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht06.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2012-10-01T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht06.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+
+        // check 1th buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-07-02T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht06.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 2nd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-12-28T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht06.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 3rd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(2).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-10-01T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht06.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 4th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -7243,48 +7090,28 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 5th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(4).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2012-10-01T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht06.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2012-10-01T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht06.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-10-01T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht06.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 6th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(5).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-10-01T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht06.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 7th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(6).findFirst()
+        // check 2th buy sell transaction
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -7304,28 +7131,18 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 7th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(7).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2012-12-28T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht06.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-12-28T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht06.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 9th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(8).findFirst()
+        // check 3th buy sell transaction
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -7345,8 +7162,8 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 10th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(9).findFirst()
+        // check 4th buy sell transaction
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -7382,54 +7199,22 @@ public class DekaBankPDFExtractorTest
         assertThat(deliveryTransaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 1st dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(7)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-07-02T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(12.778)));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-08-20T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(13.772)));
         assertThat(transaction.getSource(), is("Quartalsbericht06.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(15.29))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(15.29))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 2nd dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(2)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-12-28T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(50.169)));
-        assertThat(transaction.getSource(), is("Quartalsbericht06.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 3rd dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(3)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-10-01T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(5.454)));
-        assertThat(transaction.getSource(), is("Quartalsbericht06.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 4th dividends transaction
+        // check 2st dividends transaction
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(4)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
@@ -7445,69 +7230,71 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 5th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(5)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2012-07-02T00:00"), hasExDate("2012-07-02T00:00"), //
+                                        hasShares(12.778), //
+                                        hasSource("Quartalsbericht06.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2012-12-28T00:00"), hasExDate("2012-12-28T00:00"), //
+                                        hasShares(50.169), //
+                                        hasSource("Quartalsbericht06.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-10-01T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(10.694)));
-        assertThat(transaction.getSource(), is("Quartalsbericht06.txt"));
-        assertNull(transaction.getNote());
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2012-10-01T00:00"), hasExDate("2012-10-01T00:00"), //
+                                        hasShares(5.454), //
+                                        hasSource("Quartalsbericht06.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2012-10-01T00:00"), hasExDate("2012-10-01T00:00"), //
+                                        hasShares(10.694), //
+                                        hasSource("Quartalsbericht06.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
-        // check 6th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(6)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2012-10-01T00:00"), hasExDate("2012-10-01T00:00"), //
+                                        hasShares(6.332), //
+                                        hasSource("Quartalsbericht06.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-10-01T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(6.332)));
-        assertThat(transaction.getSource(), is("Quartalsbericht06.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 7th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(7)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-08-20T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(13.772)));
-        assertThat(transaction.getSource(), is("Quartalsbericht06.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(15.29))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(15.29))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 8th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(8)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-12-28T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(28.237)));
-        assertThat(transaction.getSource(), is("Quartalsbericht06.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2012-12-28T00:00"), hasExDate("2012-12-28T00:00"), //
+                                        hasShares(28.237), //
+                                        hasSource("Quartalsbericht06.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 9th dividends transaction
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(9)
@@ -7525,187 +7312,13 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 1st cancellation transaction
-        var cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2012-07-02T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht06.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 2nd cancellation transaction
-        cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2012-12-28T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht06.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 3rd cancellation transaction
-        cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .skip(2).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2012-10-01T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht06.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 4th cancellation transaction
-        cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .skip(3).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2012-10-01T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht06.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 5th cancellation transaction
-        cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .skip(4).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2012-10-01T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht06.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 6th cancellation transaction
-        cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .skip(5).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2012-12-28T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht06.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check transaction
-        var iter = results.stream().filter(TransactionItem.class::isInstance).skip(10).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(11L));
-
-        var item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-12-31T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.00))));
-        assertThat(transaction.getSource(), is("Quartalsbericht06.txt"));
-        assertThat(transaction.getNote(), is("Depotpreis 2012"));
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2012-12-31T00:00"), //
+                        hasSource("Quartalsbericht06.txt"), //
+                        hasNote("Depotpreis 2012"), //
+                        hasAmount("EUR", 10.00), hasGrossValue("EUR", 10.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -8224,11 +7837,11 @@ public class DekaBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(10L));
-        assertThat(countBuySell(results), is(38L));
+        assertThat(countBuySell(results), is(34L));
         assertThat(countAccountTransactions(results), is(16L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(9L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(5L));
+        assertThat(countSkippedItems(results), is(4L));
         assertThat(results.size(), is(64));
         new AssertImportActions().check(results, "EUR");
 
@@ -8709,28 +8322,18 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 20th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(19).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-12-30T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2005-12-30T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht09.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 21th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(20).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(19).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -8751,7 +8354,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 22th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(21).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(20).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -8772,7 +8375,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 23th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(22).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(21).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -8793,7 +8396,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 24th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(23).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(22).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -8814,7 +8417,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 25th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(24).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(23).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -8835,7 +8438,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 26th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(25).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(24).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -8855,7 +8458,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 27th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(26).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(25).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -8876,7 +8479,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 28th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(27).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(26).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -8896,28 +8499,18 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 29th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(28).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-12-30T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2005-12-30T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht09.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 30th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(29).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(27).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -8937,7 +8530,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 31th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(30).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(28).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -8958,7 +8551,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 32th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(31).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(29).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -8979,7 +8572,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 33th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(32).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(30).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -8998,28 +8591,18 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 34th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(33).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-09-09T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.00)));
-        assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2005-09-09T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht09.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 35th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(34).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(31).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -9038,28 +8621,18 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 36th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(35).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-09-14T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2005-09-14T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht09.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 37th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(36).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(32).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -9080,7 +8653,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 38th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(37).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(33).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -9098,118 +8671,6 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 1st cancellation transaction
-        var cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2005-12-30T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht09.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 2nd cancellation transaction
-        cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2005-12-30T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht09.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 3rd cancellation transaction
-        cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .skip(2).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2005-09-09T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht09.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 4th cancellation transaction
-        cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .skip(3).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2005-09-14T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht09.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 1st dividends transaction
@@ -9278,23 +8739,6 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 5th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(4)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2005-12-30T00:00")));
-        // assertThat(transaction.getShares(),
-        // is(Values.Share.factorize(0.913)));
-        assertThat(transaction.getSource(), is("Quartalsbericht09.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 6th dividends transaction
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(5)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
@@ -9310,7 +8754,7 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 7th dividends transaction
+        // check 6th dividends transaction
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(6)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
@@ -9323,22 +8767,6 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.08))));
         assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.08))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 8th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(7)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2005-12-30T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(45.986)));
-        assertThat(transaction.getSource(), is("Quartalsbericht09.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
@@ -9374,220 +8802,56 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 11th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(10)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2005-12-30T00:00"), hasExDate("2005-12-30T00:00"), //
+                                        hasShares(0.913), //
+                                        hasSource("Quartalsbericht09.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2005-12-30T00:00"), hasExDate("2005-12-30T00:00"), //
+                                        hasShares(31.348 + 0.002 + 5.854 + 8.782), //
+                                        hasSource("Quartalsbericht09.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2005-08-22T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(26.194)));
-        assertThat(transaction.getSource(), is("Quartalsbericht09.txt"));
-        assertNull(transaction.getNote());
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2005-09-09T00:00"), hasExDate("2005-09-09T00:00"), //
+                                        hasShares(26.194), //
+                                        hasSource("Quartalsbericht09.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1.05))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(1.05))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2005-09-14T00:00"), hasExDate("2005-09-14T00:00"), //
+                                        hasShares(26.194 + 0.025), //
+                                        hasSource("Quartalsbericht09.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
-        // check 12th dividends transaction (Storno)
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(11)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2005-08-22T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(26.194)));
-        assertThat(transaction.getSource(), is("Quartalsbericht09.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1.05))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(1.05))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 13th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(12)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2005-09-09T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(26.194)));
-        assertThat(transaction.getSource(), is("Quartalsbericht09.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 14th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(13)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2005-08-22T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(26.194)));
-        assertThat(transaction.getSource(), is("Quartalsbericht09.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1.05))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(1.05))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 15th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(14)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2005-09-14T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(26.194 + 0.025)));
-        assertThat(transaction.getSource(), is("Quartalsbericht09.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        var cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2005-12-30T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(0.913)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht09.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2005-12-30T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(),
-                        is(Values.Share.factorize(31.348 + 0.002 + 5.854 + 8.782)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht09.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation (Storno) transaction
-        cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(2).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionOrderCancellationUnsupported));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2005-08-22T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(26.194)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht09.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1.05))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(1.05))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(3).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2005-09-09T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(26.194)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht09.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(4).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2005-09-14T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(26.194 + 0.025)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht09.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check transaction
-        var iter = results.stream().filter(TransactionItem.class::isInstance).skip(15).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(16L));
-
-        var item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2005-12-16T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.00))));
-        assertThat(transaction.getSource(), is("Quartalsbericht09.txt"));
-        assertThat(transaction.getNote(), is("Depotpreis 2005"));
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2005-12-16T00:00"), hasShares(0), //
+                        hasSource("Quartalsbericht09.txt"), hasNote("Depotpreis 2005"), //
+                        hasAmount("EUR", 10.00), hasGrossValue("EUR", 10.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -9605,11 +8869,11 @@ public class DekaBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(9L));
-        assertThat(countBuySell(results), is(30L));
+        assertThat(countBuySell(results), is(28L));
         assertThat(countAccountTransactions(results), is(11L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(4L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(2L));
+        assertThat(countSkippedItems(results), is(2L));
         assertThat(results.size(), is(50));
         new AssertImportActions().check(results, "EUR");
 
@@ -10165,28 +9429,18 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 24th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(23).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-12-29T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2006-12-29T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht10.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 25th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(24).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(23).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -10207,7 +9461,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 26th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(25).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(24).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -10227,28 +9481,18 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 27th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(26).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-12-29T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2006-12-29T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht10.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 28th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(27).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(25).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -10269,7 +9513,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 29th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(28).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(26).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -10290,7 +9534,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 30th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(29).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(27).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -10307,62 +9551,6 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 1st cancellation transaction
-        var cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2006-12-29T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht10.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 2nd cancellation transaction
-        cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2006-12-29T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht10.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 1st dividends transaction
@@ -10430,21 +9618,16 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 5th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(4)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2006-12-29T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0.913 + 0.005 + 15.323)));
-        assertThat(transaction.getSource(), is("Quartalsbericht10.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2006-12-29T00:00"), hasExDate("2006-12-29T00:00"), //
+                                        hasShares(0.913 + 0.005 + 15.323), //
+                                        hasSource("Quartalsbericht10.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 6th dividends transaction
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(5)
@@ -10462,21 +9645,16 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 7th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(6)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2006-12-29T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(45.986 + 8.699)));
-        assertThat(transaction.getSource(), is("Quartalsbericht10.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2006-12-29T00:00"), hasExDate("2006-12-29T00:00"), //
+                                        hasShares(45.986 + 8.699), //
+                                        hasSource("Quartalsbericht10.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 8th dividends transaction
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(7)
@@ -10510,78 +9688,19 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check cancellation transaction
-        var cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .findFirst().orElseThrow(IllegalArgumentException::new);
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2006-12-15T00:00"), hasShares(0), //
+                        hasSource("Quartalsbericht10.txt"), hasNote("Depotpreis 2006"), //
+                        hasAmount("EUR", 10.00), hasGrossValue("EUR", 10.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2006-12-29T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(),
-                        is(Values.Share.factorize(0.913 + 0.005 + 15.323)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht10.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2006-12-29T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(45.986 + 8.699)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht10.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check transaction
-        var iter = results.stream().filter(TransactionItem.class::isInstance).skip(9).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(11L));
-
-        var item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2006-12-15T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.00))));
-        assertThat(transaction.getSource(), is("Quartalsbericht10.txt"));
-        assertThat(transaction.getNote(), is("Depotpreis 2006"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2006-12-15T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(5.00))));
-        assertThat(transaction.getSource(), is("Quartalsbericht10.txt"));
-        assertThat(transaction.getNote(), is("Vertragsgebühr 2006"));
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2006-12-15T00:00"), hasShares(0), //
+                        hasSource("Quartalsbericht10.txt"), hasNote("Vertragsgebühr 2006"), //
+                        hasAmount("EUR", 5.00), hasGrossValue("EUR", 5.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -10599,11 +9718,11 @@ public class DekaBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(10L));
-        assertThat(countBuySell(results), is(34L));
+        assertThat(countBuySell(results), is(32L));
         assertThat(countAccountTransactions(results), is(10L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(4L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(2L));
+        assertThat(countSkippedItems(results), is(2L));
         assertThat(results.size(), is(54));
         new AssertImportActions().check(results, "EUR");
 
@@ -11212,28 +10331,18 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 26th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(25).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-10-01T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2008-10-01T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht11.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 27th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(26).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(25).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -11254,7 +10363,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 28th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(27).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(26).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -11275,7 +10384,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 29th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(28).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(27).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -11295,7 +10404,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 30th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(29).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(28).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -11316,7 +10425,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 31th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(30).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(29).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -11337,7 +10446,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 32th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(31).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(30).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -11357,28 +10466,18 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 33th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(32).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-06-30T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2008-06-30T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht11.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 34th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(33).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(31).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -11396,62 +10495,6 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 1st cancellation transaction
-        var cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2008-10-01T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht11.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 2nd cancellation transaction
-        cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2008-06-30T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht11.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 1st dividends transaction
@@ -11486,21 +10529,16 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 3rd dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(2)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2008-10-01T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(15.216)));
-        assertThat(transaction.getSource(), is("Quartalsbericht11.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2008-10-01T00:00"), hasExDate("2008-10-01T00:00"), //
+                                        hasShares(15.216), //
+                                        hasSource("Quartalsbericht11.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 4th dividends transaction
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(3)
@@ -11566,94 +10604,30 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 8th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(7)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2008-06-30T00:00"), hasExDate("2008-06-30T00:00"), //
+                                        hasShares(0.000 + 48.399 - 0.000), //
+                                        hasSource("Quartalsbericht11.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2008-12-12T00:00"), hasShares(0), //
+                        hasSource("Quartalsbericht11.txt"), hasNote("Depotpreis 2008"), //
+                        hasAmount("EUR", 10.00), hasGrossValue("EUR", 10.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2008-06-30T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0.000 + 48.399 - 0.000)));
-        assertThat(transaction.getSource(), is("Quartalsbericht11.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        var cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2008-10-01T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(15.216)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht11.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2008-06-30T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(),
-                        is(Values.Share.factorize(0.000 + 48.399 - 0.000)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht11.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check transaction
-        var iter = results.stream().filter(TransactionItem.class::isInstance).skip(8).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(10L));
-
-        var item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2008-12-12T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.00))));
-        assertThat(transaction.getSource(), is("Quartalsbericht11.txt"));
-        assertThat(transaction.getNote(), is("Depotpreis 2008"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2008-12-12T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.00))));
-        assertThat(transaction.getSource(), is("Quartalsbericht11.txt"));
-        assertThat(transaction.getNote(), is("Vertragsgebühr 2008"));
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2008-12-12T00:00"), hasShares(0), //
+                        hasSource("Quartalsbericht11.txt"), hasNote("Vertragsgebühr 2008"), //
+                        hasAmount("EUR", 10.00), hasGrossValue("EUR", 10.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -11671,11 +10645,11 @@ public class DekaBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(9L));
-        assertThat(countBuySell(results), is(17L));
+        assertThat(countBuySell(results), is(14L));
         assertThat(countAccountTransactions(results), is(14L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(6L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(3L));
+        assertThat(countSkippedItems(results), is(3L));
         assertThat(results.size(), is(40));
         new AssertImportActions().check(results, "EUR");
 
@@ -11857,28 +10831,18 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 6th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(5).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-07-02T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht12.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2009-07-02T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht12.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 7th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(6).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(5).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -11898,7 +10862,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 8th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(7).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(6).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -11919,7 +10883,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 9th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(8).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(7).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -11940,7 +10904,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 10th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(9).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(8).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -11961,7 +10925,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 11th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(10).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(9).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -11981,28 +10945,18 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 12th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(11).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-10-01T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht12.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2009-10-01T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht12.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 13th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(12).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(10).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -12023,7 +10977,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 14th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(13).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(11).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -12043,7 +10997,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 15th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(14).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(12).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -12064,7 +11018,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 16th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(15).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(13).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -12083,109 +11037,15 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 17th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(16).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-12-30T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht12.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 1st cancellation transaction
-        var cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2009-07-02T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht12.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 2nd cancellation transaction
-        cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2009-10-01T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht12.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 3rd cancellation transaction
-        cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .skip(2).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2009-12-30T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht12.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2009-12-30T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht12.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check delivery inbound (Einlieferung) transaction
         var deliveryTransaction = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
@@ -12219,21 +11079,16 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 2nd dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(2)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2009-07-02T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(15.795)));
-        assertThat(transaction.getSource(), is("Quartalsbericht12.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2009-07-02T00:00"), hasExDate("2009-07-02T00:00"), //
+                                        hasShares(15.795), //
+                                        hasSource("Quartalsbericht12.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 3rd dividends transaction
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(3)
@@ -12267,21 +11122,16 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 5th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(5)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2009-10-01T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(15.216)));
-        assertThat(transaction.getSource(), is("Quartalsbericht12.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2009-10-01T00:00"), hasExDate("2009-10-01T00:00"), //
+                                        hasShares(15.216), //
+                                        hasSource("Quartalsbericht12.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 6th dividends transaction
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(6)
@@ -12315,111 +11165,26 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check cancellation transaction
-        var cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .findFirst().orElseThrow(IllegalArgumentException::new);
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2009-12-31T00:00"), hasShares(0), //
+                        hasSource("Quartalsbericht12.txt"), hasNote("Depotpreis 2009"), //
+                        hasAmount("EUR", 10.00), hasGrossValue("EUR", 10.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2009-12-31T00:00"), hasShares(0), //
+                        hasSource("Quartalsbericht12.txt"), hasNote("Abschluss-/ Vertriebskosten 2009"), //
+                        hasAmount("EUR", 21.06), hasGrossValue("EUR", 21.06), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2009-07-02T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(15.795)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht12.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2009-10-01T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(15.216)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht12.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(2).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2009-12-30T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(36.045)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht12.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check transaction
-        var iter = results.stream().filter(TransactionItem.class::isInstance).skip(11).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(14L));
-
-        var item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2009-12-31T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.00))));
-        assertThat(transaction.getSource(), is("Quartalsbericht12.txt"));
-        assertThat(transaction.getNote(), is("Depotpreis 2009"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2009-12-31T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(21.06))));
-        assertThat(transaction.getSource(), is("Quartalsbericht12.txt"));
-        assertThat(transaction.getNote(), is("Abschluss-/ Vertriebskosten 2009"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2009-12-31T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.00))));
-        assertThat(transaction.getSource(), is("Quartalsbericht12.txt"));
-        assertThat(transaction.getNote(), is("Vertragspreis 2009"));
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2009-12-31T00:00"), hasShares(0), //
+                        hasSource("Quartalsbericht12.txt"), hasNote("Vertragspreis 2009"), //
+                        hasAmount("EUR", 10.00), hasGrossValue("EUR", 10.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -12437,11 +11202,11 @@ public class DekaBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(9L));
-        assertThat(countBuySell(results), is(15L));
-        assertThat(countAccountTransactions(results), is(17L));
+        assertThat(countBuySell(results), is(10L));
+        assertThat(countAccountTransactions(results), is(14L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(13L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(5L));
+        assertThat(countSkippedItems(results), is(8L));
         assertThat(results.size(), is(41));
         new AssertImportActions().check(results, "EUR");
 
@@ -12559,28 +11324,18 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 3rd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(2).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-07-01T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht13.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2010-07-01T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht13.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 4th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(3).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -12601,7 +11356,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 5th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(4).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -12622,7 +11377,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 6th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(5).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(4).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -12642,28 +11397,18 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 7th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(6).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-10-01T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht13.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2010-10-01T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht13.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 8th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(7).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(5).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -12683,28 +11428,18 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 9th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(8).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-10-01T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht13.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2010-10-01T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht13.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 10th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(9).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(6).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -12724,28 +11459,18 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 11th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(10).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-10-01T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht13.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2010-10-01T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht13.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 12th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(11).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(7).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -12765,28 +11490,18 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 13th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(12).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-12-30T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht13.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2010-12-30T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht13.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 14th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(13).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(8).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -12806,7 +11521,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 15th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(14).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(9).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -12824,146 +11539,6 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 1st cancellation transaction
-        var cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2010-07-01T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht13.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 2nd cancellation transaction
-        cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2010-10-01T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht13.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 3rd cancellation transaction
-        cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .skip(2).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2010-10-01T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht13.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 4th cancellation transaction
-        cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .skip(3).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2010-10-01T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht13.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 5th cancellation transaction
-        cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .skip(4).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2010-12-30T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht13.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check delivery inbound (Einlieferung) transaction
@@ -12998,21 +11573,16 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 2nd dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(2)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-01T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(15.795)));
-        assertThat(transaction.getSource(), is("Quartalsbericht13.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2010-07-01T00:00"), hasExDate("2010-07-01T00:00"), //
+                                        hasShares(15.795), //
+                                        hasSource("Quartalsbericht13.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 3rd dividends transaction
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(3)
@@ -13030,37 +11600,27 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 4th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(4)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2010-10-01T00:00"), hasExDate("2010-10-01T00:00"), //
+                                        hasShares(15.216), //
+                                        hasSource("Quartalsbericht13.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-10-01T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(15.216)));
-        assertThat(transaction.getSource(), is("Quartalsbericht13.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 5th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(5)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-10-01T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(5.864)));
-        assertThat(transaction.getSource(), is("Quartalsbericht13.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2010-10-01T00:00"), hasExDate("2010-10-01T00:00"), //
+                                        hasShares(5.864), //
+                                        hasSource("Quartalsbericht13.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 6th dividends transaction
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(6)
@@ -13078,21 +11638,16 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 7th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(7)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-10-01T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(32.371)));
-        assertThat(transaction.getSource(), is("Quartalsbericht13.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2010-10-01T00:00"), hasExDate("2010-10-01T00:00"), //
+                                        hasShares(32.371), //
+                                        hasSource("Quartalsbericht13.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 8th dividends transaction
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(8)
@@ -13110,21 +11665,16 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 9th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(9)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-12-30T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(36.045)));
-        assertThat(transaction.getSource(), is("Quartalsbericht13.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2010-12-30T00:00"), hasExDate("2010-12-30T00:00"), //
+                                        hasShares(36.045), //
+                                        hasSource("Quartalsbericht13.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 10th dividends transaction
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(10)
@@ -13142,262 +11692,56 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check cancellation transaction
-        var cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .findFirst().orElseThrow(IllegalArgumentException::new);
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        fee( //
+                                        hasDate("2010-12-31T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht13.txt"), //
+                                        hasNote("Vertragspreis (zu Lasten Vertrag) 2010"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        fee( //
+                                        hasDate("2010-12-31T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht13.txt"), //
+                                        hasNote("Weitere Preise (zu Lasten Girokonto) 2010"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2010-07-01T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(15.795)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht13.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        fee( //
+                                        hasDate("2010-12-31T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht13.txt"), //
+                                        hasNote("Weitere Preise (zu Lasten Vertrag) 2010"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2010-12-31T00:00"), hasShares(0), //
+                        hasSource("Quartalsbericht13.txt"), hasNote("Depotpreis 2010"), //
+                        hasAmount("EUR", 10.00), hasGrossValue("EUR", 10.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // check cancellation transaction
-        cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2010-12-31T00:00"), hasShares(0), //
+                        hasSource("Quartalsbericht13.txt"), hasNote("Abschluss-/ Vertriebskosten 2010"), //
+                        hasAmount("EUR", 10.77), hasGrossValue("EUR", 10.77), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2010-10-01T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(15.216)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht13.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(2).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2010-10-01T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(5.864)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht13.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(3).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2010-10-01T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(32.371)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht13.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(4).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2010-12-30T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(36.045)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht13.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(5).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.FEES));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2010-12-31T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(0)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht13.txt"));
-        assertThat(((Transaction) cancellation1.getSubject()).getNote(), is("Vertragspreis (zu Lasten Vertrag) 2010"));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(6).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.FEES));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2010-12-31T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(0)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht13.txt"));
-        assertThat(((Transaction) cancellation1.getSubject()).getNote(),
-                        is("Weitere Preise (zu Lasten Girokonto) 2010"));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(7).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.FEES));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2010-12-31T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(0)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht13.txt"));
-        assertThat(((Transaction) cancellation1.getSubject()).getNote(), is("Weitere Preise (zu Lasten Vertrag) 2010"));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check transaction
-        var iter = results.stream().filter(TransactionItem.class::isInstance).skip(11).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(17L));
-
-        var item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-12-31T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.00))));
-        assertThat(transaction.getSource(), is("Quartalsbericht13.txt"));
-        assertThat(transaction.getNote(), is("Depotpreis 2010"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-12-31T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.77))));
-        assertThat(transaction.getSource(), is("Quartalsbericht13.txt"));
-        assertThat(transaction.getNote(), is("Abschluss-/ Vertriebskosten 2010"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-12-31T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.00))));
-        assertThat(transaction.getSource(), is("Quartalsbericht13.txt"));
-        assertThat(transaction.getNote(), is("Vertragspreis (zu Lasten Girokonto) 2010"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-12-31T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getSource(), is("Quartalsbericht13.txt"));
-        assertThat(transaction.getNote(), is("Vertragspreis (zu Lasten Vertrag) 2010"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-12-31T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getSource(), is("Quartalsbericht13.txt"));
-        assertThat(transaction.getNote(), is("Weitere Preise (zu Lasten Girokonto) 2010"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-12-31T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getSource(), is("Quartalsbericht13.txt"));
-        assertThat(transaction.getNote(), is("Weitere Preise (zu Lasten Vertrag) 2010"));
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2010-12-31T00:00"), hasShares(0), //
+                        hasSource("Quartalsbericht13.txt"), hasNote("Vertragspreis (zu Lasten Girokonto) 2010"), //
+                        hasAmount("EUR", 10.00), hasGrossValue("EUR", 10.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -13415,11 +11759,11 @@ public class DekaBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(9L));
-        assertThat(countBuySell(results), is(11L));
+        assertThat(countBuySell(results), is(7L));
         assertThat(countAccountTransactions(results), is(12L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(8L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(4L));
+        assertThat(countSkippedItems(results), is(4L));
         assertThat(results.size(), is(32));
         new AssertImportActions().check(results, "EUR");
 
@@ -13517,28 +11861,18 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 2nd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2011-07-01T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht14.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2011-07-01T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht14.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 3rd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(2).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -13557,48 +11891,28 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 4th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(3).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2011-10-04T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht14.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2011-10-04T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht14.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 5th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(4).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2011-10-04T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht14.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2011-10-04T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht14.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 6th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(5).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -13619,7 +11933,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 7th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(6).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -13639,7 +11953,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 8th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(7).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(4).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -13659,28 +11973,18 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 9th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(8).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2011-12-30T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht14.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2011-12-30T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht14.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 10th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(9).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(5).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -13700,7 +12004,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 11th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(10).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(6).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -13718,118 +12022,6 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 1st cancellation transaction
-        var cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2011-07-01T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht14.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 2nd cancellation transaction
-        cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2011-10-04T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht14.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 3rd cancellation transaction
-        cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .skip(2).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2011-10-04T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht14.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 4th cancellation transaction
-        cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .skip(3).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2011-12-30T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht14.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check delivery inbound (Einlieferung) transaction
@@ -13864,21 +12056,16 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 2nd dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(2)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2011-07-01T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(15.795)));
-        assertThat(transaction.getSource(), is("Quartalsbericht14.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2011-07-01T00:00"), hasExDate("2011-07-01T00:00"), //
+                                        hasShares(15.795), //
+                                        hasSource("Quartalsbericht14.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 3rd dividends transaction
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(3)
@@ -13896,37 +12083,27 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 4th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(4)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2011-10-04T00:00"), hasExDate("2011-10-04T00:00"), //
+                                        hasShares(15.216), //
+                                        hasSource("Quartalsbericht14.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2011-10-04T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(15.216)));
-        assertThat(transaction.getSource(), is("Quartalsbericht14.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 5th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(5)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2011-10-04T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(5.864)));
-        assertThat(transaction.getSource(), is("Quartalsbericht14.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2011-10-04T00:00"), hasExDate("2011-10-04T00:00"), //
+                                        hasShares(5.864), //
+                                        hasSource("Quartalsbericht14.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 6th dividends transaction
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(6)
@@ -13976,21 +12153,16 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 9th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(9)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2011-12-30T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(36.045)));
-        assertThat(transaction.getSource(), is("Quartalsbericht14.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2011-12-30T00:00"), hasExDate("2011-12-30T00:00"), //
+                                        hasShares(36.045), //
+                                        hasSource("Quartalsbericht14.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 10th dividends transaction
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(10)
@@ -14008,115 +12180,12 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check cancellation transaction
-        var cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2011-07-01T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(15.795)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht14.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2011-10-04T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(15.216)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht14.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(2).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2011-10-04T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(5.864)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht14.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(3).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2011-12-30T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(36.045)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht14.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check transaction
-        var iter = results.stream().filter(TransactionItem.class::isInstance).skip(11).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(12L));
-
-        var item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2011-12-31T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.00))));
-        assertThat(transaction.getSource(), is("Quartalsbericht14.txt"));
-        assertThat(transaction.getNote(), is("Depotpreis 2011"));
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2011-12-31T00:00"), hasShares(0), //
+                        hasSource("Quartalsbericht14.txt"), hasNote("Depotpreis 2011"), //
+                        hasAmount("EUR", 10.00), hasGrossValue("EUR", 10.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -14134,11 +12203,11 @@ public class DekaBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(9L));
-        assertThat(countBuySell(results), is(12L));
+        assertThat(countBuySell(results), is(7L));
         assertThat(countAccountTransactions(results), is(10L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(10L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(5L));
+        assertThat(countSkippedItems(results), is(5L));
         assertThat(results.size(), is(31));
         new AssertImportActions().check(results, "EUR");
 
@@ -14236,28 +12305,18 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 2nd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-07-02T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht15.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2012-07-02T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht15.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 3rd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(2).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -14277,48 +12336,28 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 4th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(3).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2012-10-01T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht15.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-10-01T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht15.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 5th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(4).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-10-01T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht15.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2012-10-01T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht15.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 6th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(5).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -14338,28 +12377,18 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 7th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(6).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-10-01T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht15.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2012-10-01T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht15.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 8th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(7).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -14379,28 +12408,18 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 9th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(8).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-12-28T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht15.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2012-12-28T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht15.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 10th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(9).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(4).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -14421,7 +12440,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 11th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(10).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(5).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -14442,7 +12461,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 12th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(11).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(6).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -14462,146 +12481,6 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 1st cancellation transaction
-        var cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2012-07-02T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht15.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 2nd cancellation transaction
-        cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2012-10-01T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht15.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 3rd cancellation transaction
-        cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .skip(2).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2012-10-01T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht15.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 4th cancellation transaction
-        cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .skip(3).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2012-10-01T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht15.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 5th cancellation transaction
-        cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .skip(4).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2012-12-28T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht15.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
         // check delivery inbound (Einlieferung) transaction
         var deliveryTransaction = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
@@ -14618,24 +12497,19 @@ public class DekaBankPDFExtractorTest
         assertThat(deliveryTransaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(deliveryTransaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 1st dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-07-02T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(15.795)));
-        assertThat(transaction.getSource(), is("Quartalsbericht15.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2012-07-02T00:00"), hasExDate("2012-07-02T00:00"), //
+                                        hasShares(15.795), //
+                                        hasSource("Quartalsbericht15.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 2nd dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(2)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(2)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -14650,37 +12524,27 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 3rd dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(3)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2012-10-01T00:00"), hasExDate("2012-10-01T00:00"), //
+                                        hasShares(15.216), //
+                                        hasSource("Quartalsbericht15.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-10-01T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(15.216)));
-        assertThat(transaction.getSource(), is("Quartalsbericht15.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 4th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(4)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-10-01T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(5.864)));
-        assertThat(transaction.getSource(), is("Quartalsbericht15.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2012-10-01T00:00"), hasExDate("2012-10-01T00:00"), //
+                                        hasShares(5.864), //
+                                        hasSource("Quartalsbericht15.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 5th dividends transaction
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(5)
@@ -14698,37 +12562,27 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 6th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(6)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2012-10-01T00:00"), hasExDate("2012-10-01T00:00"), //
+                                        hasShares(32.445), //
+                                        hasSource("Quartalsbericht15.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-10-01T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(32.445)));
-        assertThat(transaction.getSource(), is("Quartalsbericht15.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 7th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(7)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-12-28T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(36.045)));
-        assertThat(transaction.getSource(), is("Quartalsbericht15.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check failure message
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2012-12-28T00:00"), hasExDate("2012-12-28T00:00"), //
+                                        hasShares(36.045), //
+                                        hasSource("Quartalsbericht15.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 8th dividends transaction
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(8)
@@ -14746,139 +12600,12 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check cancellation transaction
-        var cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2012-07-02T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(15.795)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht15.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2012-10-01T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(15.216)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht15.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(2).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2012-10-01T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(5.864)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht15.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(3).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2012-10-01T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(32.445)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht15.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(4).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2012-12-28T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(36.045)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht15.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check transaction
-        var iter = results.stream().filter(TransactionItem.class::isInstance).skip(9).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(10L));
-
-        var item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-12-31T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.00))));
-        assertThat(transaction.getSource(), is("Quartalsbericht15.txt"));
-        assertThat(transaction.getNote(), is("Depotpreis 2012"));
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2012-12-31T00:00"), hasShares(0), //
+                        hasSource("Quartalsbericht15.txt"), hasNote("Depotpreis 2012"), //
+                        hasAmount("EUR", 10.00), hasGrossValue("EUR", 10.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -14896,11 +12623,11 @@ public class DekaBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(7L));
-        assertThat(countBuySell(results), is(17L));
-        assertThat(countAccountTransactions(results), is(18L));
+        assertThat(countBuySell(results), is(10L));
+        assertThat(countAccountTransactions(results), is(11L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(14L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(14L));
         assertThat(results.size(), is(42));
         new AssertImportActions().check(results, "EUR");
 
@@ -14961,28 +12688,18 @@ public class DekaBankPDFExtractorTest
         assertThat(security7.getName(), is("Deka-BR 100"));
         assertThat(security7.getCurrencyCode(), is("EUR"));
 
-        // check 1st buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht16.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2017-12-29T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht16.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 2nd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -15002,28 +12719,18 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 3rd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(2).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht16.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2017-12-29T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht16.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 4th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(3).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -15043,28 +12750,18 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 5th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(4).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht16.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2017-12-29T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht16.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 6th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(5).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -15084,28 +12781,18 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 7th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(6).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht16.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2017-12-29T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht16.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 8th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(7).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -15124,28 +12811,18 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 9th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(8).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht16.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2017-12-29T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht16.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 10th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(9).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(4).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -15165,28 +12842,18 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 11th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(10).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht16.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2017-12-29T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht16.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 12th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(11).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(5).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -15207,7 +12874,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 13th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(12).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(6).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -15227,7 +12894,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 14th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(13).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(7).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -15247,28 +12914,18 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 15th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(14).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
-        assertThat(entry.getSource(), is("Quartalsbericht16.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2017-12-29T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht16.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 16th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(15).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(8).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -15289,7 +12946,7 @@ public class DekaBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 17th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(16).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(9).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -15309,202 +12966,6 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 1st cancellation transaction
-        var cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2017-12-29T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht16.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 2nd cancellation transaction
-        cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2017-12-29T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht16.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 3rd cancellation transaction
-        cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .skip(2).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2017-12-29T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht16.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 4th cancellation transaction
-        cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .skip(3).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2017-12-29T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht16.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 5th cancellation transaction
-        cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .skip(4).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2017-12-29T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht16.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 6th cancellation transaction
-        cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .skip(5).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2017-12-29T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht16.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 7th cancellation transaction
-        cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .skip(6).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2017-12-29T00:00")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(0)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Quartalsbericht16.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
         // check delivery inbound (Einlieferung) transaction
         var deliveryTransaction = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
@@ -15521,24 +12982,19 @@ public class DekaBankPDFExtractorTest
         assertThat(deliveryTransaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(deliveryTransaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 1st dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(16.642 - 0.091)));
-        assertThat(transaction.getSource(), is("Quartalsbericht16.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2018-01-26T00:00"), hasExDate("2017-12-29T00:00"), //
+                                        hasShares(0.00), //
+                                        hasSource("Quartalsbericht16.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 2nd dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(2)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -15553,24 +13009,19 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 3rd dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(3)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(39.231 - 0.239)));
-        assertThat(transaction.getSource(), is("Quartalsbericht16.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2018-01-26T00:00"), hasExDate("2017-12-29T00:00"), //
+                                        hasShares(0.00), //
+                                        hasSource("Quartalsbericht16.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 4th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(4)
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(2)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -15585,24 +13036,19 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 5th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(5)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(15.615 - 0.101)));
-        assertThat(transaction.getSource(), is("Quartalsbericht16.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2018-01-26T00:00"), hasExDate("2017-12-29T00:00"), //
+                                        hasShares(0.00), //
+                                        hasSource("Quartalsbericht16.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 6th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(6)
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(3)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -15617,24 +13063,19 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 7th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(7)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(6.018 - 0.039)));
-        assertThat(transaction.getSource(), is("Quartalsbericht16.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2018-01-26T00:00"), hasExDate("2017-12-29T00:00"), //
+                                        hasShares(0.00), //
+                                        hasSource("Quartalsbericht16.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 8th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(8)
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(4)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -15649,24 +13090,19 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 9th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(9)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(6.833 - 0.052)));
-        assertThat(transaction.getSource(), is("Quartalsbericht16.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2018-01-26T00:00"), hasExDate("2017-12-29T00:00"), //
+                                        hasShares(0.00), //
+                                        hasSource("Quartalsbericht16.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 10th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(10)
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(5)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -15681,24 +13117,19 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 11th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(11)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(34.621 - 0.236)));
-        assertThat(transaction.getSource(), is("Quartalsbericht16.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2018-01-26T00:00"), hasExDate("2017-12-29T00:00"), //
+                                        hasShares(0.00), //
+                                        hasSource("Quartalsbericht16.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 12th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(12)
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(6)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -15714,13 +13145,13 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 13th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(13)
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(7)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(37.758 - 0.220 - 0.009)));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-01-12T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0.00)));
         assertThat(transaction.getSource(), is("Quartalsbericht16.txt"));
         assertNull(transaction.getNote());
 
@@ -15730,7 +13161,7 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 14th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(14)
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(8)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -15745,204 +13176,12 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 15th dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(15)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(295.513 - 25.428 - 2.024 - 0.582)));
-        assertThat(transaction.getSource(), is("Quartalsbericht16.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        var cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2017-12-29T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(16.642 - 0.091)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht16.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2017-12-29T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(39.231 - 0.239)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht16.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(2).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2017-12-29T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(15.615 - 0.101)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht16.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(3).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2017-12-29T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(6.0180 - 0.039)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht16.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(4).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2017-12-29T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(6.833 - 0.052)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht16.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(5).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2017-12-29T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(34.621 - 0.236)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht16.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation1 = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(6).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2017-12-29T00:00")));
-        assertThat(((Transaction) cancellation1.getSubject()).getShares(),
-                        is(Values.Share.factorize(295.513 - 25.428 - 2.024 - 0.582)));
-        assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht16.txt"));
-        assertNull(((Transaction) cancellation1.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation1.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation1.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check transaction
-        var iter = results.stream().filter(TransactionItem.class::isInstance).skip(17).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(18L));
-
-        var item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-12-31T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(12.50))));
-        assertThat(transaction.getSource(), is("Quartalsbericht16.txt"));
-        assertThat(transaction.getNote(), is("Depotpreis 2018"));
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2018-12-31T00:00"), hasShares(0), //
+                        hasSource("Quartalsbericht16.txt"), hasNote("Depotpreis 2018"), //
+                        hasAmount("EUR", 12.50), hasGrossValue("EUR", 12.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -16392,10 +13631,10 @@ public class DekaBankPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(7L));
         assertThat(countBuySell(results), is(12L));
-        assertThat(countAccountTransactions(results), is(15L));
+        assertThat(countAccountTransactions(results), is(14L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(8L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(7L));
+        assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(34));
         new AssertImportActions().check(results, "EUR");
 
@@ -16707,121 +13946,9 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 1st delivery outbound (Auslieferung) transaction
+        // check 1st delivery inbound (Einlieferung) transaction
         var deliveryTransaction = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-03-18T00:00")));
-        assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(16)));
-        assertThat(deliveryTransaction.getSource(), is("Quartalsbericht18.txt"));
-        assertNull(deliveryTransaction.getNote());
-
-        assertThat(deliveryTransaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 2nd delivery outbound (Auslieferung) transaction
-        deliveryTransaction = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-03-18T00:00")));
-        assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(40)));
-        assertThat(deliveryTransaction.getSource(), is("Quartalsbericht18.txt"));
-        assertNull(deliveryTransaction.getNote());
-
-        assertThat(deliveryTransaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 3rd delivery outbound (Auslieferung) transaction
-        deliveryTransaction = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(2)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-03-18T00:00")));
-        assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(15)));
-        assertThat(deliveryTransaction.getSource(), is("Quartalsbericht18.txt"));
-        assertNull(deliveryTransaction.getNote());
-
-        assertThat(deliveryTransaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 4th delivery outbound (Auslieferung) transaction
-        deliveryTransaction = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(3)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-03-18T00:00")));
-        assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(6)));
-        assertThat(deliveryTransaction.getSource(), is("Quartalsbericht18.txt"));
-        assertNull(deliveryTransaction.getNote());
-
-        assertThat(deliveryTransaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 5th delivery outbound (Auslieferung) transaction
-        deliveryTransaction = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(4)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-03-18T00:00")));
-        assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(6)));
-        assertThat(deliveryTransaction.getSource(), is("Quartalsbericht18.txt"));
-        assertNull(deliveryTransaction.getNote());
-
-        assertThat(deliveryTransaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 6th delivery outbound (Auslieferung) transaction
-        deliveryTransaction = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(5)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-03-18T00:00")));
-        assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(34)));
-        assertThat(deliveryTransaction.getSource(), is("Quartalsbericht18.txt"));
-        assertNull(deliveryTransaction.getNote());
-
-        assertThat(deliveryTransaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 7th delivery outbound (Auslieferung) transaction
-        deliveryTransaction = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(6)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-03-18T00:00")));
-        assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(37)));
-        assertThat(deliveryTransaction.getSource(), is("Quartalsbericht18.txt"));
-        assertNull(deliveryTransaction.getNote());
-
-        assertThat(deliveryTransaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 8th delivery inbound (Einlieferung) transaction
-        deliveryTransaction = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(7)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+                        .skip(7).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
@@ -16835,7 +13962,7 @@ public class DekaBankPDFExtractorTest
         assertThat(deliveryTransaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(deliveryTransaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 9th delivery outbound (Auslieferung) transaction
+        // check 1st delivery outbound (Auslieferung) transaction
         deliveryTransaction = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(8)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
@@ -16851,7 +13978,7 @@ public class DekaBankPDFExtractorTest
         assertThat(deliveryTransaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(deliveryTransaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 10th delivery outbound (Auslieferung) transaction
+        // check 2nd delivery outbound (Auslieferung) transaction
         deliveryTransaction = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(9)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
@@ -16867,7 +13994,7 @@ public class DekaBankPDFExtractorTest
         assertThat(deliveryTransaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(deliveryTransaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 11th delivery outbound (Auslieferung) transaction
+        // check 3rd delivery outbound (Auslieferung) transaction
         deliveryTransaction = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(10)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
@@ -16883,260 +14010,22 @@ public class DekaBankPDFExtractorTest
         assertThat(deliveryTransaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(deliveryTransaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check 1st dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(11)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        fee( //
+                                        hasDate("2020-12-31T00:00"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht18.txt"), //
+                                        hasNote("Depotpreis 2020"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-21T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0.000 + 0.388 + 40.000 - 0.761)));
-        assertThat(transaction.getSource(), is("Quartalsbericht18.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(56.27))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(56.27))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check 2nd dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(12)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-21T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0.000 + 0.901 + 37.000 - 0.018)));
-        assertThat(transaction.getSource(), is("Quartalsbericht18.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(2.65))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(2.65))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        var cancellation = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((PortfolioTransaction) cancellation.getSubject()).getType(),
-                        is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2020-03-18T00:00")));
-        assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(16)));
-        assertThat(((Transaction) cancellation.getSubject()).getSource(), is("Quartalsbericht18.txt"));
-        assertNull(((Transaction) cancellation.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((PortfolioTransaction) cancellation.getSubject()).getType(),
-                        is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2020-03-18T00:00")));
-        assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(40)));
-        assertThat(((Transaction) cancellation.getSubject()).getSource(), is("Quartalsbericht18.txt"));
-        assertNull(((Transaction) cancellation.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(2).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((PortfolioTransaction) cancellation.getSubject()).getType(),
-                        is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2020-03-18T00:00")));
-        assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(15)));
-        assertThat(((Transaction) cancellation.getSubject()).getSource(), is("Quartalsbericht18.txt"));
-        assertNull(((Transaction) cancellation.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(3).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((PortfolioTransaction) cancellation.getSubject()).getType(),
-                        is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2020-03-18T00:00")));
-        assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(6)));
-        assertThat(((Transaction) cancellation.getSubject()).getSource(), is("Quartalsbericht18.txt"));
-        assertNull(((Transaction) cancellation.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(4).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((PortfolioTransaction) cancellation.getSubject()).getType(),
-                        is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2020-03-18T00:00")));
-        assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(6)));
-        assertThat(((Transaction) cancellation.getSubject()).getSource(), is("Quartalsbericht18.txt"));
-        assertNull(((Transaction) cancellation.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(5).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((PortfolioTransaction) cancellation.getSubject()).getType(),
-                        is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2020-03-18T00:00")));
-        assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(34)));
-        assertThat(((Transaction) cancellation.getSubject()).getSource(), is("Quartalsbericht18.txt"));
-        assertNull(((Transaction) cancellation.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(6).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((PortfolioTransaction) cancellation.getSubject()).getType(),
-                        is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2020-03-18T00:00")));
-        assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(37)));
-        assertThat(((Transaction) cancellation.getSubject()).getSource(), is("Quartalsbericht18.txt"));
-        assertNull(((Transaction) cancellation.getSubject()).getNote());
-
-        assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check cancellation transaction
-        cancellation = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .skip(7).findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.FEES));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2020-12-31T00:00")));
-        assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(0)));
-        assertThat(((Transaction) cancellation.getSubject()).getSource(), is("Quartalsbericht18.txt"));
-        assertThat(((Transaction) cancellation.getSubject()).getNote(), is("Depotpreis 2020"));
-
-        assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        // check transaction
-        var iter = results.stream().filter(TransactionItem.class::isInstance).skip(13).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(15L));
-
-        var item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-31T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getSource(), is("Quartalsbericht18.txt"));
-        assertThat(transaction.getNote(), is("Depotpreis 2020"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-24T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(48.74))));
-        assertThat(transaction.getSource(), is("Quartalsbericht18.txt"));
-        assertThat(transaction.getNote(), is("Entgelt Auflösung"));
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2020-11-24T00:00"), hasShares(0.00), //
+                        hasSource("Quartalsbericht18.txt"), hasNote("Entgelt Auflösung"), //
+                        hasAmount("EUR", 48.74), hasGrossValue("EUR", 48.74), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -19882,7 +16771,8 @@ public class DekaBankPDFExtractorTest
 
         // check 1st dividende transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-05-22"), hasShares(8.083 - 0.180), //
+                        hasDate("2020-05-22"), hasExDate("2020-05-22"), //
+                        hasShares(8.083 - 0.180), //
                         hasSource("Quartalsbericht23.txt"), hasNote(null), //
                         hasAmount("EUR", 16.10), hasGrossValue("EUR", 16.10), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -20005,10 +16895,10 @@ public class DekaBankPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(3L));
         assertThat(countBuySell(results), is(90L));
-        assertThat(countAccountTransactions(results), is(5L));
+        assertThat(countAccountTransactions(results), is(4L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(2L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(98));
         new AssertImportActions().check(results, "EUR");
 
@@ -20053,7 +16943,8 @@ public class DekaBankPDFExtractorTest
 
         // check 1st dividende transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-05-22"), hasShares(0.00 + 4.128 - 0.180), //
+                        hasDate("2020-05-22"), hasExDate("2020-05-22"), //
+                        hasShares(0.00 + 4.128 - 0.180), //
                         hasSource("Quartalsbericht24.txt"), hasNote(null), //
                         hasAmount("EUR", 16.10), hasGrossValue("EUR", 16.10), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -20081,7 +16972,8 @@ public class DekaBankPDFExtractorTest
 
         // check 2nd dividende transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-11-13"), hasShares(9.359 + 5.036 - 5.036 - 0.122), //
+                        hasDate("2020-11-13"), hasExDate("2020-11-13"), //
+                        hasShares(9.359 + 5.036 - 5.036 - 0.122), //
                         hasSource("Quartalsbericht24.txt"), hasNote(null), //
                         hasAmount("EUR", 18.47), hasGrossValue("EUR", 18.47), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -20100,7 +16992,7 @@ public class DekaBankPDFExtractorTest
                         hasAmount("EUR", 805.00), hasGrossValue("EUR", 805.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // check cancellation transaction
+        // check failure message
         assertThat(results, hasItem(withFailureMessage(Messages.MsgErrorTransactionOrderCancellationUnsupported, //
                         sale( //
                                         hasDate("2020-12-01"), hasShares(5.036), //
@@ -20696,18 +17588,13 @@ public class DekaBankPDFExtractorTest
                         hasAmount("EUR", 276.42), hasGrossValue("EUR", 276.42), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // check fee transaction
-        assertThat(results, hasItem(fee( //
-                        hasDate("2020-12-31"), hasShares(0), //
-                        hasSource("Quartalsbericht24.txt"), hasNote("Depotpreis 2020"), //
-                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         fee( //
-                                        hasDate("2020-12-31"), hasShares(0), //
-                                        hasSource("Quartalsbericht24.txt"), hasNote("Depotpreis 2020"), //
+                                        hasDate("2020-12-31"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht24.txt"), //
+                                        hasNote("Depotpreis 2020"), //
                                         hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
                                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
@@ -20777,11 +17664,11 @@ public class DekaBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(2L));
-        assertThat(countBuySell(results), is(15L));
+        assertThat(countBuySell(results), is(14L));
         assertThat(countAccountTransactions(results), is(4L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(2L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(21));
         new AssertImportActions().check(results, "EUR");
 
@@ -20796,12 +17683,15 @@ public class DekaBankPDFExtractorTest
                         hasName("Deka-ImmobilienEuropa"), //
                         hasCurrencyCode("EUR"))));
 
-        // check 1st buy sell transaction
-        assertThat(results, hasItem(purchase( //
-                        hasDate("2020-06-16"), hasShares(0), //
-                        hasSource("Quartalsbericht26.txt"), hasNote(null), //
-                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        purchase( //
+                                        hasDate("2020-06-16"), hasShares(0.00), //
+                                        hasSource("Quartalsbericht26.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 2st buy sell transaction
         assertThat(results, hasItem(purchase( //
@@ -20901,25 +17791,29 @@ public class DekaBankPDFExtractorTest
                         hasAmount("EUR", 333.00), hasGrossValue("EUR", 333.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // check 1st dividende transaction
+        // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-06-16"), hasSource("Quartalsbericht26.txt"), hasAmount("EUR", 0.00),
-                        hasGrossValue("EUR", 0.00), hasShares(271.125))));
+                        hasDate("2020-06-18"), hasExDate("2020-06-17"), //
+                        hasShares(0.00), //
+                        hasSource("Quartalsbericht26.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 108.45), hasGrossValue("EUR", 108.45), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // check 2st dividende transaction
+        // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-06-17"), hasSource("Quartalsbericht26.txt"), hasAmount("EUR", 108.45),
-                        hasGrossValue("EUR", 108.45), hasShares(271.125))));
-
-        // check 3st dividende transaction
-        assertThat(results, hasItem(dividend( //
-                        hasDate("2020-01-10"), hasSource("Quartalsbericht26.txt"), hasAmount("EUR", 33.38),
-                        hasGrossValue("EUR", 33.38), hasShares(26.702))));
+                        hasDate("2020-01-10"), hasExDate("2020-01-10"), //
+                        hasShares(26.702), //
+                        hasSource("Quartalsbericht26.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 33.38), hasGrossValue("EUR", 33.38), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check fee transaction
         assertThat(results, hasItem(fee( //
-                        hasDate("2020-12-31"), //
-                        hasSource("Quartalsbericht26.txt"), //
-                        hasAmount("EUR", 12.18))));
+                        hasDate("2020-12-31"), hasShares(0), //
+                        hasSource("Quartalsbericht26.txt"), hasNote("Depotpreis 2020"), //
+                        hasAmount("EUR", 12.18), hasGrossValue("EUR", 12.18), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 }

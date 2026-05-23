@@ -76,6 +76,12 @@ public class PortfolioTransaction extends Transaction
         // needed for xstream de-serialization
     }
 
+    public PortfolioTransaction(Type type)
+    {
+        super();
+        this.type = type;
+    }
+
     /* protobuf only */ PortfolioTransaction(String uuid)
     {
         super(uuid);

@@ -77,11 +77,7 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
         purchase.setMaxSize(10);
         purchase.set(new Transaction<BuySellEntry>()
 
-                        .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         .section("date", "amount", "units") //
                         .optional() //
@@ -96,7 +92,7 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
                             t.setSecurity(getOrCreateSecurity(v));
 
                             t.setDate(LocalDate.parse(v.get("date"), DATE_FORMAT).atStartOfDay());
-                            t.setCurrencyCode(INR);
+                            t.setCurrencyCode(asCurrencyCode(INR));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setShares(asShares(v.get("units")));
                         })
@@ -134,11 +130,7 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
         creation.setMaxSize(10);
         creation.set(new Transaction<BuySellEntry>()
 
-                        .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         .section("date", "units", "note") //
                         .optional() //
@@ -152,7 +144,7 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
                             t.setSecurity(getOrCreateSecurity(v));
 
                             t.setDate(LocalDate.parse(v.get("date"), DATE_FORMAT).atStartOfDay());
-                            t.setCurrencyCode(INR);
+                            t.setCurrencyCode(asCurrencyCode(INR));
                             t.setAmount(Values.Amount.factorize(1));
                             t.setShares(asShares(v.get("units")));
 
@@ -169,11 +161,7 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
         sale.setMaxSize(10);
         sale.set(new Transaction<BuySellEntry>()
 
-                        .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.SELL);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.SELL))
 
                         .section("date", "amount", "units", "note") //
                         .optional() //
@@ -188,7 +176,7 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
                             t.setSecurity(getOrCreateSecurity(v));
 
                             t.setDate(LocalDate.parse(v.get("date"), DATE_FORMAT).atStartOfDay());
-                            t.setCurrencyCode(INR);
+                            t.setCurrencyCode(asCurrencyCode(INR));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setShares(asShares(v.get("units")));
 
@@ -205,11 +193,7 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
         switchOut.setMaxSize(10);
         switchOut.set(new Transaction<BuySellEntry>()
 
-                        .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.SELL);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.SELL))
 
                         .section("date", "amount", "units", "note") //
                         .optional() //
@@ -224,7 +208,7 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
                             t.setSecurity(getOrCreateSecurity(v));
 
                             t.setDate(LocalDate.parse(v.get("date"), DATE_FORMAT).atStartOfDay());
-                            t.setCurrencyCode(INR);
+                            t.setCurrencyCode(asCurrencyCode(INR));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setShares(asShares(v.get("units")));
 
@@ -257,11 +241,7 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
         switchIn.setMaxSize(10);
         switchIn.set(new Transaction<BuySellEntry>()
 
-                        .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         .section("date", "amount", "units", "note") //
                         .optional() //
@@ -276,7 +256,7 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
                             t.setSecurity(getOrCreateSecurity(v));
 
                             t.setDate(LocalDate.parse(v.get("date"), DATE_FORMAT).atStartOfDay());
-                            t.setCurrencyCode(INR);
+                            t.setCurrencyCode(asCurrencyCode(INR));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setShares(asShares(v.get("units")));
 
@@ -313,11 +293,7 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
         dividend.setMaxSize(10);
         dividend.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            AccountTransaction t = new AccountTransaction();
-                            t.setType(AccountTransaction.Type.DIVIDENDS);
-                            return t;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         .section("date", "amount") //
                         .optional() //
@@ -330,7 +306,7 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
                             t.setSecurity(getOrCreateSecurity(v));
 
                             t.setDateTime(LocalDate.parse(v.get("date"), DATE_FORMAT).atStartOfDay());
-                            t.setCurrencyCode(INR);
+                            t.setCurrencyCode(asCurrencyCode(INR));
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
@@ -387,7 +363,7 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
 
         // add the default currency
 
-        values.put("currency", INR);
+        values.put("currency", asCurrencyCode(INR));
 
         return super.getOrCreateSecurity(values);
     }

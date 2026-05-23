@@ -51,11 +51,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "VENTA" change from BUY to SELL
                         .section("type").optional() //
@@ -151,11 +147,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
-        pdfTransaction.subject(() -> {
-            var portfolioTransaction = new BuySellEntry();
-            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-            return portfolioTransaction;
-        })
+        pdfTransaction.subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "REEMBOLSO" change from BUY to SELL
                         .section("type").optional() //
@@ -222,11 +214,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
-        pdfTransaction.subject(() -> {
-            var accountTransaction = new AccountTransaction();
-            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-            return accountTransaction;
-        })
+        pdfTransaction.subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         // @formatter:off
                         // CODIGO CUENTA VALOR VALOR (US8299331004) TIPO INTERÉS FECHA VENCIMIENTO CAMBIO DIVISA
@@ -323,11 +311,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         // @formatter:off
                         // ACC.AMAZON -USD- T 967,26 USD 1,1678 828,28 Mínimo 20,88

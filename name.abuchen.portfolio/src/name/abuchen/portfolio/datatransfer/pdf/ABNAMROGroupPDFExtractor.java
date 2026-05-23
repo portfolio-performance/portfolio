@@ -94,11 +94,7 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "amount") //
                         .documentContext("currency") //
@@ -123,11 +119,7 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.REMOVAL);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
 
                         .section("date", "amount") //
                         .documentContext("currency") //
@@ -156,11 +148,7 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .section("date", "amount") //
                         .documentContext("currency") //
@@ -177,21 +165,21 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
                             if (v.containsKey("taxDate1") && v.containsKey("tax1")
                                             && t.getDateTime().equals(asDate(v.get("taxDate1"))))
                             {
-                                Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax1")));
+                                Money tax = Money.of(v.get("currency"), asAmount(v.get("tax1")));
                                 t.addUnit(new Unit(Unit.Type.TAX, tax));
                             }
 
                             if (v.containsKey("taxDate2") && v.containsKey("tax2")
                                             && t.getDateTime().equals(asDate(v.get("taxDate2"))))
                             {
-                                Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax2")));
+                                Money tax = Money.of(v.get("currency"), asAmount(v.get("tax2")));
                                 t.addUnit(new Unit(Unit.Type.TAX, tax));
                             }
 
                             if (v.containsKey("taxDate3") && v.containsKey("tax3")
                                             && t.getDateTime().equals(asDate(v.get("taxDate3"))))
                             {
-                                Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax3")));
+                                Money tax = Money.of(v.get("currency"), asAmount(v.get("tax3")));
                                 t.addUnit(new Unit(Unit.Type.TAX, tax));
                             }
                         })
