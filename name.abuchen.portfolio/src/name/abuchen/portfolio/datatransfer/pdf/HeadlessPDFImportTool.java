@@ -83,6 +83,8 @@ public final class HeadlessPDFImportTool
     public static Result run(Options options) throws IOException
     {
         Client client = loadClient(options);
+        if (options.baseCurrency == null)
+            options.baseCurrency = client.getBaseCurrency();
         client.setBaseCurrency(options.baseCurrency);
 
         ImportContext context = new ImportContext(client, options);
@@ -251,6 +253,7 @@ public final class HeadlessPDFImportTool
                                         && Objects.equals(existing.getDateTime(), transaction.getDateTime())
                                         && Objects.equals(existing.getCurrencyCode(), transaction.getCurrencyCode())
                                         && existing.getAmount() == transaction.getAmount()
+                                        && existing.getShares() == transaction.getShares()
                                         && sameSecurity(existing.getSecurity(), transaction.getSecurity()));
     }
 
@@ -263,6 +266,7 @@ public final class HeadlessPDFImportTool
                                         && Objects.equals(existing.getDateTime(), transaction.getDateTime())
                                         && Objects.equals(existing.getCurrencyCode(), transaction.getCurrencyCode())
                                         && existing.getAmount() == transaction.getAmount()
+                                        && existing.getShares() == transaction.getShares()
                                         && sameSecurity(existing.getSecurity(), transaction.getSecurity()));
     }
 
@@ -621,7 +625,7 @@ public final class HeadlessPDFImportTool
         private File clientFile;
         private File outputFile;
         private File reportFile;
-        private String baseCurrency = CurrencyUnit.EUR;
+        private String baseCurrency;
         private String accountName = DEFAULT_ACCOUNT;
         private String portfolioName = DEFAULT_PORTFOLIO;
         private String secondaryAccountName = DEFAULT_SECONDARY_ACCOUNT;
@@ -761,7 +765,7 @@ public final class HeadlessPDFImportTool
                 throw new IllegalArgumentException("--report-holdings requires --client when no input is provided"); //$NON-NLS-1$
             if (outputFile == null)
                 throw new IllegalArgumentException("--output is required"); //$NON-NLS-1$
-            if (CurrencyUnit.getInstance(baseCurrency) == null)
+            if (baseCurrency != null && CurrencyUnit.getInstance(baseCurrency) == null)
                 throw new IllegalArgumentException("Unsupported base currency: " + baseCurrency); //$NON-NLS-1$
 
             inputFiles.sort(Comparator.comparing(File::getPath));
