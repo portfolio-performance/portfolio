@@ -81,7 +81,7 @@ public class BundesschatzPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         assertThat(results, hasItem(deposit(hasDate("2026-05-05"), hasAmount("EUR", 1000.00), //
-                        hasSource("EinUndAuszahlungen02.txt"), hasNote("AT74 5170 3423 1048 4364 41"))));
+                        hasSource("EinUndAuszahlungen02.txt"), hasNote("DE74 5170 3423 1048 4364 41"))));
     }
 
     @Test
