@@ -315,12 +315,12 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
 
     private void addDividendsTransaction()
     {
-        final var type = new DocumentType("(Dividende|Kapitalgewinn)");
+        final var type = new DocumentType("(Dividende|Kapitalgewinn|Option Premium)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^(Dividende|Kapitalgewinn) Unsere Referenz:.*$");
+        var firstRelevantLine = new Block("^(Dividende|Kapitalgewinn|Option Premium) Unsere Referenz:.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -361,6 +361,17 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "isin", "currency") //
                                                         .match("^(?<name>.*) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .match("^Dividende pro Aktie (?<currency>[A-Z]{3}) [\\.'\\d]+.*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // INCOMESHARES GOLD YIELD ETP ISIN: XS2852999775 581
+                                        // NKN: 136957026
+                                        // Prämienanteil 0.14405405 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "wkn", "currency") //
+                                                        .match("^(?<name>.*) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .match("^NKN: (?<wkn>[A-Z0-9]{5,9}).*$") //
+                                                        .match("^Pr.mienanteil [\\.'\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
