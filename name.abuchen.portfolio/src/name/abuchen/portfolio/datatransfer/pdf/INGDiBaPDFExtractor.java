@@ -975,7 +975,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<nameContinued>.*)$") //
                         .match("^ISIN \\(WKN\\): (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                         .assign((t, v) -> {
-                            v.put("currency", guessCurrencyCode(v.get("isin")));
+                            v.put("currency", getClient().getBaseCurrency());
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setShares(asShares(v.get("shares")));
@@ -985,21 +985,14 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                             t.setNote("Auftragsnummer " + v.get("note"));
                         })
 
+                        // @formatter:off
+                        // Die Gesellschaft hat einen Aktiensplit durchgeführt.
+                        // @formatter:on
+                        .section("stockSplit").optional() //
+                        .match("^(?<stockSplit>Die Gesellschaft hat einen Aktiensplit durchgef.hrt\\.)$") //
+                        .assign((t, v) -> v.markAsFailure(Messages.MsgErrorTransactionSplitUnsupported))
+
                         .wrap(TransactionItem::new);
-    }
-
-    private String guessCurrencyCode(String isin)
-    {
-        if (isin == null || isin.length() < 2)
-            return "EUR";
-
-        return switch (isin.substring(0, 2))
-        {
-            case "CA" -> "CAD";
-            case "GB" -> "GBP";
-            case "US" -> "USD";
-            default -> "EUR";
-        };
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
