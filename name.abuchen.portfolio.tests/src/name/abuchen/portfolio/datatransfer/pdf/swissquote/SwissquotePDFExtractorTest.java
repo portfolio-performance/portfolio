@@ -1975,6 +1975,76 @@ public class SwissquotePDFExtractorTest
     }
 
     @Test
+    public void testDividende15()
+    {
+        var extractor = new SwissquotePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende15.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "USD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("XS2852999775"), hasWkn("136957026"), hasTicker(null), //
+                        hasName("INCOMESHARES GOLD YIELD ETP"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-05-12T00:00"), hasShares(581.00), //
+                        hasSource("Dividende15.txt"), //
+                        hasNote("Referenz: 1097680988"), //
+                        hasAmount("USD", 83.70), hasGrossValue("USD", 83.70), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+    }
+
+    @Test
+    public void testDividende15WithSecurityInCHF()
+    {
+        var security = new Security("INCOMESHARES GOLD YIELD ETP", "CHF");
+        security.setIsin("XS2852999775");
+        security.setWkn("136957026");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new SwissquotePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende15.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "USD");
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-05-12T00:00"), hasShares(581.00), //
+                        hasSource("Dividende15.txt"), //
+                        hasNote("Referenz: 1097680988"), //
+                        hasAmount("USD", 83.70), hasGrossValue("USD", 83.70), //
+                        hasForexGrossValue("CHF", 65.45), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+    }
+
+    @Test
     public void testZahlungsverkehr01()
     {
         var extractor = new SwissquotePDFExtractor(new Client());

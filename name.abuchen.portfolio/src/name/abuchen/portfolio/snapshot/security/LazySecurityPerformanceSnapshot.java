@@ -6,6 +6,7 @@ import java.util.Optional;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.util.Interval;
 
 public class LazySecurityPerformanceSnapshot
@@ -14,6 +15,15 @@ public class LazySecurityPerformanceSnapshot
     {
         var records = new SecurityPerformanceSnapshotBuilder<LazySecurityPerformanceRecord>(client, converter, interval)
                         .create(LazySecurityPerformanceRecord.class);
+
+        return new LazySecurityPerformanceSnapshot(records);
+    }
+
+    public static LazySecurityPerformanceSnapshot create(Client client, CurrencyConverter converter, Interval interval,
+                    ClientSnapshot valuationAtStart, ClientSnapshot valuationAtEnd)
+    {
+        var records = new SecurityPerformanceSnapshotBuilder<LazySecurityPerformanceRecord>(client, converter, interval)
+                        .create(LazySecurityPerformanceRecord.class, valuationAtStart, valuationAtEnd);
 
         return new LazySecurityPerformanceSnapshot(records);
     }
