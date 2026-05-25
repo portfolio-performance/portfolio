@@ -57,6 +57,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.CurrencyUnitResolver;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -403,9 +404,9 @@ public class IBFlexStatementExtractor implements Extractor
             String currency = asCurrencyCode(element.getAttribute("currency"));
             if (currency != null && !currency.isEmpty())
             {
-                CurrencyUnit currencyUnit = CurrencyUnit.getInstance(currency);
+                var currencyUnit = CurrencyUnitResolver.resolve(client, currency);
                 if (currencyUnit != null)
-                    accountCurrency = currency;
+                    accountCurrency = currencyUnit.getCurrencyCode();
             }
 
             String acctAlias = element.getAttribute("acctAlias");
@@ -1550,7 +1551,7 @@ public class IBFlexStatementExtractor implements Extractor
         if (currency == null)
             return client.getBaseCurrency();
 
-        CurrencyUnit unit = CurrencyUnit.getInstance(currency.trim());
+        var unit = CurrencyUnitResolver.resolve(client, currency.trim());
         return unit == null ? client.getBaseCurrency() : unit.getCurrencyCode();
     }
 

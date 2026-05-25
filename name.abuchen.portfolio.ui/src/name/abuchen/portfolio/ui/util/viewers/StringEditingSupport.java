@@ -26,7 +26,7 @@ public class StringEditingSupport extends PropertyEditingSupport
     }
 
     @Override
-    public final void setValue(Object element, Object value) throws Exception
+    public void setValue(Object element, Object value) throws Exception
     {
         Object subject = adapt(element);
 

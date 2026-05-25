@@ -272,7 +272,7 @@ public class AccountListView extends AbstractFinanceView implements Modification
     private Column defineCurrencyColumn()
     {
         var column = new CurrencyColumn();
-        column.setEditingSupport(new CurrencyEditingSupport()
+        column.setEditingSupport(new CurrencyEditingSupport(getClient())
         {
             @Override
             public boolean canEdit(Object element)

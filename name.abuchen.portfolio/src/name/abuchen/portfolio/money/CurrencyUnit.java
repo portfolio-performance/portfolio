@@ -211,4 +211,20 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>
             return false;
         return true;
     }
+
+    public static CurrencyUnit of(String currencyCode, String displayName, String currencySymbol)
+    {
+        if (currencyCode == null || currencyCode.trim().isEmpty())
+            return null;
+
+        return new CurrencyUnit(currencyCode.trim().toUpperCase(), displayName, currencySymbol);
+    }
+
+    public static CurrencyUnit create(String currencyCode, String displayName, String currencySymbol)
+    {
+        if (currencyCode == null || currencyCode.trim().isEmpty())
+            return null;
+
+        return new CurrencyUnit(currencyCode.trim().toUpperCase(), displayName, currencySymbol);
+    }
 }

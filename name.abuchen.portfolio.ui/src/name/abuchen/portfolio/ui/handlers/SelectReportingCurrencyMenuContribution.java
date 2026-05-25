@@ -18,6 +18,7 @@ import org.eclipse.e4.ui.workbench.modeling.EModelService;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.CurrencyUnitResolver;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.editor.ClientInput;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
@@ -42,7 +43,8 @@ public class SelectReportingCurrencyMenuContribution
 
         menuItems.add(MMenuFactory.INSTANCE.createMenuSeparator());
 
-        List<Pair<String, List<CurrencyUnit>>> available = CurrencyUnit.getAvailableCurrencyUnitsGrouped();
+        List<Pair<String, List<CurrencyUnit>>> available = CurrencyUnitResolver
+                        .getAvailableCurrencyUnitsGrouped(client);
 
         for (Pair<String, List<CurrencyUnit>> pair : available)
         {

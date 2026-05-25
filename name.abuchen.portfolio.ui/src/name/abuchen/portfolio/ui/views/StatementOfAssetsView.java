@@ -20,6 +20,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.CurrencyUnitResolver;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -100,7 +101,8 @@ public class StatementOfAssetsView extends AbstractFinanceView
             manager.add(new Separator());
 
             // then all available units
-            List<Pair<String, List<CurrencyUnit>>> available = CurrencyUnit.getAvailableCurrencyUnitsGrouped();
+            List<Pair<String, List<CurrencyUnit>>> available = CurrencyUnitResolver
+                            .getAvailableCurrencyUnitsGrouped(getClient());
 
             for (Pair<String, List<CurrencyUnit>> pair : available)
             {

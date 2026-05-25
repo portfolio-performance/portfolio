@@ -16,7 +16,7 @@ import name.abuchen.portfolio.datatransfer.csv.CSVImporter.ISINField;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.CurrencyUnitResolver;
 
 /* package */class CSVPortfolioExtractor extends BaseCSVExtractor
 {
@@ -60,7 +60,7 @@ import name.abuchen.portfolio.money.CurrencyUnit;
             var currency = getText(Messages.CSVColumn_Currency, rawValues, field2column);
             if (currency != null)
             {
-                var unit = CurrencyUnit.getInstance(currency.trim());
+                var unit = CurrencyUnitResolver.resolve(getClient(), currency.trim());
                 s.setCurrencyCode(unit == null ? getClient().getBaseCurrency() : unit.getCurrencyCode());
             }
         });

@@ -15,6 +15,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.CurrencyUnitResolver;
 
 /**
  * Checks if there is at least one account or security without a currency.
@@ -105,7 +106,7 @@ public class MissingCurrencyCheck implements Check
 
             fixes.add(QuickFix.SEPARATOR);
 
-            List<CurrencyUnit> available = CurrencyUnit.getAvailableCurrencyUnits();
+            List<CurrencyUnit> available = CurrencyUnitResolver.getAvailableCurrencyUnits(client);
             Collections.sort(available);
             for (CurrencyUnit currency : available)
                 fixes.add(new CurrencyQuickFix(client, currency));

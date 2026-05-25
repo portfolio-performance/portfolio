@@ -45,6 +45,7 @@ import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.CurrencyUnitResolver;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.text.DecimalKeypadSupport;
@@ -268,7 +269,7 @@ public class BindingHelper
     public final Control bindCurrencyCodeCombo(Composite editArea, String label, String property, boolean includeEmpty)
     {
         List<CurrencyUnit> units = new ArrayList<>();
-        units.addAll(CurrencyUnit.getAvailableCurrencyUnits());
+        units.addAll(CurrencyUnitResolver.getAvailableCurrencyUnits(model.getClient()));
 
         Label l = new Label(editArea, SWT.NONE);
         l.setText(label);
@@ -305,7 +306,7 @@ public class BindingHelper
         currencyCode.addModifyListener(e -> {
             String code = currencyCode.getText();
 
-            CurrencyUnit unit = CurrencyUnit.getInstance(code);
+            CurrencyUnit unit = CurrencyUnitResolver.resolve(model.getClient(), code);
             if (unit != null)
             {
                 description.setText(unit.getDisplayName());
@@ -322,7 +323,7 @@ public class BindingHelper
 
         UpdateValueStrategy<String, String> targetToModel = new UpdateValueStrategy<>();
         targetToModel.setAfterGetValidator(c -> {
-            if ((c.isEmpty() && includeEmpty) || CurrencyUnit.getInstance(c) != null)
+            if ((c.isEmpty() && includeEmpty) || CurrencyUnitResolver.resolve(model.getClient(), c) != null)
                 return ValidationStatus.ok();
             else
                 return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, label));
@@ -331,7 +332,7 @@ public class BindingHelper
 
         UpdateValueStrategy<String, String> modelToTarget = new UpdateValueStrategy<>();
         modelToTarget.setConverter(IConverter.create(code -> {
-            CurrencyUnit unit = CurrencyUnit.getInstance(code);
+            CurrencyUnit unit = CurrencyUnitResolver.resolve(model.getClient(), code);
             return unit != null ? unit.getCurrencyCode() : null;
         }));
 
