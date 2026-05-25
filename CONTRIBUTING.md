@@ -60,6 +60,8 @@ Install via Eclipse Marketplace (drag and drop the `Install` button to your work
 - **M2E PDE Integration** (under General Purpose Tools)
 - **Eclipse e4 Tools** (under General Purpose Tools)
 
+Note: depending on your Eclipse package, some of these may already be installed. Uncheck "Hide items that are already installed" at the bottom of the dialog to verify.
+
 **Configure Eclipse**
 
 `Menu` → `Window` → `Preferences`:
@@ -82,7 +84,7 @@ Install via Eclipse Marketplace (drag and drop the `Install` button to your work
 
 **Project Setup**
 
-1. **Fork** your repository using [GitHub's fork workflow](https://docs.github.com/en/get-started/quickstart/fork-a-repo)
+1. **Fork** the repository using [GitHub's fork workflow](https://docs.github.com/en/get-started/quickstart/fork-a-repo) to create your own copy
 2. **Import projects**: Within Eclipse, [clone and import all projects](https://www.vogella.com/tutorials/EclipseGit/article.html#exercise-clone-an-existing-repository)
 3. **Setup target platform**:
    - Open `portfolio-target-definition` project
