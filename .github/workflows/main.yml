@@ -1,76 +1,90 @@
 name: CI
-
 on:
   push:
     branches:
       - master
   pull_request:
-      types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened]
 
 jobs:
+  # Runs on PRs and fork pushes. The master branch of the main repo uses build-analyze instead.
   build:
     name: Maven Build
     if: github.ref != 'refs/heads/master' || github.repository != 'portfolio-performance/portfolio'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
-      with:
-        fetch-depth: 0
-    - name: Cache Maven repository
-      uses: actions/cache@v5
-      with:
-        path: |
-          ~/.m2/repository
-          ~/.sonar/cache
-        key: ${{ runner.os }}-mvn
-        restore-keys: |
-          ${{ runner.os }}-mvn-
-    - name: Set up JDK 21
-      uses: actions/setup-java@v5
-      with:
-        java-version: 21
-        distribution: zulu
-    - name: Set up Maven
-      uses: stCarolas/setup-maven@v5
-      with:
-        maven-version: 3.9.11
-    - name: Build with Maven
-      run: |
-        mvn verify \
-        --batch-mode \
-        --file portfolio-app/pom.xml
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
+      - name: Cache Maven and Sonar artifacts
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.m2/repository
+            ~/.sonar/cache
+          # Include .target files: Tycho resolves OSGi dependencies from the
+          # target platform definition, which is not captured by pom.xml alone
+          key: ${{ runner.os }}-mvn-${{ hashFiles('**/pom.xml', '**/*.target') }}
+          restore-keys: |
+            ${{ runner.os }}-mvn-
+
+      - name: Set up Zulu JDK 21
+        uses: actions/setup-java@v5
+        with:
+          java-version: 21
+          distribution: zulu
+
+      - name: Set up Maven 3.9.16
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: 3.9.16
+
+      - name: Build
+        run: |
+          mvn verify \
+            --batch-mode \
+            --file portfolio-app/pom.xml
+
+  # Runs only on the master branch of the main repo; includes SonarQube analysis.
   build-analyze:
     name: Maven Build + Sonar Analysis
     if: github.ref == 'refs/heads/master' && github.repository == 'portfolio-performance/portfolio'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
-      with:
-        fetch-depth: 0
-    - name: Cache Maven repository
-      uses: actions/cache@v5
-      with:
-        path: |
-          ~/.m2/repository
-          ~/.sonar/cache
-        key: ${{ runner.os }}-mvn
-        restore-keys: |
-          ${{ runner.os }}-mvn-
-    - name: Set up JDK 21
-      uses: actions/setup-java@v5
-      with:
-        java-version: 21
-        distribution: zulu
-    - name: Set up Maven
-      uses: stCarolas/setup-maven@v5
-      with:
-        maven-version: 3.9.11
-    - name: Build with Maven
-      run: |
-        mvn verify sonar:sonar \
-        --batch-mode \
-        -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
-        --file portfolio-app/pom.xml
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0  # full history required by Sonar for blame and new-code detection
+
+      - name: Cache Maven and Sonar artifacts
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.m2/repository
+            ~/.sonar/cache
+          # Include .target files: Tycho resolves OSGi dependencies from the
+          # target platform definition, which is not captured by pom.xml alone
+          key: ${{ runner.os }}-mvn-${{ hashFiles('**/pom.xml', '**/*.target') }}
+          restore-keys: |
+            ${{ runner.os }}-mvn-
+
+      - name: Set up Zulu JDK 21
+        uses: actions/setup-java@v5
+        with:
+          java-version: 21
+          distribution: zulu
+
+      - name: Set up Maven 3.9.16
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: 3.9.16
+
+      - name: Build and analyze
+        # sonar.login is deprecated since SonarQube 10.0 / SonarCloud — use sonar.token
+        run: |
+          mvn verify sonar:sonar \
+            --batch-mode \
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
+            --file portfolio-app/pom.xml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
