@@ -14,6 +14,17 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<tycho-version>5.0.3</tycho-version>
+		<maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
+		<maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
+		<maven-dependency-plugin.version>3.11.0</maven-dependency-plugin.version>
+		<maven-jarsigner-plugin.version>3.1.0</maven-jarsigner-plugin.version>
+		<maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
+		<maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
+		<sonar-maven-plugin.version>5.7.0.6970</sonar-maven-plugin.version>
+		<fix-info-plist-maven-plugin.version>1.8</fix-info-plist-maven-plugin.version>
+		<exec-maven-plugin.version>3.6.3</exec-maven-plugin.version>
+		<jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
+		<protoc-jar-maven-plugin.version>3.11.4</protoc-jar-maven-plugin.version>
 		<jarsigner.skip>true</jarsigner.skip>
 		<gpgsigner.skip>true</gpgsigner.skip>
 		<applesigner.skip>true</applesigner.skip>
@@ -106,7 +117,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
-				<version>3.6.3</version>
+				<version>${maven-enforcer-plugin.version}</version>
 				<executions>
 					<execution>
 						<id>enforce-versions</id>
@@ -462,7 +473,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.5.0</version>
+					<version>${maven-resources-plugin.version}</version>
 					<configuration>
 						<encoding>UTF-8</encoding>
 					</configuration>
@@ -470,7 +481,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-dependency-plugin</artifactId>
-					<version>3.11.0</version>
+					<version>${maven-dependency-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
@@ -530,7 +541,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jarsigner-plugin</artifactId>
-					<version>3.1.0</version>
+					<version>${maven-jarsigner-plugin.version}</version>
 					<executions>
 						<execution>
 							<id>sign</id>
@@ -562,12 +573,12 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-gpg-plugin</artifactId>
-					<version>3.2.8</version>
+					<version>${maven-gpg-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-checkstyle-plugin</artifactId>
-					<version>3.6.0</version>
+					<version>${maven-checkstyle-plugin.version}</version>
 					<dependencies>
 						<dependency>
 							<groupId>com.puppycrawl.tools</groupId>
@@ -596,17 +607,17 @@
 				<plugin>
 					<groupId>org.sonarsource.scanner.maven</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>5.7.0.6970</version>
+					<version>${sonar-maven-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>name.abuchen</groupId>
 					<artifactId>fix-info-plist-maven-plugin</artifactId>
-					<version>1.8</version>
+					<version>${fix-info-plist-maven-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>exec-maven-plugin</artifactId>
-					<version>3.6.3</version>
+					<version>${exec-maven-plugin.version}</version>
 					<configuration>
 						<mainClass>name.abuchen.portfolio.build.MessagesTool</mainClass>
 						<classpathScope>runtime</classpathScope>
@@ -619,12 +630,12 @@
 				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>0.8.14</version>
+					<version>${jacoco-maven-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>com.github.os72</groupId>
 					<artifactId>protoc-jar-maven-plugin</artifactId>
-					<version>3.11.4</version>
+					<version>${protoc-jar-maven-plugin.version}</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
