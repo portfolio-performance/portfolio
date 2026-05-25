@@ -17,6 +17,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,9 +30,13 @@ import name.abuchen.portfolio.datatransfer.Extractor.SkippedItem;
 import name.abuchen.portfolio.datatransfer.ImportAction;
 import name.abuchen.portfolio.datatransfer.ImportAction.Context;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
+import name.abuchen.portfolio.datatransfer.pdf.layout.PDFLayoutKeyValue;
+import name.abuchen.portfolio.datatransfer.pdf.layout.PDFLayoutStructure;
+import name.abuchen.portfolio.datatransfer.pdf.layout.PDFLayoutTableRegion;
 import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.TypedMap;
+import name.abuchen.portfolio.pdfbox3.layout.PDFLayoutSegmentRow;
 
 /* package */ final class PDFParser
 {
@@ -139,15 +144,15 @@ import name.abuchen.portfolio.model.TypedMap;
             return context;
         }
 
-        public void parse(String filename, List<Item> items, String text)
+        public void parse(String filename, List<Item> items, String text, PDFLayoutStructure layoutStructure)
         {
-            // strip all carriage returns (as the CreateTextFromPDFHandle does
-            // as well) and split into lines
-
             var lines = text.replace("\r", "").split("\\n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
-            // reset context and parse it from this file
             context.clear();
+
+            if (layoutStructure != null)
+                context.putType(layoutStructure);
+
             parseContext(filename, context, lines);
 
             for (Block block : blocks)
@@ -570,14 +575,16 @@ import name.abuchen.portfolio.model.TypedMap;
         private final int endLineNumber;
         private final String fileName;
         private final TransactionContext txContext;
+        private final DocumentContext documentContext;
 
         private ParsedData(Map<String, String> base, int startLineNumber, int endLineNumber, String fileName,
-                        TransactionContext txContext)
+                        TransactionContext txContext, DocumentContext documentContext)
         {
             this.base = base;
             this.startLineNumber = startLineNumber;
             this.endLineNumber = endLineNumber;
             this.fileName = fileName;
+            this.documentContext = documentContext;
             this.txContext = txContext;
         }
 
@@ -604,6 +611,55 @@ import name.abuchen.portfolio.model.TypedMap;
         public TransactionContext getTransactionContext()
         {
             return txContext;
+        }
+
+        public DocumentContext getDocumentContext()
+        {
+            return documentContext;
+        }
+
+        public Optional<PDFLayoutStructure> getLayoutStructure()
+        {
+            return documentContext.getType(PDFLayoutStructure.class);
+        }
+
+        public Optional<String> findLayoutValue(String label, int index)
+        {
+            return getLayoutStructure()
+                            .flatMap(structure -> structure.findKeyValue(label))
+                            .map(keyValue -> keyValue.valueText(index));
+        }
+
+        public void putLayoutValue(String targetKey, String layoutLabel, int index)
+        {
+            findLayoutValue(layoutLabel, index).ifPresent(value -> put(targetKey, value));
+        }
+
+        public Optional<PDFLayoutKeyValue> findLayoutKeyValue(String label)
+        {
+            return getLayoutStructure().flatMap(structure -> structure.findKeyValue(label));
+        }
+
+        public List<PDFLayoutKeyValue> findLayoutKeyValues(String label)
+        {
+            return getLayoutStructure().map(structure -> structure.findKeyValues(label))
+                            .orElse(Collections.emptyList());
+        }
+
+        public Optional<PDFLayoutTableRegion> findLayoutTableByHeader(String... headerParts)
+        {
+            return getLayoutStructure().flatMap(structure -> structure.findTableByHeader(headerParts));
+        }
+
+        public List<PDFLayoutSegmentRow> findRowsContaining(String text)
+        {
+            return getLayoutStructure().map(structure -> structure.findRowsContaining(text))
+                            .orElse(Collections.emptyList());
+        }
+
+        public Optional<PDFLayoutSegmentRow> findFirstRowContaining(String text)
+        {
+            return getLayoutStructure().flatMap(structure -> structure.findFirstRowContaining(text));
         }
 
         public void skipTransaction(String reason)
@@ -707,6 +763,8 @@ import name.abuchen.portfolio.model.TypedMap;
         private List<Pattern> pattern = new ArrayList<>();
         private BiConsumer<T, ParsedData> assignment;
 
+        private Predicate<DocumentContext> contextCondition;
+
         public Section(Transaction<T> transaction, String[] attributes)
         {
             this.transaction = transaction;
@@ -783,6 +841,9 @@ import name.abuchen.portfolio.model.TypedMap;
         {
             if (assignment == null)
                 throw new IllegalArgumentException("Assignment function missing"); //$NON-NLS-1$
+
+            if (contextCondition != null && !contextCondition.test(documentContext))
+                return;
 
             Map<String, String> values = new HashMap<>();
 
@@ -872,7 +933,8 @@ import name.abuchen.portfolio.model.TypedMap;
                                 break;
                         }
 
-                        assignment.accept(target, new ParsedData(values, lineNo, lineNoEnd, filename, txContext));
+                        assignment.accept(target, new ParsedData(values, lineNo, lineNoEnd, filename, txContext,
+                                        documentContext));
 
                         // if there might be multiple occurrences that match,
                         // the found values need to be added and the search
@@ -911,6 +973,12 @@ import name.abuchen.portfolio.model.TypedMap;
                         values.put(attribute, v);
                 }
             }
+        }
+
+        public Section<T> findContext(Predicate<DocumentContext> condition)
+        {
+            this.contextCondition = condition;
+            return this;
         }
     }
 

@@ -8,12 +8,17 @@ import java.util.List;
 import java.util.Scanner;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
+import name.abuchen.portfolio.datatransfer.pdf.layout.PDFLayoutStructure;
+import name.abuchen.portfolio.datatransfer.pdf.layout.PDFLayoutStructureBuilder;
 import name.abuchen.portfolio.pdfbox1.PDFBox1Adapter;
 import name.abuchen.portfolio.pdfbox3.PDFBox3Adapter;
+import name.abuchen.portfolio.pdfbox3.layout.PDFLayoutSegmentDocument;
+import name.abuchen.portfolio.pdfbox3.layout.PDFLayoutSegmentDocumentExtractor;
 
 public class PDFInputFile extends Extractor.InputFile
 {
     private String text;
+    private PDFLayoutStructure layoutStructure;
     private String version;
 
     public PDFInputFile(File file)
@@ -77,6 +82,17 @@ public class PDFInputFile extends Extractor.InputFile
 
         text = sanitize(adapter.convertToText(getFile()));
         version = adapter.getPDFBoxVersion();
+    }
+
+    public PDFLayoutStructure getLayoutStructure()
+    {
+        return layoutStructure;
+    }
+
+    public void convertPDFtoLayoutStructure() throws IOException
+    {
+        PDFLayoutSegmentDocument document = new PDFLayoutSegmentDocumentExtractor().extract(getFile());
+        this.layoutStructure = new PDFLayoutStructureBuilder().build(document);
     }
 
     @SuppressWarnings("nls")

@@ -19,6 +19,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.datatransfer.pdf.layout.PDFLayoutDebugExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.layout.PDFLayoutDebugMode;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -49,8 +51,11 @@ public class CreateTextFromPDFHandler
             // create text from PDF
             inputFile.convertPDFtoText();
             var extractedText = inputFile.getText();
-            var pdfBoxVersion = inputFile.getPDFBoxVersion();
 
+            // create text from PDF Layout
+            var extractedTextPdfLayout = new PDFLayoutDebugExtractor().extract(file, PDFLayoutDebugMode.STANDARD);
+
+            var pdfBoxVersion = inputFile.getPDFBoxVersion();
             var textBuilder = new StringBuilder();
             textBuilder.append("```").append("\n");
             textBuilder.append("PDFBox Version: ").append(pdfBoxVersion).append("\n");
@@ -66,6 +71,8 @@ public class CreateTextFromPDFHandler
 
             textBuilder.append("-----------------------------------------\n");
             textBuilder.append(extractedText).append("\n");
+            textBuilder.append("-----------------------------------------\n");
+            textBuilder.append(extractedTextPdfLayout).append("\n");
             textBuilder.append("```");
 
             var dialog = new DisplayPDFTextDialog(shell, file, textBuilder.toString());
@@ -82,7 +89,6 @@ public class CreateTextFromPDFHandler
 
     private static class DisplayPDFTextDialog extends DisplayTextDialog
     {
-
         public DisplayPDFTextDialog(Shell parentShell, File source, String text)
         {
             super(parentShell, source, text);
@@ -131,8 +137,8 @@ public class CreateTextFromPDFHandler
                         case Character ch when Character.isDigit(ch) -> generateRandomNumber();
                         default -> c;
                     });
-
                 }
+
                 var replacementText = replacementTextBuilder.toString();
 
                 // Replace selectedText with replacementText
@@ -162,5 +168,4 @@ public class CreateTextFromPDFHandler
             return (char) (random.nextInt(10) + '0');
         }
     }
-
 }

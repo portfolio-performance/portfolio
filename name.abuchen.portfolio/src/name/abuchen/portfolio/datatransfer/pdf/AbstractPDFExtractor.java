@@ -28,6 +28,7 @@ import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.ParsedData;
+import name.abuchen.portfolio.datatransfer.pdf.layout.PDFLayoutStructure;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.CrossEntry;
 import name.abuchen.portfolio.model.Security;
@@ -117,21 +118,25 @@ public abstract class AbstractPDFExtractor implements Extractor
             throw new IllegalArgumentException("input file doesn't seem to be a PDF-file but is of type " //$NON-NLS-1$
                             + inputFile.getClass().getName());
 
-        var text = ((PDFInputFile) inputFile).getText();
-        results.addAll(extract(inputFile.getFile().getName(), text, errors));
+        var pdfInputFile = (PDFInputFile) inputFile;
+        var text = pdfInputFile.getText();
+        var layoutStructure = pdfInputFile.getLayoutStructure();
+
+        results.addAll(extract(inputFile.getFile().getName(), text, layoutStructure, errors));
 
         this.securityCache = null;
 
         return results;
     }
 
-    private final List<Item> extract(String filename, String text, List<Exception> errors)
+    private final List<Item> extract(String filename, String text, PDFLayoutStructure layoutStructure,
+                    List<Exception> errors)
     {
         try
         {
             checkBankIdentifier(filename, text);
 
-            var items = parseDocumentTypes(documentTypes, filename, text);
+            var items = parseDocumentTypes(documentTypes, filename, text, layoutStructure);
 
             if (items.isEmpty())
             {
@@ -186,14 +191,17 @@ public abstract class AbstractPDFExtractor implements Extractor
         }
     }
 
-    protected final List<Item> parseDocumentTypes(List<DocumentType> documentTypes, String filename, String text)
+    protected final List<Item> parseDocumentTypes(List<DocumentType> documentTypes, String filename, String text,
+                    PDFLayoutStructure layoutStructure)
     {
         List<Item> items = new ArrayList<>();
+
         for (DocumentType type : documentTypes)
         {
             if (type.matches(text))
-                type.parse(filename, items, text);
+                type.parse(filename, items, text, layoutStructure);
         }
+
         return items;
     }
 
