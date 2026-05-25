@@ -93,6 +93,7 @@ Note: depending on your Eclipse package, some of these may already be installed.
 4. **Add Launch Configuration view**: `Menu` → `Window` → `Show View` → `Other...` → `Debug` → `Launch Configuration`
 5. **Run the application**: Select `Eclipse Application` → `PortfolioPerformance` and right-click *Run*
 6. **Run tests**: Select `JUnit Plug-in Tests` → `PortfolioPerformance_Tests` or `PortfolioPerformance_UI_Tests`
+   - If you get `Required plug-in 'org.eclipse.pde.junit.runtime' could not be found`, add your running Eclipse installation as a location in the target. Open `portfolio-target-definition.target` in the Target Editor (same as in step 3), click `Add...` → `Installation` → enter `${eclipse_home}` (works cross-platform) → Finish. Save the file. Keep this change in your working tree only, do not commit it. This bundle is part of the Eclipse PDE tooling rather than the application's runtime, so it intentionally isn't in `portfolio-target-definition.target`. CI uses Maven/Tycho, which has its own test runner, so this only affects running tests from inside Eclipse.
 
 **Optional Language Packs**
 
