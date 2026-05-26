@@ -29,7 +29,7 @@ public class AkfBankPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("akf bank", //
+        final var type = new DocumentType("akf bank", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // Nr. Valuta / Buchungstag Buchungstext EUR
@@ -44,7 +44,7 @@ public class AkfBankPDFExtractor extends AbstractPDFExtractor
         // 01 08.04.2011 / 08.04.2011 Gutschrift 29.000,12
         // 01 16.08.2022 / 16.08.2022 SEPA Gutschrift Bank 755,00
         // @formatter:on
-        Block depositBlock = new Block("^[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\/ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Gutschrift|SEPA Gutschrift( Bank)?) .*$");
+        var depositBlock = new Block("^[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\/ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Gutschrift|SEPA Gutschrift( Bank)?) .*$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
@@ -72,10 +72,10 @@ public class AkfBankPDFExtractor extends AbstractPDFExtractor
         // 01 14.11.2012 / 14.11.2012 Einzelüberweisung -5,00
         // Gebühren für Nachbe-
         // @formatter:on
-        Block removalBlock = new Block("^[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\/ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
-                        + "(Einzel)?(.*berweisung.*"
-                        + "|Festgeld Anlage"
-                        + "|Sparkonto K.ndigung) \\-[\\.,\\d]+$");
+        var removalBlock = new Block("^[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\/ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                        + "(Einzel)?(.*berweisung.*" //
+                        + "|Festgeld Anlage" //
+                        + "|Sparkonto K.ndigung) \\-[\\.,\\d]+$"); //
         type.addBlock(removalBlock);
         removalBlock.setMaxSize(2);
         removalBlock.set(new Transaction<AccountTransaction>()
@@ -89,7 +89,7 @@ public class AkfBankPDFExtractor extends AbstractPDFExtractor
                                         + "|Festgeld Anlage" //
                                         + "|Sparkonto K.ndigung)) " //
                                         + "\\-(?<amount>[\\.,\\d]+)$") //
-                        .match("^(?<type>[^\\s]+).*$")
+                        .match("^(?<type>[^\\s]+).*$") //
                         .assign((t, v) -> {
                             // @formatter:off
                             // Is type is "Gebühren" change from REMOVAL to FEES
@@ -105,7 +105,7 @@ public class AkfBankPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block interestBlock = new Block("^[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\/ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Kontoabschlu. [\\.,\\d]+$");
+        var interestBlock = new Block("^[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\/ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Kontoabschlu. [\\.,\\d]+$");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
@@ -121,7 +121,7 @@ public class AkfBankPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\/ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Kontoabschlu. (?<amount>[\\.,\\d]+)$") //
                         .match("^v\\. (?<note1>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) b\\. (?<note2>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .match("^Zinsen zu[\\s]{1,}(?<note3>[\\.,\\d]+).*$")
+                        .match("^Zinsen zu[\\s]{1,}(?<note3>[\\.,\\d]+).*$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -138,7 +138,7 @@ public class AkfBankPDFExtractor extends AbstractPDFExtractor
                         .match("^[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\/ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Kontoabschlu. \\-(?<tax>[\\.,\\d]+)$") //
                         .match("^Abgeltungssteuer.*$") //
                         .assign((t, v) -> {
-                            Money tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
+                            var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
 
                             t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
@@ -154,7 +154,7 @@ public class AkfBankPDFExtractor extends AbstractPDFExtractor
                         .match("^[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\/ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Kontoabschlu. \\-(?<tax>[\\.,\\d]+)$") //
                         .match("^Solidarit.tszuschlag.*$") //
                         .assign((t, v) -> {
-                            Money tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
+                            var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
 
                             t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
@@ -170,7 +170,7 @@ public class AkfBankPDFExtractor extends AbstractPDFExtractor
                         .match("^[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\/ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Kontoabschlu. \\-(?<tax>[\\.,\\d]+)$") //
                         .match("^Kirchensteuer.*$") //
                         .assign((t, v) -> {
-                            Money tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
+                            var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
 
                             t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
