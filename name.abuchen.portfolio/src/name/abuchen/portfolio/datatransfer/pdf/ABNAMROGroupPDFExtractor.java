@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.datatransfer.pdf;
+﻿package name.abuchen.portfolio.datatransfer.pdf;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -6,7 +6,6 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
@@ -29,7 +28,7 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("Kontoauszug", //
+        final var type = new DocumentType("Kontoauszug", //
                         documentContext -> documentContext //
                                         .oneOf( //
                                                         // @formatter:off
@@ -45,8 +44,7 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
                                                         section -> section //
                                                                         .attributes("currency") //
                                                                         .match("^Tagesgeldkonto (?<currency>.*)$") //
-                                                                        .assign((ctx, v) -> ctx.put("currency",
-                                                                                        CurrencyUnit.EUR)))
+                                                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode("EUR"))))
 
                                         .optionalOneOf( //
                                                         // @formatter:off
@@ -90,7 +88,7 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
         // 24.10.2011 19.10.2011 12030000-001 Zahlungseingang 100,00
         // 11.10.2012 11.10.2012 B2D11BI5S00A Ru¨ckzahlung Ihres Festgeldes 50.000,00
         // @formatter:on
-        Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* (Zahlungseingang|Ru.ckzahlung Ihres Festgeldes)[\\s]{1,}[\\.,\\d]+$");
+        var depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* (Zahlungseingang|Ru.ckzahlung Ihres Festgeldes)[\\s]{1,}[\\.,\\d]+$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
@@ -115,7 +113,7 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
         // 16.12.2011 16.12.2011 12030000-001 Zahlungsausgang 2.000,00
         // 11.04.2012 11.04.2012 B2D11BI5S00A Abschluss eines Festgeldes 50.000,0
         // @formatter:on
-        Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* (Zahlungsausgang|Abschluss eines Festgeldes)[\\s]{1,}[\\.,\\d]+$");
+        var removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* (Zahlungsausgang|Abschluss eines Festgeldes)[\\s]{1,}[\\.,\\d]+$");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
@@ -144,7 +142,7 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
         // 31.12.2012 01.01.2013 5000510765 Solidarita¨tszuschlag 2,73
         // 31.12.2012 01.01.2013 5000510765 Ihre Tagesgeldzinsen 198,97
         // @formatter:on
-        Block interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* (Ihre (Zinsabrechnung|Tagesgeldzinsen)|Zinszahlung Festgeld)[\\s]{1,}[\\.,\\d]+$");
+        var interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* (Ihre (Zinsabrechnung|Tagesgeldzinsen)|Zinszahlung Festgeld)[\\s]{1,}[\\.,\\d]+$");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
@@ -152,7 +150,7 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "amount") //
                         .documentContext("currency") //
-                        .documentContextOptionally("taxDate1", "taxDate2", "taxDate3", "tax1", "tax2", "tax3")
+                        .documentContextOptionally("taxDate1", "taxDate2", "taxDate3", "tax1", "tax2", "tax3") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .* " //
                                         + "(Ihre (Zinsabrechnung|Tagesgeldzinsen)" //
                                         + "|Zinszahlung Festgeld)[\\s]{1,}" //
@@ -165,21 +163,21 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
                             if (v.containsKey("taxDate1") && v.containsKey("tax1")
                                             && t.getDateTime().equals(asDate(v.get("taxDate1"))))
                             {
-                                Money tax = Money.of(v.get("currency"), asAmount(v.get("tax1")));
+                                var tax = Money.of(v.get("currency"), asAmount(v.get("tax1")));
                                 t.addUnit(new Unit(Unit.Type.TAX, tax));
                             }
 
                             if (v.containsKey("taxDate2") && v.containsKey("tax2")
                                             && t.getDateTime().equals(asDate(v.get("taxDate2"))))
                             {
-                                Money tax = Money.of(v.get("currency"), asAmount(v.get("tax2")));
+                                var tax = Money.of(v.get("currency"), asAmount(v.get("tax2")));
                                 t.addUnit(new Unit(Unit.Type.TAX, tax));
                             }
 
                             if (v.containsKey("taxDate3") && v.containsKey("tax3")
                                             && t.getDateTime().equals(asDate(v.get("taxDate3"))))
                             {
-                                Money tax = Money.of(v.get("currency"), asAmount(v.get("tax3")));
+                                var tax = Money.of(v.get("currency"), asAmount(v.get("tax3")));
                                 t.addUnit(new Unit(Unit.Type.TAX, tax));
                             }
                         })
