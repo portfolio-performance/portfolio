@@ -137,16 +137,16 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
                                         // 16:27:35 Sens Achat - Exécution unique
                                         // @formatter:on
                                         section -> section //
-                                            .attributes("date", "time") //
-                                            .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) R.f.rence .*$") //
-                                            .match("^(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .* \\- .*$") //
-                                            .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
+                                                        .attributes("date", "time") //
+                                                        .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) R.f.rence .*$") //
+                                                        .match("^(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .* \\- .*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
 
-                                         // 02-02-2026 Référence 94F7048294366804
-                                         section -> section //
-                                             .attributes("date") //
-                                             .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) R.f.rence .*$") //
-                                             .assign((t, v) -> t.setDate(asDate(v.get("date")))))
+                                        // 02-02-2026 Référence 94F7048294366804
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) R.f.rence .*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))))
 
                         // @formatter:off
                         // Montant NET 491,67 € 491,67 €
