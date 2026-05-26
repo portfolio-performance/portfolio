@@ -4,6 +4,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
@@ -136,7 +137,8 @@ public class ApoBankPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-08-27"), hasShares(0.707), //
+                        hasDate("2025-08-27"), hasExDate("2025-08-14"),//
+                        hasShares(0.707), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Ref.-Nr.: 6968008518"), //
                         hasAmount("EUR", 0.04), hasGrossValue("EUR", 0.06), //
