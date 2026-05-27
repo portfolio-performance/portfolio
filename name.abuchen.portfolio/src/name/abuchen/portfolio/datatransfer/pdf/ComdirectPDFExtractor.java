@@ -71,8 +71,6 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
     private static final String ATTRIBUTE_GROSS_TAXES_TREATMENT = "gross_taxes_treatment";
     private static final String ATTRIBUTE_GROSS_TAX_BASE_BEFORE_LOST_OFFSET = "gross_tax_base_before_lost_offset";
-    private static final String ATTRIBUTE_WITHHOLDING_TAX_FROM_DIVIDENDS = "withholding_tax_from_dividends";
-    private static final String ATTRIBUTE_WITHHOLDING_TAX_FROM_TAX = "withholding_tax_from_tax";
 
     public ComdirectPDFExtractor(Client client)
     {
@@ -679,7 +677,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
                                 return new TransactionItem(t);
-                            
+
                             // Do *not* return a skipped item here. The
                             // addSellWithNegativeAmountTransaction method
                             // creates an *additional* transaction in case the
@@ -931,7 +929,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                         .match("^[\\.,\\d]+ % Quellensteuer[\\s]{1,}(?<currency>[A-Z]{3})[\\s]{1,}(?<withHoldingTax>[\\.,\\d]+) \\-.*$") //
                                                         .assign((t, v) -> {
                                                             var withHoldingTax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("withHoldingTax")));
-                                                            v.getTransactionContext().put(ATTRIBUTE_WITHHOLDING_TAX_FROM_DIVIDENDS, withHoldingTax);
+
                                                             if (t.getMonetaryAmount().getCurrencyCode().equals(withHoldingTax.getCurrencyCode()))
                                                                 t.setMonetaryAmount(t.getMonetaryAmount().add(withHoldingTax));
                                                         }))
@@ -986,14 +984,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         + ".*$") //
                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
-                        .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
-
-                            // Store withholding tax for later use in post processing
-                            item.setData(ATTRIBUTE_WITHHOLDING_TAX_FROM_DIVIDENDS, ctx.get(ATTRIBUTE_WITHHOLDING_TAX_FROM_DIVIDENDS));
-
-                            return item;
-                        });
+                        .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -1154,31 +1145,30 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         //  S te u e rb e m  e ss u n g s g r u n d la g e                                                            E  U   R                                  0 , 2 8
                                         // (angerechnete ausländische Quellensteuer:       EUR               0,04  )
                                         // a b g e f ü h rt e S t e u er n                                                                                                                    _E _U R_ _ _ _ _ _ _ _ _ _ _  _ __ -__0,_0_ _3
+                                        // Z u  Ih r e n G u n s t e n n a c h S t e u er n :                                                                                                   E U R               0,2 1
                                         //
                                         // Z u  Ih r e n G u n s t e n v o r S te u e r n :                                                                                                    E U R               2,7 4
                                         // S te u e rb e m e ss u n g s g r u n d la g e                                                            E  U   R                                  3 , 2 2
                                         // (angerechnete ausländische Quellensteuer:       EUR               0,81  )
                                         // a b g e f ü h rt e S t e u er n                                                                                                                    E_ U_ R_ _ _ _ _ _ _ _  _ _ _ _ _ _ _0_,_0_ 0_
+                                        // Z u  Ih r e n G u n s t e n n a c h S t e u er n :                                                                                                   E U R               2,7 4
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("currencyBeforeTaxes", "grossBeforeTaxes", "currencyAssessmentBasis", "currencyForeignWithholdingTax", "foreignWithholdingTax", "grossAssessmentBasis", "currencyDeductedTaxes", "deductedTaxes") //
+                                                        .attributes("currencyBeforeTaxes", "grossBeforeTaxes", "currencyAssessmentBasis", "currencyCreditedForeignWithholdingTax", "creditedForeignWithholdingTax", "grossAssessmentBasis", "currencyDeductedTaxes", "deductedTaxes", "currencyAfterTaxes", "grossAfterTaxes") //
                                                         .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?<currencyBeforeTaxes>(?:[A-Z][\\s]*){3})[\\s\\-]+(?<grossBeforeTaxes>[\\.,\\d\\s]+).*$") //
                                                         .match("^[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*b[\\s]*e[\\s]*m[\\s]*e[\\s]*s[\\s]*s[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*g[\\s]*r[\\s]*u[\\s]*n[\\s]*d[\\s]*l[\\s]*a[\\s]*g[\\s]*e[\\s]*.*(?<currencyAssessmentBasis>(?:[A-Z][\\s]*){3})[\\s\\-]+(?<grossAssessmentBasis>[\\.,\\d\\s]+).*$") //
-                                                        .match("^\\(angerechnete ausl.ndische Quellensteuer:[\\s]*(?<currencyForeignWithholdingTax>[A-Z]{3})[\\s]+(?<foreignWithholdingTax>[\\.,\\d\\s]+)\\).*$") //
+                                                        .match("^\\(angerechnete ausl.ndische Quellensteuer:[\\s]*(?<currencyCreditedForeignWithholdingTax>[A-Z]{3})[\\s]+(?<creditedForeignWithholdingTax>[\\.,\\d\\s]+)\\).*$") //
                                                         .match("^[\\s]*a[\\s]*b[\\s]*g[\\s]*e[\\s]*f[\\s]*.[\\s]*h[\\s]*r[\\s]*t[\\s]*e[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]+(?<currencyDeductedTaxes>[A-Z_\\s]+)[\\-_\\s]+(?<deductedTaxes>[\\.,\\d_\\s]+).*$") //
+                                                        .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n[\\s]*n[\\s]*a[\\s]*c[\\s]*h[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?<currencyAfterTaxes>(?:[A-Z][\\s]*){3})[\\-\\s]+(?<grossAfterTaxes>[\\.,\\d\\s]+).*$") //
                                                         .assign((t, v) -> {
-                                                            // Parse amounts from tax treatment document
                                                             var grossBeforeTaxes = Money.of(asCurrencyCode(stripBlanks(v.get("currencyBeforeTaxes"))), asAmount(stripBlanks(v.get("grossBeforeTaxes"))));
                                                             var grossAssessmentBasis = Money.of(asCurrencyCode(stripBlanks(v.get("currencyAssessmentBasis"))), asAmount(stripBlanks(v.get("grossAssessmentBasis"))));
-                                                            var foreignWithholdingTax = Money.of(asCurrencyCode(stripBlanks(v.get("currencyForeignWithholdingTax"))), asAmount(stripBlanks(v.get("foreignWithholdingTax"))));
+                                                            var creditedForeignWithholdingTax = Money.of(asCurrencyCode(stripBlanks(v.get("currencyCreditedForeignWithholdingTax"))), asAmount(stripBlanks(v.get("creditedForeignWithholdingTax"))));
                                                             var deductedTaxes = Money.of(asCurrencyCode(stripBlanksAndUnderscores(v.get("currencyDeductedTaxes"))), asAmount(stripBlanksAndUnderscores(v.get("deductedTaxes"))));
+                                                            var grossAfterTaxes = Money.of(asCurrencyCode(stripBlanks(v.get("currencyAfterTaxes"))), asAmount(stripBlanks(v.get("grossAfterTaxes"))));
 
-                                                            // Initially set total taxes (German deducted taxes + foreign withholding tax)
-                                                            var totalDeductedTaxes = deductedTaxes.add(foreignWithholdingTax);
-                                                            t.setMonetaryAmount(totalDeductedTaxes);
-                                                            
-                                                            v.getTransactionContext().put(ATTRIBUTE_WITHHOLDING_TAX_FROM_TAX, foreignWithholdingTax);
-
+                                                            var totalDeductedTaxes = deductedTaxes.add(creditedForeignWithholdingTax);
+                                                            var totalDeductedTaxesFromAmounts = grossAssessmentBasis.subtract(grossAfterTaxes);
                                                             // Use tax base before loss offset if it's higher than regular assessment basis
                                                             if (v.getTransactionContext().get(ATTRIBUTE_GROSS_TAX_BASE_BEFORE_LOST_OFFSET) != null)
                                                             {
@@ -1187,12 +1177,18 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                                     grossAssessmentBasis = grossTaxBaseBeforeLostOffset;
                                                             }
 
-                                                            // Calculate effective tax burden when no German taxes were deducted
-                                                            // (e.g., due to allowances or loss offset):
-                                                            // The actual burden is the difference between assessment basis and received amount
-                                                            // Example: Gross 3.22 EUR - Received 2.74 EUR = 0.48 EUR effective tax
+                                                            // When no German taxes were deducted (e.g. allowances or loss offset), the
+                                                            // effective burden is the gap between the assessment basis and the gross amount.
+                                                            // When the document-derived figure is higher (e.g. non-creditable foreign
+                                                            // withholding exceeds the DTA credit limit), that figure takes precedence.
+                                                            var taxes = totalDeductedTaxes;
                                                             if (deductedTaxes.isZero() && grossAssessmentBasis.isGreaterThan(grossBeforeTaxes))
-                                                                t.setMonetaryAmount(grossAssessmentBasis.subtract(grossBeforeTaxes));
+                                                                taxes = grossAssessmentBasis.subtract(grossBeforeTaxes);
+
+                                                            if (totalDeductedTaxesFromAmounts.isGreaterThan(totalDeductedTaxes))
+                                                                taxes = totalDeductedTaxesFromAmounts;
+
+                                                            t.setMonetaryAmount(taxes);
 
                                                             // Store gross amount for transaction context (use higher of the two)
                                                             if (!grossBeforeTaxes.isZero() && grossAssessmentBasis.isGreaterThan(grossBeforeTaxes))
@@ -1264,10 +1260,10 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                             // Calculate the taxes and store gross amount
                                                             if (!grossBeforeTaxes.isZero() && grossAssessmentBasis.isGreaterThan(grossBeforeTaxes))
                                                             {
-                                                                t.setMonetaryAmount(grossAssessmentBasis.subtract(grossBeforeTaxes).add(deductedTaxes));
-
                                                                 // Store in transaction context
                                                                 v.getTransactionContext().put(ATTRIBUTE_GROSS_TAXES_TREATMENT, grossAssessmentBasis);
+
+                                                                t.setMonetaryAmount(grossAssessmentBasis.subtract(grossBeforeTaxes).add(deductedTaxes));
                                                             }
                                                             else
                                                             {
@@ -1305,10 +1301,10 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                             // Calculate the taxes and store gross amount
                                                             if (!grossBeforeTaxes.isZero() && grossAssessmentBasis.isGreaterThan(grossBeforeTaxes) && !"-".equals(trim(v.get("type"))))
                                                             {
-                                                                t.setMonetaryAmount(grossAssessmentBasis.subtract(grossBeforeTaxes).add(deductedTaxes));
-
                                                                 // Store in transaction context
                                                                 v.getTransactionContext().put(ATTRIBUTE_GROSS_TAXES_TREATMENT, grossAssessmentBasis);
+
+                                                                t.setMonetaryAmount(grossAssessmentBasis.subtract(grossBeforeTaxes).add(deductedTaxes));
                                                             }
                                                             else
                                                             {
@@ -1441,8 +1437,6 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                             // Store attribute in item data map
                             item.setData(ATTRIBUTE_GROSS_TAXES_TREATMENT, ctx.get(ATTRIBUTE_GROSS_TAXES_TREATMENT));
-                            // Store withholding tax for later use in post processing
-                            item.setData(ATTRIBUTE_WITHHOLDING_TAX_FROM_TAX, ctx.get(ATTRIBUTE_WITHHOLDING_TAX_FROM_TAX));
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
                                 ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
@@ -2157,22 +2151,10 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                 ExtractorUtils.fixGrossValue().accept(dividendTransaction);
 
-                var taxesTotal = taxesTransaction.getMonetaryAmount();
-
-                // detect if withholding taxes were not completely regarded and add the missing amount if needed
-                var withholdTaxPa1 = (Money) pair.transaction().getData(ATTRIBUTE_WITHHOLDING_TAX_FROM_DIVIDENDS);
-                var withholdTaxPa2 = (Money) pair.tax().getData(ATTRIBUTE_WITHHOLDING_TAX_FROM_TAX);
-
-                if (withholdTaxPa1 != null && withholdTaxPa2 != null && withholdTaxPa1 != withholdTaxPa2)
-                {
-                    taxesTotal = taxesTotal.add(withholdTaxPa1.subtract(withholdTaxPa2));
-                }
-                // end of: detect if withholding taxes were not completely regarded and add the missing amount if needed
-
                 dividendTransaction.setMonetaryAmount(dividendTransaction.getMonetaryAmount() //
-                                .subtract(taxesTotal));
+                                .subtract(taxesTransaction.getMonetaryAmount()));
 
-                dividendTransaction.addUnit(new Unit(Unit.Type.TAX, taxesTotal));
+                dividendTransaction.addUnit(new Unit(Unit.Type.TAX, taxesTransaction.getMonetaryAmount()));
 
                 dividendTransaction.setSource(
                                 concatenate(dividendTransaction.getSource(), taxesTransaction.getSource(), "; "));
