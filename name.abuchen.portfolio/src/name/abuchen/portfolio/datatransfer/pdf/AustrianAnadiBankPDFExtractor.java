@@ -41,6 +41,7 @@ public class AustrianAnadiBankPDFExtractor extends AbstractPDFExtractor
                                         .find("^Neuer Saldo zu Ihren Gunsten.*$") //
                                         .match("^.* (?<currency>[A-Z]{3}) [\\.,\\d]+(\\-)?$") //
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency"))))
+
                                         // @formatter:off
                                         // Inglitschstraße 5A, 050202-0 vom 30.05.2025
                                         // @formatter:on
@@ -64,7 +65,7 @@ public class AustrianAnadiBankPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "amount") //
                         .documentContext("currency", "year") //
-                        .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) .* [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)$") //)
+                        .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) .* [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)$") // )
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date") + '.' + v.get("year")));
                             t.setCurrencyCode(v.get("currency"));
@@ -129,7 +130,7 @@ public class AustrianAnadiBankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("note").optional() //
-                        .match("^[\\d]{1,2}\\.[\\d]{1,2} (?<note>(ONLINE-FESTGELD|IBAN:).*) [\\d]{1,2}\\.[\\d]{1,2} [\\.,\\d]+-$") //
+                        .match("^[\\d]{1,2}\\.[\\d]{1,2} (?<note>(ONLINE\\-FESTGELD|IBAN:).*) [\\d]{1,2}\\.[\\d]{1,2} [\\.,\\d]+\\-$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         .wrap(TransactionItem::new));
