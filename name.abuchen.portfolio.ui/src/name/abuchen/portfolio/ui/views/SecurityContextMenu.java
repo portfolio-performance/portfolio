@@ -17,6 +17,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.FundTransferDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
@@ -143,6 +144,16 @@ public class SecurityContextMenu
                             .with(security) //
                             .addTo(manager);
         }
+
+        // Spanish-style fund transfers can keep the same portfolio while the
+        // source and target securities differ, so expose it outside the
+        // multi-portfolio security-transfer condition.
+        manager.add(new Separator());
+        new OpenDialogAction(owner, Messages.LabelFundTransfer + "...") //$NON-NLS-1$
+                        .type(FundTransferDialog.class) //
+                        .with(portfolio) //
+                        .with(security) //
+                        .addTo(manager);
 
         manager.add(new Separator());
         new OpenDialogAction(owner, PortfolioTransaction.Type.DELIVERY_INBOUND.toString() + "...") //$NON-NLS-1$

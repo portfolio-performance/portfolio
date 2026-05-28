@@ -22,6 +22,7 @@ import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.AbstractTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransferDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.FundTransferDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
@@ -47,6 +48,10 @@ public class NewTransactionMenuContribution
 
         if (portfolioPart.getClient().getActivePortfolios().size() > 1)
             items.add(create(portfolioPart, SecurityTransferDialog.class, Messages.LabelSecurityTransfer));
+
+        // A fund transfer can happen within one securities account because the
+        // movement is between funds, not necessarily between portfolios.
+        items.add(create(portfolioPart, FundTransferDialog.class, Messages.LabelFundTransfer));
 
         items.add(MMenuFactory.INSTANCE.createMenuSeparator());
 

@@ -16,6 +16,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
+import name.abuchen.portfolio.model.FundTransferEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
@@ -23,6 +24,7 @@ import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransferDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.FundTransferDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
@@ -270,6 +272,14 @@ public class TransactionContextMenu
             return new OpenDialogAction(owner, Messages.MenuEditTransaction) //
                             .type(SecurityTransferDialog.class, d -> d.setEntry(entry));
         }
+        else if (tx.getTransaction().getCrossEntry() instanceof FundTransferEntry entry)
+        {
+            // Edit the paired entry instead of treating either side as a plain
+            // delivery. The source-oriented dialog recalculates carried lots
+            // once for the whole tax-neutral transfer.
+            return new OpenDialogAction(owner, Messages.MenuEditTransaction) //
+                            .type(FundTransferDialog.class, d -> d.setEntry(entry));
+        }
         else
         {
             return new OpenDialogAction(owner, Messages.MenuEditTransaction) //
@@ -291,6 +301,13 @@ public class TransactionContextMenu
         {
             return new OpenDialogAction(owner, Messages.MenuDuplicateTransaction) //
                             .type(SecurityTransferDialog.class, d -> d.presetEntry(entry));
+        }
+        else if (tx.getTransaction().getCrossEntry() instanceof FundTransferEntry entry)
+        {
+            // Duplicating keeps the source/target fund pairing but lets the
+            // model rebuild deferred-basis lots for the new transfer date.
+            return new OpenDialogAction(owner, Messages.MenuDuplicateTransaction) //
+                            .type(FundTransferDialog.class, d -> d.presetEntry(entry));
         }
         else
         {
