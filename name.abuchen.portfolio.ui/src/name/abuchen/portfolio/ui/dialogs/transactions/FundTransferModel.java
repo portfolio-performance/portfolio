@@ -44,6 +44,8 @@ public class FundTransferModel extends AbstractModel
     private String note;
     private List<FundTransferEntry.CarriedLot> carriedLots = List.of();
     private IStatus calculationStatus = ValidationStatus.ok();
+    private boolean targetPortfolioExplicit;
+    private boolean targetAmountExplicit;
 
     public FundTransferModel(Client client)
     {
@@ -107,10 +109,11 @@ public class FundTransferModel extends AbstractModel
     {
         this.source = null;
 
+        targetAmountExplicit = false;
+        targetPortfolioExplicit = false;
         setSourceShares(0);
         setTargetShares(0);
         setSourceAmount(0);
-        setTargetAmount(0);
         setNote(null);
         setTime(PresetValues.getTime());
     }
@@ -143,6 +146,8 @@ public class FundTransferModel extends AbstractModel
         this.targetAmount = entry.getTargetTransaction().getAmount();
         this.note = entry.getNote();
         this.carriedLots = new ArrayList<>(entry.getCarriedLots());
+        this.targetAmountExplicit = true;
+        this.targetPortfolioExplicit = true;
     }
 
     @Override
@@ -234,6 +239,8 @@ public class FundTransferModel extends AbstractModel
     public void setSourcePortfolio(Portfolio portfolio)
     {
         firePropertyChange(Properties.sourcePortfolio.name(), this.sourcePortfolio, this.sourcePortfolio = portfolio);
+        if (!targetPortfolioExplicit)
+            firePropertyChange(Properties.targetPortfolio.name(), this.targetPortfolio, this.targetPortfolio = portfolio);
         recalculate();
     }
 
@@ -244,6 +251,7 @@ public class FundTransferModel extends AbstractModel
 
     public void setTargetPortfolio(Portfolio portfolio)
     {
+        targetPortfolioExplicit = true;
         firePropertyChange(Properties.targetPortfolio.name(), this.targetPortfolio, this.targetPortfolio = portfolio);
         recalculate();
     }
@@ -295,6 +303,10 @@ public class FundTransferModel extends AbstractModel
     public void setSourceAmount(long amount)
     {
         firePropertyChange(Properties.sourceAmount.name(), this.sourceAmount, this.sourceAmount = amount);
+        // The target market value normally starts as the source redemption
+        // value; once the user edits it, keep that explicit value.
+        if (!targetAmountExplicit)
+            firePropertyChange(Properties.targetAmount.name(), this.targetAmount, this.targetAmount = amount);
         recalculate();
     }
 
@@ -305,6 +317,7 @@ public class FundTransferModel extends AbstractModel
 
     public void setTargetAmount(long amount)
     {
+        targetAmountExplicit = true;
         firePropertyChange(Properties.targetAmount.name(), this.targetAmount, this.targetAmount = amount);
         recalculate();
     }

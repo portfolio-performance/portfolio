@@ -78,6 +78,30 @@ public class FundTransferModelTest
     }
 
     @Test
+    public void testDefaultsTargetPortfolioAndAmountFromSourceFields()
+    {
+        Client client = new Client();
+        Portfolio sourcePortfolio = new PortfolioBuilder().addTo(client);
+        Portfolio explicitTargetPortfolio = new PortfolioBuilder().addTo(client);
+
+        FundTransferModel model = new FundTransferModel(client);
+
+        model.setSourcePortfolio(sourcePortfolio);
+        assertThat(model.getTargetPortfolio(), is(sourcePortfolio));
+
+        model.setSourceAmount(Values.Amount.factorize(1234));
+        assertThat(model.getTargetAmount(), is(Values.Amount.factorize(1234)));
+
+        model.setTargetAmount(Values.Amount.factorize(999));
+        model.setSourceAmount(Values.Amount.factorize(2000));
+        assertThat(model.getTargetAmount(), is(Values.Amount.factorize(999)));
+
+        model.setTargetPortfolio(explicitTargetPortfolio);
+        model.setSourcePortfolio(sourcePortfolio);
+        assertThat(model.getTargetPortfolio(), is(explicitTargetPortfolio));
+    }
+
+    @Test
     public void testValidationRejectsSameSecurityAndInsufficientHoldings()
     {
         Client client = new Client();
