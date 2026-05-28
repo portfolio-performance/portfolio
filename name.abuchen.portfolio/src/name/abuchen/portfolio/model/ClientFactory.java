@@ -1934,6 +1934,8 @@ public class ClientFactory
         xstream.alias("buysell", BuySellEntry.class);
         xstream.alias("account-transfer", AccountTransferEntry.class);
         xstream.alias("portfolio-transfer", PortfolioTransferEntry.class);
+        xstream.alias("fund-transfer", FundTransferEntry.class);
+        xstream.alias("carried-lot", FundTransferEntry.CarriedLot.class);
 
         xstream.alias("taxonomy", Taxonomy.class);
         xstream.alias("classification", Classification.class);

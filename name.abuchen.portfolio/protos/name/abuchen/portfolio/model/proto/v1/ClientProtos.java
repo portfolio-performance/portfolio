@@ -16,162 +16,167 @@ public final class ClientProtos {
   }
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PDecimalValue_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PDecimalValue_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PLocalDateTime_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PLocalDateTime_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PAnyValue_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PAnyValue_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PKeyValue_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PKeyValue_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PMap_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PMap_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PHistoricalPrice_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PHistoricalPrice_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PFullHistoricalPrice_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PFullHistoricalPrice_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PSecurityEvent_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PSecurityEvent_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PSecurity_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PSecurity_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PWatchlist_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PWatchlist_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PAccount_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PAccount_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PPortfolio_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PPortfolio_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PTransactionUnit_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PTransactionUnit_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_name_abuchen_portfolio_PFundTransferLot_descriptor;
+  static final
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_name_abuchen_portfolio_PFundTransferLot_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PTransaction_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PTransaction_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PInvestmentPlan_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PInvestmentPlan_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PTaxonomy_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PTaxonomy_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PTaxonomy_Assignment_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PTaxonomy_Assignment_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PTaxonomy_Classification_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PTaxonomy_Classification_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PDashboard_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PDashboard_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PDashboard_Widget_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PDashboard_Widget_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PDashboard_Widget_ConfigurationEntry_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PDashboard_Widget_ConfigurationEntry_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PDashboard_Column_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PDashboard_Column_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PDashboard_ConfigurationEntry_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PDashboard_ConfigurationEntry_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PBookmark_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PBookmark_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PAttributeType_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PAttributeType_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PConfigurationSet_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PConfigurationSet_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PSettings_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PSettings_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PClient_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PClient_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PClient_PropertiesEntry_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PClient_PropertiesEntry_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PExchangeRate_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PExchangeRate_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PExchangeRateTimeSeries_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PExchangeRateTimeSeries_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_name_abuchen_portfolio_PECBData_descriptor;
-  static final 
+  static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_name_abuchen_portfolio_PECBData_fieldAccessorTable;
 
@@ -249,111 +254,120 @@ public final class ClientProtos {
       "name.abuchen.portfolio.PDecimalValueH\002\210\001" +
       "\001\")\n\004Type\022\017\n\013GROSS_VALUE\020\000\022\007\n\003TAX\020\001\022\007\n\003F" +
       "EE\020\002B\013\n\t_fxAmountB\021\n\017_fxCurrencyCodeB\017\n\r" +
-      "_fxRateToBase\"\340\007\n\014PTransaction\022\014\n\004uuid\030\001" +
-      " \001(\t\0227\n\004type\030\002 \001(\0162).name.abuchen.portfo" +
-      "lio.PTransaction.Type\022\024\n\007account\030\003 \001(\tH\000" +
-      "\210\001\001\022\026\n\tportfolio\030\004 \001(\tH\001\210\001\001\022\031\n\014otherAcco" +
-      "unt\030\005 \001(\tH\002\210\001\001\022\033\n\016otherPortfolio\030\006 \001(\tH\003" +
-      "\210\001\001\022\026\n\totherUuid\030\007 \001(\tH\004\210\001\001\0227\n\016otherUpda" +
-      "tedAt\030\010 \001(\0132\032.google.protobuf.TimestampH" +
-      "\005\210\001\001\022(\n\004date\030\t \001(\0132\032.google.protobuf.Tim" +
-      "estamp\022\024\n\014currencyCode\030\n \001(\t\022\016\n\006amount\030\013" +
-      " \001(\003\022\023\n\006shares\030\014 \001(\003H\006\210\001\001\022\021\n\004note\030\r \001(\tH" +
-      "\007\210\001\001\022\025\n\010security\030\016 \001(\tH\010\210\001\001\0227\n\005units\030\017 \003" +
-      "(\0132(.name.abuchen.portfolio.PTransaction" +
-      "Unit\022-\n\tupdatedAt\030\020 \001(\0132\032.google.protobu" +
-      "f.Timestamp\022\023\n\006source\030\021 \001(\tH\t\210\001\001\022;\n\006exDa" +
-      "te\030\022 \001(\0132&.name.abuchen.portfolio.PLocal" +
-      "DateTimeH\n\210\001\001\"\362\001\n\004Type\022\014\n\010PURCHASE\020\000\022\010\n\004" +
-      "SALE\020\001\022\024\n\020INBOUND_DELIVERY\020\002\022\025\n\021OUTBOUND" +
-      "_DELIVERY\020\003\022\025\n\021SECURITY_TRANSFER\020\004\022\021\n\rCA" +
-      "SH_TRANSFER\020\005\022\013\n\007DEPOSIT\020\006\022\013\n\007REMOVAL\020\007\022" +
-      "\014\n\010DIVIDEND\020\010\022\014\n\010INTEREST\020\t\022\023\n\017INTEREST_" +
-      "CHARGE\020\n\022\007\n\003TAX\020\013\022\016\n\nTAX_REFUND\020\014\022\007\n\003FEE" +
-      "\020\r\022\016\n\nFEE_REFUND\020\016B\n\n\010_accountB\014\n\n_portf" +
-      "olioB\017\n\r_otherAccountB\021\n\017_otherPortfolio" +
-      "B\014\n\n_otherUuidB\021\n\017_otherUpdatedAtB\t\n\007_sh" +
-      "aresB\007\n\005_noteB\013\n\t_securityB\t\n\007_sourceB\t\n" +
-      "\007_exDate\"\335\003\n\017PInvestmentPlan\022\014\n\004name\030\001 \001" +
-      "(\t\022\021\n\004note\030\002 \001(\tH\000\210\001\001\022\025\n\010security\030\003 \001(\tH" +
-      "\001\210\001\001\022\026\n\tportfolio\030\004 \001(\tH\002\210\001\001\022\024\n\007account\030" +
-      "\005 \001(\tH\003\210\001\001\0225\n\nattributes\030\006 \003(\0132!.name.ab" +
-      "uchen.portfolio.PKeyValue\022\024\n\014autoGenerat" +
-      "e\030\007 \001(\010\022\014\n\004date\030\010 \001(\003\022\020\n\010interval\030\t \001(\005\022" +
-      "\016\n\006amount\030\n \001(\003\022\014\n\004fees\030\013 \001(\003\022\024\n\014transac" +
-      "tions\030\014 \003(\t\022\r\n\005taxes\030\r \001(\003\022:\n\004type\030\016 \001(\016" +
-      "2,.name.abuchen.portfolio.PInvestmentPla" +
-      "n.Type\"H\n\004Type\022\030\n\024PURCHASE_OR_DELIVERY\020\000" +
-      "\022\013\n\007DEPOSIT\020\001\022\013\n\007REMOVAL\020\002\022\014\n\010INTEREST\020\003" +
-      "B\007\n\005_noteB\013\n\t_securityB\014\n\n_portfolioB\n\n\010" +
-      "_account\"\252\004\n\tPTaxonomy\022\n\n\002id\030\001 \001(\t\022\014\n\004na" +
-      "me\030\002 \001(\t\022\023\n\006source\030\003 \001(\tH\000\210\001\001\022\022\n\ndimensi" +
-      "ons\030\004 \003(\t\022I\n\017classifications\030\005 \003(\01320.nam" +
-      "e.abuchen.portfolio.PTaxonomy.Classifica" +
-      "tion\032v\n\nAssignment\022\031\n\021investmentVehicle\030" +
-      "\001 \001(\t\022\016\n\006weight\030\002 \001(\005\022\014\n\004rank\030\003 \001(\005\022/\n\004d" +
-      "ata\030\004 \003(\0132!.name.abuchen.portfolio.PKeyV" +
-      "alue\032\213\002\n\016Classification\022\n\n\002id\030\001 \001(\t\022\025\n\010p" +
-      "arentId\030\002 \001(\tH\000\210\001\001\022\014\n\004name\030\003 \001(\t\022\021\n\004note" +
-      "\030\004 \001(\tH\001\210\001\001\022\r\n\005color\030\005 \001(\t\022\016\n\006weight\030\006 \001" +
-      "(\005\022\014\n\004rank\030\007 \001(\005\022/\n\004data\030\010 \003(\0132!.name.ab" +
-      "uchen.portfolio.PKeyValue\022A\n\013assignments" +
-      "\030\t \003(\0132,.name.abuchen.portfolio.PTaxonom" +
-      "y.AssignmentB\013\n\t_parentIdB\007\n\005_noteB\t\n\007_s" +
-      "ource\"\357\003\n\nPDashboard\022\014\n\004name\030\001 \001(\t\022L\n\rco" +
-      "nfiguration\030\002 \003(\01325.name.abuchen.portfol" +
-      "io.PDashboard.ConfigurationEntry\022:\n\007colu" +
-      "mns\030\003 \003(\0132).name.abuchen.portfolio.PDash" +
-      "board.Column\022\n\n\002id\030\004 \001(\t\032\260\001\n\006Widget\022\014\n\004t" +
-      "ype\030\001 \001(\t\022\r\n\005label\030\002 \001(\t\022S\n\rconfiguratio" +
-      "n\030\003 \003(\0132<.name.abuchen.portfolio.PDashbo" +
-      "ard.Widget.ConfigurationEntry\0324\n\022Configu" +
-      "rationEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:" +
-      "\0028\001\032T\n\006Column\022\016\n\006weight\030\001 \001(\005\022:\n\007widgets" +
-      "\030\002 \003(\0132).name.abuchen.portfolio.PDashboa" +
-      "rd.Widget\0324\n\022ConfigurationEntry\022\013\n\003key\030\001" +
-      " \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\"+\n\tPBookmark\022\r\n\005" +
-      "label\030\001 \001(\t\022\017\n\007pattern\030\002 \001(\t\"\307\001\n\016PAttrib" +
-      "uteType\022\n\n\002id\030\001 \001(\t\022\014\n\004name\030\002 \001(\t\022\023\n\013col" +
-      "umnLabel\030\003 \001(\t\022\023\n\006source\030\004 \001(\tH\000\210\001\001\022\016\n\006t" +
-      "arget\030\005 \001(\t\022\014\n\004type\030\006 \001(\t\022\026\n\016converterCl" +
-      "ass\030\007 \001(\t\0220\n\nproperties\030\010 \001(\0132\034.name.abu" +
-      "chen.portfolio.PMapB\t\n\007_source\"J\n\021PConfi" +
-      "gurationSet\022\013\n\003key\030\001 \001(\t\022\014\n\004uuid\030\002 \001(\t\022\014" +
-      "\n\004name\030\003 \001(\t\022\014\n\004data\030\004 \001(\t\"\307\001\n\tPSettings" +
-      "\0224\n\tbookmarks\030\001 \003(\0132!.name.abuchen.portf" +
-      "olio.PBookmark\022>\n\016attributeTypes\030\002 \003(\0132&" +
-      ".name.abuchen.portfolio.PAttributeType\022D" +
-      "\n\021configurationSets\030\003 \003(\0132).name.abuchen" +
-      ".portfolio.PConfigurationSet\"\305\005\n\007PClient" +
-      "\022\017\n\007version\030\001 \001(\005\0225\n\nsecurities\030\002 \003(\0132!." +
-      "name.abuchen.portfolio.PSecurity\0222\n\010acco" +
-      "unts\030\003 \003(\0132 .name.abuchen.portfolio.PAcc" +
-      "ount\0226\n\nportfolios\030\004 \003(\0132\".name.abuchen." +
-      "portfolio.PPortfolio\022:\n\014transactions\030\005 \003" +
-      "(\0132$.name.abuchen.portfolio.PTransaction" +
-      "\0226\n\005plans\030\006 \003(\0132\'.name.abuchen.portfolio" +
-      ".PInvestmentPlan\0226\n\nwatchlists\030\007 \003(\0132\".n" +
-      "ame.abuchen.portfolio.PWatchlist\0225\n\ntaxo" +
-      "nomies\030\010 \003(\0132!.name.abuchen.portfolio.PT" +
-      "axonomy\0226\n\ndashboards\030\t \003(\0132\".name.abuch" +
-      "en.portfolio.PDashboard\022C\n\nproperties\030\n " +
-      "\003(\0132/.name.abuchen.portfolio.PClient.Pro" +
-      "pertiesEntry\0223\n\010settings\030\013 \001(\0132!.name.ab" +
-      "uchen.portfolio.PSettings\022\024\n\014baseCurrenc" +
-      "y\030\014 \001(\t\022(\n\nextensions\030c \003(\0132\024.google.pro" +
-      "tobuf.Any\0321\n\017PropertiesEntry\022\013\n\003key\030\001 \001(" +
-      "\t\022\r\n\005value\030\002 \001(\t:\0028\001\"S\n\rPExchangeRate\022\014\n" +
-      "\004date\030\001 \001(\003\0224\n\005value\030\002 \001(\0132%.name.abuche" +
-      "n.portfolio.PDecimalValue\"\203\001\n\027PExchangeR" +
-      "ateTimeSeries\022\024\n\014baseCurrency\030\001 \001(\t\022\024\n\014t" +
-      "ermCurrency\030\002 \001(\t\022<\n\rexchangeRates\030\003 \003(\013" +
-      "2%.name.abuchen.portfolio.PExchangeRate\"" +
-      "a\n\010PECBData\022\024\n\014lastModified\030\001 \001(\003\022?\n\006ser" +
-      "ies\030\002 \003(\0132/.name.abuchen.portfolio.PExch" +
-      "angeRateTimeSeriesB7\n%name.abuchen.portf" +
-      "olio.model.proto.v1B\014ClientProtosP\001b\006pro" +
-      "to3"
+      "_fxRateToBase\"\311\001\n\020PFundTransferLot\022\027\n\017ac" +
+      "quisitionDate\030\001 \001(\003\022\024\n\014sourceShares\030\002 \001(" +
+      "\003\022\024\n\014targetShares\030\003 \001(\003\022\031\n\021acquisitionAm" +
+      "ount\030\004 \001(\003\022\037\n\027acquisitionCurrencyCode\030\005 " +
+      "\001(\t\022\036\n\021sourceTransaction\030\006 \001(\tH\000\210\001\001B\024\n\022_" +
+      "sourceTransaction\"\216\t\n\014PTransaction\022\014\n\004uu" +
+      "id\030\001 \001(\t\0227\n\004type\030\002 \001(\0162).name.abuchen.po" +
+      "rtfolio.PTransaction.Type\022\024\n\007account\030\003 \001" +
+      "(\tH\000\210\001\001\022\026\n\tportfolio\030\004 \001(\tH\001\210\001\001\022\031\n\014other" +
+      "Account\030\005 \001(\tH\002\210\001\001\022\033\n\016otherPortfolio\030\006 \001" +
+      "(\tH\003\210\001\001\022\026\n\totherUuid\030\007 \001(\tH\004\210\001\001\0227\n\016other" +
+      "UpdatedAt\030\010 \001(\0132\032.google.protobuf.Timest" +
+      "ampH\005\210\001\001\022(\n\004date\030\t \001(\0132\032.google.protobuf" +
+      ".Timestamp\022\024\n\014currencyCode\030\n \001(\t\022\016\n\006amou" +
+      "nt\030\013 \001(\003\022\023\n\006shares\030\014 \001(\003H\006\210\001\001\022\021\n\004note\030\r " +
+      "\001(\tH\007\210\001\001\022\025\n\010security\030\016 \001(\tH\010\210\001\001\0227\n\005units" +
+      "\030\017 \003(\0132(.name.abuchen.portfolio.PTransac" +
+      "tionUnit\022-\n\tupdatedAt\030\020 \001(\0132\032.google.pro" +
+      "tobuf.Timestamp\022\023\n\006source\030\021 \001(\tH\t\210\001\001\022;\n\006" +
+      "exDate\030\022 \001(\0132&.name.abuchen.portfolio.PL" +
+      "ocalDateTimeH\n\210\001\001\022\033\n\016targetSecurity\030\023 \001(" +
+      "\tH\013\210\001\001\022\031\n\014targetShares\030\024 \001(\003H\014\210\001\001\022=\n\013car" +
+      "riedLots\030\025 \003(\0132(.name.abuchen.portfolio." +
+      "PFundTransferLot\"\205\002\n\004Type\022\014\n\010PURCHASE\020\000\022" +
+      "\010\n\004SALE\020\001\022\024\n\020INBOUND_DELIVERY\020\002\022\025\n\021OUTBO" +
+      "UND_DELIVERY\020\003\022\025\n\021SECURITY_TRANSFER\020\004\022\021\n" +
+      "\rCASH_TRANSFER\020\005\022\013\n\007DEPOSIT\020\006\022\013\n\007REMOVAL" +
+      "\020\007\022\014\n\010DIVIDEND\020\010\022\014\n\010INTEREST\020\t\022\023\n\017INTERE" +
+      "ST_CHARGE\020\n\022\007\n\003TAX\020\013\022\016\n\nTAX_REFUND\020\014\022\007\n\003" +
+      "FEE\020\r\022\016\n\nFEE_REFUND\020\016\022\021\n\rFUND_TRANSFER\020\017" +
+      "B\n\n\010_accountB\014\n\n_portfolioB\017\n\r_otherAcco" +
+      "untB\021\n\017_otherPortfolioB\014\n\n_otherUuidB\021\n\017" +
+      "_otherUpdatedAtB\t\n\007_sharesB\007\n\005_noteB\013\n\t_" +
+      "securityB\t\n\007_sourceB\t\n\007_exDateB\021\n\017_targe" +
+      "tSecurityB\017\n\r_targetShares\"\335\003\n\017PInvestme" +
+      "ntPlan\022\014\n\004name\030\001 \001(\t\022\021\n\004note\030\002 \001(\tH\000\210\001\001\022" +
+      "\025\n\010security\030\003 \001(\tH\001\210\001\001\022\026\n\tportfolio\030\004 \001(" +
+      "\tH\002\210\001\001\022\024\n\007account\030\005 \001(\tH\003\210\001\001\0225\n\nattribut" +
+      "es\030\006 \003(\0132!.name.abuchen.portfolio.PKeyVa" +
+      "lue\022\024\n\014autoGenerate\030\007 \001(\010\022\014\n\004date\030\010 \001(\003\022" +
+      "\020\n\010interval\030\t \001(\005\022\016\n\006amount\030\n \001(\003\022\014\n\004fee" +
+      "s\030\013 \001(\003\022\024\n\014transactions\030\014 \003(\t\022\r\n\005taxes\030\r" +
+      " \001(\003\022:\n\004type\030\016 \001(\0162,.name.abuchen.portfo" +
+      "lio.PInvestmentPlan.Type\"H\n\004Type\022\030\n\024PURC" +
+      "HASE_OR_DELIVERY\020\000\022\013\n\007DEPOSIT\020\001\022\013\n\007REMOV" +
+      "AL\020\002\022\014\n\010INTEREST\020\003B\007\n\005_noteB\013\n\t_security" +
+      "B\014\n\n_portfolioB\n\n\010_account\"\252\004\n\tPTaxonomy" +
+      "\022\n\n\002id\030\001 \001(\t\022\014\n\004name\030\002 \001(\t\022\023\n\006source\030\003 \001" +
+      "(\tH\000\210\001\001\022\022\n\ndimensions\030\004 \003(\t\022I\n\017classific" +
+      "ations\030\005 \003(\01320.name.abuchen.portfolio.PT" +
+      "axonomy.Classification\032v\n\nAssignment\022\031\n\021" +
+      "investmentVehicle\030\001 \001(\t\022\016\n\006weight\030\002 \001(\005\022" +
+      "\014\n\004rank\030\003 \001(\005\022/\n\004data\030\004 \003(\0132!.name.abuch" +
+      "en.portfolio.PKeyValue\032\213\002\n\016Classificatio" +
+      "n\022\n\n\002id\030\001 \001(\t\022\025\n\010parentId\030\002 \001(\tH\000\210\001\001\022\014\n\004" +
+      "name\030\003 \001(\t\022\021\n\004note\030\004 \001(\tH\001\210\001\001\022\r\n\005color\030\005" +
+      " \001(\t\022\016\n\006weight\030\006 \001(\005\022\014\n\004rank\030\007 \001(\005\022/\n\004da" +
+      "ta\030\010 \003(\0132!.name.abuchen.portfolio.PKeyVa" +
+      "lue\022A\n\013assignments\030\t \003(\0132,.name.abuchen." +
+      "portfolio.PTaxonomy.AssignmentB\013\n\t_paren" +
+      "tIdB\007\n\005_noteB\t\n\007_source\"\357\003\n\nPDashboard\022\014" +
+      "\n\004name\030\001 \001(\t\022L\n\rconfiguration\030\002 \003(\01325.na" +
+      "me.abuchen.portfolio.PDashboard.Configur" +
+      "ationEntry\022:\n\007columns\030\003 \003(\0132).name.abuch" +
+      "en.portfolio.PDashboard.Column\022\n\n\002id\030\004 \001" +
+      "(\t\032\260\001\n\006Widget\022\014\n\004type\030\001 \001(\t\022\r\n\005label\030\002 \001" +
+      "(\t\022S\n\rconfiguration\030\003 \003(\0132<.name.abuchen" +
+      ".portfolio.PDashboard.Widget.Configurati" +
+      "onEntry\0324\n\022ConfigurationEntry\022\013\n\003key\030\001 \001" +
+      "(\t\022\r\n\005value\030\002 \001(\t:\0028\001\032T\n\006Column\022\016\n\006weigh" +
+      "t\030\001 \001(\005\022:\n\007widgets\030\002 \003(\0132).name.abuchen." +
+      "portfolio.PDashboard.Widget\0324\n\022Configura" +
+      "tionEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028" +
+      "\001\"+\n\tPBookmark\022\r\n\005label\030\001 \001(\t\022\017\n\007pattern" +
+      "\030\002 \001(\t\"\307\001\n\016PAttributeType\022\n\n\002id\030\001 \001(\t\022\014\n" +
+      "\004name\030\002 \001(\t\022\023\n\013columnLabel\030\003 \001(\t\022\023\n\006sour" +
+      "ce\030\004 \001(\tH\000\210\001\001\022\016\n\006target\030\005 \001(\t\022\014\n\004type\030\006 " +
+      "\001(\t\022\026\n\016converterClass\030\007 \001(\t\0220\n\npropertie" +
+      "s\030\010 \001(\0132\034.name.abuchen.portfolio.PMapB\t\n" +
+      "\007_source\"J\n\021PConfigurationSet\022\013\n\003key\030\001 \001" +
+      "(\t\022\014\n\004uuid\030\002 \001(\t\022\014\n\004name\030\003 \001(\t\022\014\n\004data\030\004" +
+      " \001(\t\"\307\001\n\tPSettings\0224\n\tbookmarks\030\001 \003(\0132!." +
+      "name.abuchen.portfolio.PBookmark\022>\n\016attr" +
+      "ibuteTypes\030\002 \003(\0132&.name.abuchen.portfoli" +
+      "o.PAttributeType\022D\n\021configurationSets\030\003 " +
+      "\003(\0132).name.abuchen.portfolio.PConfigurat" +
+      "ionSet\"\305\005\n\007PClient\022\017\n\007version\030\001 \001(\005\0225\n\ns" +
+      "ecurities\030\002 \003(\0132!.name.abuchen.portfolio" +
+      ".PSecurity\0222\n\010accounts\030\003 \003(\0132 .name.abuc" +
+      "hen.portfolio.PAccount\0226\n\nportfolios\030\004 \003" +
+      "(\0132\".name.abuchen.portfolio.PPortfolio\022:" +
+      "\n\014transactions\030\005 \003(\0132$.name.abuchen.port" +
+      "folio.PTransaction\0226\n\005plans\030\006 \003(\0132\'.name" +
+      ".abuchen.portfolio.PInvestmentPlan\0226\n\nwa" +
+      "tchlists\030\007 \003(\0132\".name.abuchen.portfolio." +
+      "PWatchlist\0225\n\ntaxonomies\030\010 \003(\0132!.name.ab" +
+      "uchen.portfolio.PTaxonomy\0226\n\ndashboards\030" +
+      "\t \003(\0132\".name.abuchen.portfolio.PDashboar" +
+      "d\022C\n\nproperties\030\n \003(\0132/.name.abuchen.por" +
+      "tfolio.PClient.PropertiesEntry\0223\n\010settin" +
+      "gs\030\013 \001(\0132!.name.abuchen.portfolio.PSetti" +
+      "ngs\022\024\n\014baseCurrency\030\014 \001(\t\022(\n\nextensions\030" +
+      "c \003(\0132\024.google.protobuf.Any\0321\n\017Propertie" +
+      "sEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\"S" +
+      "\n\rPExchangeRate\022\014\n\004date\030\001 \001(\003\0224\n\005value\030\002" +
+      " \001(\0132%.name.abuchen.portfolio.PDecimalVa" +
+      "lue\"\203\001\n\027PExchangeRateTimeSeries\022\024\n\014baseC" +
+      "urrency\030\001 \001(\t\022\024\n\014termCurrency\030\002 \001(\t\022<\n\re" +
+      "xchangeRates\030\003 \003(\0132%.name.abuchen.portfo" +
+      "lio.PExchangeRate\"a\n\010PECBData\022\024\n\014lastMod" +
+      "ified\030\001 \001(\003\022?\n\006series\030\002 \003(\0132/.name.abuch" +
+      "en.portfolio.PExchangeRateTimeSeriesB7\n%" +
+      "name.abuchen.portfolio.model.proto.v1B\014C" +
+      "lientProtosP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -440,20 +454,26 @@ public final class ClientProtos {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_name_abuchen_portfolio_PTransactionUnit_descriptor,
         new java.lang.String[] { "Type", "Amount", "CurrencyCode", "FxAmount", "FxCurrencyCode", "FxRateToBase", "FxAmount", "FxCurrencyCode", "FxRateToBase", });
-    internal_static_name_abuchen_portfolio_PTransaction_descriptor =
+    internal_static_name_abuchen_portfolio_PFundTransferLot_descriptor =
       getDescriptor().getMessageTypes().get(13);
+    internal_static_name_abuchen_portfolio_PFundTransferLot_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_name_abuchen_portfolio_PFundTransferLot_descriptor,
+        new java.lang.String[] { "AcquisitionDate", "SourceShares", "TargetShares", "AcquisitionAmount", "AcquisitionCurrencyCode", "SourceTransaction", "SourceTransaction", });
+    internal_static_name_abuchen_portfolio_PTransaction_descriptor =
+      getDescriptor().getMessageTypes().get(14);
     internal_static_name_abuchen_portfolio_PTransaction_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_name_abuchen_portfolio_PTransaction_descriptor,
-        new java.lang.String[] { "Uuid", "Type", "Account", "Portfolio", "OtherAccount", "OtherPortfolio", "OtherUuid", "OtherUpdatedAt", "Date", "CurrencyCode", "Amount", "Shares", "Note", "Security", "Units", "UpdatedAt", "Source", "ExDate", "Account", "Portfolio", "OtherAccount", "OtherPortfolio", "OtherUuid", "OtherUpdatedAt", "Shares", "Note", "Security", "Source", "ExDate", });
+        new java.lang.String[] { "Uuid", "Type", "Account", "Portfolio", "OtherAccount", "OtherPortfolio", "OtherUuid", "OtherUpdatedAt", "Date", "CurrencyCode", "Amount", "Shares", "Note", "Security", "Units", "UpdatedAt", "Source", "ExDate", "TargetSecurity", "TargetShares", "CarriedLots", "Account", "Portfolio", "OtherAccount", "OtherPortfolio", "OtherUuid", "OtherUpdatedAt", "Shares", "Note", "Security", "Source", "ExDate", "TargetSecurity", "TargetShares", });
     internal_static_name_abuchen_portfolio_PInvestmentPlan_descriptor =
-      getDescriptor().getMessageTypes().get(14);
+      getDescriptor().getMessageTypes().get(15);
     internal_static_name_abuchen_portfolio_PInvestmentPlan_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_name_abuchen_portfolio_PInvestmentPlan_descriptor,
         new java.lang.String[] { "Name", "Note", "Security", "Portfolio", "Account", "Attributes", "AutoGenerate", "Date", "Interval", "Amount", "Fees", "Transactions", "Taxes", "Type", "Note", "Security", "Portfolio", "Account", });
     internal_static_name_abuchen_portfolio_PTaxonomy_descriptor =
-      getDescriptor().getMessageTypes().get(15);
+      getDescriptor().getMessageTypes().get(16);
     internal_static_name_abuchen_portfolio_PTaxonomy_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_name_abuchen_portfolio_PTaxonomy_descriptor,
@@ -471,7 +491,7 @@ public final class ClientProtos {
         internal_static_name_abuchen_portfolio_PTaxonomy_Classification_descriptor,
         new java.lang.String[] { "Id", "ParentId", "Name", "Note", "Color", "Weight", "Rank", "Data", "Assignments", "ParentId", "Note", });
     internal_static_name_abuchen_portfolio_PDashboard_descriptor =
-      getDescriptor().getMessageTypes().get(16);
+      getDescriptor().getMessageTypes().get(17);
     internal_static_name_abuchen_portfolio_PDashboard_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_name_abuchen_portfolio_PDashboard_descriptor,
@@ -501,31 +521,31 @@ public final class ClientProtos {
         internal_static_name_abuchen_portfolio_PDashboard_ConfigurationEntry_descriptor,
         new java.lang.String[] { "Key", "Value", });
     internal_static_name_abuchen_portfolio_PBookmark_descriptor =
-      getDescriptor().getMessageTypes().get(17);
+      getDescriptor().getMessageTypes().get(18);
     internal_static_name_abuchen_portfolio_PBookmark_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_name_abuchen_portfolio_PBookmark_descriptor,
         new java.lang.String[] { "Label", "Pattern", });
     internal_static_name_abuchen_portfolio_PAttributeType_descriptor =
-      getDescriptor().getMessageTypes().get(18);
+      getDescriptor().getMessageTypes().get(19);
     internal_static_name_abuchen_portfolio_PAttributeType_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_name_abuchen_portfolio_PAttributeType_descriptor,
         new java.lang.String[] { "Id", "Name", "ColumnLabel", "Source", "Target", "Type", "ConverterClass", "Properties", "Source", });
     internal_static_name_abuchen_portfolio_PConfigurationSet_descriptor =
-      getDescriptor().getMessageTypes().get(19);
+      getDescriptor().getMessageTypes().get(20);
     internal_static_name_abuchen_portfolio_PConfigurationSet_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_name_abuchen_portfolio_PConfigurationSet_descriptor,
         new java.lang.String[] { "Key", "Uuid", "Name", "Data", });
     internal_static_name_abuchen_portfolio_PSettings_descriptor =
-      getDescriptor().getMessageTypes().get(20);
+      getDescriptor().getMessageTypes().get(21);
     internal_static_name_abuchen_portfolio_PSettings_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_name_abuchen_portfolio_PSettings_descriptor,
         new java.lang.String[] { "Bookmarks", "AttributeTypes", "ConfigurationSets", });
     internal_static_name_abuchen_portfolio_PClient_descriptor =
-      getDescriptor().getMessageTypes().get(21);
+      getDescriptor().getMessageTypes().get(22);
     internal_static_name_abuchen_portfolio_PClient_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_name_abuchen_portfolio_PClient_descriptor,
@@ -537,19 +557,19 @@ public final class ClientProtos {
         internal_static_name_abuchen_portfolio_PClient_PropertiesEntry_descriptor,
         new java.lang.String[] { "Key", "Value", });
     internal_static_name_abuchen_portfolio_PExchangeRate_descriptor =
-      getDescriptor().getMessageTypes().get(22);
+      getDescriptor().getMessageTypes().get(23);
     internal_static_name_abuchen_portfolio_PExchangeRate_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_name_abuchen_portfolio_PExchangeRate_descriptor,
         new java.lang.String[] { "Date", "Value", });
     internal_static_name_abuchen_portfolio_PExchangeRateTimeSeries_descriptor =
-      getDescriptor().getMessageTypes().get(23);
+      getDescriptor().getMessageTypes().get(24);
     internal_static_name_abuchen_portfolio_PExchangeRateTimeSeries_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_name_abuchen_portfolio_PExchangeRateTimeSeries_descriptor,
         new java.lang.String[] { "BaseCurrency", "TermCurrency", "ExchangeRates", });
     internal_static_name_abuchen_portfolio_PECBData_descriptor =
-      getDescriptor().getMessageTypes().get(24);
+      getDescriptor().getMessageTypes().get(25);
     internal_static_name_abuchen_portfolio_PECBData_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_name_abuchen_portfolio_PECBData_descriptor,

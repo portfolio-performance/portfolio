@@ -146,6 +146,15 @@ message PTransactionUnit {
   optional PDecimalValue fxRateToBase = 6;
 }
 
+message PFundTransferLot {
+  int64 acquisitionDate = 1; // epoch day, based on the epoch 1970-01-01
+  int64 sourceShares = 2;
+  int64 targetShares = 3;
+  int64 acquisitionAmount = 4;
+  string acquisitionCurrencyCode = 5;
+  optional string sourceTransaction = 6;
+}
+
 message PTransaction {
   enum Type {
     PURCHASE = 0;
@@ -163,6 +172,7 @@ message PTransaction {
     TAX_REFUND = 12;
     FEE = 13;
     FEE_REFUND = 14;
+    FUND_TRANSFER = 15;
   }
 	
   string uuid = 1;
@@ -190,6 +200,11 @@ message PTransaction {
   
   optional string source = 17;
   optional PLocalDateTime exDate = 18;
+
+  // Fund transfers use security/shares for the source side and these fields for the target side.
+  optional string targetSecurity = 19;
+  optional int64 targetShares = 20;
+  repeated PFundTransferLot carriedLots = 21;
 }
 
 message PInvestmentPlan {
