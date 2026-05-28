@@ -43,12 +43,12 @@ public class AvivaPLCPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("You have (PURCHASED|SOLD)");
+        var type = new DocumentType("You have (PURCHASED|SOLD)");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^You have (PURCHASED|SOLD).*$");
+        var firstRelevantLine = new Block("^You have (PURCHASED|SOLD).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
