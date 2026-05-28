@@ -16,11 +16,13 @@ import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ColumnPixelData;
+import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -41,6 +43,10 @@ import name.abuchen.portfolio.ui.util.SecurityNameLabelProvider;
 
 public class FundTransferDialog extends AbstractTransactionDialog
 {
+    // Keep the carried lot preview readable when all source, target, and purchase value columns are visible.
+    private static final int MIN_DIALOG_WIDTH = 820;
+    private static final int MIN_DIALOG_HEIGHT = 640;
+
     private Client client;
 
     @Inject
@@ -140,11 +146,11 @@ public class FundTransferDialog extends AbstractTransactionDialog
                         .thenRight(targetAmount.label).thenRight(targetAmount.value).width(amountWidth)
                         .thenRight(targetAmount.currency).width(currencyWidth);
 
-        startingWith(targetShares.value).thenBelow(previewArea).height(SWTHelper.lineHeight(valueNote) * 6)
-                        .left(sourceSecurity.value.getControl()).right(targetAmount.currency).label(previewLabel);
+        startingWith(targetShares.value).thenBelow(previewArea).height(SWTHelper.lineHeight(valueNote) * 9)
+                        .left(sourceSecurity.value.getControl()).right(new FormAttachment(100)).label(previewLabel);
 
         startingWith(previewArea).thenBelow(valueNote).height(SWTHelper.lineHeight(valueNote) * 3)
-                        .left(sourceSecurity.value.getControl()).right(targetAmount.currency).label(lblNote);
+                        .left(sourceSecurity.value.getControl()).right(new FormAttachment(100)).label(lblNote);
 
         int widest = widest(sourceSecurity.label, targetSecurity.label, sourcePortfolio.label, targetPortfolio.label,
                         dateTime.label, sourceShares.label, targetShares.label, previewLabel, lblNote);
@@ -165,6 +171,13 @@ public class FundTransferDialog extends AbstractTransactionDialog
         model.addPropertyChangeListener(Properties.date.name(), e -> warnings.check());
     }
 
+    @Override
+    protected Point getInitialSize()
+    {
+        Point size = super.getInitialSize();
+        return new Point(Math.max(size.x, MIN_DIALOG_WIDTH), Math.max(size.y, MIN_DIALOG_HEIGHT));
+    }
+
     private Composite createPreviewTable(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NONE);
@@ -176,13 +189,13 @@ public class FundTransferDialog extends AbstractTransactionDialog
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
 
-        addColumn(viewer, layout, Messages.ColumnDate, 100, SWT.NONE,
+        addColumn(viewer, layout, Messages.ColumnDate, 24, 120, SWT.NONE,
                         lot -> Values.Date.format(lot.getAcquisitionDate()));
-        addColumn(viewer, layout, Messages.ColumnAccountFrom + " " + Messages.ColumnShares, 110, SWT.RIGHT, //$NON-NLS-1$
-                        lot -> Values.Share.format(lot.getSourceShares()));
-        addColumn(viewer, layout, Messages.ColumnAccountTo + " " + Messages.ColumnShares, 110, SWT.RIGHT, //$NON-NLS-1$
+        addColumn(viewer, layout, Messages.ColumnAccountFrom + " " + Messages.ColumnShares, 25, 130, //$NON-NLS-1$
+                        SWT.RIGHT, lot -> Values.Share.format(lot.getSourceShares()));
+        addColumn(viewer, layout, Messages.ColumnAccountTo + " " + Messages.ColumnShares, 25, 130, SWT.RIGHT, //$NON-NLS-1$
                         lot -> Values.Share.format(lot.getTargetShares()));
-        addColumn(viewer, layout, Messages.ColumnPurchaseValue, 140, SWT.RIGHT, this::formatAcquisitionValue);
+        addColumn(viewer, layout, Messages.ColumnPurchaseValue, 26, 160, SWT.RIGHT, this::formatAcquisitionValue);
 
         viewer.setContentProvider(ArrayContentProvider.getInstance());
         viewer.setInput(model().getCarriedLots());
@@ -195,7 +208,8 @@ public class FundTransferDialog extends AbstractTransactionDialog
         return container;
     }
 
-    private void addColumn(TableViewer viewer, TableColumnLayout layout, String label, int width, int align,
+    private void addColumn(TableViewer viewer, TableColumnLayout layout, String label, int weight, int minimumWidth,
+                    int align,
                     Function<CarriedLot, String> formatter)
     {
         TableViewerColumn column = new TableViewerColumn(viewer, align);
@@ -208,7 +222,8 @@ public class FundTransferDialog extends AbstractTransactionDialog
                 return formatter.apply((CarriedLot) element);
             }
         });
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(width, true));
+        // The preview table carries audit-relevant tax lot data, so columns should grow with the dialog.
+        layout.setColumnData(column.getColumn(), new ColumnWeightData(weight, minimumWidth, true));
     }
 
     private String formatAcquisitionValue(CarriedLot lot)
