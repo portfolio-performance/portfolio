@@ -8,6 +8,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.CostMethod;
+import name.abuchen.portfolio.model.FundTransferEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.TaxesAndFees;
@@ -110,51 +111,37 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                 break;
 
             case SELL:
+            case FUND_TRANSFER_OUT:
             case DELIVERY_OUTBOUND:
-                long sold = t.getShares();
+                removeSharesFromCostBasis(item.getOwner(), t.getShares(), t);
 
-                long remaining = heldShares - sold;
-                if (remaining <= 0)
+                break;
+
+            case FUND_TRANSFER_IN:
+                // Fund transfer amounts are market values at conversion time.
+                // The target FIFO cost must use carried acquisition lots so no
+                // taxable gain is realized during the transfer.
+                if (!(t.getCrossEntry() instanceof FundTransferEntry entry))
+                    throw new UnsupportedOperationException();
+
+                for (FundTransferEntry.CarriedLot lot : entry.getCarriedLots())
                 {
-                    movingRelativeCost = 0;
-                    movingRelativeNetCost = 0;
-                    heldShares = 0;
+                    long carriedAmount = converter
+                                    .convert(lot.getAcquisitionDate().atStartOfDay(), lot.getAcquisitionValue())
+                                    .getAmount();
+
+                    TrailRecord lotTrail = TrailRecord.ofTransaction(t);
+                    if (!getTermCurrency().equals(lot.getAcquisitionValue().getCurrencyCode()))
+                        lotTrail = lotTrail.convert(Money.of(getTermCurrency(), carriedAmount),
+                                        converter.getRate(lot.getAcquisitionDate().atStartOfDay(),
+                                                        lot.getAcquisitionValue().getCurrencyCode()));
+
+                    fifo.add(new LineItem(item.getOwner(), lot.getTargetShares(), carriedAmount, carriedAmount,
+                                    lotTrail));
+                    movingRelativeCost += carriedAmount;
+                    movingRelativeNetCost += carriedAmount;
+                    heldShares += lot.getTargetShares();
                 }
-                else
-                {
-                    movingRelativeCost = Math.round(movingRelativeCost / (double) heldShares * remaining);
-                    movingRelativeNetCost = Math.round(movingRelativeNetCost / (double) heldShares * remaining);
-                    heldShares = remaining;
-                }
-
-                for (LineItem entry : fifo)
-                {
-                    if (sold <= 0)
-                        break;
-
-                    if (!entry.owner.equals(item.getOwner()))
-                        continue;
-
-                    if (entry.shares == 0)
-                        continue;
-
-                    long n = Math.min(sold, entry.shares);
-
-                    entry.grossAmount -= Math.round(n / (double) entry.shares * entry.grossAmount);
-                    entry.netAmount -= Math.round(n / (double) entry.shares * entry.netAmount);
-                    entry.shares -= n;
-
-                    sold -= n;
-                }
-
-                if (sold > 0)
-                {
-                    // FIXME Oops. More sold than bought.
-                    PortfolioLog.warning(MessageFormat.format(Messages.MsgNegativeHoldingsDuringFIFOCostCalculation,
-                                    Values.Share.format(sold), t.getSecurity().getName(),
-                                    Values.DateTime.format(t.getDateTime())));
-                }
-
                 break;
 
             case TRANSFER_IN:
@@ -221,6 +208,53 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                 break;
             default:
                 throw new UnsupportedOperationException();
+        }
+    }
+
+    private void removeSharesFromCostBasis(TransactionOwner<?> owner, long shares, PortfolioTransaction transaction)
+    {
+        long sold = shares;
+
+        long remaining = heldShares - sold;
+        if (remaining <= 0)
+        {
+            movingRelativeCost = 0;
+            movingRelativeNetCost = 0;
+            heldShares = 0;
+        }
+        else
+        {
+            movingRelativeCost = Math.round(movingRelativeCost / (double) heldShares * remaining);
+            movingRelativeNetCost = Math.round(movingRelativeNetCost / (double) heldShares * remaining);
+            heldShares = remaining;
+        }
+
+        for (LineItem entry : fifo)
+        {
+            if (sold <= 0)
+                break;
+
+            if (!entry.owner.equals(owner))
+                continue;
+
+            if (entry.shares == 0)
+                continue;
+
+            long n = Math.min(sold, entry.shares);
+
+            entry.grossAmount -= Math.round(n / (double) entry.shares * entry.grossAmount);
+            entry.netAmount -= Math.round(n / (double) entry.shares * entry.netAmount);
+            entry.shares -= n;
+
+            sold -= n;
+        }
+
+        if (sold > 0)
+        {
+            // FIXME Oops. More sold than bought.
+            PortfolioLog.warning(MessageFormat.format(Messages.MsgNegativeHoldingsDuringFIFOCostCalculation,
+                            Values.Share.format(sold), transaction.getSecurity().getName(),
+                            Values.DateTime.format(transaction.getDateTime())));
         }
     }
 
