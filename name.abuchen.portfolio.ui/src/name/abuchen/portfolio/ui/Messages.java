@@ -727,6 +727,7 @@ public class Messages extends NLS
     public static String LabelFontSize;
     public static String LabelFormatJSON;
     public static String LabelFullClassification;
+    public static String LabelFundTransfer;
     public static String LabelGreenGrayRed;
     public static String LabelGreenWhiteRed;
     public static String LabelGreenYellowRed;
@@ -1140,6 +1141,8 @@ public class Messages extends NLS
     public static String MsgErrorSavingIniFile;
     public static String MsgErrorTradeCollectionWithErrors;
     public static String MsgErrorUpdating;
+    public static String MsgFundTransferNotEnoughShares;
+    public static String MsgFundTransferSecuritiesMustDiffer;
     public static String MsgHintNoAttributesConfigured;
     public static String MsgHintNoEvents;
     public static String MsgHintUseOutboundDeliveryForZeroTotal;
