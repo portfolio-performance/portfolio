@@ -128,6 +128,27 @@ public class CheckCurrenciesPortfolioTransactionTest
     }
 
     @Test
+    public void testFundTransfersDoNotApplyInboundTaxAndFeeCap()
+    {
+        Portfolio portfolio = new Portfolio();
+        Security security = new Security("", "EUR");
+
+        Unit tax = new Unit(Unit.Type.TAX, Money.of("EUR", 5_00));
+        Unit fee = new Unit(Unit.Type.FEE, Money.of("EUR", 5_00));
+
+        PortfolioTransaction t = new PortfolioTransaction();
+        t.setType(Type.FUND_TRANSFER_IN);
+        t.setMonetaryAmount(Money.of("EUR", 7_00));
+        t.setSecurity(security);
+        t.addUnit(fee);
+        t.addUnit(tax);
+        assertThat(action.process(t, portfolio).getCode(), is(Status.Code.OK));
+
+        t.setType(Type.FUND_TRANSFER_OUT);
+        assertThat(action.process(t, portfolio).getCode(), is(Status.Code.OK));
+    }
+
+    @Test
     public void testTransactionForexTaxesAndFees()
     {
         Portfolio portfolio = new Portfolio();
