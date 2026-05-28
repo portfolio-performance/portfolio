@@ -8,6 +8,7 @@ import java.util.List;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
+import name.abuchen.portfolio.model.FundTransferEntry;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
@@ -50,6 +51,24 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
                 movingAverageNetCost += netAmount;
                 movingAverageNetCostForex += netAmountForex;
                 heldShares += t.getShares();
+                break;
+
+            case FUND_TRANSFER_IN:
+                // Target moving-average costs inherit acquisition basis; the
+                // transfer amount is market value, not a taxable purchase cost.
+                if (!(t.getCrossEntry() instanceof FundTransferEntry entry))
+                    throw new UnsupportedOperationException();
+
+                for (FundTransferEntry.CarriedLot lot : entry.getCarriedLots())
+                {
+                    movingAverageNetCost += converter
+                                    .convert(lot.getAcquisitionDate().atStartOfDay(), lot.getAcquisitionValue())
+                                    .getAmount();
+                    movingAverageNetCostForex += converter.with(securityCurrency)
+                                    .convert(lot.getAcquisitionDate().atStartOfDay(), lot.getAcquisitionValue())
+                                    .getAmount();
+                    heldShares += lot.getTargetShares();
+                }
                 break;
 
             case SELL, DELIVERY_OUTBOUND:
@@ -112,11 +131,43 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
                     heldShares = remaining;
                 }
                 break;
+            case FUND_TRANSFER_OUT:
+                removeSharesWithoutRealizing(t);
+                break;
             case TRANSFER_IN, TRANSFER_OUT:
                 // ignore --> not relevant for moving average
                 break;
             default:
                 throw new UnsupportedOperationException();
+        }
+    }
+
+    private void removeSharesWithoutRealizing(PortfolioTransaction t)
+    {
+        long moved = t.getShares();
+        long remaining = heldShares - moved;
+
+        if (remaining < 0)
+        {
+            movingAverageNetCost = 0;
+            movingAverageNetCostForex = 0;
+            heldShares = 0;
+            // FIXME Oops. More moved than available.
+            PortfolioLog.warning(MessageFormat.format(Messages.MsgNegativeHoldingsDuringFIFOCostCalculation,
+                            Values.Share.format(moved), t.getSecurity().getName(),
+                            Values.DateTime.format(t.getDateTime())));
+        }
+        else if (remaining == 0)
+        {
+            movingAverageNetCost = 0;
+            movingAverageNetCostForex = 0;
+            heldShares = 0;
+        }
+        else
+        {
+            movingAverageNetCost = Math.round(movingAverageNetCost / (double) heldShares * remaining);
+            movingAverageNetCostForex = Math.round(movingAverageNetCostForex / (double) heldShares * remaining);
+            heldShares = remaining;
         }
     }
 

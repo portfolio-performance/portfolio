@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
+import name.abuchen.portfolio.model.FundTransferEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.TransactionOwner;
@@ -90,6 +91,30 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                                 txTrail, transactionItem));
                 break;
 
+            case FUND_TRANSFER_IN:
+                // Fund transfers defer taxation: target fund lots inherit the
+                // original acquisition basis instead of using transfer market
+                // value as a new purchase price.
+                if (!(t.getCrossEntry() instanceof FundTransferEntry entry))
+                    throw new UnsupportedOperationException();
+
+                for (FundTransferEntry.CarriedLot lot : entry.getCarriedLots())
+                {
+                    long carriedValue = converter
+                                    .convert(lot.getAcquisitionDate().atStartOfDay(), lot.getAcquisitionValue())
+                                    .getAmount();
+
+                    TrailRecord lotTrail = TrailRecord.ofTransaction(t);
+                    if (!getTermCurrency().equals(lot.getAcquisitionValue().getCurrencyCode()))
+                        lotTrail = lotTrail.convert(Money.of(getTermCurrency(), carriedValue),
+                                        converter.getRate(lot.getAcquisitionDate().atStartOfDay(),
+                                                        lot.getAcquisitionValue().getCurrencyCode()));
+
+                    fifo.add(new LineItem(lot.getTargetShares(), lot.getAcquisitionDate(), carriedValue, lotTrail,
+                                    transactionItem));
+                }
+                break;
+
             case SELL:
             case DELIVERY_OUTBOUND:
 
@@ -162,6 +187,10 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 
                 break;
 
+            case FUND_TRANSFER_OUT:
+                removeSharesWithoutRealizing(transactionItem, t);
+                break;
+
             case TRANSFER_IN:
                 long moved = t.getShares();
 
@@ -222,6 +251,40 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                 break;
             default:
                 throw new UnsupportedOperationException();
+        }
+    }
+
+    private void removeSharesWithoutRealizing(CalculationLineItem.TransactionItem transactionItem,
+                    PortfolioTransaction t)
+    {
+        long moved = t.getShares();
+
+        for (LineItem item : fifo) // NOSONAR
+        {
+            if (item.shares == 0)
+                continue;
+
+            if (!item.source.getOwner().equals(transactionItem.getOwner()))
+                continue;
+
+            if (moved <= 0)
+                break;
+
+            long movedShares = Math.min(moved, item.shares);
+            long movedValue = Math.round((double) movedShares / item.shares * item.value);
+
+            item.shares -= movedShares;
+            item.value -= movedValue;
+
+            moved -= movedShares;
+        }
+
+        if (moved > 0)
+        {
+            // FIXME Oops. More moved than available.
+            PortfolioLog.warning(MessageFormat.format(Messages.MsgNegativeHoldingsDuringFIFOCostCalculation,
+                            Values.Share.format(moved), t.getSecurity().getName(),
+                            Values.DateTime.format(t.getDateTime())));
         }
     }
 

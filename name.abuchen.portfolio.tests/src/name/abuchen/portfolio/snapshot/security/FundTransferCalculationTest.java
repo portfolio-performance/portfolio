@@ -105,6 +105,66 @@ public class FundTransferCalculationTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(700))));
     }
 
+    @Test
+    public void testFundTransferDefersCapitalGainsUntilTargetSale()
+    {
+        Client client = new Client();
+        Security sourceFund = new SecurityBuilder().addTo(client);
+        Security targetFund = new SecurityBuilder().addPrice("2020-12-31", Values.Quote.factorize(100)).addTo(client);
+
+        Portfolio sourcePortfolio = new PortfolioBuilder() //
+                        .buy(sourceFund, "2020-01-01", Values.Share.factorize(10),
+                                        Values.Amount.factorize(1000)) //
+                        .addTo(client);
+
+        Portfolio targetPortfolio = new PortfolioBuilder().addTo(client);
+
+        PortfolioTransaction sourceBuy = sourcePortfolio.getTransactions().get(0);
+        insertFundTransfer(sourcePortfolio, targetPortfolio, sourceFund, targetFund, Values.Share.factorize(10),
+                        Values.Share.factorize(15), Values.Amount.factorize(1500),
+                        new FundTransferEntry.CarriedLot(LocalDate.parse("2020-01-01"),
+                                        Values.Share.factorize(10), Values.Share.factorize(15),
+                                        Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000)),
+                                        sourceBuy.getUUID()));
+
+        LazySecurityPerformanceSnapshot snapshot = createSnapshot(client);
+        LazySecurityPerformanceRecord sourceRecord = snapshot.getRecord(sourceFund)
+                        .orElseThrow(IllegalArgumentException::new);
+        LazySecurityPerformanceRecord targetRecord = snapshot.getRecord(targetFund)
+                        .orElseThrow(IllegalArgumentException::new);
+
+        assertThat(sourceRecord.getDelta(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500))));
+        assertThat(targetRecord.getDelta(), is(Money.of(CurrencyUnit.EUR, 0)));
+
+        assertThat(sourceRecord.getRealizedCapitalGains(CostMethod.FIFO).getCapitalGains(),
+                        is(Money.of(CurrencyUnit.EUR, 0)));
+        assertThat(sourceRecord.getRealizedCapitalGains(CostMethod.MOVING_AVERAGE).getCapitalGains(),
+                        is(Money.of(CurrencyUnit.EUR, 0)));
+
+        assertThat(targetRecord.getUnrealizedCapitalGains(CostMethod.FIFO).getCapitalGains(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500))));
+        assertThat(targetRecord.getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE).getCapitalGains(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500))));
+
+        PortfolioTransaction sale = new PortfolioTransaction();
+        sale.setType(PortfolioTransaction.Type.SELL);
+        sale.setDateTime(LocalDateTime.parse("2021-01-01T00:00"));
+        sale.setSecurity(targetFund);
+        sale.setShares(Values.Share.factorize(15));
+        sale.setMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1800)));
+        targetPortfolio.addTransaction(sale);
+
+        LazySecurityPerformanceRecord targetRecordAfterSale = LazySecurityPerformanceSnapshot
+                        .create(client, new TestCurrencyConverter(),
+                                        Interval.of(LocalDate.parse("2019-12-31"), LocalDate.parse("2021-12-31")))
+                        .getRecord(targetFund).orElseThrow(IllegalArgumentException::new);
+
+        assertThat(targetRecordAfterSale.getRealizedCapitalGains(CostMethod.FIFO).getCapitalGains(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(800))));
+        assertThat(targetRecordAfterSale.getRealizedCapitalGains(CostMethod.MOVING_AVERAGE).getCapitalGains(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(800))));
+    }
+
     private LazySecurityPerformanceSnapshot createSnapshot(Client client)
     {
         return LazySecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(),
