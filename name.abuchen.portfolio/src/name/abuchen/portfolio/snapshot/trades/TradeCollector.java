@@ -2,6 +2,7 @@ package name.abuchen.portfolio.snapshot.trades;
 
 import java.io.Serializable;
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -96,6 +97,23 @@ public class TradeCollector
 
     private Client client;
     private CurrencyConverter converter;
+
+    private static final class CarriedFundTransferTransaction extends PortfolioTransaction
+                    implements FundTransferCarriedTransaction
+    {
+        private final LocalDate acquisitionDate;
+
+        private CarriedFundTransferTransaction(LocalDate acquisitionDate)
+        {
+            this.acquisitionDate = acquisitionDate;
+        }
+
+        @Override
+        public LocalDate getAcquisitionDate()
+        {
+            return acquisitionDate;
+        }
+    }
 
     public TradeCollector(Client client, CurrencyConverter converter)
     {
@@ -309,16 +327,16 @@ public class TradeCollector
 
         for (FundTransferEntry.CarriedLot lot : transfer.getCarriedLots())
         {
-            PortfolioTransaction syntheticLot = new PortfolioTransaction();
+            PortfolioTransaction syntheticLot = new CarriedFundTransferTransaction(lot.getAcquisitionDate());
             syntheticLot.setType(Type.FUND_TRANSFER_IN);
-            syntheticLot.setDateTime(lot.getAcquisitionDate().atStartOfDay());
+            syntheticLot.setDateTime(pair.getTransaction().getDateTime());
             syntheticLot.setSecurity(pair.getTransaction().getSecurity());
             syntheticLot.setShares(lot.getTargetShares());
             syntheticLot.setMonetaryAmount(lot.getAcquisitionValue());
 
-            // A fund-transfer trade starts at the original acquisition date and
-            // carries the original acquisition basis. The visible transfer
-            // transaction remains at market value and is not used as trade cost.
+            // Display the synthetic lot on the real transfer execution date,
+            // while keeping the inherited acquisition date for holding-period
+            // and carried-basis calculations.
             target.add(new TransactionPair<>(inbound, syntheticLot));
         }
     }

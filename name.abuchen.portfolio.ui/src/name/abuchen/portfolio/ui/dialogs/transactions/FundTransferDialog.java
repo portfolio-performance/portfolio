@@ -189,7 +189,7 @@ public class FundTransferDialog extends AbstractTransactionDialog
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
 
-        addColumn(viewer, layout, Messages.ColumnDate, 24, 120, SWT.NONE,
+        addColumn(viewer, layout, Messages.ColumnAcquisitionDate, 24, 120, SWT.NONE,
                         lot -> Values.Date.format(lot.getAcquisitionDate()));
         addColumn(viewer, layout, Messages.ColumnAccountFrom + " " + Messages.ColumnShares, 25, 130, //$NON-NLS-1$
                         SWT.RIGHT, lot -> Values.Share.format(lot.getSourceShares()));

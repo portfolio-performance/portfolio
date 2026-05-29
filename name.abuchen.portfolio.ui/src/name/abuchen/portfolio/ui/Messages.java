@@ -105,6 +105,7 @@ public class Messages extends NLS
     public static String ColumnAccountFrom;
     public static String ColumnAccountTo;
     public static String ColumnAction;
+    public static String ColumnAcquisitionDate;
     public static String ColumnActualPercent;
     public static String ColumnActualValue;
     public static String ColumnActualValueBaseCurrency;

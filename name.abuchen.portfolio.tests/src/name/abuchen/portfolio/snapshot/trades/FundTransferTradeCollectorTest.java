@@ -62,6 +62,10 @@ public class FundTransferTradeCollectorTest
         assertThat(trades.size(), is(1));
 
         Trade trade = trades.get(0);
+        PortfolioTransaction carriedTransaction = trade.getTransactions().get(0).getTransaction();
+
+        assertThat(carriedTransaction.getType(), is(PortfolioTransaction.Type.FUND_TRANSFER_IN));
+        assertThat(carriedTransaction.getDateTime(), is(LocalDateTime.parse("2020-06-01T00:00")));
         assertThat(trade.isClosed(), is(true));
         assertThat(trade.getStart(), is(LocalDateTime.parse("2020-01-01T00:00")));
         assertThat(trade.getHoldingPeriod(), is(366L));
