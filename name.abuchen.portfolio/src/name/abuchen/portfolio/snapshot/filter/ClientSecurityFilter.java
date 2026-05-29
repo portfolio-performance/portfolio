@@ -9,6 +9,7 @@ import java.util.function.Function;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.FundTransferEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
@@ -96,6 +97,12 @@ public class ClientSecurityFilter implements ClientFilter
                 convertTransfer(getPortfolio, pair);
             case TRANSFER_OUT:
                 // handled via TRANSFER_IN
+                break;
+            case FUND_TRANSFER_IN:
+                convertFundTransferIn(getPortfolio, pair);
+                break;
+            case FUND_TRANSFER_OUT:
+                convertFundTransferOut(getPortfolio, pair);
                 break;
             default:
                 throw new IllegalArgumentException("unsupported type " + type); //$NON-NLS-1$
@@ -187,5 +194,40 @@ public class ClientSecurityFilter implements ClientFilter
         ReadOnlyPortfolio target = getPortfolio.apply(entry.getTargetPortfolio());
 
         ClientFilterHelper.recreateTransfer(entry, source, target);
+    }
+
+    private void convertFundTransferIn(Function<Portfolio, ReadOnlyPortfolio> getPortfolio,
+                    TransactionPair<PortfolioTransaction> pair)
+    {
+        FundTransferEntry entry = (FundTransferEntry) pair.getTransaction().getCrossEntry();
+
+        ReadOnlyPortfolio target = getPortfolio.apply(entry.getTargetPortfolio());
+
+        if (securities.contains(entry.getSourceTransaction().getSecurity()))
+        {
+            ClientFilterHelper.recreateFundTransfer(entry, getPortfolio.apply(entry.getSourcePortfolio()), target);
+        }
+        else
+        {
+            // A target-only security filter still needs the carried acquisition
+            // lots; a plain inbound delivery would incorrectly reset cost basis.
+            target.internalAddTransaction(ClientFilterHelper
+                            .copyFundTransfer(entry, entry.getSourcePortfolio(), target).getTargetTransaction());
+        }
+    }
+
+    private void convertFundTransferOut(Function<Portfolio, ReadOnlyPortfolio> getPortfolio,
+                    TransactionPair<PortfolioTransaction> pair)
+    {
+        FundTransferEntry entry = (FundTransferEntry) pair.getTransaction().getCrossEntry();
+
+        // If the target security is selected too, the inbound side recreates
+        // both transactions so the cross entry is only copied once.
+        if (!securities.contains(entry.getTargetTransaction().getSecurity()))
+        {
+            ReadOnlyPortfolio source = getPortfolio.apply(entry.getSourcePortfolio());
+            source.internalAddTransaction(ClientFilterHelper
+                            .copyFundTransfer(entry, source, entry.getTargetPortfolio()).getSourceTransaction());
+        }
     }
 }

@@ -19,6 +19,7 @@ import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.FundTransferEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
@@ -257,6 +258,25 @@ public class PortfolioClientFilter implements ClientFilter
                         pseudoPortfolio.internalAddTransaction(
                                         convertTo(t, PortfolioTransaction.Type.DELIVERY_INBOUND, portfolioWeight));
                     break;
+                case FUND_TRANSFER_IN:
+                    FundTransferEntry inboundFundTransfer = (FundTransferEntry) t.getCrossEntry();
+                    if (portfolios.contains(inboundFundTransfer.getSourcePortfolio()))
+                    {
+                        ClientFilterHelper.recreateFundTransfer(inboundFundTransfer,
+                                        portfolio2pseudo.get(inboundFundTransfer.getSourcePortfolio()),
+                                        pseudoPortfolio);
+                    }
+                    else
+                    {
+                        // Keep fund transfers as fund transfers even when only
+                        // one portfolio is selected; converting to a delivery
+                        // would lose the tax-neutral carried acquisition lots.
+                        pseudoPortfolio.internalAddTransaction(ClientFilterHelper
+                                        .copyFundTransfer(inboundFundTransfer, inboundFundTransfer.getSourcePortfolio(),
+                                                        pseudoPortfolio)
+                                        .getTargetTransaction());
+                    }
+                    break;
                 case SELL:
                     if (accounts.contains(crossOwner))
                         recreateBuySell((BuySellEntry) t.getCrossEntry(), pseudoPortfolio,
@@ -270,6 +290,16 @@ public class PortfolioClientFilter implements ClientFilter
                     if (!portfolios.contains(crossOwner))
                         pseudoPortfolio.internalAddTransaction(
                                         convertTo(t, PortfolioTransaction.Type.DELIVERY_OUTBOUND, portfolioWeight));
+                    break;
+                case FUND_TRANSFER_OUT:
+                    FundTransferEntry outboundFundTransfer = (FundTransferEntry) t.getCrossEntry();
+                    // fund transfer handled by FUND_TRANSFER_IN if both
+                    // portfolios are visible in the filtered client
+                    if (!portfolios.contains(outboundFundTransfer.getTargetPortfolio()))
+                        pseudoPortfolio.internalAddTransaction(ClientFilterHelper
+                                        .copyFundTransfer(outboundFundTransfer, pseudoPortfolio,
+                                                        outboundFundTransfer.getTargetPortfolio())
+                                        .getSourceTransaction());
                     break;
                 case DELIVERY_INBOUND, DELIVERY_OUTBOUND:
                     pseudoPortfolio.internalAddTransaction(scaled(t, portfolioWeight));
