@@ -65,7 +65,7 @@ public class AustrianAnadiBankPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "amount") //
                         .documentContext("currency", "year") //
-                        .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) .* [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)$") // )
+                        .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) .* [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date") + '.' + v.get("year")));
                             t.setCurrencyCode(v.get("currency"));
