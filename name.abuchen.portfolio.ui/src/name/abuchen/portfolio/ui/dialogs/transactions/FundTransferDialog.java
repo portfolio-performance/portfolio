@@ -6,6 +6,7 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.currencyWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 
 import java.time.LocalDateTime;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import jakarta.inject.Inject;
@@ -16,10 +17,12 @@ import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
@@ -38,8 +41,14 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.FundTransferModel.Properties;
+import name.abuchen.portfolio.ui.util.CurrencyToStringConverter;
+import name.abuchen.portfolio.ui.util.NumberVerifyListener;
 import name.abuchen.portfolio.ui.util.SWTHelper;
 import name.abuchen.portfolio.ui.util.SecurityNameLabelProvider;
+import name.abuchen.portfolio.ui.util.StringToCurrencyConverter;
+import name.abuchen.portfolio.ui.util.text.DecimalKeypadSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupportWrapper;
 
 public class FundTransferDialog extends AbstractTransactionDialog
 {
@@ -115,6 +124,7 @@ public class FundTransferDialog extends AbstractTransactionDialog
 
         Label previewLabel = new Label(editArea, SWT.LEFT);
         previewLabel.setText(Messages.ColumnPurchaseValue);
+        previewLabel.setToolTipText(Messages.TooltipFundTransferCarriedLots);
         Composite previewArea = createPreviewTable(editArea);
 
         Label lblNote = new Label(editArea, SWT.LEFT);
@@ -185,35 +195,52 @@ public class FundTransferDialog extends AbstractTransactionDialog
         container.setLayout(layout);
 
         TableViewer viewer = new TableViewer(container, SWT.BORDER | SWT.FULL_SELECTION);
+        ColumnEditingSupport.prepare(viewer);
+
         Table table = viewer.getTable();
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
+        table.setToolTipText(Messages.TooltipFundTransferCarriedLots);
 
         addColumn(viewer, layout, Messages.ColumnAcquisitionDate, 24, 120, SWT.NONE,
                         lot -> Values.Date.format(lot.getAcquisitionDate()));
-        addColumn(viewer, layout, Messages.ColumnAccountFrom + " " + Messages.ColumnShares, 25, 130, //$NON-NLS-1$
-                        SWT.RIGHT, lot -> Values.Share.format(lot.getSourceShares()));
-        addColumn(viewer, layout, Messages.ColumnAccountTo + " " + Messages.ColumnShares, 25, 130, SWT.RIGHT, //$NON-NLS-1$
+
+        TableViewerColumn sourceShares = addColumn(viewer, layout,
+                        Messages.ColumnAccountFrom + " " + Messages.ColumnShares, 25, 130, SWT.RIGHT, //$NON-NLS-1$
+                        lot -> Values.Share.format(lot.getSourceShares()));
+        addValueEditingSupport(viewer, sourceShares, Values.Share, CarriedLot::getSourceShares,
+                        model()::setCarriedLotSourceShares);
+
+        TableViewerColumn targetShares = addColumn(viewer, layout,
+                        Messages.ColumnAccountTo + " " + Messages.ColumnShares, 25, 130, SWT.RIGHT, //$NON-NLS-1$
                         lot -> Values.Share.format(lot.getTargetShares()));
-        addColumn(viewer, layout, Messages.ColumnPurchaseValue, 26, 160, SWT.RIGHT, this::formatAcquisitionValue);
+        addValueEditingSupport(viewer, targetShares, Values.Share, CarriedLot::getTargetShares,
+                        model()::setCarriedLotTargetShares);
+
+        TableViewerColumn acquisitionValue = addColumn(viewer, layout, Messages.ColumnPurchaseValue, 26, 160,
+                        SWT.RIGHT, this::formatAcquisitionValue);
+        addValueEditingSupport(viewer, acquisitionValue, Values.Amount,
+                        lot -> lot.getAcquisitionValue().getAmount(), model()::setCarriedLotAcquisitionAmount);
 
         viewer.setContentProvider(ArrayContentProvider.getInstance());
         viewer.setInput(model().getCarriedLots());
 
         // The preview is not another market-value field. It shows the FIFO
         // acquisition lots that will be carried to the target fund for deferred
-        // capital-gains calculations.
+        // capital-gains calculations. The numeric lot columns remain editable
+        // so users can match broker-specific operation splits and rounding.
         model.addPropertyChangeListener(Properties.carriedLots.name(), e -> viewer.setInput(model().getCarriedLots()));
 
         return container;
     }
 
-    private void addColumn(TableViewer viewer, TableColumnLayout layout, String label, int weight, int minimumWidth,
-                    int align,
+    private TableViewerColumn addColumn(TableViewer viewer, TableColumnLayout layout, String label, int weight,
+                    int minimumWidth, int align,
                     Function<CarriedLot, String> formatter)
     {
         TableViewerColumn column = new TableViewerColumn(viewer, align);
         column.getColumn().setText(label);
+        column.getColumn().setToolTipText(Messages.TooltipFundTransferCarriedLots);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -224,6 +251,62 @@ public class FundTransferDialog extends AbstractTransactionDialog
         });
         // The preview table carries audit-relevant tax lot data, so columns should grow with the dialog.
         layout.setColumnData(column.getColumn(), new ColumnWeightData(weight, minimumWidth, true));
+        return column;
+    }
+
+    private void addValueEditingSupport(TableViewer viewer, TableViewerColumn column, Values<? extends Number> valueType,
+                    Function<CarriedLot, Long> getter, BiConsumer<CarriedLot, Long> setter)
+    {
+        column.setEditingSupport(new ColumnEditingSupportWrapper(viewer,
+                        new CarriedLotValueEditingSupport(valueType, getter, setter)));
+    }
+
+    private static final class CarriedLotValueEditingSupport extends ColumnEditingSupport
+    {
+        private final StringToCurrencyConverter stringToLong;
+        private final CurrencyToStringConverter longToString;
+        private final Function<CarriedLot, Long> getter;
+        private final BiConsumer<CarriedLot, Long> setter;
+
+        private CarriedLotValueEditingSupport(Values<? extends Number> valueType, Function<CarriedLot, Long> getter,
+                        BiConsumer<CarriedLot, Long> setter)
+        {
+            this.stringToLong = new StringToCurrencyConverter(valueType);
+            this.longToString = new CurrencyToStringConverter(valueType);
+            this.getter = getter;
+            this.setter = setter;
+        }
+
+        @Override
+        public CellEditor createEditor(Composite composite)
+        {
+            TextCellEditor textEditor = new TextCellEditor(composite);
+            Text text = (Text) textEditor.getControl();
+            text.setTextLimit(20);
+            text.addVerifyListener(new NumberVerifyListener());
+            DecimalKeypadSupport.configure(text);
+            return textEditor;
+        }
+
+        @Override
+        public Object getValue(Object element) throws Exception
+        {
+            return longToString.convert(getter.apply((CarriedLot) element));
+        }
+
+        @Override
+        public void setValue(Object element, Object value) throws Exception
+        {
+            CarriedLot lot = (CarriedLot) element;
+            long oldValue = getter.apply(lot);
+            long newValue = stringToLong.convert(String.valueOf(value));
+
+            if (newValue != oldValue)
+            {
+                setter.accept(lot, newValue);
+                notify(lot, newValue, oldValue);
+            }
+        }
     }
 
     private String formatAcquisitionValue(CarriedLot lot)

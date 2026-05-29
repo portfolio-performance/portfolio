@@ -102,6 +102,103 @@ public class FundTransferModelTest
     }
 
     @Test
+    public void testApplyPersistsManualCarriedLotOverrides()
+    {
+        Client client = new Client();
+        Security sourceFund = new SecurityBuilder().addTo(client);
+        Security targetFund = new SecurityBuilder().addTo(client);
+
+        Portfolio sourcePortfolio = new PortfolioBuilder() //
+                        .buy(sourceFund, "2020-01-01", Values.Share.factorize(3),
+                                        Values.Amount.factorize(300)) //
+                        .buy(sourceFund, "2020-02-01", Values.Share.factorize(7),
+                                        Values.Amount.factorize(700)) //
+                        .addTo(client);
+        Portfolio targetPortfolio = new PortfolioBuilder().addTo(client);
+
+        FundTransferModel model = new FundTransferModel(client);
+        model.setSourcePortfolio(sourcePortfolio);
+        model.setTargetPortfolio(targetPortfolio);
+        model.setSourceSecurity(sourceFund);
+        model.setTargetSecurity(targetFund);
+        model.setDate(LocalDate.parse("2020-06-01"));
+        model.setSourceShares(Values.Share.factorize(10));
+        model.setTargetShares(Values.Share.factorize(20));
+        model.setSourceAmount(Values.Amount.factorize(2000));
+        model.setTargetAmount(Values.Amount.factorize(2000));
+
+        assertThat(model.getCalculationStatus().getSeverity(), is(IStatus.OK));
+        assertThat(model.getCarriedLots().size(), is(2));
+
+        FundTransferEntry.CarriedLot firstLot = model.getCarriedLots().get(0);
+        FundTransferEntry.CarriedLot secondLot = model.getCarriedLots().get(1);
+
+        model.setCarriedLotSourceShares(firstLot, Values.Share.factorize(4));
+        model.setCarriedLotSourceShares(secondLot, Values.Share.factorize(6));
+        model.setCarriedLotTargetShares(firstLot, Values.Share.factorize(5));
+        model.setCarriedLotTargetShares(secondLot, Values.Share.factorize(15));
+        model.setCarriedLotAcquisitionAmount(firstLot, Values.Amount.factorize(320));
+        model.setCarriedLotAcquisitionAmount(secondLot, Values.Amount.factorize(680));
+
+        assertThat(model.getCalculationStatus().getSeverity(), is(IStatus.OK));
+
+        model.applyChanges();
+
+        FundTransferEntry entry = (FundTransferEntry) targetPortfolio.getTransactions().get(0).getCrossEntry();
+
+        assertThat(entry.getCarriedLots().get(0).getSourceShares(), is(Values.Share.factorize(4)));
+        assertThat(entry.getCarriedLots().get(1).getSourceShares(), is(Values.Share.factorize(6)));
+        assertThat(entry.getCarriedLots().get(0).getTargetShares(), is(Values.Share.factorize(5)));
+        assertThat(entry.getCarriedLots().get(1).getTargetShares(), is(Values.Share.factorize(15)));
+        assertThat(entry.getCarriedLots().get(0).getAcquisitionValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(320))));
+        assertThat(entry.getCarriedLots().get(1).getAcquisitionValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(680))));
+    }
+
+    @Test
+    public void testManualCarriedLotShareTotalsMustMatchTransferTotals()
+    {
+        Client client = new Client();
+        Security sourceFund = new SecurityBuilder().addTo(client);
+        Security targetFund = new SecurityBuilder().addTo(client);
+
+        Portfolio sourcePortfolio = new PortfolioBuilder() //
+                        .buy(sourceFund, "2020-01-01", Values.Share.factorize(3),
+                                        Values.Amount.factorize(300)) //
+                        .buy(sourceFund, "2020-02-01", Values.Share.factorize(7),
+                                        Values.Amount.factorize(700)) //
+                        .addTo(client);
+        Portfolio targetPortfolio = new PortfolioBuilder().addTo(client);
+
+        FundTransferModel model = new FundTransferModel(client);
+        model.setSourcePortfolio(sourcePortfolio);
+        model.setTargetPortfolio(targetPortfolio);
+        model.setSourceSecurity(sourceFund);
+        model.setTargetSecurity(targetFund);
+        model.setDate(LocalDate.parse("2020-06-01"));
+        model.setSourceShares(Values.Share.factorize(10));
+        model.setTargetShares(Values.Share.factorize(20));
+        model.setSourceAmount(Values.Amount.factorize(2000));
+        model.setTargetAmount(Values.Amount.factorize(2000));
+
+        FundTransferEntry.CarriedLot firstLot = model.getCarriedLots().get(0);
+        FundTransferEntry.CarriedLot secondLot = model.getCarriedLots().get(1);
+
+        model.setCarriedLotTargetShares(firstLot, Values.Share.factorize(5));
+        assertThat(model.getCalculationStatus().getSeverity(), is(IStatus.ERROR));
+
+        model.setCarriedLotTargetShares(secondLot, Values.Share.factorize(15));
+        assertThat(model.getCalculationStatus().getSeverity(), is(IStatus.OK));
+
+        model.setCarriedLotSourceShares(firstLot, Values.Share.factorize(4));
+        assertThat(model.getCalculationStatus().getSeverity(), is(IStatus.ERROR));
+
+        model.setCarriedLotSourceShares(secondLot, Values.Share.factorize(6));
+        assertThat(model.getCalculationStatus().getSeverity(), is(IStatus.OK));
+    }
+
+    @Test
     public void testValidationRejectsSameSecurityAndInsufficientHoldings()
     {
         Client client = new Client();

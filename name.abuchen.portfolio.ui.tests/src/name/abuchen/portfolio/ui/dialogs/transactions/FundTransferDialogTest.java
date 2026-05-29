@@ -8,6 +8,7 @@ import org.junit.Test;
 import name.abuchen.portfolio.model.FundTransferEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.ui.Messages;
 
 public class FundTransferDialogTest
 {
@@ -22,5 +23,6 @@ public class FundTransferDialogTest
                         is(Void.TYPE));
         assertThat(FundTransferDialog.class.getMethod("setSecurity", Security.class).getReturnType(), is(Void.TYPE));
         assertThat(FundTransferDialog.class.getMethod("setPortfolio", Portfolio.class).getReturnType(), is(Void.TYPE));
+        assertThat(Messages.TooltipFundTransferCarriedLots.contains("Acquisition dates"), is(true));
     }
 }

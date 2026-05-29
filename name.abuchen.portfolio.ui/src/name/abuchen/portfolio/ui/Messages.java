@@ -1142,6 +1142,11 @@ public class Messages extends NLS
     public static String MsgErrorSavingIniFile;
     public static String MsgErrorTradeCollectionWithErrors;
     public static String MsgErrorUpdating;
+    public static String MsgFundTransferCarriedLotCurrencyMismatch;
+    public static String MsgFundTransferCarriedLotSourceSharesMismatch;
+    public static String MsgFundTransferCarriedLotTargetSharesMismatch;
+    public static String MsgFundTransferCarriedLotValuesMustBePositive;
+    public static String MsgFundTransferCarriedLotsMissing;
     public static String MsgFundTransferNotEnoughShares;
     public static String MsgFundTransferSecuritiesMustDiffer;
     public static String MsgHintNoAttributesConfigured;
@@ -1472,6 +1477,7 @@ public class Messages extends NLS
     public static String TooltipCurrentDrawdown;
     public static String TooltipDateOfExchangeRate;
     public static String TooltipFIRENumber;
+    public static String TooltipFundTransferCarriedLots;
     public static String TooltipHintPressAlt;
     public static String TooltipMaxDrawdown;
     public static String TooltipMaxDrawdownDuration;

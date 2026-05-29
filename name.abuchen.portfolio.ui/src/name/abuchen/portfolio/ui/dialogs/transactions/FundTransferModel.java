@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
@@ -44,6 +45,7 @@ public class FundTransferModel extends AbstractModel
     private String note;
     private List<FundTransferEntry.CarriedLot> carriedLots = List.of();
     private IStatus calculationStatus = ValidationStatus.ok();
+    private boolean carriedLotsManuallyEdited;
     private boolean targetPortfolioExplicit;
     private boolean targetAmountExplicit;
 
@@ -111,6 +113,7 @@ public class FundTransferModel extends AbstractModel
 
         targetAmountExplicit = false;
         targetPortfolioExplicit = false;
+        carriedLotsManuallyEdited = false;
         setSourceShares(0);
         setTargetShares(0);
         setSourceAmount(0);
@@ -146,6 +149,7 @@ public class FundTransferModel extends AbstractModel
         this.targetAmount = entry.getTargetTransaction().getAmount();
         this.note = entry.getNote();
         this.carriedLots = new ArrayList<>(entry.getCarriedLots());
+        this.carriedLotsManuallyEdited = true;
         this.targetAmountExplicit = true;
         this.targetPortfolioExplicit = true;
     }
@@ -169,7 +173,8 @@ public class FundTransferModel extends AbstractModel
 
     private IStatus calculateStatus()
     {
-        carriedLots = List.of();
+        if (!carriedLotsManuallyEdited)
+            carriedLots = List.of();
 
         if (sourceSecurity == null || targetSecurity == null)
             return ValidationStatus.error(Messages.MsgMissingSecurity);
@@ -189,6 +194,12 @@ public class FundTransferModel extends AbstractModel
         if (sourceAmount == 0L || targetAmount == 0L)
             return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnAmount));
 
+        // Broker statements may split the destination-fund operation with
+        // their own rounding. Preserve explicit lot edits and validate only
+        // the invariants that must still match the transfer totals.
+        if (carriedLotsManuallyEdited)
+            return validateCarriedLots();
+
         try
         {
             carriedLots = FundTransferLotBuilder.build(client, sourcePortfolio, sourceSecurity,
@@ -199,6 +210,37 @@ public class FundTransferModel extends AbstractModel
         {
             return ValidationStatus.error(Messages.MsgFundTransferNotEnoughShares);
         }
+
+        return ValidationStatus.ok();
+    }
+
+    private IStatus validateCarriedLots()
+    {
+        if (carriedLots.isEmpty())
+            return ValidationStatus.error(Messages.MsgFundTransferCarriedLotsMissing);
+
+        long carriedSourceShares = 0;
+        long carriedTargetShares = 0;
+
+        for (FundTransferEntry.CarriedLot lot : carriedLots)
+        {
+            Money acquisitionValue = lot.getAcquisitionValue();
+            if (lot.getSourceShares() <= 0 || lot.getTargetShares() <= 0 || acquisitionValue == null
+                            || acquisitionValue.getAmount() <= 0)
+                return ValidationStatus.error(Messages.MsgFundTransferCarriedLotValuesMustBePositive);
+
+            if (!getSourceSecurityCurrencyCode().equals(acquisitionValue.getCurrencyCode()))
+                return ValidationStatus.error(Messages.MsgFundTransferCarriedLotCurrencyMismatch);
+
+            carriedSourceShares += lot.getSourceShares();
+            carriedTargetShares += lot.getTargetShares();
+        }
+
+        if (carriedSourceShares != sourceShares)
+            return ValidationStatus.error(Messages.MsgFundTransferCarriedLotSourceSharesMismatch);
+
+        if (carriedTargetShares != targetShares)
+            return ValidationStatus.error(Messages.MsgFundTransferCarriedLotTargetSharesMismatch);
 
         return ValidationStatus.ok();
     }
@@ -335,6 +377,40 @@ public class FundTransferModel extends AbstractModel
     public List<FundTransferEntry.CarriedLot> getCarriedLots()
     {
         return carriedLots;
+    }
+
+    public void setCarriedLotSourceShares(FundTransferEntry.CarriedLot lot, long shares)
+    {
+        updateCarriedLot(lot, l -> l.setSourceShares(shares));
+    }
+
+    public void setCarriedLotTargetShares(FundTransferEntry.CarriedLot lot, long shares)
+    {
+        updateCarriedLot(lot, l -> l.setTargetShares(shares));
+    }
+
+    public void setCarriedLotAcquisitionAmount(FundTransferEntry.CarriedLot lot, long amount)
+    {
+        updateCarriedLot(lot, l -> {
+            Money currentValue = l.getAcquisitionValue();
+            String currencyCode = currentValue != null ? currentValue.getCurrencyCode() : getSourceSecurityCurrencyCode();
+            l.setAcquisitionValue(Money.of(currencyCode, amount));
+        });
+    }
+
+    private void updateCarriedLot(FundTransferEntry.CarriedLot lot, Consumer<FundTransferEntry.CarriedLot> updater)
+    {
+        if (!carriedLots.contains(lot))
+            throw new IllegalArgumentException("carried lot does not belong to this fund transfer"); //$NON-NLS-1$
+
+        IStatus oldStatus = this.calculationStatus;
+
+        updater.accept(lot);
+        carriedLotsManuallyEdited = true;
+        this.calculationStatus = calculateStatus();
+
+        firePropertyChange(Properties.carriedLots.name(), null, this.carriedLots);
+        firePropertyChange(Properties.calculationStatus.name(), oldStatus, this.calculationStatus);
     }
 
     public String getSourceSecurityCurrencyCode()
