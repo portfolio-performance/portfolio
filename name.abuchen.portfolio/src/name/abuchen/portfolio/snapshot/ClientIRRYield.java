@@ -71,6 +71,14 @@ public class ClientIRRYield
                                         break;
                                     case BUY:
                                     case SELL:
+                                    case FUND_TRANSFER_IN:
+                                    case FUND_TRANSFER_OUT:
+                                        // A fund transfer is an internal
+                                        // source-to-target fund conversion for
+                                        // the full client. Filtered views that
+                                        // expose only one side convert it to a
+                                        // delivery transaction before IRR is
+                                        // calculated.
                                         break;
                                     default:
                                         throw new UnsupportedOperationException();

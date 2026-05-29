@@ -531,6 +531,11 @@ public class ClientPerformanceSnapshot
                     case SELL:
                     case TRANSFER_IN:
                     case TRANSFER_OUT:
+                    case FUND_TRANSFER_IN:
+                    case FUND_TRANSFER_OUT:
+                        // Fund transfers keep the money inside the client; a
+                        // one-sided scoped view is represented as a delivery
+                        // by the filters before this snapshot is calculated.
                         break;
                     default:
                         throw new UnsupportedOperationException();
