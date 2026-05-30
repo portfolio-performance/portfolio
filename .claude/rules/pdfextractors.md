@@ -180,6 +180,17 @@ assertThat(results, hasItem(deposit(hasDate("2011-10-19"), hasAmount("EUR", 100.
                 hasSource("Kontoauszug01.txt"), hasNote(null))));
 ```
 
+`interest(...)`, `interestCharge(...)`, `fee(...)` and `feeRefund(...)` assertions always include `hasGrossValue`, `hasTaxes` and `hasFees` — use this multi-line format:
+
+```java
+assertThat(results, hasItem(interest( //
+                hasDate("2021-12-25"), //
+                hasSource("Kontoauszug01.txt"), //
+                hasNote(null), //
+                hasAmount("EUR", 0.61), hasGrossValue("EUR", 0.83), //
+                hasTaxes("EUR", (0.20 + 0.01 + 0.01)), hasFees("EUR", 0.00))));
+```
+
 - Each method has a starting `assertThat`-Block checking the counts. All 8 assertions need to be present.
 - Use `//` to enforce line-breaks when checking securities and transactions
 - Include time (hours, minutes, seconds) in `hasDate` when the source document provides it.

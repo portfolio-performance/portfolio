@@ -45,7 +45,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
-                        .section("type").optional()
+                        .section("type").optional() //
                         .match("^([\\d]{1,2}.[\\d]{1,2}.[\\d]{4}|[\\d]{4}.[\\d]{1,2}.[\\d]{1,2}) " //
                                         + "(?<type>(.berweisen" //
                                         + "|SEPA\\-Bank.berweisung" //
