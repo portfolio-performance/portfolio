@@ -54,7 +54,7 @@ public class BondoraCapitalPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2020-01-15"), hasAmount("EUR", 100.00),
+        assertThat(results, hasItem(deposit(hasDate("2020-01-15"), hasAmount("EUR", 100.00), //
                         hasSource("Kontoauszug01.txt"), hasNote("Überweisen"))));
 
         // assert transaction
@@ -90,11 +90,8 @@ public class BondoraCapitalPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2020-09-04"), //
-                        hasAmount("EUR", 200.00), //
-                        hasSource("Kontoauszug02.txt"), //
-                        hasNote("Überweisen"))));
+        assertThat(results, hasItem(deposit(hasDate("2020-09-04"), hasAmount("EUR", 200.00), //
+                        hasSource("Kontoauszug02.txt"), hasNote("Überweisen"))));
 
         // assert transaction
         assertThat(results, hasItem(interest( //
@@ -157,7 +154,7 @@ public class BondoraCapitalPDFExtractorTest
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2020-11-02"), hasAmount("EUR", 300.00),
+        assertThat(results, hasItem(deposit(hasDate("2020-11-02"), hasAmount("EUR", 300.00), //
                         hasSource("Kontoauszug03.txt"), hasNote("Überweisen"))));
     }
 
@@ -197,11 +194,8 @@ public class BondoraCapitalPDFExtractorTest
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
-        assertThat(results, hasItem(removal( //
-                        hasDate("2020-11-20"), //
-                        hasAmount("EUR", 1.00), //
-                        hasSource("Kontoauszug04.txt"), //
-                        hasNote("Withdrawal"))));
+        assertThat(results, hasItem(removal(hasDate("2020-11-20"), hasAmount("EUR", 1.00), //
+                        hasSource("Kontoauszug04.txt"), hasNote("Withdrawal"))));
 
         // assert transaction
         assertThat(results, hasItem(interest( //
@@ -232,11 +226,8 @@ public class BondoraCapitalPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2020-09-07"), //
-                        hasAmount("EUR", 1500.00), //
-                        hasSource("Kontoauszug05.txt"), //
-                        hasNote("Überweisen"))));
+        assertThat(results, hasItem(deposit(hasDate("2020-09-07"), hasAmount("EUR", 1500.00), //
+                        hasSource("Kontoauszug05.txt"), hasNote("Überweisen"))));
 
         // assert transaction
         assertThat(results, hasItem(interest( //
@@ -275,18 +266,12 @@ public class BondoraCapitalPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2020-10-05"), //
-                        hasAmount("EUR", 25.00), //
-                        hasSource("Kontoauszug06.txt"), //
-                        hasNote("Überweisen"))));
+        assertThat(results, hasItem(deposit(hasDate("2020-10-05"), hasAmount("EUR", 25.00), //
+                        hasSource("Kontoauszug06.txt"), hasNote("Überweisen"))));
 
         // assert transaction
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2020-10-06"), //
-                        hasAmount("EUR", 4.91), //
-                        hasSource("Kontoauszug06.txt"), //
-                        hasNote("Überweisen"))));
+        assertThat(results, hasItem(deposit(hasDate("2020-10-06"), hasAmount("EUR", 4.91), //
+                        hasSource("Kontoauszug06.txt"), hasNote("Überweisen"))));
 
         // assert transaction
         assertThat(results, hasItem(interest( //
@@ -325,25 +310,16 @@ public class BondoraCapitalPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2021-12-25"), //
-                        hasAmount("EUR", 5.00), //
-                        hasSource("Kontoauszug07.txt"), //
-                        hasNote("Überweisen"))));
+        assertThat(results, hasItem(deposit(hasDate("2021-12-25"), hasAmount("EUR", 5.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisen"))));
 
         // assert transaction
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2021-12-27"), //
-                        hasAmount("EUR", 15.00), //
-                        hasSource("Kontoauszug07.txt"), //
-                        hasNote("Überweisen"))));
+        assertThat(results, hasItem(deposit(hasDate("2021-12-27"), hasAmount("EUR", 15.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisen"))));
 
         // assert transaction
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2021-12-27"), //
-                        hasAmount("EUR", 980.00), //
-                        hasSource("Kontoauszug07.txt"), //
-                        hasNote("Überweisen"))));
+        assertThat(results, hasItem(deposit(hasDate("2021-12-27"), hasAmount("EUR", 980.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisen"))));
     }
 
     @Test
@@ -374,11 +350,8 @@ public class BondoraCapitalPDFExtractorTest
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2022-02-07"), //
-                        hasAmount("EUR", 1000.00), //
-                        hasSource("Kontoauszug08.txt"), //
-                        hasNote("Überweisen"))));
+        assertThat(results, hasItem(deposit(hasDate("2022-02-07"), hasAmount("EUR", 1000.00), //
+                        hasSource("Kontoauszug08.txt"), hasNote("Überweisen"))));
 
         // assert transaction
         assertThat(results, hasItem(interest( //
@@ -417,18 +390,12 @@ public class BondoraCapitalPDFExtractorTest
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
-        assertThat(results, hasItem(removal( //
-                        hasDate("2022-12-30"), //
-                        hasAmount("EUR", 474.35), //
-                        hasSource("Kontoauszug09.txt"), //
-                        hasNote("Abheben"))));
+        assertThat(results, hasItem(removal(hasDate("2022-12-30"), hasAmount("EUR", 474.35), //
+                        hasSource("Kontoauszug09.txt"), hasNote("Abheben"))));
 
         // assert transaction
-        assertThat(results, hasItem(removal( //
-                        hasDate("2022-12-30"), //
-                        hasAmount("EUR", 4230.27), //
-                        hasSource("Kontoauszug09.txt"), //
-                        hasNote("Abheben"))));
+        assertThat(results, hasItem(removal(hasDate("2022-12-30"), hasAmount("EUR", 4230.27), //
+                        hasSource("Kontoauszug09.txt"), hasNote("Abheben"))));
 
         // assert transaction
         assertThat(results, hasItem(interest( //
@@ -439,11 +406,8 @@ public class BondoraCapitalPDFExtractorTest
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2022-12-31"), //
-                        hasAmount("EUR", 4204.97), //
-                        hasSource("Kontoauszug09.txt"), //
-                        hasNote("Überweisen"))));
+        assertThat(results, hasItem(deposit(hasDate("2022-12-31"), hasAmount("EUR", 4204.97), //
+                        hasSource("Kontoauszug09.txt"), hasNote("Überweisen"))));
     }
 
     @Test
@@ -584,7 +548,6 @@ public class BondoraCapitalPDFExtractorTest
                         hasNote("Go & Grow Zinsen"), //
                         hasAmount("EUR", 0.69), hasGrossValue("EUR", 0.69), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-
     }
 
     @Test
@@ -607,11 +570,8 @@ public class BondoraCapitalPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2023-04-06"), //
-                        hasAmount("EUR", 50.00), //
-                        hasSource("Kontoauszug13.txt"), //
-                        hasNote("Transfer"))));
+        assertThat(results, hasItem(deposit(hasDate("2023-04-06"), hasAmount("EUR", 50.00), //
+                        hasSource("Kontoauszug13.txt"), hasNote("Transfer"))));
 
         // assert transaction
         assertThat(results, hasItem(interest( //
@@ -622,11 +582,8 @@ public class BondoraCapitalPDFExtractorTest
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2023-04-14"), //
-                        hasAmount("EUR", 50.00), //
-                        hasSource("Kontoauszug13.txt"), //
-                        hasNote("Transfer"))));
+        assertThat(results, hasItem(deposit(hasDate("2023-04-14"), hasAmount("EUR", 50.00), //
+                        hasSource("Kontoauszug13.txt"), hasNote("Transfer"))));
 
         // assert transaction
         assertThat(results, hasItem(interest( //
@@ -669,8 +626,12 @@ public class BondoraCapitalPDFExtractorTest
                         hasSource("Kontoauszug14.txt"), hasNote("SEPA-Banküberweisung"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2023-11-28"), hasAmount("EUR", 0.19), //
-                        hasSource("Kontoauszug14.txt"), hasNote("Go & Grow Zinsen"))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2023-11-28"), //
+                        hasSource("Kontoauszug14.txt"), //
+                        hasNote("Go & Grow Zinsen"), //
+                        hasAmount("EUR", 0.19), hasGrossValue("EUR", 0.19), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -697,12 +658,20 @@ public class BondoraCapitalPDFExtractorTest
                         hasSource("Kontoauszug15.txt"), hasNote("SEPA-Banküberweisung"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-01-02"), hasAmount("EUR", 0.49), //
-                        hasSource("Kontoauszug15.txt"), hasNote("Go & Grow Zinsen"))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2024-01-02"), //
+                        hasSource("Kontoauszug15.txt"), //
+                        hasNote("Go & Grow Zinsen"), //
+                        hasAmount("EUR", 0.49), hasGrossValue("EUR", 0.49), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-01-01"), hasAmount("EUR", 0.54), //
-                        hasSource("Kontoauszug15.txt"), hasNote("Go & Grow Zinsen"))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2024-01-01"), //
+                        hasSource("Kontoauszug15.txt"), //
+                        hasNote("Go & Grow Zinsen"), //
+                        hasAmount("EUR", 0.54), hasGrossValue("EUR", 0.54), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -729,8 +698,12 @@ public class BondoraCapitalPDFExtractorTest
                         hasSource("Kontoauszug16.txt"), hasNote("Abheben auf Bankkonto"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-04-28"), hasAmount("EUR", 32.45), //
-                        hasSource("Kontoauszug16.txt"), hasNote("Go & Grow Zinsen"))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2024-04-28"), //
+                        hasSource("Kontoauszug16.txt"), //
+                        hasNote("Go & Grow Zinsen"), //
+                        hasAmount("EUR", 32.45), hasGrossValue("EUR", 32.45), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
