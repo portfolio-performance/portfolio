@@ -116,7 +116,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
                         // @formatter:on
                         .section("fxGross", "termCurrency", "baseCurrency", "exchangeRate") //
                         .match("^Cambio divisa (?<exchangeRate>[\\.,\\d]+) (?<termCurrency>[A-Z]{3})\\/(?<baseCurrency>[A-Z]{3})$") //
-                        .match("^S/títulos [A-Z]{3}[\\s]{1,}[\\d]+[\\s]{1,}[\\.,\\d]+[\\s]{1,}(\\-)?(?<fxGross>[\\.,\\d]+)$") //
+                        .match("^S\\/t.tulos [A-Z]{3}[\\s]{1,}[\\d]+[\\s]{1,}[\\.,\\d]+[\\s]{1,}(\\-)?(?<fxGross>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
@@ -142,8 +142,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        var firstRelevantLine = new Block(
-                        "^CARTA DE AVISO POR OPERACIONES DE FONDOS (SUSCRIPCI.N|REEMBOLSO) EN EFECTIVO$");
+        var firstRelevantLine = new Block("^CARTA DE AVISO POR OPERACIONES DE FONDOS (SUSCRIPCI.N|REEMBOLSO) EN EFECTIVO$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -191,7 +190,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
                         // @formatter:on
                         .section("amount", "currency") //
                         .find("CONCEPTO DIVISA PRECIO IMPORTE") //
-                        .match("^(SUSCRIPCIÓN|REEMBOLSO) EFECTIVO (?<currency>[A-Z]{3}) [\\.,\\d]+ (?<amount>[\\.,\\d]+)$") //
+                        .match("^(SUSCRIPCI.N|REEMBOLSO) EFECTIVO (?<currency>[A-Z]{3}) [\\.,\\d]+ (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));

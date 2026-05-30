@@ -20,6 +20,12 @@ PDF importers extract transactions from bank and broker PDF statements.
   - Consistency in coding style between all extractors is more important than nice code.
   - Add comment-blocks with `@formatter:off` and `@formatter:on` before each section-block showing the format that is handled there.
 
+## Regular Expressions
+
+Beside general good practices for regular expressions, keep in mind:
+* all special characters in the PDF document (`äöüÄÖÜß` as well as e.g. circumflex or similar) should be matched by a `.` (dot) because the PDF to text conversion can create different results
+* the special characters `$^{[(|)]}*+?\` in the PDF document are to be escaped
+
 ## Conventions
 
 **DocumentType declaration** — always `final`:
