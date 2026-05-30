@@ -14,7 +14,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
  * @formatter:off
  * @implNote Importer for "Info Reports" produced by the Bison App.
  *
- * @implSpec Bison only supports EUR as currency. 
+ * @implSpec Bison only supports EUR as currency.
  *           Therefore the extractor is always defaulting to EUR.
  * @formatter:on
  */

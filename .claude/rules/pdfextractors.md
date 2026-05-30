@@ -108,7 +108,7 @@ v.put("currency", asCurrencyCode("USD"));         // works but prefer named cons
 # Testing
 Test methods should be in following structure
 
-```
+```java
 @Test
 public void testWertpapierKauf01()
 {
@@ -173,9 +173,17 @@ assertThat(results, hasItem(skippedItem( //
                                 hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 ```
 
+`deposit(...)` and `removal(...)` assertions do NOT include `hasGrossValue`, `hasTaxes`, or `hasFees` — use this compact format:
+
+```java
+assertThat(results, hasItem(deposit(hasDate("2011-10-19"), hasAmount("EUR", 100.00), //
+                hasSource("Kontoauszug01.txt"), hasNote(null))));
+```
+
 - Each method has a starting `assertThat`-Block checking the counts. All 8 assertions need to be present.
 - Use `//` to enforce line-breaks when checking securities and transactions
 - Include time (hours, minutes, seconds) in `hasDate` when the source document provides it.
 - The `ExtractorMatchers`-class contains test assertion helpers
 - The fees and taxes could consist of multiple values, do not merge or consolidate them for better understanding
+- Always use `0.00` (double literal) for zero amounts, never the integer `0`
 - Every `dividend(...)` assertion must include `hasExDate(...)`. The correct value comes from the JUnit test failure message: look for `dividend with exDate = <value>` in the mismatch output. Use that exact value. If the extractor does not extract an ex-date, the actual value will be `null`.
