@@ -31,7 +31,7 @@ public class BarclaysBankIrelandPLCPDFExtractor extends AbstractPDFExtractor
 
     private void addCreditcardStatementTransaction()
     {
-        final DocumentType type = new DocumentType("Kontoauszug", //
+        final var type = new DocumentType("Kontoauszug", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // Beleg- Buchungs-/ Beschreibung Karte Betrag (EUR)
@@ -47,7 +47,7 @@ public class BarclaysBankIrelandPLCPDFExtractor extends AbstractPDFExtractor
         // 23.12.2023 25.12.2023 Lidl sagt Danke        Ort           DE Visa B A             60,78-
         // 23.12.2023 28.12.2023 Lidl sagt Danke        Ort           DE Visa B A             60,78+
         // @formatter:on
-        Block depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
+        var depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
                         + "(?!(Abgeltungsteuer|Solidarit.tszuschlag)).* [\\.,\\d]+[\\-|\\+]$");
         type.addBlock(depositRemovalBlock);
         depositRemovalBlock.set(new Transaction<AccountTransaction>()
@@ -75,7 +75,7 @@ public class BarclaysBankIrelandPLCPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Habenzinsen [\\.,\\d]+$");
+        var interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Habenzinsen [\\.,\\d]+$");
         type.addBlock(interestBlock);
         interestBlock.setMaxSize(4);
         interestBlock.set(new Transaction<AccountTransaction>()
@@ -104,7 +104,7 @@ public class BarclaysBankIrelandPLCPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Abgeltungsteuer \\-(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            Money tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
+                            var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
 
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
                             t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
@@ -117,7 +117,7 @@ public class BarclaysBankIrelandPLCPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Solidarit.tszuschlag \\-(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            Money tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
+                            var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
 
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
                             t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
