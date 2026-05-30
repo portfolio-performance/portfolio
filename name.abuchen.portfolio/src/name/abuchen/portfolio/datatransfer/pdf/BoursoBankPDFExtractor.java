@@ -280,16 +280,16 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                         // TOTAL EUR 0,00 12,09 28,24 0,00 28,24
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .find("Revenus.*")
+                        .find("Revenus.*") //
                         .match("^TOTAL (?<currency>[A-Z]{3}) [\\,\\d\\s]+ (?<tax>[\\,\\d\\s]+) [\\,\\d\\s]+ [\\,\\d\\s]+ [\\,\\d\\s]+$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
-        
+
                         // @formatter:off
                         // Montant brut Commission Frais (¨) Montant net au débit de votre compte
                         // 10,99 EUR 2,02 EUR 3,03 EUR 16,04 EUR
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .find("Montant.*")
+                        .find("Montant.*") //
                         .match("^[\\d\\s]+,[\\d]{2} [A-Z]{3} [\\d\\s]+,[\\d]{2} [A-Z]{3} (?<tax>[\\d\\s]+,[\\d]{2}) (?<currency>[A-Z]{3}) [\\d\\s]+,[\\d]{2} [A-Z]{3}$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
@@ -303,7 +303,7 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                         // 965,02 EUR 4,83 EUR  969,85 EU
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .find("Montant.*")
+                        .find("Montant.*") //
                         .match("^[\\d\\s]+,[\\d]{2} [A-Z]{3} (?<fee>[\\d\\s]+,[\\d]{2}) (?<currency>[A-Z]{3}) [\\d\\s]+,[\\d]{2} [A-Z]{3}$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
@@ -312,16 +312,16 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                         // 6,95 EUR 0,00 EUR 6,95 EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .find("Commission Frais divers.*")
+                        .find("Commission Frais divers.*") //
                         .match("^(?<fee>[\\d\\s]+,[\\d]{2}) (?<currency>[A-Z]{3}) [\\d\\s]+,[\\d]{2} [A-Z]{3} [\\d\\s]+,[\\d]{2} [A-Z]{3}$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
-        
+
                         // @formatter:off
                         // Montant brut Commission Frais (¨) Montant net au débit de votre compte
                         // 10,99 EUR 2,02 EUR 3,03 EUR 16,04 EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .find("Montant.*")
+                        .find("Montant.*") //
                         .match("^[\\d\\s]+,[\\d]{2} [A-Z]{3} (?<fee>[\\d\\s]+,[\\d]{2}) (?<currency>[A-Z]{3}) [\\d\\s]+,[\\d]{2} [A-Z]{3} [\\d\\s]+,[\\d]{2} [A-Z]{3}$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
