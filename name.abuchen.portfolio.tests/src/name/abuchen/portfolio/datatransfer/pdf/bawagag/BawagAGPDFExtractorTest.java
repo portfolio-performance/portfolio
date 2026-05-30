@@ -28,7 +28,7 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Client;
 
 @SuppressWarnings("nls")
-public class BawagAgPDFExtractorTest
+public class BawagAGPDFExtractorTest
 {
     @Test
     public void testKreditKontoauszug01()
