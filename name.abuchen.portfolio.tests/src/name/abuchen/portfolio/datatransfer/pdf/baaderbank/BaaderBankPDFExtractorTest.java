@@ -6,6 +6,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFeed;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFeedProperty;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
@@ -67,7 +68,6 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -3159,30 +3159,19 @@ public class BaaderBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("FR0000130577"));
-        assertThat(security.getWkn(), is("859386"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("Publicis Groupe S.A."));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0000130577"), hasWkn("859386"), hasTicker(null), //
+                        hasName("Publicis Groupe S.A."), //
+                        hasCurrencyCode("EUR"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-07-06T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(57)));
-        assertThat(transaction.getSource(), is("Dividende01.txt"));
-        assertThat(transaction.getNote(), is("Vorgangs-Nr.: 5555555"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(68.22))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(114.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(13.60 + 1.22 + 0.75 + 30.21))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2021-07-06T00:00"), hasExDate("2021-06-15"), //
+                        hasShares(57.00), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote("Vorgangs-Nr.: 5555555"), //
+                        hasAmount("EUR", 68.22), hasGrossValue("EUR", 114.00), //
+                        hasTaxes("EUR", 13.60 + 1.22 + 0.75 + 30.21), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3205,29 +3194,18 @@ public class BaaderBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE0005933931"));
-        assertThat(security.getWkn(), is("593393"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("iShares Core DAX UCITS ETF DE Inhaber-Anteile"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0005933931"), hasWkn("593393"), hasTicker(null), //
+                        hasName("iShares Core DAX UCITS ETF DE Inhaber-Anteile"), //
+                        hasCurrencyCode("EUR"))));
 
         // check dividends tax transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-05-12T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(11)));
-        assertThat(transaction.getSource(), is("Dividende02.txt"));
-        assertThat(transaction.getNote(), is("Vorgangs-Nr.: 123456"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1.24))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(1.24))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2017-05-12T00:00"), hasShares(11.00), //
+                        hasSource("Dividende02.txt"), //
+                        hasNote("Vorgangs-Nr.: 123456"), //
+                        hasAmount("EUR", 1.24), hasGrossValue("EUR", 1.24), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3250,33 +3228,20 @@ public class BaaderBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("IE00B2NPKV68"));
-        assertThat(security.getWkn(), is("A0NECU"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("iShsII-J.P.M.$ EM Bond U.ETF Registered Shares o.N."));
-        assertThat(security.getCurrencyCode(), is("USD"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B2NPKV68"), hasWkn("A0NECU"), hasTicker(null), //
+                        hasName("iShsII-J.P.M.$ EM Bond U.ETF Registered Shares o.N."), //
+                        hasCurrencyCode("USD"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-30T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(8)));
-        assertThat(transaction.getSource(), is("Dividende03.txt"));
-        assertThat(transaction.getNote(), is("Vorgangs-Nr.: 123456"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(3.08))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(3.44))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.32 + 0.02 + 0.02))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(3.94))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2017-06-30T00:00"), hasExDate("2017-06-15"), //
+                        hasShares(8.00), //
+                        hasSource("Dividende03.txt"), //
+                        hasNote("Vorgangs-Nr.: 123456"), //
+                        hasAmount("EUR", 3.08), hasGrossValue("EUR", 3.44), //
+                        hasForexGrossValue("USD", 3.94), //
+                        hasTaxes("EUR", 0.32 + 0.02 + 0.02), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3306,27 +3271,13 @@ public class BaaderBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-30T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(8)));
-        assertThat(transaction.getSource(), is("Dividende03.txt"));
-        assertThat(transaction.getNote(), is("Vorgangs-Nr.: 123456"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(3.08))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(3.44))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.32 + 0.02 + 0.02))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        var c = new CheckCurrenciesAction();
-        var account = new Account();
-        account.setCurrencyCode("EUR");
-        var s = c.process(transaction, account);
-        assertThat(s, is(Status.OK_STATUS));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2017-06-30T00:00"), hasExDate("2017-06-15"), //
+                        hasShares(8.00), //
+                        hasSource("Dividende03.txt"), //
+                        hasNote("Vorgangs-Nr.: 123456"), //
+                        hasAmount("EUR", 3.08), hasGrossValue("EUR", 3.44), //
+                        hasTaxes("EUR", 0.32 + 0.02 + 0.02), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3349,29 +3300,19 @@ public class BaaderBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE000A14KRD3"));
-        assertThat(security.getWkn(), is("A14KRD"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("Deutsche Konsum REIT-AG"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000A14KRD3"), hasWkn("A14KRD"), hasTicker(null), //
+                        hasName("Deutsche Konsum REIT-AG"), //
+                        hasCurrencyCode("EUR"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-16T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(35)));
-        assertThat(transaction.getSource(), is("Dividende04.txt"));
-        assertThat(transaction.getNote(), is("Vorgangs-Nr.: 1111111"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(14.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(14.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2021-03-16T00:00"), hasExDate("2021-03-12"), //
+                        hasShares(35.00), //
+                        hasSource("Dividende04.txt"), //
+                        hasNote("Vorgangs-Nr.: 1111111"), //
+                        hasAmount("EUR", 14.00), hasGrossValue("EUR", 14.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3394,32 +3335,20 @@ public class BaaderBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("US57636Q1040"));
-        assertThat(security.getWkn(), is("A0F602"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("Mastercard Inc."));
-        assertThat(security.getCurrencyCode(), is("USD"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("US57636Q1040"), hasWkn("A0F602"), hasTicker(null), //
+                        hasName("Mastercard Inc."), //
+                        hasCurrencyCode("USD"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-05-08T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(3)));
-        assertThat(transaction.getSource(), is("Dividende05.txt"));
-        assertThat(transaction.getNote(), is("Vorgangs-Nr.: 1111111111"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.84))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(1.11))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.10 + 0.17))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(1.20))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2020-05-08T00:00"), hasExDate("2020-04-08"), //
+                        hasShares(3.00), //
+                        hasSource("Dividende05.txt"), //
+                        hasNote("Vorgangs-Nr.: 1111111111"), //
+                        hasAmount("EUR", 0.84), hasGrossValue("EUR", 1.11), //
+                        hasForexGrossValue("USD", 1.20), //
+                        hasTaxes("EUR", 0.10 + 0.17), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3449,26 +3378,13 @@ public class BaaderBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-05-08T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(3)));
-        assertThat(transaction.getSource(), is("Dividende05.txt"));
-        assertThat(transaction.getNote(), is("Vorgangs-Nr.: 1111111111"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.84))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(1.11))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.10 + 0.17))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        var c = new CheckCurrenciesAction();
-        var account = new Account();
-        account.setCurrencyCode("EUR");
-        var s = c.process(transaction, account);
-        assertThat(s, is(Status.OK_STATUS));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2020-05-08T00:00"), hasExDate("2020-04-08"), //
+                        hasShares(3.00), //
+                        hasSource("Dividende05.txt"), //
+                        hasNote("Vorgangs-Nr.: 1111111111"), //
+                        hasAmount("EUR", 0.84), hasGrossValue("EUR", 1.11), //
+                        hasTaxes("EUR", 0.10 + 0.17), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3491,33 +3407,20 @@ public class BaaderBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("US56035L1044"));
-        assertThat(security.getWkn(), is("A0X8Y3"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("Main Street Capital Corp."));
-        assertThat(security.getCurrencyCode(), is("USD"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("US56035L1044"), hasWkn("A0X8Y3"), hasTicker(null), //
+                        hasName("Main Street Capital Corp."), //
+                        hasCurrencyCode("USD"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-05-15T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(23)));
-        assertThat(transaction.getSource(), is("Dividende06.txt"));
-        assertThat(transaction.getNote(), is("Vorgangs-Nr.: 1111111"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(3.23))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(4.36))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.41 + 0.03 + 0.03 + 0.66))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(4.72))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2020-05-15T00:00"), hasExDate("2020-04-17"), //
+                        hasShares(23.00), //
+                        hasSource("Dividende06.txt"), //
+                        hasNote("Vorgangs-Nr.: 1111111"), //
+                        hasAmount("EUR", 3.23), hasGrossValue("EUR", 4.36), //
+                        hasForexGrossValue("USD", 4.72), //
+                        hasTaxes("EUR", 0.41 + 0.03 + 0.03 + 0.66), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3547,27 +3450,13 @@ public class BaaderBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-05-15T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(23)));
-        assertThat(transaction.getSource(), is("Dividende06.txt"));
-        assertThat(transaction.getNote(), is("Vorgangs-Nr.: 1111111"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(3.23))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(4.36))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.41 + 0.03 + 0.03 + 0.66))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        var c = new CheckCurrenciesAction();
-        var account = new Account();
-        account.setCurrencyCode("EUR");
-        var s = c.process(transaction, account);
-        assertThat(s, is(Status.OK_STATUS));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2020-05-15T00:00"), hasExDate("2020-04-17"), //
+                        hasShares(23.00), //
+                        hasSource("Dividende06.txt"), //
+                        hasNote("Vorgangs-Nr.: 1111111"), //
+                        hasAmount("EUR", 3.23), hasGrossValue("EUR", 4.36), //
+                        hasTaxes("EUR", 0.41 + 0.03 + 0.03 + 0.66), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3590,33 +3479,20 @@ public class BaaderBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("US92936U1097"));
-        assertThat(security.getWkn(), is("A1J5SB"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("W.P. Carey Inc."));
-        assertThat(security.getCurrencyCode(), is("USD"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("US92936U1097"), hasWkn("A1J5SB"), hasTicker(null), //
+                        hasName("W.P. Carey Inc."), //
+                        hasCurrencyCode("USD"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-04-15T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(14)));
-        assertThat(transaction.getSource(), is("Dividende07.txt"));
-        assertThat(transaction.getNote(), is("Vorgangs-Nr.: 5555555"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(9.98))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(13.40))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(1.34 + 0.07 + 2.01))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(14.56))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2020-04-15T00:00"), hasExDate("2020-03-30"), //
+                        hasShares(14.00), //
+                        hasSource("Dividende07.txt"), //
+                        hasNote("Vorgangs-Nr.: 5555555"), //
+                        hasAmount("EUR", 9.98), hasGrossValue("EUR", 13.40), //
+                        hasForexGrossValue("USD", 14.56), //
+                        hasTaxes("EUR", 1.34 + 0.07 + 2.01), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3646,27 +3522,13 @@ public class BaaderBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-04-15T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(14)));
-        assertThat(transaction.getSource(), is("Dividende07.txt"));
-        assertThat(transaction.getNote(), is("Vorgangs-Nr.: 5555555"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(9.98))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(13.40))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(1.34 + 0.07 + 2.01))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        var c = new CheckCurrenciesAction();
-        var account = new Account();
-        account.setCurrencyCode("EUR");
-        var s = c.process(transaction, account);
-        assertThat(s, is(Status.OK_STATUS));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2020-04-15T00:00"), hasExDate("2020-03-30"), //
+                        hasShares(14.00), //
+                        hasSource("Dividende07.txt"), //
+                        hasNote("Vorgangs-Nr.: 5555555"), //
+                        hasAmount("EUR", 9.98), hasGrossValue("EUR", 13.40), //
+                        hasTaxes("EUR", 1.34 + 0.07 + 2.01), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3689,39 +3551,25 @@ public class BaaderBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE000A2G9LL1"));
-        assertThat(security.getWkn(), is("A2G9LL"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("Deutsche Industrie REIT-AG"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000A2G9LL1"), hasWkn("A2G9LL"), hasTicker(null), //
+                        hasName("Deutsche Industrie REIT-AG"), //
+                        hasCurrencyCode("EUR"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-17T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(62)));
-        assertThat(transaction.getSource(), is("Dividende08.txt"));
-        assertThat(transaction.getNote(), is("Vorgangs-Nr.: 5566777"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.72))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(14.88))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(3.64 + 0.32 + 0.20))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2021-03-17T00:00"), hasExDate("2021-03-15"), //
+                        hasShares(62.00), //
+                        hasSource("Dividende08.txt"), //
+                        hasNote("Vorgangs-Nr.: 5566777"), //
+                        hasAmount("EUR", 10.72), hasGrossValue("EUR", 14.88), //
+                        hasTaxes("EUR", 3.64 + 0.32 + 0.20), hasFees("EUR", 0.00))));
     }
 
     @Test
     public void testDividende09()
     {
-        /**
-         * We know that there is still an delivery in-/outbound exit here, but
-         * we don't know how to post it.
-         */
+        // We know that there is still an delivery in-/outbound exit here, but we don't know how to post it.
         var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
@@ -3739,29 +3587,19 @@ public class BaaderBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE0005557508"));
-        assertThat(security.getWkn(), is("555750"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("Deutsche Telekom AG"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0005557508"), hasWkn("555750"), hasTicker(null), //
+                        hasName("Deutsche Telekom AG"), //
+                        hasCurrencyCode("EUR"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-24T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(77)));
-        assertThat(transaction.getSource(), is("Dividende09.txt"));
-        assertThat(transaction.getNote(), is("Vorgangs-Nr.: 222222"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(46.20))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(46.20))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2020-06-24T00:00"), hasExDate("2020-06-22"), //
+                        hasShares(77.00), //
+                        hasSource("Dividende09.txt"), //
+                        hasNote("Vorgangs-Nr.: 222222"), //
+                        hasAmount("EUR", 46.20), hasGrossValue("EUR", 46.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3784,32 +3622,20 @@ public class BaaderBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("IE00BYSX4739"));
-        assertThat(security.getWkn(), is("A2PQDR"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("F.UC.-Fid.Em.Mkt.Qual.In.U.ETF Reg. Shs USD Dis. oN"));
-        assertThat(security.getCurrencyCode(), is("USD"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BYSX4739"), hasWkn("A2PQDR"), hasTicker(null), //
+                        hasName("F.UC.-Fid.Em.Mkt.Qual.In.U.ETF Reg. Shs USD Dis. oN"), //
+                        hasCurrencyCode("USD"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-02-25T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(7.367)));
-        assertThat(transaction.getSource(), is("Dividende10.txt"));
-        assertThat(transaction.getNote(), is("Transaction No.: 204751222"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.20))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.20))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(0.22))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2022-02-25T00:00"), hasExDate("2022-02-18"), //
+                        hasShares(7.367), //
+                        hasSource("Dividende10.txt"), //
+                        hasNote("Transaction No.: 204751222"), //
+                        hasAmount("EUR", 0.20), hasGrossValue("EUR", 0.20), //
+                        hasForexGrossValue("USD", 0.22), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3839,26 +3665,13 @@ public class BaaderBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-02-25T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(7.367)));
-        assertThat(transaction.getSource(), is("Dividende10.txt"));
-        assertThat(transaction.getNote(), is("Transaction No.: 204751222"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.20))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.20))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        var c = new CheckCurrenciesAction();
-        var account = new Account();
-        account.setCurrencyCode("EUR");
-        var s = c.process(transaction, account);
-        assertThat(s, is(Status.OK_STATUS));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2022-02-25T00:00"), hasExDate("2022-02-18"), //
+                        hasShares(7.367), //
+                        hasSource("Dividende10.txt"), //
+                        hasNote("Transaction No.: 204751222"), //
+                        hasAmount("EUR", 0.20), hasGrossValue("EUR", 0.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3881,29 +3694,19 @@ public class BaaderBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE000A0H0744"));
-        assertThat(security.getWkn(), is("A0H074"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("iSh.DJ Asia Pa.S.D.50 U.ETF DE"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000A0H0744"), hasWkn("A0H074"), hasTicker(null), //
+                        hasName("iSh.DJ Asia Pa.S.D.50 U.ETF DE"), //
+                        hasCurrencyCode("EUR"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-15T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(1.225)));
-        assertThat(transaction.getSource(), is("Dividende11.txt"));
-        assertThat(transaction.getNote(), is("Transaction No.: 204751222"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.06))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.06))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2022-03-15T00:00"), hasExDate("2022-03-15"), //
+                        hasShares(1.225), //
+                        hasSource("Dividende11.txt"), //
+                        hasNote("Transaction No.: 204751222"), //
+                        hasAmount("EUR", 0.06), hasGrossValue("EUR", 0.06), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3926,33 +3729,20 @@ public class BaaderBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("US1101221083"));
-        assertThat(security.getWkn(), is("850501"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("Bristol-Myers Squibb Co."));
-        assertThat(security.getCurrencyCode(), is("USD"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("US1101221083"), hasWkn("850501"), hasTicker(null), //
+                        hasName("Bristol-Myers Squibb Co."), //
+                        hasCurrencyCode("USD"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-02-01T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(30)));
-        assertThat(transaction.getSource(), is("Dividende12.txt"));
-        assertThat(transaction.getNote(), is("Vorgangs-Nr.: 11111111"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(11.57))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(15.67))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(1.52 + 0.14 + 0.08 + 2.36))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(17.10))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-02-01T00:00"), hasExDate("2023-01-05"), //
+                        hasShares(30.00), //
+                        hasSource("Dividende12.txt"), //
+                        hasNote("Vorgangs-Nr.: 11111111"), //
+                        hasAmount("EUR", 11.57), hasGrossValue("EUR", 15.67), //
+                        hasForexGrossValue("USD", 17.10), //
+                        hasTaxes("EUR", 1.52 + 0.14 + 0.08 + 2.36), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3982,27 +3772,13 @@ public class BaaderBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-02-01T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(30)));
-        assertThat(transaction.getSource(), is("Dividende12.txt"));
-        assertThat(transaction.getNote(), is("Vorgangs-Nr.: 11111111"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(11.57))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(15.67))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(1.52 + 0.14 + 0.08 + 2.36))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        var c = new CheckCurrenciesAction();
-        var account = new Account();
-        account.setCurrencyCode("EUR");
-        var s = c.process(transaction, account);
-        assertThat(s, is(Status.OK_STATUS));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-02-01T00:00"), hasExDate("2023-01-05"), //
+                        hasShares(30.00), //
+                        hasSource("Dividende12.txt"), //
+                        hasNote("Vorgangs-Nr.: 11111111"), //
+                        hasAmount("EUR", 11.57), hasGrossValue("EUR", 15.67), //
+                        hasTaxes("EUR", 1.52 + 0.14 + 0.08 + 2.36), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4025,32 +3801,20 @@ public class BaaderBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("US09075V1026"));
-        assertThat(security.getWkn(), is("A2PSR2"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("BioNTech SE Nam.-Akt.(sp.ADRs)1/o.N."));
-        assertThat(security.getCurrencyCode(), is("USD"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("US09075V1026"), hasWkn("A2PSR2"), hasTicker(null), //
+                        hasName("BioNTech SE Nam.-Akt.(sp.ADRs)1/o.N."), //
+                        hasCurrencyCode("USD"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-17T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(10)));
-        assertThat(transaction.getSource(), is("Dividende13.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(17.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(30.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(10.00 + 1.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(2.00))));
-
-        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(30.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2022-06-17T00:00"), hasExDate("2022-06-02"), //
+                        hasShares(10.00), //
+                        hasSource("Dividende13.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 17.00), hasGrossValue("EUR", 30.00), //
+                        hasForexGrossValue("USD", 30.00), //
+                        hasTaxes("EUR", 10.00 + 1.00), hasFees("EUR", 2.00))));
     }
 
     @Test
@@ -4080,26 +3844,13 @@ public class BaaderBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-17T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(10)));
-        assertThat(transaction.getSource(), is("Dividende13.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(17.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(30.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(10.00 + 1.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(2.00))));
-
-        var c = new CheckCurrenciesAction();
-        var account = new Account();
-        account.setCurrencyCode("EUR");
-        var s = c.process(transaction, account);
-        assertThat(s, is(Status.OK_STATUS));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2022-06-17T00:00"), hasExDate("2022-06-02"), //
+                        hasShares(10.00), //
+                        hasSource("Dividende13.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 17.00), hasGrossValue("EUR", 30.00), //
+                        hasTaxes("EUR", 10.00 + 1.00), hasFees("EUR", 2.00))));
     }
 
     @Test
@@ -4122,29 +3873,19 @@ public class BaaderBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE0005557508"));
-        assertThat(security.getWkn(), is("555750"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("Deutsche Telekom AG"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0005557508"), hasWkn("555750"), hasTicker(null), //
+                        hasName("Deutsche Telekom AG"), //
+                        hasCurrencyCode("EUR"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-04-12T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(13.629)));
-        assertThat(transaction.getSource(), is("Dividende14.txt"));
-        assertThat(transaction.getNote(), is("Vorgangs-Nr.: 00000000"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(9.54))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(9.54))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-04-12T00:00"), hasExDate("2023-04-06"), //
+                        hasShares(13.629), //
+                        hasSource("Dividende14.txt"), //
+                        hasNote("Vorgangs-Nr.: 00000000"), //
+                        hasAmount("EUR", 9.54), hasGrossValue("EUR", 9.54), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4174,7 +3915,8 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-02-16T00:00"), hasShares(2.00), //
+                        hasDate("2023-02-16T00:00"), hasExDate("2023-02-10"), //
+                        hasShares(2.00), //
                         hasSource("Dividende15.txt"), //
                         hasNote("Transaction No.: 13241804"), //
                         hasAmount("EUR", 0.26), hasGrossValue("EUR", 0.43), //
@@ -4210,7 +3952,8 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-02-16T00:00"), hasShares(2.00), //
+                        hasDate("2023-02-16T00:00"), hasExDate("2023-02-10"), //
+                        hasShares(2.00), //
                         hasSource("Dividende15.txt"), //
                         hasNote("Transaction No.: 13241804"), //
                         hasAmount("EUR", 0.26), hasGrossValue("EUR", 0.43), //
@@ -4244,7 +3987,8 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-05-18T00:00"), hasShares(2.00), //
+                        hasDate("2023-05-18T00:00"), hasExDate("2023-05-12"), //
+                        hasShares(2.00), //
                         hasSource("Dividende16.txt"), //
                         hasNote("Transaction No.: 15390292"), //
                         hasAmount("EUR", 0.32), hasGrossValue("EUR", 0.44), //
@@ -4280,7 +4024,8 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-05-18T00:00"), hasShares(2.00), //
+                        hasDate("2023-05-18T00:00"), hasExDate("2023-05-12"), //
+                        hasShares(2.00), //
                         hasSource("Dividende16.txt"), //
                         hasNote("Transaction No.: 15390292"), //
                         hasAmount("EUR", 0.32), hasGrossValue("EUR", 0.44), //
@@ -4314,7 +4059,8 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-11-16T00:00"), hasShares(60.00), //
+                        hasDate("2023-11-16T00:00"), hasExDate("2023-11-10"), //
+                        hasShares(60.00), //
                         hasSource("Dividende17.txt"), //
                         hasNote("Vorgangs-Nr.: 20120279"), //
                         hasAmount("USD", 12.24), hasGrossValue("USD", 14.40), //
@@ -4349,7 +4095,8 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-11-16T00:00"), hasShares(60.00), //
+                        hasDate("2023-11-16T00:00"), hasExDate("2023-11-10"), //
+                        hasShares(60.00), //
                         hasSource("Dividende17.txt"), //
                         hasNote("Vorgangs-Nr.: 20120279"), //
                         hasAmount("USD", 12.24), hasGrossValue("USD", 14.40), //
@@ -4384,7 +4131,8 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-12-14T00:00"), hasShares(5.00), //
+                        hasDate("2023-12-14T00:00"), hasExDate("2023-11-15"), //
+                        hasShares(5.00), //
                         hasSource("Dividende18.txt"), //
                         hasNote("Vorgangs-Nr.: 123"), //
                         hasAmount("USD", 2.79), hasGrossValue("USD", 3.75), //
@@ -4419,7 +4167,8 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-12-14T00:00"), hasShares(5.00), //
+                        hasDate("2023-12-14T00:00"), hasExDate("2023-11-15"), //
+                        hasShares(5.00), //
                         hasSource("Dividende18.txt"), //
                         hasNote("Vorgangs-Nr.: 123"), //
                         hasAmount("USD", 2.79), hasGrossValue("USD", 3.75), //
@@ -4454,7 +4203,8 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-11-29T00:00"), hasShares(140.00), //
+                        hasDate("2023-11-29T00:00"), hasExDate("2023-11-16"), //
+                        hasShares(140.00), //
                         hasSource("Dividende19.txt"), //
                         hasNote("Vorgangs-Nr.: 20483837"), //
                         hasAmount("USD", 6.26), hasGrossValue("USD", 6.26), //
@@ -4489,7 +4239,8 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-11-29T00:00"), hasShares(140.00), //
+                        hasDate("2023-11-29T00:00"), hasExDate("2023-11-16"), //
+                        hasShares(140.00), //
                         hasSource("Dividende19.txt"), //
                         hasNote("Vorgangs-Nr.: 20483837"), //
                         hasAmount("USD", 6.26), hasGrossValue("USD", 6.26), //
@@ -4524,7 +4275,8 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-12-22T00:00"), hasShares(4.00), //
+                        hasDate("2023-12-22T00:00"), hasExDate("2023-12-06"), //
+                        hasShares(4.00), //
                         hasSource("Dividende20.txt"), //
                         hasNote("Vorgangs-Nr.: XXX"), //
                         hasAmount("USD", 14.89), hasGrossValue("USD", 20.00), //
@@ -4559,7 +4311,8 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-12-22T00:00"), hasShares(4.00), //
+                        hasDate("2023-12-22T00:00"), hasExDate("2023-12-06"), //
+                        hasShares(4.00), //
                         hasSource("Dividende20.txt"), //
                         hasNote("Vorgangs-Nr.: XXX"), //
                         hasAmount("USD", 14.89), hasGrossValue("USD", 20.00), //
@@ -4594,7 +4347,8 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-12-15T00:00"), hasShares(14.00), //
+                        hasDate("2023-12-15T00:00"), hasExDate("2023-11-30"), //
+                        hasShares(14.00), //
                         hasSource("Dividende21.txt"), //
                         hasNote("Vorgangs-Nr.: XXX"), //
                         hasAmount("USD", 2.66), hasGrossValue("USD", 3.58), //
@@ -4629,7 +4383,8 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-12-15T00:00"), hasShares(14.00), //
+                        hasDate("2023-12-15T00:00"), hasExDate("2023-11-30"), //
+                        hasShares(14.00), //
                         hasSource("Dividende21.txt"), //
                         hasNote("Vorgangs-Nr.: XXX"), //
                         hasAmount("USD", 2.66), hasGrossValue("USD", 3.58), //
@@ -4664,7 +4419,8 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-01-26T00:00"), hasShares(10.00), //
+                        hasDate("2024-01-26T00:00"), hasExDate("2024-01-26"), //
+                        hasShares(10.00), //
                         hasSource("Dividende22.txt"), //
                         hasNote("Vorgangs-Nr.: 25694016"), //
                         hasAmount("USD", 33.50), hasGrossValue("USD", 33.50), //
@@ -4699,7 +4455,8 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-01-26T00:00"), hasShares(10.00), //
+                        hasDate("2024-01-26T00:00"), hasExDate("2024-01-26"), //
+                        hasShares(10.00), //
                         hasSource("Dividende22.txt"), //
                         hasNote("Vorgangs-Nr.: 25694016"), //
                         hasAmount("USD", 33.50), hasGrossValue("USD", 33.50), //
@@ -4734,7 +4491,8 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-10-16T00:00"), hasShares(28.00), //
+                        hasDate("2023-10-16T00:00"), hasExDate("2023-09-28"), //
+                        hasShares(28.00), //
                         hasSource("Dividende23.txt"), //
                         hasNote("Vorgangs-Nr.: 22556339"), //
                         hasAmount("EUR", 4.88), hasGrossValue("EUR", 4.88), //
@@ -4770,7 +4528,8 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-10-16T00:00"), hasShares(28.00), //
+                        hasDate("2023-10-16T00:00"), hasExDate("2023-09-28"), //
+                        hasShares(28.00), //
                         hasSource("Dividende23.txt"), //
                         hasNote("Vorgangs-Nr.: 22556339"), //
                         hasAmount("EUR", 4.88), hasGrossValue("EUR", 4.88), //
@@ -4804,7 +4563,8 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-12-13T00:00"), hasShares(12.371), //
+                        hasDate("2023-12-13T00:00"), hasExDate("2023-12-06"), //
+                        hasShares(12.371), //
                         hasSource("Dividende24.txt"), //
                         hasNote("Transaction No.: 01473347"), //
                         hasAmount("EUR", 2.94), hasGrossValue("EUR", 3.46), //
@@ -4838,7 +4598,8 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-01-26T00:00"), hasShares(10.00), //
+                        hasDate("2024-01-26T00:00"), hasExDate("2024-01-26"), //
+                        hasShares(10.00), //
                         hasSource("Dividende25.txt"), //
                         hasNote("Transaction No.: 01473347"), //
                         hasAmount("USD", 33.50), hasGrossValue("USD", 33.50), //
@@ -4873,7 +4634,8 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-01-26T00:00"), hasShares(10.00), //
+                        hasDate("2024-01-26T00:00"), hasExDate("2024-01-26"), //
+                        hasShares(10.00), //
                         hasSource("Dividende25.txt"), //
                         hasNote("Transaction No.: 01473347"), //
                         hasAmount("USD", 33.50), hasGrossValue("USD", 33.50), //
@@ -4908,7 +4670,8 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-12-03T00:00"), hasShares(0.867), //
+                        hasDate("2024-12-03T00:00"), hasExDate("2024-09-27"), //
+                        hasShares(0.867), //
                         hasSource("Dividende26.txt"), //
                         hasNote("Vorgangs-Nr.: 37229865"), //
                         hasAmount("EUR", 0.72), hasGrossValue("EUR", 1.01), //
@@ -4944,7 +4707,8 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-12-03T00:00"), hasShares(0.867), //
+                        hasDate("2024-12-03T00:00"), hasExDate("2024-09-27"), //
+                        hasShares(0.867), //
                         hasSource("Dividende26.txt"), //
                         hasNote("Vorgangs-Nr.: 37229865"), //
                         hasAmount("EUR", 0.72), hasGrossValue("EUR", 1.01), //
@@ -4978,7 +4742,8 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-12-10T00:00"), hasShares(3.000), //
+                        hasDate("2025-12-10T00:00"), hasExDate("2025-11-14"), //
+                        hasShares(3.000), //
                         hasSource("Dividende27.txt"), //
                         hasNote("Vorgangs-Nr.: 16224553"), //
                         hasAmount("EUR", 1.94), hasGrossValue("EUR", 2.63), //
@@ -5014,7 +4779,8 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-12-10T00:00"), hasShares(3.000), //
+                        hasDate("2025-12-10T00:00"), hasExDate("2025-11-14"), //
+                        hasShares(3.000), //
                         hasSource("Dividende27.txt"), //
                         hasNote("Vorgangs-Nr.: 16224553"), //
                         hasAmount("EUR", 1.94), hasGrossValue("EUR", 2.63), //
@@ -5049,7 +4815,8 @@ public class BaaderBankPDFExtractorTest
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionOrderCancellationUnsupported, //
                         dividend( //
-                                        hasDate("2022-06-13"), hasShares(10.672), //
+                                        hasDate("2022-06-13"), hasExDate("2022-05-16"), //
+                                        hasShares(10.672), //
                                         hasSource("DividendeStorno01.txt"), //
                                         hasNote("Vorgangs-Nr.: XXXXX"), //
                                         hasAmount("EUR", 7.04), hasGrossValue("EUR", 7.04), //
@@ -5076,41 +4843,22 @@ public class BaaderBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("US85571B1052"));
-        assertThat(security.getWkn(), is("A0N9JF"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("Starwood Property Trust Inc."));
-        assertThat(security.getCurrencyCode(), is("USD"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("US85571B1052"), hasWkn("A0N9JF"), hasTicker(null), //
+                        hasName("Starwood Property Trust Inc."), //
+                        hasCurrencyCode("USD"))));
 
         // check cancellation (Storno) transaction
-        var cancellation = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionOrderCancellationUnsupported));
-
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2021-10-18T00:00")));
-        assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(250)));
-        assertThat(((Transaction) cancellation.getSubject()).getSource(), is("DividendeStorno02.txt"));
-        assertThat(((Transaction) cancellation.getSubject()).getNote(), is("Vorgangs-Nr.: 6662228"));
-
-        assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(76.34))));
-        assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(103.45))));
-        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(10.11 + 0.92 + 0.56 + 15.52))));
-        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-
-        var grossValueUnit = ((Transaction) cancellation.getSubject()).getUnit(Unit.Type.GROSS_VALUE)
-                        .orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(120.00))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionOrderCancellationUnsupported, //
+                        dividend( //
+                                        hasDate("2021-10-18T00:00"), hasExDate("2021-09-29"), //
+                                        hasShares(250.00), //
+                                        hasSource("DividendeStorno02.txt"), //
+                                        hasNote("Vorgangs-Nr.: 6662228"), //
+                                        hasAmount("EUR", 76.34), hasGrossValue("EUR", 103.45), //
+                                        hasForexGrossValue("USD", 120.00), //
+                                        hasTaxes("EUR", 10.11 + 0.92 + 0.56 + 15.52), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -5142,10 +4890,11 @@ public class BaaderBankPDFExtractorTest
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionOrderCancellationUnsupported, //
                         dividend( //
-                                        hasDate("2022-10-14T00:00"), hasShares(5.683), //
+                                        hasDate("2022-10-14T00:00"), hasExDate("2022-09-30"), //
+                                        hasShares(5.683), //
                                         hasSource("DividendeStorno03.txt"), //
                                         hasNote("Vorgangs-Nr.: 2546"), //
-                                        hasAmount("EUR", 1.14), hasGrossValue("EUR", 1.34),
+                                        hasAmount("EUR", 1.14), hasGrossValue("EUR", 1.34), //
                                         hasForexGrossValue("USD", 1.32), //
                                         hasTaxes("EUR", 0.20), hasFees("EUR", 0.00)))));
     }
@@ -5180,7 +4929,8 @@ public class BaaderBankPDFExtractorTest
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionOrderCancellationUnsupported, //
                         dividend( //
-                                        hasDate("2022-10-14T00:00"), hasShares(5.683), //
+                                        hasDate("2022-10-14T00:00"), hasExDate("2022-09-30"), //
+                                        hasShares(5.683), //
                                         hasSource("DividendeStorno03.txt"), //
                                         hasNote("Vorgangs-Nr.: 2546"), //
                                         hasAmount("EUR", 1.14), hasGrossValue("EUR", 1.34), //
@@ -5216,7 +4966,8 @@ public class BaaderBankPDFExtractorTest
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionOrderCancellationUnsupported, //
                         dividend( //
-                                        hasDate("2023-01-13T00:00"), hasShares(39.00), //
+                                        hasDate("2023-01-13T00:00"), hasExDate("2022-12-29"), //
+                                        hasShares(39.00), //
                                         hasSource("DividendeStorno04.txt"), //
                                         hasNote("Vorgangs-Nr.: 19658986"), //
                                         hasAmount("EUR", 1.45), hasGrossValue("EUR", 2.00), //
@@ -5254,7 +5005,8 @@ public class BaaderBankPDFExtractorTest
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionOrderCancellationUnsupported, //
                         dividend( //
-                                        hasDate("2023-01-13T00:00"), hasShares(39.00), //
+                                        hasDate("2023-01-13T00:00"), hasExDate("2022-12-29"), //
+                                        hasShares(39.00), //
                                         hasSource("DividendeStorno04.txt"), //
                                         hasNote("Vorgangs-Nr.: 19658986"), //
                                         hasAmount("EUR", 1.45), hasGrossValue("EUR", 2.00), //
@@ -5290,7 +5042,8 @@ public class BaaderBankPDFExtractorTest
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionOrderCancellationUnsupported, //
                         dividend( //
-                                        hasDate("2024-06-26T00:00"), hasShares(4.003), //
+                                        hasDate("2024-06-26T00:00"), hasExDate("2024-06-24"), //
+                                        hasShares(4.003), //
                                         hasSource("DividendeStorno05.txt"), //
                                         hasNote("Vorgangs-Nr.: 99999999"), //
                                         hasAmount("EUR", 9.81), hasGrossValue("EUR", 9.81), //
