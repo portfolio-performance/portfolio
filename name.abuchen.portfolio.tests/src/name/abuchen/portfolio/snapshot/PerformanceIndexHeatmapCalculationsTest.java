@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.snapshot;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.number.IsCloseTo.closeTo;
 
 import java.time.LocalDate;
@@ -43,11 +44,54 @@ public class PerformanceIndexHeatmapCalculationsTest
 
     private PerformanceIndex getClientIndex()
     {
+        return getClientIndex(client, Interval.of(startDate, endDate));
+    }
+
+    private PerformanceIndex getClientIndex(Client client, Interval reportInterval)
+    {
         List<Exception> warnings = new ArrayList<>();
-        Interval reportInterval = Interval.of(startDate, endDate);
         CurrencyConverter converter = new TestCurrencyConverter();
 
         return PerformanceIndex.forClient(client, converter, reportInterval, warnings);
+    }
+
+    @Test
+    public void testFirstHoldingIntervalSkipsLeadingZeroValuation()
+    {
+        // the deposit from setUp() happens on 2021-12-01; reporting starts
+        // earlier, so the leading data points have a zero valuation
+        Interval reportInterval = Interval.of(LocalDate.parse("2021-11-15"), endDate);
+
+        Interval firstHolding = getClientIndex(client, reportInterval).getFirstHoldingInterval();
+
+        // half-open: the start is anchored to the day *before* the first
+        // holding (2021-12-01) so that the first active day is included
+        assertThat(firstHolding, is(Interval.of(LocalDate.parse("2021-11-30"), endDate)));
+    }
+
+    @Test
+    public void testFirstHoldingIntervalWhenHeldFromTheStart()
+    {
+        // reporting starts on the deposit date -> the very first data point
+        // already holds assets, so it matches the full actual interval
+        PerformanceIndex index = getClientIndex();
+
+        assertThat(index.getFirstHoldingInterval(), is(index.getActualInterval()));
+    }
+
+    @Test
+    public void testFirstHoldingIntervalWhenNeverHeld()
+    {
+        // a client without any transaction never holds assets
+        PerformanceIndex index = getClientIndex(new Client(),
+                        Interval.of(LocalDate.parse("2021-11-15"), endDate));
+
+        Interval firstHolding = index.getFirstHoldingInterval();
+
+        // empty interval (start == end) so the heat map shows nothing instead
+        // of a spurious excess return for every month
+        assertThat(firstHolding.getStart(), is(firstHolding.getEnd()));
+        assertThat(firstHolding.getYears().isEmpty(), is(true));
     }
 
     @Test
