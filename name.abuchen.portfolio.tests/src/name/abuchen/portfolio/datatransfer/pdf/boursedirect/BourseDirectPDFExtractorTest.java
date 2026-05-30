@@ -6,6 +6,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -224,7 +225,8 @@ public class BourseDirectPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-08-06T00:00"), hasShares(3.00), //
+                        hasDate("2025-08-06T00:00"), hasExDate(null), //
+                        hasShares(3.00), //
                         hasSource("ReleveDeCompte03.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 4.08), hasGrossValue("EUR", 4.80), //
@@ -306,7 +308,7 @@ public class BourseDirectPDFExtractorTest
     }
 
     @Test
-    public void testDividende02WithSecurityInEUR()
+    public void testReleveDeCompte05WithSecurityInEUR()
     {
         var security1 = new Security("BOOZ ALLEN CL.A", "EUR");
         security1.setIsin("US0995021062");
@@ -378,7 +380,8 @@ public class BourseDirectPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2021-03-30T00:00"), hasShares(20.00), //
+                        hasDate("2021-03-30T00:00"), hasExDate(null), //
+                        hasShares(20.00), //
                         hasSource("ReleveDeCompte06.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 9.55), hasGrossValue("EUR", 17.34), //
