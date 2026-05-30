@@ -66,7 +66,13 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget<Double>
 
         // build heat map model for actual interval
 
-        Interval actualInterval = performanceIndex.getActualInterval();
+        // When an excess return baseline is configured, restrict the display
+        // interval to start from the first date the primary series has actual
+        // holdings. Without this, months before the first transaction show a
+        // spurious excess return (0 - benchmarkReturn != 0).
+        Interval actualInterval = benchmark != null
+                        ? getFirstActiveInterval(performanceIndex)
+                        : performanceIndex.getActualInterval();
 
         boolean showSum = get(HeatmapOrnamentConfig.class).getValues().contains(HeatmapOrnament.SUM);
         boolean showStandardDeviation = get(HeatmapOrnamentConfig.class).getValues()
@@ -119,6 +125,20 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget<Double>
         }
 
         return model;
+    }
+
+    private Interval getFirstActiveInterval(PerformanceIndex index)
+    {
+        long[] totals = index.getTotals();
+        LocalDate[] dates = index.getDates();
+
+        for (int i = 0; i < totals.length; i++)
+        {
+            if (totals[i] > 0)
+                return Interval.of(i > 0 ? dates[i - 1] : dates[i], dates[dates.length - 1]);
+        }
+
+        return index.getActualInterval();
     }
 
     private double getPerformanceFor(PerformanceIndex index, YearMonth month)
