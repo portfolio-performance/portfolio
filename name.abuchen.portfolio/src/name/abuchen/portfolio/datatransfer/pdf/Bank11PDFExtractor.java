@@ -59,7 +59,7 @@ public class Bank11PDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date") + v.get("year")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setCurrencyCode(v.get("currency"));
 
                             if ("Überweisungsgutschr.".equals(v.get("note")))
                                 v.put("note", "Überweisungsgutschrift");
@@ -85,16 +85,12 @@ public class Bank11PDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date") + v.get("year")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-
-                            if ("Überweisungsgutschr.".equals(v.get("note")))
-                                v.put("note", "Überweisungsgutschrift");
+                            t.setCurrencyCode(v.get("currency"));
 
                             t.setNote(v.get("note"));
                         })
 
                         .wrap(TransactionItem::new));
-
 
         // @formatter:off
         // 30.12. 31.12. Abschluss lt. Anlage 1                                                         52,66 H
@@ -112,7 +108,7 @@ public class Bank11PDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date") + v.get("year")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setCurrencyCode(v.get("currency"));
                         })
 
                         .wrap(TransactionItem::new));
