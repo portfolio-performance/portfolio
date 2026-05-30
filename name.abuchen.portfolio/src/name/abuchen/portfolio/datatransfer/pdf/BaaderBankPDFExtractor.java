@@ -549,6 +549,23 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Amount credited to account .* Value: (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) [A-Z]{3} [\\.,\\d]+$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Ex-Tag: 15.06.2021
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exDate") //
+                                                        .match("^Ex-Tag: (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate")))),
+                                        // @formatter:off
+                                        // Ex-Date: 2023-05-12
+                                        // Ex-Date: 2022-03-15 Declare-Date: 2022-02-25
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exDate") //
+                                                        .match("^Ex-Date: (?<exDate>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}).*$") //
+                                                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate")))))
+
                         .oneOf( //
                                         // @formatter:off
                                         // Zu Gunsten Konto 1111111111 Valuta: 06.07.2021 EUR 68,22
@@ -1047,6 +1064,13 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         // @formatter:off
+                        // Abbuchungsdatum: 02.08.2017
+                        // @formatter:on
+                        .section("date") //
+                        .match("^Abbuchungsdatum: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
                         // Leistungen Beträge (EUR)
                         // Rechnungsbetrag 6,48
                         // @formatter:on
@@ -1057,13 +1081,6 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
-
-                        // @formatter:off
-                        // Abbuchungsdatum: 02.08.2017
-                        // @formatter:on
-                        .section("date") //
-                        .match("^Abbuchungsdatum: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Rechnungsnr.: 2017071234567
@@ -1278,13 +1295,13 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
     {
         final var type = new DocumentType("(Fusion \\/ Zusammenlegung" //
                         + "|Depoteinlieferung" //
-                        + "|Reverse Split"
+                        + "|Reverse Split" //
                         + "|Obligatorischer Umtausch)", //
                         documentContext -> documentContext //
                                         .section("transaction") //
                                         .match("^(?<transaction>(Fusion \\/ Zusammenlegung" //
                                                         + "|Depoteinlieferung" //
-                                                        + "|Reverse Split"
+                                                        + "|Reverse Split" //
                                                         + "|Obligatorischer Umtausch))$") //
                                         .assign((ctx, v) -> ctx.put("transaction", v.get("transaction"))));
         this.addDocumentTyp(type);
@@ -1341,7 +1358,6 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .find(".*Valuta: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*") //
                                                         .assign((t, v) -> {
-
                                                             if ("Reverse Split".equals(v.get("transaction")) || "Obligatorischer Umtausch".equals(v.get("transaction")))
                                                                 v.markAsFailure(Messages.MsgErrorTransactionSplitUnsupported);
                                                             else
