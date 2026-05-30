@@ -4,7 +4,9 @@ paths:
  - "name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/**"
 ---
 
-PDF importers extract transactions from bank and broker PDF statements. 
+PDF importers extract transactions from bank and broker PDF statements.
+
+> **Required:** Whenever these rules are active, the test cases of the modified importer must be reviewed after every change — both for completeness and correct assertions.
 
 - Each bank/broker has its own extractor class inside `name.abuchen.portfolio/src/name/abuchen/datatransfer/pdf/`
 - Tests are located at `name.abuchen.portfolio.tests/src/name/abuchen/datatransfer/pdf/` within a folder for each bank, containing all connected test-exports.
@@ -85,9 +87,12 @@ v.put("currency", asCurrencyCode("USD"));         // works but prefer named cons
 })
 ```
 
-**wrap() block** — use the canonical `if/return SkippedItem` form; no ternary, no intermediate `item` variable, no unused `ctx` parameter. Always guard the amount check with a currency code null-check:
+**wrap() block** — the SkippedItem guard is optional; only add it when the extractor can produce zero-amount transactions that should be skipped. If used, apply the canonical `if/return SkippedItem` form; no ternary, no intermediate `item` variable, no unused `ctx` parameter. Always guard the amount check with a currency code null-check:
 ```java
-// AccountTransaction
+// AccountTransaction — simple form (no guard needed)
+.wrap(TransactionItem::new)
+
+// AccountTransaction — with guard
 .wrap(t -> {
     if (t.getCurrencyCode() != null && t.getAmount() == 0)
         return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
@@ -95,7 +100,10 @@ v.put("currency", asCurrencyCode("USD"));         // works but prefer named cons
     return new TransactionItem(t);
 })
 
-// BuySellEntry
+// BuySellEntry — simple form (no guard needed)
+.wrap(BuySellEntryItem::new)
+
+// BuySellEntry — with guard
 .wrap(t -> {
     if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() == 0)
         return new SkippedItem(new BuySellEntryItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
@@ -144,6 +152,28 @@ public void testWertpapierKauf01()
 
 }
 ```
+
+**Crypto extractors** — when a test class uses the `lookupCryptoProvider` override (class-level extractor field with anonymous subclass), `hasFeed()` and `hasFeedProperty()` are mandatory in every `security(...)` assertion:
+```java
+// class-level extractor with crypto provider override
+BSDEXPDFExtractor extractor = new BSDEXPDFExtractor(new Client())
+{
+    @Override
+    protected List<SecuritySearchProvider> lookupCryptoProvider()
+    {
+        return TestCoinSearchProvider.cryptoProvider();
+    }
+};
+
+// check security — hasFeed and hasFeedProperty are required
+assertThat(results, hasItem(security( //
+                hasIsin(null), hasWkn(null), hasTicker("BTC"), //
+                hasName("Bitcoin"), //
+                hasCurrencyCode("EUR"), //
+                hasFeed(CoinGeckoQuoteFeed.ID), //
+                hasFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID, "bitcoin"))));
+```
+Tests that do not involve crypto securities (e.g. deposits/removals only) may create a plain `new BSDEXPDFExtractor(new Client())` locally within the test method instead.
 
 `withFailureMessage(...)` assertions follow this structure — the `//` after the opening parenthesis is required:
 
