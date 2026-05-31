@@ -19,7 +19,7 @@
 		<maven-jarsigner-plugin.version>3.1.0</maven-jarsigner-plugin.version>
 		<maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
 		<maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
-		<sonar-maven-plugin.version>5.6.0.6792</sonar-maven-plugin.version>
+		<sonar-maven-plugin.version>5.7.0.6970</sonar-maven-plugin.version>
 		<fix-info-plist-maven-plugin.version>1.8</fix-info-plist-maven-plugin.version>
 		<exec-maven-plugin.version>3.6.3</exec-maven-plugin.version>
 		<jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
