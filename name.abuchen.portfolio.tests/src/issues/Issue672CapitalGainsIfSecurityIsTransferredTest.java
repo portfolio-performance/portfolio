@@ -59,9 +59,9 @@ public class Issue672CapitalGainsIfSecurityIsTransferredTest
         // cash-flow series with an absurdly large IRR.
         assertThat(record.getSharesHeld(), is(1000000000L));
         assertThat(record.getQuote(), is(Quote.of("EUR", 9714100000L))); //$NON-NLS-1$
-        assertThat(record.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED),
-                        is(Money.of("EUR", 88310L))); //$NON-NLS-1$
-        assertThat(record.getCostPerSharesHeld(CostMethod.FIFO), is(Quote.of("EUR", 8831000000L))); //$NON-NLS-1$
+        assertThat(record.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), is(Money.of("EUR", 88310L))); //$NON-NLS-1$
+        assertThat(record.getCostPerSharesHeld(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED),
+                        is(Quote.of("EUR", 8831000000L))); //$NON-NLS-1$
         assertThat(record.getFees(), is(Money.of("EUR", 0L))); //$NON-NLS-1$
         assertThat(record.getTaxes(), is(Money.of("EUR", 0L))); //$NON-NLS-1$
         assertThat(record.getDelta(), is(Money.of("EUR", 8831L))); //$NON-NLS-1$

@@ -60,7 +60,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        var type = new DocumentType("(Wertpapier )?Abrechnung(:)? "//
+        final var type = new DocumentType("(Wertpapier )?Abrechnung(:)? "//
                         + "(Kauf" //
                         + "|Kauf von Wertpapieren" //
                         + "|Verkauf" //
@@ -77,11 +77,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
@@ -259,7 +255,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        var type = new DocumentType("(Dividendengutschrift" //
+        final var type = new DocumentType("(Dividendengutschrift" //
                         + "|Aussch.ttung Investmentfonds" //
                         + "|Gutschrift von Investmentertr.gen" //
                         + "|Ertragsgutschrift" //
@@ -275,11 +271,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         // @formatter:off
                         // Storno einer Ertragsgutschrift
@@ -519,7 +511,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
     private void addAdvanceTaxTransaction()
     {
-        var type = new DocumentType("Vorabpauschale");
+        final var type = new DocumentType("Vorabpauschale");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -530,11 +522,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         // @formatter:off
                         // Stück WKN ISIN
@@ -601,9 +589,12 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                                         })
                         )
 
-                        .wrap(t -> t.getCurrencyCode() == null || t.getAmount() == 0
-                                        ? new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired)
-                                        : new TransactionItem(t));
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() == null || t.getAmount() == 0)
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                            return new TransactionItem(t);
+                        });
     }
 
     private void addDepotStatementTransaction()
@@ -636,11 +627,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var t = new AccountTransaction();
-                            t.setType(AccountTransaction.Type.DEPOSIT);
-                            return t;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "note", "amount").optional() //
                         .documentContext("currency", "year") //
@@ -675,11 +662,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var t = new AccountTransaction();
-                            t.setType(AccountTransaction.Type.REMOVAL);
-                            return t;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
 
                         .section("date", "note", "amount").optional() //
                         .documentContext("currency", "year") //
@@ -758,12 +741,12 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                             if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                             {
                                 // Account 1
-                                v.put("currency", v.get("currency1"));
+                                v.put("currency", asCurrencyCode(v.get("currency1")));
                                 v.put("tax", v.get("tax1"));
                                 processTaxEntries(t, v, type);
 
                                 // Account 2
-                                v.put("currency", v.get("currency2"));
+                                v.put("currency", asCurrencyCode(v.get("currency2")));
                                 v.put("tax", v.get("tax2"));
                                 processTaxEntries(t, v, type);
                             }
@@ -800,12 +783,12 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                             if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                             {
                                 // Account 1
-                                v.put("currency", v.get("currency1"));
+                                v.put("currency", asCurrencyCode(v.get("currency1")));
                                 v.put("tax", v.get("tax1"));
                                 processTaxEntries(t, v, type);
 
                                 // Account 2
-                                v.put("currency", v.get("currency2"));
+                                v.put("currency", asCurrencyCode(v.get("currency2")));
                                 v.put("tax", v.get("tax2"));
                                 processTaxEntries(t, v, type);
                             }
@@ -842,12 +825,12 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                             if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                             {
                                 // Account 1
-                                v.put("currency", v.get("currency1"));
+                                v.put("currency", asCurrencyCode(v.get("currency1")));
                                 v.put("tax", v.get("tax1"));
                                 processTaxEntries(t, v, type);
 
                                 // Account 2
-                                v.put("currency", v.get("currency2"));
+                                v.put("currency", asCurrencyCode(v.get("currency2")));
                                 v.put("tax", v.get("tax2"));
                                 processTaxEntries(t, v, type);
                             }

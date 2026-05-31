@@ -143,7 +143,8 @@ public class SecurityTaxAndFeeAccountTransactionsTestCase
         assertThat(record.getQuote(), is(Quote.of("EUR", 14565000000L)));
         assertThat(record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of("EUR", 153300L)));
         assertThat(record.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), is(Money.of("EUR", 153300L)));
-        assertThat(record.getCostPerSharesHeld(CostMethod.FIFO), is(Quote.of("EUR", 15130000000L)));
+        assertThat(record.getCostPerSharesHeld(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED),
+                        is(Quote.of("EUR", 15130000000L)));
         assertThat(record.getCapitalGainsOnHoldings(CostMethod.FIFO), is(Money.of("EUR", -7650L)));
         assertThat(record.getCapitalGainsOnHoldings(CostMethod.MOVING_AVERAGE), is(Money.of("EUR", -7650L)));
         assertThat(record.getCapitalGainsOnHoldingsPercent(CostMethod.FIFO), closeTo(-0.049902152641878694, 0.0001));

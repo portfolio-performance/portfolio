@@ -48,11 +48,7 @@ public class CrowdestorPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         // 14.07.2022 CRF-6-4911 Deposit +50.00 50.00
                         // 16.07.2022 CRF-6-4911 Profit +0.03 50.03
@@ -62,7 +58,7 @@ public class CrowdestorPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setCurrencyCode(v.get("currency"));
 
                             // Switch transactions if ...
                             switch (v.get("type"))

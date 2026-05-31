@@ -62,11 +62,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
@@ -253,11 +249,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // @formatter:off
                         // Anzahl Währung Rate
@@ -315,22 +307,18 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
 
     private void addDividendsTransaction()
     {
-        final var type = new DocumentType("(Dividende|Kapitalgewinn)");
+        final var type = new DocumentType("(Dividende|Kapitalgewinn|Option Premium)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^(Dividende|Kapitalgewinn) Unsere Referenz:.*$");
+        var firstRelevantLine = new Block("^(Dividende|Kapitalgewinn|Option Premium) Unsere Referenz:.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         .oneOf( //
                                         // @formatter:off
@@ -361,6 +349,17 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "isin", "currency") //
                                                         .match("^(?<name>.*) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .match("^Dividende pro Aktie (?<currency>[A-Z]{3}) [\\.'\\d]+.*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // INCOMESHARES GOLD YIELD ETP ISIN: XS2852999775 581
+                                        // NKN: 136957026
+                                        // Prämienanteil 0.14405405 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "wkn", "currency") //
+                                                        .match("^(?<name>.*) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .match("^NKN: (?<wkn>[A-Z0-9]{5,9}).*$") //
+                                                        .match("^Pr.mienanteil [\\.'\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
@@ -480,11 +479,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         // @formatter:off
                         // Is type --> "Belastung" change from DEPOSIT to REMOVAL
@@ -565,11 +560,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         // @formatter:off
                         // 30.12.2022 1.36 0.00 1.36 0.00 1.36
@@ -620,11 +611,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
         type.addBlock(feeBlock);
         feeBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .section("note", "amount", "date") //
                         .documentRange("baseCurrency") //
@@ -653,11 +640,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST_CHARGE);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST_CHARGE))
 
                         .section("note", "amount", "date") //
                         .documentRange("baseCurrency") //
@@ -694,11 +677,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new PortfolioTransaction();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new PortfolioTransaction(PortfolioTransaction.Type.DELIVERY_OUTBOUND))
 
                         // @formatter:off
                         // Bezeichnung Anzahl Kontraktwährung Preis

@@ -27,6 +27,8 @@ import name.abuchen.portfolio.money.Money;
 @SuppressWarnings("nls")
 public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 {
+    private static final String EUR = "EUR";
+
     public SutorBankGmbHPDFExtractor(Client client)
     {
         super(client);
@@ -52,7 +54,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        var type = new DocumentType("((Transaktionsart:|Wertpapier Abrechnung) (Kauf|Verkauf)|F.lligkeit\\/Verfall)", "ABRECHNUNG KRYPTOHANDEL");
+        final var type = new DocumentType("((Transaktionsart:|Wertpapier Abrechnung) (Kauf|Verkauf)|F.lligkeit\\/Verfall)", "ABRECHNUNG KRYPTOHANDEL");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
@@ -63,11 +65,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // If type is "Verkauf" change from BUY to SELL
                         .section("type").optional() //
@@ -233,7 +231,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellCryptoTransaction()
     {
-        var type = new DocumentType("ABRECHNUNG KRYPTOHANDEL");
+        final var type = new DocumentType("ABRECHNUNG KRYPTOHANDEL");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
@@ -244,11 +242,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // If type is "Verkauf" change from BUY to SELL
                         .section("type").optional() //
@@ -320,7 +314,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        var type = new DocumentType("Dividende");
+        final var type = new DocumentType("Dividende");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -331,11 +325,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         // @formatter:off
                         // Produktbezeichnung - Kellogg Co.:
@@ -391,7 +381,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
     private void addAdvanceTaxTransaction()
     {
-        var type = new DocumentType("Abrechnung Vorabpauschale");
+        final var type = new DocumentType("Abrechnung Vorabpauschale");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -402,11 +392,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         // @formatter:off
                         // Name iShares MSCI World (Acc)
@@ -448,7 +434,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        var type = new DocumentType("(Sutor fairriester 2\\.0|Ums.tze) .*");
+        final var type = new DocumentType("(Sutor fairriester 2\\.0|Ums.tze) .*");
         this.addDocumentTyp(type);
 
         var buySellBlock = new Transaction<BuySellEntry>();
@@ -459,11 +445,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
         buySellBlock //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
@@ -497,7 +479,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                             t.setDate(asDate(v.get("date"), v.get("time")));
                                                             t.setShares(asShares(v.get("shares")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(asCurrencyCode(EUR));
                                                             t.setAmount(asAmount(v.get("amount")));
 
                                                             v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported);
@@ -529,7 +511,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                             t.setDate(asDate(v.get("date"), v.get("time")));
                                                             t.setShares(asShares(v.get("shares")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(asCurrencyCode(EUR));
                                                             t.setAmount(asAmount(v.get("amount")));
 
                                                             var tax1 = Money.of(t.getPortfolioTransaction().getCurrencyCode(), asAmount(v.get("tax1")));
@@ -562,7 +544,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                             t.setDate(asDate(v.get("date"), v.get("time")));
                                                             t.setShares(asShares(v.get("shares")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(asCurrencyCode(EUR));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
                                         // @formatter:off
@@ -589,7 +571,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                             t.setDate(asDate(v.get("date"), v.get("time")));
                                                             t.setShares(asShares(v.get("shares")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(asCurrencyCode(EUR));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
                                         // @formatter:off
@@ -621,7 +603,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                             t.setDate(asDate(v.get("date"), v.get("time")));
                                                             t.setShares(asShares(v.get("shares")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(asCurrencyCode(EUR));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
                                         // @formatter:off
@@ -646,7 +628,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                             t.setDate(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(asCurrencyCode(EUR));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
                                         // @formatter:off
@@ -669,7 +651,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                             t.setDate(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(asCurrencyCode(EUR));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
                                         // @formatter:off
@@ -691,7 +673,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                             t.setDate(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(asCurrencyCode(EUR));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
                                         // @formatter:off
@@ -712,7 +694,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                             t.setDate(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(asCurrencyCode(EUR));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
                                         // @formatter:off
@@ -734,7 +716,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                             t.setDate(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(asCurrencyCode(EUR));
                                                             t.setAmount(asAmount(v.get("amount")));
 
                                                             t.setNote(v.get("note"));
@@ -757,7 +739,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                             t.setDate(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(asCurrencyCode(EUR));
                                                             t.setAmount(asAmount(v.get("amount")));
 
                                                             t.setNote(v.get("note"));
@@ -773,11 +755,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
         dividendsBlock //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         .oneOf( //
                                         // @formatter:off
@@ -803,7 +781,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setShares(0L);
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(asCurrencyCode(EUR));
                                                             t.setAmount(asAmount(v.get("amount")));
 
                                                             var tax1 = Money.of(t.getCurrencyCode(), asAmount(v.get("tax1")));
@@ -832,7 +810,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setShares(0L);
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(asCurrencyCode(EUR));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }))
 
@@ -851,11 +829,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
         depositRemovalBlock //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .oneOf( //
                                         // @formatter:off
@@ -873,7 +847,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
                                                             t.setDateTime(asDate(v.get("date")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(asCurrencyCode(EUR));
                                                             t.setAmount(asAmount(v.get("amount")));
 
                                                             t.setNote(v.get("note"));
@@ -891,7 +865,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(asCurrencyCode(EUR));
                                                             t.setAmount(asAmount(v.get("amount")));
 
                                                             t.setNote(v.get("note"));
@@ -915,7 +889,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
                                                             t.setDateTime(asDate(v.get("date")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(asCurrencyCode(EUR));
                                                             t.setAmount(asAmount(v.get("amount")));
 
                                                             t.setNote(v.get("note"));
@@ -931,11 +905,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
         taxesBlock //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         // @formatter:off
                         // 20.01.2024 20.01.2024 Steuerbuchung KapSt2023Vorabpauschale AIS-Amundi I.S.Stoxx - -0,26
@@ -951,7 +921,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
 
-                            t.setCurrencyCode("EUR");
+                            t.setCurrencyCode(asCurrencyCode(EUR));
                             t.setAmount(asAmount(v.get("amount")));
 
                             t.setNote(v.get("note"));
@@ -976,11 +946,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
         feesBlock //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .oneOf( //
                                         section -> section //
@@ -998,7 +964,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(asCurrencyCode(EUR));
                                                             t.setAmount(asAmount(v.get("amount")));
 
                                                             t.setNote(v.get("note"));
@@ -1020,7 +986,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(asCurrencyCode(EUR));
                                                             t.setAmount(asAmount(v.get("amount")));
 
                                                             t.setNote(v.get("note"));
@@ -1035,7 +1001,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(asCurrencyCode(EUR));
                                                             t.setAmount(asAmount(v.get("amount")));
 
                                                             t.setNote(v.get("note"));
@@ -1060,7 +1026,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
                                                             t.setDateTime(asDate(v.get("date")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(asCurrencyCode(EUR));
                                                             t.setAmount(asAmount(v.get("amount")));
 
                                                             t.setNote(v.get("note1") + " " + v.get("note2") + " vom " + v.get("stornoDate"));
@@ -1076,11 +1042,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
         deliveryOutbound //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new PortfolioTransaction();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new PortfolioTransaction(PortfolioTransaction.Type.DELIVERY_OUTBOUND))
 
                         .oneOf( //
                                         section -> section //
@@ -1099,7 +1061,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                             t.setSecurity(getOrCreateSecurity(v));
 
                                                             t.setAmount(0L);
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(asCurrencyCode(EUR));
 
                                                             t.setNote(v.get("note"));
 
@@ -1124,11 +1086,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new PortfolioTransaction();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new PortfolioTransaction(PortfolioTransaction.Type.DELIVERY_OUTBOUND))
 
                         // @formatter:off
                         // Produktbezeichnung - OXFORD SQUARE CAP. DL-,01

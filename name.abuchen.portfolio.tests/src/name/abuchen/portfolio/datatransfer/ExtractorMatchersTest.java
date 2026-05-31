@@ -49,7 +49,7 @@ public class ExtractorMatchersTest
     @BeforeClass
     public static void setup()
     {
-        Security s = new Security();
+        var s = new Security();
         s.setName("test name");
         s.setIsin("DE01");
         s.setWkn("WKN");
@@ -58,7 +58,7 @@ public class ExtractorMatchersTest
 
         someSecurity = new SecurityItem(s);
 
-        AccountTransaction tx = new AccountTransaction();
+        var tx = new AccountTransaction();
         tx.setType(AccountTransaction.Type.DIVIDENDS);
         tx.setCurrencyCode(CurrencyUnit.EUR);
         tx.setAmount(Values.Amount.factorize(100));
@@ -87,7 +87,7 @@ public class ExtractorMatchersTest
     @Test(expected = AssertionError.class)
     public void testList()
     {
-        List<Extractor.Item> items = new ArrayList<Extractor.Item>();
+        List<Extractor.Item> items = new ArrayList<>();
 
         items.add(new Extractor.TransactionItem(new AccountTransaction()));
 
@@ -97,11 +97,11 @@ public class ExtractorMatchersTest
     @Test(expected = AssertionError.class)
     public void testDividend()
     {
-        List<Extractor.Item> items = new ArrayList<Extractor.Item>();
+        List<Extractor.Item> items = new ArrayList<>();
 
         items.add(someTransactionItem);
 
-        AccountTransaction tx = new AccountTransaction();
+        var tx = new AccountTransaction();
         tx.setType(AccountTransaction.Type.DIVIDENDS);
         tx.setCurrencyCode(CurrencyUnit.EUR);
         tx.setAmount(1000);
@@ -276,6 +276,24 @@ public class ExtractorMatchersTest
     public void testExDateSuccess()
     {
         assertThat(List.of(someTransactionItem), hasItem(dividend(hasExDate("2023-04-28"))));
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testExDateNullFailure()
+    {
+        assertThat(List.of(someTransactionItem), hasItem(dividend(hasExDate(null))));
+    }
+
+    @Test
+    public void testExDateNullSuccess()
+    {
+        var tx = new AccountTransaction();
+        tx.setType(AccountTransaction.Type.DIVIDENDS);
+        tx.setCurrencyCode(CurrencyUnit.EUR);
+        tx.setAmount(Values.Amount.factorize(100));
+        tx.setDateTime(LocalDateTime.parse("2023-04-30T12:45"));
+
+        assertThat(List.of(new TransactionItem(tx)), hasItem(dividend(hasExDate(null))));
     }
 
     @Test(expected = AssertionError.class)

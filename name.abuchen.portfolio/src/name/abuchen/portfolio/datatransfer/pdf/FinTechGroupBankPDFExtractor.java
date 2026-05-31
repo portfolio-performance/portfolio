@@ -78,11 +78,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
@@ -455,11 +451,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
@@ -584,11 +576,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
@@ -860,11 +848,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.SELL);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.SELL))
 
                         // @formatter:off
                         // WKN     ISIN          Wertpapierbezeichnung           Anzahl
@@ -941,11 +925,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         // @formatter:off
                         // Storno Ertragsmitteilung - ausschüttender/teilthesaurierender Fonds
@@ -1250,11 +1230,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         .oneOf( //
                                         // @formatter:off
@@ -1431,11 +1407,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         // @formatter:off
                         // WKN     ISIN          Wertpapierbezeichnung           Anzahl
@@ -1522,11 +1494,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         // @formatter:off
                         // WKN     ISIN          Wertpapierbezeichnung           Anzahl
@@ -1618,11 +1586,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // @formatter:off
                         // WKN     ISIN          Wertpapierbezeichnung           Anzahl
@@ -1710,11 +1674,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         // @formatter:off
                         // WKN     ISIN          Wertpapierbezeichnung           Anzahl
@@ -1789,11 +1749,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         depositRemovalblock_Format01.setMaxSize(2);
         depositRemovalblock_Format01.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .oneOf( //
                                         // @formatter:off
@@ -1884,11 +1840,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         depositRemovalblock_Format02.setMaxSize(2);
         depositRemovalblock_Format02.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "note", "amount", "type") //
                         .documentContext("year", "currency") //
@@ -1935,11 +1887,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(feeblock);
         feeblock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .oneOf( //
                                         // @formatter:off
@@ -2020,13 +1968,11 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setNote(concatenate(v.get("note"), v.get("isin"), " "));
                                                         }))
-                        .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
-
+                        .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
-                            return item;
+                            return new TransactionItem(t);
                         }));
 
         var interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
@@ -2036,11 +1982,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST_CHARGE);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST_CHARGE))
 
                         .oneOf( //
                                         // @formatter:off
@@ -2088,13 +2030,11 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                             t.setNote(trim(v.get("note")));
                                                         }))
 
-                        .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
-
+                        .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
-                            return item;
+                            return new TransactionItem(t);
                         }));
 
         // @formatter:off
@@ -2104,11 +2044,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(interestCancellationBlock);
         interestCancellationBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST_CHARGE);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST_CHARGE))
 
                         .section("date", "note", "amount", "type") //
                         .documentContext("year", "currency") //
@@ -2137,11 +2073,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(taxesBlock);
         taxesBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                         .oneOf( //
                                         // @formatter:off
@@ -2209,11 +2141,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.SELL);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.SELL))
 
                         .oneOf( //
                                         // @formatter:off
@@ -2369,11 +2297,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new PortfolioTransaction();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new PortfolioTransaction(PortfolioTransaction.Type.DELIVERY_INBOUND))
 
                         // @formatter:off
                         // Is type --> "wertlos" change from DELIVERY_INBOUND to DELIVERY_OUTBOUND
@@ -2522,11 +2446,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         // @formatter:off
                         // ISHS MSCI EM USD-AC                 IE00BKM4GZ66/A111X9
@@ -2580,9 +2500,9 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^[\\s]*(?<note2>[\\d]+).*$") //
                                                         .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + v.get("note2"))))
 
-                        .wrap((t, ctx) -> {
-                            if (t.getAmount() == 0)
-                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             return new TransactionItem(t);
                         });
@@ -2608,11 +2528,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         // @formatter:off
                         // Wir belasten den Betrag Ihrem Konto 1009999999 per Valuta 23.03.2023.
@@ -2658,11 +2574,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                         .oneOf( //
                                         // @formatter:off
@@ -2893,11 +2805,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .oneOf( //
                                         // @formatter:off
@@ -3056,11 +2964,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                         .optionalOneOf( //
                                         // @formatter:off
@@ -3198,11 +3102,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .optionalOneOf( //
                                         // @formatter:off
@@ -3545,11 +3445,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                         .optionalOneOf( //
                                         // @formatter:off
@@ -3685,11 +3581,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new PortfolioTransaction();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new PortfolioTransaction(PortfolioTransaction.Type.DELIVERY_INBOUND))
 
                         .oneOf( //
                                         // @formatter:off

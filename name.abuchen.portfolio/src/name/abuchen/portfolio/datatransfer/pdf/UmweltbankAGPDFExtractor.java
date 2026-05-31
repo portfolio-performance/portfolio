@@ -46,7 +46,7 @@ public class UmweltbankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        var type = new DocumentType("Wertpapier Abrechnung Kauf");
+        final var type = new DocumentType("Wertpapier Abrechnung Kauf");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
@@ -57,11 +57,7 @@ public class UmweltbankAGPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         .oneOf( //
                                         // @formatter:off

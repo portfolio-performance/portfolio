@@ -26,6 +26,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.skippedItem;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
@@ -2470,10 +2471,10 @@ public class SBrokerPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(1L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -2483,8 +2484,8 @@ public class SBrokerPDFExtractorTest
                         hasName("UBS(L)FS-MSCI WLD SOC.RSP.UETF NAMENS-ANTEILE (USD) A-DIS O.N"), //
                         hasCurrencyCode("EUR"))));
 
-        // check taxes transaction
-        assertThat(results, hasItem(withFailureMessage( //
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2024-01-02T00:00"), hasShares(8.781), //
@@ -2506,10 +2507,10 @@ public class SBrokerPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(1L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -2519,8 +2520,8 @@ public class SBrokerPDFExtractorTest
                         hasName("ISHARES MDAX UCITS ETF DE"), //
                         hasCurrencyCode("EUR"))));
 
-        // check taxes transaction
-        assertThat(results, hasItem(withFailureMessage( //
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2024-01-02T00:00"), hasShares(12.2335), //
@@ -2650,10 +2651,10 @@ public class SBrokerPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(20L));
+        assertThat(countAccountTransactions(results), is(19L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(1L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(20));
         new AssertImportActions().check(results, "EUR");
 
@@ -2733,17 +2734,15 @@ public class SBrokerPDFExtractorTest
         assertThat(results, hasItem(fee(hasDate("2023-03-31"), hasAmount("EUR", 5.40), //
                         hasSource("GiroKontoauszug01.txt"), hasNote("Entgelte vom 01.03.2023 bis 31.03.2023"))));
 
-        // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2023-03-31"), hasAmount("EUR", 0.00), //
-                        hasSource("GiroKontoauszug01.txt"),
-                        hasNote("Abrechnungszeitraum vom 01.01.2023 bis 31.03.2023"))));
-
-        // assert transaction
-        assertThat(results, hasItem(withFailureMessage( //
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
-                        interest(hasDate("2023-03-31"), hasAmount("EUR", 0.00), //
-                                        hasSource("GiroKontoauszug01.txt"),
-                                        hasNote("Abrechnungszeitraum vom 01.01.2023 bis 31.03.2023")))));
+                        interest( //
+                                        hasDate("2023-03-31"), hasShares(0.00), //
+                                        hasSource("GiroKontoauszug01.txt"), //
+                                        hasNote("Abrechnungszeitraum vom 01.01.2023 bis 31.03.2023"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -2943,17 +2942,17 @@ public class SBrokerPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(8L));
+        assertThat(countAccountTransactions(results), is(7L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(1L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(8));
         new AssertImportActions().check(results, "EUR");
 
         // check transaction
         // get transactions
         var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(8L));
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(7L));
 
         var item = iter.next();
 
@@ -3025,39 +3024,15 @@ public class SBrokerPDFExtractorTest
         assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("Entgelte vom 01.09.2020 bis 30.09.2020"));
 
-        item = iter.next();
-
-        // assert transaction is cancellation
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-09-30T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Abrechnungszeitraum vom 01.07.2020 bis 30.09.2020"));
-
-        // check cancellation (Amount = 0,00) transaction
-        var cancellation = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
-
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
-                        is(LocalDateTime.parse("2020-09-30T00:00")));
-        assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(0)));
-        assertThat(((Transaction) cancellation.getSubject()).getSource(), is("GiroKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Abrechnungszeitraum vom 01.07.2020 bis 30.09.2020"));
-
-        assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        interest( //
+                                        hasDate("2020-09-30T00:00"), hasShares(0.00), //
+                                        hasSource("GiroKontoauszug03.txt"), //
+                                        hasNote("Abrechnungszeitraum vom 01.07.2020 bis 30.09.2020"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -3342,10 +3317,10 @@ public class SBrokerPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(5L));
+        assertThat(countAccountTransactions(results), is(4L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(1L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(5));
         new AssertImportActions().check(results, "EUR");
 
@@ -3365,17 +3340,15 @@ public class SBrokerPDFExtractorTest
         assertThat(results, hasItem(fee(hasDate("2018-12-28"), hasAmount("EUR", 4.40), //
                         hasSource("GiroKontoauszug08.txt"), hasNote("Entgelte vom 01.12.2018 bis 28.12.2018"))));
 
-        // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2018-12-31"), hasAmount("EUR", 0.00), //
-                        hasSource("GiroKontoauszug08.txt"),
-                        hasNote("Abrechnungszeitraum vom 01.10.2018 bis 31.12.2018"))));
-
-        // assert transaction
-        assertThat(results, hasItem(withFailureMessage( //
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
-                        interest(hasDate("2018-12-31"), hasAmount("EUR", 0.00), //
-                                        hasSource("GiroKontoauszug08.txt"),
-                                        hasNote("Abrechnungszeitraum vom 01.10.2018 bis 31.12.2018")))));
+                        interest( //
+                                        hasDate("2018-12-31"), hasShares(0.00), //
+                                        hasSource("GiroKontoauszug08.txt"), //
+                                        hasNote("Abrechnungszeitraum vom 01.10.2018 bis 31.12.2018"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -3390,14 +3363,14 @@ public class SBrokerPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(1L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(3L));
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(2L));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2019-12-27"), hasAmount("EUR", 1111.11), //
@@ -3407,17 +3380,15 @@ public class SBrokerPDFExtractorTest
         assertThat(results, hasItem(fee(hasDate("2019-12-30"), hasAmount("EUR", 6.20), //
                         hasSource("GiroKontoauszug09.txt"), hasNote("Entgelte vom 30.11.2019 bis 30.12.2019"))));
 
-        // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2019-12-31"), hasAmount("EUR", 0.00), //
-                        hasSource("GiroKontoauszug09.txt"),
-                        hasNote("Abrechnungszeitraum vom 01.10.2019 bis 31.12.2019"))));
-
-        // assert transaction
-        assertThat(results, hasItem(withFailureMessage( //
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
-                        interest(hasDate("2019-12-31"), hasAmount("EUR", 0.00), //
-                                        hasSource("GiroKontoauszug09.txt"),
-                                        hasNote("Abrechnungszeitraum vom 01.10.2019 bis 31.12.2019")))));
+                        interest( //
+                                        hasDate("2019-12-31"), hasShares(0.00), //
+                                        hasSource("GiroKontoauszug09.txt"), //
+                                        hasNote("Abrechnungszeitraum vom 01.10.2019 bis 31.12.2019"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -3432,10 +3403,10 @@ public class SBrokerPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(7L));
+        assertThat(countAccountTransactions(results), is(6L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(1L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(7));
         new AssertImportActions().check(results, "EUR");
 
@@ -3463,17 +3434,15 @@ public class SBrokerPDFExtractorTest
         assertThat(results, hasItem(fee(hasDate("2014-06-30"), hasAmount("EUR", 4.05), //
                         hasSource("GiroKontoauszug10.txt"), hasNote("Entgelte vom 31.05.2014 bis 30.06.2014"))));
 
-        // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2014-06-30"), hasAmount("EUR", 0.00), //
-                        hasSource("GiroKontoauszug10.txt"),
-                        hasNote("Abrechnungszeitraum vom 01.04.2014 bis 30.06.2014"))));
-
-        // assert transaction
-        assertThat(results, hasItem(withFailureMessage( //
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
-                        interest(hasDate("2014-06-30"), hasAmount("EUR", 0.00), //
-                                        hasSource("GiroKontoauszug10.txt"),
-                                        hasNote("Abrechnungszeitraum vom 01.04.2014 bis 30.06.2014")))));
+                        interest( //
+                                        hasDate("2014-06-30"), hasShares(0.00), //
+                                        hasSource("GiroKontoauszug10.txt"), //
+                                        hasNote("Abrechnungszeitraum vom 01.04.2014 bis 30.06.2014"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -3488,10 +3457,10 @@ public class SBrokerPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(1L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
@@ -3503,17 +3472,15 @@ public class SBrokerPDFExtractorTest
         assertThat(results, hasItem(fee(hasDate("2015-06-30"), hasAmount("EUR", 3.55), //
                         hasSource("GiroKontoauszug11.txt"), hasNote("Entgelte vom 30.05.2015 bis 30.06.2015"))));
 
-        // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2015-06-30"), hasAmount("EUR", 0.00), //
-                        hasSource("GiroKontoauszug11.txt"),
-                        hasNote("Abrechnungszeitraum vom 01.04.2015 bis 30.06.2015"))));
-
-        // assert transaction
-        assertThat(results, hasItem(withFailureMessage( //
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
-                        interest(hasDate("2015-06-30"), hasAmount("EUR", 0.00), //
-                                        hasSource("GiroKontoauszug11.txt"),
-                                        hasNote("Abrechnungszeitraum vom 01.04.2015 bis 30.06.2015")))));
+                        interest( //
+                                        hasDate("2015-06-30"), hasShares(0.00), //
+                                        hasSource("GiroKontoauszug11.txt"), //
+                                        hasNote("Abrechnungszeitraum vom 01.04.2015 bis 30.06.2015"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -3664,10 +3631,10 @@ public class SBrokerPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(9L));
+        assertThat(countAccountTransactions(results), is(8L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(1L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(9));
         new AssertImportActions().check(results, "EUR");
 
@@ -3703,17 +3670,15 @@ public class SBrokerPDFExtractorTest
         assertThat(results, hasItem(fee(hasDate("2019-03-29"), hasAmount("EUR", 5.00), //
                         hasSource("GiroKontoauszug15.txt"), hasNote("Entgelte vom 01.03.2019 bis 29.03.2019"))));
 
-        // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2019-03-31"), hasAmount("EUR", 0.00), //
-                        hasSource("GiroKontoauszug15.txt"),
-                        hasNote("Abrechnungszeitraum vom 01.01.2019 bis 31.03.2019"))));
-
-        // assert transaction
-        assertThat(results, hasItem(withFailureMessage( //
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
-                        interest(hasDate("2019-03-31"), hasAmount("EUR", 0.00), //
-                                        hasSource("GiroKontoauszug15.txt"),
-                                        hasNote("Abrechnungszeitraum vom 01.01.2019 bis 31.03.2019")))));
+                        interest( //
+                                        hasDate("2019-03-31"), hasShares(0.00), //
+                                        hasSource("GiroKontoauszug15.txt"), //
+                                        hasNote("Abrechnungszeitraum vom 01.01.2019 bis 31.03.2019"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -3808,10 +3773,10 @@ public class SBrokerPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(9L));
+        assertThat(countAccountTransactions(results), is(8L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(1L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(9));
         new AssertImportActions().check(results, "EUR");
 
@@ -3847,17 +3812,15 @@ public class SBrokerPDFExtractorTest
         assertThat(results, hasItem(fee(hasDate("2022-12-30"), hasAmount("EUR", 4.60), //
                         hasSource("GiroKontoauszug17.txt"), hasNote("Entgelte vom 01.12.2022 bis 30.12.2022"))));
 
-        // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2022-12-31"), hasAmount("EUR", 0.00), //
-                        hasSource("GiroKontoauszug17.txt"),
-                        hasNote("Abrechnungszeitraum vom 01.10.2022 bis 31.12.2022"))));
-
-        // assert transaction
-        assertThat(results, hasItem(withFailureMessage( //
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
-                        interest(hasDate("2022-12-31"), hasAmount("EUR", 0.00), //
-                                        hasSource("GiroKontoauszug17.txt"),
-                                        hasNote("Abrechnungszeitraum vom 01.10.2022 bis 31.12.2022")))));
+                        interest( //
+                                        hasDate("2022-12-31"), hasShares(0.00), //
+                                        hasSource("GiroKontoauszug17.txt"), //
+                                        hasNote("Abrechnungszeitraum vom 01.10.2022 bis 31.12.2022"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -4102,10 +4065,10 @@ public class SBrokerPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(1L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
@@ -4117,17 +4080,15 @@ public class SBrokerPDFExtractorTest
         assertThat(results, hasItem(fee(hasDate("2012-12-28"), hasAmount("EUR", 4.30 - 1.80), //
                         hasSource("GiroKontoauszug24.txt"), hasNote("Entgelte vom 01.12.2012 bis 28.12.2012"))));
 
-        // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2012-12-31"), hasAmount("EUR", 0.00), //
-                        hasSource("GiroKontoauszug24.txt"),
-                        hasNote("Abrechnungszeitraum vom 01.10.2012 bis 31.12.2012"))));
-
-        // assert transaction
-        assertThat(results, hasItem(withFailureMessage( //
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
-                        interest(hasDate("2012-12-31"), hasAmount("EUR", 0.00), //
-                                        hasSource("GiroKontoauszug24.txt"),
-                                        hasNote("Abrechnungszeitraum vom 01.10.2012 bis 31.12.2012")))));
+                        interest( //
+                                        hasDate("2012-12-31"), hasShares(0.00), //
+                                        hasSource("GiroKontoauszug24.txt"), //
+                                        hasNote("Abrechnungszeitraum vom 01.10.2012 bis 31.12.2012"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -4142,10 +4103,10 @@ public class SBrokerPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(10L));
+        assertThat(countAccountTransactions(results), is(9L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(1L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(10));
         new AssertImportActions().check(results, "EUR");
 
@@ -4185,17 +4146,15 @@ public class SBrokerPDFExtractorTest
         assertThat(results, hasItem(fee(hasDate("2011-06-30"), hasAmount("EUR", 4.05), //
                         hasSource("GiroKontoauszug25.txt"), hasNote("Entgelte vom 01.06.2011 bis 30.06.2011"))));
 
-        // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2011-06-30"), hasAmount("EUR", 0.00), //
-                        hasSource("GiroKontoauszug25.txt"),
-                        hasNote("Abrechnungszeitraum vom 01.04.2011 bis 30.06.2011"))));
-
-        // assert transaction
-        assertThat(results, hasItem(withFailureMessage( //
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
-                        interest(hasDate("2011-06-30"), hasAmount("EUR", 0.00), //
-                                        hasSource("GiroKontoauszug25.txt"),
-                                        hasNote("Abrechnungszeitraum vom 01.04.2011 bis 30.06.2011")))));
+                        interest( //
+                                        hasDate("2011-06-30"), hasShares(0.00), //
+                                        hasSource("GiroKontoauszug25.txt"), //
+                                        hasNote("Abrechnungszeitraum vom 01.04.2011 bis 30.06.2011"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -4687,10 +4646,10 @@ public class SBrokerPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(countAccountTransactions(results), is(3L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(1L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(4));
         new AssertImportActions().check(results, "EUR");
 
@@ -4707,17 +4666,15 @@ public class SBrokerPDFExtractorTest
         assertThat(results, hasItem(fee(hasDate("2019-03-29"), hasAmount("EUR", 8.50), //
                         hasSource("GiroKontoauszug34.txt"), hasNote("Entgelte vom 01.03.2019 bis 29.03.2019"))));
 
-        // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2019-03-31"), hasAmount("EUR", 0.00), //
-                        hasSource("GiroKontoauszug34.txt"),
-                        hasNote("Abrechnungszeitraum vom 01.01.2019 bis 31.03.2019"))));
-
-        // assert transaction
-        assertThat(results, hasItem(withFailureMessage( //
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
-                        interest(hasDate("2019-03-31"), hasAmount("EUR", 0.00), //
-                                        hasSource("GiroKontoauszug34.txt"),
-                                        hasNote("Abrechnungszeitraum vom 01.01.2019 bis 31.03.2019")))));
+                        interest( //
+                                        hasDate("2019-03-31"), hasShares(0.00), //
+                                        hasSource("GiroKontoauszug34.txt"), //
+                                        hasNote("Abrechnungszeitraum vom 01.01.2019 bis 31.03.2019"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -5112,10 +5069,10 @@ public class SBrokerPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(15L));
+        assertThat(countAccountTransactions(results), is(14L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(1L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(15));
         new AssertImportActions().check(results, "EUR");
 
@@ -5175,12 +5132,15 @@ public class SBrokerPDFExtractorTest
         assertThat(results, hasItem(fee(hasDate("2019-12-30"), hasAmount("EUR", 6.20), //
                         hasSource("GiroKontoauszug39.txt"), hasNote("Entgelte vom 30.11.2019 bis 30.12.2019"))));
 
-        // assert transaction
-        assertThat(results, hasItem(withFailureMessage( //
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
-                        interest(hasDate("2019-12-31"), hasAmount("EUR", 0.00), //
-                                        hasSource("GiroKontoauszug39.txt"),
-                                        hasNote("Abrechnungszeitraum vom 01.10.2019 bis 31.12.2019")))));
+                        interest( //
+                                        hasDate("2019-12-31"), hasShares(0.00), //
+                                        hasSource("GiroKontoauszug39.txt"), //
+                                        hasNote("Abrechnungszeitraum vom 01.10.2019 bis 31.12.2019"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -5195,10 +5155,10 @@ public class SBrokerPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(31L));
+        assertThat(countAccountTransactions(results), is(30L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(1L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(31));
         new AssertImportActions().check(results, "EUR");
 
@@ -5318,12 +5278,15 @@ public class SBrokerPDFExtractorTest
         assertThat(results, hasItem(fee(hasDate("2020-06-30"), hasAmount("EUR", 8.50), //
                         hasSource("GiroKontoauszug40.txt"), hasNote("Entgelte vom 30.05.2020 bis 30.06.2020"))));
 
-        // assert transaction
-        assertThat(results, hasItem(withFailureMessage( //
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
-                        interest(hasDate("2020-06-30"), hasAmount("EUR", 0.00), //
-                                        hasSource("GiroKontoauszug40.txt"),
-                                        hasNote("Abrechnungszeitraum vom 01.04.2020 bis 30.06.2020")))));
+                        interest( //
+                                        hasDate("2020-06-30"), hasShares(0.00), //
+                                        hasSource("GiroKontoauszug40.txt"), //
+                                        hasNote("Abrechnungszeitraum vom 01.04.2020 bis 30.06.2020"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -5367,10 +5330,10 @@ public class SBrokerPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(44L));
+        assertThat(countAccountTransactions(results), is(43L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(1L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(44));
         new AssertImportActions().check(results, "EUR");
 
@@ -5534,12 +5497,15 @@ public class SBrokerPDFExtractorTest
         assertThat(results, hasItem(fee(hasDate("2016-06-30"), hasAmount("EUR", 8.50), //
                         hasSource("GiroKontoauszug42.txt"), hasNote("Entgelte vom 01.06.2016 bis 30.06.2016"))));
 
-        // assert transaction
-        assertThat(results, hasItem(withFailureMessage( //
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
-                        interest(hasDate("2016-06-30"), hasAmount("EUR", 0.00), //
-                                        hasSource("GiroKontoauszug42.txt"),
-                                        hasNote("Abrechnungszeitraum vom 01.04.2016 bis 30.06.2016")))));
+                        interest( //
+                                        hasDate("2016-06-30"), hasShares(0.00), //
+                                        hasSource("GiroKontoauszug42.txt"), //
+                                        hasNote("Abrechnungszeitraum vom 01.04.2016 bis 30.06.2016"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test

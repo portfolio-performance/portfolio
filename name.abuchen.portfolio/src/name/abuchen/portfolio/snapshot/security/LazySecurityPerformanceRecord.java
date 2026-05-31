@@ -277,21 +277,12 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
         return costCalculation.get().sharesHeld();
     }
 
-    public Quote getCostPerSharesHeld(CostMethod costMethod)
+    public Quote getCostPerSharesHeld(CostMethod costMethod, TaxesAndFees taxesAndFees)
     {
-        var costs = costCalculation.get();
-        Money cost = getCostMoney(costMethod, TaxesAndFees.NOT_INCLUDED);
+        var sharesHeld = getSharesHeld();
+        Money cost = getCostMoney(costMethod, taxesAndFees);
 
-        return Quote.of(cost.getCurrencyCode(), Math.round(cost.getAmount() / (double) costs.sharesHeld()
-                        * Values.Share.factor() * Values.Quote.factorToMoney()));
-    }
-
-    public Quote getGrossCostPerSharesHeld(CostMethod costMethod)
-    {
-        var costs = costCalculation.get();
-        var cost = getCostMoney(costMethod, TaxesAndFees.INCLUDED);
-
-        return Quote.of(cost.getCurrencyCode(), Math.round(cost.getAmount() / (double) costs.sharesHeld()
+        return Quote.of(cost.getCurrencyCode(), Math.round(cost.getAmount() / (double) sharesHeld
                         * Values.Share.factor() * Values.Quote.factorToMoney()));
     }
 

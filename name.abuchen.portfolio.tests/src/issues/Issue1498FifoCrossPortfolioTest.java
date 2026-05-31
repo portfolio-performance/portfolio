@@ -59,9 +59,9 @@ public class Issue1498FifoCrossPortfolioTest
         assertThat(record.getSharesHeld(), is(6000000000L));
         assertThat(record.getMarketValue(), is(Money.of("EUR", 60000L))); //$NON-NLS-1$
         assertThat(record.getQuote(), is(Quote.of("EUR", 1000000000L))); //$NON-NLS-1$
-        assertThat(record.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED),
-                        is(Money.of("EUR", 99345L))); //$NON-NLS-1$
-        assertThat(record.getCostPerSharesHeld(CostMethod.FIFO), is(Quote.of("EUR", 1916666667L))); //$NON-NLS-1$
+        assertThat(record.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), is(Money.of("EUR", 99345L))); //$NON-NLS-1$
+        assertThat(record.getCostPerSharesHeld(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED),
+                        is(Quote.of("EUR", 1916666667L))); //$NON-NLS-1$
         assertThat(record.getFees(), is(Money.of("EUR", 0L))); //$NON-NLS-1$
         assertThat(record.getTaxes(), is(Money.of("EUR", 0L))); //$NON-NLS-1$
         assertThat(record.getDelta(), is(Money.of("EUR", -53660L))); //$NON-NLS-1$

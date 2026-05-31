@@ -41,7 +41,7 @@ public class SydbankASPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        var type = new DocumentType("Du har den .* \\(UTC: .*\\) (k.bt|solgt):");
+        final var type = new DocumentType("Du har den .* \\(UTC: .*\\) (k.bt|solgt):");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
@@ -52,11 +52,7 @@ public class SydbankASPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "solgt" change from BUY to SELL
                         .section("type").optional() //
@@ -125,7 +121,7 @@ public class SydbankASPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        var type = new DocumentType("Udbytte\\-meddelelse");
+        final var type = new DocumentType("Udbytte\\-meddelelse");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -136,11 +132,7 @@ public class SydbankASPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         // @formatter:off
                         // 10.02.2025 6010520 Sparinvest Korte Obligationer KL A

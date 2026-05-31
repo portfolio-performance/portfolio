@@ -54,9 +54,9 @@ public class Issue1879DividendRateOfReturnPerYearWithSecurityInMultipleAccountsT
         assertThat(record.getMarketValue(), is(Money.of("EUR", 80120L))); //$NON-NLS-1$
         assertThat(record.getQuote(), is(Quote.of("EUR", 400600000L))); //$NON-NLS-1$
         assertThat(record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of("EUR", 82930L))); //$NON-NLS-1$
-        assertThat(record.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED),
-                        is(Money.of("EUR", 82930L))); //$NON-NLS-1$
-        assertThat(record.getCostPerSharesHeld(CostMethod.FIFO), is(Quote.of("EUR", 414650000L))); //$NON-NLS-1$
+        assertThat(record.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), is(Money.of("EUR", 82930L))); //$NON-NLS-1$
+        assertThat(record.getCostPerSharesHeld(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED),
+                        is(Quote.of("EUR", 414650000L))); //$NON-NLS-1$
         assertThat(record.getFees(), is(Money.of("EUR", 0L))); //$NON-NLS-1$
         assertThat(record.getTaxes(), is(Money.of("EUR", 0L))); //$NON-NLS-1$
         assertThat(record.getDelta(), is(Money.of("EUR", 5190L))); //$NON-NLS-1$

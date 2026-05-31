@@ -69,9 +69,9 @@ public class Issue371PurchaseValueWithTransfersTest
         // pinned values previously verified via SecurityPerformanceSnapshotComparator
         assertThat(record.getMarketValue(), is(Money.of("EUR", 414023L))); //$NON-NLS-1$
         assertThat(record.getQuote(), is(Quote.of("EUR", 8809000000L))); //$NON-NLS-1$
-        assertThat(record.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED),
-                        is(Money.of("EUR", 239760L))); //$NON-NLS-1$
-        assertThat(record.getCostPerSharesHeld(CostMethod.FIFO), is(Quote.of("EUR", 5080000000L))); //$NON-NLS-1$
+        assertThat(record.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), is(Money.of("EUR", 239760L))); //$NON-NLS-1$
+        assertThat(record.getCostPerSharesHeld(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED),
+                        is(Quote.of("EUR", 5080000000L))); //$NON-NLS-1$
         assertThat(record.getFees(), is(Money.of("EUR", 1000L))); //$NON-NLS-1$
         assertThat(record.getTaxes(), is(Money.of("EUR", 0L))); //$NON-NLS-1$
         assertThat(record.getDelta(), is(Money.of("EUR", 174263L))); //$NON-NLS-1$

@@ -1,0 +1,30 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.83.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 1805027 - TRADING
+IBAN: OD1697441568843804599
+NXUxt qZwZb und-oder iHnABh dmQYGPOlN fByex
+YdPTGUXdthnd 6a
+DE-30908 nDfgzu
+Gland, 13.05.2026
+Option Premium Unsere Referenz: 1097680988 
+Im Hinblick auf folgenden Titel:
+Titel
+Bezeichnung Anzahl
+INCOMESHARES GOLD YIELD ETP ISIN: XS2852999775 581
+NKN: 136957026
+haben wir Ihrem Konto den folgenden Betrag gutgeschrieben: 
+Kontonummer 734035875
+Ausführungsdatum 05.05.2026
+Valutadatum 12.05.2026
+Anzahl 581
+Prämienanteil 0.14405405 USD
+Betrag USD 83.70
+Total USD 83.70
+Wechselkurs USD / CHF : 0.7819
+Dieser Transaktionsbeleg sowie die aufgeführte Transaktion unterliegen unseren Allgemeinen Geschäftsbedingungen und Depotreglement.
+Swissquote Bank AG, 33 chemin de la Crétaux, CH-1196 Gland  Formular ohne Unterschrift | SE&O.
+Customer Care : 0848 25 88 88 (Aus dem Ausland +41 44 825 88 88)
+CHE-116.310.079 MwSt

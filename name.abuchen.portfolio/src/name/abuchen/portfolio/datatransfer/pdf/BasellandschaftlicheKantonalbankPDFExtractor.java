@@ -39,22 +39,18 @@ public class BasellandschaftlicheKantonalbankPDFExtractor extends AbstractPDFExt
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("B.rsenabrechnung \\-( Zeichnung| R.cknahme)? (Kauf|Verkauf)");
+        final var type = new DocumentType("B.rsenabrechnung \\-( Zeichnung| R.cknahme)? (Kauf|Verkauf)");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^Auftragsnummer.*$");
+        var firstRelevantLine = new Block("^Auftragsnummer.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
@@ -74,7 +70,7 @@ public class BasellandschaftlicheKantonalbankPDFExtractor extends AbstractPDFExt
                         // Total Kurswert CHF -105.51
                         // @formatter:on
                         .section("name", "nameContinued", "wkn", "isin", "currency") //
-                        .find("Wir haben für Sie am .*") //
+                        .find("Wir haben f.r Sie am .*") //
                         .match("^[\\.'\\d]+ .*$") //
                         .match("^(?<name>.*)$") //
                         .match("^(?<nameContinued>.*)$") //
@@ -99,7 +95,7 @@ public class BasellandschaftlicheKantonalbankPDFExtractor extends AbstractPDFExt
                         // Wir haben für Sie am 11.01.2024 gezeichnet.
                         // @formatter:on
                         .section("date") //
-                        .match("^Wir haben für Sie am (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .match("^Wir haben f.r Sie am (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         // @formatter:off

@@ -43,22 +43,18 @@ public class AJBellSecuritiesLimitedPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("CONTRACT NOTE");
+        var type = new DocumentType("CONTRACT NOTE");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^Account No\\. .*$");
+        var firstRelevantLine = new Block("^Account No\\. .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "sold" change from BUY to SELL
                         .section("type").optional() //
@@ -79,7 +75,7 @@ public class AJBellSecuritiesLimitedPDFExtractor extends AbstractPDFExtractor
                         .find("We have (bought|sold) for you as agent") //
                         .match("^(?<name>.*)$") //
                         .match("^(?<name1>.*)$") //
-                        .match("^.*([\\s]{1,})[\\.,\\d]+ [\\.,\\d]+([\\s]{1,})[\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                        .match("^.*([\\s]{1,})[\\.,\\d]+ [\\.,\\d]+([\\s]{1,})[\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             if (!v.get("name1").startsWith("Venue"))
                                 v.put("name", v.get("name") + " " + v.get("name1"));
@@ -92,7 +88,7 @@ public class AJBellSecuritiesLimitedPDFExtractor extends AbstractPDFExtractor
                         // XLON                   470 67.3483        31,653.70 GBP
                         // @formatter:on
                         .section("shares") //
-                        .match("^.*([\\s]{1,})(?<shares>[\\.,\\d]+) [\\.,\\d]+([\\s]{1,})[\\.,\\d]+ [\\w]{3}$") //
+                        .match("^.*[\\s]{1,}(?<shares>[\\.,\\d]+) [\\.,\\d]+[\\s]{1,}[\\.,\\d]+ [A-Z]{3}$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
@@ -107,7 +103,7 @@ public class AJBellSecuritiesLimitedPDFExtractor extends AbstractPDFExtractor
                         // Total credit     15,783.20 GBP
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Total (debit|credit)([\\s]{1,})(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^Total (debit|credit)[\\s]{1,}(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -117,7 +113,7 @@ public class AJBellSecuritiesLimitedPDFExtractor extends AbstractPDFExtractor
                         // 05/12/19 13.15 11/12/19 Bought BF41Q72 C5L6DQ
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{2} [\\d]{2}\\.[\\d]{2} [\\d]{2}\\/[\\d]{2}\\/[\\d]{2} (Bought|Sold)([\\s]{1,})[A-Z0-9]{7} (?<note>.*)$") //
+                        .match("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{2} [\\d]{2}\\.[\\d]{2} [\\d]{2}\\/[\\d]{2}\\/[\\d]{2} (Bought|Sold)[\\s]{1,}[A-Z0-9]{7} (?<note>.*)$") //
                         .assign((t, v) -> t.setNote("Ref. No. " + trim(v.get("note"))))
 
                         .wrap(BuySellEntryItem::new);
@@ -133,7 +129,7 @@ public class AJBellSecuritiesLimitedPDFExtractor extends AbstractPDFExtractor
                         // Dealing charge 1.50 GBP
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Dealing charge([\\s]{1,})(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^Dealing charge[\\s]{1,}(?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 

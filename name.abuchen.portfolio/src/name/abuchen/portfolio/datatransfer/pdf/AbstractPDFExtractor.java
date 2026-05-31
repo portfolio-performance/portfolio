@@ -249,7 +249,7 @@ public abstract class AbstractPDFExtractor implements Extractor
     {
         try
         {
-            var tickerSymbol = values.get("tickerSymbol").trim(); //$NON-NLS-1$
+            var tickerSymbol = trim(values.get("tickerSymbol")); //$NON-NLS-1$
 
             for (SecuritySearchProvider provider : lookupCryptoProvider())
             {
@@ -276,23 +276,23 @@ public abstract class AbstractPDFExtractor implements Extractor
     {
         var isin = values.get("isin"); //$NON-NLS-1$
         if (isin != null)
-            isin = isin.trim();
+            isin = trim(isin);
 
         var tickerSymbol = values.get("tickerSymbol"); //$NON-NLS-1$
         if (tickerSymbol != null)
-            tickerSymbol = tickerSymbol.trim();
+            tickerSymbol = trim(tickerSymbol);
 
         var wkn = values.get("wkn"); //$NON-NLS-1$
         if (wkn != null)
-            wkn = wkn.trim();
+            wkn = trim(wkn);
 
         var name = values.get("name"); //$NON-NLS-1$
         if (name != null)
-            name = name.trim();
+            name = trim(name);
 
         var nameRowTwo = values.get("nameContinued"); //$NON-NLS-1$
         if (nameRowTwo != null)
-            name = name + " " + nameRowTwo.trim(); //$NON-NLS-1$
+            name = name + " " + trim(nameRowTwo); //$NON-NLS-1$
 
         var security = securityCache.lookup(isin, tickerSymbol, wkn, name, factory);
 
@@ -325,15 +325,15 @@ public abstract class AbstractPDFExtractor implements Extractor
         if (currency == null)
             return client.getBaseCurrency();
 
-        var unit = CurrencyUnit.getInstance(currency.trim());
+        var unit = CurrencyUnit.getInstance(trim(currency));
         if (unit != null)
             return unit.getCurrencyCode();
 
-        unit = CurrencyUnit.getInstanceBySymbol(currency.trim());
+        unit = CurrencyUnit.getInstanceBySymbol(trim(currency));
         if (unit != null)
             return unit.getCurrencyCode();
 
-        unit = CurrencyUnit.getInstanceByDisplayName(currency.trim());
+        unit = CurrencyUnit.getInstanceByDisplayName(trim(currency));
         if (unit != null)
             return unit.getCurrencyCode();
 
