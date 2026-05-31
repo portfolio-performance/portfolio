@@ -87,6 +87,34 @@ v.put("currency", asCurrencyCode("USD"));         // works but prefer named cons
 })
 ```
 
+**Runtime transaction type switch** — when a single PDF document format contains both deposits and removals (or buys and sells) distinguished only by a sign character, it is allowed to combine them into one block. Set `subject()` to the default type and switch in `assign()` based on the extracted sign. Use `@formatter:off/on` inside the assign lambda to mark the switch comment:
+```java
+var depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Einzahlung|Auszahlung) (\\-)?[\\.,\\d]+ .*$");
+depositRemovalBlock.set(new Transaction<AccountTransaction>()
+
+                .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
+
+                .section("date", "amount", "type", "note") //
+                .documentContext("currency") //
+                .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (Einzahlung|Auszahlung)(?<type>\\s(\\-)?)(?<amount>[\\.,\\d]+) (?<note>.*)$") //
+                .assign((t, v) -> {
+                    // @formatter:off
+                    // Is type --> "-" change from DEPOSIT to REMOVAL
+                    // @formatter:on
+                    if ("-".equals(trim(v.get("type"))))
+                        t.setType(AccountTransaction.Type.REMOVAL);
+
+                    t.setDateTime(asDate(v.get("date")));
+                    t.setCurrencyCode(v.get("currency"));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setNote(trim(v.get("note")));
+                })
+
+                .wrap(TransactionItem::new));
+```
+
+Block variable names may use an underscore suffix to distinguish format variants: `depositRemovalBlock_Format01`, `depositRemovalBlock_Format02`.
+
 **wrap() block** — the SkippedItem guard is optional; only add it when the extractor can produce zero-amount transactions that should be skipped. If used, apply the canonical `if/return SkippedItem` form; no ternary, no intermediate `item` variable, no unused `ctx` parameter. Always guard the amount check with a currency code null-check:
 ```java
 // AccountTransaction — simple form (no guard needed)
