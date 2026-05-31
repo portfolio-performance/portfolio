@@ -1,0 +1,13 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.83.2
+System: linux | x86_64 | 25.0.3+9 | Red Hat, Inc.
+-----------------------------------------
+Ein- und Auszahlungen Bundesschatz Bundes
+schatz
+Max Mustermann, Musterstraße 398, 0796 Musterstadt
+Konto: 9352 1714 9509 - Musterkonto Zeitraum: 01.05.2026 - 23.05.2026
+Währung: EUR Erstellt am: 23.05.2026 13:31:05
+Gemeinsam mit: Maximilia Mustermann, Musterstraße 398, 0796 Musterstadt
+Datum Art Betrag
+05.05.2026 Einzahlung DE74 5170 3423 1048 4364 41 1.000,00
+Seite 1 / 1
