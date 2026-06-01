@@ -79,7 +79,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("Commerzbank AG");
 
         addBuySellTransaction();
-        addDividendeTransaction();
+        addDividendTransaction();
         addTaxesTreatmentTransaction();
     }
 
@@ -104,7 +104,9 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
-                        // Is type --> "Wertpapierkauf" change from BUY to SELL
+                        // @formatter:off
+                        // Is type --> "Wertpapierverkauf" change from BUY to SELL
+                        // @formatter:on
                         .section("type").optional() //
                         .match("^(?<type>W[\\s]*e[\\s]*r[\\s]*t[\\s]*p[\\s]*a[\\s]*p[\\s]*i[\\s]*e[\\s]*r[\\s]*(k[\\s]*a[\\s]*u[\\s]*f|v[\\s]*e[\\s]*r[\\s]*k[\\s]*a[\\s]*u[\\s]*f)).*$") //
                         .assign((t, v) -> {
@@ -197,7 +199,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
-    private void addDividendeTransaction()
+    private void addDividendTransaction()
     {
         final var type = new DocumentType("(D[\\s]*i[\\s]*v[\\s]*i[\\s]*d[\\s]*e[\\s]*n[\\s]*d[\\s]*e[\\s]*n[\\s]*g[\\s]*u[\\s]*t[\\s]*s[\\s]*c[\\s]*h[\\s]*r[\\s]*i[\\s]*f[\\s]*t|E[\\s]*r[\\s]*t[\\s]*r[\\s]*a[\\s]*g[\\s]*s[\\s]*g[\\s]*u[\\s]*t[\\s]*s[\\s]*c[\\s]*h[\\s]*r[\\s]*i[\\s]*f[\\s]*t)");
         this.addDocumentTyp(type);
@@ -311,10 +313,10 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                                         // 15,000 % Quellensteuer                                     EUR               XX,XX -
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("currency", "withHoldingTax") //
+                                                        .attributes("currencyWithHoldingTax", "withHoldingTax") //
                                                         .match("^[\\.,\\d]+ % Quellensteuer[\\s]{1,}(?<currencyWithHoldingTax>[\\w]{3})[\\s]{1,}(?<withHoldingTax>[\\.,\\d]+) \\-.*$") //
                                                         .assign((t, v) -> {
-                                                            var withHoldingTax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("withHoldingTax")));
+                                                            var withHoldingTax = Money.of(asCurrencyCode(v.get("currencyWithHoldingTax")), asAmount(v.get("withHoldingTax")));
 
                                                             if (t.getMonetaryAmount().getCurrencyCode().equals(withHoldingTax.getCurrencyCode()))
                                                                 t.setMonetaryAmount(t.getMonetaryAmount().add(withHoldingTax));
