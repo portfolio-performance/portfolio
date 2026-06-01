@@ -80,7 +80,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
         addBuySellTransaction();
         addSellWithNegativeAmountTransaction();
-        addDividendeTransaction();
+        addDividendTransaction();
         addDepositoryFeeTransaction();
         addTaxesTreatmentTransaction();
         addFinancialReport();
@@ -688,7 +688,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         });
     }
 
-    private void addDividendeTransaction()
+    private void addDividendTransaction()
     {
         final var type = new DocumentType("(Dividendengutschrift" //
                         + "|Ertragsgutschrift" //
@@ -1534,21 +1534,21 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 switch (line)
                 {
                     case "Ihre aktuellen Salden IBAN Saldo in":
-                        context.put("currency", lines[i + 1]);
+                        context.put("currency", asCurrencyCode(lines[i + 1]));
                         break;
 
                     case "Ihre aktuellen Salden Saldo in":
-                        context.put("currency", lines[i + 1].substring(5, 8));
+                        context.put("currency", asCurrencyCode(lines[i + 1].substring(5, 8)));
                         break;
 
                     default:
                         var mCurrency = pCurrency.matcher(line);
                         if (mCurrency.matches())
-                            context.put("currency", mCurrency.group("currency"));
+                            context.put("currency", asCurrencyCode(mCurrency.group("currency")));
 
                         var mForeignCurrencyAccount = pForeignCurrencyAccount.matcher(line);
                         if (mForeignCurrencyAccount.matches())
-                            context.put("foreignCurrency", mForeignCurrencyAccount.group("foreignCurrency"));
+                            context.put("foreignCurrency", asCurrencyCode(mForeignCurrencyAccount.group("foreignCurrency")));
 
                         var mStartForeignCurrency = pStartForeignCurrency.matcher(line);
                         if (mStartForeignCurrency.matches())
