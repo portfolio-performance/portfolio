@@ -89,6 +89,67 @@ public class FundTransferLotBuilderTest
     }
 
     @Test
+    public void testBuildIncludesLotsRecordedOnTransferDate()
+    {
+        Client client = new Client();
+        Security sourceFund = new SecurityBuilder().addTo(client);
+
+        Portfolio sourcePortfolio = new PortfolioBuilder() //
+                        .buy(sourceFund, "2020-06-01", Values.Share.factorize(10),
+                                        Values.Amount.factorize(1000)) //
+                        .addTo(client);
+
+        PortfolioTransaction firstBuy = sourcePortfolio.getTransactions().get(0);
+
+        List<FundTransferEntry.CarriedLot> lots = FundTransferLotBuilder.build(client, sourcePortfolio, sourceFund,
+                        LocalDateTime.parse("2020-06-01T00:00"), Values.Share.factorize(7),
+                        Values.Share.factorize(11), CurrencyUnit.EUR);
+
+        assertThat(lots.size(), is(1));
+        assertThat(lots.get(0).getAcquisitionDate(), is(LocalDate.parse("2020-06-01")));
+        assertThat(lots.get(0).getSourceShares(), is(Values.Share.factorize(7)));
+        assertThat(lots.get(0).getTargetShares(), is(Values.Share.factorize(11)));
+        assertThat(lots.get(0).getAcquisitionValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(700))));
+        assertThat(lots.get(0).getSourceTransactionUUID(), is(firstBuy.getUUID()));
+    }
+
+    @Test
+    public void testBuildIncludesTransferredLotsRecordedOnTransferDate()
+    {
+        Client client = new Client();
+        Security sourceFund = new SecurityBuilder().addTo(client);
+
+        Portfolio originalPortfolio = new PortfolioBuilder() //
+                        .buy(sourceFund, "2020-06-01", Values.Share.factorize(10),
+                                        Values.Amount.factorize(1000)) //
+                        .addTo(client);
+        Portfolio sourcePortfolio = new PortfolioBuilder().addTo(client);
+
+        PortfolioTransaction originalBuy = originalPortfolio.getTransactions().get(0);
+
+        PortfolioTransferEntry transfer = new PortfolioTransferEntry(originalPortfolio, sourcePortfolio);
+        transfer.setDate(LocalDateTime.parse("2020-06-01T00:00"));
+        transfer.setSecurity(sourceFund);
+        transfer.setShares(Values.Share.factorize(10));
+        transfer.setAmount(Values.Amount.factorize(1000));
+        transfer.setCurrencyCode(CurrencyUnit.EUR);
+        transfer.insert();
+
+        List<FundTransferEntry.CarriedLot> lots = FundTransferLotBuilder.build(client, sourcePortfolio, sourceFund,
+                        LocalDateTime.parse("2020-06-01T00:00"), Values.Share.factorize(7),
+                        Values.Share.factorize(11), CurrencyUnit.EUR);
+
+        assertThat(lots.size(), is(1));
+        assertThat(lots.get(0).getAcquisitionDate(), is(LocalDate.parse("2020-06-01")));
+        assertThat(lots.get(0).getSourceShares(), is(Values.Share.factorize(7)));
+        assertThat(lots.get(0).getTargetShares(), is(Values.Share.factorize(11)));
+        assertThat(lots.get(0).getAcquisitionValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(700))));
+        assertThat(lots.get(0).getSourceTransactionUUID(), is(originalBuy.getUUID()));
+    }
+
+    @Test
     public void testBuildPreservesOriginalLotsAfterPreviousFundTransfer()
     {
         Client client = new Client();

@@ -3,7 +3,9 @@ package name.abuchen.portfolio.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import name.abuchen.portfolio.money.Money;
 
@@ -42,18 +44,26 @@ public final class FundTransferLotBuilder
                     String currencyCode)
     {
         return build(client, sourcePortfolio, sourceSecurity, transferDate, sourceShares, targetShares, currencyCode,
-                        null);
+                        (FundTransferEntry) null);
     }
 
     public static List<FundTransferEntry.CarriedLot> build(Client client, Portfolio sourcePortfolio,
                     Security sourceSecurity, LocalDateTime transferDate, long sourceShares, long targetShares,
                     String currencyCode, FundTransferEntry ignoredEntry)
     {
+        return build(client, sourcePortfolio, sourceSecurity, transferDate, sourceShares, targetShares, currencyCode,
+                        ignoredEntry != null ? Set.of(ignoredEntry) : Set.of());
+    }
+
+    private static List<FundTransferEntry.CarriedLot> build(Client client, Portfolio sourcePortfolio,
+                    Security sourceSecurity, LocalDateTime transferDate, long sourceShares, long targetShares,
+                    String currencyCode, Set<CrossEntry> ignoredEntries)
+    {
         if (sourceShares <= 0 || targetShares <= 0)
             throw new IllegalArgumentException("source and target shares must be positive"); //$NON-NLS-1$
 
         List<OpenLot> openLots = collectOpenLots(client, sourcePortfolio, sourceSecurity, transferDate, currencyCode,
-                        ignoredEntry);
+                        ignoredEntries);
         List<OpenLot> consumedLots = consume(openLots, sourceShares, true);
 
         long carriedAmount = consumedLots.stream().mapToLong(lot -> lot.acquisitionValue.getAmount()).sum();
@@ -86,18 +96,24 @@ public final class FundTransferLotBuilder
     }
 
     private static List<OpenLot> collectOpenLots(Client client, Portfolio sourcePortfolio, Security sourceSecurity,
-                    LocalDateTime transferDate, String currencyCode, FundTransferEntry ignoredEntry)
+                    LocalDateTime transferDate, String currencyCode, Set<CrossEntry> ignoredEntries)
     {
         List<OpenLot> openLots = new ArrayList<>();
+        LocalDate transferLocalDate = transferDate.toLocalDate();
 
         for (PortfolioTransaction transaction : Transaction.sortByDate(new ArrayList<>(sourcePortfolio.getTransactions())))
         {
             // When editing an existing transfer, rebuild the preview from the
             // portfolio state as if that transfer had not been recorded yet.
-            if (transaction.getCrossEntry() == ignoredEntry)
+            if (ignoredEntries.contains(transaction.getCrossEntry()))
                 continue;
 
-            if (!sourceSecurity.equals(transaction.getSecurity()) || !transaction.getDateTime().isBefore(transferDate))
+            // Statement of Assets and portfolio snapshots are date-based. The
+            // fund transfer dialog defaults new transactions to 00:00, so using
+            // a strict timestamp comparison would hide same-day lots that the
+            // user can already see as held on the transfer date.
+            if (!sourceSecurity.equals(transaction.getSecurity())
+                            || transaction.getDateTime().toLocalDate().isAfter(transferLocalDate))
                 continue;
 
             switch (transaction.getType())
@@ -112,7 +128,7 @@ public final class FundTransferLotBuilder
                     addCarriedFundTransferLots(openLots, transaction, currencyCode);
                     break;
                 case TRANSFER_IN:
-                    addTransferredLots(client, openLots, transaction, currencyCode, ignoredEntry);
+                    addTransferredLots(client, openLots, transaction, currencyCode, ignoredEntries);
                     break;
                 case SELL:
                 case DELIVERY_OUTBOUND:
@@ -140,14 +156,17 @@ public final class FundTransferLotBuilder
     }
 
     private static void addTransferredLots(Client client, List<OpenLot> openLots, PortfolioTransaction transaction,
-                    String currencyCode, FundTransferEntry ignoredEntry)
+                    String currencyCode, Set<CrossEntry> ignoredEntries)
     {
         if (!(transaction.getCrossEntry().getCrossOwner(transaction) instanceof Portfolio sourcePortfolio))
             throw new UnsupportedOperationException();
 
+        Set<CrossEntry> transferIgnoredEntries = new HashSet<>(ignoredEntries);
+        transferIgnoredEntries.add(transaction.getCrossEntry());
+
         List<FundTransferEntry.CarriedLot> lots = build(client, sourcePortfolio, transaction.getSecurity(),
                         transaction.getDateTime(), transaction.getShares(), transaction.getShares(), currencyCode,
-                        ignoredEntry);
+                        transferIgnoredEntries);
 
         for (FundTransferEntry.CarriedLot lot : lots)
             addOpenLot(openLots, lot.getAcquisitionDate(), lot.getTargetShares(), lot.getAcquisitionValue(),
