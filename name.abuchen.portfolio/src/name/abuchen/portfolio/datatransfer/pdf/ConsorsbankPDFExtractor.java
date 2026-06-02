@@ -48,7 +48,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("Cortal Consors");
 
         addBuySellTransaction();
-        addDividendeTransaction();
+        addDividendTransaction();
         addEncashmentTransaction();
         addAdvanceTaxTransaction();
         addTaxAdjustmentTransaction();
@@ -85,7 +85,9 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
+                        // @formatter:off
                         // Is type --> "VERKAUF" change from BUY to SELL
+                        // @formatter:on
                         .section("type").optional() //
                         .match("^(?i).*(?<type>Verkauf" //
                                         + "|VERK\\. TEIL\\-\\/BEZUGSR\\." //
@@ -376,7 +378,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
-    private void addDividendeTransaction()
+    private void addDividendTransaction()
     {
         final var type = new DocumentType("(?i)(Dividendengutschrift" //
                         + "|Ertragsgutschrift" //
@@ -465,6 +467,15 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("date") //
                                                         .match("^(?i)Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        //                                                      EX-TAG  08.05.2015 
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exDate") //
+                                                        .match("^(?i).*EX\\-TAG[\\s]{1,}(?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate")))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -873,7 +884,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                                         // @formatter:on
                                                         section -> section //
                                                                         .attributes("currency", "date") //
-                                                                        .match("^.*ABSCHLUSS F.R KONTO.*\\/(?<currency>[A-Z]{3}).*$")
+                                                                        .match("^.*ABSCHLUSS F.R KONTO.*\\/(?<currency>[A-Z]{3}).*$") //
                                                                         .match("^RECHNUNGSABSCHLUSSSALDO PER (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                                                                         .assign((ctx, v) -> {
                                                                             ctx.put("currency", asCurrencyCode(v.get("currency")));
@@ -924,7 +935,6 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
 
-                            // Formatting some notes
                             if ("GUTSCHRIFT".equals(v.get("note")))
                                 v.put("note", "Gutschrift");
 
@@ -961,7 +971,6 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
 
-                            // Formatting some notes
                             if ("UEBERWEISUNG".equals(v.get("note")))
                                 v.put("note", "Überweisung");
 
@@ -1023,7 +1032,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                         .section("amount", "type") //
                         .documentContext("currency", "date") //
-                        .documentContextOptionally("tax")
+                        .documentContextOptionally("tax") //
                         .match("^SUMME DER ABSCHLUSSPOSTEN (?<amount>[\\.,\\d]+) (?<type>[H|S])$") //
                         .assign((t, v) -> {
                             // @formatter:off
@@ -1088,7 +1097,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("date", "name", "wkn", "shares") //
                                                         .match("^UEBERTRAG (EINGANG|AUSGANG) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})")
                                                         .find("Bezeichnung WKN") //
-                                                        .match("^(?<name>.*) (?<wkn>[A-Z0-9]{6})$")
+                                                        .match("^(?<name>.*) (?<wkn>[A-Z0-9]{6})$") //
                                                         .match("^ST (?<shares>[\\.,\\d]+) .*$") //
                                                         .assign((t, v) -> {
                                                             v.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
@@ -1113,8 +1122,8 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                             section -> section //
                                                             .attributes("name", "wkn", "isin", "shares", "date", "currency", "amount") //
                                                             .find("Bezeichnung WKN ISIN") //
-                                                            .match("^(?<name>.*) (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
-                                                            .find("Nom\\.\\/Stk\\. Anschaffungsdatum Anschaffungsdaten")
+                                                            .match("^(?<name>.*) (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                            .find("Nom\\.\\/Stk\\. Anschaffungsdatum Anschaffungsdaten") //
                                                             .match("^(?<shares>[\\.,\\d]+) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Anschaffungswert (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                                                             .assign((t, v) -> {
                                                                 v.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
