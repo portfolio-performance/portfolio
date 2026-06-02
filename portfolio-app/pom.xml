@@ -41,6 +41,7 @@
 		<module>../name.abuchen.portfolio.ui</module>
 		<module>../name.abuchen.portfolio.ui.tests</module>
 		<module>../name.abuchen.portfolio.feature</module>
+		<module>../features/org.eclipse.swt.patch</module>
 		<module>../name.abuchen.portfolio.bootstrap</module>
 		<module>../portfolio-build-tools</module>
 		<module>../portfolio-build-tools-check</module>
@@ -51,6 +52,17 @@
 			<id>portfolio-jre</id>
 			<layout>p2</layout>
 			<url>http://portfolio-performance.github.io/bundled-jre/21.0.5</url>
+		</repository>
+		<!-- Re-qualified (patched) SWT bundles from the SWT fork update-site. Added as an
+		     available-but-unrooted p2 repository (not a target-definition root) so the
+		     patched org.eclipse.swt host + fragments coexist with the upstream SWT pulled
+		     by org.eclipse.e4.rcp, without a target-platform singleton conflict. The
+		     org.eclipse.swt.patch feature redirects e4.rcp's exact SWT requirements to
+		     these bundles in the product build. -->
+		<repository>
+			<id>swt-portfolio-fork</id>
+			<layout>p2</layout>
+			<url>https://portfolio-performance.github.io/eclipse.platform.swt-fork-update-site/R4_38/</url>
 		</repository>
 	</repositories>
 
