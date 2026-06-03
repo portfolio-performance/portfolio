@@ -37,6 +37,14 @@
 	    <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.84.1" date="2026-06-03">
+      <description>
+        <ul>
+          <li>Fix: macOS: Fixed a rare issue that could cause Portfolio Performance to become unresponsive while editing table entries.</li>
+          <li xml:lang="de">Fehlerbehebung: macOS: Ein seltenes Problem behoben, bei dem Portfolio Performance beim Bearbeiten von Tabelleneinträgen nicht mehr reagierte.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.84.0" date="2026-06-03">
       <description>
         <ul>
