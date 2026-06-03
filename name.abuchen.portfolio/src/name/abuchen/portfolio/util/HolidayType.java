@@ -409,11 +409,8 @@ import name.abuchen.portfolio.util.HebrewCalendar.HebrewDate;
         }
 
         @Override
-        public Collection<Holiday> getHolidays(int year)
+        protected Collection<Holiday> doGetHolidays(int year)
         {
-            if (!isValidYear(year))
-                return Collections.emptyList();
-
             List<Holiday> holidays = new ArrayList<>();
 
             int hijriYearAtStart;
@@ -449,12 +446,6 @@ import name.abuchen.portfolio.util.HebrewCalendar.HebrewDate;
             }
 
             return holidays;
-        }
-
-        @Override
-        protected Holiday doGetHoliday(int year)
-        {
-            return null;
         }
     }
 
@@ -508,6 +499,11 @@ import name.abuchen.portfolio.util.HebrewCalendar.HebrewDate;
         return new RelativeToEasterHolidayType(name, daysToAdd);
     }
 
+    public static HolidayType islamicDateRange(HolidayName name, int islamicMonth, int startDay, int endDay)
+    {
+        return new IslamicMonthHolidayType(name, islamicMonth, startDay, endDay);
+    }
+
     public HolidayName getName()
     {
         return name;
@@ -550,17 +546,26 @@ import name.abuchen.portfolio.util.HebrewCalendar.HebrewDate;
         return this;
     }
 
-    public Holiday getHoliday(int year)
+    public Collection<Holiday> getHolidays(int year)
     {
         if (!isValidYear(year))
-            return null;
+            return Collections.emptyList();
 
-        Holiday answer = doGetHoliday(year);
-
+        var holidays = doGetHolidays(year);
         if (moveIf.isEmpty() && moveTo == null)
-            return answer;
+            return holidays;
 
-        LocalDate date = answer.getDate();
+        var answer = new ArrayList<Holiday>();
+        for (var holiday : holidays)
+            if (holiday != null)
+                answer.add(applyMoves(holiday));
+
+        return answer;
+    }
+
+    private Holiday applyMoves(Holiday holiday)
+    {
+        var date = holiday.getDate();
 
         for (MoveIf mv : moveIf)
             date = mv.apply(date);
@@ -568,21 +573,27 @@ import name.abuchen.portfolio.util.HebrewCalendar.HebrewDate;
         if (moveTo != null)
             date = date.with(nextOrSame(moveTo));
 
-        return new Holiday(answer.getName(), date);
+        return new Holiday(holiday.getName(), date);
     }
 
-    public Collection<Holiday> getHolidays(int year)
+    /**
+     * Returns a single holiday for the given year. Used as fallback by
+     * {@link #doGetHolidays(int)} for simple holiday types.
+     */
+    protected Holiday doGetHoliday(int year)
     {
-        var holiday = getHoliday(year);
+        return null;
+    }
+
+    /**
+     * Returns all holidays produced by this type for the given year. By default,
+     * wraps the single holiday returned by {@link #doGetHoliday(int)}.
+     */
+    protected Collection<Holiday> doGetHolidays(int year)
+    {
+        var holiday = doGetHoliday(year);
         return holiday == null ? Collections.emptyList() : Collections.singletonList(holiday);
     }
-
-    public static HolidayType islamicDateRange(HolidayName name, int islamicMonth, int startDay, int endDay)
-    {
-        return new IslamicMonthHolidayType(name, islamicMonth, startDay, endDay);
-    }
-
-    protected abstract Holiday doGetHoliday(int year);
 
     protected boolean isValidYear(int year)
     {
