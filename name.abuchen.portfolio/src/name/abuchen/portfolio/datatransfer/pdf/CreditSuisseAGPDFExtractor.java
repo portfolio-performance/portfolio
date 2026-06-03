@@ -33,7 +33,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("CREDIT SUISSE");
 
         addBuySellTransaction();
-        addDividendeTransaction();
+        addDividendTransaction();
     }
 
     @Override
@@ -44,12 +44,12 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(Ihr Kauf|Ihr Verkauf)");
+        final var type = new DocumentType("(Ihr Kauf|Ihr Verkauf)");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^Ihr (Kauf|Verkauf) .*$");
+        var firstRelevantLine = new Block("^Ihr (Kauf|Verkauf) .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -57,10 +57,12 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
-                        // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
                         .match("^Ihr (?<type>(Kauf|Verkauf)) .*$") //
                         .assign((t, v) -> {
+                            // @formatter:off
+                            // Is type --> "Verkauf" change from BUY to SELL
+                            // @formatter:on
                             if ("Verkauf".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
@@ -73,9 +75,9 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "wkn", "isin", "currency") //
-                                                        .match("^[\\.,\\d]+ (?<name>.*) [\\w]{3} [\\.,\\d]+$") //
+                                                        .match("^[\\.,\\d]+ (?<name>.*) [A-Z]{3} [\\.,\\d]+$") //
                                                         .match("^Valor (?<wkn>[A-Z0-9]{5,9}),.* ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                                                        .match("^zum Kurs von (?<currency>[\\w]{3}) [\\.,\\d]+$") //
+                                                        .match("^zum Kurs von (?<currency>[A-Z]{3}) [\\.,\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // USD 200,000 6.25 % Fixed Rate Notes Norddeutsche
@@ -86,9 +88,9 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "wkn", "isin", "currency") //
-                                                        .match("^[\\w]{3} [\\.,\\d]+ (?<name>.*)$") //
+                                                        .match("^[A-Z]{3} [\\.,\\d]+ (?<name>.*)$") //
                                                         .match("^Valor (?<wkn>[A-Z0-9]{5,9}),.* ISIN (?<isin>[\\w]{12})$") //
-                                                        .match("^Kurswert (?<currency>[\\w]{3}) [\\.,\\d]+$") //
+                                                        .match("^Kurswert (?<currency>[A-Z]{3}) [\\.,\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         .oneOf( //
@@ -97,12 +99,12 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^[\\w]{3} (?<shares>[\\.,\\d]+) [\\.,\\d]+ %.*$") //
+                                                        .match("^[A-Z]{3} (?<shares>[\\.,\\d]+) [\\.,\\d]+ %.*$") //
                                                         .assign((t, v) -> {
                                                             // @formatter:off
                                                             // Percentage quotation, workaround for bonds
                                                             // @formatter:on
-                                                            BigDecimal shares = asExchangeRate(v.get("shares"));
+                                                            var shares = asExchangeRate(v.get("shares"));
                                                             t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
                                                         }),
                                         // @formatter:off
@@ -110,7 +112,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^(?<shares>[\\.,\\d]+) (?<name>.*) [\\w]{3} [\\.,\\d]+$")
+                                                        .match("^(?<shares>[\\.,\\d]+) (?<name>.*) [A-Z]{3} [\\.,\\d]+$")
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
                         // @formatter:off
@@ -139,7 +141,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                         // Gutschrift EUR 28,744.30
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^(Belastung|Gutschrift) (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                        .match("^(Belastung|Gutschrift) (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -156,7 +158,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                         // Internet-Vergünstigung USD 44.69
                         // @formatter:on
                         .section("feeRefund", "currency").optional() //
-                        .match("^Internet\\-Verg.nstigung (?<currency>[\\w]{3}) (\\- )?(?<feeRefund>[\\.,\\d]+)$") //
+                        .match("^Internet\\-Verg.nstigung (?<currency>[A-Z]{3}) (\\- )?(?<feeRefund>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setAmount(t.getPortfolioTransaction().getAmount() + asAmount(v.get("feeRefund")));
                         })
@@ -168,14 +170,14 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
         addFeeReturnBlock(type);
     }
 
-    private void addDividendeTransaction()
+    private void addDividendTransaction()
     {
-        DocumentType type = new DocumentType("Ertragsabrechnung");
+        final var type = new DocumentType("Ertragsabrechnung");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
-        
-        Block firstRelevantLine = new Block("^Ertragsabrechnung .*$");
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^Ertragsabrechnung .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -193,7 +195,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "wkn", "isin", "currency") //
                                                         .match("^[\\.,\\d]+ (?<name>.*)$") //
                                                         .match("^Valor (?<wkn>[A-Z0-9]{5,9}),.* ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                                                        .match("^Dividende (?<currency>[\\w]{3}) [\\.,\\d]+$") //
+                                                        .match("^Dividende (?<currency>[A-Z]{3}) [\\.,\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // USD 200,000 6.25 % FIXED RATE NOTES NORDDEUTSCHE
@@ -203,7 +205,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "name", "wkn", "isin") //
-                                                        .match("^(?<currency>[\\w]{3}) [\\.,\\d]+ (?<name>.*)$") //
+                                                        .match("^(?<currency>[A-Z]{3}) [\\.,\\d]+ (?<name>.*)$") //
                                                         .match("^Valor (?<wkn>[A-Z0-9]{5,9}),.* ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
@@ -213,12 +215,12 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^[\\w]{3} (?<shares>[\\.,\\d]+) [\\.,\\d]+ %.*$") //
+                                                        .match("^[A-Z]{3} (?<shares>[\\.,\\d]+) [\\.,\\d]+ %.*$") //
                                                         .assign((t, v) -> {
                                                             // @formatter:off
                                                             // Percentage quotation, workaround for bonds
                                                             // @formatter:on
-                                                            BigDecimal shares = asExchangeRate(v.get("shares"));
+                                                            var shares = asExchangeRate(v.get("shares"));
                                                             t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
                                                         }),
                                         // @formatter:off
@@ -236,11 +238,20 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                         .match("^Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Ex-Datum 14.12.2020
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exDate") //
+                                                        .match("^Ex\\-Datum (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate")))))
+
                         // @formatter:off
                         // Bruttoertrag USD 6,250.00
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Gutschrift (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                        .match("^Gutschrift (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -262,7 +273,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
 
     private void addFeeReturnBlock(DocumentType type)
     {
-        Block block = new Block("^Ihr (Kauf|Verkauf) .*$");
+        var block = new Block("^Ihr (Kauf|Verkauf) .*$");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
@@ -276,9 +287,9 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "wkn", "isin", "currency") //
-                                                        .match("^[\\.,\\d]+ (?<name>.*) [\\w]{3} [\\.,\\d]+$") //
+                                                        .match("^[\\.,\\d]+ (?<name>.*) [A-Z]{3} [\\.,\\d]+$") //
                                                         .match("^Valor (?<wkn>[A-Z0-9]{5,9}),.* ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                                                        .match("^zum Kurs von (?<currency>[\\w]{3}) [\\.,\\d]+$") //
+                                                        .match("^zum Kurs von (?<currency>[A-Z]{3}) [\\.,\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // USD 200,000 6.25 % Fixed Rate Notes Norddeutsche
@@ -289,9 +300,9 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "wkn", "isin", "currency") //
-                                                        .match("^[\\w]{3} [\\.,\\d]+ (?<name>.*)$") //
+                                                        .match("^[A-Z]{3} [\\.,\\d]+ (?<name>.*)$") //
                                                         .match("^Valor (?<wkn>[A-Z0-9]{5,9}),.* ISIN (?<isin>[\\w]{12})$") //
-                                                        .match("^Kurswert (?<currency>[\\w]{3}) [\\.,\\d]+$") //
+                                                        .match("^Kurswert (?<currency>[A-Z]{3}) [\\.,\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         .oneOf( //
@@ -300,12 +311,12 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^[\\w]{3} (?<shares>[\\.,\\d]+) [\\.,\\d]+ % (?<name>.*)$") //
+                                                        .match("^[A-Z]{3} (?<shares>[\\.,\\d]+) [\\.,\\d]+ % (?<name>.*)$") //
                                                         .assign((t, v) -> {
                                                             // @formatter:off
                                                             // Percentage quotation, workaround for bonds
                                                             // @formatter:on
-                                                            BigDecimal shares = asExchangeRate(v.get("shares"));
+                                                            var shares = asExchangeRate(v.get("shares"));
                                                             t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
                                                         }),
                                         // @formatter:off
@@ -313,7 +324,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^(?<shares>[\\.,\\d]+) (?<name>.*) [\\w]{3} [\\.,\\d]+$")
+                                                        .match("^(?<shares>[\\.,\\d]+) (?<name>.*) [A-Z]{3} [\\.,\\d]+$")
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
                         // @formatter:off
@@ -328,7 +339,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                         // Internet-Vergünstigung USD 44.69
                         // @formatter:on
                         .section("currency", "amount").optional() //
-                        .match("^Internet-Verg.nstigung (?<currency>[\\w]{3}) (-\\ )?(?<amount>[\\.,\\d]+)$") //
+                        .match("^Internet-Verg.nstigung (?<currency>[A-Z]{3}) (-\\ )?(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -337,7 +348,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
                                 return new TransactionItem(t);
-                            
+
                             // The addFeeReturnBlock optionally creates a fee
                             // refund in case the customer was granted a fee
                             // reduction ("Internet-Vergünstigung"). We do not
@@ -350,39 +361,39 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction //
-        
+
                         // @formatter:off
                         // Eidgenössische Umsatzabgabe USD 40.91
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Eidgen.ssische Umsatzabgabe (?<currency>[\\w]{3}) (\\- )?(?<tax>[\\.,\\d]+)$") //
+                        .match("^Eidgen.ssische Umsatzabgabe (?<currency>[A-Z]{3}) (\\- )?(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Quellensteuer USD - 167.00
                         // @formatter:on
                         .section("currency", "withHoldingTax").optional() //
-                        .match("^Quellensteuer (?<currency>[\\w]{3}) (\\- )?(?<withHoldingTax>[\\.,\\d]+)$") //
+                        .match("^Quellensteuer (?<currency>[A-Z]{3}) (\\- )?(?<withHoldingTax>[\\.,\\d]+)$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction //
-        
+
                         // @formatter:off
                         // Kommission Schweiz/Ausland USD 463.60
                         // Kommission Schweiz USD 1,413.65
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Kommission .* (?<currency>[\\w]{3}) (\\- )?(?<fee>[\\.,\\d]+)$") //
+                        .match("^Kommission .* (?<currency>[A-Z]{3}) (\\- )?(?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Kosten und Abgaben Ausland USD 2.00
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Kosten und Abgaben (?<currency>[\\w]{3}) (\\- )?(?<fee>[\\.,\\d]+)$") //
+                        .match("^Kosten und Abgaben (?<currency>[A-Z]{3}) (\\- )?(?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
