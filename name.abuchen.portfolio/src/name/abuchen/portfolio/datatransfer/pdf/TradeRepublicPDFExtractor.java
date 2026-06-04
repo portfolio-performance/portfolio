@@ -5099,6 +5099,16 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
+    protected long asShares(String value)
+    {
+        if (value.matches("^\\d+\\.\\d{4,}$"))
+        {
+            return asShares(value, "en", "US"); //
+        }
+        return super.asShares(value);
+    }
+
+    @Override
     protected long asAmount(String value)
     {
         var language = "de";
