@@ -1,0 +1,46 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.84.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Zusammenfassung
+Zu Beginn 6.367,72 €
+kYNPH EYTrZD pRhlV
+Einzahlungen 31,59 €
+Datum 01.05.2026 - 31.05.2026 Auszahlungen 0 €
+Ergebnis 6.399,31 €
+Alle Ziele
+Datum Zahlungsart Eingänge Ausgänge Guthaben
+01.05.2026 Go & Grow Zinsen 1,01 € 6.368,73 €
+01.05.2026 Nicht  zugeordneter  Saldo  -
+Reserve 6.368,73 € 6.368,73 €
+02.05.2026 Go & Grow Zinsen 1,02 € 6.369,75 €
+03.05.2026 Go & Grow Zinsen 1,02 € 6.370,77 €
+04.05.2026 Go & Grow Zinsen 1,02 € 6.371,79 €
+05.05.2026 Go & Grow Zinsen 1,01 € 6.372,8 €
+06.05.2026 Go & Grow Zinsen 1,02 € 6.373,82 €
+07.05.2026 Go & Grow Zinsen 1,02 € 6.374,84 €
+08.05.2026 Go & Grow Zinsen 1,02 € 6.375,86 €
+09.05.2026 Go & Grow Zinsen 1,01 € 6.376,87 €
+10.05.2026 Go & Grow Zinsen 1,02 € 6.377,89 €
+11.05.2026 Go & Grow Zinsen 1,02 € 6.378,91 €
+12.05.2026 Go & Grow Zinsen 1,02 € 6.379,93 €
+13.05.2026 Go & Grow Zinsen 1,02 € 6.380,95 €
+14.05.2026 Go & Grow Zinsen 1,02 € 6.381,97 €
+15.05.2026 Go & Grow Zinsen 1,01 € 6.382,98 €
+16.05.2026 Go & Grow Zinsen 1,02 € 6.384 €
+17.05.2026 Go & Grow Zinsen 1,02 € 6.385,02 €
+18.05.2026 Go & Grow Zinsen 1,02 € 6.386,04 €
+19.05.2026 Go & Grow Zinsen 1,02 € 6.387,06 €
+20.05.2026 Go & Grow Zinsen 1,02 € 6.388,08 €
+21.05.2026 Go & Grow Zinsen 1,02 € 6.389,1 €
+22.05.2026 Go & Grow Zinsen 1,02 € 6.390,12 €
+23.05.2026 Go & Grow Zinsen 1,02 € 6.391,14 €
+24.05.2026 Go & Grow Zinsen 1,02 € 6.392,16 €
+25.05.2026 Go & Grow Zinsen 1,02 € 6.393,18 €
+26.05.2026 Go & Grow Zinsen 1,02 € 6.394,2 €
+27.05.2026 Go & Grow Zinsen 1,02 € 6.395,22 €
+28.05.2026 Go & Grow Zinsen 1,03 € 6.396,25 €
+29.05.2026 Go & Grow Zinsen 1,02 € 6.397,27 €
+30.05.2026 Go & Grow Zinsen 1,02 € 6.398,29 €
+31.05.2026 Go & Grow Zinsen 1,02 € 6.399,31 €
+Gesamt 6.399,31 €

@@ -729,4 +729,69 @@ public class BondoraCapitalPDFExtractorTest
         assertThat(results, hasItem(removal(hasDate("2025-02-04"), hasAmount("EUR", 1111.00), //
                         hasSource("Kontoauszug17.txt"), hasNote("SEPA payment"))));
     }
+
+    @Test
+    public void testKontoauszug18()
+    {
+        var extractor = new BondoraCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug18.txt"), errors);
+
+        errors.forEach(Exception::printStackTrace);
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(31L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(31));
+        new AssertImportActions().check(results, "EUR");
+
+        Object[][] expVals = { //
+                        { "2026-05-02", 1.02d, 1.02d, 0d, 0d }, //
+                        { "2026-05-03", 1.02d, 1.02d, 0d, 0d }, //
+                        { "2026-05-04", 1.02d, 1.02d, 0d, 0d }, //
+                        { "2026-05-05", 1.01d, 1.01d, 0d, 0d }, //
+                        { "2026-05-06", 1.02d, 1.02d, 0d, 0d }, //
+                        { "2026-05-07", 1.02d, 1.02d, 0d, 0d }, //
+                        { "2026-05-08", 1.02d, 1.02d, 0d, 0d }, //
+                        { "2026-05-09", 1.01d, 1.01d, 0d, 0d }, //
+                        { "2026-05-10", 1.02d, 1.02d, 0d, 0d }, //
+                        { "2026-05-11", 1.02d, 1.02d, 0d, 0d }, //
+                        { "2026-05-12", 1.02d, 1.02d, 0d, 0d }, //
+                        { "2026-05-13", 1.02d, 1.02d, 0d, 0d }, //
+                        { "2026-05-14", 1.02d, 1.02d, 0d, 0d }, //
+                        { "2026-05-15", 1.01d, 1.01d, 0d, 0d }, //
+                        { "2026-05-16", 1.02d, 1.02d, 0d, 0d }, //
+                        { "2026-05-17", 1.02d, 1.02d, 0d, 0d }, //
+                        { "2026-05-18", 1.02d, 1.02d, 0d, 0d }, //
+                        { "2026-05-19", 1.02d, 1.02d, 0d, 0d }, //
+                        { "2026-05-20", 1.02d, 1.02d, 0d, 0d }, //
+                        { "2026-05-21", 1.02d, 1.02d, 0d, 0d }, //
+                        { "2026-05-22", 1.02d, 1.02d, 0d, 0d }, //
+                        { "2026-05-23", 1.02d, 1.02d, 0d, 0d }, //
+                        { "2026-05-24", 1.02d, 1.02d, 0d, 0d }, //
+                        { "2026-05-25", 1.02d, 1.02d, 0d, 0d }, //
+                        { "2026-05-26", 1.02d, 1.02d, 0d, 0d }, //
+                        { "2026-05-27", 1.02d, 1.02d, 0d, 0d }, //
+                        { "2026-05-28", 1.03d, 1.03d, 0d, 0d }, //
+                        { "2026-05-29", 1.02d, 1.02d, 0d, 0d }, //
+                        { "2026-05-30", 1.02d, 1.02d, 0d, 0d }, //
+                        { "2026-05-31", 1.02d, 1.02d, 0d, 0d }, //
+        };
+
+        for (Object[] expLine : expVals)
+        {
+            assertThat(results, hasItem(interest( //
+                            hasDate((String) expLine[0]), //
+                            hasSource("Kontoauszug18.txt"), //
+                            hasNote("Go & Grow Zinsen"), //
+                            hasAmount("EUR", (double) expLine[1]), hasGrossValue("EUR", (double) expLine[2]), //
+                            hasTaxes("EUR", (double) expLine[3]), hasFees("EUR", (double) expLine[4]))));
+
+        }
+    }
 }
