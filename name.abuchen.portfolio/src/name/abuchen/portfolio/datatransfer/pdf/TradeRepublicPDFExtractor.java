@@ -1261,16 +1261,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("(?i)(AUSSCH.TTUNG" //
-                        + "|(STORNIERUNG DER )?DIVIDENDE( EN ESP.CES)?" //
-                        + "|REINVESTIERUNG" //
-                        + "|STORNO DIVIDENDE" //
-                        + "|(CASH )?DIVIDEND" //
-                        + "|DIVIDENDO" //
-                        + "|DISTRIBUZIONE" //
-                        + "|Distribution" //
-                        + "|KAPITALREDUKTION)", //
-                        BLOCK_ENDSWITH); //
+        var firstRelevantLine = new Block("^TRADE REPUBLIC BANK GMBH.*$", BLOCK_ENDSWITH);
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -4506,8 +4497,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
     {
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^TRADE REPUBLIC BANK GMBH.*$", //
-                        BLOCK_ENDSWITH);
+        var firstRelevantLine = new Block("^TRADE REPUBLIC BANK GMBH.*$", BLOCK_ENDSWITH);
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
