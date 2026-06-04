@@ -36,7 +36,8 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^([\\d]{1,2}.[\\d]{1,2}.[\\d]{4}|[\\d]{4}.[\\d]{1,2}.[\\d]{1,2}) (?!Automatische .berweisung).*$");
+        var firstRelevantLine = new Block(
+                        "^([\\d]{1,2}.[\\d]{1,2}.[\\d]{4}|[\\d]{4}.[\\d]{1,2}.[\\d]{1,2}) (?!Automatische .berweisung|Nicht\\s+zugeordneter\\s+Saldo).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.setMaxSize(1);
         firstRelevantLine.set(pdfTransaction);
@@ -78,6 +79,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                         //
                                         // 25.10.2020 Go & Grow Zinsen 1 € 5'630,99 €
                                         // 26.10.2020 Go & Grow Zinsen 1,01 € 5'632 €
+                                        // 02.05.2026 Go & Grow Zinsen 1,02 € 6.369,75 €
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "note", "amount") //
