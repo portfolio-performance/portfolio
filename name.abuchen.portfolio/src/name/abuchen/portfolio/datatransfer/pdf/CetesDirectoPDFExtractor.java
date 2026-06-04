@@ -65,7 +65,7 @@ public class CetesDirectoPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("contacto@cetesdirecto.com");
 
         addBuySellTransaction();
-        addDividendeTransaction();
+        addDividendTransaction();
     }
 
     @Override
@@ -81,11 +81,6 @@ public class CetesDirectoPDFExtractor extends AbstractPDFExtractor
 
             var taxAmountTransactionHelper = new TaxAmountTransactionHelper();
             context.putType(taxAmountTransactionHelper);
-
-            List<TaxAmountTransactionItem> itemsToAddToFront = new ArrayList<>();
-
-            // Add items from pTaxAmountTransaction to the beginning of the list
-            taxAmountTransactionHelper.items.addAll(0, itemsToAddToFront);
 
             for (var i = 0; i < lines.length; i++)
             {
@@ -114,11 +109,7 @@ public class CetesDirectoPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // @formatter:off
                         // Is type --> "AMORTIZACION" change from BUY to SELL
@@ -199,7 +190,7 @@ public class CetesDirectoPDFExtractor extends AbstractPDFExtractor
                         .wrap(BuySellEntryItem::new);
     }
 
-    private void addDividendeTransaction()
+    private void addDividendTransaction()
     {
         final var type = new DocumentType("Movimientos del per");
         this.addDocumentTyp(type);
@@ -212,11 +203,7 @@ public class CetesDirectoPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         // @formatter:off
                         // 06/01/22 06/01/22 SVD148097667COMPSI BONDDIA PF2 3 1.57377100 0 0.00 4.72 0.00 1.48
@@ -249,30 +236,13 @@ public class CetesDirectoPDFExtractor extends AbstractPDFExtractor
     {
         private List<TaxAmountTransactionItem> items = new ArrayList<>();
 
-        /**
-         * Finds a TaxAmountTransactionItem in the list that has a line number
-         * greater than or equal to the specified line and matches the given
-         * date and WKN.
-         *
-         * @param line
-         *            The line number to compare against.
-         * @param dateTime
-         *            The date and time to match.
-         * @param wkn
-         *            The WKN (Wertpapierkennnummer) to match.
-         * @return An Optional containing the found item, or an empty Optional
-         *         if no match is found.
-         */
         public Optional<TaxAmountTransactionItem> findItem(int line, LocalDateTime dateTime, String wkn)
         {
             for (TaxAmountTransactionItem item : items)
             {
-                // Skip items where the line number is less than the specified
-                // line
                 if (item.line < line)
                     continue;
 
-                // Check for the matching dateTime and WKN
                 if (item.dateTime.equals(dateTime) && item.wkn.equals(wkn))
                     return Optional.of(item);
             }

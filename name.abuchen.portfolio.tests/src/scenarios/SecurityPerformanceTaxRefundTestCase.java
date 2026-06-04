@@ -27,16 +27,18 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.model.CostMethod;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
+import name.abuchen.portfolio.snapshot.security.BaseSecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.CalculationLineItem;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshotComparator;
 import name.abuchen.portfolio.util.Interval;
 
 @SuppressWarnings("nls")
@@ -58,11 +60,9 @@ public class SecurityPerformanceTaxRefundTestCase
         PortfolioTransaction delivery = portfolio.getTransactions().get(0);
         Interval period = Interval.of(LocalDate.parse("2013-12-06"), LocalDate.parse("2014-12-06"));
         TestCurrencyConverter converter = new TestCurrencyConverter();
-        SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, converter, period);
-        new SecurityPerformanceSnapshotComparator(snapshot,
-                        LazySecurityPerformanceSnapshot.create(client, converter, period)).compare();
+        LazySecurityPerformanceSnapshot snapshot = LazySecurityPerformanceSnapshot.create(client, converter, period);
 
-        SecurityPerformanceRecord record = snapshot.getRecords().get(0);
+        LazySecurityPerformanceRecord record = snapshot.getRecords().get(0);
 
         assertThat(record.getSecurity().getName(), is("Basf SE"));
 
@@ -111,6 +111,37 @@ public class SecurityPerformanceTaxRefundTestCase
                         period, warnings);
         assertThat(warnings, empty());
         assertThat(accountIndex.getFinalAccumulatedPercentage(), is(0d));
+
+        // pinned values previously verified via SecurityPerformanceSnapshotComparator
+        assertThat(record.getSharesHeld(), is(10000000000L));
+        assertThat(record.getMarketValue(), is(Money.of("EUR", 743000L)));
+        assertThat(record.getQuote(), is(Quote.of("EUR", 7430000000L)));
+        assertThat(record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of("EUR", 765800L)));
+        assertThat(record.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), is(Money.of("EUR", 765800L)));
+        assertThat(record.getCostPerSharesHeld(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED),
+                        is(Quote.of("EUR", 7638000000L)));
+        assertThat(record.getDelta(), is(Money.of("EUR", -22300L)));
+        assertThat(record.getDeltaPercent(), closeTo(-0.029119874640898408, 0.0001));
+        assertThat(record.getCapitalGainsOnHoldings(CostMethod.FIFO), is(Money.of("EUR", -22800L)));
+        assertThat(record.getCapitalGainsOnHoldings(CostMethod.MOVING_AVERAGE), is(Money.of("EUR", -22800L)));
+        assertThat(record.getCapitalGainsOnHoldingsPercent(CostMethod.FIFO), closeTo(-0.02977278662836247, 0.0001));
+        assertThat(record.getCapitalGainsOnHoldingsPercent(CostMethod.MOVING_AVERAGE),
+                        closeTo(-0.02977278662836247, 0.0001));
+        assertThat(record.getTrueTimeWeightedRateOfReturnAnnualized(), closeTo(-0.02850418410041844, 0.0001));
+        assertThat(record.getDrawdown().getMaxDrawdown(), closeTo(0.11558147839542911, 0.0001));
+        assertThat(record.getDrawdown().getMaxDrawdownDuration().getDays(), is(218L));
+        assertThat(record.getVolatility().getStandardDeviation(), closeTo(0.1503855954353586, 0.0001));
+        assertThat(record.getVolatility().getSemiDeviation(), closeTo(0.12296748653116576, 0.0001));
+        assertThat(record.getSumOfDividends(), is(Money.of("EUR", 0L)));
+        assertThat(record.getDividendEventCount(), is(0));
+        assertThat(record.getLastDividendPayment(), is((LocalDate) null));
+        assertThat(record.getPeriodicity(), is(BaseSecurityPerformanceRecord.Periodicity.NONE));
+        assertThat(record.getRealizedCapitalGains(CostMethod.FIFO).getCapitalGains(), is(Money.of("EUR", 0L)));
+        assertThat(record.getRealizedCapitalGains(CostMethod.MOVING_AVERAGE).getCapitalGains(),
+                        is(Money.of("EUR", 0L)));
+        assertThat(record.getUnrealizedCapitalGains(CostMethod.FIFO).getCapitalGains(), is(Money.of("EUR", -20800L)));
+        assertThat(record.getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE).getCapitalGains(),
+                        is(Money.of("EUR", -20800L)));
     }
 
     /**
@@ -129,11 +160,9 @@ public class SecurityPerformanceTaxRefundTestCase
         PortfolioTransaction sell = portfolio.getTransactions().get(1);
         Interval period = Interval.of(LocalDate.parse("2013-12-06"), LocalDate.parse("2014-12-06"));
         TestCurrencyConverter converter = new TestCurrencyConverter();
-        SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, converter, period);
-        new SecurityPerformanceSnapshotComparator(snapshot,
-                        LazySecurityPerformanceSnapshot.create(client, converter, period)).compare();
+        LazySecurityPerformanceSnapshot snapshot = LazySecurityPerformanceSnapshot.create(client, converter, period);
 
-        SecurityPerformanceRecord record = snapshot.getRecords().get(0);
+        LazySecurityPerformanceRecord record = snapshot.getRecords().get(0);
 
         assertThat(record.getSecurity().getName(), is("Basf SE"));
         assertThat(record.getSharesHeld(), is(0L));
@@ -167,6 +196,34 @@ public class SecurityPerformanceTaxRefundTestCase
 
         // the irr must not include taxes as well (compared with Excel):
         assertThat(record.getIrr(), closeTo(-0.032248297, 0.0001));
+
+        // pinned values previously verified via SecurityPerformanceSnapshotComparator
+        assertThat(record.getMarketValue(), is(Money.of("EUR", 0L)));
+        assertThat(record.getQuote(), is(Quote.of("EUR", 7430000000L)));
+        assertThat(record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of("EUR", 0L)));
+        assertThat(record.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), is(Money.of("EUR", 0L)));
+        assertThat(record.getCostPerSharesHeld(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED), is(Quote.of("EUR", 0L)));
+        assertThat(record.getDelta(), is(Money.of("EUR", -24300L)));
+        assertThat(record.getDeltaPercent(), closeTo(-0.03173152259075477, 0.0001));
+        assertThat(record.getCapitalGainsOnHoldings(CostMethod.FIFO), is(Money.of("EUR", 0L)));
+        assertThat(record.getCapitalGainsOnHoldings(CostMethod.MOVING_AVERAGE), is(Money.of("EUR", 0L)));
+        assertThat(record.getCapitalGainsOnHoldingsPercent(CostMethod.FIFO), closeTo(0.0, 0.0001));
+        assertThat(record.getCapitalGainsOnHoldingsPercent(CostMethod.MOVING_AVERAGE), closeTo(0.0, 0.0001));
+        assertThat(record.getTrueTimeWeightedRateOfReturnAnnualized(), closeTo(-0.029811715481171563, 0.0001));
+        assertThat(record.getDrawdown().getMaxDrawdown(), closeTo(0.1167718128794191, 0.0001));
+        assertThat(record.getDrawdown().getMaxDrawdownDuration().getDays(), is(218L));
+        assertThat(record.getVolatility().getStandardDeviation(), closeTo(0.08620414822530972, 0.0001));
+        assertThat(record.getVolatility().getSemiDeviation(), closeTo(0.006158613256381528, 0.0001));
+        assertThat(record.getSumOfDividends(), is(Money.of("EUR", 0L)));
+        assertThat(record.getDividendEventCount(), is(0));
+        assertThat(record.getLastDividendPayment(), is((LocalDate) null));
+        assertThat(record.getPeriodicity(), is(BaseSecurityPerformanceRecord.Periodicity.NONE));
+        assertThat(record.getRealizedCapitalGains(CostMethod.FIFO).getCapitalGains(), is(Money.of("EUR", -20800L)));
+        assertThat(record.getRealizedCapitalGains(CostMethod.MOVING_AVERAGE).getCapitalGains(),
+                        is(Money.of("EUR", -20800L)));
+        assertThat(record.getUnrealizedCapitalGains(CostMethod.FIFO).getCapitalGains(), is(Money.of("EUR", 0L)));
+        assertThat(record.getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE).getCapitalGains(),
+                        is(Money.of("EUR", 0L)));
     }
 
     private void assertThatTTWROROfClassificationWithSecurityIsIdentical(Client client, Interval period, double ttwror)

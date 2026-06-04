@@ -174,6 +174,25 @@ public class TextUtilTest
     }
 
     @Test
+    public void testTrim()
+    {
+        assertThat(TextUtil.trim(" "), is(""));
+        assertThat(TextUtil.trim("  hello  "), is("hello"));
+        assertThat(TextUtil.trim("\thello\t"), is("hello"));
+
+        // U+00A0 non-breaking space: trimmed leading and trailing
+        var nbsp = String.valueOf((char) 0x00A0);
+        assertThat(TextUtil.trim(nbsp + "hello"), is("hello"));
+        assertThat(TextUtil.trim("hello" + nbsp), is("hello"));
+        assertThat(TextUtil.trim(nbsp + "hello" + nbsp), is("hello"));
+
+        // U+FEFF zero-width non-breaking space (BOM): trimmed leading and trailing
+        var bom = String.valueOf('﻿');
+        assertThat(TextUtil.trim(bom + "hello"), is("hello"));
+        assertThat(TextUtil.trim("hello" + bom), is("hello"));
+    }
+
+    @Test
     public void testTrimStringInArray()
     {
         String toTrimString = " Portfolio , Performance ,   is  , a, great tool! ";
@@ -181,7 +200,6 @@ public class TextUtilTest
 
         String[] trimParts = TextUtil.trim(toTrimString.split(","));
 
-        assertThat(TextUtil.trim(" "), is(""));
         assertThat(trimParts, is(trimPartsAnswer));
     }
 

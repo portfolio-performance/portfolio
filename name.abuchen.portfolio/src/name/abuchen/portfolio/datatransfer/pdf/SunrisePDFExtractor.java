@@ -5,6 +5,7 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -13,7 +14,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -29,6 +29,8 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class SunrisePDFExtractor extends AbstractPDFExtractor
 {
+    private static final String EUR = "EUR";
+
     public SunrisePDFExtractor(Client client)
     {
         super(client);
@@ -59,11 +61,7 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // @formatter:off
                         // Kauf Standortfonds Österreich 10.00 € 140.59 € 0.071
@@ -123,11 +121,7 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         // @formatter:off
                         // Fondsname: Standortfonds Österreich
@@ -137,7 +131,7 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
                         .match("^Fondsname: (?<name>.*)$") //
                         .match("^WKN\\/ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Datum des.*$") //
                         .assign((t, v) -> {
-                            v.put("currency", CurrencyUnit.EUR);
+                            v.put("currency", asCurrencyCode(EUR));
 
                             t.setSecurity(getOrCreateSecurity(v));
                         })
@@ -173,7 +167,7 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
                         .match("^.*Zur Auszahlung kommender Betrag: (?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(CurrencyUnit.EUR);
+                            t.setCurrencyCode(asCurrencyCode("EUR"));
 
                             // @formatter:off
                             // If the dividend amount correspond to the tax amount to be paid,
@@ -215,11 +209,7 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         // @formatter:off
                         // Fondsname: Standortfonds Österreich
@@ -229,7 +219,7 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
                         .match("^Fondsname: (?<name>.*)$") //
                         .match("^WKN\\/ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Datum des.*$") //
                         .assign((t, v) -> {
-                            v.put("currency", CurrencyUnit.EUR);
+                            v.put("currency", asCurrencyCode(EUR));
 
                             t.setSecurity(getOrCreateSecurity(v));
                         })
@@ -270,8 +260,8 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
                         .match("^Kapitalertragsteuer \\(KESt\\) gesamt: (?<tax>[\\.'\\d]+)$") //
                         .match("^.*Zur Auszahlung kommender Betrag: (?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
-                            Money tax = Money.of(CurrencyUnit.EUR, asAmount(v.get("tax")));
-                            Money amount = Money.of(CurrencyUnit.EUR, asAmount(v.get("amount")));
+                            Money tax = Money.of(EUR, asAmount(v.get("tax")));
+                            Money amount = Money.of(EUR, asAmount(v.get("amount")));
 
                             if (amount.isZero())
                             {
@@ -280,17 +270,15 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
                             else
                             {
                                 t.setAmount(0L);
-                                t.setCurrencyCode(CurrencyUnit.EUR);
+                                t.setCurrencyCode(asCurrencyCode("EUR"));
                             }
                         })
 
-                        .wrap((t, ctx) -> {
-                            TransactionItem item = new TransactionItem(t);
-
+                        .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                return null;
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
-                            return item;
+                            return new TransactionItem(t);
                         });
     }
 
@@ -313,7 +301,7 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("noTax"))
                             {
-                                v.put("currency", CurrencyUnit.EUR);
+                                v.put("currency", asCurrencyCode(EUR));
                                 processTaxEntries(t, v, type);
                             }
                         });

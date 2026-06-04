@@ -54,11 +54,7 @@ public class SberbankEuropeAGPDFExtractor extends AbstractPDFExtractor
 
         depositRemovalBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            AccountTransaction transaction = new AccountTransaction();
-                            transaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return transaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "note", "amount", "type") //
                         .documentContext("currency", "year") //

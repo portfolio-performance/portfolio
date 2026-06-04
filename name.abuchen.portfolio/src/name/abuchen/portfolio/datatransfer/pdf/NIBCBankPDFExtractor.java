@@ -40,11 +40,7 @@ public class NIBCBankPDFExtractor extends AbstractPDFExtractor
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
-        pdfTransaction.subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.BUY);
-            return entry;
-        });
+        pdfTransaction.subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY));
 
         Block firstRelevantLine = new Block("^Wertpapier Abrechnung (Kauf|Verkauf).*$");
         type.addBlock(firstRelevantLine);
@@ -129,11 +125,7 @@ public class NIBCBankPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("^(Dividendengutschrift|Aussch.ttung Investmentfonds|Ertragsgutschrift .*)$");
         type.addBlock(block);
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction entry = new AccountTransaction();
-            entry.setType(AccountTransaction.Type.DIVIDENDS);
-            return entry;
-        });
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS));
 
         pdfTransaction
                 // Stück 100 VANGUARD FTSE ALL-WORLD U.ETF IE00B3RBWM25 (A1JX52)
@@ -207,11 +199,7 @@ public class NIBCBankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction t = new AccountTransaction();
-                    t.setType(AccountTransaction.Type.TAX_REFUND);
-                    return t;
-                })
+                .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                 // Ausmachender Betrag 29,57 EUR
                 // Den Gegenwert buchen wir mit Valuta 13.08.2019 zu Gunsten des Kontos 5052258000

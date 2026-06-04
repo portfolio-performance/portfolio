@@ -4,7 +4,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 
-public final class CapitalGainsRecord implements SecurityPerformanceIndicator.CapitalGains
+public final class CapitalGainsRecord
 {
     private final Security security;
 
@@ -30,25 +30,21 @@ public final class CapitalGainsRecord implements SecurityPerformanceIndicator.Ca
         return security;
     }
 
-    @Override
     public Money getCapitalGains()
     {
         return capitalGains;
     }
 
-    @Override
     public TrailRecord getCapitalGainsTrail()
     {
         return capitalGainsTrail;
     }
 
-    @Override
     public Money getForexCaptialGains()
     {
         return forexCaptialGains;
     }
 
-    @Override
     public TrailRecord getForexCapitalGainsTrail()
     {
         return forexCapitalGainsTrail;

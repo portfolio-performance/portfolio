@@ -43,22 +43,18 @@ public class AvivaPLCPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("You have (PURCHASED|SOLD)");
+        var type = new DocumentType("You have (PURCHASED|SOLD)");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^You have (PURCHASED|SOLD).*$");
+        var firstRelevantLine = new Block("^You have (PURCHASED|SOLD).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "SOLD" change from BUY to SELL
                         .section("type").optional() //
@@ -82,7 +78,7 @@ public class AvivaPLCPDFExtractor extends AbstractPDFExtractor
                                                         .match("^SEDOL: (?<wkn>[A-Z0-9]{7})$") //
                                                         .match("^Citicode: (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\..*$") //
                                                         .assign((t, v) -> {
-                                                            v.put("currency", GBP);
+                                                            v.put("currency", asCurrencyCode(GBP));
 
                                                             t.setSecurity(getOrCreateSecurity(v));
                                                         }),
@@ -93,7 +89,7 @@ public class AvivaPLCPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name") //
                                                         .match("^Investment Name: (?<name>.*)$") //
                                                         .assign((t, v) -> {
-                                                            v.put("currency", GBP);
+                                                            v.put("currency", asCurrencyCode(GBP));
 
                                                             t.setSecurity(getOrCreateSecurity(v));
                                                         }))
@@ -121,7 +117,7 @@ public class AvivaPLCPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("amount") //
                                                         .match("^Total Consideration \\p{Sc}(?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
-                                                            t.setCurrencyCode(GBP);
+                                                            t.setCurrencyCode(asCurrencyCode(GBP));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
                                         // @formatter:off
@@ -132,7 +128,7 @@ public class AvivaPLCPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("amount") //
                                                         .match("^Consideration([:])? \\p{Sc}(?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
-                                                            t.setCurrencyCode(GBP);
+                                                            t.setCurrencyCode(asCurrencyCode(GBP));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }))
                         // @formatter:off

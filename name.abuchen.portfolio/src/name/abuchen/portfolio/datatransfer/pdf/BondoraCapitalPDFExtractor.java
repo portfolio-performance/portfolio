@@ -9,7 +9,6 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.money.CurrencyUnit;
 
 /**
  * @implNote Bondora Capital does not have a specific bank identifier.
@@ -32,25 +31,21 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("(?m)^(Zusammenfassung|Summary)$");
+        final var type = new DocumentType("(?m)^(Zusammenfassung|Summary)$");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^([\\d]{1,2}.[\\d]{1,2}.[\\d]{4}|[\\d]{4}.[\\d]{1,2}.[\\d]{1,2}) (?!Automatische .berweisung).*$");
+        var firstRelevantLine = new Block("^([\\d]{1,2}.[\\d]{1,2}.[\\d]{4}|[\\d]{4}.[\\d]{1,2}.[\\d]{1,2}) (?!Automatische .berweisung).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.setMaxSize(1);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
-                        .section("type").optional()
+                        .section("type").optional() //
                         .match("^([\\d]{1,2}.[\\d]{1,2}.[\\d]{4}|[\\d]{4}.[\\d]{1,2}.[\\d]{1,2}) " //
                                         + "(?<type>(.berweisen" //
                                         + "|SEPA\\-Bank.berweisung" //
@@ -102,10 +97,10 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date")));
 
-                                                            String language = "de";
-                                                            String country = "DE";
+                                                            var language = "de";
+                                                            var country = "DE";
 
-                                                            int apostrophe = v.get("amount").indexOf("\'");
+                                                            var apostrophe = v.get("amount").indexOf("\'");
                                                             if (apostrophe >= 0)
                                                             {
                                                                 language = "de";
@@ -113,7 +108,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                                             }
 
                                                             t.setAmount(asAmount(v.get("amount"), language, country));
-                                                            t.setCurrencyCode(CurrencyUnit.EUR);
+                                                            t.setCurrencyCode(asCurrencyCode("EUR"));
                                                             t.setNote(trim(v.get("note")));
                                                         }),
                                         // @formatter:off
@@ -143,11 +138,11 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date"), Locale.UK));
 
-                                                            String language = "de";
-                                                            String country = "DE";
+                                                            var language = "de";
+                                                            var country = "DE";
 
-                                                            int lastDot = v.get("amount").lastIndexOf(".");
-                                                            int lastComma = v.get("amount").lastIndexOf(",");
+                                                            var lastDot = v.get("amount").lastIndexOf(".");
+                                                            var lastComma = v.get("amount").lastIndexOf(",");
 
                                                             if (Math.max(lastDot, lastComma) == lastDot)
                                                             {
@@ -162,7 +157,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                                             }
 
                                                             t.setAmount(asAmount(v.get("amount"), language, country));
-                                                            t.setCurrencyCode(CurrencyUnit.EUR);
+                                                            t.setCurrencyCode(asCurrencyCode("EUR"));
                                                             t.setNote(trim(v.get("note")));
                                                         }),
                                         // @formatter:off
@@ -187,7 +182,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount"), "de", "DE"));
-                                                            t.setCurrencyCode(CurrencyUnit.EUR);
+                                                            t.setCurrencyCode(asCurrencyCode("EUR"));
                                                             t.setNote(trim(v.get("note")));
                                                         }))
 

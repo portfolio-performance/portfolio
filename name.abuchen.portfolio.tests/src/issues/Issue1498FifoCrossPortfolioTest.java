@@ -2,6 +2,7 @@ package issues;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.number.IsCloseTo.closeTo;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -17,13 +18,13 @@ import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
+import name.abuchen.portfolio.snapshot.security.BaseSecurityPerformanceRecord;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshotComparator;
 import name.abuchen.portfolio.util.Interval;
 
 public class Issue1498FifoCrossPortfolioTest
@@ -47,14 +48,49 @@ public class Issue1498FifoCrossPortfolioTest
         // fifo cost must be 1150 EUR of the purchase on portfolio 1 as trade on
         // portfolio 2 has been closed
 
-        SecurityPerformanceSnapshot securitySnapshot = SecurityPerformanceSnapshot.create(client, converter, period);
-        SecurityPerformanceRecord securityRecord = securitySnapshot.getRecords().get(0);
-        assertThat(securityRecord.getSecurity(), is(lufthansa));
-        assertThat(securityRecord.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
+        LazySecurityPerformanceSnapshot securitySnapshot = LazySecurityPerformanceSnapshot.create(client, converter,
+                        period);
+        LazySecurityPerformanceRecord record = securitySnapshot.getRecords().get(0);
+        assertThat(record.getSecurity(), is(lufthansa));
+        assertThat(record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1150))));
-        
-        new SecurityPerformanceSnapshotComparator(securitySnapshot,
-                        LazySecurityPerformanceSnapshot.create(client, converter, period)).compare();
+
+        // pinned values previously verified via SecurityPerformanceSnapshotComparator
+        assertThat(record.getSharesHeld(), is(6000000000L));
+        assertThat(record.getMarketValue(), is(Money.of("EUR", 60000L))); //$NON-NLS-1$
+        assertThat(record.getQuote(), is(Quote.of("EUR", 1000000000L))); //$NON-NLS-1$
+        assertThat(record.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), is(Money.of("EUR", 99345L))); //$NON-NLS-1$
+        assertThat(record.getCostPerSharesHeld(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED),
+                        is(Quote.of("EUR", 1916666667L))); //$NON-NLS-1$
+        assertThat(record.getFees(), is(Money.of("EUR", 0L))); //$NON-NLS-1$
+        assertThat(record.getTaxes(), is(Money.of("EUR", 0L))); //$NON-NLS-1$
+        assertThat(record.getDelta(), is(Money.of("EUR", -53660L))); //$NON-NLS-1$
+        assertThat(record.getDeltaPercent(), closeTo(-0.40510342744979616, 0.0001));
+        assertThat(record.getCapitalGainsOnHoldings(CostMethod.FIFO), is(Money.of("EUR", -55000L))); //$NON-NLS-1$
+        assertThat(record.getCapitalGainsOnHoldings(CostMethod.MOVING_AVERAGE), is(Money.of("EUR", -39345L))); //$NON-NLS-1$
+        assertThat(record.getCapitalGainsOnHoldingsPercent(CostMethod.FIFO),
+                        closeTo(-0.4782608695652174, 0.0001));
+        assertThat(record.getCapitalGainsOnHoldingsPercent(CostMethod.MOVING_AVERAGE),
+                        closeTo(-0.396044088781519, 0.0001));
+        assertThat(record.getIrr(), closeTo(-0.507177136905005, 0.0001));
+        assertThat(record.getTrueTimeWeightedRateOfReturn(), closeTo(-0.6300729995540222, 0.0001));
+        assertThat(record.getTrueTimeWeightedRateOfReturnAnnualized(), closeTo(-0.6300729995540222, 0.0001));
+        assertThat(record.getDrawdown().getMaxDrawdown(), closeTo(0.45454545454545464, 0.0001));
+        assertThat(record.getDrawdown().getMaxDrawdownDuration().getDays(), is(350L));
+        assertThat(record.getVolatility().getStandardDeviation(), closeTo(0.6072558271804332, 0.0001));
+        assertThat(record.getVolatility().getSemiDeviation(), closeTo(0.6050967181252082, 0.0001));
+        assertThat(record.getSumOfDividends(), is(Money.of("EUR", 0L))); //$NON-NLS-1$
+        assertThat(record.getDividendEventCount(), is(0));
+        assertThat(record.getLastDividendPayment(), is((LocalDate) null));
+        assertThat(record.getPeriodicity(), is(BaseSecurityPerformanceRecord.Periodicity.NONE));
+        assertThat(record.getRealizedCapitalGains(CostMethod.FIFO).getCapitalGains(),
+                        is(Money.of("EUR", 1340L))); //$NON-NLS-1$
+        assertThat(record.getRealizedCapitalGains(CostMethod.MOVING_AVERAGE).getCapitalGains(),
+                        is(Money.of("EUR", -14315L))); //$NON-NLS-1$
+        assertThat(record.getUnrealizedCapitalGains(CostMethod.FIFO).getCapitalGains(),
+                        is(Money.of("EUR", -55000L))); //$NON-NLS-1$
+        assertThat(record.getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE).getCapitalGains(),
+                        is(Money.of("EUR", -39345L))); //$NON-NLS-1$
 
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, period);
 

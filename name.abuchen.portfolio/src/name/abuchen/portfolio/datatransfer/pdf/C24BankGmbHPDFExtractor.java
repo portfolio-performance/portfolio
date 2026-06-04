@@ -51,7 +51,7 @@ public class C24BankGmbHPDFExtractor extends AbstractPDFExtractor
                                                                         .assign((ctx, v) -> {
                                                                             ctx.put("taxDate", v.get("taxDate") + v.get("year"));
                                                                             ctx.put("tax", v.get("tax"));
-                                                                            ctx.put("taxCurrency", v.get("taxCurrency"));
+                                                                            ctx.put("taxCurrency", asCurrencyCode(v.get("taxCurrency")));
                                                                         })));
 
         this.addDocumentTyp(type);
@@ -69,11 +69,7 @@ public class C24BankGmbHPDFExtractor extends AbstractPDFExtractor
         type.addBlock(depositRemovalBlock);
         depositRemovalBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "note", "type", "amount", "currency") //
                         .documentContext("year") //
@@ -104,11 +100,7 @@ public class C24BankGmbHPDFExtractor extends AbstractPDFExtractor
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .section("date", "note", "type", "amount", "currency") //
                         .documentContext("year") //
@@ -131,7 +123,7 @@ public class C24BankGmbHPDFExtractor extends AbstractPDFExtractor
 
                             if (v.containsKey("tax") && v.containsKey("taxCurrency") && t.getDateTime().equals(asDate(v.get("taxDate"))))
                             {
-                                var tax = Money.of(asCurrencyCode(v.get("taxCurrency")), asAmount(v.get("tax")));
+                                var tax = Money.of(v.get("taxCurrency"), asAmount(v.get("tax")));
                                 t.addUnit(new Unit(Unit.Type.TAX, tax));
                             }
                         })

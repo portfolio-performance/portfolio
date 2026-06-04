@@ -54,11 +54,7 @@ public class VZVermoegenszentrumAGPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
 //                        // Is type --> "Verkauf" change from BUY to SELL
 //                        .section("type").optional() //
@@ -145,11 +141,7 @@ public class VZVermoegenszentrumAGPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         // @formatter:off
                         // Wir beziehen uns auf die in Ihrem Wertschriftendepot verwahrten Titel und rechnen die Ausschüttung wie folgt ab:

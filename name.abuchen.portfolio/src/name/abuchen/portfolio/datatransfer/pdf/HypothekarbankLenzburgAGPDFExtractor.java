@@ -49,7 +49,7 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        var type = new DocumentType("(Wir haben am .* f.r Sie (gekauft|verkauft)|Titelr.ckzahlung)");
+        final var type = new DocumentType("(Wir haben am .* f.r Sie (gekauft|verkauft)|Titelr.ckzahlung)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
@@ -60,11 +60,7 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         // Is type --> "Rücknahme" change from BUY to SELL
@@ -276,7 +272,7 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendTransaction()
     {
-        var type = new DocumentType("(Ertragsaussch.ttung|Dividendenzahlung)");
+        final var type = new DocumentType("(Ertragsaussch.ttung|Dividendenzahlung)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -287,11 +283,7 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         .oneOf( //
                                         // @formatter:off

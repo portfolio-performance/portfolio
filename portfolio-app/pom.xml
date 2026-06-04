@@ -5,7 +5,7 @@
 
 	<groupId>name.abuchen.portfolio</groupId>
 	<artifactId>portfolio-app</artifactId>
-	<version>0.83.3-SNAPSHOT</version>
+	<version>0.84.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Portfolio Performance</name>
@@ -13,7 +13,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<tycho-version>5.0.2</tycho-version>
+		<tycho-version>5.0.3</tycho-version>
 		<jarsigner.skip>true</jarsigner.skip>
 		<gpgsigner.skip>true</gpgsigner.skip>
 		<applesigner.skip>true</applesigner.skip>
@@ -41,6 +41,7 @@
 		<module>../name.abuchen.portfolio.ui</module>
 		<module>../name.abuchen.portfolio.ui.tests</module>
 		<module>../name.abuchen.portfolio.feature</module>
+		<module>../features/org.eclipse.swt.patch</module>
 		<module>../name.abuchen.portfolio.bootstrap</module>
 		<module>../portfolio-build-tools</module>
 		<module>../portfolio-build-tools-check</module>
@@ -51,6 +52,17 @@
 			<id>portfolio-jre</id>
 			<layout>p2</layout>
 			<url>http://portfolio-performance.github.io/bundled-jre/21.0.5</url>
+		</repository>
+		<!-- Re-qualified (patched) SWT bundles from the SWT fork update-site. Added as an
+		     available-but-unrooted p2 repository (not a target-definition root) so the
+		     patched org.eclipse.swt host + fragments coexist with the upstream SWT pulled
+		     by org.eclipse.e4.rcp, without a target-platform singleton conflict. The
+		     org.eclipse.swt.patch feature redirects e4.rcp's exact SWT requirements to
+		     these bundles in the product build. -->
+		<repository>
+			<id>swt-portfolio-fork</id>
+			<layout>p2</layout>
+			<url>https://portfolio-performance.github.io/eclipse.platform.swt-fork-update-site/R4_38/</url>
 		</repository>
 	</repositories>
 
@@ -94,7 +106,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
-				<version>3.6.2</version>
+				<version>3.6.3</version>
 				<executions>
 					<execution>
 						<id>enforce-versions</id>
@@ -458,7 +470,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-dependency-plugin</artifactId>
-					<version>3.10.0</version>
+					<version>3.11.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
@@ -560,7 +572,7 @@
 						<dependency>
 							<groupId>com.puppycrawl.tools</groupId>
 							<artifactId>checkstyle</artifactId>
-							<version>13.4.2</version>
+							<version>13.5.0</version>
 						</dependency>
 					</dependencies>
 					<executions>
@@ -584,7 +596,7 @@
 				<plugin>
 					<groupId>org.sonarsource.scanner.maven</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>5.6.0.6792</version>
+					<version>5.7.0.6970</version>
 				</plugin>
 				<plugin>
 					<groupId>name.abuchen</groupId>

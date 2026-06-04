@@ -17,6 +17,12 @@ public class BuySellEntry implements CrossEntry, Annotated
         this(null, null);
     }
 
+    public BuySellEntry(Type type)
+    {
+        this(null, null);
+        setType(type);
+    }
+
     public BuySellEntry(Portfolio portfolio, Account account)
     {
         this(portfolio, new PortfolioTransaction(), account, new AccountTransaction());

@@ -13,7 +13,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 
 /**
@@ -29,6 +28,7 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class SimpelPDFExtractor extends AbstractPDFExtractor
 {
+    private static final String EUR = "EUR";
 
     public SimpelPDFExtractor(Client client)
     {
@@ -59,11 +59,7 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
@@ -133,11 +129,7 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         // @formatter:off
                         // Fondsname: Standortfonds Deutschland Datum des
@@ -148,7 +140,7 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
                         .match("^Fondsname: (?<name>.*) Datum .*$") //
                         .match("^WKN \\/ ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$") //
                         .assign((t, v) -> {
-                            v.put("currency", CurrencyUnit.EUR);
+                            v.put("currency", asCurrencyCode(EUR));
 
                             t.setSecurity(getOrCreateSecurity(v));
                         })
@@ -184,7 +176,7 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
                         .match("^Zur (Wiederveranlagung|Wiederanlage/Auszahlung) zur Verf.gung stehend: (?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(CurrencyUnit.EUR);
+                            t.setCurrencyCode(asCurrencyCode("EUR"));
                         })
 
                         // @formatter:off
@@ -216,7 +208,7 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
                         .section("tax").optional() //
                         .match("^Kapitalertragssteuer \\(KESt\\) gesamt: (?<tax>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
-                            v.put("currency", CurrencyUnit.EUR);
+                            v.put("currency", asCurrencyCode(EUR));
 
                             processTaxEntries(t, v, type);
                         });

@@ -37,6 +37,38 @@
 	    <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.84.1" date="2026-06-03">
+      <description>
+        <ul>
+          <li>Fix: macOS: Fixed a rare issue that could cause Portfolio Performance to become unresponsive while editing table entries.</li>
+          <li xml:lang="de">Fehlerbehebung: macOS: Ein seltenes Problem behoben, bei dem Portfolio Performance beim Bearbeiten von Tabelleneinträgen nicht mehr reagierte.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.84.0" date="2026-06-03">
+      <description>
+        <ul>
+          <li>New: Added Finnish translation.</li>
+          <li>New: Added a collapsible section widget for the dashboard.</li>
+          <li>Improvement: Added ex-dividend date support to the PDF importers for Baaderbank, Banco Bilbao, Bank SLM, and apoBank.</li>
+          <li>Improvement: Swissquote PDF importer now imports option premiums as dividend transactions.</li>
+          <li>Improvement: Added English dividend notes for Scalable Capital.</li>
+          <li>Fix: Corrected the comdirect PDF importer for the new buy/tax-treatment format and partial withholding tax above 15%.</li>
+          <li>Fix: Fixed Bundesschatz deposit/withdrawal PDF extraction (IBAN and amount were reversed).</li>
+          <li>Fix: Interactive Brokers Flex Query import now books tax refunds and fees correctly.</li>
+          <li>Fix: Fixed theme switching artifacts caused by hardcoded background colors.</li>
+          <li xml:lang="de">Neu: Finnische Übersetzung hinzugefügt.</li>
+          <li xml:lang="de">Neu: Aufklappbares Abschnitts-Widget für das Dashboard hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: Ex-Tag-Unterstützung für die PDF-Importer von Baaderbank, Banco Bilbao, Bank SLM und apoBank hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: Swissquote-PDF-Importer importiert Optionsprämien jetzt als Dividendenbuchungen.</li>
+          <li xml:lang="de">Verbesserung: Englische Dividendennotizen für Scalable Capital hinzugefügt.</li>
+          <li xml:lang="de">Fehlerbehebung: comdirect-PDF-Importer für das neue Kauf-/Steuerbehandlungsformat und teilweise berücksichtigte Quellensteuer über 15 % korrigiert.</li>
+          <li xml:lang="de">Fehlerbehebung: Extraktion von Ein- und Auszahlungen beim Bundesschatz korrigiert (IBAN und Betrag waren vertauscht).</li>
+          <li xml:lang="de">Fehlerbehebung: Der Interactive Brokers Flex Query-Import verbucht Steuererstattungen und Gebühren jetzt korrekt.</li>
+          <li xml:lang="de">Fehlerbehebung: Darstellungsfehler beim Wechsel des Designs durch fest codierte Hintergrundfarben behoben.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.83.2" date="2026-04-19">
       <description>
         <ul>

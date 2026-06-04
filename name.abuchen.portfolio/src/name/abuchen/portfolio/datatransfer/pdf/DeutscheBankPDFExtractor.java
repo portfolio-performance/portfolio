@@ -47,7 +47,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        var type = new DocumentType("Abrechnung: (Kauf|Verkauf|Zeichnung) von Wertpapieren");
+        final var type = new DocumentType("Abrechnung: (Kauf|Verkauf|Zeichnung) von Wertpapieren");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
@@ -58,11 +58,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
@@ -253,7 +249,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuyTransactionFundsSavingsPlan()
     {
-        var type = new DocumentType("(db AnsparPlan|Verm.gensSparplan)");
+        final var type = new DocumentType("(db AnsparPlan|Verm.gensSparplan)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
@@ -265,11 +261,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         .oneOf( //
                         // @formatter:off
@@ -338,7 +330,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        var type = new DocumentType("(Dividendengutschrift|Ertragsgutschrift|Kupongutschrift)");
+        final var type = new DocumentType("(Dividendengutschrift|Ertragsgutschrift|Kupongutschrift)");
         this.addDocumentTyp(type);
 
         var firstRelevantLine = new Block("^(Dividendengutschrift|Ertragsgutschrift|Kupongutschrift)$");
@@ -349,11 +341,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         .oneOf( //
                                         // @formatter:off
@@ -495,11 +483,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         // @formatter:off
                         // Stück WKN ISIN
@@ -565,10 +549,12 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                         })
                         )
 
-                        .wrap(t -> t.getCurrencyCode() == null || t.getAmount() == 0
-                                        ? new SkippedItem(new TransactionItem(t),
-                                                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired)
-                                        : new TransactionItem(t));
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() == null || t.getAmount() == 0)
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                            return new TransactionItem(t);
+                        });
     }
 
     private void addAccountStatementTransaction()
@@ -600,11 +586,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
         depositRemovalBlock.setMaxSize(2);
         depositRemovalBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .oneOf( //
                                         // @formatter:off
@@ -794,11 +776,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(blockFees);
         blockFees.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .section("date", "amount", "note").optional() //
                         .documentContext("currency", "year") //

@@ -26,7 +26,6 @@ public class AudiBankPDFExtractor extends AbstractPDFExtractor
         return "Audi Bank";
     }
 
-
     private void addAccountStatementTransaction()
     {
         final var type = new DocumentType("Kontoauszug / Saldenmitteilung", //
@@ -48,11 +47,7 @@ public class AudiBankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "amount") //
                         .documentContext("currency") //
@@ -73,11 +68,7 @@ public class AudiBankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.REMOVAL);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
 
                         .section("date", "amount") //
                         .documentContext("currency") //
@@ -100,11 +91,7 @@ public class AudiBankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .section("date", "amount") //
                         .documentContext("currency") //
@@ -119,7 +106,7 @@ public class AudiBankPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^[\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Abgeltungsteuer [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\-(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
 
                             t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
@@ -129,7 +116,7 @@ public class AudiBankPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^[\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Solidarit.tszuschlag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\-(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
 
                             t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
@@ -139,7 +126,7 @@ public class AudiBankPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^[\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Kirchensteuer [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\-(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
 
                             t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
