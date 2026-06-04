@@ -5101,7 +5101,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asShares(String value)
     {
-        if (value.matches("^\\d+\\.\\d{4,}$"))
+        if (value.matches("^(0\\.\\d+|\\d+\\.\\d{1,2}|\\d+\\.\\d{4,})$"))
         {
             return asShares(value, "en", "US"); //
         }
