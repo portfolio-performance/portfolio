@@ -9000,6 +9000,85 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testDividende31()
+    {
+        var extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende31.txt"), errors);
+
+        errors.forEach(Exception::printStackTrace);
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("GB0002374006"), hasWkn(null), hasTicker(null), //
+                        hasName("Diageo"), //
+                        hasCurrencyCode("GBP"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-06-04T00:00"),
+                        // hasExDate("2025-05-18T00:00"), //
+                        hasShares(7), //
+                        hasSource("Dividende31.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.90), //
+                        hasGrossValue("EUR", 1.21), //
+                        hasForexGrossValue("GBP", 1.05), //
+                        hasTaxes("EUR", 0.31), //
+                        hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende31WithSecurityInEUR()
+    {
+        var security = new Security("Diageo", "EUR");
+        security.setIsin("GB0002374006");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new TradeRepublicPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende31.txt"), errors);
+
+        errors.forEach(Exception::printStackTrace);
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-06-04T00:00"),
+                        // hasExDate("2025-05-18T00:00"), //
+                        hasShares(7), //
+                        hasSource("Dividende31.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.90), //
+                        hasGrossValue("EUR", 1.21), //
+                        hasTaxes("EUR", 0.31), //
+                        hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testDividend01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());

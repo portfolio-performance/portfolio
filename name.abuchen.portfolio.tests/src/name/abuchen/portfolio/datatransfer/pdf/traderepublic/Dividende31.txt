@@ -1,0 +1,59 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.84.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+RQMKZd XyqTYa SEITE 1 von 2
+lqGEQy xjrQMm 60 DATUM 04.06.2026
+72537 MgEfXoooBQwp DEPOT 9749142896
+DIVIDENDE
+ÜBERSICHT
+Dividende mit Ex-Datum 16.04.2026.
+POSITION ANZAHL ERTRAG BETRAG
+Diageo 1.05 GBP
+7.000000 Stücke 0.1494 GBP
+GB0002374006
+GESAMT 1.05 GBP
+ABRECHNUNG
+POSITION BETRAG
+Zwischensumme 1.05 GBP
+Zwischensumme 0.86493 GBP/EUR 1.21 EUR
+Kapitalertragsteuer 0.86493 GBP/EUR -0.30 EUR
+Solidaritätszuschlag 0.86493 GBP/EUR -0.01 EUR
+GESAMT 0.90 EUR
+BUCHUNG
+VERRECHNUNGSKONTO DATUM DER ZAHLUNG BETRAG
+DE34100123450126461601 04.06.2026 0.90 EUR
+GB0002374006 in Wertpapierrechnung
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Wird keine Umsatzsteuer ausgewiesen, handelt es sich um eine umsatzsteuerfreie Leistung gemäß § 4 Nr. 8 UStG
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+gEjZsw CHhNxv SEITE 2 von 2
+cNpIiw QIsHDu 09 DATUM 04.06.2026
+04128 EkfLYfzWCacH DEPOT 6901872638
+STEUERLICHE BEHANDLUNG
+BERECHNUNG DER STEUERBEMESSUNGSGRUNDLAGE BETRAG
+Kapitalertrag 1,05 GBP
+Zwischensumme 0.86493 EUR/GBP 1,21 EUR
+STEUERBEMESSUNGSGRUNDLAGE 1,21 EUR
+BERECHNUNG DER STEUERN BETRAG
+Steuerbemessungsgrundlage 1,21 EUR
+Kapitalertragsteuer -0,30 EUR
+Solidaritätszuschlag -0,01 EUR
+GESAMTE STEUERN 0,31 EUR
+VERRECHNUNGSTÖPFE
+VERRECHNUNGSTÖPFE VORHER VERÄNDERUNG NACHHER
+Verlustverrechnungstopf Aktien 2.229,39 EUR 0,00 EUR 2.229,39 EUR
+Verlustverrechnungstopf Allgemein 0,00 EUR 0,00 EUR 0,00 EUR
+Freistellungsauftrag 0,00 EUR 0,00 EUR 0,00 EUR
+Quellensteuertopf 0,00 EUR 0,00 EUR 0,00 EUR
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
