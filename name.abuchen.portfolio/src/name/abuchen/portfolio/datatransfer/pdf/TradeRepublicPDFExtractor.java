@@ -1504,6 +1504,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Dividendo con l'ex-tag 12.05.2023.
                                         // Distribuzione con l'ex-tag 17.08.2023. 
                                         // Ausschüttung mit dem Ex-Tag 12.09.2019.
+                                        // Dividende mit Ex-Datum22.05.2024.
                                         // Dividende mit Ex-Datum 22.05.2024.
                                         // @formatter:on
                                         section -> section //
