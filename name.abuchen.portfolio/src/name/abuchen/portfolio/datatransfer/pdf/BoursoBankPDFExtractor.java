@@ -247,6 +247,7 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("name", "isin") //
                         .match("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\,\\d\\s]+ (?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\).*$") //
+                        .documentContext("currency") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
