@@ -58,6 +58,14 @@
 		<module>../portfolio-build-tools-check</module>
 	</modules>
 
+	<distributionManagement>
+		<repository>
+			<id>github</id>
+			<name>GitHub OWNER Apache Maven Packages</name>
+			<url>https://maven.pkg.github.com/aanno/portfolio</url>
+		</repository>
+	</distributionManagement>
+
 	<repositories>
 		<repository>
 			<id>portfolio-jre</id>
