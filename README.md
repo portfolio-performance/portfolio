@@ -14,10 +14,10 @@ Here you can read more about it:
 
 There have been several discussions why PP does not allow for negative values. Here are references to several of them:
 
-* https://github.com/portfolio-performance/portfolio/issues/3450
-* https://github.com/portfolio-performance/portfolio/issues/3616
-* https://github.com/portfolio-performance/portfolio/pull/3617
-* https://forum.portfolio-performance.info/t/verbuchung-von-anleihen/1537/81
+* https://github.com/portfolio-performance/portfolio/issues/3450 (open)
+* https://github.com/portfolio-performance/portfolio/issues/3616 (closed)
+* https://github.com/portfolio-performance/portfolio/pull/3617 (closed)
+* [Verbuchung von Anleihen - Behandlung von Stückzinsen](https://forum.portfolio-performance.info/t/verbuchung-von-anleihen/1537/81)
 * [Allow dividends to be negative](https://forum.portfolio-performance.info/t/allow-dividends-to-be-negative/6501/3)
 * [Eintragen von negativen Dividenden](https://forum.portfolio-performance.info/t/eintragen-von-negativen-dividenden/1394/26)
 * [Import von negativen Dividenden](https://forum.portfolio-performance.info/t/import-von-negativen-dividenden-reversal-aus-ib-flex-query/32047/5)
