@@ -42,16 +42,19 @@ import org.junit.Test;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.TestExtractorHelper;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 
 @SuppressWarnings("nls")
 public class TradeRepublicCSVExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testTransactionExport01() throws IOException
     {
         var client = new Client();
-        var extractor = new TradeRepublicCSVExtractor(client);
+        var extractor = new TradeRepublicCSVExtractor(client, negativeValue);
         var errors = new ArrayList<Exception>();
         var filename = "TransactionExport01.csv";
 
@@ -390,7 +393,7 @@ public class TradeRepublicCSVExtractorTest
     public void testTransactionReport02() throws IOException
     {
         var client = new Client();
-        var extractor = new TradeRepublicCSVExtractor(client);
+        var extractor = new TradeRepublicCSVExtractor(client, negativeValue);
         var errors = new ArrayList<Exception>();
         var filename = "TransactionExport02.csv";
 
@@ -504,7 +507,7 @@ public class TradeRepublicCSVExtractorTest
     public void testTransactionReport03() throws IOException
     {
         var client = new Client();
-        var extractor = new TradeRepublicCSVExtractor(client);
+        var extractor = new TradeRepublicCSVExtractor(client, negativeValue);
         var errors = new ArrayList<Exception>();
         var filename = "TransactionExport03.csv";
 
@@ -557,7 +560,7 @@ public class TradeRepublicCSVExtractorTest
     public void testTransactionReport04() throws IOException
     {
         var client = new Client();
-        var extractor = new TradeRepublicCSVExtractor(client);
+        var extractor = new TradeRepublicCSVExtractor(client, negativeValue);
         var errors = new ArrayList<Exception>();
         var filename = "TransactionExport04.csv";
 
@@ -661,7 +664,7 @@ public class TradeRepublicCSVExtractorTest
     public void testTransactionReport05() throws IOException
     {
         var client = new Client();
-        var extractor = new TradeRepublicCSVExtractor(client);
+        var extractor = new TradeRepublicCSVExtractor(client, negativeValue);
         var errors = new ArrayList<Exception>();
         var filename = "TransactionExport05.csv";
 
@@ -702,7 +705,7 @@ public class TradeRepublicCSVExtractorTest
     public void testTransactionReport06() throws IOException
     {
         var client = new Client();
-        var extractor = new TradeRepublicCSVExtractor(client);
+        var extractor = new TradeRepublicCSVExtractor(client, negativeValue);
         var errors = new ArrayList<Exception>();
         var filename = "TransactionExport06.csv";
 

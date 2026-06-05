@@ -1,6 +1,44 @@
+# PR: Allow negative values (on CSV import, and in UI)
+
+This is the _permanent_ page for a simple feature request that did not make it into the portfolio main branch. With with fork, you can use negative values at most places!
+
+**ATTENTION:<br/>
+After switching this on and actually using transactions with negative values, there is _NO WAY BACK_!**
+
+Here you can read more about it:
+
+* [current PR](https://github.com/portfolio-performance/portfolio/pull/5445) (however not considered)
+  + This also explains how to use the [packages](https://github.com/users/aanno/packages?repo_name=portfolio) that I build here if you are _not_ a developer
+* [my 1st PR try](https://github.com/portfolio-performance/portfolio/pull/5376) (closed)
+* [forum discussion about my problem at hand](https://forum.portfolio-performance.info/t/verbuchung-von-anleihen/1537/81)
+
+There have been several discussion why PP does not allow for negative values. Here are references to several of them:
+
+* https://github.com/portfolio-performance/portfolio/issues/3450
+* https://github.com/portfolio-performance/portfolio/issues/3616
+* https://github.com/portfolio-performance/portfolio/pull/3617
+* https://forum.portfolio-performance.info/t/verbuchung-von-anleihen/1537/81
+* [Allow dividends to be negative](https://forum.portfolio-performance.info/t/allow-dividends-to-be-negative/6501/3)
+* [Eintragen von negativen Dividenden](https://forum.portfolio-performance.info/t/eintragen-von-negativen-dividenden/1394/26)
+* [Import von negativen Dividenden](https://forum.portfolio-performance.info/t/import-von-negativen-dividenden-reversal-aus-ib-flex-query/32047/5)
+* [Negative Dividenden bei Shortpositionen](https://forum.portfolio-performance.info/t/negative-dividenden-bei-shortposition/16626/6)
+
+## Build as developer (quick)
+
+```sh
+cd portfolio-app
+# only if needed
+mvn clean
+mvn -DskipTests install
+# run it, e.g.
+../portfolio-product/target/products/name.abuchen.portfolio.product/linux/gtk/x86_64/portfolio/PortfolioPerformance
+```
+
+Also see [here](CONTRIBUTING.md#development-setup).
+
 # About
 
-[Portfolio Performance](https://www.portfolio-performance.info): Track and evaluate the performance of your investment portfolio across stocks, cryptocurrencies, and other assets.
+[Portfolio Performance](https://www.portfolio-performance.info): Track and evaluate the performance of your investment portfolio across stocks, cryptocurrencies, and other assets. It adds the option to relaxing the restriction that you must provide positive values for the most input and CSV fields as experiment, i.e. it is configurable in the settings now.
 
 ## Status
 
