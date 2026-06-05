@@ -1,6 +1,6 @@
 # PR: Allow negative values (on CSV import, and in UI)
 
-This is the _permanent_ page for a simple feature request that did not make it into the portfolio main branch. With with fork, you can use negative values at most places!
+This is the _permanent_ page for a simple feature request that did not make it into the portfolio main branch. With this fork, you can use negative values at most places!
 
 **ATTENTION:<br/>
 After switching this on and actually using transactions with negative values, there is _NO WAY BACK_!**
@@ -12,7 +12,7 @@ Here you can read more about it:
 * [my 1st PR try](https://github.com/portfolio-performance/portfolio/pull/5376) (closed)
 * [forum discussion about my problem at hand](https://forum.portfolio-performance.info/t/verbuchung-von-anleihen/1537/81)
 
-There have been several discussion why PP does not allow for negative values. Here are references to several of them:
+There have been several discussions why PP does not allow for negative values. Here are references to several of them:
 
 * https://github.com/portfolio-performance/portfolio/issues/3450
 * https://github.com/portfolio-performance/portfolio/issues/3616
