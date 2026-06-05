@@ -197,7 +197,22 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
                 return Images.TEXT.image();
             }
         });
-        new StringEditingSupport(AttributeType.class, "name").addListener(this).attachTo(column); //$NON-NLS-1$
+
+        new StringEditingSupport(AttributeType.class, "name") //$NON-NLS-1$
+        {
+            @Override
+            public void setValue(Object element, Object value) throws Exception
+            {
+                AttributeType attribute = (AttributeType) element;
+                String newName = ((String) value).trim();
+
+                if (newName.isEmpty())
+                    return;
+
+                super.setValue(element, nextAvailableAttributeName(newName, attribute));
+            }
+        }.addListener(this).attachTo(column);
+
         support.addColumn(column);
 
         column = new Column(Messages.ColumnColumnLabel, SWT.None, 150);
@@ -284,6 +299,26 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
                     moveAttribute(attributeType, insertAt);
                 }
             });
+        }
+    }
+
+    private String nextAvailableAttributeName(String baseName, AttributeType current)
+    {
+        String name = baseName;
+        int index = 2;
+
+        while (true)
+        {
+            final String candidate = name;
+
+            boolean exists = client.getSettings().getAttributeTypes().filter(t -> t.getTarget() == mode.getType())
+                            .filter(t -> t != current).anyMatch(t -> candidate.equals(t.getName()));
+
+            if (!exists)
+                return candidate;
+
+            name = baseName + " (" + index + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+            index++;
         }
     }
 

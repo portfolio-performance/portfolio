@@ -34,6 +34,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -947,8 +948,10 @@ public class ClientFactory
                 removeSourceAttributeFromTaxonomy(client);
             case 68: // NOSONAR
                 // added exDate date field
-
                 client.setVersion(Client.CURRENT_VERSION);
+                break;
+            case 69:
+                fixAttributeTypeNamesUnique(client);
                 break;
             case Client.CURRENT_VERSION:
                 break;
@@ -1699,6 +1702,34 @@ public class ClientFactory
                 }
             }
         }
+    }
+
+    private static void fixAttributeTypeNamesUnique(Client client)
+    {
+        Map<Class<? extends Attributable>, Set<String>> usedNamesByTarget = new HashMap<>();
+
+        client.getSettings().getAttributeTypes().forEach(attribute -> {
+            Class<? extends Attributable> target = attribute.getTarget();
+
+            Set<String> usedNames = usedNamesByTarget.computeIfAbsent(target, key -> new HashSet<>());
+
+            String originalName = attribute.getName();
+
+            if (originalName == null || originalName.isBlank())
+                originalName = attribute.getId();
+
+            String name = originalName;
+            int index = 2;
+
+            while (usedNames.contains(name))
+            {
+                name = originalName + " (" + index + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+                index++;
+            }
+
+            attribute.setName(name);
+            usedNames.add(name);
+        });
     }
 
     private static void addInvestmentPlanTypes(Client client)
