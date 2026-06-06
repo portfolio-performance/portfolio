@@ -392,6 +392,21 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
                 return Optional.empty();
             return performanceRecord.explain(key);
         }
+
+        @Override
+        public int hashCode()
+        {
+            return (performanceRecord == null) ? 73 * sortOrder : performanceRecord.getSecurity().hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            return (this == obj || (obj instanceof RowElement other && sortOrder == other.sortOrder
+                            && (performanceRecord == null || performanceRecord.getSecurity()
+                                            .equals(other.performanceRecord.getSecurity()))));
+        }
+
     }
 
     /**
