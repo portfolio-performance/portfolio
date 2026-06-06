@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Messages;
@@ -20,12 +21,12 @@ import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.format.AxisTickPercentNumberFormat;
 import name.abuchen.portfolio.ui.views.dashboard.ChartHeightConfig;
 import name.abuchen.portfolio.ui.views.dashboard.ChartShowYAxisConfig;
+import name.abuchen.portfolio.ui.views.dashboard.ClientFilterConfig;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardData;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardResources;
 import name.abuchen.portfolio.ui.views.dashboard.DataSeriesConfig;
 import name.abuchen.portfolio.ui.views.dashboard.ReportingPeriodConfig;
 import name.abuchen.portfolio.ui.views.dashboard.WidgetDelegate;
-import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TextUtil;
@@ -40,6 +41,7 @@ public class DrawdownChartWidget extends WidgetDelegate<Object>
     {
         super(widget, dashboardData);
 
+        addConfig(new ClientFilterConfig(this));
         addConfig(new DataSeriesConfig(this, true));
         addConfig(new ReportingPeriodConfig(this));
         addConfig(new ChartShowYAxisConfig(this, true));
@@ -87,12 +89,14 @@ public class DrawdownChartWidget extends WidgetDelegate<Object>
 
         DataSeriesCache cache = getDashboardData().getDataSeriesCache();
 
-        DataSeries serie = get(DataSeriesConfig.class).getDataSeries();
         Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now());
 
         return () -> {
-            cache.lookup(serie, interval);
-            return null;
+            var selectedFilter = get(ClientFilterConfig.class).getSelectedFilter();
+            Client filteredClient = selectedFilter.filter(getClient());
+
+            return cache.lookup(get(DataSeriesConfig.class).getDataSeries(), filteredClient, selectedFilter.toString(),
+                            interval);
         };
     }
 
@@ -118,8 +122,12 @@ public class DrawdownChartWidget extends WidgetDelegate<Object>
             Interval reportingPeriod = get(ReportingPeriodConfig.class).getReportingPeriod()
                             .toInterval(LocalDate.now());
 
+            var selectedFilter = get(ClientFilterConfig.class).getSelectedFilter();
+            Client filteredClient = selectedFilter.filter(getClient());
+
             PerformanceIndex index = getDashboardData().getDataSeriesCache()
-                            .lookup(get(DataSeriesConfig.class).getDataSeries(), reportingPeriod);
+                            .lookup(get(DataSeriesConfig.class).getDataSeries(), filteredClient,
+                                            selectedFilter.toString(), reportingPeriod);
 
             addDrawdown(index);
 

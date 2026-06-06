@@ -74,6 +74,23 @@ public class DataSeriesCache
         return result;
     }
 
+    public PerformanceIndex lookup(DataSeries series, Client scopedClient, String scopeKey, Interval reportingPeriod)
+    {
+        if (scopedClient == null || scopedClient == client || scopeKey == null || scopeKey.isBlank())
+            return lookup(series, reportingPeriod);
+
+        String uuid = series.getType() == DataSeries.Type.CLIENT ? "$client$" : series.getUUID(); //$NON-NLS-1$
+        CacheKey key = new CacheKey(scopeKey + "::" + uuid, reportingPeriod); //$NON-NLS-1$
+
+        PerformanceIndex result = cache.get(key);
+        if (result != null)
+            return result;
+
+        result = calculate(series, scopedClient, reportingPeriod);
+        cache.put(key, result);
+
+        return result;
+    }
     private PerformanceIndex calculate(DataSeries series, Interval reportingPeriod)
     {
         List<Exception> warnings = new ArrayList<>();
@@ -143,6 +160,36 @@ public class DataSeriesCache
 
                 default:
                     throw new IllegalArgumentException(series.getType().name());
+            }
+        }
+        finally
+        {
+            if (!warnings.isEmpty())
+                PortfolioPlugin.log(warnings);
+        }
+    }
+
+    private PerformanceIndex calculate(DataSeries series, Client scopedClient, Interval reportingPeriod)
+    {
+        List<Exception> warnings = new ArrayList<>();
+
+        try
+        {
+            switch (series.getType())
+            {
+                case CLIENT:
+                    return PerformanceIndex.forClient(scopedClient, converter, reportingPeriod, warnings);
+
+                case CLIENT_PRETAX:
+                    return PerformanceIndex.forClient(new WithoutTaxesFilter().filter(scopedClient), converter,
+                                    reportingPeriod, warnings);
+
+                case SECURITY:
+                    return PerformanceIndex.forInvestment(scopedClient, converter, (Security) series.getInstance(),
+                                    reportingPeriod, warnings);
+
+                default:
+                    return lookup(series, reportingPeriod);
             }
         }
         finally
