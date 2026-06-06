@@ -42,7 +42,7 @@ public class ElementProvider implements IElementProvider
         if (element instanceof Tree tree)
             return new TreeElementAdapter(tree, engine);
         if (element instanceof SecuritiesChart securitiesChart)
-            return new SecuritiesChartElementAdapter(securitiesChart, engine);
+            return new SecuritiesChartCSS.ElementAdapter(securitiesChart, engine);
         if (element instanceof PortfolioBalanceChart portfolioBalanceChart)
             return new PortfolioBalanceChartElementAdapter(portfolioBalanceChart, engine);
         if (element instanceof ValueColorScheme scheme)

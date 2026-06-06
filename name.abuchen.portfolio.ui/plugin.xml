@@ -120,8 +120,8 @@
          </property-name>
       </handler>
       <handler
-            adapter="name.abuchen.portfolio.ui.theme.SecuritiesChartElementAdapter"
-            handler="name.abuchen.portfolio.ui.theme.SecuritiesChartCSSHandler">
+            adapter="name.abuchen.portfolio.ui.theme.SecuritiesChartCSS$ElementAdapter"
+            handler="name.abuchen.portfolio.ui.theme.SecuritiesChartCSS$Handler">
          <property-name
                name="quote-color">
          </property-name>
@@ -151,6 +151,60 @@
          </property-name>
          <property-name
                name="shares-held-color">
+         </property-name>
+         <property-name
+               name="fifo-purchase-price-color">
+         </property-name>
+         <property-name
+               name="moving-average-purchase-price-color">
+         </property-name>
+         <property-name
+               name="bollinger-bands-color">
+         </property-name>
+         <property-name
+               name="macd-color">
+         </property-name>
+         <property-name
+               name="sma-1-color">
+         </property-name>
+         <property-name
+               name="sma-2-color">
+         </property-name>
+         <property-name
+               name="sma-3-color">
+         </property-name>
+         <property-name
+               name="sma-4-color">
+         </property-name>
+         <property-name
+               name="sma-5-color">
+         </property-name>
+         <property-name
+               name="sma-6-color">
+         </property-name>
+         <property-name
+               name="sma-7-color">
+         </property-name>
+         <property-name
+               name="ema-1-color">
+         </property-name>
+         <property-name
+               name="ema-2-color">
+         </property-name>
+         <property-name
+               name="ema-3-color">
+         </property-name>
+         <property-name
+               name="ema-4-color">
+         </property-name>
+         <property-name
+               name="ema-5-color">
+         </property-name>
+         <property-name
+               name="ema-6-color">
+         </property-name>
+         <property-name
+               name="ema-7-color">
          </property-name>
       </handler>
       <handler

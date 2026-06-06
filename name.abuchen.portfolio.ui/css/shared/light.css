@@ -137,8 +137,28 @@ SecuritiesChart {
 	extreme-marker-low-color: #a30000;
 
 	non-trading-color: #FF8959;
-	
-	shares-held-color: #EBC934
+	shares-held-color: #EBC934;
+
+	fifo-purchase-price-color: #E27A79;
+	moving-average-purchase-price-color: #965251;
+	bollinger-bands-color: #C98D44;
+	macd-color: #E29BC8;
+
+	sma-1-color: #B36B6B;
+	sma-2-color: #B3A76B;
+	sma-3-color: #83B36B;
+	sma-4-color: #6BB38F;
+	sma-5-color: #6B9BB3;
+	sma-6-color: #776BB3;
+	sma-7-color: #B36BB3;
+
+	ema-1-color: #C86B6B;
+	ema-2-color: #C8A76B;
+	ema-3-color: #83C86B;
+	ema-4-color: #6BC88F;
+	ema-5-color: #6B9BC8;
+	ema-6-color: #776BC8;
+	ema-7-color: #C86BC8;
 }
 
 SecuritiesChart.blueorange {
