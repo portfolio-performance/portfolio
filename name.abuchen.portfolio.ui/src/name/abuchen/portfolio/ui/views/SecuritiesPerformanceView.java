@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -391,6 +392,27 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
             if (performanceRecord == null)
                 return Optional.empty();
             return performanceRecord.explain(key);
+        }
+
+        private Security getSecurity()
+        {
+            return performanceRecord == null ? null : performanceRecord.getSecurity();
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return performanceRecord == null ? 73 * sortOrder : performanceRecord.getSecurity().hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (!(obj instanceof RowElement other))
+                return false;
+            return sortOrder == other.sortOrder && Objects.equals(getSecurity(), other.getSecurity());
         }
     }
 
