@@ -690,26 +690,30 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .section("date", "note", "amount") //
                         .documentContext("currency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
-                                        + "(?<note>Ueberweisung" //
+                                        + "(?<note>(Ueberweisung" //
                                         + "|Dauerauftrag\\/Terminueberw\\." //
                                         + "|Lastschrift" //
                                         + "|Abbuchung" //
                                         + "|Echtzeit.berweisung" //
                                         + "|Kontol.schung)" //
-                                        + ".* \\-(?<amount>[\\.,\\d]+)$") //
+                                        + ".*) \\-(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
 
-                            // Formatting some notes
-                            if ("Ueberweisung".equals(v.get("note")))
-                                v.put("note", "Überweisung");
+                            // Formatting some notes (fix previous incorrect contains usage)
+                            var note = v.get("note");
+                            if (note != null)
+                            {
+                                if (note.contains("Ueberweisung"))
+                                    note = note.replace("Ueberweisung", "Überweisung");
 
-                            if ("Dauerauftrag/Terminueberw.".equals(v.get("note")))
-                                v.put("note", "Dauerauftrag/Terminüberweisung");
+                                if (note.contains("Dauerauftrag/Terminueberw."))
+                                    note = note.replace("Dauerauftrag/Terminueberw.", "Dauerauftrag/Terminüberweisung");
+                            }
 
-                            t.setNote(v.get("note"));
+                            t.setNote(note);
                         })
 
                         .wrap(TransactionItem::new));
@@ -740,24 +744,25 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .section("date", "note", "amount") //
                         .documentContext("currency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
-                                        + "(?<note>Gutschrift\\-VWL" //
+                                        + "(?<note>(Gutschrift\\-VWL" //
                                         + "|Gutschrift\\/Dauerauftrag" //
                                         + "|Gehalt\\/Rente" //
                                         + "|Gutschrift"
                                         + "|Retoure"
                                         + "|Bezuege"
                                         + "|Lastschrift\\-Einzug)" //
-                                        + ".* (?<amount>[\\.,\\d]+)$") //
+                                        + ".*) (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
 
-                            // Formatting some notes
-                            if ("Bezuege".equals(v.get("note")))
-                                v.put("note", "Bezüge");
+                            // Formatting some notes (fix previous incorrect contains usage)
+                            var note = v.get("note");
+                            if (note != null && note.contains("Bezuege"))
+                                note = note.replace("Bezuege", "Bezüge");
 
-                            t.setNote(v.get("note"));
+                            t.setNote(note);
                         })
 
                         .wrap(TransactionItem::new));
