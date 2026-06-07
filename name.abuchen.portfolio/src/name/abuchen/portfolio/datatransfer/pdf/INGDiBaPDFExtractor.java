@@ -670,6 +670,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         // 13.07.2016 Ueberweisung Mustermann -5.000,00
         // 13.02.2020 Gutschrift/Dauerauftrag Max Mustermann 1,01
         // 16.02.2020 Lastschrift XYZ GmbH -10,00
+        // 16.02.2020 Abbuchung XYZ GmbH -10,00
         // 16.03.2026 Echtzeitüberweisung Peter Pan Bla -1.000,00
         // 06.03.2023 Kontolöschung -1.161,10
         // @formatter:on
@@ -677,6 +678,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         + "(Ueberweisung" //
                         + "|Dauerauftrag\\/Terminueberw\\." //
                         + "|Lastschrift" //
+                        + "|Abbuchung" //
                         + "|Echtzeit.berweisung" //
                         + "|Kontol.schung)" //
                         + ".* \\-[\\.,\\d]+$");
@@ -691,6 +693,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                         + "(?<note>Ueberweisung" //
                                         + "|Dauerauftrag\\/Terminueberw\\." //
                                         + "|Lastschrift" //
+                                        + "|Abbuchung" //
                                         + "|Echtzeit.berweisung" //
                                         + "|Kontol.schung)" //
                                         + ".* \\-(?<amount>[\\.,\\d]+)$") //
@@ -716,6 +719,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         // 14.02.2020 Dauerauftrag/Terminueberw. Max Mustermann -30,00
         // 29.04.2021 Gehalt/Rente Hauptkasse des Freistaates Sachsen 806,83
         // 13.10.2020 Gutschrift-VWL 40,00
+        // 13.10.2020 Retoure XYZ GmbH 40,00
+        // 13.10.2020 Bezuege Stadt XYZ 40,00
         // 04.06.2024 Lastschrift-Einzug mvezSX fnHyElys 5.300,00
         // @formatter:on
         var depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
@@ -723,6 +728,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         + "|Gutschrift\\/Dauerauftrag" //
                         + "|Gehalt\\/Rente" //
                         + "|Gutschrift"
+                        + "|Retoure"
+                        + "|Bezuege"
                         + "|Lastschrift\\-Einzug)" //
                         + ".* [\\.,\\d]+$");
         type.addBlock(depositBlock);
@@ -737,6 +744,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                         + "|Gutschrift\\/Dauerauftrag" //
                                         + "|Gehalt\\/Rente" //
                                         + "|Gutschrift"
+                                        + "|Retoure"
+                                        + "|Bezuege"
                                         + "|Lastschrift\\-Einzug)" //
                                         + ".* (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
