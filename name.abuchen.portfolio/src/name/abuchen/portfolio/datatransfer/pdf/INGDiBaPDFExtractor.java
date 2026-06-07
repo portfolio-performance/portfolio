@@ -817,6 +817,32 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new));
 
         // @formatter:off
+        // 26.08.2022 Zins/Dividende WP 4,36
+        // 24.08.2022 Zins/Dividende ISIN IE00B1FZS350 ISHSII-DE
+        // @formatter:on
+        var dividendeBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Zins\\/Dividende WP [\\.,\\d]+$");
+        type.addBlock(dividendeBlock);
+        dividendeBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
+
+                        .section("date", "amount")
+                        .documentContext("currency")
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Zins\\/Dividende WP (?<amount>[\\.,\\d]+)$")
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+                        })
+                        .section("isin") 
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Zins\\/Dividende ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$")
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
         // 03.05.2023 Entgelt EgumoUc -0,99
         // @formatter:on
         var feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Entgelt .* \\-[\\.,\\d]+$");
