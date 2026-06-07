@@ -4324,6 +4324,38 @@ public class INGDiBaPDFExtractorTest
     }
 
     @Test
+    public void testGiroKontoauszug07()
+    {
+        var extractor = new INGDiBaPDFExtractor(new Client());
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2018-11-16"), hasAmount("EUR", 4.50), //
+                        hasSource("GiroKontoauszug07.txt"), hasNote("Abbuchung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2018-11-27"), hasAmount("EUR", 53.99), //
+                        hasSource("GiroKontoauszug07.txt"), hasNote("Retoure"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2018-11-29"), hasAmount("EUR", 1200.04), //
+                        hasSource("GiroKontoauszug07.txt"), hasNote("Bezüge"))));
+    }
+
+    @Test
     public void testKGiroKontoauszug03()
     {
         var extractor = new INGDiBaPDFExtractor(new Client());
