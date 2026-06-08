@@ -4357,7 +4357,7 @@ public class INGDiBaPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-11-16T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(4.5)));
         assertThat(transaction.getSource(), is("GiroKontoauszug07.txt"));
-        assertThat(transaction.getNote(), is("Abbuchung"));
+        assertThat(transaction.getNote(), is("Abbuchung First Data Deutschland GmbH"));
 
         item = iter.next();
 
@@ -4368,7 +4368,7 @@ public class INGDiBaPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-11-27T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(53.99)));
         assertThat(transaction.getSource(), is("GiroKontoauszug07.txt"));
-        assertThat(transaction.getNote(), is("Retoure"));
+        assertThat(transaction.getNote(), is("Retoure XYZ GmbH"));
 
         item = iter.next();
 
@@ -4379,7 +4379,7 @@ public class INGDiBaPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-11-29T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(1200.04)));
         assertThat(transaction.getSource(), is("GiroKontoauszug07.txt"));
-        assertThat(transaction.getNote(), is("Bezuege"));
+        assertThat(transaction.getNote(), is("Bezüge Freie Hansestadt Bremen"));
 
     }
 
@@ -4444,11 +4444,11 @@ public class INGDiBaPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(9L));
+        assertThat(countAccountTransactions(results), is(8L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(9));
+        assertThat(results.size(), is(8));
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
