@@ -4178,17 +4178,17 @@ public class INGDiBaPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(7L));
+        assertThat(countAccountTransactions(results), is(5L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(7));
+        assertThat(results.size(), is(5));
         new AssertImportActions().check(results, "EUR");
 
         // check transaction
         // get transactions
         var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(7L));
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(5L));
 
         var item = iter.next();
 
@@ -4244,28 +4244,6 @@ public class INGDiBaPDFExtractorTest
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.01)));
         assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Gutschrift/Dauerauftrag"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-27T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(53.99)));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Retoure"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-29T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1200.04)));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Bezuege"));
     }
 
     @Test
@@ -4345,6 +4323,67 @@ public class INGDiBaPDFExtractorTest
                         hasTaxes("EUR", (1.38 + 0.07 + 0.11)), hasFees("EUR", 0.00))));
     }
 
+
+    @Test
+    public void testGiroKontoauszug07()
+    {
+        var extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // check transaction
+        // get transactions
+        var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(3L));
+
+        var item = iter.next();
+
+        // assert transaction
+        var transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is("EUR"));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-11-16T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(4.5)));
+        assertThat(transaction.getSource(), is("GiroKontoauszug07.txt"));
+        assertThat(transaction.getNote(), is("Abbuchung"));
+
+        item = iter.next();        
+        
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getCurrencyCode(), is("EUR"));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-11-27T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(53.99)));
+        assertThat(transaction.getSource(), is("GiroKontoauszug07.txt"));
+        assertThat(transaction.getNote(), is("Retoure"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getCurrencyCode(), is("EUR"));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-11-29T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1200.04)));
+        assertThat(transaction.getSource(), is("GiroKontoauszug07.txt"));
+        assertThat(transaction.getNote(), is("Bezuege"));
+        
+    }
+
+    
     @Test
     public void testKGiroKontoauszug03()
     {

@@ -2,7 +2,7 @@ PDFBox Version: 1.8.16
 Portfolio Performance Version: 0.59.2
 -----------------------------------------
 ING-DiBa AG · 60628 Frankfurt am Main
-Datum 28.02.2020
+Datum 30.11.2018
 Herrn Auszugsnummer 1
 Max Mustermann Eingeräumte Kontoüberziehung 0,00 Euro
 Musterstr. 12 Alter Saldo 0,00 Euro
@@ -11,34 +11,31 @@ IBAN DE36 5001 0517 1234 1234 12
 BIC INGDDEFFXXX
 Seite 1 von 1
 Girokonto Nummer 1234123412
-Kontoauszug Februar 2020
+Kontoauszug November 2018
 Buchung Buchung / Verwendungszweck Betrag (EUR)
 Valuta
-12.02.2020 Gutschrift Max Mustermann 1.000,00
-12.02.2020 xyz
-13.02.2020 Gutschrift/Dauerauftrag Max Mustermann 1,01
-13.02.2020 XYZ
-14.02.2020 Dauerauftrag/Terminueberw. Max Mustermann -30,00
-14.02.2020 XYZ
-16.02.2020 Lastschrift XYZ GmbH -10,00
-16.02.2020 Danke
-Irgendein Verwendungszweck
-Mandat: 012345
-Referenz: 12345678901234567890123456
-22.02.2020 Ueberweisung XYZ GmbH -5,00
-22.02.2020 Irgendwelche Zahlen
-Neuer Saldo 956,01
+16.11.2018 Abbuchung First Data Deutschland GmbH -4,50
+16.11.2018 SumUp fdshfgh dfhgf fghfdh
+2024-10-13T22:28:03 Folgenr.00 0 Verfalld.2018-12
+Referenz: SHFGBFGHDFVB
+27.11.2018 Retoure XYZ GmbH 53,99
+26.11.2018 Auftrag 345987634567,dfjngfung Vorgelegt am 25.11.2018 Nicht
+bezahlt 53,99- Widerspruch
+Referenz: 897346980345
+29.11.2018 Bezuege Freie Hansestadt Bremen 1.200,04
+29.11.2018 fghsdg 4567/fgdh
+Referenz: LHK Bremen 45670987 fghfdgh 54677
+Neuer Saldo 1.000,00
 Kunden-Information
-Vorliegender Freistellungsauftrag 1,00
-Verbrauchter Sparer-Pauschbetrag 0,00
-Das Preis- und Leistungsverzeichnis für das Girokonto ändert sich zum 01.05.2020.
-Die neuen Bedingungen finden Sie in Ihrer Post-Box oder unter: www.ing.de/girokonto/neue-konditionen
-Schauen Sie mal rein.
+Vorliegender Freistellungsauftrag 100,00
+Verbrauchter Sparer-Pauschbetrag 100,00
+1Bitte beachten Sie: Der angegebene alte und neue Saldo berücksichtigt nicht die Wertstellung der
+Buchungen. Das bedeutet, dass der genannte Betrag gegebenenfalls nicht dem tatsächlich zur Verfügung
+stehenden Guthaben entspricht. Daher können Zinsen für die Inanspruchnahme einer eingeräumten oder
+geduldeten Kontoüberziehung anfallen. Für die Berechnung der Dispo- und Überziehungszinsen ist das
+unter "Valuta" aufgeführte Datum ausschlaggebend.
 Bitte beachten Sie auch die Hinweise auf der Folgeseite.
 ING-DiBa AG
-ING-DiBa AG · Theodor-Heuss-Allee 2 · 60486 Frankfurt am Main · Vorsitzender des Aufsichtsrates: Dr. Claus Dieter Hoffmann · Vorstand: Nick Jue (Vorsitzender),
-Bernd Geilen (stellv. Vorsitzender), Željko Kaurin, Daniel Llano Manibardo, Dr. Joachim von Schorlemer, Norman Tambach · Sitz: Frankfurt am Main · AG Frankfurt am Main HRB 7727,
-Steuernummer: 047 220 2800 4 · USt-IdNr.: DE 114 103 475 · Internet: www.ing.de · E-Mail: info@ing.de · BIC: INGDDEFFXXX · Mitglied im Einlagensicherungsfonds
 34GKKA5433249489_T
 Bitte beachten Sie die nachstehenden Hinweise:
 Kontoauszug ohne Rechnungsabschluss (Kontoübersicht)
