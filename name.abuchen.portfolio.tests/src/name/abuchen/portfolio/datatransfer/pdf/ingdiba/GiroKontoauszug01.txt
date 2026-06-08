@@ -27,13 +27,6 @@ Mandat: 012345
 Referenz: 12345678901234567890123456
 22.02.2020 Ueberweisung XYZ GmbH -5,00
 22.02.2020 Irgendwelche Zahlen
-27.02.2020 Retoure XYZ GmbH 53,99
-26.02.2020 Auftrag 345987634567,dfjngfung Vorgelegt am 25.02.2020 Nicht
-bezahlt 53,99- Widerspruch
-Referenz: 897346980345
-29.02.2020 Bezuege Freie Hansestadt Bremen 1.200,04
-29.02.2020 fghsdg 4567/fgdh
-Referenz: LHK Bremen 45670987 fghfdgh 54677
 Neuer Saldo 956,01
 Kunden-Information
 Vorliegender Freistellungsauftrag 1,00
