@@ -29,7 +29,7 @@ import name.abuchen.portfolio.ui.views.dashboard.ChartShowYAxisConfig;
 import name.abuchen.portfolio.ui.views.dashboard.ClientFilterConfig;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardData;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardResources;
-import name.abuchen.portfolio.ui.views.dashboard.HoverButton;
+import name.abuchen.portfolio.ui.views.dashboard.HoverWidgetToolbar;
 import name.abuchen.portfolio.ui.views.dashboard.WidgetDelegate;
 import name.abuchen.portfolio.ui.views.payments.PaymentsChartBuilder;
 import name.abuchen.portfolio.ui.views.payments.PaymentsPerMonthChartBuilder;
@@ -121,7 +121,7 @@ public class EarningsChartWidget extends WidgetDelegate<PaymentsViewModel>
 
         container.layout();
 
-        HoverButton.build(title, container, chart, chart.getPlotArea().getControl()).withListener(new HyperlinkAdapter()
+        HoverWidgetToolbar.attachViewListener(title, new HyperlinkAdapter()
         {
             @Override
             public void linkActivated(HyperlinkEvent e)

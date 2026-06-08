@@ -225,7 +225,7 @@ public class ChartWidget extends WidgetDelegate<Object>
 
         getDashboardData().getStylingEngine().style(chart);
 
-        HoverButton.build(title, container, chart, chart.getPlotArea().getControl()).withListener(new HyperlinkAdapter()
+        HoverWidgetToolbar.attachViewListener(title, new HyperlinkAdapter()
         {
             @Override
             public void linkActivated(HyperlinkEvent e)
