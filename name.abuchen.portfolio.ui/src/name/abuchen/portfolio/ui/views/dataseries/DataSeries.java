@@ -27,7 +27,7 @@ public final class DataSeries implements Adaptable
      */
     public enum UseCase
     {
-        STATEMENT_OF_ASSETS, PERFORMANCE, RETURN_VOLATILITY
+        STATEMENT_OF_ASSETS, PERFORMANCE, RETURN_VOLATILITY, CORRELATION_MATRIX
     }
 
     /**

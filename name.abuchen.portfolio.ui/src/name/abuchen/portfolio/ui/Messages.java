@@ -658,6 +658,7 @@ public class Messages extends NLS
     public static String LabelConsumerPriceIndex;
     public static String LabelConvertBuySellIntoDeliveryTransactions;
     public static String LabelCopyToClipboard;
+    public static String LabelCorrelationMatrix;
     public static String LabelCountry;
     public static String LabelCreateAccountFirst;
     public static String LabelCrosshair;
@@ -1438,6 +1439,8 @@ public class Messages extends NLS
     public static String TooltipAllTimeHigh;
     public static String TooltipAllTimeHighWidget;
     public static String TooltipAverageHoldingPeriod;
+    public static String ToolTipCorrelationData;
+    public static String ToolTipCorrelationNotAvailable;
     public static String TooltipCurrentDrawdown;
     public static String TooltipDateOfExchangeRate;
     public static String TooltipFIRENumber;
