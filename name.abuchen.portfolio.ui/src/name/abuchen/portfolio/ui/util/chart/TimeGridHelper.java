@@ -79,7 +79,7 @@ import name.abuchen.portfolio.util.Triple;
             if (days < 250)
             {
                 period = Period.ofMonths(1);
-                format = DateTimeFormatter.ofPattern("MMMM yyyy"); //$NON-NLS-1$
+                format = DateTimeFormatter.ofPattern("LLLL yyyy"); //$NON-NLS-1$
             }
             else if (days < 800)
             {
@@ -112,7 +112,7 @@ import name.abuchen.portfolio.util.Triple;
             if (days < 100)
             {
                 period = Period.ofMonths(1);
-                format = DateTimeFormatter.ofPattern("MMMM yyyy"); //$NON-NLS-1$
+                format = DateTimeFormatter.ofPattern("LLLL yyyy"); //$NON-NLS-1$
             }
             else if (days < 400)
             {
