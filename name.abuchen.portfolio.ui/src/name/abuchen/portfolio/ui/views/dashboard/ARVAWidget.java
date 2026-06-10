@@ -2,6 +2,8 @@ package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.temporal.ChronoUnit;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -62,8 +64,8 @@ public class ARVAWidget extends WidgetDelegate<ARVAWidget.ARVAData>
         }
     }
 
-    public record ARVAData(Money currentValue, Money reservedAmount, Money arvaBasis, double realReturn,
-                    int remainingYears, PaymentTiming paymentTiming, Money annualWithdrawal, Money monthlyWithdrawal,
+    public record ARVAData(Money currentValue, Money reservedAmount, Money arvaBasis, double realReturn, int endYear,
+                    int remainingMonths, PaymentTiming paymentTiming, Money annualWithdrawal, Money monthlyWithdrawal,
                     double withdrawalRate, Money externalAnnualIncome, Money totalAnnualBudget,
                     Money totalMonthlyBudget)
     {
@@ -260,39 +262,40 @@ public class ARVAWidget extends WidgetDelegate<ARVAWidget.ARVAData>
         }
     }
 
-    private static class RemainingYearsConfig implements WidgetConfig
+    private static class EndYearConfig implements WidgetConfig
     {
         private final WidgetDelegate<?> delegate;
-        private Integer remainingYears;
+        private Integer endYear;
 
-        public RemainingYearsConfig(WidgetDelegate<?> delegate)
+        public EndYearConfig(WidgetDelegate<?> delegate)
         {
             this.delegate = delegate;
 
-            String value = delegate.getWidget().getConfiguration().get(Dashboard.Config.ARVA_REMAINING_YEARS.name());
+            String value = delegate.getWidget().getConfiguration().get(Dashboard.Config.ARVA_END_YEAR.name());
             if (value != null && !value.isEmpty())
             {
                 try
                 {
-                    remainingYears = Integer.parseInt(value);
+                    endYear = Integer.parseInt(value);
                 }
                 catch (NumberFormatException e)
                 {
-                    remainingYears = null;
+                    endYear = null;
                 }
             }
         }
 
-        public int getRemainingYears()
+        public int getEndYear()
         {
-            return remainingYears != null && remainingYears > 0 ? remainingYears : DEFAULT_REMAINING_YEARS;
+            int currentYear = LocalDate.now().getYear();
+            return endYear != null && endYear >= currentYear ? endYear : currentYear + DEFAULT_REMAINING_YEARS;
         }
 
-        public void setRemainingYears(int remainingYears)
+        public void setEndYear(int endYear)
         {
-            this.remainingYears = Math.max(1, remainingYears);
-            delegate.getWidget().getConfiguration().put(Dashboard.Config.ARVA_REMAINING_YEARS.name(),
-                            String.valueOf(this.remainingYears));
+            this.endYear = Math.max(LocalDate.now().getYear(), endYear);
+            delegate.getWidget().getConfiguration().put(Dashboard.Config.ARVA_END_YEAR.name(),
+                            String.valueOf(this.endYear));
             delegate.update();
             delegate.getClient().touch();
         }
@@ -300,20 +303,20 @@ public class ARVAWidget extends WidgetDelegate<ARVAWidget.ARVAData>
         @Override
         public void menuAboutToShow(IMenuManager manager)
         {
-            String display = String.valueOf(getRemainingYears());
+            String display = String.valueOf(getEndYear());
             manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME, new LabelOnly(MessageFormat
-                            .format(Messages.LabelColonSeparated, Messages.LabelARVARemainingYears, display)));
+                            .format(Messages.LabelColonSeparated, Messages.LabelARVAEndYear, display)));
 
-            manager.add(new SimpleAction(Messages.LabelARVARemainingYears + "...", a -> { //$NON-NLS-1$
-                var dialog = new InputDialog(Display.getCurrent().getActiveShell(), Messages.LabelARVARemainingYears,
-                                Messages.LabelARVARemainingYears, display, null);
+            manager.add(new SimpleAction(Messages.LabelARVAEndYear + "...", a -> { //$NON-NLS-1$
+                var dialog = new InputDialog(Display.getCurrent().getActiveShell(), Messages.LabelARVAEndYear,
+                                Messages.LabelARVAEndYear, display, null);
 
                 if (dialog.open() != Window.OK)
                     return;
 
                 try
                 {
-                    setRemainingYears(Integer.parseInt(dialog.getValue()));
+                    setEndYear(Integer.parseInt(dialog.getValue()));
                 }
                 catch (NumberFormatException ignore)
                 {
@@ -325,8 +328,8 @@ public class ARVAWidget extends WidgetDelegate<ARVAWidget.ARVAData>
         @Override
         public String getLabel()
         {
-            return MessageFormat.format(Messages.LabelColonSeparated, Messages.LabelARVARemainingYears,
-                            String.valueOf(getRemainingYears()));
+            return MessageFormat.format(Messages.LabelColonSeparated, Messages.LabelARVAEndYear,
+                            String.valueOf(getEndYear()));
         }
     }
 
@@ -401,8 +404,8 @@ public class ARVAWidget extends WidgetDelegate<ARVAWidget.ARVAData>
     private ColoredLabel arvaBasisLabel;
     private ColoredLabel realReturnLabel;
     private Text realReturnInput;
-    private ColoredLabel remainingYearsLabel;
-    private Text remainingYearsInput;
+    private ColoredLabel endYearLabel;
+    private Text endYearInput;
     private ColoredLabel paymentTimingLabel;
     private ColoredLabel annualWithdrawalLabel;
     private ColoredLabel monthlyWithdrawalLabel;
@@ -419,7 +422,7 @@ public class ARVAWidget extends WidgetDelegate<ARVAWidget.ARVAData>
         super(widget, dashboardData);
 
         addConfig(new RealReturnConfig(this));
-        addConfig(new RemainingYearsConfig(this));
+        addConfig(new EndYearConfig(this));
         addConfig(new ReservedAmountConfig(this));
         addConfig(new ExternalAnnualIncomeConfig(this));
         addConfig(new PaymentTimingConfig(this));
@@ -457,11 +460,10 @@ public class ARVAWidget extends WidgetDelegate<ARVAWidget.ARVAData>
         realReturnLabel = realReturnRow.valueLabel();
         realReturnInput = realReturnRow.input();
 
-        EditableRow remainingYearsRow = createEditableRow(Messages.LabelARVARemainingYears,
-                        Messages.TooltipARVARemainingYears, this::commitRemainingYears,
-                        this::cancelRemainingYearsEditing);
-        remainingYearsLabel = remainingYearsRow.valueLabel();
-        remainingYearsInput = remainingYearsRow.input();
+        EditableRow endYearRow = createEditableRow(Messages.LabelARVAEndYear, Messages.TooltipARVAEndYear,
+                        this::commitEndYear, this::cancelEndYearEditing);
+        endYearLabel = endYearRow.valueLabel();
+        endYearInput = endYearRow.input();
 
         paymentTimingLabel = createReadOnlyRow(Messages.LabelARVAPaymentTiming,
                         Messages.TooltipARVAPaymentTiming).valueLabel();
@@ -524,9 +526,9 @@ public class ARVAWidget extends WidgetDelegate<ARVAWidget.ARVAData>
             String currency = getDashboardData().getClient().getBaseCurrency();
             Money currentValue = null;
             var dataSeries = get(DataSeriesConfig.class).getDataSeries();
+            var now = LocalDate.now();
             if (dataSeries != null)
             {
-                var now = LocalDate.now();
                 var index = getDashboardData().calculate(dataSeries, Interval.of(now.minusYears(1), now));
                 var totals = index.getTotals();
                 if (totals.length > 0)
@@ -536,20 +538,20 @@ public class ARVAWidget extends WidgetDelegate<ARVAWidget.ARVAData>
             Money reservedAmount = get(ReservedAmountConfig.class).getReservedAmount();
             Money externalAnnualIncome = get(ExternalAnnualIncomeConfig.class).getExternalAnnualIncome();
             double realReturn = get(RealReturnConfig.class).getRealReturn();
-            int remainingYears = get(RemainingYearsConfig.class).getRemainingYears();
+            int endYear = get(EndYearConfig.class).getEndYear();
+            int remainingMonths = calculateRemainingMonths(now, endYear);
             PaymentTiming paymentTiming = get(PaymentTimingConfig.class).getPaymentTiming();
 
             long currentAmount = currentValue != null ? currentValue.getAmount() : 0;
             long basisAmount = Math.max(0, currentAmount - Math.max(0, reservedAmount.getAmount()));
-            long annualWithdrawalAmount = calculateAnnualWithdrawal(basisAmount, realReturn, remainingYears,
+            long monthlyWithdrawalAmount = calculateMonthlyWithdrawalForMonths(basisAmount, realReturn, remainingMonths,
                             paymentTiming);
-            long monthlyWithdrawalAmount = calculateMonthlyWithdrawal(basisAmount, realReturn, remainingYears,
-                            paymentTiming);
+            long annualWithdrawalAmount = monthlyWithdrawalAmount * 12;
             long totalAnnualBudgetAmount = annualWithdrawalAmount + externalAnnualIncome.getAmount();
             long totalMonthlyBudgetAmount = monthlyWithdrawalAmount + calculateMonthlyEquivalent(externalAnnualIncome);
 
             return new ARVAData(currentValue, reservedAmount, Money.of(currency, basisAmount), realReturn,
-                            remainingYears, paymentTiming, Money.of(currency, annualWithdrawalAmount),
+                            endYear, remainingMonths, paymentTiming, Money.of(currency, annualWithdrawalAmount),
                             Money.of(currency, monthlyWithdrawalAmount),
                             calculateWithdrawalRate(annualWithdrawalAmount, basisAmount), externalAnnualIncome,
                             Money.of(currency, totalAnnualBudgetAmount), Money.of(currency, totalMonthlyBudgetAmount));
@@ -587,11 +589,27 @@ public class ARVAWidget extends WidgetDelegate<ARVAWidget.ARVAData>
         if (basisAmount <= 0 || remainingYears <= 0)
             return 0;
 
+        return calculateMonthlyWithdrawalForMonths(basisAmount, annualReturn, remainingYears * 12, timing);
+    }
+
+    static long calculateMonthlyWithdrawalForMonths(long basisAmount, double annualReturn, int remainingMonths,
+                    PaymentTiming timing)
+    {
+        if (basisAmount <= 0 || remainingMonths <= 0)
+            return 0;
+
         double monthlyRate = calculateMonthlyRate(annualReturn);
-        int months = remainingYears * 12;
-        double factor = calculatePeriodicWithdrawalFactor(monthlyRate, months, timing);
+        double factor = calculatePeriodicWithdrawalFactor(monthlyRate, remainingMonths, timing);
 
         return Math.max(0, Math.round(basisAmount * factor));
+    }
+
+    static int calculateRemainingMonths(LocalDate referenceDate, int endYear)
+    {
+        var start = YearMonth.from(referenceDate);
+        var end = YearMonth.of(endYear, 12);
+        long months = ChronoUnit.MONTHS.between(start, end) + 1;
+        return (int) Math.max(1, Math.min(Integer.MAX_VALUE, months));
     }
 
     static double calculateMonthlyRate(double annualReturn)
@@ -783,23 +801,23 @@ public class ARVAWidget extends WidgetDelegate<ARVAWidget.ARVAData>
         }
     }
 
-    private void commitRemainingYears()
+    private void commitEndYear()
     {
-        int currentValue = get(RemainingYearsConfig.class).getRemainingYears();
+        int currentValue = get(EndYearConfig.class).getEndYear();
 
         try
         {
-            int newValue = Math.max(1, Integer.parseInt(remainingYearsInput.getText()));
+            int newValue = Integer.parseInt(endYearInput.getText());
             if (currentValue != newValue)
-                get(RemainingYearsConfig.class).setRemainingYears(newValue);
+                get(EndYearConfig.class).setEndYear(newValue);
 
-            remainingYearsLabel.setText(String.valueOf(newValue));
-            remainingYearsInput.setText(String.valueOf(newValue));
+            endYearLabel.setText(String.valueOf(get(EndYearConfig.class).getEndYear()));
+            endYearInput.setText(String.valueOf(get(EndYearConfig.class).getEndYear()));
         }
         catch (NumberFormatException e)
         {
-            remainingYearsLabel.setText(String.valueOf(currentValue));
-            remainingYearsInput.setText(String.valueOf(currentValue));
+            endYearLabel.setText(String.valueOf(currentValue));
+            endYearInput.setText(String.valueOf(currentValue));
         }
     }
 
@@ -818,9 +836,9 @@ public class ARVAWidget extends WidgetDelegate<ARVAWidget.ARVAData>
         realReturnInput.setText(Values.Percent.format(get(RealReturnConfig.class).getRealReturn()));
     }
 
-    private void cancelRemainingYearsEditing()
+    private void cancelEndYearEditing()
     {
-        remainingYearsInput.setText(String.valueOf(get(RemainingYearsConfig.class).getRemainingYears()));
+        endYearInput.setText(String.valueOf(get(EndYearConfig.class).getEndYear()));
     }
 
     private void togglePaymentTiming()
@@ -846,9 +864,9 @@ public class ARVAWidget extends WidgetDelegate<ARVAWidget.ARVAData>
         realReturnLabel.setText(Values.Percent2.format(realReturn));
         realReturnInput.setText(Values.Percent.format(realReturn));
 
-        int remainingYears = get(RemainingYearsConfig.class).getRemainingYears();
-        remainingYearsLabel.setText(String.valueOf(remainingYears));
-        remainingYearsInput.setText(String.valueOf(remainingYears));
+        int endYear = get(EndYearConfig.class).getEndYear();
+        endYearLabel.setText(String.valueOf(endYear));
+        endYearInput.setText(String.valueOf(endYear));
     }
 
     private void resetMoneyInput(Text input, Money money)
@@ -897,10 +915,10 @@ public class ARVAWidget extends WidgetDelegate<ARVAWidget.ARVAData>
             showLabel(realReturnLabel, realReturnInput);
         }
 
-        if (remainingYearsInput.isVisible() && !isSameOrDescendant(clickedControl, remainingYearsInput))
+        if (endYearInput.isVisible() && !isSameOrDescendant(clickedControl, endYearInput))
         {
-            cancelRemainingYearsEditing();
-            showLabel(remainingYearsLabel, remainingYearsInput);
+            cancelEndYearEditing();
+            showLabel(endYearLabel, endYearInput);
         }
 
         if (externalAnnualIncomeInput.isVisible() && !isSameOrDescendant(clickedControl, externalAnnualIncomeInput))
@@ -938,7 +956,7 @@ public class ARVAWidget extends WidgetDelegate<ARVAWidget.ARVAData>
         realReturnLabel.setText(Values.Percent2.format(data.realReturn()));
         realReturnLabel.setTextColor(data.realReturn() < 0 ? Colors.theme().redForeground()
                         : Colors.theme().greenForeground());
-        remainingYearsLabel.setText(String.valueOf(data.remainingYears()));
+        endYearLabel.setText(String.valueOf(data.endYear()));
         paymentTimingLabel.setText(data.paymentTiming().getLabel());
         annualWithdrawalLabel.setText(Values.MoneyShort.format(data.annualWithdrawal(), currency));
         monthlyWithdrawalLabel.setText(Values.MoneyShort.format(data.monthlyWithdrawal(), currency));
@@ -950,7 +968,7 @@ public class ARVAWidget extends WidgetDelegate<ARVAWidget.ARVAData>
 
         reservedAmountInput.setText(Values.Amount.format(data.reservedAmount().getAmount()));
         realReturnInput.setText(Values.Percent.format(data.realReturn()));
-        remainingYearsInput.setText(String.valueOf(data.remainingYears()));
+        endYearInput.setText(String.valueOf(data.endYear()));
         externalAnnualIncomeInput.setText(Values.Amount.format(data.externalAnnualIncome().getAmount()));
 
         container.layout();
