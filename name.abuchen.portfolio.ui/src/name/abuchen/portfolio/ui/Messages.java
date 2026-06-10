@@ -573,11 +573,11 @@ public class Messages extends NLS
     public static String LabelARVABeginningOfPeriod;
     public static String LabelARVACurrentValue;
     public static String LabelARVAEndOfPeriod;
+    public static String LabelARVAEndYear;
     public static String LabelARVAExternalAnnualIncome;
     public static String LabelARVAMonthlyBudget;
     public static String LabelARVAPaymentTiming;
     public static String LabelARVARealReturn;
-    public static String LabelARVARemainingYears;
     public static String LabelARVAReservedAmount;
     public static String LabelARVATotalAnnualBudget;
     public static String LabelARVATotalMonthlyBudget;
@@ -1455,11 +1455,11 @@ public class Messages extends NLS
     public static String TooltipARVAAnnualBudget;
     public static String TooltipARVABasis;
     public static String TooltipARVACurrentValue;
+    public static String TooltipARVAEndYear;
     public static String TooltipARVAExternalAnnualIncome;
     public static String TooltipARVAMonthlyBudget;
     public static String TooltipARVAPaymentTiming;
     public static String TooltipARVARealReturn;
-    public static String TooltipARVARemainingYears;
     public static String TooltipARVAReservedAmount;
     public static String TooltipARVATotalAnnualBudget;
     public static String TooltipARVATotalMonthlyBudget;

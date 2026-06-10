@@ -4,6 +4,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.is;
 
+import java.time.LocalDate;
+
 import org.junit.Test;
 
 public class ARVAWidgetTest
@@ -72,6 +74,15 @@ public class ARVAWidgetTest
     }
 
     @Test
+    public void testMonthlyWithdrawalUsesExactMonthCount()
+    {
+        long withdrawal = ARVAWidget.calculateMonthlyWithdrawalForMonths(1_000_000_00L, 0.03, 727,
+                        ARVAWidget.PaymentTiming.BEGINNING_OF_PERIOD);
+
+        assertThat(withdrawal, is(2_952_83L));
+    }
+
+    @Test
     public void testMonthlyWithdrawalWithZeroReturn()
     {
         long withdrawal = ARVAWidget.calculateMonthlyWithdrawal(1_000_000_00L, 0.0, 60,
@@ -97,6 +108,14 @@ public class ARVAWidgetTest
     public void testWithdrawalRate()
     {
         assertThat(ARVAWidget.calculateWithdrawalRate(36_132_96L, 1_000_000_00L), closeTo(0.03613296, 0.00000001));
+    }
+
+    @Test
+    public void testRemainingMonthsAreCalculatedUntilEndOfEndYear()
+    {
+        assertThat(ARVAWidget.calculateRemainingMonths(LocalDate.of(2026, 6, 10), 2086), is(727));
+        assertThat(ARVAWidget.calculateRemainingMonths(LocalDate.of(2026, 12, 31), 2026), is(1));
+        assertThat(ARVAWidget.calculateRemainingMonths(LocalDate.of(2026, 6, 10), 2025), is(1));
     }
 
     @Test
