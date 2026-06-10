@@ -947,6 +947,8 @@ public class ClientFactory
                 removeSourceAttributeFromTaxonomy(client);
             case 68: // NOSONAR
                 // added exDate date field
+            case 69: // NOSONAR
+                // add (optional) weight to client filter
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
