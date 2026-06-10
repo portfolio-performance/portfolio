@@ -1142,6 +1142,7 @@ public class Messages extends NLS
     public static String MsgIncorrectSubTotal;
     public static String MsgIncorrectTotal;
     public static String MsgInfoChangingCurrencyNotPossible;
+    public static String MsgInfoEnableDoubleClickToEdit;
     public static String MsgInfoRetiredSecurities;
     public static String MsgInstrumentWithConfigurationIssue;
     public static String MsgInvalidImage;

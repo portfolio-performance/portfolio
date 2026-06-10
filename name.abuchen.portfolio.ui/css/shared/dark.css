@@ -54,6 +54,7 @@ CustomColors {
 	default-foreground: #EEEEEE;
 	default-background: #302E30;
 	chip-background: #7C8081;
+	warning-foreground: #F5A623;
 	warning-background: #6F6345;
 	red-background: #960000;
 	green-background: #004B00;
