@@ -29,8 +29,8 @@ public class BigbankPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("Kontoauszug",
-                        documentContext -> documentContext
+        final var type = new DocumentType("Kontoauszug", //
+                        documentContext -> documentContext //
                         // @formatter:off
                         // Datum Gegenkonto Buchung Name  Betrag in EUR
                         // @formatter:on
@@ -43,15 +43,11 @@ public class BigbankPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 21.03.2024 AT123456789101112131 Einzahlung oDkoRVZEb  TxDUxE +1 500,34
         // @formatter:on
-        Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*Einzahlung.* \\+[\\.,\\d\\s]+$");
+        var depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*Einzahlung.* \\+[\\.,\\d\\s]+$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "amount") //
                         .documentContext("currency") //
@@ -68,16 +64,11 @@ public class BigbankPDFExtractor extends AbstractPDFExtractor
         // 25.03.2024 AT123456789101112131 Auszahlung sUBHAKqzf  vNNKxT -10,12
         // 28.03.2024 EE123456789101112132 Interne Belastung wMGSJi WajHthpvl -3 500,00
         // @formatter:on
-        Block removalBlock = new Block(
-                        "^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*(Auszahlung|Interne Belastung).* \\-[\\.,\\d\\s]+$");
+        var removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*(Auszahlung|Interne Belastung).* \\-[\\.,\\d\\s]+$");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.REMOVAL);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
 
                         .section("date", "amount") //
                         .documentContext("currency") //
@@ -93,15 +84,11 @@ public class BigbankPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 31.12.2024  Zinsgutschrift  +99,01
         // @formatter:on
-        Block interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*Zinsgutschrift.* \\+[\\.,\\d\\s]+$");
+        var interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*Zinsgutschrift.* \\+[\\.,\\d\\s]+$");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .section("date", "amount") //
                         .documentContext("currency") //

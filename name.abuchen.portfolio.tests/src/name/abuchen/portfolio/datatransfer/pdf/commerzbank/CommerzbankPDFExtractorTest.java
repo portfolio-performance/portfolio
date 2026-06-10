@@ -5,6 +5,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -1184,7 +1185,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2015-06-18T00:00"), hasShares(123.00), //
+                        hasDate("2015-06-18T00:00"), hasExDate(null), //
+                        hasShares(123.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Ref.-Nr.: 3345AO12BC3D4445E"), //
                         hasAmount("EUR", 123.45), hasGrossValue("EUR", 123.45), //
@@ -1220,7 +1222,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2015-06-18T00:00"), hasShares(123.00), //
+                        hasDate("2015-06-18T00:00"), hasExDate(null), //
+                        hasShares(123.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Ref.-Nr.: 3345AO12BC3D4445E"), //
                         hasAmount("EUR", 123.45), hasGrossValue("EUR", 123.45), //
@@ -1261,7 +1264,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2015-07-16T00:00"), hasShares(1234.00), //
+                        hasDate("2015-07-16T00:00"), hasExDate(null), //
+                        hasShares(1234.00), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Ref.-Nr.: 1A2BCDEFGH1234I"), //
                         hasAmount("EUR", 1045.67), hasGrossValue("EUR", 1045.67), //
@@ -1297,7 +1301,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2015-07-16T00:00"), hasShares(1234.00), //
+                        hasDate("2015-07-16T00:00"), hasExDate(null), //
+                        hasShares(1234.00), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Ref.-Nr.: 1A2BCDEFGH1234I"), //
                         hasAmount("EUR", 1045.67), hasGrossValue("EUR", 1045.67), //
@@ -1338,7 +1343,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-05-26T00:00"), hasShares(12.00), //
+                        hasDate("2020-05-26T00:00"), hasExDate(null), //
+                        hasShares(12.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote("Ref.-Nr.: 1234567890ABCDEF"), //
                         hasAmount("EUR", 61.30), hasGrossValue("EUR", 61.52), //
@@ -1374,7 +1380,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-05-26T00:00"), hasShares(12.00), //
+                        hasDate("2020-05-26T00:00"), hasExDate(null), //
+                        hasShares(12.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote("Ref.-Nr.: 1234567890ABCDEF"), //
                         hasAmount("EUR", 61.30), hasGrossValue("EUR", 61.52), //
@@ -1415,7 +1422,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2020-02-10T00:00"), hasShares(500.00), //
+                        hasDate("2020-02-10T00:00"), hasExDate(null), //
+                        hasShares(500.00), //
                         hasSource("Dividende04.txt"), //
                         hasNote("Ref.-Nr.: 1X1XX1XXXXX00111"), //
                         hasAmount("EUR", 1950.00), hasGrossValue("EUR", 1950.00), //
@@ -1449,7 +1457,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-05T00:00"), hasShares(329.817), //
+                        hasDate("2025-03-05T00:00"), hasExDate(null), //
+                        hasShares(329.817), //
                         hasSource("Dividende05.txt"), //
                         hasNote("Ref.-Nr.: 1U7Z8J3RQTF000SP"), //
                         hasAmount("EUR", 452.51), hasGrossValue("EUR", 452.51), //
@@ -1522,7 +1531,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-05T00:00"), hasShares(329.817), //
+                        hasDate("2025-03-05T00:00"), hasExDate(null), //
+                        hasShares(329.817), //
                         hasSource("Dividende05.txt; SteuerbehandlungVonDividende05.txt"), //
                         hasNote("Ref.-Nr.: 1U7Z8J3RQTF000SP | Ref.-Nr.: 0u2B2W6NsfL386NS"), //
                         hasAmount("EUR", 452.51), hasGrossValue("EUR", 452.51), //
@@ -1558,7 +1568,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-05T00:00"), hasShares(329.817), //
+                        hasDate("2025-03-05T00:00"), hasExDate(null), //
+                        hasShares(329.817), //
                         hasSource("Dividende05.txt; SteuerbehandlungVonDividende05.txt"), //
                         hasNote("Ref.-Nr.: 1U7Z8J3RQTF000SP | Ref.-Nr.: 0u2B2W6NsfL386NS"), //
                         hasAmount("EUR", 452.51), hasGrossValue("EUR", 452.51), //
@@ -1592,7 +1603,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-13T00:00"), hasShares(120.00), //
+                        hasDate("2025-03-13T00:00"), hasExDate(null), //
+                        hasShares(120.00), //
                         hasSource("Dividende06.txt"), //
                         hasNote("Ref.-Nr.: 6R3y9052SfF124A7"), //
                         hasAmount("EUR", 96.99), hasGrossValue("EUR", 96.99), //
@@ -1629,7 +1641,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-13T00:00"), hasShares(120.00), //
+                        hasDate("2025-03-13T00:00"), hasExDate(null), //
+                        hasShares(120.00), //
                         hasSource("Dividende06.txt"), //
                         hasNote("Ref.-Nr.: 6R3y9052SfF124A7"), //
                         hasAmount("EUR", 96.99), hasGrossValue("EUR", 96.99), //
@@ -1670,7 +1683,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-05T00:00"), hasShares(500.00), //
+                        hasDate("2025-03-05T00:00"), hasExDate(null), //
+                        hasShares(500.00), //
                         hasSource("Dividende07.txt"), //
                         hasNote("Ref.-Nr.: 386S4l4q7U3103w0"), //
                         hasAmount("EUR", 713.00), hasGrossValue("EUR", 713.00), //
@@ -1741,7 +1755,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-05T00:00"), hasShares(500.00), //
+                        hasDate("2025-03-05T00:00"), hasExDate(null), //
+                        hasShares(500.00), //
                         hasSource("Dividende07.txt; SteuerbehandlungVonDividende07.txt"), //
                         hasNote("Ref.-Nr.: 386S4l4q7U3103w0 | Ref.-Nr.: 884A8H8Q6c0848W9"), //
                         hasAmount("EUR", 581.36), hasGrossValue("EUR", 713.00), //
@@ -1777,7 +1792,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-05T00:00"), hasShares(500.00), //
+                        hasDate("2025-03-05T00:00"), hasExDate(null), //
+                        hasShares(500.00), //
                         hasSource("Dividende07.txt; SteuerbehandlungVonDividende07.txt"), //
                         hasNote("Ref.-Nr.: 386S4l4q7U3103w0 | Ref.-Nr.: 884A8H8Q6c0848W9"), //
                         hasAmount("EUR", 581.36), hasGrossValue("EUR", 713.00), //
@@ -1811,7 +1827,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-13T00:00"), hasShares(120.00), //
+                        hasDate("2025-03-13T00:00"), hasExDate(null), //
+                        hasShares(120.00), //
                         hasSource("Dividende08.txt"), //
                         hasNote("Ref.-Nr.: 7i8v1949Lqg792W1"), //
                         hasAmount("EUR", 96.99), hasGrossValue("EUR", 96.99), //
@@ -1848,7 +1865,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-13T00:00"), hasShares(120.00), //
+                        hasDate("2025-03-13T00:00"), hasExDate(null), //
+                        hasShares(120.00), //
                         hasSource("Dividende08.txt"), //
                         hasNote("Ref.-Nr.: 7i8v1949Lqg792W1"), //
                         hasAmount("EUR", 96.99), hasGrossValue("EUR", 96.99), //
@@ -1926,7 +1944,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-13T00:00"), hasShares(120.00), //
+                        hasDate("2025-03-13T00:00"), hasExDate(null), //
+                        hasShares(120.00), //
                         hasSource("Dividende08.txt; SteuerbehandlungVonDividende08.txt"), //
                         hasNote("Ref.-Nr.: 7i8v1949Lqg792W1 | Ref.-Nr.: 6j2R5436dOM884a3"), //
                         hasAmount("EUR", 72.21), hasGrossValue("EUR", 96.99), //
@@ -1965,7 +1984,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-13T00:00"), hasShares(120.00), //
+                        hasDate("2025-03-13T00:00"), hasExDate(null), //
+                        hasShares(120.00), //
                         hasSource("Dividende08.txt; SteuerbehandlungVonDividende08.txt"), //
                         hasNote("Ref.-Nr.: 7i8v1949Lqg792W1 | Ref.-Nr.: 6j2R5436dOM884a3"), //
                         hasAmount("EUR", 72.21), hasGrossValue("EUR", 96.99), //
@@ -2008,7 +2028,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-13T00:00"), hasShares(120.00), //
+                        hasDate("2025-03-13T00:00"), hasExDate(null), //
+                        hasShares(120.00), //
                         hasSource("Dividende08.txt; SteuerbehandlungVonDividende08.txt"), //
                         hasNote("Ref.-Nr.: 7i8v1949Lqg792W1 | Ref.-Nr.: 6j2R5436dOM884a3"), //
                         hasAmount("EUR", 72.21), hasGrossValue("EUR", 96.99), //
@@ -2045,7 +2066,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-13T00:00"), hasShares(120.00), //
+                        hasDate("2025-03-13T00:00"), hasExDate(null), //
+                        hasShares(120.00), //
                         hasSource("Dividende08.txt; SteuerbehandlungVonDividende08.txt"), //
                         hasNote("Ref.-Nr.: 7i8v1949Lqg792W1 | Ref.-Nr.: 6j2R5436dOM884a3"), //
                         hasAmount("EUR", 72.21), hasGrossValue("EUR", 96.99), //
@@ -2086,7 +2108,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-13T00:00"), hasShares(1500.00), //
+                        hasDate("2025-03-13T00:00"), hasExDate(null), //
+                        hasShares(1500.00), //
                         hasSource("Dividende09.txt"), //
                         hasNote("Ref.-Nr.: 0S3m1013fhl684d2"), //
                         hasAmount("EUR", 5465.91), hasGrossValue("EUR", 5465.91), //
@@ -2122,7 +2145,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-13T00:00"), hasShares(1500.00), //
+                        hasDate("2025-03-13T00:00"), hasExDate(null), //
+                        hasShares(1500.00), //
                         hasSource("Dividende09.txt"), //
                         hasNote("Ref.-Nr.: 0S3m1013fhl684d2"), //
                         hasAmount("EUR", 5465.91), hasGrossValue("EUR", 5465.91), //
@@ -2200,7 +2224,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-13T00:00"), hasShares(1500.00), //
+                        hasDate("2025-03-13T00:00"), hasExDate(null), //
+                        hasShares(1500.00), //
                         hasSource("Dividende09.txt; SteuerbehandlungVonDividende09.txt"), //
                         hasNote("Ref.-Nr.: 0S3m1013fhl684d2 | Ref.-Nr.: 0I5t9813ZeI916u2"), //
                         hasAmount("EUR", 2976.19), hasGrossValue("EUR", 5465.90), //
@@ -2238,7 +2263,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-13T00:00"), hasShares(1500.00), //
+                        hasDate("2025-03-13T00:00"), hasExDate(null), //
+                        hasShares(1500.00), //
                         hasSource("Dividende09.txt; SteuerbehandlungVonDividende09.txt"), //
                         hasNote("Ref.-Nr.: 0S3m1013fhl684d2 | Ref.-Nr.: 0I5t9813ZeI916u2"), //
                         hasAmount("EUR", 2976.19), hasGrossValue("EUR", 5465.90), //
@@ -2281,7 +2307,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-13T00:00"), hasShares(1500.00), //
+                        hasDate("2025-03-13T00:00"), hasExDate(null), //
+                        hasShares(1500.00), //
                         hasSource("Dividende09.txt; SteuerbehandlungVonDividende09.txt"), //
                         hasNote("Ref.-Nr.: 0S3m1013fhl684d2 | Ref.-Nr.: 0I5t9813ZeI916u2"), //
                         hasAmount("EUR", 2976.19), hasGrossValue("EUR", 5465.90), //
@@ -2318,7 +2345,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-13T00:00"), hasShares(1500.00), //
+                        hasDate("2025-03-13T00:00"), hasExDate(null), //
+                        hasShares(1500.00), //
                         hasSource("Dividende09.txt; SteuerbehandlungVonDividende09.txt"), //
                         hasNote("Ref.-Nr.: 0S3m1013fhl684d2 | Ref.-Nr.: 0I5t9813ZeI916u2"), //
                         hasAmount("EUR", 2976.19), hasGrossValue("EUR", 5465.90), //
@@ -2359,7 +2387,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-18T00:00"), hasShares(100.00), //
+                        hasDate("2025-03-18T00:00"), hasExDate(null), //
+                        hasShares(100.00), //
                         hasSource("Dividende10.txt"), //
                         hasNote("Ref.-Nr.: 2x6f3IVQBDu6967C"), //
                         hasAmount("EUR", 74.92), hasGrossValue("EUR", 74.92), //
@@ -2397,7 +2426,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-18T00:00"), hasShares(100.00), //
+                        hasDate("2025-03-18T00:00"), hasExDate(null), //
+                        hasShares(100.00), //
                         hasSource("Dividende10.txt"), //
                         hasNote("Ref.-Nr.: 2x6f3IVQBDu6967C"), //
                         hasAmount("EUR", 74.92), hasGrossValue("EUR", 74.92), //
@@ -2475,7 +2505,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-18T00:00"), hasShares(100.00), //
+                        hasDate("2025-03-18T00:00"), hasExDate(null), //
+                        hasShares(100.00), //
                         hasSource("Dividende10.txt; SteuerbehandlungVonDividende10.txt"), //
                         hasNote("Ref.-Nr.: 2x6f3IVQBDu6967C | Ref.-Nr.: 2I7Z9FWTCFT0000R"), //
                         hasAmount("EUR", 55.78), hasGrossValue("EUR", 74.91), //
@@ -2515,7 +2546,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-18T00:00"), hasShares(100.00), //
+                        hasDate("2025-03-18T00:00"), hasExDate(null), //
+                        hasShares(100.00), //
                         hasSource("Dividende10.txt; SteuerbehandlungVonDividende10.txt"), //
                         hasNote("Ref.-Nr.: 2x6f3IVQBDu6967C | Ref.-Nr.: 2I7Z9FWTCFT0000R"), //
                         hasAmount("EUR", 55.78), hasGrossValue("EUR", 74.91), //
@@ -2558,7 +2590,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-18T00:00"), hasShares(100.00), //
+                        hasDate("2025-03-18T00:00"), hasExDate(null), //
+                        hasShares(100.00), //
                         hasSource("Dividende10.txt; SteuerbehandlungVonDividende10.txt"), //
                         hasNote("Ref.-Nr.: 2x6f3IVQBDu6967C | Ref.-Nr.: 2I7Z9FWTCFT0000R"), //
                         hasAmount("EUR", 55.78), hasGrossValue("EUR", 74.91), //
@@ -2595,7 +2628,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-18T00:00"), hasShares(100.00), //
+                        hasDate("2025-03-18T00:00"), hasExDate(null), //
+                        hasShares(100.00), //
                         hasSource("Dividende10.txt; SteuerbehandlungVonDividende10.txt"), //
                         hasNote("Ref.-Nr.: 2x6f3IVQBDu6967C | Ref.-Nr.: 2I7Z9FWTCFT0000R"), //
                         hasAmount("EUR", 55.78), hasGrossValue("EUR", 74.91), //
@@ -2636,7 +2670,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-04-24T00:00"), hasShares(126.00), //
+                        hasDate("2025-04-24T00:00"), hasExDate(null), //
+                        hasShares(126.00), //
                         hasSource("Dividende11.txt"), //
                         hasNote("Ref.-Nr.: 1C7ZBW0NK88007D4"), //
                         hasAmount("EUR", 407.92), hasGrossValue("EUR", 407.92), //
@@ -2672,7 +2707,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-04-24T00:00"), hasShares(126.00), //
+                        hasDate("2025-04-24T00:00"), hasExDate(null), //
+                        hasShares(126.00), //
                         hasSource("Dividende11.txt"), //
                         hasNote("Ref.-Nr.: 1C7ZBW0NK88007D4"), //
                         hasAmount("EUR", 407.92), hasGrossValue("EUR", 407.92), //
@@ -2750,7 +2786,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-04-24T00:00"), hasShares(126.00), //
+                        hasDate("2025-04-24T00:00"), hasExDate(null), //
+                        hasShares(126.00), //
                         hasSource("Dividende11.txt; SteuerbehandlungVonDividende11.txt"), //
                         hasNote("Ref.-Nr.: 1C7ZBW0NK88007D4 | Ref.-Nr.: 1C7ZBW0NQ14714E9"), //
                         hasAmount("EUR", 222.11), hasGrossValue("EUR", 407.92), //
@@ -2788,7 +2825,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-04-24T00:00"), hasShares(126.00), //
+                        hasDate("2025-04-24T00:00"), hasExDate(null), //
+                        hasShares(126.00), //
                         hasSource("Dividende11.txt; SteuerbehandlungVonDividende11.txt"), //
                         hasNote("Ref.-Nr.: 1C7ZBW0NK88007D4 | Ref.-Nr.: 1C7ZBW0NQ14714E9"), //
                         hasAmount("EUR", 222.11), hasGrossValue("EUR", 407.92), //
@@ -2831,7 +2869,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-04-24T00:00"), hasShares(126.00), //
+                        hasDate("2025-04-24T00:00"), hasExDate(null), //
+                        hasShares(126.00), //
                         hasSource("Dividende11.txt; SteuerbehandlungVonDividende11.txt"), //
                         hasNote("Ref.-Nr.: 1C7ZBW0NK88007D4 | Ref.-Nr.: 1C7ZBW0NQ14714E9"), //
                         hasAmount("EUR", 222.11), hasGrossValue("EUR", 407.92), //
@@ -2868,7 +2907,8 @@ public class CommerzbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-04-24T00:00"), hasShares(126.00), //
+                        hasDate("2025-04-24T00:00"), hasExDate(null), //
+                        hasShares(126.00), //
                         hasSource("Dividende11.txt; SteuerbehandlungVonDividende11.txt"), //
                         hasNote("Ref.-Nr.: 1C7ZBW0NK88007D4 | Ref.-Nr.: 1C7ZBW0NQ14714E9"), //
                         hasAmount("EUR", 222.11), hasGrossValue("EUR", 407.92), //

@@ -5,6 +5,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -603,10 +604,78 @@ public class BoursoBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-02-15T00:00"), hasShares(248.00), //
+                        hasDate("2024-02-15T00:00"), hasExDate(null), //
+                        hasShares(248.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 28.24), hasGrossValue("EUR", 40.33), //
                         hasTaxes("EUR", 12.09), hasFees("EUR", 0.00))));
     }
+
+    @Test
+    public void testDividende02()
+    {
+        var extractor = new BoursoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(3L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(6));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0000121972"), hasWkn(null), hasTicker(null), //
+                        hasName("SCHNEIDER ELECTRIC"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-05-11T00:00"), hasExDate(null), //
+                        hasShares(5.00), //
+                        hasSource("Dividende02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 21.10), hasGrossValue("EUR", 21.10), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0000120073"), hasWkn(null), hasTicker(null), //
+                        hasName("AIR LIQUIDE"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-05-18T00:00"), hasExDate(null), //
+                        hasShares(5.00), //
+                        hasSource("Dividende02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 18.50), hasGrossValue("EUR", 18.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR001400AJ45"), hasWkn(null), hasTicker(null), //
+                        hasName("MICHELIN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-05-26T00:00"), hasExDate(null), //
+                        hasShares(5.00), //
+                        hasSource("Dividende02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 6.90), hasGrossValue("EUR", 6.90), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+    }
+
 }

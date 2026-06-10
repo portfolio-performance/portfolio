@@ -52,16 +52,18 @@ import static name.abuchen.portfolio.util.HolidayName.PASSOVER_II_EVE;
 import static name.abuchen.portfolio.util.HolidayName.PASSOVER_I_EVE;
 import static name.abuchen.portfolio.util.HolidayName.PATRON_DAY;
 import static name.abuchen.portfolio.util.HolidayName.PURIM;
+import static name.abuchen.portfolio.util.HolidayName.RAMADAN_FEAST;
 import static name.abuchen.portfolio.util.HolidayName.REFORMATION_DAY;
 import static name.abuchen.portfolio.util.HolidayName.REPENTANCE_AND_PRAYER;
 import static name.abuchen.portfolio.util.HolidayName.REPUBLIC_PROCLAMATION_DAY;
 import static name.abuchen.portfolio.util.HolidayName.ROYAL_JUBILEE;
 import static name.abuchen.portfolio.util.HolidayName.ROYAL_WEDDING;
+import static name.abuchen.portfolio.util.HolidayName.SACRIFICE_FEAST;
 import static name.abuchen.portfolio.util.HolidayName.SAINT_PETER_PAUL;
 import static name.abuchen.portfolio.util.HolidayName.SAINT_STEPHEN;
-import static name.abuchen.portfolio.util.HolidayName.SHAVUOT_EVE;
 import static name.abuchen.portfolio.util.HolidayName.SECOND_CHRISTMAS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.SHAVUOT_DAY;
+import static name.abuchen.portfolio.util.HolidayName.SHAVUOT_EVE;
 import static name.abuchen.portfolio.util.HolidayName.SIMCHAT_TORA;
 import static name.abuchen.portfolio.util.HolidayName.SIMCHAT_TORA_EVE;
 import static name.abuchen.portfolio.util.HolidayName.SPRING_MAY_BANK_HOLIDAY;
@@ -72,6 +74,11 @@ import static name.abuchen.portfolio.util.HolidayName.SUMMER_BANK_HOLIDAY;
 import static name.abuchen.portfolio.util.HolidayName.TERRORIST_ATTACKS;
 import static name.abuchen.portfolio.util.HolidayName.THANKSGIVING;
 import static name.abuchen.portfolio.util.HolidayName.TIRADENTES_DAY;
+import static name.abuchen.portfolio.util.HolidayName.TURKEY_REPUBLIC_DAY;
+import static name.abuchen.portfolio.util.HolidayName.TURKEY_SOVEREIGNTY_DAY;
+import static name.abuchen.portfolio.util.HolidayName.TURKEY_UNITY_DAY;
+import static name.abuchen.portfolio.util.HolidayName.TURKEY_VICTORY_DAY;
+import static name.abuchen.portfolio.util.HolidayName.TURKEY_YOUTH_DAY;
 import static name.abuchen.portfolio.util.HolidayName.UNIFICATION_GERMANY;
 import static name.abuchen.portfolio.util.HolidayName.UNITY_DAY;
 import static name.abuchen.portfolio.util.HolidayName.VICTORIA_DAY;
@@ -84,6 +91,7 @@ import static name.abuchen.portfolio.util.HolidayName.YOM_KIPPUR_EVE;
 import static name.abuchen.portfolio.util.HolidayType.easter;
 import static name.abuchen.portfolio.util.HolidayType.fixed;
 import static name.abuchen.portfolio.util.HolidayType.fixedJewishCalendar;
+import static name.abuchen.portfolio.util.HolidayType.islamicDateRange;
 import static name.abuchen.portfolio.util.HolidayType.israeliIndependenceCalendar;
 import static name.abuchen.portfolio.util.HolidayType.israeliMemorialCalendar;
 import static name.abuchen.portfolio.util.HolidayType.jewishPurimCalendar;
@@ -119,7 +127,7 @@ public class TradeCalendarManager
 
     static
     {
-        TradeCalendar tc = new TradeCalendar(MINIMAL_CALENDAR_CODE, Messages.LabelTradeCalendarDefault,
+        var tc = new TradeCalendar(MINIMAL_CALENDAR_CODE, Messages.LabelTradeCalendarDefault,
                         STANDARD_WEEKEND, false);
         tc.add(fixed(NEW_YEAR, Month.JANUARY, 1));
         tc.add(easter(GOOD_FRIDAY, -2));
@@ -172,7 +180,7 @@ public class TradeCalendarManager
         // one-time closings since 1990; see https://www.bcm-news.de/wp-content/uploads/closings-nyse.pdf
         // for a complete list from 1885 to 2011
         tc.add(fixed(STATE_FUNERAL, Month.APRIL, 27).onlyIn(1994)); // funeral of former president Nixon
-        for (int d = 11; d <= 14; d++)
+        for (var d = 11; d <= 14; d++)
             tc.add(fixed(TERRORIST_ATTACKS, Month.SEPTEMBER, d).onlyIn(2001));
         tc.add(fixed(STATE_FUNERAL, Month.JUNE, 11).onlyIn(2004)); // funeral of former president Reagan
         tc.add(fixed(STATE_FUNERAL, Month.JANUARY, 2).onlyIn(2007)); // funeral of former president Ford
@@ -273,6 +281,32 @@ public class TradeCalendarManager
         tc.add(fixed(CHRISTMAS, Month.DECEMBER, 25).moveIf(DayOfWeek.SATURDAY, 2).moveIf(DayOfWeek.SUNDAY, 2));
         // strange but true: if 25th+26th is Sun+Mon, Christmas Day is moved *beyond* Boxing Day, to Tue
         tc.add(fixed(BOXING_DAY, Month.DECEMBER, 26).moveIf(DayOfWeek.SUNDAY, 2).moveIf(DayOfWeek.SATURDAY, 2));
+        CACHE.put(tc.getCode(), tc);
+
+        // see Borsa Istanbul trading days on their official website:
+        // https://www.borsaistanbul.com/en/official-holidays
+        // https://en.wikipedia.org/wiki/Public_holidays_in_Turkey
+        tc = new TradeCalendar("bist", Messages.LabelTradeCalendarBIST, STANDARD_WEEKEND); //$NON-NLS-1$
+        tc.add(fixed(NEW_YEAR, Month.JANUARY, 1));
+        tc.add(islamicDateRange(RAMADAN_FEAST, 10, 1, 3).exceptIn(2016));
+        tc.add(islamicDateRange(SACRIFICE_FEAST, 12, 10, 13).exceptIn(2012).exceptIn(2015).exceptIn(2016));
+        // In this market, Ramadan is one day shifted in 2016.
+        tc.add(islamicDateRange(RAMADAN_FEAST, 9, 30, 30).onlyIn(2016));
+        tc.add(islamicDateRange(RAMADAN_FEAST, 10, 1, 2).onlyIn(2016));
+        // In this market, Sacrifice is one day shifted in 2012, 2015 and 2016.
+        tc.add(islamicDateRange(SACRIFICE_FEAST, 12, 9, 12).onlyIn(2012));
+        tc.add(islamicDateRange(SACRIFICE_FEAST, 12, 11, 14).onlyIn(2015));
+        tc.add(islamicDateRange(SACRIFICE_FEAST, 12, 11, 14).onlyIn(2016));
+        tc.add(fixed(TURKEY_SOVEREIGNTY_DAY, Month.APRIL, 23));
+        tc.add(fixed(LABOUR_DAY, Month.MAY, 1));
+        tc.add(fixed(TURKEY_YOUTH_DAY, Month.MAY, 19));
+        tc.add(fixed(TURKEY_UNITY_DAY, Month.JULY, 15).validFrom(2017));
+        tc.add(fixed(TURKEY_VICTORY_DAY, Month.AUGUST, 30));
+        // In 28 October, Market is half-day open BUT it was fully closed in 2012, 2017 and 2018.
+        tc.add(fixed(TURKEY_REPUBLIC_DAY, Month.OCTOBER, 28).onlyIn(2012));
+        tc.add(fixed(TURKEY_REPUBLIC_DAY, Month.OCTOBER, 28).onlyIn(2017));
+        tc.add(fixed(TURKEY_REPUBLIC_DAY, Month.OCTOBER, 28).onlyIn(2018));
+        tc.add(fixed(TURKEY_REPUBLIC_DAY, Month.OCTOBER, 29));
         CACHE.put(tc.getCode(), tc);
 
         // see Brazilian Stock Exchange trading days on their official website:

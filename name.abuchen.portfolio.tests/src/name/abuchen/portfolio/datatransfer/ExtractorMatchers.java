@@ -95,7 +95,7 @@ public class ExtractorMatchers
         @Override
         protected boolean matchesSafely(Extractor.Item item, Description mismatchDescription)
         {
-            V tx = transaction.apply(item);
+            var tx = transaction.apply(item);
             if (tx == null)
             {
                 mismatchDescription.appendText("\n* not a '").appendText(label).appendText("' item"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -206,7 +206,7 @@ public class ExtractorMatchers
                 return false;
             }
 
-            boolean result = matcher.matches(item);
+            var result = matcher.matches(item);
             if (!result)
             {
                 matcher.describeMismatch(item, mismatchDescription);
@@ -369,7 +369,7 @@ public class ExtractorMatchers
     @SafeVarargs
     public static Matcher<Extractor.Item> inboundCash(Matcher<Transaction>... properties)
     {
-        return new ExtractorItemMatcher<Transaction>("cash transfer", //$NON-NLS-1$
+        return new ExtractorItemMatcher<>("cash transfer", //$NON-NLS-1$
                         item -> item instanceof AccountTransferItem transfer //
                                         && transfer.getSubject() instanceof AccountTransferEntry entry
                                                         ? entry.getTargetTransaction()
@@ -380,7 +380,7 @@ public class ExtractorMatchers
     @SafeVarargs
     public static Matcher<Extractor.Item> outboundCash(Matcher<Transaction>... properties)
     {
-        return new ExtractorItemMatcher<Transaction>("cash transfer", //$NON-NLS-1$
+        return new ExtractorItemMatcher<>("cash transfer", //$NON-NLS-1$
                         item -> item instanceof AccountTransferItem transfer //
                                         && transfer.getSubject() instanceof AccountTransferEntry entry
                                                         ? entry.getSourceTransaction()
@@ -391,7 +391,7 @@ public class ExtractorMatchers
     @SafeVarargs
     public static Matcher<Extractor.Item> purchase(Matcher<Transaction>... properties)
     {
-        return new ExtractorItemMatcher<Transaction>("purchase", //$NON-NLS-1$
+        return new ExtractorItemMatcher<>("purchase", //$NON-NLS-1$
                         item -> item instanceof BuySellEntryItem buysell //
                                         && buysell.getSubject() instanceof BuySellEntry entry
                                         && entry.getPortfolioTransaction().getType() == PortfolioTransaction.Type.BUY
@@ -403,7 +403,7 @@ public class ExtractorMatchers
     @SafeVarargs
     public static Matcher<Extractor.Item> sale(Matcher<Transaction>... properties)
     {
-        return new ExtractorItemMatcher<Transaction>("sale", //$NON-NLS-1$
+        return new ExtractorItemMatcher<>("sale", //$NON-NLS-1$
                         item -> item instanceof BuySellEntryItem buysell //
                                         && buysell.getSubject() instanceof BuySellEntry entry
                                         && entry.getPortfolioTransaction().getType() == PortfolioTransaction.Type.SELL
@@ -415,7 +415,7 @@ public class ExtractorMatchers
     @SafeVarargs
     public static Matcher<Extractor.Item> inboundDelivery(Matcher<Transaction>... properties)
     {
-        return new ExtractorItemMatcher<Transaction>("inbound delivery", //$NON-NLS-1$
+        return new ExtractorItemMatcher<>("inbound delivery", //$NON-NLS-1$
                         item -> item instanceof TransactionItem tItem //
                                         && tItem.getSubject() instanceof PortfolioTransaction tx
                                         && tx.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND ? tx : null, //
@@ -425,7 +425,7 @@ public class ExtractorMatchers
     @SafeVarargs
     public static Matcher<Extractor.Item> outboundDelivery(Matcher<Transaction>... properties)
     {
-        return new ExtractorItemMatcher<Transaction>("outbound delivery", //$NON-NLS-1$
+        return new ExtractorItemMatcher<>("outbound delivery", //$NON-NLS-1$
                         item -> item instanceof TransactionItem tItem //
                                         && tItem.getSubject() instanceof PortfolioTransaction tx
                                         && tx.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND ? tx : null, //
@@ -435,7 +435,7 @@ public class ExtractorMatchers
     @SafeVarargs
     public static Matcher<Extractor.Item> securityTransfer(Matcher<Transaction>... properties)
     {
-        return new ExtractorItemMatcher<Transaction>("securityTransfer", //$NON-NLS-1$
+        return new ExtractorItemMatcher<>("securityTransfer", //$NON-NLS-1$
                         item -> item instanceof PortfolioTransferItem transfer //
                                         && transfer.getSubject() instanceof PortfolioTransferEntry entry
                                                         ? entry.getSourceTransaction()
@@ -451,7 +451,7 @@ public class ExtractorMatchers
 
     public static Matcher<Transaction> hasDate(String dateString)
     {
-        LocalDateTime expectecd = dateString.contains("T") //$NON-NLS-1$
+        var expectecd = dateString.contains("T") //$NON-NLS-1$
                         ? LocalDateTime.parse(dateString)
                         : LocalDate.parse(dateString).atStartOfDay();
 
@@ -462,9 +462,10 @@ public class ExtractorMatchers
 
     public static Matcher<Transaction> hasExDate(String dateString)
     {
-        var expected = dateString.contains("T") //$NON-NLS-1$
-                        ? LocalDateTime.parse(dateString)
-                        : LocalDate.parse(dateString).atStartOfDay();
+        var expected = dateString == null ? null
+                        : dateString.contains("T") //$NON-NLS-1$
+                                        ? LocalDateTime.parse(dateString)
+                                        : LocalDate.parse(dateString).atStartOfDay();
 
         return new PropertyMatcher<>("exDate", //$NON-NLS-1$
                         expected, //
@@ -474,7 +475,7 @@ public class ExtractorMatchers
     public static Matcher<Transaction> hasShares(double value)
     {
         // work with BigDecimal to have better assertion failed messages
-        return new PropertyMatcher<Transaction, BigDecimal>("shares", //$NON-NLS-1$
+        return new PropertyMatcher<>("shares", //$NON-NLS-1$
                         BigDecimal.valueOf(value).setScale(Values.Share.precision(), Values.MC.getRoundingMode()), //
                         tx -> BigDecimal.valueOf(tx.getShares()).divide(Values.Share.getBigDecimalFactor(), Values.MC)
                                         .setScale(Values.Share.precision(), Values.MC.getRoundingMode()));
@@ -511,7 +512,7 @@ public class ExtractorMatchers
         return new PropertyMatcher<>("forexGrossValue", //$NON-NLS-1$
                         Money.of(currencyCode, Values.Amount.factorize(value)), //
                         tx -> {
-                            Unit grossValueUnit = tx.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(AssertionError::new);
+                            var grossValueUnit = tx.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(AssertionError::new);
                             return grossValueUnit.getForex();
                         });
     }
@@ -547,7 +548,7 @@ public class ExtractorMatchers
     @SafeVarargs
     public static Matcher<Extractor.Item> security(Matcher<Security>... properties)
     {
-        return new ExtractorItemMatcher<Security>("security", //$NON-NLS-1$
+        return new ExtractorItemMatcher<>("security", //$NON-NLS-1$
                         item -> item instanceof SecurityItem securityItem ? securityItem.getSecurity() : null,
                         properties);
     }
@@ -590,7 +591,7 @@ public class ExtractorMatchers
 
     public static Matcher<Security> hasFeedProperty(String name, String value)
     {
-        return new PropertyMatcher<Security, String>("feedProperty " + name, value, //$NON-NLS-1$
+        return new PropertyMatcher<>("feedProperty " + name, value, //$NON-NLS-1$
                         s -> s.getPropertyValue(SecurityProperty.Type.FEED, name).orElse(null));
     }
 

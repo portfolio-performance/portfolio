@@ -18,7 +18,6 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -49,7 +48,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("Cortal Consors");
 
         addBuySellTransaction();
-        addDividendeTransaction();
+        addDividendTransaction();
         addEncashmentTransaction();
         addAdvanceTaxTransaction();
         addTaxAdjustmentTransaction();
@@ -84,13 +83,11 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
+                        // @formatter:off
                         // Is type --> "VERKAUF" change from BUY to SELL
+                        // @formatter:on
                         .section("type").optional() //
                         .match("^(?i).*(?<type>Verkauf" //
                                         + "|VERK\\. TEIL\\-\\/BEZUGSR\\." //
@@ -370,20 +367,18 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             t.setNote(concatenate(t.getNote(), v.get("note2"), " "));
                         })
 
-                        .wrap((t, ctx) -> {
-                            var item = new BuySellEntryItem(t);
-
+                        .wrap(t -> {
                             if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() == 0)
-                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                return new SkippedItem(new BuySellEntryItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
-                            return item;
+                            return new BuySellEntryItem(t);
                         });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
-    private void addDividendeTransaction()
+    private void addDividendTransaction()
     {
         final var type = new DocumentType("(?i)(Dividendengutschrift" //
                         + "|Ertragsgutschrift" //
@@ -405,11 +400,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         // @formatter:off
                         // Storno wegen geänderten steuerrelevanten Daten. Neuabrechnung folgt.
@@ -476,6 +467,15 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("date") //
                                                         .match("^(?i)Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        //                                                      EX-TAG  08.05.2015 
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exDate") //
+                                                        .match("^(?i).*EX\\-TAG[\\s]{1,}(?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate")))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -705,11 +705,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.SELL);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.SELL))
 
                         // @formatter:off
                         // Wertpapierbezeichnung WKN ISIN
@@ -769,11 +765,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         // @formatter:off
                         // Wertpapierbezeichnung WKN ISIN
@@ -809,13 +801,11 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
-                        .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
-                            if (t.getAmount() == 0)
-                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
-
-                            return item;
+                            return new TransactionItem(t);
                         });
     }
 
@@ -832,15 +822,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
-
-                            // Set currency
-                            accountTransaction.setCurrencyCode(CurrencyUnit.EUR);
-
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                         // @formatter:off
                         // Den Steuerausgleich buchen wir mit Wertstellung 10.07.2017
@@ -870,15 +852,14 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                 t.setType(AccountTransaction.Type.TAXES);
 
                             t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode("EUR"));
                         })
 
-                        .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
-                            if (t.getAmount() == 0)
-                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
-
-                            return item;
+                            return new TransactionItem(t);
                         });
     }
 
@@ -903,7 +884,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                                         // @formatter:on
                                                         section -> section //
                                                                         .attributes("currency", "date") //
-                                                                        .match("^.*ABSCHLUSS F.R KONTO.*\\/(?<currency>[A-Z]{3}).*$")
+                                                                        .match("^.*ABSCHLUSS F.R KONTO.*\\/(?<currency>[A-Z]{3}).*$") //
                                                                         .match("^RECHNUNGSABSCHLUSSSALDO PER (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                                                                         .assign((ctx, v) -> {
                                                                             ctx.put("currency", asCurrencyCode(v.get("currency")));
@@ -944,11 +925,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("note", "date", "amount") //
                         .documentContext("year", "currency") //
@@ -958,7 +935,6 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
 
-                            // Formatting some notes
                             if ("GUTSCHRIFT".equals(v.get("note")))
                                 v.put("note", "Gutschrift");
 
@@ -985,11 +961,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.REMOVAL);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
 
                         .section("note", "date", "amount") //
                         .documentContext("year", "currency") //
@@ -999,7 +971,6 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
 
-                            // Formatting some notes
                             if ("UEBERWEISUNG".equals(v.get("note")))
                                 v.put("note", "Überweisung");
 
@@ -1019,11 +990,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(interestBlock_Format01);
         interestBlock_Format01.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .section("date", "amount", "type") //
                         .documentContext("year", "currency") //
@@ -1061,15 +1028,11 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(interestBlock_Format02);
         interestBlock_Format02.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .section("amount", "type") //
                         .documentContext("currency", "date") //
-                        .documentContextOptionally("tax")
+                        .documentContextOptionally("tax") //
                         .match("^SUMME DER ABSCHLUSSPOSTEN (?<amount>[\\.,\\d]+) (?<type>[H|S])$") //
                         .assign((t, v) -> {
                             // @formatter:off
@@ -1110,11 +1073,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new PortfolioTransaction();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new PortfolioTransaction(PortfolioTransaction.Type.DELIVERY_INBOUND))
 
                         // @formatter:off
                         // Is type --> "AUSGANG" change from DELIVERY_INBOUND to DELIVERY_OUTBOUND
@@ -1138,7 +1097,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("date", "name", "wkn", "shares") //
                                                         .match("^UEBERTRAG (EINGANG|AUSGANG) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})")
                                                         .find("Bezeichnung WKN") //
-                                                        .match("^(?<name>.*) (?<wkn>[A-Z0-9]{6})$")
+                                                        .match("^(?<name>.*) (?<wkn>[A-Z0-9]{6})$") //
                                                         .match("^ST (?<shares>[\\.,\\d]+) .*$") //
                                                         .assign((t, v) -> {
                                                             v.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
@@ -1163,8 +1122,8 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                             section -> section //
                                                             .attributes("name", "wkn", "isin", "shares", "date", "currency", "amount") //
                                                             .find("Bezeichnung WKN ISIN") //
-                                                            .match("^(?<name>.*) (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
-                                                            .find("Nom\\.\\/Stk\\. Anschaffungsdatum Anschaffungsdaten")
+                                                            .match("^(?<name>.*) (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                            .find("Nom\\.\\/Stk\\. Anschaffungsdatum Anschaffungsdaten") //
                                                             .match("^(?<shares>[\\.,\\d]+) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Anschaffungswert (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                                                             .assign((t, v) -> {
                                                                 v.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
@@ -1261,12 +1220,12 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                             {
                                 // Account 1
-                                v.put("currency", v.get("currency1"));
+                                v.put("currency", asCurrencyCode(v.get("currency1")));
                                 v.put("tax", v.get("tax1"));
                                 processTaxEntries(t, v, type);
 
                                 // Account 2
-                                v.put("currency", v.get("currency2"));
+                                v.put("currency", asCurrencyCode(v.get("currency2")));
                                 v.put("tax", v.get("tax2"));
                                 processTaxEntries(t, v, type);
                             }
@@ -1285,12 +1244,12 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                             {
                                 // Account 1
-                                v.put("currency", v.get("currency1"));
+                                v.put("currency", asCurrencyCode(v.get("currency1")));
                                 v.put("tax", v.get("tax1"));
                                 processTaxEntries(t, v, type);
 
                                 // Account 2
-                                v.put("currency", v.get("currency2"));
+                                v.put("currency", asCurrencyCode(v.get("currency2")));
                                 v.put("tax", v.get("tax2"));
                                 processTaxEntries(t, v, type);
                             }
@@ -1338,12 +1297,12 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                             {
                                 // Account 1
-                                v.put("currency", v.get("currency1"));
+                                v.put("currency", asCurrencyCode(v.get("currency1")));
                                 v.put("tax", v.get("tax1"));
                                 processTaxEntries(t, v, type);
 
                                 // Account 2
-                                v.put("currency", v.get("currency2"));
+                                v.put("currency", asCurrencyCode(v.get("currency2")));
                                 v.put("tax", v.get("tax2"));
                                 processTaxEntries(t, v, type);
                             }
@@ -1362,12 +1321,12 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                             {
                                 // Account 1
-                                v.put("currency", v.get("currency1"));
+                                v.put("currency", asCurrencyCode(v.get("currency1")));
                                 v.put("tax", v.get("tax1"));
                                 processTaxEntries(t, v, type);
 
                                 // Account 2
-                                v.put("currency", v.get("currency2"));
+                                v.put("currency", asCurrencyCode(v.get("currency2")));
                                 v.put("tax", v.get("tax2"));
                                 processTaxEntries(t, v, type);
                             }
@@ -1414,12 +1373,12 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                             {
                                 // Account 1
-                                v.put("currency", v.get("currency1"));
+                                v.put("currency", asCurrencyCode(v.get("currency1")));
                                 v.put("tax", v.get("tax1"));
                                 processTaxEntries(t, v, type);
 
                                 // Account 2
-                                v.put("currency", v.get("currency2"));
+                                v.put("currency", asCurrencyCode(v.get("currency2")));
                                 v.put("tax", v.get("tax2"));
                                 processTaxEntries(t, v, type);
                             }
@@ -1454,12 +1413,12 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                             {
                                 // Account 1
-                                v.put("currency", v.get("currency1"));
+                                v.put("currency", asCurrencyCode(v.get("currency1")));
                                 v.put("tax", v.get("tax1"));
                                 processTaxEntries(t, v, type);
 
                                 // Account 2
-                                v.put("currency", v.get("currency2"));
+                                v.put("currency", asCurrencyCode(v.get("currency2")));
                                 v.put("tax", v.get("tax2"));
                                 processTaxEntries(t, v, type);
                             }

@@ -55,11 +55,7 @@ public class JTDirektbankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(depositRemovalBlock);
         depositRemovalBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "note", "amount", "type") //
                         .documentContext("currency", "year") //
@@ -99,11 +95,7 @@ public class JTDirektbankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .section("date", "amount") //
                         .documentContext("currency", "year") //
@@ -124,11 +116,7 @@ public class JTDirektbankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(interestCancellation);
         interestCancellation.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST_CHARGE);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST_CHARGE))
 
                         .section("date", "amount") //
                         .documentContext("currency", "year") //

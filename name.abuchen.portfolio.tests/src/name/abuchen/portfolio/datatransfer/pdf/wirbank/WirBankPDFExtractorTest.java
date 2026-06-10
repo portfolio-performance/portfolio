@@ -22,8 +22,8 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.skippedItem;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
@@ -1282,15 +1282,15 @@ public class WirBankPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(1L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
-        // check fee transaction
-        assertThat(results, hasItem(withFailureMessage( //
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         fee( //
                                         hasDate("2023-07-31T00:00"), hasShares(0.00), //
@@ -2654,6 +2654,40 @@ public class WirBankPDFExtractorTest
                         hasSource("Steuerrueckerstattung07.txt"), //
                         hasNote("Rückerstattung Quellensteuer"), //
                         hasAmount("CHF", 0.05), hasGrossValue("CHF", 0.05), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+    }
+    
+    @Test
+    public void testSteuerrueckerstattung08()
+    {
+        var extractor = new WirBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerrueckerstattung08.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH1390275134"), hasWkn(null), hasTicker(null), //
+                        hasName("UBS Emerging Markets"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2026-05-29T00:00"), hasShares(1.034), //
+                        hasSource("Steuerrueckerstattung08.txt"), //
+                        hasNote("Rückerstattung Verrechnungssteuer"), //
+                        hasAmount("CHF", 17.36), hasGrossValue("CHF", 17.36), //
                         hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 

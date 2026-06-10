@@ -3,10 +3,15 @@ package name.abuchen.portfolio.util;
 import static java.time.temporal.TemporalAdjusters.dayOfWeekInMonth;
 import static java.time.temporal.TemporalAdjusters.nextOrSame;
 
+import java.time.DateTimeException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.chrono.HijrahDate;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -389,6 +394,61 @@ import name.abuchen.portfolio.util.HebrewCalendar.HebrewDate;
         }
     }
 
+    private static final class IslamicMonthHolidayType extends HolidayType
+    {
+        private final int islamicMonth;
+        private final int startDay;
+        private final int endDay;
+
+        private IslamicMonthHolidayType(HolidayName name, int islamicMonth, int startDay, int endDay)
+        {
+            super(name);
+            this.islamicMonth = islamicMonth;
+            this.startDay = startDay;
+            this.endDay = endDay;
+        }
+
+        @Override
+        protected Collection<Holiday> doGetHolidays(int year)
+        {
+            List<Holiday> holidays = new ArrayList<>();
+
+            int hijriYearAtStart;
+            int hijriYearAtEnd;
+
+            try
+            {
+                hijriYearAtStart = HijrahDate.from(LocalDate.of(year, 1, 1)).get(ChronoField.YEAR_OF_ERA);
+                hijriYearAtEnd = HijrahDate.from(LocalDate.of(year, 12, 31)).get(ChronoField.YEAR_OF_ERA);
+            }
+            catch (DateTimeException ignore)
+            {
+                // catch years outside the JDK's supported Hijrah calendar range
+                return Collections.emptyList();
+            }
+
+            for (var hijriYear = hijriYearAtStart; hijriYear <= hijriYearAtEnd; hijriYear++)
+            {
+                for (var day = startDay; day <= endDay; day++)
+                {
+                    try
+                    {
+                        var date = LocalDate.from(HijrahDate.of(hijriYear, islamicMonth, day));
+
+                        if (date.getYear() == year)
+                            holidays.add(new Holiday(getName(), date));
+                    }
+                    catch (DateTimeException ignore)
+                    {
+                        // Islamic months can have 29 or 30 days.
+                    }
+                }
+            }
+
+            return holidays;
+        }
+    }
+
     // Instance variables
     private final HolidayName name;
     private int validFrom = -1;
@@ -439,6 +499,11 @@ import name.abuchen.portfolio.util.HebrewCalendar.HebrewDate;
         return new RelativeToEasterHolidayType(name, daysToAdd);
     }
 
+    public static HolidayType islamicDateRange(HolidayName name, int islamicMonth, int startDay, int endDay)
+    {
+        return new IslamicMonthHolidayType(name, islamicMonth, startDay, endDay);
+    }
+
     public HolidayName getName()
     {
         return name;
@@ -481,23 +546,26 @@ import name.abuchen.portfolio.util.HebrewCalendar.HebrewDate;
         return this;
     }
 
-    public Holiday getHoliday(int year)
+    public Collection<Holiday> getHolidays(int year)
     {
-        if (validFrom != -1 && year < validFrom)
-            return null;
+        if (!isValidYear(year))
+            return Collections.emptyList();
 
-        if (validTo != -1 && year > validTo)
-            return null;
-
-        if (exceptIn.contains(year))
-            return null;
-
-        Holiday answer = doGetHoliday(year);
-
+        var holidays = doGetHolidays(year);
         if (moveIf.isEmpty() && moveTo == null)
-            return answer;
+            return holidays;
 
-        LocalDate date = answer.getDate();
+        var answer = new ArrayList<Holiday>();
+        for (var holiday : holidays)
+            if (holiday != null)
+                answer.add(applyMoves(holiday));
+
+        return answer;
+    }
+
+    private Holiday applyMoves(Holiday holiday)
+    {
+        var date = holiday.getDate();
 
         for (MoveIf mv : moveIf)
             date = mv.apply(date);
@@ -505,8 +573,36 @@ import name.abuchen.portfolio.util.HebrewCalendar.HebrewDate;
         if (moveTo != null)
             date = date.with(nextOrSame(moveTo));
 
-        return new Holiday(answer.getName(), date);
+        return new Holiday(holiday.getName(), date);
     }
 
-    protected abstract Holiday doGetHoliday(int year);
+    /**
+     * Returns a single holiday for the given year. Used as fallback by
+     * {@link #doGetHolidays(int)} for simple holiday types.
+     */
+    protected Holiday doGetHoliday(int year)
+    {
+        return null;
+    }
+
+    /**
+     * Returns all holidays produced by this type for the given year. By default,
+     * wraps the single holiday returned by {@link #doGetHoliday(int)}.
+     */
+    protected Collection<Holiday> doGetHolidays(int year)
+    {
+        var holiday = doGetHoliday(year);
+        return holiday == null ? Collections.emptyList() : Collections.singletonList(holiday);
+    }
+
+    protected boolean isValidYear(int year)
+    {
+        if (validFrom != -1 && year < validFrom)
+            return false;
+
+        if (validTo != -1 && year > validTo)
+            return false;
+
+        return !exceptIn.contains(year);
+    }
 }

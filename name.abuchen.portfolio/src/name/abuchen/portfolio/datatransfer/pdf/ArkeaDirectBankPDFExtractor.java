@@ -108,11 +108,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "Vente" change from BUY to SELL
                         .section("type").optional() //
@@ -141,16 +137,16 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
                                         // 16:27:35 Sens Achat - Exécution unique
                                         // @formatter:on
                                         section -> section //
-                                            .attributes("date", "time") //
-                                            .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) R.f.rence .*$") //
-                                            .match("^(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .* \\- .*$") //
-                                            .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
+                                                        .attributes("date", "time") //
+                                                        .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) R.f.rence .*$") //
+                                                        .match("^(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .* \\- .*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
 
-                                         // 02-02-2026 Référence 94F7048294366804
-                                         section -> section //
-                                             .attributes("date") //
-                                             .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) R.f.rence .*$") //
-                                             .assign((t, v) -> t.setDate(asDate(v.get("date")))))
+                                        // 02-02-2026 Référence 94F7048294366804
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) R.f.rence .*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))))
 
                         // @formatter:off
                         // Montant NET 491,67 € 491,67 €
@@ -183,17 +179,13 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        var firstRelevantLine = new Block("^RESULTAT D'OST.*$");
+        var firstRelevantLine = new Block("^RESULTAT D.OST.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // @formatter:off
                         // Nous vous informons que  nous avons procédé à la souscription de 1 titre(s) VEOLIA ENVIRON. (FR0000124141).
@@ -201,14 +193,14 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("name", "isin", "currency") //
                         .match("^.*titre\\(s\\) (?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\).*$") //
-                        .match("^montant net.* \\- [\\,\\d\\s]+ (?<currency>[\\w]{3})$") //
+                        .match("^montant net.* \\- [\\d\\s]+,[\\d]{2} (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
                         // Nous vous informons que  nous avons procédé à la souscription de 1 titre(s) VEOLIA ENVIRON. (FR0000124141).
                         // @formatter:on
                         .section("shares") //
-                        .match("^.*la souscription de (?<shares>[\\,\\d]+) titre\\(s\\).*.*$") //
+                        .match("^.*la souscription de (?<shares>[\\,\\d]+) titre\\(s\\).*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
@@ -222,7 +214,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
                         // montant net de  : - 22,70 EUR
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^montant net.* \\- (?<amount>[\\,\\d\\s]+) (?<currency>[\\w]{3})$") //
+                        .match("^montant net.* \\- (?<amount>[\\d\\s]+,[\\d]{2}) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -233,24 +225,22 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDepositTransaction()
     {
-        var type = new DocumentType("LIQUIDITES sur PEA",
+        final var type = new DocumentType("LIQUIDITES sur PEA", //
                         documentContext -> documentContext //
-                        // @formatter:off
-                        // Nouveau Solde au 31/12/2020 5 315,65
-                        // @formatter:on
-                        .section("year") //
-                        .match("^Nouveau Solde au 31/12/(?<year>[\\d]{4}) .*$") //
-                        .assign((ctx, v) -> {
-                            ctx.put("year", v.get("year"));
-                        })
-                        // @formatter:off
-                        // Date Libellé Débit € Crédit €
-                        // @formatter:on
-                        .section("currency") //
-                                        .match("^Date Libell. D.bit (?<currency>\\p{Sc}) Cr.dit \\1$") //
-                        .assign((ctx, v) -> {
-                            ctx.put("currency", v.get("currency"));
-                        }));
+                                        // @formatter:off
+                                        // Nouveau Solde au 31/12/2020 5 315,65
+                                        // @formatter:on
+                                        .section("year") //
+                                        .match("^Nouveau Solde au 31\\/12\\/(?<year>[\\d]{4}).*$") //
+                                        .assign((ctx, v) -> ctx.put("year", v.get("year")))
+
+                                        // @formatter:off
+                                        // Date Libellé Débit € Crédit €
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("^Date Libell. D.bit (?<currency>\\p{Sc}) Cr.dit.*$") //
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
+
         this.addDocumentTyp(type);
 
 
@@ -258,26 +248,20 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
         // 02/03 VERSEMENT 3 000,00
         // 10/03 REGULARISATION 331,98
         // @formatter:on
-        var depositBlock = new Block("^(?<day>[\\d]{2})\\/(?<month>[\\d]{2}) " //
-                        + "(VERSEMENT|REGULARISATION) " //
-                        + "(?<amount>[\\.,\\d\\\s]+)");
+        var depositBlock = new Block("^(?<day>[\\d]{2})\\/(?<month>[\\d]{2}) (VERSEMENT|REGULARISATION) [\\d\\s]+,[\\d]{2}$");
         type.addBlock(depositBlock);
 
         depositBlock.set(new Transaction<AccountTransaction>() //
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
+
                         .section("amount", "day", "month", "note") //
                         .documentContext("year", "currency") //
-                        .match("^(?<day>[\\d]{2})\\/(?<month>[\\d]{2}) " //
-                                        + "(?<note>VERSEMENT|REGULARISATION) " //
-                                        + "(?<amount>[\\.,\\d\\\s]+)")
+                        .match("^(?<day>[\\d]{2})\\/(?<month>[\\d]{2}) (?<note>VERSEMENT|REGULARISATION) (?<amount>[\\d\\s]+,[\\d]{2})$")
                         .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
                             t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note"));
                         })
 
@@ -286,7 +270,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        var type = new DocumentType("AVIS D.ENCAISSEMENT COUPON");
+        final var type = new DocumentType("AVIS D.ENCAISSEMENT COUPON");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -297,11 +281,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         .oneOf( //
                                         // @formatter:off
@@ -311,7 +291,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "isin", "currency") //
                                                         .match("^.* (ACTION|OPCVM) (?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\).*$") //
-                                                        .match("^Montant unitaire [\\,\\d\\s]+ (?<currency>\\p{Sc})$") //
+                                                        .match("^Montant unitaire [\\d\\s]+,[\\d]{2} (?<currency>\\p{Sc})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         //   n       OPCVM  AMUND.MSCI WORLD D (LU2655993207)
@@ -320,7 +300,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "isin", "currency") //
                                                         .match("^.* (ACTION|OPCVM) (?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\).*$") //
-                                                        .match("^Montant unitaire [\\,\\d\\s]+ (?<currency>[\\w]{3})$") //
+                                                        .match("^Montant unitaire [\\d\\s]+,[\\d]{2} (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         //   n       ACTION  ENGIE (FR0010208488))
@@ -329,7 +309,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "isin", "currency") //
                                                         .match("^.* (ACTION|OPCVM) (?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\).*$") //
-                                                        .match("^Montant Net [\\,\\d\\s]+ (?<currency>\\p{Sc}).*$") //
+                                                        .match("^Montant Net [\\d\\s]+,[\\d]{2} (?<currency>\\p{Sc}).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
@@ -352,7 +332,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
                         // Montant Net 140,00 € 140,00 €
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^Montant Net (?<amount>[\\,\\d\\s]+) (?<currency>\\p{Sc}).*$") //
+                        .match("^Montant Net (?<amount>[\\d\\s]+,[\\d]{2}) (?<currency>\\p{Sc}).*$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -366,7 +346,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
 
     private void addTaxesTreatmentTransaction()
     {
-        var type = new DocumentType("AVIS RECAPITULATIF DE LA TAXE SUR LES");
+        final var type = new DocumentType("AVIS RECAPITULATIF DE LA TAXE SUR LES");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -377,11 +357,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         // @formatter:off
                         // ¾ ORANGE (FR0000133308)
@@ -389,7 +365,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("name", "isin", "currency") //
                         .match("^. (?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\)$") //
-                        .match("^Montant global soumis à la TTF : [\\,\\d\\s]+ (?<currency>\\p{Sc})$") //
+                        .match("^Montant global soumis à la TTF : [\\d\\s]+,[\\d]{2} (?<currency>\\p{Sc})$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
@@ -412,9 +388,9 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
                         // 1,47
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Montant global soumis à la TTF : [\\,\\d\\s]+ (?<currency>\\p{Sc})$") //
-                        .find("Taux de TTF : [\\,\\d\\s]+ %")
-                        .match("(Montant de la TTF:[\\s]*|^)(?<amount>[\\,\\d\\s]+)$") //
+                        .match("^Montant global soumis à la TTF : [\\d\\s]+,[\\d]{2} (?<currency>\\p{Sc})$") //
+                        .find("Taux de TTF : [\\d\\s]+,[\\d]{2} %")
+                        .match("(Montant de la TTF:[\\s]*|^)(?<amount>[\\d\\s]+,[\\d]{2})$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -438,14 +414,14 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
                         // Prélèvement fiscal 0,00 €
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Pr.l.vement fiscal (?<tax>[\\,\\d\\s]+) (?<currency>\\p{Sc})$") //
+                        .match("^Pr.l.vement fiscal (?<tax>[\\d\\s]+,[\\d]{2}) (?<currency>\\p{Sc})$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Prélèvements sociaux 0,00 €
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Pr.l.vements sociaux (?<tax>[\\,\\d\\s]+) (?<currency>\\p{Sc})$") //
+                        .match("^Pr.l.vements sociaux (?<tax>[\\d\\s]+,[\\d]{2}) (?<currency>\\p{Sc})$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
@@ -458,7 +434,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
                         // Droits entrée/sortie 116,31 €
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^(Courtage et Commission|Droits entr.e\\/sortie) (?<fee>[\\,\\d\\s]+) (?<currency>\\p{Sc})$") //
+                        .match("^(Courtage et Commission|Droits entr.e\\/sortie) (?<fee>[\\d\\s]+,[\\d]{2}) (?<currency>\\p{Sc})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 

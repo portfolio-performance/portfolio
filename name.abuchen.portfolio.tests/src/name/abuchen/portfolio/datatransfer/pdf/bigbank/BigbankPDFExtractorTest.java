@@ -3,8 +3,10 @@ package name.abuchen.portfolio.datatransfer.pdf.bigbank;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
@@ -13,9 +15,9 @@ import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBu
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSkippedItems;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 
 import java.util.ArrayList;
@@ -120,6 +122,7 @@ public class BigbankPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(interest(hasDate("2024-12-31"), hasAmount("EUR", 99.01), //
-                        hasSource("Kontoauszug03.txt"), hasNote(null))));
+                        hasSource("Kontoauszug03.txt"), hasNote(null), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 }

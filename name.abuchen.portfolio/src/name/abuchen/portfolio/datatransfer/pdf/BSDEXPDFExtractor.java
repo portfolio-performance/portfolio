@@ -55,24 +55,23 @@ public class BSDEXPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         .oneOf( //
                                         // @formatter:off
                                         // d54eb916-79c9-4eb2-b0ed- Kauf 18.12.2024 0.001 BTC 99.0 EUR 0.2 EUR
                                         // 041dd43be6cc 04:14:42
+                                        //
+                                        // d207c7f3-ebd2-416c-b451-34353cfcc23d Kauf 30.04.2024 0.0001283 BTC 7.18 EUR 0.01 EUR
+                                        // 19:16:59
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "shares", "tickerSymbol", "amount", "currency", "time", "fee", "feeCurrency") //
-                                                        .match("^([a-f0-9\\-]+) Kauf (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<shares>[\\.,\\d]+) (?<tickerSymbol>[A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})?) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+) (?<feeCurrency>[\\w]{3})$") //
-                                                        .match("^([a-f0-9\\-]+)? ?(?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2})") //
+                                                        .match("^[a-f0-9\\-]+ Kauf (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<shares>[\\.,\\d]+) (?<tickerSymbol>[A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})?) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+) (?<feeCurrency>[A-Z]{3})$") //
+                                                        .match("^([a-f0-9\\-]+)?[\\s]*(?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}).*$") //
                                                         .assign((t, v) -> {
-                                                            var fee = Money.of(v.get("feeCurrency"), asAmount(v.get("fee")));
-                                                            var amount = Money.of(v.get("currency"), asAmount(v.get("amount")));
+                                                            var fee = Money.of(asCurrencyCode(v.get("feeCurrency")), asAmount(v.get("fee")));
+                                                            var amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
 
                                                             t.setSecurity(getOrCreateCryptoCurrency(v));
 
@@ -86,10 +85,10 @@ public class BSDEXPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time", "shares", "tickerSymbol", "amount", "currency", "fee", "feeCurrency") //
-                                                        .match("^([a-f0-9\\-]+) Kauf (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}) (?<shares>[\\.,\\d]+) (?<tickerSymbol>[A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})?) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+) (?<feeCurrency>[\\w]{3})$") //
+                                                        .match("^[a-f0-9\\-]+ Kauf (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}) (?<shares>[\\.,\\d]+) (?<tickerSymbol>[A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})?) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+) (?<feeCurrency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
-                                                            var fee = Money.of(v.get("feeCurrency"), asAmount(v.get("fee")));
-                                                            var amount = Money.of(v.get("currency"), asAmount(v.get("amount")));
+                                                            var fee = Money.of(asCurrencyCode(v.get("feeCurrency")), asAmount(v.get("fee")));
+                                                            var amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
 
                                                             t.setSecurity(getOrCreateCryptoCurrency(v));
 
@@ -118,11 +117,7 @@ public class BSDEXPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.SELL);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.SELL))
 
                         .oneOf( //
                                         // @formatter:off
@@ -131,11 +126,11 @@ public class BSDEXPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "amount", "currency", "shares", "tickerSymbol", "fee", "feeCurrency", "time") //
-                                                        .match("^([a-f0-9\\-]+) Verkauf (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}) (?<shares>[\\.,\\d]+) (?<tickerSymbol>[A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})?) (?<fee>[\\.,\\d]+) (?<feeCurrency>[\\w]{3})$") //
-                                                        .match("^([a-f0-9\\-\\s]+)?(?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}).*") //
+                                                        .match("^[a-f0-9\\-]+ Verkauf (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}) (?<shares>[\\.,\\d]+) (?<tickerSymbol>[A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})?) (?<fee>[\\.,\\d]+) (?<feeCurrency>[A-Z]{3})$") //
+                                                        .match("^([a-f0-9\\-]+)?[\\s]*(?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}).*$") //
                                                         .assign((t, v) -> {
-                                                            var fee = Money.of(v.get("feeCurrency"), asAmount(v.get("fee")));
-                                                            var amount = Money.of(v.get("currency"), asAmount(v.get("amount")));
+                                                            var fee = Money.of(asCurrencyCode(v.get("feeCurrency")), asAmount(v.get("fee")));
+                                                            var amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
 
                                                             t.setSecurity(getOrCreateCryptoCurrency(v));
 
@@ -149,10 +144,10 @@ public class BSDEXPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time", "amount", "currency", "shares", "tickerSymbol", "fee", "feeCurrency") //
-                                                        .match("^([a-f0-9\\-]+) Verkauf (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}) (?<shares>[\\.,\\d]+) (?<tickerSymbol>[A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})?) (?<fee>[\\.,\\d]+) (?<feeCurrency>[\\w]{3})$") //
+                                                        .match("^[a-f0-9\\-]+ Verkauf (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}) (?<shares>[\\.,\\d]+) (?<tickerSymbol>[A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})?) (?<fee>[\\.,\\d]+) (?<feeCurrency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
-                                                            var fee = Money.of(v.get("feeCurrency"), asAmount(v.get("fee")));
-                                                            var amount = Money.of(v.get("currency"), asAmount(v.get("amount")));
+                                                            var fee = Money.of(asCurrencyCode(v.get("feeCurrency")), asAmount(v.get("fee")));
+                                                            var amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
 
                                                             t.setSecurity(getOrCreateCryptoCurrency(v));
 
@@ -170,7 +165,7 @@ public class BSDEXPDFExtractor extends AbstractPDFExtractor
 
     private void addDepositAndRemovalTransaction()
     {
-        var type = new DocumentType("Transaktionshistorie");
+        final var type = new DocumentType("Transaktionshistorie");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -182,11 +177,7 @@ public class BSDEXPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         // @formatter:off
                         // f5f27cba-6e3a-4120-8d96-c6be8859ce6f Einzahlung 14.06.2024 25.5 EUR IBAN-A IBAN-B
@@ -196,8 +187,8 @@ public class BSDEXPDFExtractor extends AbstractPDFExtractor
                         // 87557f1886c3 06:30:23 6 4
                         // @formatter:on
                         .section("type", "date", "amount", "currency", "time") //
-                        .match("^([a-f0-9\\-]+) (?<type>Einzahlung|Auszahlung) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
-                        .match("^([a-f0-9\\-\\s]+)?(?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}).*") //
+                        .match("^[a-f0-9\\-]+ (?<type>Einzahlung|Auszahlung) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .match("^([a-f0-9\\-]+)?[\\s]*(?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}).*$") //
                         .assign((t, v) -> {
                             // Is type --> "Auszahlung" change from DEPOSIT to REMOVAL
                             if ("Auszahlung".equals(v.get("type")))
@@ -220,7 +211,7 @@ public class BSDEXPDFExtractor extends AbstractPDFExtractor
                         // 750968db-6059-481b-9dd4- Verkauf 17.12.2024 37.8 EUR 15.0 XRP 0.08 EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^([a-f0-9\\-]+) (Kauf|Verkauf) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^[a-f0-9\\-]+ (Kauf|Verkauf) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* (?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 

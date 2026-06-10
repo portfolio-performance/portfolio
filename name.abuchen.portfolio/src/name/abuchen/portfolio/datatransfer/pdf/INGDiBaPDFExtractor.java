@@ -100,11 +100,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
@@ -370,11 +366,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         // @formatter:off
                         // Sie erhalten eine neue Abrechnung.
@@ -561,11 +553,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         // @formatter:off
                         // ISIN (WKN) IE00BKPT2S34 (A2P1KU)
@@ -612,13 +600,11 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
-
+                        .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
-                            return item;
+                            return new TransactionItem(t);
                         });
     }
 
@@ -697,11 +683,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.REMOVAL);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
 
                         .section("date", "note", "amount") //
                         .documentContext("currency") //
@@ -746,11 +728,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "note", "amount") //
                         .documentContext("currency") //
@@ -774,11 +752,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .oneOf( //
                                         // @formatter:off
@@ -791,7 +765,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                         .documentContextOptionally("taxDate1", "taxDate2", "taxDate3", "tax1", "tax2", "tax3")
                                                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (Zinsertrag|Zinsgutschrift) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
-                                                            var amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+                                                            var amount = Money.of(v.get("currency"), asAmount(v.get("amount")));
 
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setMonetaryAmount(amount);
@@ -799,7 +773,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                             if (v.containsKey("taxDate1") && v.containsKey("tax1")
                                                                             && t.getDateTime().equals(asDate(v.get("taxDate1"))))
                                                             {
-                                                                var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax1")));
+                                                                var tax = Money.of(v.get("currency"), asAmount(v.get("tax1")));
                                                                 t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                                                                 t.addUnit(new Unit(Unit.Type.TAX, tax));
                                                             }
@@ -807,7 +781,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                             if (v.containsKey("taxDate2") && v.containsKey("tax2")
                                                                             && t.getDateTime().equals(asDate(v.get("taxDate2"))))
                                                             {
-                                                                var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax2")));
+                                                                var tax = Money.of(v.get("currency"), asAmount(v.get("tax2")));
                                                                 t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                                                                 t.addUnit(new Unit(Unit.Type.TAX, tax));
                                                             }
@@ -815,7 +789,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                             if (v.containsKey("taxDate3") && v.containsKey("tax3")
                                                                             && t.getDateTime().equals(asDate(v.get("taxDate3"))))
                                                             {
-                                                                var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax3")));
+                                                                var tax = Money.of(v.get("currency"), asAmount(v.get("tax3")));
                                                                 t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                                                                 t.addUnit(new Unit(Unit.Type.TAX, tax));
                                                             }
@@ -830,11 +804,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         type.addBlock(feesBlock);
         feesBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .section("date", "amount") //
                         .documentContext("currency") //
@@ -865,11 +835,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new PortfolioTransaction();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new PortfolioTransaction(PortfolioTransaction.Type.DELIVERY_INBOUND))
 
                         // @formatter:off
                         // Is type --> "Ausgang" change from DELIVERY_INBOUND to DELIVERY_OUTBOUND
@@ -986,12 +952,12 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                             if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                             {
                                 // Account 1
-                                v.put("currency", v.get("currency1"));
+                                v.put("currency", asCurrencyCode(v.get("currency1")));
                                 v.put("tax", v.get("tax1"));
                                 processTaxEntries(t, v, type);
 
                                 // Account 2
-                                v.put("currency", v.get("currency2"));
+                                v.put("currency", asCurrencyCode(v.get("currency2")));
                                 v.put("tax", v.get("tax2"));
                                 processTaxEntries(t, v, type);
                             }
@@ -1021,12 +987,12 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                             if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                             {
                                 // Account 1
-                                v.put("currency", v.get("currency1"));
+                                v.put("currency", asCurrencyCode(v.get("currency1")));
                                 v.put("tax", v.get("tax1"));
                                 processTaxEntries(t, v, type);
 
                                 // Account 2
-                                v.put("currency", v.get("currency2"));
+                                v.put("currency", asCurrencyCode(v.get("currency2")));
                                 v.put("tax", v.get("tax2"));
                                 processTaxEntries(t, v, type);
                             }
@@ -1056,12 +1022,12 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                             if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                             {
                                 // Account 1
-                                v.put("currency", v.get("currency1"));
+                                v.put("currency", asCurrencyCode(v.get("currency1")));
                                 v.put("tax", v.get("tax1"));
                                 processTaxEntries(t, v, type);
 
                                 // Account 2
-                                v.put("currency", v.get("currency2"));
+                                v.put("currency", asCurrencyCode(v.get("currency2")));
                                 v.put("tax", v.get("tax2"));
                                 processTaxEntries(t, v, type);
                             }

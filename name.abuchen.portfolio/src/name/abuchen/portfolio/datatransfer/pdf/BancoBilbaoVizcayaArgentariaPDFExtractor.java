@@ -51,11 +51,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "VENTA" change from BUY to SELL
                         .section("type").optional() //
@@ -120,7 +116,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
                         // @formatter:on
                         .section("fxGross", "termCurrency", "baseCurrency", "exchangeRate") //
                         .match("^Cambio divisa (?<exchangeRate>[\\.,\\d]+) (?<termCurrency>[A-Z]{3})\\/(?<baseCurrency>[A-Z]{3})$") //
-                        .match("^S/títulos [A-Z]{3}[\\s]{1,}[\\d]+[\\s]{1,}[\\.,\\d]+[\\s]{1,}(\\-)?(?<fxGross>[\\.,\\d]+)$") //
+                        .match("^S\\/t.tulos [A-Z]{3}[\\s]{1,}[\\d]+[\\s]{1,}[\\.,\\d]+[\\s]{1,}(\\-)?(?<fxGross>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
@@ -146,16 +142,11 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        var firstRelevantLine = new Block(
-                        "^CARTA DE AVISO POR OPERACIONES DE FONDOS (SUSCRIPCI.N|REEMBOLSO) EN EFECTIVO$");
+        var firstRelevantLine = new Block("^CARTA DE AVISO POR OPERACIONES DE FONDOS (SUSCRIPCI.N|REEMBOLSO) EN EFECTIVO$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
-        pdfTransaction.subject(() -> {
-            var portfolioTransaction = new BuySellEntry();
-            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-            return portfolioTransaction;
-        })
+        pdfTransaction.subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "REEMBOLSO" change from BUY to SELL
                         .section("type").optional() //
@@ -199,7 +190,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
                         // @formatter:on
                         .section("amount", "currency") //
                         .find("CONCEPTO DIVISA PRECIO IMPORTE") //
-                        .match("^(SUSCRIPCIÓN|REEMBOLSO) EFECTIVO (?<currency>[A-Z]{3}) [\\.,\\d]+ (?<amount>[\\.,\\d]+)$") //
+                        .match("^(SUSCRIPCI.N|REEMBOLSO) EFECTIVO (?<currency>[A-Z]{3}) [\\.,\\d]+ (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -222,11 +213,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
-        pdfTransaction.subject(() -> {
-            var accountTransaction = new AccountTransaction();
-            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-            return accountTransaction;
-        })
+        pdfTransaction.subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         // @formatter:off
                         // CODIGO CUENTA VALOR VALOR (US8299331004) TIPO INTERÉS FECHA VENCIMIENTO CAMBIO DIVISA
@@ -323,11 +310,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         // @formatter:off
                         // ACC.AMAZON -USD- T 967,26 USD 1,1678 828,28 Mínimo 20,88

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.eclipse.swt.patch"
+      label="SWT Patch for Portfolio Performance"
+      version="0.84.2.qualifier"
+      provider-name="Portfolio Performance">
+
+   <!--
+      Feature patch: overrides org.eclipse.e4.rcp's exact-version requirements on the
+      SWT host bundle and all platform fragments, redirecting them to the re-qualified
+      artifacts published by the SWT fork update-site (org.eclipse.swt.portfolio.bundles).
+      The patched fix lives in the cocoa fragment; the host and the non-cocoa fragments are
+      upstream content republished under the bumped qualifier so that the host's own exact
+      pins on the fragments still resolve on every platform. The plugins are listed at
+      version 0.0.0 so p2 binds them to the highest available version (the fork bundles).
+
+      This patch lives here (not in the SWT fork) because a feature patch only resolves
+      where the patched feature is present as a root - i.e. this product build, where
+      org.eclipse.e4.rcp is a product feature. Tycho cannot assemble a bare feature patch
+      into a standalone p2 repository (eclipse-tycho/tycho issue 893).
+
+      The org.eclipse.e4.rcp version below must be bumped on each platform upgrade.
+   -->
+   <requires>
+      <import feature="org.eclipse.e4.rcp" version="4.38.0.v20251126-0427" patch="true"/>
+   </requires>
+
+   <plugin
+         id="org.eclipse.swt"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.swt.win32.win32.x86_64"
+         os="win32"
+         ws="win32"
+         arch="x86_64"
+         fragment="true"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.swt.win32.win32.aarch64"
+         os="win32"
+         ws="win32"
+         arch="aarch64"
+         fragment="true"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.swt.gtk.linux.x86_64"
+         os="linux"
+         ws="gtk"
+         arch="x86_64"
+         fragment="true"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.swt.gtk.linux.aarch64"
+         os="linux"
+         ws="gtk"
+         arch="aarch64"
+         fragment="true"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.swt.gtk.linux.ppc64le"
+         os="linux"
+         ws="gtk"
+         arch="ppc64le"
+         fragment="true"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.swt.gtk.linux.riscv64"
+         os="linux"
+         ws="gtk"
+         arch="riscv64"
+         fragment="true"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.swt.cocoa.macosx.x86_64"
+         os="macosx"
+         ws="cocoa"
+         arch="x86_64"
+         fragment="true"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.swt.cocoa.macosx.aarch64"
+         os="macosx"
+         ws="cocoa"
+         arch="aarch64"
+         fragment="true"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>

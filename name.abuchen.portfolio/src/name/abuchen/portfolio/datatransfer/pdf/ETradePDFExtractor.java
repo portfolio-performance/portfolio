@@ -31,7 +31,7 @@ public class ETradePDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        var type = new DocumentType("Purchase Summary");
+        final var type = new DocumentType("Purchase Summary");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
@@ -42,11 +42,7 @@ public class ETradePDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // @formatter:off
                         // Company Name (Symbol) NXP SEMICONDUCTORS, Beginning Balance 0.0000

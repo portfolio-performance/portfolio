@@ -60,6 +60,8 @@ Install via Eclipse Marketplace (drag and drop the `Install` button to your work
 - **M2E PDE Integration** (under General Purpose Tools)
 - **Eclipse e4 Tools** (under General Purpose Tools)
 
+Note: depending on your Eclipse package, some of these may already be installed. Uncheck "Hide items that are already installed" at the bottom of the dialog to verify.
+
 **Configure Eclipse**
 
 `Menu` → `Window` → `Preferences`:
@@ -82,7 +84,7 @@ Install via Eclipse Marketplace (drag and drop the `Install` button to your work
 
 **Project Setup**
 
-1. **Fork** your repository using [GitHub's fork workflow](https://docs.github.com/en/get-started/quickstart/fork-a-repo)
+1. **Fork** the repository using [GitHub's fork workflow](https://docs.github.com/en/get-started/quickstart/fork-a-repo) to create your own copy
 2. **Import projects**: Within Eclipse, [clone and import all projects](https://www.vogella.com/tutorials/EclipseGit/article.html#exercise-clone-an-existing-repository)
 3. **Setup target platform**:
    - Open `portfolio-target-definition` project
@@ -91,6 +93,7 @@ Install via Eclipse Marketplace (drag and drop the `Install` button to your work
 4. **Add Launch Configuration view**: `Menu` → `Window` → `Show View` → `Other...` → `Debug` → `Launch Configuration`
 5. **Run the application**: Select `Eclipse Application` → `PortfolioPerformance` and right-click *Run*
 6. **Run tests**: Select `JUnit Plug-in Tests` → `PortfolioPerformance_Tests` or `PortfolioPerformance_UI_Tests`
+   - If you get `Required plug-in 'org.eclipse.pde.junit.runtime' could not be found`, add your running Eclipse installation as a location in the target. Open `portfolio-target-definition.target` in the Target Editor (same as in step 3), click `Add...` → `Installation` → enter `${eclipse_home}` (works cross-platform) → Finish. Save the file. Keep this change in your working tree only, do not commit it. This bundle is part of the Eclipse PDE tooling rather than the application's runtime, so it intentionally isn't in `portfolio-target-definition.target`. CI uses Maven/Tycho, which has its own test runner, so this only affects running tests from inside Eclipse.
 
 **Optional Language Packs**
 

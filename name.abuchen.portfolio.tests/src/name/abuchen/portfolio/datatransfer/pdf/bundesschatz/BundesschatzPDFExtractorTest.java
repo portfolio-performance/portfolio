@@ -54,11 +54,37 @@ public class BundesschatzPDFExtractorTest
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
+        // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2025-12-30"), hasAmount("EUR", 5000.00), //
                         hasSource("EinUndAuszahlungen01.txt"), hasNote("AT745170342310484364"))));
 
+        // assert transaction
         assertThat(results, hasItem(removal(hasDate("2026-01-12"), hasAmount("EUR", 2531.91), //
                         hasSource("EinUndAuszahlungen01.txt"), hasNote("AT811215280026188132"))));
+    }
+
+    @Test
+    public void testEinUndAuszahlungen02()
+    {
+        var extractor = new BundesschatzPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "EinUndAuszahlungen02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-05-05"), hasAmount("EUR", 1000.00), //
+                        hasSource("EinUndAuszahlungen02.txt"), hasNote("DE74 5170 3423 1048 4364 41"))));
     }
 
     @Test
@@ -80,15 +106,17 @@ public class BundesschatzPDFExtractorTest
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
+        // assert transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2025-12-10"), hasShares(0), //
+                        hasDate("2025-12-10"), hasShares(0.00), //
                         hasSource("Kontoauszug01.txt"), //
                         hasNote("10.11.2025 - 10.12.2025 (1 Monat)"), //
                         hasAmount("EUR", 2.78), hasGrossValue("EUR", 3.84), //
                         hasTaxes("EUR", 1.06), hasFees("EUR", 0.00))));
 
+        // assert transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2026-01-12"), hasShares(0), //
+                        hasDate("2026-01-12"), hasShares(0.00), //
                         hasSource("Kontoauszug01.txt"), //
                         hasNote("10.12.2025 - 12.01.2026 (1 Monat)"), //
                         hasAmount("EUR", 3.07), hasGrossValue("EUR", 4.23), //

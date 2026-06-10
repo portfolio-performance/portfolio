@@ -151,6 +151,32 @@ public class PerformanceIndex
         return Interval.of(dates[0], dates[dates.length - 1]);
     }
 
+    /**
+     * Returns an interval that starts at the first data point at which the
+     * portfolio actually holds assets and ends at the last data point.
+     * <p>
+     * Because intervals are half-open — the start date is <em>excluded</em>
+     * and the end date <em>included</em> (see {@link Interval}) — the start is
+     * anchored to the data point immediately <em>before</em> the first holding,
+     * so the first active day itself is part of the interval while a leading
+     * run of zero-valuation data points (e.g. months before the first
+     * transaction) is excluded.
+     * <p>
+     * If the portfolio never holds any assets, an empty interval (with start
+     * equal to end at the last data point) is returned.
+     */
+    public Interval getFirstHoldingInterval()
+    {
+        for (int ii = 0; ii < totals.length; ii++)
+        {
+            if (totals[ii] != 0)
+                return Interval.of(ii > 0 ? dates[ii - 1] : dates[ii], dates[dates.length - 1]);
+        }
+
+        LocalDate last = dates[dates.length - 1];
+        return Interval.of(last, last);
+    }
+
     public LocalDate[] getDates()
     {
         return dates;

@@ -86,11 +86,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
@@ -839,11 +835,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         // @formatter:off
                         // Korrektur des Belegs 8ac7-2fd8 vom 17.01.2025
@@ -1005,11 +997,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
@@ -1274,11 +1262,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         .optionalOneOf(
                                         // @formatter:off
@@ -1704,13 +1688,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         .conclude(ExtractorUtils.fixGrossValueA())
 
-                        .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
-
+                        .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
-                            return item;
+                            return new TransactionItem(t);
                         });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
@@ -1731,11 +1713,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         .oneOf( //
                                      // @formatter:off
@@ -1830,11 +1808,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .oneOf( //
                                         // @formatter:off
@@ -1930,11 +1904,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         depositBlock.setMaxSize(1);
         depositBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "amount") //
                         .documentContext("currency") //
@@ -1958,11 +1928,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         removalBlock.setMaxSize(1);
         removalBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.REMOVAL);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
 
                         .section("date", "amount") //
                         .documentContext("currency") //
@@ -1983,11 +1949,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         taxRefundBlock.setMaxSize(1);
         taxRefundBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                         .section("date", "amount") //
                         .documentContext("currency") //
@@ -2008,11 +1970,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         interestBlock.setMaxSize(1);
         interestBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .section("date", "amount") //
                         .documentContext("currency") //
@@ -2114,11 +2072,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         depositRemovalBlock_Format01.setMaxSize(1);
         depositRemovalBlock_Format01.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .optionalOneOf( //
                                         // @formatter:off
@@ -2230,11 +2184,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         depositRemovalBlock_Format02.setMaxSize(4);
         depositRemovalBlock_Format02.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .optionalOneOf( //
                                         // @formatter:off
@@ -2740,11 +2690,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         depositRemovalBlock_Format03.setMaxSize(5);
         depositRemovalBlock_Format03.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .optionalOneOf( //
                                         // @formatter:off
@@ -3137,11 +3083,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         feesBlock_Format01.setMaxSize(2);
         feesBlock_Format01.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .optionalOneOf( //
                                         section -> section //
@@ -3170,11 +3112,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         feesBlock_Format02.setMaxSize(1);
         feesBlock_Format02.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .optionalOneOf( //
                                         section -> section //
@@ -3203,11 +3141,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         interestBlock_Format01.setMaxSize(1);
         interestBlock_Format01.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .optionalOneOf( //
                                         section -> section //
@@ -3232,11 +3166,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         interestBlock_Format02.setMaxSize(5);
         interestBlock_Format02.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .optionalOneOf( //
                                         // @formatter:off
@@ -3337,11 +3267,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         interestBlock_Format03.setMaxSize(5);
         interestBlock_Format03.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .optionalOneOf( //
                                         // @formatter:off
@@ -3396,11 +3322,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         taxesBlock_Format01.setMaxSize(2);
         taxesBlock_Format01.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         .optionalOneOf( //
                                         section -> section //
@@ -3437,11 +3359,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         taxesBlock_Format02.setMaxSize(3);
         taxesBlock_Format02.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                         .optionalOneOf( //
                                         section -> section //
@@ -3512,11 +3430,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                         // @formatter:off
                         // STORNO STEUERKORREKTUR
@@ -3678,11 +3592,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                         .oneOf( //
                                         // @formatter:off
@@ -3743,11 +3653,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .oneOf( //
                                         // @formatter:off
@@ -3907,11 +3813,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .oneOf( //
                                         // @formatter:off
@@ -3985,11 +3887,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .oneOf( //
                                         // @formatter:off
@@ -4037,11 +3935,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         // @formatter:off
                         // VERRECHNUNGSKONTO DATUM DER ZAHLUNG BETRAG
@@ -4074,11 +3968,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         // @formatter:off
                         // POSITION COMMANDÉ LE QUANTITÉ
@@ -4147,11 +4037,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new PortfolioTransaction();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new PortfolioTransaction(PortfolioTransaction.Type.DELIVERY_INBOUND))
 
                         .oneOf( //
                                         // @formatter:off
@@ -4234,11 +4120,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                         .oneOf( //
                                         // @formatter:off
@@ -4616,11 +4498,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                         .optionalOneOf(
                                         // @formatter:off

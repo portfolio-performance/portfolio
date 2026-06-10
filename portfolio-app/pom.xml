@@ -5,7 +5,7 @@
 
 	<groupId>name.abuchen.portfolio</groupId>
 	<artifactId>portfolio-app</artifactId>
-	<version>0.83.3-SNAPSHOT</version>
+	<version>0.84.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Portfolio Performance</name>
@@ -13,7 +13,18 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<tycho-version>5.0.2</tycho-version>
+		<tycho-version>5.0.3</tycho-version>
+		<maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
+		<maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
+		<maven-dependency-plugin.version>3.11.0</maven-dependency-plugin.version>
+		<maven-jarsigner-plugin.version>3.1.0</maven-jarsigner-plugin.version>
+		<maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
+		<maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
+		<sonar-maven-plugin.version>5.7.0.6970</sonar-maven-plugin.version>
+		<fix-info-plist-maven-plugin.version>1.8</fix-info-plist-maven-plugin.version>
+		<exec-maven-plugin.version>3.6.3</exec-maven-plugin.version>
+		<jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
+		<protoc-jar-maven-plugin.version>3.11.4</protoc-jar-maven-plugin.version>
 		<jarsigner.skip>true</jarsigner.skip>
 		<gpgsigner.skip>true</gpgsigner.skip>
 		<applesigner.skip>true</applesigner.skip>
@@ -41,6 +52,7 @@
 		<module>../name.abuchen.portfolio.ui</module>
 		<module>../name.abuchen.portfolio.ui.tests</module>
 		<module>../name.abuchen.portfolio.feature</module>
+		<module>../features/org.eclipse.swt.patch</module>
 		<module>../name.abuchen.portfolio.bootstrap</module>
 		<module>../portfolio-build-tools</module>
 		<module>../portfolio-build-tools-check</module>
@@ -51,6 +63,17 @@
 			<id>portfolio-jre</id>
 			<layout>p2</layout>
 			<url>http://portfolio-performance.github.io/bundled-jre/21.0.5</url>
+		</repository>
+		<!-- Re-qualified (patched) SWT bundles from the SWT fork update-site. Added as an
+		     available-but-unrooted p2 repository (not a target-definition root) so the
+		     patched org.eclipse.swt host + fragments coexist with the upstream SWT pulled
+		     by org.eclipse.e4.rcp, without a target-platform singleton conflict. The
+		     org.eclipse.swt.patch feature redirects e4.rcp's exact SWT requirements to
+		     these bundles in the product build. -->
+		<repository>
+			<id>swt-portfolio-fork</id>
+			<layout>p2</layout>
+			<url>https://portfolio-performance.github.io/eclipse.platform.swt-fork-update-site/R4_38/</url>
 		</repository>
 	</repositories>
 
@@ -94,7 +117,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
-				<version>3.6.3</version>
+				<version>${maven-enforcer-plugin.version}</version>
 				<executions>
 					<execution>
 						<id>enforce-versions</id>
@@ -450,7 +473,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.5.0</version>
+					<version>${maven-resources-plugin.version}</version>
 					<configuration>
 						<encoding>UTF-8</encoding>
 					</configuration>
@@ -458,7 +481,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-dependency-plugin</artifactId>
-					<version>3.10.0</version>
+					<version>${maven-dependency-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
@@ -518,7 +541,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jarsigner-plugin</artifactId>
-					<version>3.1.0</version>
+					<version>${maven-jarsigner-plugin.version}</version>
 					<executions>
 						<execution>
 							<id>sign</id>
@@ -550,17 +573,17 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-gpg-plugin</artifactId>
-					<version>3.2.8</version>
+					<version>${maven-gpg-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-checkstyle-plugin</artifactId>
-					<version>3.6.0</version>
+					<version>${maven-checkstyle-plugin.version}</version>
 					<dependencies>
 						<dependency>
 							<groupId>com.puppycrawl.tools</groupId>
 							<artifactId>checkstyle</artifactId>
-							<version>13.4.2</version>
+							<version>13.5.0</version>
 						</dependency>
 					</dependencies>
 					<executions>
@@ -584,17 +607,17 @@
 				<plugin>
 					<groupId>org.sonarsource.scanner.maven</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>5.6.0.6792</version>
+					<version>${sonar-maven-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>name.abuchen</groupId>
 					<artifactId>fix-info-plist-maven-plugin</artifactId>
-					<version>1.8</version>
+					<version>${fix-info-plist-maven-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>exec-maven-plugin</artifactId>
-					<version>3.6.3</version>
+					<version>${exec-maven-plugin.version}</version>
 					<configuration>
 						<mainClass>name.abuchen.portfolio.build.MessagesTool</mainClass>
 						<classpathScope>runtime</classpathScope>
@@ -607,12 +630,12 @@
 				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>0.8.14</version>
+					<version>${jacoco-maven-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>com.github.os72</groupId>
 					<artifactId>protoc-jar-maven-plugin</artifactId>
-					<version>3.11.4</version>
+					<version>${protoc-jar-maven-plugin.version}</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>

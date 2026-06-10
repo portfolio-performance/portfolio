@@ -50,11 +50,6 @@ public class BourseDirectPDFExtractor extends AbstractPDFExtractor
             var taxAmountTransactionHelper = new TaxAmountTransactionHelper();
             context.putType(taxAmountTransactionHelper);
 
-            List<TaxAmountTransactionItem> itemsToAddToFront = new ArrayList<>();
-
-            // Add items from pTaxAmountTransaction to the beginning of the list
-            taxAmountTransactionHelper.items.addAll(0, itemsToAddToFront);
-
             for (var i = 0; i < lines.length; i++)
             {
                 // Extract currency from header line
@@ -75,7 +70,7 @@ public class BourseDirectPDFExtractor extends AbstractPDFExtractor
                     item.dateTime = asDate(m.group("date"));
                     item.isin = m.group("isin");
                     item.tax = asAmount(m.group("tax"));
-                    item.currency = asCurrencyCode(context.get("currency"));
+                    item.currency = context.get("currency");
 
                     taxAmountTransactionHelper.items.add(item);
                 }
@@ -92,11 +87,7 @@ public class BourseDirectPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "VENTE" change from BUY to SELL
                         .section("type").optional() //
@@ -154,7 +145,7 @@ public class BourseDirectPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^.*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}[\\s]{1,}(ACHAT|VENTE).*[\\s]{2,}(?<amount>[\\d\\s]+,[\\d]{2})$") //
                         .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
 
                             var taxAmountTransactionHelper = type.getCurrentContext().getType(TaxAmountTransactionHelper.class).orElseGet(TaxAmountTransactionHelper::new);
@@ -215,11 +206,7 @@ public class BourseDirectPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         // @formatter:off
                         //   06/08/2025  COUPONS  NL0010273215  ASML HOLDING  4,08
@@ -251,7 +238,7 @@ public class BourseDirectPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^.*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}[\\s]{1,}COUPONS.*[\\s]{2,}(?<amount>[\\d\\s]+,[\\d]{2})$") //
                         .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
@@ -264,8 +251,8 @@ public class BourseDirectPDFExtractor extends AbstractPDFExtractor
                         .match("^.*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}[\\s]{1,}COUPONS.*[\\s]{2,}(?<amount>[\\d\\s]+,[\\d]{2})$") //
                         .match("^.*PX UN.BRUT :[\\s]{1,}\\+[\\d\\s]+,[\\d]+[\\s]{1,}BRUT :[\\s]{1,}\\+(?<gross>[\\d\\s]+,[\\d]{2})$") //
                         .assign((t, v) -> {
-                            var amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
-                            var gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                            var amount = Money.of(v.get("currency"), asAmount(v.get("amount")));
+                            var gross = Money.of(v.get("currency"), asAmount(v.get("gross")));
 
                             // @formatter:off
                             // we assume that the difference between gross and amount is tax
@@ -298,11 +285,7 @@ public class BourseDirectPDFExtractor extends AbstractPDFExtractor
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         // @formatter:off
                         //  24/02/2021  VIREMENT ESPECES  VIRT M. ET/OU MME  2 400,00
@@ -312,7 +295,7 @@ public class BourseDirectPDFExtractor extends AbstractPDFExtractor
                         .match("^.*(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4})[\\s]{1,}VIREMENT ESPECES.*[\\s]{2,}(?<amount>[\\d\\s]+,[\\d]{2})$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
@@ -322,11 +305,7 @@ public class BourseDirectPDFExtractor extends AbstractPDFExtractor
         type.addBlock(feesBlock);
         feesBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         // @formatter:off
                         //  06/07/2021  DROITS DE GARDE  DDG ETG 2T21  0,81
@@ -336,7 +315,7 @@ public class BourseDirectPDFExtractor extends AbstractPDFExtractor
                         .match("^.*(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4})[\\s]{1,}DROITS DE GARDE(?<note>.*)[\\s]{2,}(?<amount>[\\d\\s]+,[\\d]{2})$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(trim(v.get("note")));
                         })
@@ -374,20 +353,6 @@ public class BourseDirectPDFExtractor extends AbstractPDFExtractor
     {
         private List<TaxAmountTransactionItem> items = new ArrayList<>();
 
-        /**
-         * Finds a TaxAmountTransactionItem in the list that has a line number
-         * greater than or equal to the specified line and matches the given
-         * date and ISIN.
-         *
-         * @param line
-         *            The line number to compare against.
-         * @param date
-         *            The date to match.
-         * @param isin
-         *            The ISIN to match.
-         * @return An Optional containing the matching TaxAmountTransactionItem,
-         *         or empty if no match is found.
-         */
         public Optional<TaxAmountTransactionItem> findItem(int line, LocalDateTime date, String isin)
         {
             return items.stream()

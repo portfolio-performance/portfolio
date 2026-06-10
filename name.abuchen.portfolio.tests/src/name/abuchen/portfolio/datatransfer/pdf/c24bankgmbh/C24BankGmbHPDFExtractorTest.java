@@ -84,7 +84,7 @@ public class C24BankGmbHPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2024-05-31"), hasShares(0), //
+                        hasDate("2024-05-31"), hasShares(0.00), //
                         hasSource("Kontoauszug02.txt"), //
                         hasNote("Zinsen"), //
                         hasAmount("EUR", 1.93), hasGrossValue("EUR", 4.22), //
@@ -116,7 +116,7 @@ public class C24BankGmbHPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2024-06-30"), hasShares(0), //
+                        hasDate("2024-06-30"), hasShares(0.00), //
                         hasSource("Kontoauszug03.txt"), //
                         hasNote("Zinsen"), //
                         hasAmount("EUR", 15.32), hasGrossValue("EUR", 19.36), //
@@ -144,7 +144,7 @@ public class C24BankGmbHPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2024-07-31"), hasShares(0), //
+                        hasDate("2024-07-31"), hasShares(0.00), //
                         hasSource("Kontoauszug04.txt"), //
                         hasNote("Zinsen"), //
                         hasAmount("EUR", 15.86), hasGrossValue("EUR", 20.04), //

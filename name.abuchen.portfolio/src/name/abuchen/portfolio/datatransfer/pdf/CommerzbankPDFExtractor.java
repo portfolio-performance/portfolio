@@ -79,7 +79,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("Commerzbank AG");
 
         addBuySellTransaction();
-        addDividendeTransaction();
+        addDividendTransaction();
         addTaxesTreatmentTransaction();
     }
 
@@ -102,13 +102,11 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
-                        // Is type --> "Wertpapierkauf" change from BUY to SELL
+                        // @formatter:off
+                        // Is type --> "Wertpapierverkauf" change from BUY to SELL
+                        // @formatter:on
                         .section("type").optional() //
                         .match("^(?<type>W[\\s]*e[\\s]*r[\\s]*t[\\s]*p[\\s]*a[\\s]*p[\\s]*i[\\s]*e[\\s]*r[\\s]*(k[\\s]*a[\\s]*u[\\s]*f|v[\\s]*e[\\s]*r[\\s]*k[\\s]*a[\\s]*u[\\s]*f)).*$") //
                         .assign((t, v) -> {
@@ -201,7 +199,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
-    private void addDividendeTransaction()
+    private void addDividendTransaction()
     {
         final var type = new DocumentType("(D[\\s]*i[\\s]*v[\\s]*i[\\s]*d[\\s]*e[\\s]*n[\\s]*d[\\s]*e[\\s]*n[\\s]*g[\\s]*u[\\s]*t[\\s]*s[\\s]*c[\\s]*h[\\s]*r[\\s]*i[\\s]*f[\\s]*t|E[\\s]*r[\\s]*t[\\s]*r[\\s]*a[\\s]*g[\\s]*s[\\s]*g[\\s]*u[\\s]*t[\\s]*s[\\s]*c[\\s]*h[\\s]*r[\\s]*i[\\s]*f[\\s]*t)");
         this.addDocumentTyp(type);
@@ -214,11 +212,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         // @formatter:off
                         // p e r 2 7 . 0 3 . 2 0 2 0 Samsung E l e c t r o n i c s Co. L t d . 881823
@@ -319,10 +313,10 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                                         // 15,000 % Quellensteuer                                     EUR               XX,XX -
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("currency", "withHoldingTax") //
+                                                        .attributes("currencyWithHoldingTax", "withHoldingTax") //
                                                         .match("^[\\.,\\d]+ % Quellensteuer[\\s]{1,}(?<currencyWithHoldingTax>[\\w]{3})[\\s]{1,}(?<withHoldingTax>[\\.,\\d]+) \\-.*$") //
                                                         .assign((t, v) -> {
-                                                            var withHoldingTax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("withHoldingTax")));
+                                                            var withHoldingTax = Money.of(asCurrencyCode(v.get("currencyWithHoldingTax")), asAmount(v.get("withHoldingTax")));
 
                                                             if (t.getMonetaryAmount().getCurrencyCode().equals(withHoldingTax.getCurrencyCode()))
                                                                 t.setMonetaryAmount(t.getMonetaryAmount().add(withHoldingTax));
@@ -355,11 +349,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         .oneOf( //
                                         // @formatter:off
@@ -391,7 +381,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*(?:G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n|L[\\s]*a[\\s]*s[\\s]*t[\\s]*e[\\s]*n)[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:?[\\s]*?(?<currency>[A-Z\\s]{3,}).*$") //
                                                         .assign((t, v) -> {
                                                             v.put("name", trim(replaceMultipleBlanks(v.get("name"))));
-                                                            v.put("currency", stripBlanks(v.get("currency")));
+                                                            v.put("currency", asCurrencyCode(stripBlanks(v.get("currency"))));
 
                                                             t.setSecurity(getOrCreateSecurity(v));
                                                         }))

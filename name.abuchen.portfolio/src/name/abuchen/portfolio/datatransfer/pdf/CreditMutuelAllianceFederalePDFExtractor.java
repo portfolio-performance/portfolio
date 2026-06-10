@@ -29,22 +29,18 @@ public class CreditMutuelAllianceFederalePDFExtractor extends AbstractPDFExtract
 
     private void addBuySellTransaction()
     {
-        final DocumentType type = new DocumentType("Objet : Confirmation de versement");
+        final var type = new DocumentType("Objet : Confirmation de versement");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^Objet : Confirmation de versement$", "^Total.*$");
+        var firstRelevantLine = new Block("^Objet : Confirmation de versement$", "^Total.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // @formatter:off
                         // Montant brut (frais inclus) : 3 000,00 €
