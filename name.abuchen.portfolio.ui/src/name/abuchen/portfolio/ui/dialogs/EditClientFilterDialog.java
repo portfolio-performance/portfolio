@@ -3,9 +3,7 @@ package name.abuchen.portfolio.ui.dialogs;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.jface.action.Action;
@@ -18,6 +16,7 @@ import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -44,9 +43,11 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 
-import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Adaptable;
+import name.abuchen.portfolio.model.Adaptor;
+import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -58,18 +59,85 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 
 public class EditClientFilterDialog extends Dialog
 {
+    /**
+     * Wraps a child element (Account or Portfolio) of a filter together with
+     * its owning filter item, so the tree's editable weight column can read and
+     * write the per-element ownership percentage.
+     */
+    public static class WeightedElement implements Adaptable
+    {
+        private final Object element;
+        private final ClientFilterMenu.Item item;
+        private final PortfolioClientFilter filter;
+
+        public WeightedElement(Object element, ClientFilterMenu.Item item, PortfolioClientFilter filter)
+        {
+            this.element = element;
+            this.item = item;
+            this.filter = filter;
+        }
+
+        public Object getElement()
+        {
+            return element;
+        }
+
+        @Override
+        public <T> T adapt(Class<T> type)
+        {
+            return Adaptor.adapt(type, element);
+        }
+
+        public int getWeight()
+        {
+            return filter.getWeight(element);
+        }
+
+        public void setWeight(int weight)
+        {
+            filter.setWeight(element, weight);
+            item.setUUIDs(ClientFilterMenu.buildUUIDs(filter));
+        }
+
+        @Override
+        public String toString()
+        {
+            return String.valueOf(element);
+        }
+
+        // value equality on the owning filter item + the wrapped element (not
+        // the weight) so that a WeightedElement recreated on tree refresh
+        // equals
+        // the previous instance -- this keeps JFace selection and expansion
+        // stable even though the children are created dynamically
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(item, element);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null || getClass() != obj.getClass())
+                return false;
+            WeightedElement other = (WeightedElement) obj;
+            return Objects.equals(item, other.item) && Objects.equals(element, other.element);
+        }
+    }
+
     public static class ContentProvider implements ITreeContentProvider
     {
-        private final Map<String, Object> uuid2object = new HashMap<>();
         private List<ClientFilterMenu.Item> items = new ArrayList<>();
 
         public ContentProvider(Client client)
         {
-            client.getPortfolios().forEach(p -> uuid2object.put(p.getUUID(), p));
-            client.getAccounts().forEach(a -> uuid2object.put(a.getUUID(), a));
         }
 
         @SuppressWarnings("unchecked")
@@ -88,11 +156,10 @@ public class EditClientFilterDialog extends Dialog
         @Override
         public Object[] getChildren(Object parentElement)
         {
-            if (parentElement instanceof ClientFilterMenu.Item item)
+            if (parentElement instanceof ClientFilterMenu.Item item
+                            && item.getFilter() instanceof PortfolioClientFilter filter)
             {
-                String[] uuids = item.getUUIDs().split(","); //$NON-NLS-1$
-
-                return Arrays.stream(uuids).map(uuid2object::get).filter(Objects::nonNull).toArray();
+                return Arrays.stream(filter.getAllElements()).map(e -> new WeightedElement(e, item, filter)).toArray();
             }
             else
             {
@@ -156,15 +223,15 @@ public class EditClientFilterDialog extends Dialog
 
         treeViewer = new TreeViewer(treeArea, SWT.BORDER);
         final Tree tree = treeViewer.getTree();
-        tree.setHeaderVisible(false);
+        tree.setHeaderVisible(true);
         tree.setLinesVisible(false);
 
         ColumnEditingSupport.prepare(treeViewer);
         ColumnViewerToolTipSupport.enableFor(treeViewer, ToolTip.NO_RECREATE);
         CopyPasteSupport.enableFor(treeViewer);
 
-        ShowHideColumnHelper columns = new ShowHideColumnHelper(EditClientFilterDialog.class.toString(), preferences,
-                        treeViewer, layout);
+        ShowHideColumnHelper columns = new ShowHideColumnHelper(EditClientFilterDialog.class.toString() + "$v2", //$NON-NLS-1$
+                        preferences, treeViewer, layout);
 
         Column column = new Column(Messages.ColumnName, SWT.NONE, 100);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -180,6 +247,8 @@ public class EditClientFilterDialog extends Dialog
             {
                 if (element instanceof ClientFilterMenu.Item)
                     return Images.GROUPEDACCOUNTS.image();
+                else if (element instanceof WeightedElement weighted)
+                    return LogoManager.instance().getDefaultColumnImage(weighted.getElement(), client.getSettings());
                 else
                     return LogoManager.instance().getDefaultColumnImage(element, client.getSettings());
             }
@@ -189,10 +258,28 @@ public class EditClientFilterDialog extends Dialog
 
         columns.addColumn(column);
 
+        column = new Column(Messages.ColumnWeight, SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                if (element instanceof WeightedElement weighted)
+                    return Values.WeightPercent.format(weighted.getWeight());
+                return null;
+            }
+        });
+        new ValueEditingSupport(WeightedElement.class, "weight", Values.WeightPercent, //$NON-NLS-1$
+                        n -> n.intValue() >= 1 && n.intValue() <= Classification.ONE_HUNDRED_PERCENT)
+                                        .addListener((e, n, o) -> treeViewer.refresh(e)).attachTo(column);
+        columns.addColumn(column);
+
         columns.createColumns();
 
-        // retrofit the column width to 100%
+        // name column grabs the available width; the weight column stays fixed
         layout.setColumnData(tree.getColumn(0), new ColumnWeightData(100));
+        if (tree.getColumnCount() > 1)
+            layout.setColumnData(tree.getColumn(1), new ColumnPixelData(80));
 
         treeViewer.setContentProvider(new ContentProvider(client));
         treeViewer.setInput(items);
@@ -322,7 +409,7 @@ public class EditClientFilterDialog extends Dialog
 
                             // important step: update UUIDs because this is
                             // basic information in settings
-                            selectedFilterElement.setUUIDs(ClientFilterMenu.buildUUIDs(filter.getAllElements()));
+                            selectedFilterElement.setUUIDs(ClientFilterMenu.buildUUIDs(filter));
                             treeViewer.refresh();
                         }
                     }
@@ -331,8 +418,7 @@ public class EditClientFilterDialog extends Dialog
         }
 
         if ((treeViewer.getStructuredSelection().getFirstElement() instanceof ClientFilterMenu.Item)
-                        || (treeViewer.getStructuredSelection().getFirstElement() instanceof Portfolio)
-                        || (treeViewer.getStructuredSelection().getFirstElement() instanceof Account))
+                        || (treeViewer.getStructuredSelection().getFirstElement() instanceof WeightedElement))
         {
             manager.add(new Action(Messages.MenuReportingPeriodDelete)
             {
@@ -362,14 +448,15 @@ public class EditClientFilterDialog extends Dialog
                         {
                             // child node clicked (portfolio or account)
                             items.forEach(it -> {
-                                if (it == p.getFirstSegment() && it.getFilter() instanceof PortfolioClientFilter filter)
+                                if (it == p.getFirstSegment() && it.getFilter() instanceof PortfolioClientFilter filter
+                                                && p.getLastSegment() instanceof WeightedElement weighted)
                                 { // found parent item --> now remove selected
                                   // child item
-                                    filter.removeElement(p.getLastSegment());
+                                    filter.removeElement(weighted.getElement());
 
                                     // important step: update UUIDs because this
                                     // is basic information in settings
-                                    it.setUUIDs(ClientFilterMenu.buildUUIDs(filter.getAllElements()));
+                                    it.setUUIDs(ClientFilterMenu.buildUUIDs(filter));
                                 }
                             });
                         }

@@ -4,9 +4,11 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
 
@@ -44,12 +46,14 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.ConfigurationSet;
 import name.abuchen.portfolio.model.ConfigurationSet.Configuration;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.AccountSnapshot;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
@@ -59,6 +63,7 @@ import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.EditClientFilterDialog.ContentProvider;
+import name.abuchen.portfolio.ui.dialogs.EditClientFilterDialog.WeightedElement;
 import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
@@ -74,6 +79,7 @@ import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.LocaleSenstiveViewerComparator;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
@@ -199,7 +205,13 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
     {
         // update currency converter (in case the base currency changes)
         converter = converter.with(getClient().getBaseCurrency());
+
+        // the weighted child elements are recreated on refresh, so capture the
+        // selection and restore it afterwards (WeightedElement has value
+        // equality, so the recreated row matches the previous selection)
+        IStructuredSelection selection = groupedAccounts.getStructuredSelection();
         groupedAccounts.refresh();
+        groupedAccounts.setSelection(selection, true);
     }
 
     @Override
@@ -292,7 +304,7 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
                         .addListener(this).attachTo(column);
         column.setRemovable(false);
         // top level nodes order is manually sorted by the user via drag & drop
-        column.setSorter(ColumnViewerSorter.create(o -> switch (o)
+        column.setSorter(ColumnViewerSorter.create(o -> switch (unwrap(o))
         {
             case Portfolio portfolio -> portfolio.getName();
             case Account account -> account.getName();
@@ -301,22 +313,43 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
 
         groupedAccountColumns.addColumn(column);
 
-        column = new Column("volume", Messages.ColumnBalance, SWT.RIGHT, 100); //$NON-NLS-1$
+        column = new Column("weight", Messages.ColumnWeight, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object element)
             {
+                return element instanceof WeightedElement weighted ? Values.WeightPercent.format(weighted.getWeight())
+                                : null;
+            }
+        });
+        new ValueEditingSupport(WeightedElement.class, "weight", Values.WeightPercent, //$NON-NLS-1$
+                        n -> n.intValue() >= 1 && n.intValue() <= Classification.ONE_HUNDRED_PERCENT) //
+                                        .addListener(this).attachTo(column);
+        groupedAccountColumns.addColumn(column);
+
+        column = new Column("volume", Messages.ColumnBalance, SWT.RIGHT, 100); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                // the balance of a single element is linear in its weight, so
+                // we scale the (cheap) unweighted snapshot instead of
+                // materializing a weighted pseudo element here
+                var element = unwrap(e);
+                var weight = weightOf(e);
                 if (element instanceof Portfolio portfolio)
                 {
                     PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, converter, LocalDate.now());
-                    return Values.Money.format(snapshot.getValue(), getClient().getBaseCurrency());
+                    return Values.Money.format(scale(snapshot.getValue(), weight), getClient().getBaseCurrency());
                 }
                 else if (element instanceof Account account)
                 {
                     AccountSnapshot snapshot = AccountSnapshot.create(account, converter, LocalDate.now());
                     // show unconverted amount
-                    return Values.Money.format(snapshot.getUnconvertedFunds(), getClient().getBaseCurrency());
+                    return Values.Money.format(scale(snapshot.getUnconvertedFunds(), weight),
+                                    getClient().getBaseCurrency());
                 }
                 else if (element instanceof ClientFilterMenu.Item groupedAccount)
                 {
@@ -330,15 +363,18 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
         });
         // add a sorter
         column.setSorter(ColumnViewerSorter.create(o -> {
-            if (o instanceof Portfolio portfolio)
+            var element = unwrap(o);
+            var weight = weightOf(o);
+            if (element instanceof Portfolio portfolio)
             {
                 PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, converter, LocalDate.now());
-                return snapshot.getValue();
+                return scale(snapshot.getValue(), weight);
             }
-            else if (o instanceof Account account)
+            else if (element instanceof Account account)
             {
                 AccountSnapshot snapshot = AccountSnapshot.create(account, converter, LocalDate.now());
-                return snapshot.getFunds(); // converted amount to sort
+                // converted amount to sort
+                return scale(snapshot.getFunds(), weight);
             }
             return null;
         }));
@@ -353,7 +389,11 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
         groupedAccounts.setContentProvider(new ContentProvider(getClient()));
 
         groupedAccounts.addSelectionChangedListener(event -> {
-            Object treeItem = event.getStructuredSelection().getFirstElement();
+            // feed the weighted pseudo element to the information panes (which
+            // expect Account/Portfolio/Item) so they reflect the ownership
+            // percentage; for a full-weight or non-weighted element this is the
+            // underlying model object
+            Object treeItem = weighted(event.getStructuredSelection().getFirstElement());
             setInformationPaneInput(treeItem);
         });
 
@@ -453,12 +493,12 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
             }));
 
         }
-        else if (element instanceof Portfolio || element instanceof Account)
+        else if (element instanceof WeightedElement weighted)
         {
             var filterItem = (ClientFilterMenu.Item) treeSelection.getPathsFor(element)[0].getFirstSegment();
 
             manager.add(new SimpleAction(Messages.ChartSeriesPickerRemove, a -> {
-                deleteElementInFilter(element, filterItem);
+                deleteElementInFilter(weighted.getElement(), filterItem);
                 storeChangedFilter();
                 if (element instanceof ClientFilterMenu.Item && groupedAccounts.getTree().getItemCount() > 0
                                 && !items.isEmpty())
@@ -483,7 +523,7 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
             filter.removeElement(element);
             // important step: update UUIDs because this is basic
             // information in settings
-            filterItem.setUUIDs(ClientFilterMenu.buildUUIDs(filter.getAllElements()));
+            filterItem.setUUIDs(ClientFilterMenu.buildUUIDs(filter));
         }
     }
 
@@ -529,9 +569,62 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
 
                 // important step: update UUIDs because this is
                 // basic information in settings
-                selectedFilterElement.setUUIDs(ClientFilterMenu.buildUUIDs(filter.getAllElements()));
+                selectedFilterElement.setUUIDs(ClientFilterMenu.buildUUIDs(filter));
             }
         }
+    }
+
+    private static Object unwrap(Object element)
+    {
+        return element instanceof WeightedElement weighted ? weighted.getElement() : element;
+    }
+
+    private static int weightOf(Object element)
+    {
+        return element instanceof WeightedElement weighted ? weighted.getWeight() : Classification.ONE_HUNDRED_PERCENT;
+    }
+
+    private static Money scale(Money money, int weight)
+    {
+        return weight == Classification.ONE_HUNDRED_PERCENT ? money
+                        : money.multiplyAndRound(weight / (double) Classification.ONE_HUNDRED_PERCENT);
+    }
+
+    /**
+     * Materializes the weighted view of a child element: builds a
+     * single-element {@link PortfolioClientFilter} carrying the element's
+     * ownership weight, applies it to the client and returns the resulting
+     * (scaled) {@code ReadOnlyPortfolio}/{@code ReadOnlyAccount}. For a
+     * full-weight element, an {@code Item}, or a non-weighted element the input
+     * is returned unchanged. Used only for the information pane (the balance
+     * column scales the unweighted snapshot instead).
+     */
+    private Object weighted(Object element)
+    {
+        if (!(element instanceof WeightedElement weightedElement))
+            return element;
+
+        var underlying = weightedElement.getElement();
+        var weight = weightedElement.getWeight();
+        if (weight == Classification.ONE_HUNDRED_PERCENT)
+            return underlying;
+
+        Object pseudo;
+        if (underlying instanceof Portfolio portfolio)
+        {
+            var filtered = new PortfolioClientFilter(List.of(portfolio), Collections.emptyList(),
+                            Map.<Object, Integer>of(portfolio, weight)).filter(getClient());
+            pseudo = filtered.getPortfolios().get(0);
+        }
+        else
+        {
+            var account = (Account) underlying;
+            var filtered = new PortfolioClientFilter(Collections.emptyList(), List.of(account),
+                            Map.<Object, Integer>of(account, weight)).filter(getClient());
+            pseudo = filtered.getAccounts().get(0);
+        }
+
+        return pseudo;
     }
 
     // //////////////////////////////////////////////////////////////
