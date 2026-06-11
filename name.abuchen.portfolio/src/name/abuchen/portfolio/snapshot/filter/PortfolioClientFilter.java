@@ -183,6 +183,13 @@ public class PortfolioClientFilter implements ClientFilter
 
         Set<Security> usedSecurities = new HashSet<>();
 
+        // index of (reference account -> security -> highest ownership weight
+        // among included portfolios that book that security there), built as a
+        // side effect of the portfolio pass below so that resolving a security
+        // weight for an account transaction is an O(1) lookup instead of a full
+        // re-scan of every portfolio per account transaction.
+        Map<Account, Map<Security, Integer>> securityWeightIndex = new HashMap<>();
+
         // keep track of transactions processed for a portfolio where the
         // reference account is not included in the filter (otherwise if
         // multiple portfolio share the same reference account, transactions are
@@ -191,7 +198,8 @@ public class PortfolioClientFilter implements ClientFilter
 
         for (Portfolio portfolio : portfolios)
         {
-            adaptPortfolioTransactions(portfolio, portfolio2pseudo, account2pseudo, usedSecurities);
+            adaptPortfolioTransactions(portfolio, portfolio2pseudo, account2pseudo, usedSecurities,
+                            securityWeightIndex);
 
             if (!accounts.contains(portfolio.getReferenceAccount()))
                 collectSecurityRelevantTx(portfolio, account2pseudo.get(portfolio.getReferenceAccount()),
@@ -199,7 +207,7 @@ public class PortfolioClientFilter implements ClientFilter
         }
 
         for (Account account : accounts)
-            adaptAccountTransactions(account, account2pseudo, usedSecurities);
+            adaptAccountTransactions(account, account2pseudo, usedSecurities, securityWeightIndex);
 
         for (Security security : usedSecurities)
             pseudoClient.internalAddSecurity(security);
@@ -208,14 +216,25 @@ public class PortfolioClientFilter implements ClientFilter
     }
 
     private void adaptPortfolioTransactions(Portfolio portfolio, Map<Portfolio, ReadOnlyPortfolio> portfolio2pseudo,
-                    Map<Account, ReadOnlyAccount> account2pseudo, Set<Security> usedSecurities)
+                    Map<Account, ReadOnlyAccount> account2pseudo, Set<Security> usedSecurities,
+                    Map<Account, Map<Security, Integer>> securityWeightIndex)
     {
         ReadOnlyPortfolio pseudoPortfolio = portfolio2pseudo.get(portfolio);
         BigDecimal portfolioWeight = getWeightBD(portfolio);
 
+        var referenceAccount = portfolio.getReferenceAccount();
+        var perSecurity = referenceAccount == null ? null
+                        : securityWeightIndex.computeIfAbsent(referenceAccount, k -> new HashMap<>());
+
         for (PortfolioTransaction t : portfolio.getTransactions())
         {
-            usedSecurities.add(t.getSecurity());
+            var security = t.getSecurity();
+            usedSecurities.add(security);
+
+            // fold the (reference account, security) -> max weight index into
+            // this pass instead of re-scanning all portfolios per account tx
+            if (perSecurity != null && security != null)
+                perSecurity.merge(security, getWeight(portfolio), Math::max);
 
             Object crossOwner = t.getCrossEntry() != null ? t.getCrossEntry().getCrossOwner(t) : null;
 
@@ -402,7 +421,7 @@ public class PortfolioClientFilter implements ClientFilter
     }
 
     private void adaptAccountTransactions(Account account, Map<Account, ReadOnlyAccount> account2pseudo,
-                    Set<Security> usedSecurities)
+                    Set<Security> usedSecurities, Map<Account, Map<Security, Integer>> securityWeightIndex)
     {
         ReadOnlyAccount pseudoAccount = account2pseudo.get(account);
         BigDecimal accountWeight = getWeightBD(account);
@@ -444,12 +463,12 @@ public class PortfolioClientFilter implements ClientFilter
                 case TAX_REFUND:
                 case FEES_REFUND:
                     addSecurityRelatedAccountTx(account, pseudoAccount, t, usedSecurities, accountWeight,
-                                    AccountTransaction.Type.DEPOSIT);
+                                    AccountTransaction.Type.DEPOSIT, securityWeightIndex);
                     break;
                 case TAXES:
                 case FEES:
                     addSecurityRelatedAccountTx(account, pseudoAccount, t, usedSecurities, accountWeight,
-                                    AccountTransaction.Type.REMOVAL);
+                                    AccountTransaction.Type.REMOVAL, securityWeightIndex);
                     break;
                 case DEPOSIT:
                 case REMOVAL:
@@ -472,7 +491,8 @@ public class PortfolioClientFilter implements ClientFilter
      * weight is booked as a balancing deposit/removal. Taxes are preserved.
      */
     private void addSecurityRelatedAccountTx(Account account, ReadOnlyAccount pseudoAccount, AccountTransaction t,
-                    Set<Security> usedSecurities, BigDecimal accountWeight, AccountTransaction.Type fallbackType)
+                    Set<Security> usedSecurities, BigDecimal accountWeight, AccountTransaction.Type fallbackType,
+                    Map<Account, Map<Security, Integer>> securityWeightIndex)
     {
         var security = t.getSecurity();
 
@@ -490,7 +510,8 @@ public class PortfolioClientFilter implements ClientFilter
             return;
         }
 
-        var securityWeight = BigDecimal.valueOf(resolveSecurityWeight(account, security, getWeight(account)));
+        var securityWeight = BigDecimal
+                        .valueOf(resolveSecurityWeight(securityWeightIndex, account, security, getWeight(account)));
 
         // book the security-related part at the portfolio weight (keeps the
         // type, security reference and units including taxes)
@@ -513,27 +534,20 @@ public class PortfolioClientFilter implements ClientFilter
      * Resolves the ownership weight to apply to a security-related transaction
      * that sits in {@code account}. Candidates are included portfolios whose
      * reference account is {@code account} and whose transaction history
-     * contains the security. If candidates carry differing weights, the highest
-     * candidate weight is used as a conservative heuristic. If there is no
-     * candidate, the account's own weight is used as a defensive fallback.
+     * contains the security; their highest weight is used as a conservative
+     * heuristic. The candidates are pre-indexed in {@code securityWeightIndex}
+     * during the portfolio pass. If there is no candidate, the account's own
+     * weight is used as a defensive fallback.
      */
-    private int resolveSecurityWeight(Account account, Security security, int accountWeight)
+    private int resolveSecurityWeight(Map<Account, Map<Security, Integer>> securityWeightIndex, Account account,
+                    Security security, int accountWeight)
     {
-        Set<Integer> weights = new HashSet<>();
+        var perSecurity = securityWeightIndex.get(account);
+        if (perSecurity == null)
+            return accountWeight;
 
-        for (Portfolio portfolio : portfolios)
-        {
-            if (portfolio.getReferenceAccount() == account && holdsSecurity(portfolio, security))
-                weights.add(getWeight(portfolio));
-        }
-
-        return weights.isEmpty() ? accountWeight : weights.stream().mapToInt(Integer::intValue).max()
-                        .orElse(accountWeight);
-    }
-
-    private static boolean holdsSecurity(Portfolio portfolio, Security security)
-    {
-        return portfolio.getTransactions().stream().anyMatch(tx -> security.equals(tx.getSecurity()));
+        var weight = perSecurity.get(security);
+        return weight == null ? accountWeight : weight.intValue();
     }
 
     /**
