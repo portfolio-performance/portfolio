@@ -40,6 +40,7 @@ import name.abuchen.portfolio.snapshot.AccountSnapshot;
 public class PortfolioClientFilterTest
 {
     private static final int HALF = Classification.ONE_HUNDRED_PERCENT / 2;
+    private static final int EIGHTY = Classification.ONE_HUNDRED_PERCENT * 8 / 10;
 
     private Client client;
 
@@ -385,6 +386,47 @@ public class PortfolioClientFilterTest
         assertThat(account.getTransactions().stream() //
                         .filter(t -> t.getType() == AccountTransaction.Type.DEPOSIT) //
                         .anyMatch(t -> t.getAmount() == Values.Amount.factorize(5)), is(true));
+    }
+
+    @Test
+    public void testFullSecuritiesAccountWithReferenceAccountAtFiftyKeepsSecurityCashFlowAndCorrection()
+    {
+        Portfolio portfolioA = client.getPortfolios().get(0);
+        Account referenceA = portfolioA.getReferenceAccount();
+
+        Client result = new PortfolioClientFilter(Arrays.asList(portfolioA), Arrays.asList(referenceA),
+                        Map.of(referenceA, HALF)).filter(client);
+
+        Account account = result.getAccounts().get(0);
+
+        assertThat(account.getTransactions().stream() //
+                        .filter(t -> t.getType() == AccountTransaction.Type.DIVIDENDS) //
+                        .anyMatch(t -> t.getAmount() == Values.Amount.factorize(10)), is(true));
+        assertThat(account.getTransactions().stream() //
+                        .filter(t -> t.getType() == AccountTransaction.Type.REMOVAL) //
+                        .anyMatch(t -> t.getAmount() == Values.Amount.factorize(5)), is(true));
+    }
+
+    @Test
+    public void testIncludedAccountWithMixedCandidatePortfolioWeightsUsesMaximumWithCorrection()
+    {
+        Portfolio portfolioA = client.getPortfolios().get(0);
+        Portfolio portfolioB = client.getPortfolios().get(1);
+        Account referenceA = portfolioA.getReferenceAccount();
+
+        portfolioB.setReferenceAccount(referenceA);
+
+        Client result = new PortfolioClientFilter(Arrays.asList(portfolioA, portfolioB), Arrays.asList(referenceA),
+                        Map.of(referenceA, HALF, portfolioA, HALF, portfolioB, EIGHTY)).filter(client);
+
+        Account account = result.getAccounts().get(0);
+
+        assertThat(account.getTransactions().stream() //
+                        .filter(t -> t.getType() == AccountTransaction.Type.DIVIDENDS) //
+                        .anyMatch(t -> t.getAmount() == Values.Amount.factorize(8)), is(true));
+        assertThat(account.getTransactions().stream() //
+                        .filter(t -> t.getType() == AccountTransaction.Type.REMOVAL) //
+                        .anyMatch(t -> t.getAmount() == Values.Amount.factorize(3)), is(true));
     }
 
     @Test

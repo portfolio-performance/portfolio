@@ -513,9 +513,9 @@ public class PortfolioClientFilter implements ClientFilter
      * Resolves the ownership weight to apply to a security-related transaction
      * that sits in {@code account}. Candidates are included portfolios whose
      * reference account is {@code account} and whose transaction history
-     * contains the security. If exactly one weight applies, it is used; if the
-     * candidates carry differing weights (ambiguous) or there is no candidate,
-     * the account's own weight is used (no security split).
+     * contains the security. If candidates carry differing weights, the highest
+     * candidate weight is used as a conservative heuristic. If there is no
+     * candidate, the account's own weight is used as a defensive fallback.
      */
     private int resolveSecurityWeight(Account account, Security security, int accountWeight)
     {
@@ -527,7 +527,8 @@ public class PortfolioClientFilter implements ClientFilter
                 weights.add(getWeight(portfolio));
         }
 
-        return weights.size() == 1 ? weights.iterator().next().intValue() : accountWeight;
+        return weights.isEmpty() ? accountWeight : weights.stream().mapToInt(Integer::intValue).max()
+                        .orElse(accountWeight);
     }
 
     private static boolean holdsSecurity(Portfolio portfolio, Security security)
