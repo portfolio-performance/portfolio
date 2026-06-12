@@ -670,6 +670,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         // 13.07.2016 Ueberweisung Mustermann -5.000,00
         // 13.02.2020 Gutschrift/Dauerauftrag Max Mustermann 1,01
         // 16.02.2020 Lastschrift XYZ GmbH -10,00
+        // 16.02.2020 Abbuchung XYZ GmbH -10,00
         // 16.03.2026 Echtzeitüberweisung Peter Pan Bla -1.000,00
         // 06.03.2023 Kontolöschung -1.161,10
         // @formatter:on
@@ -677,6 +678,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         + "(Ueberweisung" //
                         + "|Dauerauftrag\\/Terminueberw\\." //
                         + "|Lastschrift" //
+                        + "|Abbuchung" //
                         + "|Echtzeit.berweisung" //
                         + "|Kontol.schung)" //
                         + ".* \\-[\\.,\\d]+$");
@@ -688,25 +690,30 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .section("date", "note", "amount") //
                         .documentContext("currency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
-                                        + "(?<note>Ueberweisung" //
+                                        + "(?<note>(Ueberweisung" //
                                         + "|Dauerauftrag\\/Terminueberw\\." //
                                         + "|Lastschrift" //
+                                        + "|Abbuchung" //
                                         + "|Echtzeit.berweisung" //
                                         + "|Kontol.schung)" //
-                                        + ".* \\-(?<amount>[\\.,\\d]+)$") //
+                                        + ".*) \\-(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
 
-                            // Formatting some notes
-                            if ("Ueberweisung".equals(v.get("note")))
-                                v.put("note", "Überweisung");
+                            // Formatting some notes (fix previous incorrect contains usage)
+                            var note = v.get("note");
+                            if (note != null)
+                            {
+                                if (note.contains("Ueberweisung"))
+                                    note = note.replace("Ueberweisung", "Überweisung");
 
-                            if ("Dauerauftrag/Terminueberw.".equals(v.get("note")))
-                                v.put("note", "Dauerauftrag/Terminüberweisung");
+                                if (note.contains("Dauerauftrag/Terminueberw."))
+                                    note = note.replace("Dauerauftrag/Terminueberw.", "Dauerauftrag/Terminüberweisung");
+                            }
 
-                            t.setNote(v.get("note"));
+                            t.setNote(note);
                         })
 
                         .wrap(TransactionItem::new));
@@ -716,6 +723,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         // 14.02.2020 Dauerauftrag/Terminueberw. Max Mustermann -30,00
         // 29.04.2021 Gehalt/Rente Hauptkasse des Freistaates Sachsen 806,83
         // 13.10.2020 Gutschrift-VWL 40,00
+        // 13.10.2020 Retoure XYZ GmbH 40,00
+        // 13.10.2020 Bezuege Stadt XYZ 40,00
         // 04.06.2024 Lastschrift-Einzug mvezSX fnHyElys 5.300,00
         // @formatter:on
         var depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
@@ -723,6 +732,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         + "|Gutschrift\\/Dauerauftrag" //
                         + "|Gehalt\\/Rente" //
                         + "|Gutschrift"
+                        + "|Retoure"
+                        + "|Bezuege"
                         + "|Lastschrift\\-Einzug)" //
                         + ".* [\\.,\\d]+$");
         type.addBlock(depositBlock);
@@ -733,17 +744,25 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .section("date", "note", "amount") //
                         .documentContext("currency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
-                                        + "(?<note>Gutschrift\\-VWL" //
+                                        + "(?<note>(Gutschrift\\-VWL" //
                                         + "|Gutschrift\\/Dauerauftrag" //
                                         + "|Gehalt\\/Rente" //
                                         + "|Gutschrift"
+                                        + "|Retoure"
+                                        + "|Bezuege"
                                         + "|Lastschrift\\-Einzug)" //
-                                        + ".* (?<amount>[\\.,\\d]+)$") //
+                                        + ".*) (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
-                            t.setNote(v.get("note"));
+
+                            // Formatting some notes (fix previous incorrect contains usage)
+                            var note = v.get("note");
+                            if (note != null && note.contains("Bezuege"))
+                                note = note.replace("Bezuege", "Bezüge");
+
+                            t.setNote(note);
                         })
 
                         .wrap(TransactionItem::new));
