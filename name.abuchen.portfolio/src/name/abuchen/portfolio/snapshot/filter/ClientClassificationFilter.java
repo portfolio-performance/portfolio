@@ -1,7 +1,8 @@
 package name.abuchen.portfolio.snapshot.filter;
 
+import static name.abuchen.portfolio.snapshot.filter.ClientFilterHelper.value;
+
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -535,23 +536,5 @@ public class ClientClassificationFilter implements ClientFilter
                     throw new UnsupportedOperationException();
             }
         }
-    }
-
-    private static Unit value(Unit unit, BigDecimal weight)
-    {
-        if (weight.equals(Classification.ONE_HUNDRED_PERCENT_BD))
-            return unit;
-        else
-            return unit.split(weight.divide(Classification.ONE_HUNDRED_PERCENT_BD, Values.MC).doubleValue());
-    }
-
-    private static long value(long value, BigDecimal weight)
-    {
-        if (weight.equals(Classification.ONE_HUNDRED_PERCENT_BD))
-            return value;
-        else
-            return BigDecimal.valueOf(value) //
-                            .multiply(weight, Values.MC).divide(Classification.ONE_HUNDRED_PERCENT_BD, Values.MC)
-                            .setScale(0, RoundingMode.HALF_EVEN).longValue();
     }
 }
