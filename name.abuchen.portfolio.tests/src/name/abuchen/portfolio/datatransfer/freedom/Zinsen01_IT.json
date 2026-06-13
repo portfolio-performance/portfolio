@@ -1,0 +1,13 @@
+{
+  "commissions": {
+    "detailed": [
+      {
+        "datetime": "2026-02-15 03:00:00",
+        "currency": "EUR",
+        "sum": "0.03",
+        "type": "Interesse sull'utilizzo dei fondi EUR",
+        "comment": "Fee for negative cash balance EUR"
+      }
+    ]
+  }
+}
