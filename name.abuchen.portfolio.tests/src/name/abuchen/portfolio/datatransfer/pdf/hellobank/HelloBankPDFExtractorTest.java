@@ -25,6 +25,7 @@ import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.HelloBankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -38,10 +39,13 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class HelloBankPDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testWertpapierKauf01()
     {
         var extractor = new HelloBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -102,6 +106,7 @@ public class HelloBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new HelloBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

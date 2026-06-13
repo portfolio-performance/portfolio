@@ -43,6 +43,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
@@ -391,26 +392,30 @@ public class BindingHelper
         return boxDate.getControl();
     }
 
-    public final Control bindMandatoryAmountInput(Composite editArea, final String label, String property, int style,
+    public final Control bindMandatoryAmountInput(NegativeValue negativeValue, Composite editArea, final String label,
+                    String property, int style,
                     int lenghtInCharacters)
     {
         Text txtValue = createTextInput(editArea, label, style, lenghtInCharacters);
         DecimalKeypadSupport.configure(txtValue);
-        bindMandatoryDecimalInput(label, property, txtValue, Values.Amount);
+        bindMandatoryDecimalInput(negativeValue, label, property, txtValue, Values.Amount);
         return txtValue;
     }
 
-    public final Control bindMandatoryQuoteInput(Composite editArea, final String label, String property)
+    public final Control bindMandatoryQuoteInput(NegativeValue negativeValue, Composite editArea, final String label,
+                    String property)
     {
         Text txtValue = createTextInput(editArea, label);
         DecimalKeypadSupport.configure(txtValue);
-        bindMandatoryDecimalInput(label, property, txtValue, Values.Quote);
+        bindMandatoryDecimalInput(negativeValue, label, property, txtValue, Values.Quote);
         return txtValue;
     }
 
-    private void bindMandatoryDecimalInput(final String label, String property, Text txtValue, Values<?> type)
+    private void bindMandatoryDecimalInput(NegativeValue negativeValue, final String label, String property,
+                    Text txtValue, Values<?> type)
     {
-        StringToCurrencyConverter converter = new StringToCurrencyConverter(type);
+        StringToCurrencyConverter converter = new StringToCurrencyConverter(type,
+                        negativeValue.isNegativeValueAllowed());
 
         UpdateValueStrategy<String, Long> input2model = new UpdateValueStrategy<>();
         input2model.setAfterGetValidator(converter);

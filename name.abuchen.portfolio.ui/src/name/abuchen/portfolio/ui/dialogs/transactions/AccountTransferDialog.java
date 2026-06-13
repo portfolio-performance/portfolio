@@ -82,7 +82,7 @@ public class AccountTransferDialog extends AbstractTransactionDialog // NOSONAR
     @PostConstruct
     private void createModel(ExchangeRateProviderFactory factory) // NOSONAR
     {
-        AccountTransferModel m = new AccountTransferModel(client);
+        AccountTransferModel m = new AccountTransferModel(negativeValue, client);
         m.setExchangeRateProviderFactory(factory);
         setModel(m);
     }

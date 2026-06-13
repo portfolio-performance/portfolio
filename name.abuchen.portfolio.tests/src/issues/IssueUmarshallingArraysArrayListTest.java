@@ -10,16 +10,19 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.Taxonomy;
 
 public class IssueUmarshallingArraysArrayListTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testMigrationOfClassificationKeys() throws IOException
     {
-        Client client = ClientFactory.load(IssueUmarshallingArraysArrayListTest.class
+        Client client = ClientFactory.load(negativeValue, IssueUmarshallingArraysArrayListTest.class
                         .getResourceAsStream("IssueUmarshallingArraysArrayList.xml")); //$NON-NLS-1$
 
         Taxonomy taxonomy = client.getTaxonomies().get(0);

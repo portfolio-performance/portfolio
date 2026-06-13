@@ -11,12 +11,15 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.money.Values;
 
 @RunWith(Parameterized.class)
 @SuppressWarnings("nls")
 public class ExtractorUtilsConvertToNumberLongTest
 {
+    NegativeValue negativeValue = new NegativeValue();
+
     private final String input;
     private final Locale locale;
     private final long expectedOutput;
@@ -43,7 +46,8 @@ public class ExtractorUtilsConvertToNumberLongTest
     @Test
     public void testConvertToNumberLong()
     {
-        long actualOutput = ExtractorUtils.convertToNumberLong(input, Values.Amount, locale.getLanguage(),
+        long actualOutput = ExtractorUtils.convertToNumberLong(negativeValue, input, Values.Amount,
+                        locale.getLanguage(),
                         locale.getCountry());
         assertEquals(expectedOutput, actualOutput);
     }
@@ -51,6 +55,7 @@ public class ExtractorUtilsConvertToNumberLongTest
     @Test(expected = IllegalArgumentException.class)
     public void testConvertToNumberLongWithInvalidInput()
     {
-        ExtractorUtils.convertToNumberLong("abc", Values.Amount, locale.getLanguage(), locale.getCountry());
+        ExtractorUtils.convertToNumberLong(negativeValue, "abc", Values.Amount, locale.getLanguage(),
+                        locale.getCountry());
     }
 }

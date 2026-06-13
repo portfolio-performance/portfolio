@@ -12,6 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.Security;
@@ -23,11 +24,13 @@ import name.abuchen.portfolio.money.Values;
 public class TradeCollectorTest
 {
     private static Client client;
+    private static NegativeValue negativeValue = new NegativeValue();
+
 
     @BeforeClass
     public static void prepare() throws IOException
     {
-        client = ClientFactory.load(TradeCollectorTest.class.getResourceAsStream("trade_test_case.xml"));
+        client = ClientFactory.load(negativeValue, TradeCollectorTest.class.getResourceAsStream("trade_test_case.xml"));
     }
 
     @Test

@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 
 import java.time.LocalDateTime;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -16,9 +17,9 @@ public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
 
     private CurrencyUnit transactionCurrency;
 
-    public SecurityDeliveryModel(Client client, Type type)
+    public SecurityDeliveryModel(NegativeValue negativeValue, Client client, Type type)
     {
-        super(client, type);
+        super(negativeValue, client, type);
 
         if (!accepts(type))
             throw new IllegalArgumentException("type " + type + " not accepted for this model"); //$NON-NLS-1$ //$NON-NLS-2$

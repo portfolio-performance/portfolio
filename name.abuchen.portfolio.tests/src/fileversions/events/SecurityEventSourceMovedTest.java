@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.SaveFlag;
@@ -25,10 +26,12 @@ import name.abuchen.portfolio.model.SecurityEvent;
 @SuppressWarnings("nls")
 public class SecurityEventSourceMovedTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testXMLFormat() throws IOException
     {
-        Client client = ClientFactory.load(
+        Client client = ClientFactory.load(negativeValue,
                         SecurityEventSourceMovedTest.class.getResourceAsStream("client_with_security_events.xml"));
 
         assertEvents(client);
@@ -37,7 +40,7 @@ public class SecurityEventSourceMovedTest
     @Test
     public void testBinaryFormat() throws IOException
     {
-        Client client = ClientFactory.load(find("client_with_security_events.portfolio"), null,
+        Client client = ClientFactory.load(negativeValue, find("client_with_security_events.portfolio"), null,
                         new NullProgressMonitor());
 
         assertEvents(client);
@@ -53,8 +56,9 @@ public class SecurityEventSourceMovedTest
         }))
         {
             Path tempFile = Files.createTempFile("test", ".portfolio");
-            ClientFactory.saveAs(client, tempFile.toFile(), null, EnumSet.of(SaveFlag.BINARY, SaveFlag.COMPRESSED));
-            Client rereadClient = ClientFactory.load(tempFile.toFile(), null, new NullProgressMonitor());
+            ClientFactory.saveAs(negativeValue, client, tempFile.toFile(), null,
+                            EnumSet.of(SaveFlag.BINARY, SaveFlag.COMPRESSED));
+            Client rereadClient = ClientFactory.load(negativeValue, tempFile.toFile(), null, new NullProgressMonitor());
             assertEvents(rereadClient);
         }
     }

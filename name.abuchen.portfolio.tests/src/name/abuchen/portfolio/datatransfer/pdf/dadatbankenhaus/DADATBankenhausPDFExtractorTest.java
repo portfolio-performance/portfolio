@@ -47,16 +47,20 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.DADATBankenhausPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 
 @SuppressWarnings("nls")
 public class DADATBankenhausPDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testWertpapierKauf01()
     {
         var extractor = new DADATBankenhausPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -380,6 +384,7 @@ public class DADATBankenhausPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new DADATBankenhausPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

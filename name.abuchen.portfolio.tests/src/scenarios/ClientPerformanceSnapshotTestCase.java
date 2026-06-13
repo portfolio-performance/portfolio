@@ -10,6 +10,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -23,13 +24,14 @@ import name.abuchen.portfolio.snapshot.ReportingPeriod;
 public class ClientPerformanceSnapshotTestCase
 {
     private static TestCurrencyConverter converter = new TestCurrencyConverter();
-
+    private static NegativeValue negativeValue = new NegativeValue();
     private static Client client;
 
     @BeforeClass
     public static void prepare() throws IOException
     {
-        client = ClientFactory.load(SecurityTestCase.class.getResourceAsStream("client_performance_snapshot.xml"));
+        client = ClientFactory.load(negativeValue,
+                        SecurityTestCase.class.getResourceAsStream("client_performance_snapshot.xml"));
     }
 
     @Test

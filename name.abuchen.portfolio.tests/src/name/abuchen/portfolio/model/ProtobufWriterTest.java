@@ -14,11 +14,15 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import name.abuchen.portfolio.math.NegativeValue;
+
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
 public class ProtobufWriterTest
 {
     private static final int CONTEXT_LENGTH = 100;
+
+    private NegativeValue negativeValue = new NegativeValue();
 
     @Parameters(name = "{index}: {0}")
     public static Collection<Object[]> getFiles()
@@ -54,11 +58,11 @@ public class ProtobufWriterTest
     @Test
     public void compareAgainstXML() throws IOException
     {
-        Client client = ClientFactory.load(ProtobufWriterTest.class.getResourceAsStream(file));
+        Client client = ClientFactory.load(negativeValue, ProtobufWriterTest.class.getResourceAsStream(file));
 
         // convert to binary format and back
 
-        ProtobufWriter protobufWriter = new ProtobufWriter();
+        ProtobufWriter protobufWriter = new ProtobufWriter(negativeValue);
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         protobufWriter.save(client, stream);

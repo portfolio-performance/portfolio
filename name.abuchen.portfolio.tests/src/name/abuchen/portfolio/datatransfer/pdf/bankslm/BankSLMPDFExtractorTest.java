@@ -38,16 +38,20 @@ import org.junit.Test;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.BankSLMPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 
 @SuppressWarnings("nls")
 public class BankSLMPDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testWertpapierKauf01()
     {
         var extractor = new BankSLMPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -89,6 +93,7 @@ public class BankSLMPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BankSLMPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -117,6 +122,7 @@ public class BankSLMPDFExtractorTest
     public void testWertpapierKauf02()
     {
         var extractor = new BankSLMPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -151,6 +157,7 @@ public class BankSLMPDFExtractorTest
     public void testWertpapierKauf03()
     {
         var extractor = new BankSLMPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -185,6 +192,7 @@ public class BankSLMPDFExtractorTest
     public void testWertpapierVerkauf01()
     {
         var extractor = new BankSLMPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -219,6 +227,7 @@ public class BankSLMPDFExtractorTest
     public void testWertpapierVerkauf02()
     {
         var extractor = new BankSLMPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -260,6 +269,7 @@ public class BankSLMPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BankSLMPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -288,6 +298,7 @@ public class BankSLMPDFExtractorTest
     public void testDividende01()
     {
         var extractor = new BankSLMPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -323,6 +334,7 @@ public class BankSLMPDFExtractorTest
     public void testDividende02()
     {
         var extractor = new BankSLMPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

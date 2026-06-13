@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import org.junit.Test;
 
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.CostMethod;
@@ -29,6 +30,7 @@ import name.abuchen.portfolio.util.Interval;
 @SuppressWarnings("nls")
 public class SecurityTestCase
 {
+    private NegativeValue negativeValue = new NegativeValue();
 
     /**
      * Issue: If historical quotes start only after the purchase (or delivery)
@@ -39,7 +41,7 @@ public class SecurityTestCase
     @Test
     public void testSecurityPerformanceWithMissingHistoricalQuotes() throws IOException
     {
-        Client client = ClientFactory.load(SecurityTestCase.class
+        Client client = ClientFactory.load(negativeValue, SecurityTestCase.class
                         .getResourceAsStream("security_performance_with_missing_historical_quotes.xml"));
 
         Security security = client.getSecurities().get(0);
