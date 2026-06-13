@@ -426,10 +426,20 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^Ausf.hrung von (Round up|Saveback) .* "
+                                                        .match("^Ausf.hrung von (Round up|Saveback) \\D* "
                                                                         + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}"
                                                                         + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // Ausführung der Zeichnungsorder am 12.06.2026 um 13:28 am Primärmarkt.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "time") //
+                                                        .match("^Ausf.hrung der Zeichnungsorder am "
+                                                                        + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}"
+                                                                        + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) um (?<time>\\d{2}\\:\\d{2}).*$") //
+                                                        .assign((t, v) -> t
+                                                                        .setDate(asDate(v.get("date"), v.get("time")))),
                                         // @formatter:off
                                         // Ejecución del Saveback el 02.02.2026 en Lang und Schwarz Exchange.
                                         // @formatter:on
@@ -4416,13 +4426,27 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // Ausführung von Round up am 09.02.2024 an der Lang & Schwarz Exchange.
                                         // Ausführung von Saveback am 04.03.2024 an der Lang & Schwarz Exchange.
+                                        // Ausführung der Zeichnungsorder am 12.06.2026 um 13:28 am Primärmarkt.
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^Ausf.hrung von (Round up|Saveback) .* "
+                                                        .match("^Ausf.hrung von (Round up|Saveback) \\D* "
                                                                         + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}"
                                                                         + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+
+                                        // @formatter:off
+                                        // Ausführung der Zeichnungsorder am 12.06.2026 um 13:28 am Primärmarkt.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "time") //
+                                                        .match("^Ausf.hrung der Zeichnungsorder am "
+                                                                        + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}"
+                                                                        + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) um (?<time>\\d{2}\\:\\d{2}).*$") //
+                                                        .assign((t, v) -> t
+                                                                        .setDateTime(asDate(v.get("date"),
+                                                                                        v.get("time")))),
+
                                         // @formatter:off
                                         // Ejecución del Saveback el 02.02.2026 en Lang und Schwarz Exchange.
                                         // @formatter:on
@@ -4981,6 +5005,16 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("fee", "currency").optional() //
                         .match("^Fremdkostenzuschlag \\-(?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negative"))
+                                processFeeEntries(t, v, type);
+                        })
+
+                        // @formatter:off
+                        // Abwicklungskostenpauschale -1,00 EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^Abwicklungskostenpauschale \\-(?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("negative"))
                                 processFeeEntries(t, v, type);

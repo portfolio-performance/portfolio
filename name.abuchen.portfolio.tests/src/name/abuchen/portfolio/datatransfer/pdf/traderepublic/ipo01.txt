@@ -1,0 +1,32 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.84.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+QsjVbWSxs zvRj SEITE 1 von 1
+Musterstr. 77 DATUM 12.06.2026
+01148 cdPcgAJoe AUSFÜHRUNG 670a-5b88
+DEPOT 0275536150
+WERTPAPIERABRECHNUNG
+ÜBERSICHT
+Ausführung der Zeichnungsorder am 12.06.2026 um 13:28 am Primärmarkt.
+Der Stückpreis beträgt 135,00 USD und es wurde 0,86491 USD/EUR als Wechselkurs verwendet.
+POSITION ANZAHL PREIS BETRAG
+SpaceX 1,107566 Stk. 116,762806 EUR 129,32 EUR
+ISIN: US84615Q1031
+GESAMT 129,32 EUR
+ABRECHNUNG
+POSITION BETRAG
+Abwicklungskostenpauschale -1,00 EUR
+GESAMT -130,32 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+DE11100123450187686504 2026-06-15 -130,32 EUR
+SpaceX nicht in Sammelverwahrung
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Wird keine Umsatzsteuer ausgewiesen, handelt es sich gemäß § 4 Nr. 8 UStG um eine umsatzsteuerfreie Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
