@@ -928,6 +928,40 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testIPOBuy01()
+    {
+        var extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ipo01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US84615Q1031"), hasWkn(null), hasTicker(null), //
+                        hasName("SpaceX"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-06-12T13:28"), hasShares(1.107566), //
+                        hasSource("ipo01.txt"), //
+                        hasNote("670a-5b88"), //
+                        hasAmount("EUR", 130.32), hasGrossValue("EUR", 129.32), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.00))));
+    }
+
+    @Test
     public void testSecurityBuy01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
