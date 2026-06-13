@@ -92,7 +92,7 @@ public class TradeRepublicPDFExtractorTest
     @Before
     public void init()
     {
-        extractor.setNegativeValue(negativeValue);
+        cryptExtractor.setNegativeValue(negativeValue);
     }
 
     @Test
