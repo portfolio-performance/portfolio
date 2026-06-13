@@ -4426,7 +4426,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // Ausführung von Round up am 09.02.2024 an der Lang & Schwarz Exchange.
                                         // Ausführung von Saveback am 04.03.2024 an der Lang & Schwarz Exchange.
-                                        // Ausführung der Zeichnungsorder am 12.06.2026 um 13:28 am Primärmarkt.
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
