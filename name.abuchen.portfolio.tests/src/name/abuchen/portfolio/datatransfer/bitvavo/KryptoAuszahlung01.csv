@@ -1,0 +1,2 @@
+Timezone,Date,Time,Type,Currency,Amount,Quote Currency,Quote Price,Received / Paid Currency,Received / Paid Amount,Fee currency,Fee amount,Status,Transaction ID,Address
+Europe/Berlin,2025-01-20,16:30:45,withdrawal,BTC,-0.01000000,,,,,BTC,0.00001000,Completed,d4e5f6a7-b8c9-0123-defa-234567890123,bc1qtestaddress0000000000000000000000000000
