@@ -1,0 +1,55 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.6.qualifier
+System: macosx | aarch64 | 21.0.9+10-LTS | Eclipse Adoptium
+-----------------------------------------
+Durchführungsanzeig e                   Kapitalmaßnahme
+888888 - 20.07.2021
+Depotnummer Betreuer
+Mustermann Max 111-1111.11 Z 3
+23
+Wertpapiernummer Bezeichnung Nominale/Stück
+US67066G1040 NVIDIA CORP. für Stk.                4,00
+Registered Shares DL-,001
+Split
+Extag
+Verwahrart, Positionsdaten
+Wertpapierrechnung
+Düsseldorf
+Oberbank AG, Rechtsform: Aktiengesellschaft, Sitz: Linz, Firmenbuch Nr. FN 79063w, Landesgericht Linz, DVR: 0019020, UID-Nr. ATU22852606       Seite 1 von 3
+Durchführungsanzeig e                        Einbuchung
+888888 - 20.07.2021
+Depotnummer Betreuer
+Mustermann Max 111-1111.11 Z 3
+23
+Wertpapiernummer Bezeichnung Nominale/Stück
+US67066G1040 NVIDIA CORP. Zugang Stk.               12,00
+Registered Shares DL-,001
+Split
+Extag
+Verwahrart, Positionsdaten
+Wertpapierrechnung
+Düsseldorf
+Oberbank AG, Rechtsform: Aktiengesellschaft, Sitz: Linz, Firmenbuch Nr. FN 79063w, Landesgericht Linz, DVR: 0019020, UID-Nr. ATU22852606       Seite 2 von 3
+Durchführungsanzeige
+888888 - 20.07.2021
+Depotnummer Betreuer
+Mustermann Max
+111-1111.11 Z 3
+23
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden                           4,00 STK
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG
+  Nebenkosten:                                                                       7,25 EUR
+---------------------------------------------------------------------------------------------
+Berechtigte: US67066G1040 NVIDIA CORP.      DL-,001
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden                           4,00 STK
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG
+  steuerlicher Anschaffungswert:                                                   432,85 EUR
+---------------------------------------------------------------------------------------------
+Bezogene:    US67066G1040 NVIDIA CORP.      DL-,001
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden                          12,00 STK
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG
+  steuerlicher Anschaffungswert:                                                 1.298,55 EUR
+---------------------------------------------------------------------------------------------
+Verhältnis 1 + 3
+      Seite 3 von 3
+Oberbank AG, Rechtsform: Aktiengesellschaft, Sitz: Linz, Firmenbuch Nr. FN 79063w, Landesgericht Linz, DVR: 0019020, UID-Nr. ATU22852606

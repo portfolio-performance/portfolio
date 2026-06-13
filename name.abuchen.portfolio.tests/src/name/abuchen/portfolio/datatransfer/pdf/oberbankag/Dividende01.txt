@@ -1,0 +1,34 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.5
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Wertpapier-Abrechnu n g                        Dividende
+888888 - 02.03.2026
+Depotnummer Betreuer
+Mustermann Max 111-1111.11 Z 3
+34
+Wertpapiernummer Bezeichnung Nominale/Stück
+US92826C8394 VISA Inc. Stk .              10,00
+Reg. Shares Class A DL -,0001
+Ertrag USD                6,70
+Ertrag 0,67 USD
+Auslands-KESt USD               -0,84
+Ausländische Steuern USD               -1,01
+Zwischensumme USD                4,85
+15 % QUSt a 1,1797 v. 26.02.2026 EUR                4,11
+Extag 10.02.2026
+Verrechnung
+Verwahrart, Positionsdaten
+Wertpapierrechnung Wert 02.03.2026 EUR                4,11
+Düsseldorf zu Gunsten Konto AT11 1111 1111 1111 1111
+      Seite 1 von 2
+Oberbank AG, Rechtsform: Aktiengesellschaft, Sitz: Linz, Firmenbuch Nr. FN 79063w, Landesgericht Linz, DVR: 0019020, UID-Nr. ATU22852606
+Wertpapier-Abrechnung
+888888 - 02.03.2026
+Depotbezeichnung Depotnummer Betreuer
+Mustermann Max 111-1111.11 Z 3
+34
+KESt-Neubestand                                                                     10,00 STK
+---------------------------------------------------------------------------------------------
+Die KESt wird an das Finanzamt für Großbetriebe abgeführt.
+Oberbank AG, Rechtsform: Aktiengesellschaft, Sitz: Linz, Firmenbuch Nr. FN 79063w, Landesgericht Linz, DVR: 0019020, UID-Nr. ATU22852606       Seite 2 von 2
