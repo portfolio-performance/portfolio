@@ -30,6 +30,9 @@ public class ColorsThemeCSSHandler implements ICSSPropertyHandler
             case "chip-background": //$NON-NLS-1$
                 theme.setChipBackground(CSSSWTColorHelper.getRGBA(value));
                 return true;
+            case "warning-foreground": //$NON-NLS-1$
+                theme.setWarningForeground(CSSSWTColorHelper.getRGBA(value));
+                return true;
             case "warning-background": //$NON-NLS-1$
                 theme.setWarningBackground(CSSSWTColorHelper.getRGBA(value));
                 return true;

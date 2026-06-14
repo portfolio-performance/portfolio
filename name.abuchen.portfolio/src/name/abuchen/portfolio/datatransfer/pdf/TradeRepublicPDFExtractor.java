@@ -1240,13 +1240,18 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
+    private static final String BLOCK_ENDSWITH = "^(Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben\\." //
+                    + "|Ce document est .*"
+                    + "|Questo regolamento viene creato automaticamente e quindi non . firmato\\."
+                    + "|This statement is generated automatically and therefore not signed\\.)$";
+
     private void addDividendTransaction()
     {
-        final var type = new DocumentType("(AUSSCH.TTUNG" //
-                        + "|DIVIDENDE" //
+        final var type = new DocumentType("(?i)(AUSSCH.TTUNG" //
+                        + "|(STORNIERUNG DER )?DIVIDENDE( EN ESP.CES)?" //
                         + "|REINVESTIERUNG" //
                         + "|STORNO DIVIDENDE" //
-                        + "|DIVIDEND" //
+                        + "|(CASH )?DIVIDEND" //
                         + "|DIVIDENDO" //
                         + "|DISTRIBUZIONE" //
                         + "|Distribution" //
@@ -1256,7 +1261,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block(); //
+        var firstRelevantLine = new Block("^TRADE REPUBLIC BANK GMBH.*$", BLOCK_ENDSWITH);
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -1500,6 +1505,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Distribuzione con l'ex-tag 17.08.2023. 
                                         // Ausschüttung mit dem Ex-Tag 12.09.2019.
                                         // Dividende mit Ex-Datum22.05.2024.
+                                        // Dividende mit Ex-Datum 22.05.2024.
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("exDate") //
@@ -4492,7 +4498,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
     {
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^TRADE REPUBLIC BANK GMBH.*$");
+        var firstRelevantLine = new Block("^TRADE REPUBLIC BANK GMBH.*$", BLOCK_ENDSWITH);
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -5081,6 +5087,16 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
             return Optional.empty();
         }
+    }
+
+    @Override
+    protected long asShares(String value)
+    {
+        if (value.matches("^(0\\.\\d+|\\d+\\.\\d{1,2}|\\d+\\.\\d{4,})$"))
+        {
+            return asShares(value, "en", "US"); //
+        }
+        return super.asShares(value);
     }
 
     @Override

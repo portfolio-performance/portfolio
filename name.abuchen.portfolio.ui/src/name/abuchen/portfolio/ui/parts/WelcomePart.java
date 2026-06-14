@@ -101,7 +101,7 @@ public class WelcomePart
         // version
         var version = new Label(composite, SWT.NONE);
         version.setText(PortfolioPlugin.getDefault().getBundle().getVersion().toString() + " (" //$NON-NLS-1$
-                        + DateTimeFormatter.ofPattern("MMMM yyyy").format(BuildInfo.INSTANCE.getBuildTime()) //$NON-NLS-1$
+                        + DateTimeFormatter.ofPattern("LLLL yyyy").format(BuildInfo.INSTANCE.getBuildTime()) //$NON-NLS-1$
                         + ")"); //$NON-NLS-1$
 
         FormDataFactory.startingWith(image) //
@@ -112,6 +112,20 @@ public class WelcomePart
         {
             var info = new StyledLabel(composite, SWT.WRAP);
             info.setText(Messages.MsgWarningWayland);
+
+            FormData data = new FormData();
+            data.left = new FormAttachment(title, 100);
+            data.top = new FormAttachment(image, 0, SWT.TOP);
+            data.width = 300;
+            info.setLayoutData(data);
+        }
+        else if (Platform.OS_MACOSX.equals(Platform.getOS()) && !PortfolioPlugin.getDefault().getPreferenceStore()
+                        .getBoolean(UIConstants.Preferences.DOUBLE_CLICK_CELL_TO_EDIT))
+        {
+            var info = new StyledLabel(composite, SWT.WRAP);
+            info.setText(MessageFormat.format(Messages.MsgInfoEnableDoubleClickToEdit,
+                            "<a href=\"" + OPEN_PREFERENCES + "general\">", "</a>")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            info.setOpenLinkHandler(this::linkActivated);
 
             FormData data = new FormData();
             data.left = new FormAttachment(title, 100);

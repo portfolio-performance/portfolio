@@ -49,6 +49,7 @@ import name.abuchen.portfolio.ui.util.ValueColorScheme;
  * <li>positive, green - uses ValueColorScheme positive color</li>
  * <li>negative, red - uses ValueColorScheme negative color</li>
  * <li>gray</li>
+ * <li>warning - uses the theme warning foreground color, bold</li>
  * <li>strong</li>
  * <li>em</li>
  * <li>a</li>
@@ -120,6 +121,11 @@ public class StyledLabel extends Canvas // NOSONAR
             {
                 styleRanges.add(new StyleRange(tag.start, plainText.length() - tag.start,
                                 Colors.theme().grayForeground(), null));
+            }
+            else if ("warning".equals(qName)) //$NON-NLS-1$
+            {
+                styleRanges.add(new StyleRange(tag.start, plainText.length() - tag.start,
+                                Colors.theme().warningForeground(), null, SWT.BOLD));
             }
             else if ("strong".equals(qName)) //$NON-NLS-1$
             {
