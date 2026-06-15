@@ -451,6 +451,62 @@ public class ExtractorUtils
         return convertToNumberLong(value, Values.Share, language, country);
     }
 
+    public static long convertToNumberLong(String value, Values<Long> valueType, Locale locale)
+    {
+        return convertToNumberLong(value, valueType, locale.getLanguage(), locale.getCountry());
+    }
+
+    public static BigDecimal convertToNumberBigDecimal(String value, Values<Long> valueType, Locale locale)
+    {
+        return convertToNumberBigDecimal(value, valueType, locale.getLanguage(), locale.getCountry());
+    }
+
+    /**
+     * Guesses the locale of a formatted number so that it can be parsed with
+     * {@link #convertToNumberLong} / {@link #convertToNumberBigDecimal}.
+     *
+     * @formatter:off
+     * Detection order:
+     *  - Swiss apostrophe group separator (12'345.67)             -> de/CH
+     *  - both '.' and ',' present: the right-most one is decimal  -> '.' last = en/US, ',' last = de/DE
+     *  - a single separator that repeats (1.234.567)             -> it is the group separator: dots = de/DE, commas = en/US
+     *  - a single dot (0.5, 1.262, 63.726878)                    -> decimal point en/US
+     *  - a single comma otherwise (1,25)                         -> decimal point de/DE
+     *  - no separator                                            -> fallback
+     * @formatter:on
+     */
+    public static Locale guessNumberLocale(String value, Locale fallback)
+    {
+        var v = trim(value).replaceAll("\\s", "");
+
+        if (v.indexOf('\'') >= 0)
+            return Locale.of("de", "CH");
+
+        var hasDot = v.indexOf('.') >= 0;
+        var hasComma = v.indexOf(',') >= 0;
+
+        if (hasDot && hasComma)
+            return v.lastIndexOf('.') > v.lastIndexOf(',') ? Locale.US : Locale.GERMANY;
+
+        if (hasDot)
+        {
+            // repeated dot = grouping
+            if (v.indexOf('.') != v.lastIndexOf('.'))
+                return Locale.GERMANY;
+            return Locale.US;
+        }
+
+        if (hasComma)
+        {
+            // repeated comma = grouping
+            if (v.indexOf(',') != v.lastIndexOf(','))
+                return Locale.US;
+            return Locale.GERMANY;
+        }
+
+        return fallback;
+    }
+
     public static LocalDateTime asDate(String value, Locale... hints)
     {
         // starting with Java 8, the abbreviation Mrz is not supported out of

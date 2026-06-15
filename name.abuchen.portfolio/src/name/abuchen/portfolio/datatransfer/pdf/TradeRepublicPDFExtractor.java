@@ -6,6 +6,7 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -5102,38 +5103,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        var language = "de";
-        var country = "DE";
-
-        var lastDot = value.lastIndexOf(".");
-        var lastComma = value.lastIndexOf(",");
-
-        // returns the greater of two int values
-        if (Math.max(lastDot, lastComma) == lastDot)
-        {
-            language = "en";
-            country = "US";
-        }
-
-        return ExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
+        return ExtractorUtils.convertToNumberLong(value, Values.Amount,
+                        ExtractorUtils.guessNumberLocale(value, Locale.GERMANY));
     }
 
     @Override
     protected BigDecimal asExchangeRate(String value)
     {
-        var language = "de";
-        var country = "DE";
-
-        var lastDot = value.lastIndexOf(".");
-        var lastComma = value.lastIndexOf(",");
-
-        // returns the greater of two int values
-        if (Math.max(lastDot, lastComma) == lastDot)
-        {
-            language = "en";
-            country = "US";
-        }
-
-        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, language, country);
+        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share,
+                        ExtractorUtils.guessNumberLocale(value, Locale.GERMANY));
     }
 }

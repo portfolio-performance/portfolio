@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -2190,84 +2191,21 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        String language = "de";
-        String country = "DE";
-
-        int apostrophe = value.indexOf("\'");
-        if (apostrophe >= 0)
-        {
-            language = "de";
-            country = "CH";
-        }
-        else
-        {
-            int lastDot = value.lastIndexOf(".");
-            int lastComma = value.lastIndexOf(",");
-
-            // returns the greater of two int values
-            if (Math.max(lastDot, lastComma) == lastDot)
-            {
-                language = "en";
-                country = "US";
-            }
-        }
-
-        return ExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
+        return ExtractorUtils.convertToNumberLong(value, Values.Amount,
+                        ExtractorUtils.guessNumberLocale(value, Locale.GERMANY));
     }
 
     @Override
     protected long asShares(String value)
     {
-        String language = "de";
-        String country = "DE";
-
-        int apostrophe = value.indexOf("\'");
-        if (apostrophe >= 0)
-        {
-            language = "de";
-            country = "CH";
-        }
-        else
-        {
-            int lastDot = value.lastIndexOf(".");
-            int lastComma = value.lastIndexOf(",");
-
-            // returns the greater of two int values
-            if (Math.max(lastDot, lastComma) == lastDot)
-            {
-                language = "en";
-                country = "US";
-            }
-        }
-
-        return ExtractorUtils.convertToNumberLong(value, Values.Share, language, country);
+        return ExtractorUtils.convertToNumberLong(value, Values.Share,
+                        ExtractorUtils.guessNumberLocale(value, Locale.GERMANY));
     }
 
     @Override
     protected BigDecimal asExchangeRate(String value)
     {
-        String language = "de";
-        String country = "DE";
-
-        int apostrophe = value.indexOf("\'");
-        if (apostrophe >= 0)
-        {
-            language = "de";
-            country = "CH";
-        }
-        else
-        {
-            int lastDot = value.lastIndexOf(".");
-            int lastComma = value.lastIndexOf(",");
-
-            // returns the greater of two int values
-            if (Math.max(lastDot, lastComma) == lastDot)
-            {
-                language = "en";
-                country = "US";
-            }
-        }
-
-        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, language, country);
+        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share,
+                        ExtractorUtils.guessNumberLocale(value, Locale.GERMANY));
     }
 }
