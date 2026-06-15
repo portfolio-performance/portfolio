@@ -314,6 +314,11 @@ public abstract class AbstractPDFExtractor implements Extractor
         }
     }
 
+    protected long asShares(String value, Locale locale)
+    {
+        return ExtractorUtils.asShares(value, locale.getLanguage(), locale.getCountry());
+    }
+
     protected long asShares(String value, String language, String country)
     {
         return ExtractorUtils.asShares(value, language, country);
@@ -350,6 +355,11 @@ public abstract class AbstractPDFExtractor implements Extractor
         {
             throw new IllegalArgumentException(e);
         }
+    }
+
+    protected long asAmount(String value, Locale locale)
+    {
+        return ExtractorUtils.convertToNumberLong(value, Values.Amount, locale);
     }
 
     protected long asAmount(String value, String language, String country)

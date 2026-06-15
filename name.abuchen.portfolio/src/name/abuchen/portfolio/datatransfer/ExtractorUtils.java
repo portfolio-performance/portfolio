@@ -345,8 +345,12 @@ public class ExtractorUtils
 
     public static long convertToNumberLong(String value, Values<Long> valueType, String language, String country)
     {
-        var newNumberFormat = (DecimalFormat) NumberFormat
-                        .getInstance(Locale.forLanguageTag(language + "-" + country));
+        return convertToNumberLong(value, valueType, Locale.forLanguageTag(language + "-" + country));
+    }
+
+    public static long convertToNumberLong(String value, Values<Long> valueType, Locale locale)
+    {
+        var newNumberFormat = (DecimalFormat) NumberFormat.getInstance(locale);
 
         /**
          * @formatter:off
@@ -369,7 +373,7 @@ public class ExtractorUtils
          */
         value = trim(value).replaceAll("\\s", "");
 
-        if ("CH".equals(country))
+        if ("CH".equals(locale.getCountry()))
         {
             /***
              * The group separator for language format German, region
@@ -446,14 +450,14 @@ public class ExtractorUtils
         }
     }
 
+    public static long asShares(String value, Locale locale)
+    {
+        return convertToNumberLong(value, Values.Share, locale);
+    }
+    
     public static long asShares(String value, String language, String country)
     {
         return convertToNumberLong(value, Values.Share, language, country);
-    }
-
-    public static long convertToNumberLong(String value, Values<Long> valueType, Locale locale)
-    {
-        return convertToNumberLong(value, valueType, locale.getLanguage(), locale.getCountry());
     }
 
     public static BigDecimal convertToNumberBigDecimal(String value, Values<Long> valueType, Locale locale)

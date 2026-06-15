@@ -43,6 +43,13 @@ public class ExtractorUtilsConvertToNumberLongTest
     @Test
     public void testConvertToNumberLong()
     {
+        long actualOutput = ExtractorUtils.convertToNumberLong(input, Values.Amount, locale);
+        assertEquals(expectedOutput, actualOutput);
+    }
+
+    @Test
+    public void testConvertToNumberLongWithLanguageAndCountry()
+    {
         long actualOutput = ExtractorUtils.convertToNumberLong(input, Values.Amount, locale.getLanguage(),
                         locale.getCountry());
         assertEquals(expectedOutput, actualOutput);
@@ -51,6 +58,6 @@ public class ExtractorUtilsConvertToNumberLongTest
     @Test(expected = IllegalArgumentException.class)
     public void testConvertToNumberLongWithInvalidInput()
     {
-        ExtractorUtils.convertToNumberLong("abc", Values.Amount, locale.getLanguage(), locale.getCountry());
+        ExtractorUtils.convertToNumberLong("abc", Values.Amount, locale);
     }
 }
