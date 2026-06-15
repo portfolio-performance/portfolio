@@ -511,6 +511,52 @@ public class ExtractorUtils
         return fallback;
     }
 
+    /**
+     * Reliably detects the locale of a formatted number so that it can be
+     * parsed with {@link #convertToNumberLong} /
+     * {@link #convertToNumberBigDecimal}. Returns {@link Optional#empty()} if
+     * the value does not contain enough information.
+     */
+    public static Optional<Locale> detectNumberLocale(String value)
+    {
+        var v = trim(value).replaceAll("\\s", "");
+
+        if (v.indexOf('\'') >= 0)
+            return Optional.of(Locale.of("de", "CH"));
+
+        var hasDot = v.indexOf('.') >= 0;
+        var hasComma = v.indexOf(',') >= 0;
+
+        if (hasDot && hasComma)
+            return Optional.of(v.lastIndexOf('.') > v.lastIndexOf(',') ? Locale.US : Locale.GERMANY);
+
+        if (hasDot)
+        {
+            // repeated dot = grouping
+            if (v.indexOf('.') != v.lastIndexOf('.'))
+                return Optional.of(Locale.GERMANY);
+
+            if (v.length() - v.lastIndexOf('.') - 1 == 3)
+                return Optional.empty();
+
+            return Optional.of(Locale.US);
+        }
+
+        if (hasComma)
+        {
+            // repeated comma = grouping
+            if (v.indexOf(',') != v.lastIndexOf(','))
+                return Optional.of(Locale.US);
+
+            if (v.length() - v.lastIndexOf(',') - 1 == 3)
+                return Optional.empty();
+
+            return Optional.of(Locale.GERMANY);
+        }
+
+        return Optional.empty();
+    }
+
     public static LocalDateTime asDate(String value, Locale... hints)
     {
         // starting with Java 8, the abbreviation Mrz is not supported out of
