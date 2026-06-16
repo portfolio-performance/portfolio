@@ -287,16 +287,6 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction //
-
-                        // @formatter:off
-                        // Revenus d'actions étrangères sans abattement
-                        // TOTAL EUR 0,00 12,09 28,24 0,00 28,24
-                        // @formatter:on
-                        .section("currency", "tax").optional() //
-                        .find("Revenus.*") //
-                        .match("^TOTAL (?<currency>[A-Z]{3}) [\\,\\d\\s]+ (?<tax>[\\,\\d\\s]+) [\\,\\d\\s]+ [\\,\\d\\s]+ [\\,\\d\\s]+$") //
-                        .assign((t, v) -> processTaxEntries(t, v, type))
-
                         // @formatter:off
                         // Montant brut Commission Frais (¨) Montant net au débit de votre compte
                         // 10,99 EUR 2,02 EUR 3,03 EUR 16,04 EUR
@@ -304,7 +294,21 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "tax").optional() //
                         .find("Montant.*") //
                         .match("^[\\d\\s]+,[\\d]{2} [A-Z]{3} [\\d\\s]+,[\\d]{2} [A-Z]{3} (?<tax>[\\d\\s]+,[\\d]{2}) (?<currency>[A-Z]{3}) [\\d\\s]+,[\\d]{2} [A-Z]{3}$") //
-                        .assign((t, v) -> processTaxEntries(t, v, type));
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // 15/02/2024 248 ISHS DEV MK PRO US (IE00B1FZS350) 40,33 12,09 28,24 28,24
+                        // 06/05/2026 476 NOS (PTZON0AM0006) 214,20 24,50 139,23 139,23
+                        // @formatter:on
+                        .section("gross", "amount").optional() //
+                        .documentContext("currency") //
+                        .match("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\,\\d\\s]+ .* (?<gross>[\\d\\s]+,[\\d]{2}) [\\d\\s]+,[\\d]{2} [\\d\\s]+,[\\d]{2} (?<amount>[\\d\\s]+,[\\d]{2})$") //
+                        .assign((t, v) -> {
+                            var gross = Money.of(v.get("currency"), asAmount(v.get("gross")));
+                            var amount = Money.of(v.get("currency"), asAmount(v.get("amount")));
+                            var tax = gross.subtract(amount);
+                            ExtractorUtils.checkAndSetTax(tax, t, type.getCurrentContext());
+                        });
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)

@@ -678,4 +678,145 @@ public class BoursoBankPDFExtractorTest
 
     }
 
+    @Test
+    public void testDividende03()
+    {
+        var extractor = new BoursoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(8L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(8L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(16));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0000053225"), hasWkn(null), hasTicker(null), //
+                        hasName("METROPOLE TV"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-05-04T00:00"), hasExDate(null), //
+                        hasShares(73), //
+                        hasSource("Dividende03.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 91.25), hasGrossValue("EUR", 91.25), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0010411983"), hasWkn(null), hasTicker(null), //
+                        hasName("SCOR SE REGPT"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-05-04T00:00"), hasExDate(null), //
+                        hasShares(183), //
+                        hasSource("Dividende03.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 347.70), hasGrossValue("EUR", 347.70), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("PTZON0AM0006"), hasWkn(null), hasTicker(null), //
+                        hasName("NOS"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-05-06T00:00"), hasExDate(null), //
+                        hasShares(476), //
+                        hasSource("Dividende03.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 139.23), hasGrossValue("EUR", 214.20), //
+                        hasTaxes("EUR", 74.97), hasFees("EUR", 0.00))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0000120628"), hasWkn(null), hasTicker(null), //
+                        hasName("AXA"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-05-11T00:00"), hasExDate(null), //
+                        hasShares(6), //
+                        hasSource("Dividende03.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 13.92), hasGrossValue("EUR", 13.92), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0004007813"), hasWkn(null), hasTicker(null), //
+                        hasName("KAUFMAN ET BROAD"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-05-11T00:00"), hasExDate(null), //
+                        hasShares(106), //
+                        hasSource("Dividende03.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 233.20), hasGrossValue("EUR", 233.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0000045072"), hasWkn(null), hasTicker(null), //
+                        hasName("CREDIT AGRICOLE"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-05-26T00:00"), hasExDate(null), //
+                        hasShares(187), //
+                        hasSource("Dividende03.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 211.31), hasGrossValue("EUR", 211.31), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0010667147"), hasWkn(null), hasTicker(null), //
+                        hasName("COFACE"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-05-26T00:00"), hasExDate(null), //
+                        hasShares(410), //
+                        hasSource("Dividende03.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 512.50), hasGrossValue("EUR", 512.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("BE0003820371"), hasWkn(null), hasTicker(null), //
+                        hasName("EVS BROADCAST.EQUI"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-05-27T00:00"), hasExDate(null), //
+                        hasShares(5), //
+                        hasSource("Dividende03.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2.10), hasGrossValue("EUR", 3.00), //
+                        hasTaxes("EUR", 0.90), hasFees("EUR", 0.00))));
+
+    }
+
 }

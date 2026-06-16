@@ -1,0 +1,66 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.82.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+COUPONS REMBOURSEMENTS : MAI 2026
+ 000000
+P226803
+MR pRJSdIG NapEEdr
+625 LA XeevTo qxiXWr
+80995 eXIDVUjdj
+le 29/05/2026
+Feuillet 1/2
+Références de votre compte titres
+69460 96399 31360727195 Compte PEA
+Résident Français
+ DETAIL COUPONS
+Acompte
+Date et/ou Commission
+échéance Brut fiscal Crédit d'impôt Prélèvements ¨ Net fiscal T.T.C. Net client
+coupon Quantité Nom de la valeur (code) EUR EUR EUR EUR EUR EUR
+04/05/2026 73 METROPOLE TV (FR0000053225) 91,25 91,25 91,25
+revenus d'actions et opc français ouvrant droit à
+abattement
+04/05/2026 183 SCOR SE REGPT (FR0010411983) 347,70 347,70 347,70
+revenus d'actions et opc français ouvrant droit à
+abattement
+06/05/2026 476 NOS (PTZON0AM0006) 214,20 24,50 139,23 139,23
+revenus d'actions étrangères et opc européens ouvrant
+droit à abattement
+11/05/2026 6 AXA (FR0000120628) 13,92 13,92 13,92
+revenus d'actions et opc français ouvrant droit à
+abattement
+11/05/2026 106 KAUFMAN ET BROAD (FR0004007813) 233,20 233,20 233,20
+revenus d'actions et opc français ouvrant droit à
+abattement
+26/05/2026 187 CREDIT AGRICOLE (FR0000045072) 211,31 211,31 211,31
+revenus d'actions et opc français ouvrant droit à
+abattement
+26/05/2026 410 COFACE (FR0010667147) 512,50 512,50 512,50
+revenus d'actions et opc français ouvrant droit à
+abattement
+27/05/2026 5 EVS BROADCAST.EQUI (BE0003820371) 3,00 0,37 2,10 2,10
+revenus d'actions étrangères et opc européens ouvrant
+droit à abattement
+TOTAL EUR 24,87 0,00 1 551,21 0,00 1 551,21
+¨ Comprend l'acompte sur le revenu au titre de l'impôt et/ou les divers prélèvements dont les contibutions sociales (CSG, CRDS, ...)
+ 
+Service Clientèle : 01 46 09 49 49 ou +33 146 09 49 49 depuis l'étranger, du lundi au vendredi de 8h à 20h et le samedi de 8h45 à 16h30 – www.boursobank.com
+Boursorama S.A. au capital de 53 576 889,20 € - RCS Nanterre 351 058 151 - TVA 69 351 058 151 - 44 rue Traversière - CS 80134 - 92772 Boulogne Billancourt Cedex
+Adresse du médiateur : Médiateur de l'AMF - 17, place de la Bourse - 75082 PARIS CEDEX 02 AA1
+000000 F1 P226803 1/1
+COUPONS REMBOURSEMENTS : MAI 2026
+MR gvhaDLA hPdcjuS
+164 fB rbqMaZ BbUbYo
+30029 mtTQQMBNK
+le 29/05/2026
+Feuillet 2/2
+Références de votre compte titres
+98917 80616 49900580546
+COUPONS : NETS FISCAUX  1 551,21 EUR
+REMBOURSEMENTS : BRUTS GLOBAUX  0,00 EUR
+¨ Comprend l'acompte sur le revenu au titre de l'impôt et/ou les divers prélèvements dont les contibutions sociales (CSG, CRDS, ...)
+Service Clientèle : 01 46 09 49 49 ou +33 146 09 49 49 depuis l'étranger, du lundi au vendredi de 8h à 20h et le samedi de 8h45 à 16h30 – www.boursobank.com
+Boursorama S.A. au capital de 53 576 889,20 € - RCS Nanterre 351 058 151 - TVA 69 351 058 151 - 44 rue Traversière - CS 80134 - 92772 Boulogne Billancourt Cedex
+Adresse du médiateur : Médiateur de l'AMF - 17, place de la Bourse - 75082 PARIS CEDEX 02 AA1
+000000 F2 P226803 2/1
