@@ -702,7 +702,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
 
-                            // Formatting some notes (fix previous incorrect contains usage)
+                            // Formatting some notes
                             var note = v.get("note");
                             if (note != null)
                             {
@@ -757,7 +757,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
 
-                            // Formatting some notes (fix previous incorrect contains usage)
+                            // Formatting some notes
                             var note = v.get("note");
                             if (note != null && note.contains("Bezuege"))
                                 note = note.replace("Bezuege", "Bezüge");
