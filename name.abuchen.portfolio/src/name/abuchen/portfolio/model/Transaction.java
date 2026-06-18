@@ -198,6 +198,18 @@ public abstract class Transaction implements Annotated, Adaptable
         @Override
         public int compare(Transaction t1, Transaction t2)
         {
+            // Adding more debugging information to the exception thrown. We
+            // cannot use the toString method because it might also fail to
+            // construct a proper string.
+
+            if (t1.getDateTime() == null)
+                throw new NullPointerException(
+                                String.format("%s %s is missing a date", t1.getClass().getSimpleName(), t1.getUUID())); //$NON-NLS-1$
+
+            if (t2.getDateTime() == null)
+                throw new NullPointerException(
+                                String.format("%s %s is missing a date", t2.getClass().getSimpleName(), t2.getUUID())); //$NON-NLS-1$
+
             int compareTo = t1.getDateTime().compareTo(t2.getDateTime());
             if (compareTo != 0)
                 return compareTo;

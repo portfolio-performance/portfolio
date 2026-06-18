@@ -39,7 +39,7 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        var type = new DocumentType("Wertpapier Abrechnung (Kauf|Verkauf)");
+        final var type = new DocumentType("Wertpapier Abrechnung (Kauf|Verkauf)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
@@ -50,11 +50,7 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // @formatter:off
                         // Is type --> "Verkauf" change from BUY to SELL
@@ -121,7 +117,7 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        var type = new DocumentType("(Ertragsgutschrift nach" //
+        final var type = new DocumentType("(Ertragsgutschrift nach" //
                         + "|Aussch.ttung Investmentfonds" //
                         + "|Dividendengutschrift)");
         this.addDocumentTyp(type);
@@ -134,11 +130,7 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         // @formatter:off
                         // Stück 55 DEUTSCHE TELEKOM AG DE0005557508 (555750)
@@ -238,11 +230,7 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(depositRemovalBlock);
         depositRemovalBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "note", "amount", "type") //
                         .documentContext("currency", "year") //
@@ -285,11 +273,7 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         .section("name", "isin", "wkn", "nameContinued", "currency") //
                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
@@ -318,9 +302,9 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
                         .match("^.*(?<note>Abrechnungsnr\\. [\\d]+).*$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                        .wrap((t, ctx) -> {
+                        .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             return new TransactionItem(t);
                         });

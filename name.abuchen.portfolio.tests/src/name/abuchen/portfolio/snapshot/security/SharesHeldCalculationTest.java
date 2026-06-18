@@ -32,12 +32,8 @@ public class SharesHeldCalculationTest
                         .addTo(client);
 
         var interval = Interval.of(LocalDate.parse("2018-02-01"), LocalDate.parse("2018-02-02")); //$NON-NLS-1$ //$NON-NLS-2$
-        SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(),
-                        interval);
-
-        new SecurityPerformanceSnapshotComparator(snapshot,
-                        LazySecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(), interval))
-                                        .compare();
+        LazySecurityPerformanceSnapshot snapshot = LazySecurityPerformanceSnapshot.create(client,
+                        new TestCurrencyConverter(), interval);
 
         assertThat(snapshot.getRecords().size(), is(1));
 

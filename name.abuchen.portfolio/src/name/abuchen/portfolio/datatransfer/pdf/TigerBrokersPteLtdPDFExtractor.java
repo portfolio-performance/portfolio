@@ -148,11 +148,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
 
         buyBlock_Format01 //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         .section("tickerSymbol", "date", "time", "shares", "gross", "fee1", "fee2", "fee3") //
                         .find("Settlement Fee: \\-[\\.,\\d]+") //
@@ -211,11 +207,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
 
         buyBlock_Format02 //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         .section("tickerSymbol", "date", "time", "shares", "gross", "fee1", "fee2", "fee3").optional() //
                         .match("^(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) " //
@@ -273,11 +265,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
 
         buyBlock_Format03 //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         .section("tickerSymbol", "shares", "gross", "fee1", "fee2", "date", "fee3", "time").optional() //
                         .match("^(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) [A-Z]+ " //
@@ -332,11 +320,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
 
         buyBlock_Format04 //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         .optionalOneOf( //
                                         // @formatter:off
@@ -447,11 +431,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
 
         buyBlock_Format05 //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
                         .section("fee1", "date", "name", "shares", "gross", "fee2", "time", "tickerSymbol", "fee3") //
                         .find("Settlement Fee:[\\s]*") //
                         .match("^\\-(?<fee1>[\\.,\\d]+) (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})$") //
@@ -506,11 +486,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
 
         dividendBlock //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         .section("date", "tickerSymbol", "amountPerShare", "note", "amount") //
                         .match("^(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) " //
@@ -584,11 +560,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
 
         dividendBlock_late24 //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         .optionalOneOf(
                                         // Pattern 1: three-line instrument
@@ -735,11 +707,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
 
         taxRefundBlock //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                         .section("date", "amount", "currency") //
                         .match("^(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) " //
@@ -764,11 +732,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
 
         depositBlock //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "note", "amount") //
                         .match("^(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) Deposit " //

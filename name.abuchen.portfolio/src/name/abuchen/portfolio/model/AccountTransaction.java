@@ -71,6 +71,12 @@ public class AccountTransaction extends Transaction
         super(uuid);
     }
 
+    public AccountTransaction(Type type)
+    {
+        super();
+        this.type = type;
+    }
+
     public AccountTransaction(LocalDateTime date, String currencyCode, long amount, Security security, Type type)
     {
         super(date, currencyCode, amount, security, 0, null);

@@ -4,7 +4,6 @@ import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGros
 
 import java.math.BigDecimal;
 
-import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -46,22 +45,18 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("B.rsenabrechnung \\- (Kauf|Verkauf)");
+        final var type = new DocumentType("B.rsenabrechnung \\- (Kauf|Verkauf)");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^B.rsenabrechnung \\- (Kauf|Verkauf)$");
+        var firstRelevantLine = new Block("^B.rsenabrechnung \\- (Kauf|Verkauf)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
@@ -83,7 +78,7 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
                         .match("^[\\.'\\d]+ (?<name1>.*)$") //
                         .match("^(?<name>.*)$") //
                         .match("^Valor: (?<wkn>[A-Z0-9]{5,9})$") //
-                        .match("^Total Kurswert (?<currency>[\\w]{3}).*$") //
+                        .match("^Total Kurswert (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> {
                             v.put("name", v.get("name") + " " + v.get("name1"));
 
@@ -94,7 +89,7 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
                         // 17'000 Inhaber-Aktien Nokia Corp
                         // @formatter:on
                         .section("shares") //
-                        .find("Wir haben.*")
+                        .find("Wir haben.*") //
                         .match("^(?<shares>[\\.'\\d]+) .*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
@@ -111,7 +106,7 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
                         // Netto CHF 142'359.40
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^Netto (?<currency>[\\w]{3}) (\\-)?(?<amount>[\\.'\\d]+)$") //
+                        .match("^Netto (?<currency>[A-Z]{3}) (\\-)?(?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -122,14 +117,14 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
                         // Change EUR/CHF 1.241652 CHF -92'031.25
                         // @formatter:on
                         .section("fxGross", "termCurrency", "baseCurrency", "exchangeRate", "gross").optional() //
-                        .match("^Total Kurswert [\\w]{3} (\\-)?(?<fxGross>[\\.'\\d]+)$") //
-                        .match("^Change (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.'\\d]+) [\\w]{3} (\\-)?(?<gross>[\\.'\\d]+)$") //
+                        .match("^Total Kurswert [A-Z]{3} (\\-)?(?<fxGross>[\\.'\\d]+)$") //
+                        .match("^Change (?<baseCurrency>[A-Z]{3})\\/(?<termCurrency>[A-Z]{3}) (?<exchangeRate>[\\.'\\d]+) [A-Z]{3} (\\-)?(?<gross>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
+                            var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money gross = Money.of(rate.getTermCurrency(), asAmount(v.get("gross")));
-                            Money fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
+                            var gross = Money.of(rate.getTermCurrency(), asAmount(v.get("gross")));
+                            var fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
@@ -142,22 +137,18 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("Dividende");
+        final var type = new DocumentType("Dividende");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^Dividende$");
+        var firstRelevantLine = new Block("^Dividende$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         // @formatter:off
                         // Namen-Aktien nom CHF 100.00 Ex Datum: 02.05.2016
@@ -171,7 +162,7 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<name>.*)$") //
                         .match("^Valor: (?<wkn>[A-Z0-9]{5,9})$") //
                         .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                        .match("^Brutto \\([\\.'\\d]+ \\* [\\w]{3} [\\.'\\d]+\\) (?<currency>[\\w]{3}) [\\.'\\d]+$") //
+                        .match("^Brutto \\([\\.'\\d]+ \\* [A-Z]{3} [\\.'\\d]+\\) (?<currency>[A-Z]{3}) [\\.'\\d]+$") //
                         .assign((t, v) -> {
                             v.put("name", v.get("name") + " " + v.get("name1"));
 
@@ -193,10 +184,17 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
+                        // Namen-Aktien nom CHF 100.00 Ex Datum: 02.05.2016
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^.* Ex Datum: (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
+                        // @formatter:off
                         // Netto CHF 18.20
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^Netto (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
+                        .match("^Netto (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -207,14 +205,14 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
                         // Change EUR / CHF 1.067227 CHF 3'302.00
                         // @formatter:on
                         .section("gross", "termCurrency", "baseCurrency", "exchangeRate").optional() //
-                        .match("^Brutto \\([\\.'\\d]+ \\* [\\w]{3} [\\.'\\d]+\\) >[\\w]{3} (?<gross>[\\.'\\d]+)$") //
-                        .match("^Change (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.'\\d]+) [\\w]{3} (\\-)?[\\.'\\d]+$") //
+                        .match("^Brutto \\([\\.'\\d]+ \\* [A-Z]{3} [\\.'\\d]+\\) [A-Z]{3} (?<gross>[\\.'\\d]+)$") //
+                        .match("^Change (?<baseCurrency>[A-Z]{3}) \\/ (?<termCurrency>[A-Z]{3}) (?<exchangeRate>[\\.'\\d]+) [A-Z]{3} (\\-)?[\\.'\\d]+$") //
                         .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
+                            var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
@@ -233,28 +231,28 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
                         // Eidg. Umsatzabgabe CHF -138.05
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Eidg\\. Umsatzabgabe (?<currency>[\\w]{3}) \\-(?<tax>[\\.'\\d]+)$") //
+                        .match("^Eidg\\. Umsatzabgabe (?<currency>[A-Z]{3}) \\-(?<tax>[\\.'\\d]+)$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // 35% Verrechnungssteuer CHF -9.80
-                        // @formatter:off
+                        // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^[\\d]+% Verrechnungssteuer (?<currency>[\\w]{3}) \\-(?<tax>[\\.'\\d]+)$") //
+                        .match("^[\\d]+% Verrechnungssteuer (?<currency>[A-Z]{3}) \\-(?<tax>[\\.'\\d]+)$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // 20% Quellensteuer EUR -884.00
                         // @formatter:on
                         .section("currency", "withHoldingTax").optional() //
-                        .match("^[\\d]+% Quellensteuer (?<currency>[\\w]{3}) \\-(?<withHoldingTax>[\\.'\\d]+)$") //
+                        .match("^[\\d]+% Quellensteuer (?<currency>[A-Z]{3}) \\-(?<withHoldingTax>[\\.'\\d]+)$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                         // @formatter:off
                         // 10% Nichtrückforderbare Steuern EUR -442.00
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^[\\d]+% Nicht r.ckforderbare Steuern (?<currency>[\\w]{3}) \\-(?<tax>[\\.'\\d]+)$") //
+                        .match("^[\\d]+% Nicht r.ckforderbare Steuern (?<currency>[A-Z]{3}) \\-(?<tax>[\\.'\\d]+)$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
@@ -266,21 +264,21 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
                         // Eigene Courtage CHF -489.15
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Eigene Courtage (?<currency>[\\w]{3}) \\-(?<fee>[\\.'\\d]+)$") //
+                        .match("^Eigene Courtage (?<currency>[A-Z]{3}) \\-(?<fee>[\\.'\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Börsengebühr Inland CHF -3.50
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^B.rsengeb.hr Inland (?<currency>[\\w]{3}) \\-(?<fee>[\\.'\\d]+)$") //
+                        .match("^B.rsengeb.hr Inland (?<currency>[A-Z]{3}) \\-(?<fee>[\\.'\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Börsengebühr CHF -3.50
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^B.rsengeb.hr (?<currency>[\\w]{3}) \\-(?<fee>[\\.'\\d]+)$") //
+                        .match("^B.rsengeb.hr (?<currency>[A-Z]{3}) \\-(?<fee>[\\.'\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 

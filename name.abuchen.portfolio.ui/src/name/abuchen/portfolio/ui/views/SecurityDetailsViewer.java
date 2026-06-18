@@ -381,7 +381,7 @@ public class SecurityDetailsViewer
         // and covers right edge (last digits of quotes, etc.) of the content
         // pane. With setAlwaysShowScrollBars(true) that issue doesn't happen.
         container.setAlwaysShowScrollBars(true);
-        container1.setBackground(Colors.WHITE);
+        container1.setBackground(Colors.theme().defaultBackground());
         container1.setBackgroundMode(SWT.INHERIT_FORCE);
 
         // facets

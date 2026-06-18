@@ -1,0 +1,84 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.83.2
+-----------------------------------------
+Ihren Auftrag haben wir gemäß unseren produktbezogenen
+Geschäftsbedingungen "Trading" wie nachstehend ausgeführt.
+Die Wertpapiere haben wir der Abrechnung entsprechend gebucht.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und
+Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+25449 Quickborn
+Telefon : 04106-708 25 00
+11111 111
+Depotnr.: 1111111 11
+BLZ: 111 111 11
+Vorname Nachname
+Straße 1
+11111 Stadt
+GESCHÄFTSABRECHNUNG VOM 04.05.2026
+*
+Wertpapierkauf
+Geschäftsnummer : 92 163657
+119817162670 Rechnungsnummer : 705006160048DB25
+Geschäftstag : 04.05.2026 Ausführungsplatz : TRADEGATE
+(Kommissionsgeschäft)
+Wertpapier-Bezeichnung WPKNR/ISIN
+Palantir Technologies Inc. A2QA4J
+Registered Shares o.N. US69608A1088
+Nennwert Zum Kurs von
+St. 0,193 EUR 127,62
+Kurswert : EUR 24,63
+--------------------------------------------------------------------------------
+Eigene Entgelte
+Provision : EUR 0,37
+--------------------------------------------------------------------------------
+IBAN Valuta Zu Ihren Lasten vor Steuern
+DE11 1111 1111 1111 1111 11 EUR 06.05.2026 EUR 25,00
+Verwahrungs-Art: GIROSAMMELDEPOT
+Informationen zur steuerlichen Behandlung dieses Geschäftsvorgangs und den auf
+Ihrem Konto gebuchten Endbetrag finden Sie auf der separaten Steuermitteilung.
+Ihre comdirect
+Diese Abrechnung wird von der Bank nicht unterschrieben
+Die Leistung ist gemäß §4 Nr.8 UStG umsatzsteuerfrei. USt-Id-Nr.: DE 114 103 514
+A113
+DO15DD/16/04/2010
+Kundennr. /BLZ Bezeichnung
+Vorname Nachname
+1111111
+Straße 1
+111 111 11 11111 Stadt
+abweichend wirtschaftlich Berechtigter
+----
+comdirect
+25451 Quickborn
+111 11111
+Telefon: 04106 - 708 25 00
+Herrn Datum: 04.05.2026
+Vorname Nachname Depotnummer: 1111111 11
+Straße 1
+11111 Stadt Referenz-Nummer: 2JINGAN3ZPQ003IE
+Steuerliche Behandlung: Wertpapierkauf Nr. 92163657 vom 04.05.2026
+Stk. 0,193 PALANTIR TECHNOLOGIES INC , WKN / ISIN: A2QA4J / US69608A1088
+Zu Ihren Lasten vor Steuern: EUR -25,00
+Steuerbemessungsgrundlage EUR 0,00
+Kapitalertragsteuer EUR 0,00
+Solidaritätszuschlag EUR 0,00
+Kirchensteuer E_U_R_______________0_,_0_0_
+abgeführte Steuern E_U_R_______________0_,_0_0_
+Zu Ihren Lasten nach Steuern: EUR -25,00
+Die Belastung erfolgt mit Valuta 06.05.2026 auf Konto EUR mit der IBAN DE11 1111 1111 1111 1111 11
+KEINE STEUERBESCHEINIGUNG ...
+Bisher einbehaltene bzw. angerechnete Steuer in EUR (4)
+in 2026 einbehaltene einbehaltener einbehaltene angerechnete
+Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer ausländische Quellensteuer
+vor Ermittlung 79,95 4,32 6,30 52,34
+nach Ermittlung 79,95 4,32 6,30 52,34
+Verrechnungssalden in EUR (4)
+Gewinne / Verluste sonstige anrechenbare verfügbarer
+in 2026 aus Aktien Gewinne / Verluste ausländische Quellensteuer Freistellungsauftrag
+vor Ermittlung -22,03 535,50 0,00 0,00
+nach Ermittlung -22,03 535,50 0,00 0,00
+Ihre comdirect
+Diese Abrechnung ist maschinell erstellt und wird nicht unterschrieben.
+(4) Die ausgewiesenen EUR-Beträge spiegeln den Stand zum Abrechnungszeitpunkt wider.
+KEINE STEUERBESCHEINIGUNG

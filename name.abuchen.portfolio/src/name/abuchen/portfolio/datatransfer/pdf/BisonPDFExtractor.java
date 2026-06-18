@@ -14,7 +14,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
  * @formatter:off
  * @implNote Importer for "Info Reports" produced by the Bison App.
  *
- * @implSpec Bison only supports EUR as currency. 
+ * @implSpec Bison only supports EUR as currency.
  *           Therefore the extractor is always defaulting to EUR.
  * @formatter:on
  */
@@ -52,11 +52,7 @@ public class BisonPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
@@ -94,7 +90,7 @@ public class BisonPDFExtractor extends AbstractPDFExtractor
 
     private void addDeliveryInboundTransaction()
     {
-        var type = new DocumentType("Info-Report");
+        final var type = new DocumentType("Info-Report");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<PortfolioTransaction>();
@@ -105,11 +101,7 @@ public class BisonPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new PortfolioTransaction();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new PortfolioTransaction(PortfolioTransaction.Type.DELIVERY_INBOUND))
 
                         // @formatter:off
                         // Gutschein BTC 0,00130130
@@ -137,7 +129,7 @@ public class BisonPDFExtractor extends AbstractPDFExtractor
 
     private void addDepositRemovalTransaction()
     {
-        var type = new DocumentType("Info-Report");
+        final var type = new DocumentType("Info-Report");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -148,11 +140,7 @@ public class BisonPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         // Is type --> "Auszahlung" change from BUY to SELL
                         .section("type").optional() //
@@ -195,11 +183,7 @@ public class BisonPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         // @formatter:off
                         // Name LYX ETF EUR CASH

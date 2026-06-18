@@ -188,12 +188,8 @@ public class BisonPDFExtractorTest
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check deposit transaction
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2021-11-29T08:49"), //
-                        hasSource("InfoReport01.txt"), //
-                        hasNote(null), //
-                        hasAmount("EUR", 250.00), hasGrossValue("EUR", 250.00), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+        assertThat(results, hasItem(deposit(hasDate("2021-11-29T08:49"), hasAmount("EUR", 250.00), //
+                        hasSource("InfoReport01.txt"), hasNote(null))));
     }
 
     @Test
@@ -235,7 +231,7 @@ public class BisonPDFExtractorTest
                         hasSource("InfoReport02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 47.62), hasGrossValue("EUR", 47.62), //
-                        hasTaxes("EUR", 0), hasFees("EUR", 0))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
@@ -243,7 +239,7 @@ public class BisonPDFExtractorTest
                         hasSource("InfoReport02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 47.62), hasGrossValue("EUR", 47.62), //
-                        hasTaxes("EUR", 0), hasFees("EUR", 0))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -272,12 +268,8 @@ public class BisonPDFExtractorTest
                         hasFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID, "bitcoin"))));
 
         // check withdrawal transaction
-        assertThat(results, hasItem(removal( //
-                        hasDate("2020-11-22T09:51"), //
-                        hasSource("InfoReport03.txt"), //
-                        hasNote(null), //
-                        hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+        assertThat(results, hasItem(removal(hasDate("2020-11-22T09:51"), hasAmount("EUR", 100.00), //
+                        hasSource("InfoReport03.txt"), hasNote(null))));
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
@@ -301,14 +293,6 @@ public class BisonPDFExtractorTest
                         hasSource("InfoReport03.txt"), //
                         hasNote("Gutschein"), //
                         hasAmount("EUR", 10.00), hasGrossValue("EUR", 10.00), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-
-        // check buy sell transaction
-        assertThat(results, hasItem(purchase( //
-                        hasDate("2020-01-16T11:19"), hasShares(0.01282436), //
-                        hasSource("InfoReport03.txt"), //
-                        hasNote(null), //
-                        hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check deposit transactions

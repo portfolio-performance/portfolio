@@ -17,10 +17,13 @@ import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
+import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.AccountSnapshot;
 import name.abuchen.portfolio.snapshot.AssetCategory;
@@ -30,11 +33,9 @@ import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.GroupByTaxonomy;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.snapshot.security.BaseSecurityPerformanceRecord;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceIndicator;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshotComparator;
 import name.abuchen.portfolio.snapshot.trail.Trail;
 import name.abuchen.portfolio.util.Interval;
 
@@ -133,15 +134,13 @@ public class CurrencyTestCase
         assertThat(equityUSD.getPosition().getShares(), is(Values.Share.factorize(10)));
 
         Interval interval = Interval.of(LocalDate.MIN, grouping.getDate());
-        SecurityPerformanceRecord recordUSD = SecurityPerformanceSnapshot
-                        .create(client, converter.with(CurrencyUnit.USD), interval,
-                                        SecurityPerformanceIndicator.Costs.class)
-                        .getRecord(securityUSD).orElseThrow(IllegalArgumentException::new);
+        LazySecurityPerformanceRecord recordUSD = LazySecurityPerformanceSnapshot
+                        .create(client, converter.with(CurrencyUnit.USD), interval).getRecord(securityUSD)
+                        .orElseThrow(IllegalArgumentException::new);
 
-        SecurityPerformanceRecord recordEUR = SecurityPerformanceSnapshot
-                        .create(client, converter.with(CurrencyUnit.EUR), interval,
-                                        SecurityPerformanceIndicator.Costs.class)
-                        .getRecord(securityUSD).orElseThrow(IllegalArgumentException::new);
+        LazySecurityPerformanceRecord recordEUR = LazySecurityPerformanceSnapshot
+                        .create(client, converter.with(CurrencyUnit.EUR), interval).getRecord(securityUSD)
+                        .orElseThrow(IllegalArgumentException::new);
 
         // purchase value must be sum of both purchases:
         // the one in EUR account and the one in USD account
@@ -149,24 +148,27 @@ public class CurrencyTestCase
         // must take the inverse of the exchange used within the transaction
         BigDecimal rate = BigDecimal.ONE.divide(BigDecimal.valueOf(0.8237), 10, RoundingMode.HALF_DOWN);
 
-        assertThat(recordUSD.getFifoCost(),
+        assertThat(recordUSD.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
                         is(Money.of(CurrencyUnit.USD, Math.round(454_60 * rate.doubleValue()) + 571_90)));
 
         // price per share is the total purchase price minus 20 USD fees and
         // taxes divided by the number of shares
-        Money pricePerShare = recordUSD.getFifoCost() //
+        Money pricePerShare = recordUSD.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED) //
                         .subtract(Money.of(CurrencyUnit.USD, 20_00)).divide(10);
-        assertThat(recordUSD.getFifoCostPerSharesHeld().toMoney(), is(pricePerShare));
+        assertThat(recordUSD.getCostPerSharesHeld(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED).toMoney(),
+                        is(pricePerShare));
 
         // profit loss w/o rounding differences
 
         assertThat(equityUSD.getValuation(), is(recordEUR.getMarketValue()));
 
-        assertThat(recordEUR.getCapitalGainsOnHoldings(),
-                        is(equityUSD.getValuation().subtract(recordEUR.getFifoCost())));
+        assertThat(recordEUR.getCapitalGainsOnHoldings(CostMethod.FIFO),
+                        is(equityUSD.getValuation()
+                                        .subtract(recordEUR.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED))));
 
-        assertThat(recordUSD.getCapitalGainsOnHoldings(),
-                        is(equityUSD.getPosition().calculateValue().subtract(recordUSD.getFifoCost())));
+        assertThat(recordUSD.getCapitalGainsOnHoldings(CostMethod.FIFO),
+                        is(equityUSD.getPosition().calculateValue()
+                                        .subtract(recordUSD.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED))));
 
     }
 
@@ -220,23 +222,61 @@ public class CurrencyTestCase
         assertThat(position.getPosition().getShares(), is(Values.Share.factorize(15)));
 
         Interval inteval = Interval.of(LocalDate.MIN, snapshot.getTime());
-        SecurityPerformanceRecord recordEUR = SecurityPerformanceSnapshot
-                        .create(client, converter.with(CurrencyUnit.EUR), inteval,
-                                        SecurityPerformanceIndicator.Costs.class)
-                        .getRecord(securityUSD).orElseThrow(IllegalArgumentException::new);
+        LazySecurityPerformanceRecord recordEUR = LazySecurityPerformanceSnapshot
+                        .create(client, converter.with(CurrencyUnit.EUR), inteval).getRecord(securityUSD)
+                        .orElseThrow(IllegalArgumentException::new);
 
-        assertThat(recordEUR.getFifoCost(), is(Money.of(CurrencyUnit.EUR, 454_60L + 471_05 + 498_45)));
+        assertThat(recordEUR.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
+                        is(Money.of(CurrencyUnit.EUR, 454_60L + 471_05 + 498_45)));
 
         Interval period = Interval.of(LocalDate.parse("2014-12-31"), LocalDate.parse("2015-08-10"));
-        SecurityPerformanceSnapshot performance = SecurityPerformanceSnapshot.create(client, converter, period);
-        
-        new SecurityPerformanceSnapshotComparator(performance,
-                        LazySecurityPerformanceSnapshot.create(client, converter, period)).compare();
-        
-        SecurityPerformanceRecord record = performance.getRecords().stream().filter(r -> r.getSecurity() == securityUSD)
-                        .findAny().orElseThrow(IllegalArgumentException::new);
+        LazySecurityPerformanceSnapshot performance = LazySecurityPerformanceSnapshot.create(client, converter, period);
+
+        LazySecurityPerformanceRecord record = performance.getRecords().stream()
+                        .filter(r -> r.getSecurity() == securityUSD).findAny()
+                        .orElseThrow(IllegalArgumentException::new);
         assertThat(record.getSharesHeld(), is(Values.Share.factorize(15)));
-        assertThat(record.getFifoCost(), is(Money.of(CurrencyUnit.EUR, 454_60L + 471_05 + 498_45)));
+        assertThat(record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
+                        is(Money.of(CurrencyUnit.EUR, 454_60L + 471_05 + 498_45)));
+
+        // pinned values previously verified via SecurityPerformanceSnapshotComparator
+        assertThat(record.getMarketValue(), is(Money.of("EUR", 149534L)));
+        assertThat(record.getQuote(), is(Quote.of("USD", 11552000000L)));
+        assertThat(record.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), is(Money.of("EUR", 142410L)));
+        assertThat(record.getCostPerSharesHeld(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED),
+                        is(Quote.of("EUR", 9384200000L)));
+        assertThat(record.getFees(), is(Money.of("EUR", 824L)));
+        assertThat(record.getTaxes(), is(Money.of("EUR", 824L)));
+        assertThat(record.getDelta(), is(Money.of("EUR", 7124L)));
+        assertThat(record.getDeltaPercent(), IsCloseTo.closeTo(0.050024576925777685, 0.0001));
+        assertThat(record.getCapitalGainsOnHoldings(CostMethod.FIFO), is(Money.of("EUR", 7124L)));
+        assertThat(record.getCapitalGainsOnHoldings(CostMethod.MOVING_AVERAGE), is(Money.of("EUR", 7124L)));
+        assertThat(record.getCapitalGainsOnHoldingsPercent(CostMethod.FIFO),
+                        IsCloseTo.closeTo(0.050024576925777664, 0.0001));
+        assertThat(record.getCapitalGainsOnHoldingsPercent(CostMethod.MOVING_AVERAGE),
+                        IsCloseTo.closeTo(0.050024576925777664, 0.0001));
+        assertThat(record.getIrr(), IsCloseTo.closeTo(0.1446282845545095, 0.0001));
+        assertThat(record.getTrueTimeWeightedRateOfReturn(), IsCloseTo.closeTo(0.10417377427377805, 0.0001));
+        assertThat(record.getTrueTimeWeightedRateOfReturnAnnualized(),
+                        IsCloseTo.closeTo(0.17695466576686947, 0.0001));
+        assertThat(record.getDrawdown().getMaxDrawdown(), IsCloseTo.closeTo(0.12421268652674962, 0.0001));
+        assertThat(record.getDrawdown().getMaxDrawdownDuration().getDays(), is(168L));
+        assertThat(record.getVolatility().getStandardDeviation(), IsCloseTo.closeTo(0.17746878011093473, 0.0001));
+        assertThat(record.getVolatility().getSemiDeviation(), IsCloseTo.closeTo(0.12318433923170118, 0.0001));
+        assertThat(record.getSumOfDividends(), is(Money.of("EUR", 0L)));
+        assertThat(record.getDividendEventCount(), is(0));
+        assertThat(record.getLastDividendPayment(), is((LocalDate) null));
+        assertThat(record.getPeriodicity(), is(BaseSecurityPerformanceRecord.Periodicity.NONE));
+        assertThat(record.getRealizedCapitalGains(CostMethod.FIFO).getCapitalGains(), is(Money.of("EUR", 0L)));
+        assertThat(record.getRealizedCapitalGains(CostMethod.MOVING_AVERAGE).getCapitalGains(),
+                        is(Money.of("EUR", 0L)));
+        assertThat(record.getUnrealizedCapitalGains(CostMethod.FIFO).getCapitalGains(), is(Money.of("EUR", 8771L)));
+        assertThat(record.getUnrealizedCapitalGains(CostMethod.FIFO).getForexCaptialGains(),
+                        is(Money.of("EUR", 4339L)));
+        assertThat(record.getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE).getCapitalGains(),
+                        is(Money.of("EUR", 8771L)));
+        assertThat(record.getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE).getForexCaptialGains(),
+                        is(Money.of("EUR", 4335L)));
     }
 
     private AccountSnapshot lookupAccountSnapshot(ClientSnapshot snapshot, Account account)

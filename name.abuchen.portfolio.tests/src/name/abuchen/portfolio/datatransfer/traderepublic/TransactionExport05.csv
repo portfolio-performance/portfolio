@@ -1,0 +1,4 @@
+datetime,date,account_type,category,type,asset_class,name,symbol,shares,price,amount,fee,tax,currency,original_amount,original_currency,fx_rate,description,transaction_id,counterparty_name,counterparty_iban,payment_reference,mcc_code
+2025-07-17T09:43:05.327422Z,2025-07-17,DEFAULT,CASH,DIVIDEND,STOCK,Global Net Lease,US3793782018,181.6381060000,,29.580000,,-7.56,EUR,34.51,USD,0.857265,Cash Dividend for ISIN US3793782018,113ae326-158b-4dd3-8e2b-d0a44ec561fc,,,,
+2026-03-28T12:17:08.949883Z,2026-03-27,DEFAULT,CASH,DIVIDEND,STOCK,Global Net Lease,US3793782018,181.6381060000,,-29.580000,,7.56,EUR,-34.51,USD,0.857265,Cash Dividend for ISIN US3793782018,019d3460-7155-70d9-82ae-523ba453bf9c,,,,
+2026-03-28T12:44:58.343321Z,2026-03-27,DEFAULT,CASH,DIVIDEND,STOCK,Global Net Lease,US3793782018,181.6381060000,,29.580000,,-7.80,EUR,34.51,USD,0.857265,Cash Dividend for ISIN US3793782018,019d3479-ea67-7463-ac1a-5b18951dbc8b,,,,

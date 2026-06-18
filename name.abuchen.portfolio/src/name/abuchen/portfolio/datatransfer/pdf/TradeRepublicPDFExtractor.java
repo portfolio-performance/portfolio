@@ -34,7 +34,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         addBuySellTransaction();
         addSellWithNegativeAmountTransaction();
         addBuySellCryptoTransaction();
-        addDividendeTransaction();
+        addDividendTransaction();
         addAdvanceTaxTransaction();
         addExAnteFeeTransaction();
         addAccountStatementTransaction_Format01();
@@ -80,17 +80,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        var firstRelevantLine = new Block("^TRADE REPUBLIC BANK GMBH.*$");
+        var firstRelevantLine = new Block();
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
@@ -430,7 +426,26 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^Ausf.hrung von (Round up|Saveback) .* "
+                                                        .match("^Ausf.hrung von (Round up|Saveback) \\D* "
+                                                                        + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}"
+                                                                        + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // Ausführung der Zeichnungsorder am 12.06.2026 um 13:28 am Primärmarkt.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "time") //
+                                                        .match("^Ausf.hrung der Zeichnungsorder am "
+                                                                        + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}"
+                                                                        + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) um (?<time>\\d{2}\\:\\d{2}).*$") //
+                                                        .assign((t, v) -> t
+                                                                        .setDate(asDate(v.get("date"), v.get("time")))),
+                                        // @formatter:off
+                                        // Ejecución del Saveback el 02.02.2026 en Lang und Schwarz Exchange.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Ejecuci.n del Saveback .* "
                                                                         + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}"
                                                                         + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date")))),
@@ -830,11 +845,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         // @formatter:off
                         // Korrektur des Belegs 8ac7-2fd8 vom 17.01.2025
@@ -990,17 +1001,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        var firstRelevantLine = new Block("^TRADE REPUBLIC BANK GMBH.*$", "^Diese Abrechnung wird maschinell erstellt.*$");
+        var firstRelevantLine = new Block();
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
@@ -1243,13 +1250,18 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
-    private void addDividendeTransaction()
+    private static final String BLOCK_ENDSWITH = "^(Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben\\." //
+                    + "|Ce document est .*"
+                    + "|Questo regolamento viene creato automaticamente e quindi non . firmato\\."
+                    + "|This statement is generated automatically and therefore not signed\\.)$";
+
+    private void addDividendTransaction()
     {
-        final var type = new DocumentType("(AUSSCH.TTUNG" //
-                        + "|DIVIDENDE" //
+        final var type = new DocumentType("(?i)(AUSSCH.TTUNG" //
+                        + "|(STORNIERUNG DER )?DIVIDENDE( EN ESP.CES)?" //
                         + "|REINVESTIERUNG" //
                         + "|STORNO DIVIDENDE" //
-                        + "|DIVIDEND" //
+                        + "|(CASH )?DIVIDEND" //
                         + "|DIVIDENDO" //
                         + "|DISTRIBUZIONE" //
                         + "|Distribution" //
@@ -1259,17 +1271,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^TRADE REPUBLIC BANK GMBH.*$"); //
+        var firstRelevantLine = new Block("^TRADE REPUBLIC BANK GMBH.*$", BLOCK_ENDSWITH);
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         .optionalOneOf(
                                         // @formatter:off
@@ -1499,6 +1507,40 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^[\\w]+ (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (\\-)?[\\.,\\d]+ [A-Z]{3}$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
+                        .optionalOneOf( //
+                        // @formatter:off
+                                        // Dividend with the ex-tag 10.11.2023.
+                                        // Cash Dividend with Ex-Date 28.06.2024.
+                                        // Dividendo con l'ex-tag 12.05.2023.
+                                        // Distribuzione con l'ex-tag 17.08.2023. 
+                                        // Ausschüttung mit dem Ex-Tag 12.09.2019.
+                                        // Dividende mit Ex-Datum22.05.2024.
+                                        // Dividende mit Ex-Datum 22.05.2024.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exDate") //
+                                                        .match("^.* (ex-tag|Ex-Tag|Ex-Date|l'ex-tag|Ex-Datum)[\\s]*(?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})\\.$") //
+                                                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate")))),
+
+                                        // @formatter:off
+                                        // Dividende à la date du 10/05/2024.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exDate") //
+                                                        .match("^Dividende . la date du (?<exDate>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4})\\.$") //
+                                                        .assign((t, v) -> t.setExDate(asDate(v.get(
+                                                                        "exDate")))),
+
+                                        // @formatter:off
+                                        // Dividende en espèces avec la date d'exécution au -15.05.2024.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exDate") //
+                                                        .match("^Dividende en esp.ces .* -(?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})\\.$") //
+                                                        .assign((t, v) -> t.setExDate(asDate(v.get(
+                                                                        "exDate"))))
+                        )
+
                         .oneOf( //
                                         // @formatter:off
                                         // 1 Reinvestierung Vodafone Group PLC 699 Stk.
@@ -1662,13 +1704,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         .conclude(ExtractorUtils.fixGrossValueA())
 
-                        .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
-
+                        .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
-                            return item;
+                            return new TransactionItem(t);
                         });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
@@ -1689,11 +1729,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         .oneOf( //
                                      // @formatter:off
@@ -1788,11 +1824,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .oneOf( //
                                         // @formatter:off
@@ -1888,11 +1920,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         depositBlock.setMaxSize(1);
         depositBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "amount") //
                         .documentContext("currency") //
@@ -1916,11 +1944,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         removalBlock.setMaxSize(1);
         removalBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.REMOVAL);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
 
                         .section("date", "amount") //
                         .documentContext("currency") //
@@ -1941,11 +1965,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         taxRefundBlock.setMaxSize(1);
         taxRefundBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                         .section("date", "amount") //
                         .documentContext("currency") //
@@ -1966,11 +1986,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         interestBlock.setMaxSize(1);
         interestBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .section("date", "amount") //
                         .documentContext("currency") //
@@ -2072,11 +2088,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         depositRemovalBlock_Format01.setMaxSize(1);
         depositRemovalBlock_Format01.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .optionalOneOf( //
                                         // @formatter:off
@@ -2188,11 +2200,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         depositRemovalBlock_Format02.setMaxSize(4);
         depositRemovalBlock_Format02.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .optionalOneOf( //
                                         // @formatter:off
@@ -2622,11 +2630,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // 02 Jan. Incoming transfer from Vorname Nachname
                                         // Überweisung 50,00 € 361,83 €
                                         // 2026 (DE00000000000000000000)
+                                        //
+                                        // 14 ene Incoming transfer from gmjtlp XluEoyJqEV RhncI, S.L.
+                                        // Transferencia 25,00 € 6.101,63 €
+                                        // 2026 (oN9903194352357816331388)
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "amount", "currency", "amountAfter", "currencyAfter", "note0", "year", "note1") //
                                                         .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?) (?<note0>(Incoming transfer from) .*)$") //
-                                                        .match("^(.berweisung) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
+                                                        .match("^(.berweisung|Transferencia) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
                                                         .match("^(?<year>[\\d]{4}) (?<note1>(.*))$") //
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.DEPOSIT);
@@ -2694,11 +2706,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         depositRemovalBlock_Format03.setMaxSize(5);
         depositRemovalBlock_Format03.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .optionalOneOf( //
                                         // @formatter:off
@@ -2949,12 +2957,18 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Dez. Überweisung 1.800,00 € 8.204,71 €
                                         // (DE00000000000000000000)
                                         // 2025
+                                        //
+                                        // 17 
+                                        // Sepa Direct Debit transfer to apetito catering B.V. + Co. KG 
+                                        // Feb. SEPA-Lastschrift 10,00 € 1.000,00 €
+                                        // (DE00000000000000000000)
+                                        // 2026
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("day", "month", "year", "note0", "note1", "amount", "currency") //
                                                         .match("^(?<day>[\\d]{2})[\\s]*$") //
-                                                        .match("^(?<note0>(Outgoing transfer for) .*)$") //
-                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) (.berweisung) " //
+                                                        .match("^(?<note0>(Outgoing transfer for|Sepa Direct Debit transfer to) .*)$") //
+                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) (.berweisung|SEPA\\-Lastschrift) " //
                                                                         + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) ([\\.,\\d]+) (\\p{Sc})$") //
                                                         .match("^(?<note1>.*)$") //
                                                         .match("^(?<year>[\\d]{4})$") //
@@ -3085,11 +3099,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         feesBlock_Format01.setMaxSize(2);
         feesBlock_Format01.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .optionalOneOf( //
                                         section -> section //
@@ -3118,11 +3128,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         feesBlock_Format02.setMaxSize(1);
         feesBlock_Format02.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .optionalOneOf( //
                                         section -> section //
@@ -3151,11 +3157,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         interestBlock_Format01.setMaxSize(1);
         interestBlock_Format01.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .optionalOneOf( //
                                         section -> section //
@@ -3180,11 +3182,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         interestBlock_Format02.setMaxSize(5);
         interestBlock_Format02.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .optionalOneOf( //
                                         // @formatter:off
@@ -3285,11 +3283,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         interestBlock_Format03.setMaxSize(5);
         interestBlock_Format03.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .optionalOneOf( //
                                         // @formatter:off
@@ -3344,11 +3338,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         taxesBlock_Format01.setMaxSize(2);
         taxesBlock_Format01.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         .optionalOneOf( //
                                         section -> section //
@@ -3385,11 +3375,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         taxesBlock_Format02.setMaxSize(3);
         taxesBlock_Format02.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                         .optionalOneOf( //
                                         section -> section //
@@ -3460,11 +3446,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                         // @formatter:off
                         // STORNO STEUERKORREKTUR
@@ -3626,11 +3608,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                         .oneOf( //
                                         // @formatter:off
@@ -3691,11 +3669,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .oneOf( //
                                         // @formatter:off
@@ -3855,11 +3829,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .oneOf( //
                                         // @formatter:off
@@ -3919,24 +3889,21 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         final var type = new DocumentType("(ABRECHNUNG ZINSEN" //
                         + "|RESOCONTO INTERESSI MATURATI" //
                         + "|INTEREST INVOICE" //
-                        + "|RAPPORT D.INT.R.TS)", //
+                        + "|RAPPORT D.INT.R.TS" //
+                        + "|INFORME DE INTERESES)", //
                         "Besteuerungsgrundlage");
 
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^(.BERSICHT|OVERVIEW|SYNTH.SE|PANORAMICA)$");
+        var firstRelevantLine = new Block("^(.BERSICHT|OVERVIEW|SYNTH.SE|PANORAMICA|RESUMEN)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .oneOf( //
                                         // @formatter:off
@@ -3984,11 +3951,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         // @formatter:off
                         // VERRECHNUNGSKONTO DATUM DER ZAHLUNG BETRAG
@@ -4021,11 +3984,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         // @formatter:off
                         // POSITION COMMANDÉ LE QUANTITÉ
@@ -4094,11 +4053,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new PortfolioTransaction();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new PortfolioTransaction(PortfolioTransaction.Type.DELIVERY_INBOUND))
 
                         .oneOf( //
                                         // @formatter:off
@@ -4175,17 +4130,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
     {
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^TRADE REPUBLIC BANK GMBH.*$");
+        var firstRelevantLine = new Block();
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                         .oneOf( //
                                         // @formatter:off
@@ -4478,7 +4429,29 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^Ausf.hrung von (Round up|Saveback) .* "
+                                                        .match("^Ausf.hrung von (Round up|Saveback) \\D* "
+                                                                        + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}"
+                                                                        + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+
+                                        // @formatter:off
+                                        // Ausführung der Zeichnungsorder am 12.06.2026 um 13:28 am Primärmarkt.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "time") //
+                                                        .match("^Ausf.hrung der Zeichnungsorder am "
+                                                                        + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}"
+                                                                        + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) um (?<time>\\d{2}\\:\\d{2}).*$") //
+                                                        .assign((t, v) -> t
+                                                                        .setDateTime(asDate(v.get("date"),
+                                                                                        v.get("time")))),
+
+                                        // @formatter:off
+                                        // Ejecución del Saveback el 02.02.2026 en Lang und Schwarz Exchange.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Ejecuci.n del Saveback .* "
                                                                         + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}"
                                                                         + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
@@ -4548,17 +4521,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
     {
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^TRADE REPUBLIC BANK GMBH.*$");
+        var firstRelevantLine = new Block("^TRADE REPUBLIC BANK GMBH.*$", BLOCK_ENDSWITH);
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                         .optionalOneOf(
                                         // @formatter:off
@@ -5016,6 +4985,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("tax", "currency").optional() //
                         .match("^Imp.t sur le revenu des personnes physiques (\\-)?(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Retención IRPF -14,71 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Retenci.n IRPF (\\-)?(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
@@ -5028,6 +5004,16 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("fee", "currency").optional() //
                         .match("^Fremdkostenzuschlag \\-(?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negative"))
+                                processFeeEntries(t, v, type);
+                        })
+
+                        // @formatter:off
+                        // Abwicklungskostenpauschale -1,00 EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^Abwicklungskostenpauschale \\-(?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("negative"))
                                 processFeeEntries(t, v, type);
@@ -5134,6 +5120,16 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
             return Optional.empty();
         }
+    }
+
+    @Override
+    protected long asShares(String value)
+    {
+        if (value.matches("^(0\\.\\d+|\\d+\\.\\d{1,2}|\\d+\\.\\d{4,})$"))
+        {
+            return asShares(value, "en", "US"); //
+        }
+        return super.asShares(value);
     }
 
     @Override

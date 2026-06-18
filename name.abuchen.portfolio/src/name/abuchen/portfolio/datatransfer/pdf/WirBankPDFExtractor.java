@@ -44,29 +44,25 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDepositTransaction()
     {
-        DocumentType type = new DocumentType("(Einzahlung|Deposit|Avis de versement) 3a");
+        DocumentType type = new DocumentType("(Einzahlung|Deposit|Avis de versement) (3a|VIAC Invest)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^(Einzahlung|Deposit|Avis de versement) 3a$");
+        Block firstRelevantLine = new Block("^(Einzahlung|Deposit|Avis de versement) (3a|VIAC Invest)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         // @formatter:off
                         // Einzahlung 3a
                         // Gutschrift: Valuta 15.01.2019 CHF 2'150.00
                         // @formatter:on
                         .section("date", "amount", "currency") //
-                        .find("(Einzahlung|Deposit|Versement|Avis de versement) 3a") //
+                        .find("(Einzahlung|Deposit|Versement|Avis de versement) (3a|VIAC Invest)") //
                         .match("^(Gutschrift: Valuta|Credit: Value date|Montant cr.dit.: Valeur) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
@@ -78,7 +74,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // Zahlungseingang von: Einzahlung ABCD
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^(Zahlungseingang von|Incoming payment from|Mode de versement): (?<note>.*)$") //
+                        .match("^(Zahlungseingang von|Incoming payment from|Mode de versement|Deposit by): (?<note>.*)$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         .wrap(TransactionItem::new);
@@ -87,32 +83,29 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
     private void addBuySellTransaction()
     {
         DocumentType type = new DocumentType("(B.rsenabrechnung|Exchange Settlement|Op.ration de bourse) " //
-                        + "\\- (Kauf|Zeichnung|Verkauf|R.cknahme|Buy|Sell|Achat|Vente)");
+                        + "\\- (Kauf|Zeichnung|Verkauf|R.cknahme|Buy|Subscription|Sell|Redemption|Achat|Vente)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
 
         Block firstRelevantLine = new Block("^(B.rsenabrechnung|Exchange Settlement|Op.ration de bourse) " //
-                        + "\\- (Kauf|Zeichnung|Verkauf|R.cknahme|Buy|Sell|Achat|Vente).*$");
+                        + "\\- (Kauf|Zeichnung|Verkauf|R.cknahme|Buy|Subscription|Sell|Redemption|Achat|Vente).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
                         .match("^(B.rsenabrechnung|Exchange Settlement|Op.ration de bourse) " //
-                                        + "\\- (?<type>(Kauf|Zeichnung|Verkauf|R.cknahme|Buy|Sell|Achat|Vente)).*$") //
+                                        + "\\- (?<type>(Kauf|Zeichnung|Verkauf|R.cknahme|Buy|Subscription|Sell|Redemption|Achat|Vente)).*$") //
                         .assign((t, v) -> {
                             if ("Verkauf".equals(v.get("type"))  //
                                             || "Rücknahme".equals(v.get("type")) //
                                             || "Sell".equals(v.get("type"))  //
+                                            || "Redemption".equals(v.get("type"))  //
                                             || "Vente".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
@@ -124,7 +117,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // Kurs: USD 262.51
                         // @formatter:on
                         .section("isin", "name", "currency") //
-                        .find("(Order|Ordre): (Kauf|Zeichnung|Verkauf|R.cknahme|Buy|Sell|Achat|Vente)") //
+                        .find("(Order|Ordre): (Kauf|Zeichnung|Verkauf|R.cknahme|Buy|Subscription|Sell|Redemption|Achat|Vente)") //
                         .match("^[\\.,\\d]+ (Anteile|Qty|Ant|units|Qt.|Quantit.|parts|actions)?(?<name>.*)$") //
                         .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                         .match("^(Kurs|Price|Cours): (?<currency>[\\w]{3}) .*$") //
@@ -135,7 +128,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // 0.027 units Swisscanto Pacific ex Japan
                         // @formatter:on
                         .section("shares") //
-                        .find("(Order|Ordre): (Kauf|Zeichnung|Verkauf|R.cknahme|Buy|Sell|Achat|Vente)") //
+                        .find("(Order|Ordre): (Kauf|Zeichnung|Verkauf|R.cknahme|Buy|Subscription|Sell|Redemption|Achat|Vente)") //
                         .match("^(?<shares>[\\.,\\d]+) (Anteile|Qty|Ant|units|Qt.|Quantit.|parts|actions)?(?<name>.*)$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
@@ -193,11 +186,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         // @formatter:off
                         // Zins
@@ -209,7 +198,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         .match("^(Am|On|Nous avons cr.dit. le) ?" //
                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
                                         + "(haben wir (Ihrem Konto|Ihnen) gutgeschrieben|we have credited (you|your account)|les int.r.ts suivants):$") //
-                        .match("^(Zinsgutschrift|Interest credit|Int.r.ts cr.diteurs): (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d]+)$") //
+                        .match("^(Zinsgutschrift|Interest credit|Interest amount|Int.r.ts cr.diteurs): (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -241,11 +230,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         // @formatter:off
                         // Belastung
@@ -280,13 +265,11 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<note>Commission de gestion effective VIAC.*: [\\.,\\d]+%).*$")
                         .assign((t, v) -> t.setNote(v.get("note")))
 
-                        .wrap((t, ctx) -> {
-                            TransactionItem item = new TransactionItem(t);
-
+                        .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
-                            return item;
+                            return new TransactionItem(t);
                         });
     }
 
@@ -314,17 +297,14 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         .section("type").optional() //
-                        .match("^(Dividendenart|Type of dividend|Type de dividende): " //
-                                        + "(?<type>(R.ckerstattung Quellensteuer|Refund withholding tax|Remboursement d.imp.t . la source))$") //
+                        .match("^(Dividendenart|Aussch.ttungsart|Type of dividend|Type de dividende): " //
+                                        + "(?<type>(R.ckerstattung Quellensteuer|R.ckerstattung Verrechnungssteuer|Refund withholding tax|Remboursement d.imp.t . la source))$") //
                         .assign((t, v) -> {
                             if ("Rückerstattung Quellensteuer".equals(v.get("type")) //
+                                            || "Rückerstattung Verrechnungssteuer".equals(v.get("type")) //
                                             || "Refund withholding tax".equals(v.get("type")) //
                                             || "Remboursement d'impôt à la source".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.TAX_REFUND);
@@ -344,7 +324,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // Ausschüttung: USD 0.72
                         // @formatter:on
                         .section("name", "isin", "currency") //
-                        .find("(Dividendenart|Type of dividend|Type de dividende):.*") //
+                        .find("(Dividendenart|Aussch.ttungsart|Type of dividend|Type de dividende):.*") //
                         .match("^[\\.,\\d]+ (Anteile|Qty|Ant|parts|units|actions)?(?<name>.*)$") //
                         .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                         .match("^(Aussch.ttung|Dividend payment|Dividende distribu.): (?<currency>[\\w]{3}) .*$") //
@@ -355,7 +335,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // 47.817 Ant UBS ETF MSCI USA SRI
                         // @formatter:on
                         .section("shares") //
-                        .find("(Dividendenart|Type of dividend|Type de dividende):.*") //
+                        .find("(Dividendenart|Aussch.ttungsart|Type of dividend|Type de dividende):.*") //
                         .match("^(?<shares>[\\.,\\d]+) (Anteile|Qty|Ant|parts|units|actions)?.*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
@@ -419,7 +399,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // Type of dividend: Ordinary dividend
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^(Dividendenart|Type of dividend|Type de dividende): (?<note>.*)") //
+                        .match("^(Dividendenart|Aussch.ttungsart|Type of dividend|Type de dividende): (?<note>.*)") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         .wrap(TransactionItem::new);

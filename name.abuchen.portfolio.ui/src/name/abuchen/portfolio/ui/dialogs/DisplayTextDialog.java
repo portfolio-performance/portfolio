@@ -108,7 +108,7 @@ public class DisplayTextDialog extends Dialog
     protected final Control createDialogArea(Composite parent)
     {
         Composite container = new Composite(parent, SWT.None);
-        container.setBackground(Colors.WHITE);
+        container.setBackground(Colors.theme().defaultBackground());
         GridDataFactory.fillDefaults().grab(true, true).hint(800, 500).applyTo(container);
         GridLayoutFactory.fillDefaults().numColumns(1).applyTo(container);
 
@@ -118,7 +118,7 @@ public class DisplayTextDialog extends Dialog
         if (additionalText != null)
         {
             StyledLabel additionalTextBox = new StyledLabel(container, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY);
-            additionalTextBox.setBackground(Colors.WHITE);
+            additionalTextBox.setBackground(Colors.theme().defaultBackground());
             additionalTextBox.setText(additionalText);
             GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.TOP).indent(5, 5)
                             .applyTo(additionalTextBox);

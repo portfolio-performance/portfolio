@@ -21,6 +21,7 @@ public final class Colors
         private Color defaultForeground = Colors.BLACK;
         private Color defaultBackground = Colors.WHITE;
         private Color chipBackground = Colors.WHITE;
+        private Color warningForeground = getColor(241, 143, 1); // F18F01
         private Color warningBackground = getColor(254, 223, 107); // FEDF6B
         private Color redBackground = Colors.RED;
         private Color greenBackground = Colors.GREEN;
@@ -57,6 +58,16 @@ public final class Colors
         public void setChipBackground(RGBA color)
         {
             this.chipBackground = getColor(color.rgb);
+        }
+
+        public Color warningForeground()
+        {
+            return warningForeground;
+        }
+
+        public void setWarningForeground(RGBA color)
+        {
+            this.warningForeground = getColor(color.rgb);
         }
 
         public Color warningBackground()

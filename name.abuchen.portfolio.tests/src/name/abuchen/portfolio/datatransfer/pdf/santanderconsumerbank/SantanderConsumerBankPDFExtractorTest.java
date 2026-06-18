@@ -8,6 +8,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyC
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
@@ -194,6 +195,7 @@ public class SantanderConsumerBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-16T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2021-05-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(2)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 00000000000 | Quartalsdividende"));
@@ -240,6 +242,7 @@ public class SantanderConsumerBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-16T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2021-05-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(2)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 00000000000 | Quartalsdividende"));
@@ -291,6 +294,7 @@ public class SantanderConsumerBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-05-10T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2021-05-06T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(2)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 0000000000"));
@@ -328,7 +332,8 @@ public class SantanderConsumerBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-06-30T00:00"), hasShares(495.00), //
+                        hasDate("2023-06-30T00:00"), hasExDate("2023-06-15T00:00"), //
+                        hasShares(495.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote("Abrechnungsnr. 00000000000"), //
                         hasAmount("EUR", 327.96), hasGrossValue("EUR", 327.96), //
@@ -364,7 +369,8 @@ public class SantanderConsumerBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-06-30T00:00"), hasShares(495.00), //
+                        hasDate("2023-06-30T00:00"), hasExDate("2023-06-15T00:00"), //
+                        hasShares(495.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote("Abrechnungsnr. 00000000000"), //
                         hasAmount("EUR", 327.96), hasGrossValue("EUR", 327.96), //
@@ -405,7 +411,8 @@ public class SantanderConsumerBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-06-27T00:00"), hasShares(495.00), //
+                        hasDate("2024-06-27T00:00"), hasExDate("2024-06-13T00:00"), //
+                        hasShares(495.00), //
                         hasSource("Dividende04.txt"), //
                         hasNote("Abrechnungsnr. 00000000000"), //
                         hasAmount("EUR", 291.95), hasGrossValue("EUR", 363.10), //
@@ -441,7 +448,8 @@ public class SantanderConsumerBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-06-27T00:00"), hasShares(495.00), //
+                        hasDate("2024-06-27T00:00"), hasExDate("2024-06-13T00:00"), //
+                        hasShares(495.00), //
                         hasSource("Dividende04.txt"), //
                         hasNote("Abrechnungsnr. 00000000000"), //
                         hasAmount("EUR", 291.95), hasGrossValue("EUR", 363.10), //

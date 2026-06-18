@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.util;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -80,12 +81,17 @@ public class QuotesTableViewer
 
     public void setMessage(String message)
     {
-        tableViewer.setInput(new String[] { message });
+        tableViewer.setInput(new String[] { sanitizeMessage(message) });
     }
 
     public void setMessages(String[] messages)
     {
-        tableViewer.setInput(messages);
+        tableViewer.setInput(Arrays.stream(messages).map(QuotesTableViewer::sanitizeMessage).toArray(String[]::new));
+    }
+
+    private static String sanitizeMessage(String message)
+    {
+        return message == null || message.isBlank() ? Messages.EditWizardQuoteFeedMsgErrorOrNoData : message;
     }
 
     public void refresh()

@@ -59,11 +59,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         Block block = new Block("^Dividend note .*$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
-            .subject(() -> {
-                AccountTransaction entry = new AccountTransaction();
-                entry.setType(AccountTransaction.Type.DIVIDENDS);
-                return entry;
-            });
+            .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS));
 
         pdfTransaction
                 // @formatter:off
@@ -329,11 +325,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         type.addBlock(blockDeposit);
         blockDeposit.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            AccountTransaction t = new AccountTransaction();
-                            t.setType(AccountTransaction.Type.DEPOSIT);
-                            return t;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "time", "note", "currency", "amount")
                         .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
@@ -386,11 +378,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         type.addBlock(blockRemoval);
         blockRemoval.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            AccountTransaction t = new AccountTransaction();
-                            t.setType(AccountTransaction.Type.REMOVAL);
-                            return t;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
 
                         .section("date", "time", "note", "currency", "amount")
                         .match("(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
@@ -492,11 +480,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         type.addBlock(blockDividends);
         blockDividends.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            AccountTransaction t = new AccountTransaction();
-                            t.setType(AccountTransaction.Type.DIVIDENDS);
-                            return t;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         .optionalOneOf(
                                         // @formatter:off
@@ -804,11 +788,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         type.addBlock(blockDividendTax);
         blockDividendTax.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            AccountTransaction t = new AccountTransaction();
-                            t.setType(AccountTransaction.Type.TAX_REFUND);
-                            return t;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                         // @formatter:off
                         // 16-12-2021 18:26 22-10-2021 VANGUARD TOTAL INTERNA US9219097683 Dividendbelasting USD -10,45 USD -22,78
@@ -932,11 +912,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         type.addBlock(blockInterest);
         blockInterest.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            AccountTransaction t = new AccountTransaction();
-                            t.setType(AccountTransaction.Type.INTEREST);
-                            return t;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .section("date", "time", "note", "currency", "type", "amount")
                         .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
@@ -988,11 +964,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         type.addBlock(blockDepositFee);
         blockDepositFee.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            AccountTransaction t = new AccountTransaction();
-                            t.setType(AccountTransaction.Type.FEES);
-                            return t;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .section("date", "time", "note", "currency", "amount")
                         .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
@@ -1065,11 +1037,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         type.addBlock(blockTrademodalities);
         blockTrademodalities.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            AccountTransaction t = new AccountTransaction();
-                            t.setType(AccountTransaction.Type.FEES_REFUND);
-                            return t;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES_REFUND))
 
                         .oneOf(
                                 section -> section
@@ -1243,11 +1211,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         type.addBlock(blockFeeStrike);
         blockFeeStrike.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            AccountTransaction t = new AccountTransaction();
-                            t.setType(AccountTransaction.Type.FEES);
-                            return t;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .section("date", "time", "name", "isin", "note", "currency", "amount")
                         .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
@@ -1294,11 +1258,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         type.addBlock(blockFeeReturn);
         blockFeeReturn.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            AccountTransaction t = new AccountTransaction();
-                            t.setType(AccountTransaction.Type.FEES_REFUND);
-                            return t;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES_REFUND))
 
                         .section("date", "time", "note", "currency", "amount")
                         .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
@@ -1348,11 +1308,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
 
         blockBuy.set(new Transaction<BuySellEntry>()
 
-                        .subject(() -> {
-                            BuySellEntry entry = new BuySellEntry();
-                            entry.setType(PortfolioTransaction.Type.BUY);
-                            return entry;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         .oneOf(
                             // @formatter:off

@@ -32,6 +32,7 @@ import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodListener;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.StackedChartCSVExporter;
@@ -121,7 +122,7 @@ public abstract class AbstractStackedChartViewer extends AbstractChartPage imple
     public Control createControl(Composite container)
     {
         Composite composite = new Composite(container, SWT.NONE);
-        composite.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+        composite.setBackground(Colors.theme().defaultBackground());
         composite.setLayout(new FillLayout());
 
         chart = new StackedTimelineChart(composite, getDates());

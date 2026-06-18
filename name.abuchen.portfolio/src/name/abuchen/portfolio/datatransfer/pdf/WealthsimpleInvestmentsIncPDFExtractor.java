@@ -139,11 +139,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
         type.addBlock(depositRemovalBlock);
         depositRemovalBlock.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction entry = new AccountTransaction();
-                    entry.setType(AccountTransaction.Type.DEPOSIT);
-                    return entry;
-                })
+                .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                 .section("month", "day", "type", "amount", "currency")
                 .match("^(?<month>[\\w]{3,4}) "
@@ -179,11 +175,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
         type.addBlock(buySellBlock);
         buySellBlock.set(new Transaction<BuySellEntry>()
 
-                .subject(() -> {
-                    BuySellEntry entry = new BuySellEntry();
-                    entry.setType(PortfolioTransaction.Type.BUY);
-                    return entry;
-                })
+                .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                 .section("month", "day", "type", "tickerSymbol", "name", "amount", "currency", "shares")
                 .match("^(?<month>[\\w]{3,4}) "
@@ -239,11 +231,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
         type.addBlock(dividendBlock);
         dividendBlock.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction entry = new AccountTransaction();
-                    entry.setType(AccountTransaction.Type.DIVIDENDS);
-                    return entry;
-                })
+                .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                 .oneOf(
                                 section -> section
@@ -440,11 +428,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
         type.addBlock(missingTickerSymbolforDividendeBlock);
         missingTickerSymbolforDividendeBlock.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction entry = new AccountTransaction();
-                    entry.setType(AccountTransaction.Type.DIVIDENDS);
-                    return entry;
-                })
+                .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                 .section("month", "day", "name", "shares", "amount")
                 .match("^(?<month>[\\w]{3,4}) "
@@ -476,11 +460,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
         type.addBlock(feeBlock);
         feeBlock.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction entry = new AccountTransaction();
-                    entry.setType(AccountTransaction.Type.FEES);
-                    return entry;
-                })
+                .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                 .section("month", "day", "amount")
                 .match("^(?<month>[\\w]{3,4}) (?<day>[\\d]{2}) Gross management fee to Wealthsimple [\\W]{1,3} \\-\\p{Sc}(?<amount>[\\.,\\d]+)$")

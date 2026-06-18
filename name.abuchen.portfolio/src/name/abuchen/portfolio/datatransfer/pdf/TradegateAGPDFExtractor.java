@@ -13,7 +13,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
@@ -26,7 +25,8 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("Tradegate AG");
 
         addBuySellTransaction();
-        addDividendeTransaction();
+        addDividendTransaction();
+        addAccountStatementTransaction();
         addAdvanceTaxTransaction();
         addTaxAdjustmentTransaction();
     }
@@ -50,11 +50,7 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
@@ -77,12 +73,24 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
                         .match("^Ausf.hrungskurs [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                        // @formatter:off
-                        // Stück ausgeführt 3
-                        // @formatter:on
-                        .section("shares") //
-                        .match("^St.ck .* (?<shares>[\\.,\\d]+)$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .oneOf(
+                                        // @formatter:off
+                                        // Daraus ergibt sich ein Mischkurs von 19,3500 EUR für insgesamt 1.560 Stück.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^Daraus ergibt sich ein Mischkurs von [\\.,\\d]+ [A-Z]{3} f.r insgesamt (?<shares>[\\.,\\d]+) St.ck\\.$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+
+                                        // @formatter:off
+                                        // Stück ausgeführt 3
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^St.ck .* (?<shares>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        )
 
                         // @formatter:off
                         // Handelstag/-zeit 04.06.2024 11:04:53
@@ -120,7 +128,7 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
         addTaxesSectionsTransaction(pdfTransaction, type);
     }
 
-    private void addDividendeTransaction()
+    private void addDividendTransaction()
     {
         final var type = new DocumentType("(Ertragsgutschrift|Bardividende)",
                         "Durch steuerliche Verrechnungen");
@@ -134,11 +142,7 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         // @formatter:off
                         // Wertpapier Vanguard EUR Corp.Bond U.ETF Registered Shares EUR Dis.oN
@@ -226,11 +230,7 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         // @formatter:off
                         // Wertpapier PFI ETFs-EO Sh.Mat.UC.ETF Registered Shares EUR Acc.o.N.
@@ -277,13 +277,11 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
                         .match("^.*(?<note>Order\\-\\/Ref\\.nr\\. .*)$")
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                        .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
-                            if (t.getAmount() == 0)
-                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
-
-                            return item;
+                            return new TransactionItem(t);
                         });
     }
 
@@ -300,11 +298,7 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
 
                         // Is type --> "Belastung" change from TAX_REFUND to TAXES
                         .section("type").optional() //
@@ -328,7 +322,7 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
                         .section("amount") //
                         .match("^(Gutgeschriebener Betrag|Belastung) (\\-)?(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setCurrencyCode(CurrencyUnit.EUR);
+                            t.setCurrencyCode(asCurrencyCode("EUR"));
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
@@ -380,5 +374,47 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency").optional() //
                         .match("^Abgef.hrte Kirchensteuer \\-(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
+    }
+
+    private void addAccountStatementTransaction()
+    {
+        final var type = new DocumentType("Kontoauszug", //
+                        documentContext -> documentContext //
+                        // @formatter:off
+                                        // Alter Kontostand per 30.11.2024 95,23 EUR
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("^Alter Kontostand per .* (?<currency>[A-Z]{3})$") //
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
+
+        this.addDocumentTyp(type);
+
+        // @formatter:off
+        // 9668834 Einzahlung 09.12.2024 75,00
+        // 38063139 Auszahlung 02.03.2026 -10,72
+        // @formatter:on
+        var depositAndWithdrawalBlock = new Block(
+                        "^.* (Einzahlung|Auszahlung) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\-]?[\\.,\\d]+$");
+        type.addBlock(depositAndWithdrawalBlock);
+        depositAndWithdrawalBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
+
+                        .section("note", "type", "date", "amount") //
+                        .documentContext("currency") //
+                        .match("^(?<note>.*) (?<type>(Einzahlung|Auszahlung)) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\-]?(?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            // Is type --> "Auszahlung" change from DEPOSIT to
+                            // REMOVAL
+                            if ("Auszahlung".equals(v.get("type")))
+                                t.setType(AccountTransaction.Type.REMOVAL);
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote("Ref.nr. " + v.get("note"));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 }

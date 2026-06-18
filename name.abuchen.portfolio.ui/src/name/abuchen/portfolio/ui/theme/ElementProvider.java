@@ -15,9 +15,11 @@ import org.w3c.dom.Element;
 
 import name.abuchen.portfolio.ui.editor.Sidebar;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.DataSeriesColors;
 import name.abuchen.portfolio.ui.util.ValueColorScheme;
 import name.abuchen.portfolio.ui.views.PortfolioBalanceChart;
 import name.abuchen.portfolio.ui.views.SecuritiesChart;
+import name.abuchen.portfolio.ui.views.payments.PaymentsPalette;
 
 @SuppressWarnings("restriction")
 public class ElementProvider implements IElementProvider
@@ -37,16 +39,20 @@ public class ElementProvider implements IElementProvider
             return new ChartElementAdapter(chart, engine);
         if (element instanceof Colors.Theme colorsTheme)
             return new ColorsThemeElementAdapter(colorsTheme, engine);
+        if (element instanceof DataSeriesColors dataSeriesColors)
+            return new DataSeriesColorsCSS.ElementAdapter(dataSeriesColors, engine);
         if (element instanceof Table table)
             return new TableElementAdapter(table, engine);
         if (element instanceof Tree tree)
             return new TreeElementAdapter(tree, engine);
         if (element instanceof SecuritiesChart securitiesChart)
-            return new SecuritiesChartElementAdapter(securitiesChart, engine);
+            return new SecuritiesChartCSS.ElementAdapter(securitiesChart, engine);
         if (element instanceof PortfolioBalanceChart portfolioBalanceChart)
-            return new PortfolioBalanceChartElementAdapter(portfolioBalanceChart, engine);
+            return new PortfolioBalanceChartCSS.ElementAdapter(portfolioBalanceChart, engine);
         if (element instanceof ValueColorScheme scheme)
             return new ValueColorSchemeElementAdapter(scheme, engine);
+        if (element instanceof PaymentsPalette palette)
+            return new PaymentsPaletteCSS.ElementAdapter(palette, engine);
 
         return null;
     }

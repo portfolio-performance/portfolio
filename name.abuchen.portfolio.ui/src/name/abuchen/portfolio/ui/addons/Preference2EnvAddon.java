@@ -1,9 +1,12 @@
 package name.abuchen.portfolio.ui.addons;
 
+import java.util.Objects;
+
 import jakarta.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.core.services.events.IEventBroker;
 
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
@@ -28,10 +31,17 @@ import name.abuchen.portfolio.util.TradeCalendarManager;
 public class Preference2EnvAddon
 {
     @Inject
+    private IEventBroker broker;
+
+    @Inject
     @Optional
     public void setValueColorScheme(@Preference(value = UIConstants.Preferences.VALUE_COLOR_SCHEME) String scheme)
     {
+        String currentScheme = ValueColorScheme.current().getIdentifier();
         ValueColorScheme.initialize(scheme);
+
+        if (broker != null && !Objects.equals(currentScheme, ValueColorScheme.current().getIdentifier()))
+            broker.post(UIConstants.Event.Global.VALUE_COLOR_SCHEME_CHANGED, scheme);
     }
 
     @Inject

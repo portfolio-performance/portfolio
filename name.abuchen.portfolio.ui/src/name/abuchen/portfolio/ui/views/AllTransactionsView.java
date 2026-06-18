@@ -11,8 +11,6 @@ import java.util.List;
 
 import jakarta.inject.Inject;
 
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -28,18 +26,15 @@ import org.eclipse.swt.widgets.FileDialog;
 
 import name.abuchen.portfolio.json.JClient;
 import name.abuchen.portfolio.model.TransactionPair;
-import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
-import name.abuchen.portfolio.ui.util.ClientFilterMenu;
+import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
 import name.abuchen.portfolio.ui.util.DropDown;
-import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
-import name.abuchen.portfolio.ui.util.searchfilter.TransactionFilterCriteria;
 import name.abuchen.portfolio.ui.util.searchfilter.TransactionFilterDropDown;
 import name.abuchen.portfolio.ui.util.searchfilter.TransactionSearchField;
 import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
@@ -51,73 +46,11 @@ import name.abuchen.portfolio.util.TextUtil;
 
 public class AllTransactionsView extends AbstractFinanceView
 {
-
-    private class FilterDropDown extends DropDown implements IMenuListener
-    {
-        private TransactionFilterDropDown transactionFilterMenu;
-        private ClientFilterMenu clientFilterMenu;
-
-        public FilterDropDown(IPreferenceStore preferenceStore)
-        {
-            super(Messages.SecurityFilter, Images.FILTER_OFF, SWT.NONE);
-
-            setMenuListener(this);
-
-            transactionFilterMenu = new TransactionFilterDropDown(preferenceStore,
-                            AllTransactionsView.class.getSimpleName() + "-transaction-type-filter", //$NON-NLS-1$
-                            criteria -> {
-                                typeFilter = criteria;
-                                updateIcon();
-                                notifyModelUpdated();
-                            });
-
-            clientFilterMenu = new ClientFilterMenu(getClient(), getPreferenceStore());
-
-            clientFilterMenu.addListener(f -> {
-                setInformationPaneInput(null);
-                setupFilterInView(f);
-                notifyModelUpdated();
-                updateIcon();
-            });
-
-            clientFilterMenu.trackSelectedFilterConfigurationKey(AllTransactionsView.class.getSimpleName());
-
-            // set initial filter
-            setupFilterInView(clientFilterMenu.getSelectedFilter());
-
-            updateIcon();
-        }
-
-        private void setupFilterInView(ClientFilter filter)
-        {
-            if (filter instanceof PortfolioClientFilter pcf)
-                AllTransactionsView.this.clientFilter = pcf;
-            else
-                AllTransactionsView.this.clientFilter = null;
-        }
-
-        private void updateIcon()
-        {
-            boolean hasActiveFilter = clientFilterMenu.hasActiveFilter() || transactionFilterMenu.hasActiveCriteria();
-            setImage(hasActiveFilter ? Images.FILTER_ON : Images.FILTER_OFF);
-        }
-
-        @Override
-        public void menuAboutToShow(IMenuManager manager)
-        {
-            transactionFilterMenu.menuAboutToShow(manager);
-
-            manager.add(new Separator());
-            manager.add(new LabelOnly(Messages.MenuChooseClientFilter));
-            clientFilterMenu.menuAboutToShow(manager);
-        }
-    }
-
     private TransactionsViewer table;
 
     private TransactionSearchField textFilter;
-    private PortfolioClientFilter clientFilter;
-    private TransactionFilterCriteria typeFilter = TransactionFilterCriteria.NONE;
+    private ClientFilterDropDown clientFilterDropDown;
+    private TransactionFilterDropDown transactionFilterDropDown;
 
     @Inject
     public AllTransactionsView(IPreferenceStore preferenceStore)
@@ -149,7 +82,17 @@ public class AllTransactionsView extends AbstractFinanceView
 
         toolBar.add(new Separator());
 
-        toolBar.add(new FilterDropDown(getPreferenceStore()));
+        transactionFilterDropDown = new TransactionFilterDropDown(getPreferenceStore(),
+                        AllTransactionsView.class.getSimpleName() + "-transaction-type-filter", //$NON-NLS-1$
+                        criteria -> notifyModelUpdated());
+        toolBar.add(transactionFilterDropDown);
+
+        clientFilterDropDown = new ClientFilterDropDown(getClient(), getPreferenceStore(),
+                        AllTransactionsView.class.getSimpleName(), filter -> {
+                            setInformationPaneInput(null);
+                            notifyModelUpdated();
+                        });
+        toolBar.add(clientFilterDropDown);
 
         toolBar.add(new DropDown(Messages.MenuExportData, Images.EXPORT, SWT.NONE, manager -> {
             manager.add(new SimpleAction(Messages.LabelAllTransactions + " (CSV)", //$NON-NLS-1$
@@ -187,12 +130,11 @@ public class AllTransactionsView extends AbstractFinanceView
 
         table.addFilter(new ViewerFilter()
         {
-
             @Override
             public boolean select(Viewer viewer, Object parentElement, Object element)
             {
                 TransactionPair<?> tx = (TransactionPair<?>) element;
-                return typeFilter.matches(tx.getTransaction());
+                return transactionFilterDropDown.getFilterCriteria().matches(tx.getTransaction());
             }
         });
 
@@ -203,10 +145,11 @@ public class AllTransactionsView extends AbstractFinanceView
         // portfolio without the account passes the filter)
         table.addFilter(new ViewerFilter()
         {
-
             @Override
             public boolean select(Viewer viewer, Object parentElement, Object element)
             {
+                var clientFilter = clientFilterDropDown.getSelectedFilter() instanceof PortfolioClientFilter pcf ? pcf
+                                : null;
                 if (clientFilter == null)
                     return true;
                 TransactionPair<?> tx = (TransactionPair<?>) element;

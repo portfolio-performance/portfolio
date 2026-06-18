@@ -67,8 +67,13 @@ public class PaymentsPerYearChartBuilder implements PaymentsChartBuilder
                             .sorted((l1, l2) -> TextUtil.compare(l1.getVehicle().getName(), l2.getVehicle().getName()))
                             .toList();
 
+            var firstColumnLabel = switch (model.getMode())
+            {
+                case INTEREST -> Messages.ColumnAccount;
+                default -> Messages.ColumnSecurity;
+            };
             builder.addColumns( //
-                            new Column(Messages.ColumnSecurity, SWT.LEFT, 220).withLogo(),
+                            new Column(firstColumnLabel, SWT.LEFT, 220).withLogo(),
                             new Column(String.valueOf(model.getStartYear() + year))
                                             .withBackgroundColor(PaymentsColors.getColor(model.getStartYear() + year))
                                             .withFormatter(cell -> Values.Amount.format((long) cell)));

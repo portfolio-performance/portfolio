@@ -1,0 +1,30 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.5
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH, SUCURSAL EN ESPAÑA  C/ VELAZQUEZ 50 - PLANTA 5, MADRID 28001 - MADRID
+ifFLn nJnuj ibPAjl
+FECHA 01.01.2026
+EyyNcq pYh de la rPrUUU 380- ag 5
+CUENTA DE EFECTIVO 0478962611
+00000 Zamora
+INFORME DE INTERESES
+a fecha 31.12.2025
+RESUMEN
+ACTIVOS TIPO DE INGRESO INTERÉS FECHA TOTAL
+Efectivo Interés 2,00% 01.12.2025 - 31.12.2025 77,42 EUR
+Total 77,42 EUR
+JUSTIFICANTE - INTERÉS
+POSICIÓN CANTIDAD
+Base imponible 77,42 EUR
+Retención IRPF -14,71 EUR
+Total 62,71 EUR
+CONTABILIDAD
+IBAN FECHA DE EFECTO CRÉDITO DESPUÉS DE IMPUESTOS
+Ee7185932018829118828273 01.01.2026 62,71 EUR
+Trade Republic Bank GmbH, Sucursal en España www.traderepublic.es Domicilio social: Trade Republic Bank GmbH Directores generales
+C/ Velazquez 50 - Planta 5 NIF-IVA DE307510626 Brunnenstrasse 19-21, 10119 Berlín, Alemania Andreas Torner
+28001, Madrid, Madrid Registrada en el Registro Mercantil del juzgado local de Gernot Mittendorfer
+NIF: W0322893I Charlottenburg con el número HRB 244347 B, Alemania Christian Hecker
+Thomas Pischke
+Creado en 1 ene 2026, 12:13:15 Página 1 de 1

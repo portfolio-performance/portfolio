@@ -1,0 +1,57 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.5
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+VORNAME NACHNAME DATUM 01 Feb. 2026 - 28 Feb. 2026
+Straße 1 IBAN DE00000000000000000000
+12345 Ort BIC TRBKDEBBXXX
+KONTOÜBERSICHT
+PRODUKT ANFANGSSALDO ZAHLUNGSEINGANG ZAHLUNGSAUSGANG ENDSALDO
+Cashkonto 3110,01 € 0,00 € 110,01 € 3.000,00 €
+UMSATZÜBERSICHT
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+16 
+Sepa Direct Debit transfer to Stadt Blah 
+Feb. SEPA-Lastschrift 100,01 € 3010,00 €
+(DE00000000000000000000)
+2026
+17 
+Sepa Direct Debit transfer to apetito catering B.V. + Co. KG 
+Feb. SEPA-Lastschrift 10,00 € 3.000,00 €
+(DE00000000000000000000)
+2026
+BARMITTELÜBERSICHT
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Vorname Hecker
+Thomas Pischke
+Erstellt am 03.03.2026, 19:22:27 Seite 3 von 4
+TRADE REPUBLIC BANK GMBH BRUNNENSTRASSE 19-21 10119 BERLIN
+Zum 28 Feb. 2026
+TREUHANDKONTEN SALDO
+Deutsche Bank 1.000,00 €
+GELDMARKTFONDS ISIN STK. / NOMINALE KURS PRO STÜCK KURSWERT IN EUR
+BlackRock ICS Euro Liquidity Fund IE000GWTNRJ7 2.000,00 1,00 € 2.000,00 €
+TRANSAKTIONSÜBERSICHT
+DATUM ZAHLUNGSART GELDMARKTFONDS STÜCK KURS PRO STÜCK BETRAG
+BlackRock ICS Euro Liquidity Fund
+18 Feb. 2026 Kauf 2.000,00 1,00 € 2.000,00 €
+IE000GWTNRJ7
+HINWEISE ZUM KONTOAUSZUG
+Bitte überprüfe Deinen Kontoauszug, da Einwendungen unverzüglich geltend gemacht/erhoben werden müssen. Bitte beachte, dass der 
+angegebene Kontostand nicht die Wertstellung der einzelnen Buchungen bzw. Transaktionen berücksichtigt, der genannte Betrag bzw. 
+Nennbetrag also nicht dem für die Zinsrechnung maßgeblichen Kontostand entsprechen muss. Ein Rechnungsabschluss gilt als 
+genehmigt, sofern Du innerhalb von 6 Wochen keine Einwendungen erhebst. Zur Fristwahrung genügt die Einreichung einer Einwendung 
+über unseren Kundenservice (Chat). Alle Chats sind Gegenstand unabhängiger Überprüfungen durch den Bereich Internal Audit. Dieser 
+Kontoauszug gilt im Zusammenhang mit den zugrundeliegenden Verträgen laut angegebener Kontonummer als Rechnung i.S.d. UStG. 
+Die Guthaben, die bei Treuhandbanken verwahrt werden, sind jeweils bis zu €100.000 von der Einlagensicherung der Treuhandbank 
+gesichert. Die Anteile an qualifizierten Geldmarktfonds (QMMF) sind für den unwahrscheinlichen Fall einer Insolvenz von Trade Republic 
+geschützt. Weitere Informationen zur Sicherung Deiner Gelder findest Du unter https://support.traderepublic.com.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Vorname Hecker
+Thomas Pischke
+Erstellt am 03.03.2026, 19:22:27 Seite 4 von 4

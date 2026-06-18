@@ -144,7 +144,7 @@ public final class TextUtil
             st++;
         }
 
-        while ((st < len) && Character.isWhitespace(value.charAt(len - 1)))
+        while ((st < len) && isWhitespace(value.charAt(len - 1)))
         {
             len--;
         }

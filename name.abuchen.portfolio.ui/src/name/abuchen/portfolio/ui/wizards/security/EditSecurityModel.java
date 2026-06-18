@@ -16,6 +16,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.Taxonomy.Visitor;
+import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 
 /* package */final class EditSecurityModel extends BindingHelper.Model
@@ -388,6 +389,18 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
     public void setLatestFeedURL(String latestFeedURL)
     {
         firePropertyChange("latestFeedURL", this.latestFeedURL, this.latestFeedURL = latestFeedURL); //$NON-NLS-1$ //NOSONAR
+    }
+
+    public String getLatestTickerSymbol()
+    {
+        return feedProperties.get(QuoteFeed.TICKER_SYMBOL_LATEST);
+    }
+
+    public void setLatestTickerSymbol(String latestTickerSymbol)
+    {
+        var old = feedProperties.get(QuoteFeed.TICKER_SYMBOL_LATEST);
+        feedProperties.put(QuoteFeed.TICKER_SYMBOL_LATEST, latestTickerSymbol);
+        firePropertyChange("latestTickerSymbol", old, latestTickerSymbol); //$NON-NLS-1$
     }
 
     public boolean isRetired()

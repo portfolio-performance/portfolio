@@ -14,6 +14,7 @@ import java.util.Optional;
 import name.abuchen.portfolio.math.IRR;
 import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -25,10 +26,10 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.filter.ClientTransactionFilter;
-import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord.LazyValue;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
 import name.abuchen.portfolio.util.Dates;
 import name.abuchen.portfolio.util.Interval;
+import name.abuchen.portfolio.util.LazyValue;
 
 public class Trade implements Adaptable
 {
@@ -441,10 +442,8 @@ public class Trade implements Adaptable
         // the moving average purchase value based on the number of shares
         // sold
 
-        var totalCosts = taxesAndFees == TaxesAndFees.INCLUDED //
-                        ? r.get().getMovingAverageCost().get()
-                        : r.get().getMovingAverageCostWithoutTaxesAndFees().get();
-        var totalShares = r.get().getSharesHeld().get();
+        Money totalCosts = r.get().getCost(CostMethod.MOVING_AVERAGE, taxesAndFees);
+        var totalShares = r.get().getSharesHeld();
 
         if (totalShares <= 0)
             return Money.of(totalCosts.getCurrencyCode(), 0);

@@ -1,0 +1,58 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.82.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+gWoFLz vefwC SEITE 1 von 2
+Burgkmairstr. 66 DATUM 18.03.2026
+17937 PzNPjxF AUFTRAG 181f-3af9
+AUSFÜHRUNG 5330-b574
+DEPOT 0114088601
+WERTPAPIERABRECHNUNG
+ÜBERSICHT
+Market-Order SELL am 18.03.2026 um 19:05 (Europe/Berlin).
+Der Kontrahent der Transaktion ist Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION ANZAHL PREIS BETRAG
+Novo-Nordisk (B) 136 Stk. 32,33 EUR 4.396,88 EUR
+ISIN: DK0062498333
+GESAMT 4.396,88 EUR
+ABRECHNUNG
+POSITION BETRAG
+Fremdkostenzuschlag -1,00 EUR
+Kapitalertragsteuer 0,00 EUR
+Solidaritätszuschlag 0,00 EUR
+GESAMT 4.395,88 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+DE27100123450114088601 2026-03-20 4.395,88 EUR
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+Oisbwg hpsvF SEITE 2 von 2
+ertertz. 39 DATUM 18.03.2026
+03611 KmBeqaX AUFTRAG 181f-3af9
+AUSFÜHRUNG 5330-b574
+DEPOT 0114088601
+STEUERLICHE BEHANDLUNG
+BERECHNUNG DER STEUERBEMESSUNGSGRUNDLAGE BETRAG
+Bruttoverlust -3.150,79 EUR
+STEUERBEMESSUNGSGRUNDLAGE -3.150,79 EUR
+BERECHNUNG DER STEUERN BETRAG
+Steuerbemessungsgrundlage -3.150,79 EUR
+Kapitalertragsteuer 0,00 EUR
+Solidaritätszuschlag 0,00 EUR
+GESAMTE STEUERN 0,00 EUR
+VERRECHNUNGSTÖPFE VORHER VERÄNDERUNG NACHHER
+Verlustverrechnungstopf: Aktien 0,00 EUR 3.150,79 EUR 3.150,79 EUR
+Verlustverrechnungstopf: Allgemein 0,00 EUR 0,00 EUR 0,00 EUR
+Freistellungsauftrag 0,00 EUR 0,00 EUR 0,00 EUR
+Quellensteuertopf 0,00 EUR 0,00 EUR 0,00 EUR
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke

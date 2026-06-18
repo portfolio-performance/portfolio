@@ -54,6 +54,7 @@ CustomColors {
 	default-foreground: #EEEEEE;
 	default-background: #302E30;
 	chip-background: #7C8081;
+	warning-foreground: #F5A623;
 	warning-background: #6F6345;
 	red-background: #960000;
 	green-background: #004B00;
@@ -86,6 +87,13 @@ ValueColorScheme.asia {
 	down-arrow: "scheme/asia/dark/down_arrow.svg";
 }
 
+ValueColorScheme.vivid {
+	positive-foreground: #02f500;
+	negative-foreground: #fe2b05;
+	up-arrow: "scheme/vivid/dark/up_arrow.svg";
+	down-arrow: "scheme/vivid/dark/down_arrow.svg";
+}
+
 SecuritiesChart {
 	quote-color: #4ddaff;
 	quote-area-positive-color: #23b0d7;
@@ -99,8 +107,28 @@ SecuritiesChart {
 	extreme-marker-low-color: #A8272A;
 
 	non-trading-color: #8c4b31;
-	
 	shares-held-color: #ffaf4d;
+
+	fifo-purchase-price-color: #E27A79;
+	moving-average-purchase-price-color: #965251;
+	bollinger-bands-color: #C98D44;
+	macd-color: #E29BC8;
+
+	sma-1-color: #B36B6B;
+	sma-2-color: #B3A76B;
+	sma-3-color: #83B36B;
+	sma-4-color: #6BB38F;
+	sma-5-color: #6B9BB3;
+	sma-6-color: #776BB3;
+	sma-7-color: #B36BB3;
+
+	ema-1-color: #C86B6B;
+	ema-2-color: #C8A76B;
+	ema-3-color: #83C86B;
+	ema-4-color: #6BC88F;
+	ema-5-color: #6B9BC8;
+	ema-6-color: #776BC8;
+	ema-7-color: #C86BC8;
 }
 
 SecuritiesChart.blueorange {
@@ -127,11 +155,67 @@ PortfolioBalanceChart {
 	absolute-delta-color: #4ddaff;
 	delta-area-positive-color: #23b0d7;
 	delta-area-negative-color: #e25b5a;
+	taxes-accumulated-color: #FF0000;
+	fees-accumulated-color: #C0C0C0;
+	totals-color: #C437C2;
 }
 
 PortfolioBalanceChart.asia {
 	delta-area-positive-color: #e25b5a;
 	delta-area-negative-color: #23b0d7;
+}
+
+DataSeries {
+	totals-color: #EEEEEE;
+
+	invested-capital-color: #ffaf4d;
+	absolute-invested-capital-color: #ffaf4d;
+
+	transferals-color: #A0A0A0;
+	transferals-accumulated-color: #ffd562;
+
+	taxes-color: #ff2b30;
+	taxes-accumulated-color: #ff2b30;
+
+	absolute-delta-color: #4ddaff;
+	absolute-delta-all-record-color: #4ddaff;
+
+	dividends-color: #8063A8;
+	dividends-accumulated-color: #8063A8;
+
+	interest-color: #02f500;
+	interest-accumulated-color: #02f500;
+
+	interest-charge-color: #02f500;
+	interest-charge-accumulated-color: #02f500;
+
+	earnings-color: #02f500;
+	earnings-accumulated-color: #02f500;
+
+	fees-color: #808080;
+	fees-accumulated-color: #808080;
+
+	performance-entire-portfolio-color: #EEEEEE;
+	performance-positive-color: #4DA6FF;
+	performance-negative-color: #FFB366;
+}
+
+ColorPalette {
+	color-0: #8C564B;
+	color-1: #E377C2;
+	color-2: #7F7F7F;
+	color-3: #BCBD22;
+	color-4: #17BECF;
+	color-5: #727CC9;
+	color-6: #FA735C;
+	color-7: #FDB667;
+	color-8: #8FCF70;
+	color-9: #57CFFD;
+	color-10: #1F77B4;
+	color-11: #FF7F0E;
+	color-12: #2CA02C;
+	color-13: #D62728;
+	color-14: #9467BD;
 }
 
 * {

@@ -12,7 +12,9 @@ import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Quote;
@@ -38,25 +40,23 @@ public class SecurityPerformanceSnapshotTest
                         .addTo(client);
 
         final Interval interval = Interval.of(LocalDate.parse("2018-04-01"), LocalDate.parse("2018-06-01"));
-        SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(),
-                        interval);
-
-        new SecurityPerformanceSnapshotComparator(snapshot,
-                        LazySecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(), interval))
-                                        .compare();
+        LazySecurityPerformanceSnapshot snapshot = LazySecurityPerformanceSnapshot.create(client,
+                        new TestCurrencyConverter(), interval);
 
         assertThat(snapshot.getRecords(), hasSize(1));
 
-        SecurityPerformanceRecord record = snapshot.getRecords().get(0);
+        LazySecurityPerformanceRecord record = snapshot.getRecords().get(0);
         assertThat(record.getSecurity(), is(security));
 
         assertThat(record.getSharesHeld(), is(0L));
 
-        assertThat(record.getFifoCost(), is(Money.of(CurrencyUnit.EUR, 0)));
-        assertThat(record.getFifoCostPerSharesHeld(), is(Quote.of(CurrencyUnit.EUR, 0)));
+        assertThat(record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, 0)));
+        assertThat(record.getCostPerSharesHeld(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED),
+                        is(Quote.of(CurrencyUnit.EUR, 0)));
 
-        assertThat(record.getMovingAverageCost(), is(Money.of(CurrencyUnit.EUR, 0)));
-        assertThat(record.getMovingAverageCostPerSharesHeld(), is(Quote.of(CurrencyUnit.EUR, 0)));
+        assertThat(record.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, 0)));
+        assertThat(record.getCostPerSharesHeld(CostMethod.MOVING_AVERAGE, TaxesAndFees.NOT_INCLUDED),
+                        is(Quote.of(CurrencyUnit.EUR, 0)));
     }
 
     @Test
@@ -72,26 +72,24 @@ public class SecurityPerformanceSnapshotTest
                         .addTo(client);
 
         Interval reportingPeriod = Interval.of(LocalDate.parse("2018-04-01"), LocalDate.parse("2018-06-01"));
-        SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(),
-                        reportingPeriod);
-
-        new SecurityPerformanceSnapshotComparator(snapshot,
-                        LazySecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(), reportingPeriod))
-                                        .compare();
+        LazySecurityPerformanceSnapshot snapshot = LazySecurityPerformanceSnapshot.create(client,
+                        new TestCurrencyConverter(), reportingPeriod);
 
         assertThat(snapshot.getRecords(), hasSize(1));
 
-        SecurityPerformanceRecord record = snapshot.getRecords().get(0);
+        LazySecurityPerformanceRecord record = snapshot.getRecords().get(0);
         assertThat(record.getSecurity(), is(security));
 
         assertThat(record.getSharesHeld(), is(Values.Share.factorize(499999)));
 
-        assertThat(record.getFifoCost(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(450000 - 0.9))));
-        assertThat(record.getFifoCostPerSharesHeld(), is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(0.9))));
-
-        assertThat(record.getMovingAverageCost(),
+        assertThat(record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(450000 - 0.9))));
-        assertThat(record.getMovingAverageCostPerSharesHeld(),
+        assertThat(record.getCostPerSharesHeld(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED),
+                        is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(0.9))));
+
+        assertThat(record.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(450000 - 0.9))));
+        assertThat(record.getCostPerSharesHeld(CostMethod.MOVING_AVERAGE, TaxesAndFees.NOT_INCLUDED),
                         is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(0.9))));
 
         SecurityPosition position = ClientSnapshot.create(client, new TestCurrencyConverter(), reportingPeriod.getEnd())

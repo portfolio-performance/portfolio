@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Portfolio Performance Tests
 Bundle-SymbolicName: name.abuchen.portfolio.tests
-Bundle-Version: 0.82.2.qualifier
+Bundle-Version: 0.84.2.qualifier
 Fragment-Host: name.abuchen.portfolio
 Bundle-RequiredExecutionEnvironment: JavaSE-21
 Bundle-Vendor: Andreas Buchen
@@ -20,6 +20,8 @@ Require-Bundle: org.junit,
  net.minidev.accessors-smart,
  net.minidev.json-smart,
  name.abuchen.portfolio.junit,
- org.mockito.mockito-core
+ org.mockito.mockito-core,
+ org.apache.commons.commons-io,
+ org.apache.commons.commons-codec
 Automatic-Module-Name: name.abuchen.portfolio.tests
 Import-Package: com.google.common.collect

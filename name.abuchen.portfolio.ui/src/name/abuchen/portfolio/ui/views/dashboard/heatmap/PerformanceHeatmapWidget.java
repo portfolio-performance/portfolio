@@ -47,6 +47,8 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget<Double>
         DataSeries dataSeries = get(DataSeriesConfig.class).getDataSeries();
         PerformanceIndex performanceIndex = getDashboardData().calculate(dataSeries, calcInterval);
 
+        var actualInterval = performanceIndex.getActualInterval();
+
         // build functions to calculate performance and sum values
 
         ToDoubleFunction<YearMonth> calculatePerformance = month -> getPerformanceFor(performanceIndex, month);
@@ -55,18 +57,25 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget<Double>
         DataSeries benchmark = get(ExcessReturnDataSeriesConfig.class).getDataSeries();
         if (benchmark != null)
         {
+            // When an excess return baseline is configured, restrict the
+            // display interval to start from the first date the primary series
+            // has actual holdings. Without this, months before the first
+            // transaction show a spurious excess return (0 - benchmarkReturn !=
+            // 0).
+            actualInterval = performanceIndex.getFirstHoldingInterval();
+
             PerformanceIndex benchmarkIndex = getDashboardData().calculate(benchmark, calcInterval);
 
             DoubleBinaryOperator operator = get(ExcessReturnOperatorConfig.class).getValue().getOperator();
+            var notBefore = actualInterval.getStart();
             calculatePerformance = month -> operator.applyAsDouble( //
-                            getPerformanceFor(performanceIndex, month), getPerformanceFor(benchmarkIndex, month));
+                            getPerformanceFor(performanceIndex, month),
+                            getPerformanceFor(benchmarkIndex, month, notBefore));
+
             calculateSum = year -> operator.applyAsDouble( //
-                            getSumPerformance(performanceIndex, year), getSumPerformance(benchmarkIndex, year));
+                            getSumPerformance(performanceIndex, year),
+                            getSumPerformance(benchmarkIndex, year, notBefore));
         }
-
-        // build heat map model for actual interval
-
-        Interval actualInterval = performanceIndex.getActualInterval();
 
         boolean showSum = get(HeatmapOrnamentConfig.class).getValues().contains(HeatmapOrnament.SUM);
         boolean showStandardDeviation = get(HeatmapOrnamentConfig.class).getValues()
@@ -127,9 +136,37 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget<Double>
                                                 month.atEndOfMonth()));
     }
 
+    private double getPerformanceFor(PerformanceIndex index, YearMonth month, LocalDate notBefore)
+    {
+        var start = month.atDay(1).minusDays(1);
+        var end = month.atEndOfMonth();
+
+        if (notBefore.isAfter(end))
+            return 0;
+
+        return index.getPerformance(Interval.of(notBefore.isAfter(start) ? notBefore : start, end));
+    }
+
     private double getSumPerformance(PerformanceIndex index, Year year)
     {
         return index.getPerformance(Interval.of(year.atDay(1).minusDays(1),
                                                 year.atDay(1).with(TemporalAdjusters.lastDayOfYear())));
+    }
+
+    /**
+     * Returns the performance for the given year, but never reaching further
+     * back than {@code notBefore}. Used for the excess return sum so that the
+     * activation year only compares the period in which the primary series
+     * actually held assets.
+     */
+    private double getSumPerformance(PerformanceIndex index, Year year, LocalDate notBefore)
+    {
+        var start = year.atDay(1).minusDays(1);
+        var end = year.atDay(1).with(TemporalAdjusters.lastDayOfYear());
+
+        if (notBefore.isAfter(end))
+            return 0;
+
+        return index.getPerformance(Interval.of(notBefore.isAfter(start) ? notBefore : start, end));
     }
 }

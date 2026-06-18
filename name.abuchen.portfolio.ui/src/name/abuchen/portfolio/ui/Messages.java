@@ -235,6 +235,7 @@ public class Messages extends NLS
     public static String ColumnIssue;
     public static String ColumnLabel;
     public static String ColumnLastDate;
+    public static String ColumnLastTransactionDate;
     public static String ColumnLastDividendPayment;
     public static String ColumnLastDividendPayment_MenuLabel;
     public static String ColumnLatest;
@@ -430,6 +431,7 @@ public class Messages extends NLS
     public static String EditWizardMasterDataUnlink;
     public static String EditWizardMasterDataUnlink_ToolTip;
     public static String EditWizardOptionSameAsHistoricalQuoteFeed;
+    public static String EditWizardUseDifferentLatestTicker;
     public static String EditWizardQuoteFeedLabelFeedURL;
     public static String EditWizardQuoteFeedMsgErrorMissingURL;
     public static String EditWizardQuoteFeedMsgErrorOrNoData;
@@ -643,6 +645,7 @@ public class Messages extends NLS
     public static String LabelCoinGeckoCoinIdHint;
     public static String LabelCollapse;
     public static String LabelCollapseAll;
+    public static String LabelCollapsibleSection;
     public static String LabelColonSeparated;
     public static String LabelColorBy;
     public static String LabelColorSchema;
@@ -710,6 +713,15 @@ public class Messages extends NLS
     public static String LabelExport;
     public static String LabelFees;
     public static String LabelFeesAccumulated;
+    public static String LabelFIREAchieved;
+    public static String LabelFIREClickToSet;
+    public static String LabelFIRECurrentNetWorth;
+    public static String LabelFIREMonthlySavings;
+    public static String LabelFIRENumber;
+    public static String LabelFIREReturns;
+    public static String LabelFIRETargetDate;
+    public static String LabelFIRETimeToFIRE;
+    public static String LabelFIREWidget;
     public static String LabelFirstDayOfWeek;
     public static String LabelFontSize;
     public static String LabelFormatJSON;
@@ -924,6 +936,9 @@ public class Messages extends NLS
     public static String LabelTotalsAtTheBottom;
     public static String LabelTotalsAtTheTop;
     public static String LabelTotalSum;
+    public static String LabelTopAndBottomCount;
+    public static String LabelTopContributorsReturn;
+    public static String LabelTopContributorsValue;
     public static String LabelTotalValuePercent;
     public static String LabelTrades;
     public static String LabelTradesBasicStatistics;
@@ -1106,6 +1121,8 @@ public class Messages extends NLS
     public static String MsgErrorAccountNotExist;
     public static String MsgErrorConvertedAmount;
     public static String MsgErrorConvertToBuySellCurrencyMismatch;
+    public static String MsgBackfillExDatesNoCandidates;
+    public static String MsgBackfillExDatesUpdated;
     public static String MsgErrorDividendsYearBetween1900AndNow;
     public static String MsgErrorExchangeMissing;
     public static String MsgErrorMinimumHeightRequired;
@@ -1125,6 +1142,7 @@ public class Messages extends NLS
     public static String MsgIncorrectSubTotal;
     public static String MsgIncorrectTotal;
     public static String MsgInfoChangingCurrencyNotPossible;
+    public static String MsgInfoEnableDoubleClickToEdit;
     public static String MsgInfoRetiredSecurities;
     public static String MsgInstrumentWithConfigurationIssue;
     public static String MsgInvalidImage;
@@ -1288,6 +1306,8 @@ public class Messages extends NLS
     public static String PrefUpdateQuotesAfterFileOpen;
     public static String PrefUpdateQuotesPeriodically;
     public static String PrefUpdateSite;
+    public static String PrefUpdateSiteBetaChannel;
+    public static String PrefUpdateSiteStableChannel;
     public static String PresetsPrefPageDescription;
     public static String PresetsPrefPageNow;
     public static String PresetsPrefPageStartOfDay;
@@ -1421,6 +1441,7 @@ public class Messages extends NLS
     public static String TooltipAverageHoldingPeriod;
     public static String TooltipCurrentDrawdown;
     public static String TooltipDateOfExchangeRate;
+    public static String TooltipFIRENumber;
     public static String TooltipHintPressAlt;
     public static String TooltipMaxDrawdown;
     public static String TooltipMaxDrawdownDuration;
@@ -1456,6 +1477,7 @@ public class Messages extends NLS
     public static String ValueColorSchemeAsia;
     public static String ValueColorSchemeBlueOrange;
     public static String ValueColorSchemeStandard;
+    public static String ValueColorSchemeVividContrast;
     public static String WatchlistDelete;
     public static String WatchlistEditDialog;
     public static String WatchlistEditDialogMsg;

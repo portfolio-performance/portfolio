@@ -12,7 +12,9 @@ import org.junit.Test;
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
@@ -75,7 +77,7 @@ public class Issue4446FIFOMultipleTransfers
 
         var snapshotRecord = snapshot.getRecord(security).orElseThrow();
 
-        assertThat(snapshotRecord.getFifoCost().get(),
+        assertThat(snapshotRecord.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3916.56))));
     }
 

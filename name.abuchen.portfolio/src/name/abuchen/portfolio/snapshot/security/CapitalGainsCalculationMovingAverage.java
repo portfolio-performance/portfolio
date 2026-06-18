@@ -15,21 +15,11 @@ import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 
-/* package */class CapitalGainsCalculationMovingAverage extends Calculation
+/* package */class CapitalGainsCalculationMovingAverage extends AbstractCapitalGainsCalculation
 {
     private long heldShares = 0;
     private long movingAverageNetCost = 0;
     private long movingAverageNetCostForex = 0;
-
-    private CapitalGainsRecord realizedCapitalGains;
-    private CapitalGainsRecord unrealizedCapitalGains;
-
-    @Override
-    public void prepare()
-    {
-        this.realizedCapitalGains = new CapitalGainsRecord(getSecurity(), getTermCurrency());
-        this.unrealizedCapitalGains = new CapitalGainsRecord(getSecurity(), getTermCurrency());
-    }
 
     @Override
     public void visit(CurrencyConverter converter, CalculationLineItem.ValuationAtStart valuation)
@@ -181,15 +171,5 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
 
         unrealizedCapitalGains.addCapitalGains(Money.of(termCurrency, gain));
         unrealizedCapitalGains.addForexCaptialGains(Money.of(termCurrency, gainForex));
-    }
-
-    public CapitalGainsRecord getRealizedCapitalGains()
-    {
-        return realizedCapitalGains;
-    }
-
-    public CapitalGainsRecord getUnrealizedCapitalGains()
-    {
-        return unrealizedCapitalGains;
     }
 }

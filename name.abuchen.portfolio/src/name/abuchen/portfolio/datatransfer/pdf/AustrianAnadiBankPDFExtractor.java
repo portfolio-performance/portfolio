@@ -41,6 +41,7 @@ public class AustrianAnadiBankPDFExtractor extends AbstractPDFExtractor
                                         .find("^Neuer Saldo zu Ihren Gunsten.*$") //
                                         .match("^.* (?<currency>[A-Z]{3}) [\\.,\\d]+(\\-)?$") //
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency"))))
+
                                         // @formatter:off
                                         // Inglitschstraße 5A, 050202-0 vom 30.05.2025
                                         // @formatter:on
@@ -60,15 +61,11 @@ public class AustrianAnadiBankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(depositBlock_Format01);
         depositBlock_Format01.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "amount") //
                         .documentContext("currency", "year") //
-                        .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) .* [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)$") //)
+                        .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) .* [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date") + '.' + v.get("year")));
                             t.setCurrencyCode(v.get("currency"));
@@ -93,11 +90,7 @@ public class AustrianAnadiBankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(depositBlock_Format02);
         depositBlock_Format02.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "note", "amount") //
                         .documentContext("currency", "year") //
@@ -125,11 +118,7 @@ public class AustrianAnadiBankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.REMOVAL);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
 
                         .section("date", "amount") //
                         .documentContext("currency", "year") //
@@ -141,7 +130,7 @@ public class AustrianAnadiBankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("note").optional() //
-                        .match("^[\\d]{1,2}\\.[\\d]{1,2} (?<note>(ONLINE-FESTGELD|IBAN:).*) [\\d]{1,2}\\.[\\d]{1,2} [\\.,\\d]+-$") //
+                        .match("^[\\d]{1,2}\\.[\\d]{1,2} (?<note>(ONLINE\\-FESTGELD|IBAN:).*) [\\d]{1,2}\\.[\\d]{1,2} [\\.,\\d]+\\-$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         .wrap(TransactionItem::new));
@@ -155,11 +144,7 @@ public class AustrianAnadiBankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(interestBlock_Format01);
         interestBlock_Format01.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .section("date", "note", "amount") //
                         .documentContext("currency", "year") //
@@ -176,7 +161,7 @@ public class AustrianAnadiBankPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^(?i)KESt[\\s]{1,}(?<tax>[\\.,\\d]+)\\-$") //
                         .assign((t, v) -> {
-                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
 
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
                         })
@@ -195,11 +180,7 @@ public class AustrianAnadiBankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(interestBlock_Format02);
         interestBlock_Format02.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .section("date", "note", "amount") //
                         .documentContext("currency", "year") //
@@ -217,7 +198,7 @@ public class AustrianAnadiBankPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^(?i)KESt[\\s]{1,}(?<tax>[\\.,\\d]+)\\-$") //
                         .assign((t, v) -> {
-                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
 
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
                             t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));

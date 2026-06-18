@@ -481,23 +481,23 @@ public class GenericJSONQuoteFeed implements QuoteFeed
 
     private LocalDate parseDateTimestamp(Long object, ZoneOffset offset)
     {
-        Long futureEpoch = LocalDateTime.of(2200, 1, 1, 0, 0, 0, 0).toEpochSecond(offset);
+        long futureEpoch = LocalDateTime.of(2200, 1, 1, 0, 0, 0, 0).toEpochSecond(offset);
+        long abs = Math.abs(object);
 
-        if (object > futureEpoch)
+        if (abs > futureEpoch)
         {
-            // if the timestamp represents a date further than year 2200, then
-            // it is probably in milliseconds
-            // Note: This means that millisecond timestamps before 1970-03-26
-            // 00:08:38 can't be parsed by this method
+            // if the absolute timestamp represents a date further than year
+            // 2200, then it is probably in milliseconds
+            // Note: This means that millisecond timestamps between 1969-10-07
+            // and 1970-03-26 can't be parsed by this method
             object = object / 1000;
-
         }
-        else if (object < futureEpoch / (24 * 60 * 60))
+        else if (abs < futureEpoch / (24 * 60 * 60))
         {
-            // if the timestamp is smaller than the number of days between 1970
-            // and 2200, then it is probably in days
-            // Note: This means that second timestamps before 1970-01-01
-            // 23:20:06 can't be parsed by this method
+            // if the absolute timestamp is smaller than the number of days
+            // between 1970 and 2200, then it is probably in days
+            // Note: This means that second timestamps between 1969-12-31
+            // 00:39:54 and 1970-01-01 23:20:06 can't be parsed by this method
             object = object * 24 * 60 * 60;
         }
         // The following does NOT do a time zone conversion. If the API gives

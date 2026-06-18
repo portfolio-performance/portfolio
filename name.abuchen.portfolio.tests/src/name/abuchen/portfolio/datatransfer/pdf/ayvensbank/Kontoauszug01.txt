@@ -1,0 +1,30 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.82.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Kontoauszug
+Herr HT BLeehaC
+QfkeHqqrFcxea 7
+29146 ROmID
+Ihr Online-Sparkonto
+aR94rMTo9180657893
+Von Datum Bis Datum Saldo vom 04-04-2026
+04-01-2026 04-04-2026 79.584,38 €
+Dazu gesamt 79.830,10 €
+Ab gesamt -64.283,94 €
+Datum Referenzkonto Beschreibung Betrag
+02-04-2026 dI53998518932366313094 von Adva gesamt inkl. April Zins dazu 78.683,12 €
+01-04-2026 Zinsen dazu 123,26 €
+31-03-2026 BC60230308373922159806 R ex Kasse 190 dazu 190,00 €
+31-03-2026 rQ26236415973132438367 monatl. Haeufchen 588,- dazu 588,00 €
+31-03-2026 8912317415 Ab -64.283,94 €
+01-03-2026 Zinsen dazu 122,98 €
+01-02-2026 Zinsen dazu 122,74 €
+Seite 1 von 1
+Obwohl diese Informationen sorgfältig zusammengestellt worden sind, können aus dieser Übersicht keine Rechte abgeleitet werden.
+Ayvens Bank
+Joan Muyskenweg 30, 1114 AN Amsterdam-Duivendrecht Tel: +31 (0)20-2261402 Industrie- & Handelskammer:
+Antwoordnummer 39388, 1090 WC Amsterdam kundenservice@ayvensbank.de 39037076
+www.ayvensbank.de Satzungsgemäẞer Sitz: Amsterdam
+Umzatzsteuer:
+NL002905024B01

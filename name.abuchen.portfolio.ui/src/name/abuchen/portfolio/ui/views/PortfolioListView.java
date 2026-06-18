@@ -54,6 +54,7 @@ import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.ListEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
+import name.abuchen.portfolio.ui.views.columns.LastTransactionDateColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
@@ -278,6 +279,8 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
         ColumnViewerSorter.create(o -> ((Portfolio) o).getReferenceAccount()
                         .getCurrentAmount(LocalDateTime.now().with(LocalTime.MAX))).attachTo(column);
         portfolioColumns.addColumn(column);
+
+        portfolioColumns.addColumn(new LastTransactionDateColumn());
 
         column = new NoteColumn();
         column.getEditingSupport().addListener(this);

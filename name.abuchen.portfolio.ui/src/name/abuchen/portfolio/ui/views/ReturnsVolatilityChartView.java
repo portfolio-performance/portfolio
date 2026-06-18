@@ -36,6 +36,7 @@ import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -200,7 +201,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
         cache = make(DataSeriesCache.class);
 
         Composite composite = new Composite(parent, SWT.NONE);
-        composite.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+        composite.setBackground(Colors.theme().defaultBackground());
 
         resources = new LocalResourceManager(JFaceResources.getResources(), composite);
 

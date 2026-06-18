@@ -47,6 +47,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -164,6 +165,10 @@ public class DashboardView extends AbstractHistoricView
 
             oldParent.layout();
             newParent.layout();
+
+            CollapsibleSectionWidget.applySectionVisibility(oldParent);
+            if (newParent != oldParent)
+                CollapsibleSectionWidget.applySectionVisibility(newParent);
         }
 
         private void doDropCopy(Dashboard.Widget copiedWidget, Dashboard.Column newColumn, Composite newParent)
@@ -313,7 +318,8 @@ public class DashboardView extends AbstractHistoricView
 
     private static final String SELECTED_DASHBOARD_KEY = "selected-dashboard"; //$NON-NLS-1$
     /* package */ static final String DELEGATE_KEY = "$delegate"; //$NON-NLS-1$
-    private static final String FILLER_KEY = "$filler"; //$NON-NLS-1$
+    /* package */ static final String FILLER_KEY = "$filler"; //$NON-NLS-1$
+    /* package */ static final String VIEW_KEY = "$view"; //$NON-NLS-1$
 
     @Inject
     private PartPersistedState persistedState;
@@ -459,6 +465,7 @@ public class DashboardView extends AbstractHistoricView
         container = new Composite(scrolledComposite, SWT.NONE);
         container.setLayout(new DashboardLayout());
         container.setData(UIConstants.CSS.CLASS_NAME, "dashboard"); //$NON-NLS-1$
+        container.setData(VIEW_KEY, this);
 
         selectDashboard(dashboard);
 
@@ -549,6 +556,8 @@ public class DashboardView extends AbstractHistoricView
             }
         }
 
+        CollapsibleSectionWidget.applySectionVisibility(columnControl);
+
         return columnControl;
     }
 
@@ -626,7 +635,13 @@ public class DashboardView extends AbstractHistoricView
         addDropListener(element);
 
         for (Control child : element.getChildren())
+        {
+            // skip interactive controls: a DragSource on a Button can
+            // swallow SWT.Selection events on some platforms
+            if (child instanceof Button)
+                continue;
             addDragListener(child);
+        }
 
         GridDataFactory.fillDefaults().grab(true, false).applyTo(element);
         return new Pair<>(delegate, element);
@@ -853,6 +868,7 @@ public class DashboardView extends AbstractHistoricView
 
         getClient().touch();
         delegate.update();
+        CollapsibleSectionWidget.applySectionVisibility(columnControl);
         columnControl.layout(true);
         updateScrolledCompositeMinSize();
     }

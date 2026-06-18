@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ImportAction.Context;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
@@ -698,6 +700,7 @@ public interface Extractor
 
         private LocalDateTime dateTime;
         private Money amount;
+        private long shares;
         private String typeInformation;
         private String source;
         private Security security;
@@ -739,9 +742,16 @@ public interface Extractor
             // copy basic data from original item
             dateTime = item.getDate();
             amount = item.getAmount();
+            shares = item.getShares();
             typeInformation = item.getTypeInformation();
             source = item.getSource();
             security = item.getSecurity();
+        }
+
+        @Override
+        public long getShares()
+        {
+            return shares;
         }
 
         @Override
@@ -825,6 +835,7 @@ public interface Extractor
      */
     List<Item> extract(SecurityCache securityCache, InputFile file, List<Exception> errors);
 
+    @VisibleForTesting
     default List<Item> extract(List<InputFile> file, List<Exception> errors)
     {
         // keep the method signature stable to avoid changing *all* test cases.

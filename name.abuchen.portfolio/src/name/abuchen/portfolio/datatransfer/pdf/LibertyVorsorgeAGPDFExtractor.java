@@ -60,11 +60,7 @@ public class LibertyVorsorgeAGPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "verkauft" change from BUY to SELL
                         .section("type").optional() //
@@ -121,7 +117,7 @@ public class LibertyVorsorgeAGPDFExtractor extends AbstractPDFExtractor
                                                             v.put("name", trim(replaceMultipleBlanks(replaceSingleBlank(v.get("name")))));
                                                             v.put("wkn", stripBlanks(v.get("wkn")));
                                                             v.put("isin", stripBlanks(v.get("isin")));
-                                                            v.put("currency", stripBlanks(v.get("currency")));
+                                                            v.put("currency", asCurrencyCode(stripBlanks(v.get("currency"))));
 
                                                             t.setSecurity(getOrCreateSecurity(v));
                                                         }))
@@ -195,8 +191,8 @@ public class LibertyVorsorgeAGPDFExtractor extends AbstractPDFExtractor
                                                         .match("^T[\\s]*o[\\s]*t[\\s]*a[\\s]*l[\\s]*K[\\s]*u[\\s]*r[\\s]*s[\\s]*w[\\s]*e[\\s]*r[\\s]*t[\\s]*(?<currency>[A-Z\\s]{3,}) (?<fxGross>[\\.,\\d]+)$") //
                                                         .match("^C[\\s]*h[\\s]*a[\s]*n[\\s]*g[\\s]*e[\\s]*(?<baseCurrency>[A-Z\\s]{3,})[\\s]*\\/[\\s]*(?<termCurrency>[A-Z\\s]{3,}) (?<exchangeRate>[\\.,\\d]+) [A-Z\\s]{3,} [\\.,\\d]+$") //
                                                         .assign((t, v) -> {
-                                                            v.put("termCurrency", stripBlanks(v.get("termCurrency")));
-                                                            v.put("baseCurrency", stripBlanks(v.get("baseCurrency")));
+                                                            v.put("termCurrency", asCurrencyCode(stripBlanks(v.get("termCurrency"))));
+                                                            v.put("baseCurrency", asCurrencyCode(stripBlanks(v.get("baseCurrency"))));
 
                                                             var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
@@ -242,11 +238,7 @@ public class LibertyVorsorgeAGPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         .oneOf( //
                                         // @formatter:off
@@ -272,7 +264,7 @@ public class LibertyVorsorgeAGPDFExtractor extends AbstractPDFExtractor
                                                             v.put("nameContinued", trim(replaceMultipleBlanks(v.get("nameContinued"))));
                                                             v.put("wkn", stripBlanks(v.get("wkn")));
                                                             v.put("isin", stripBlanks(v.get("isin")));
-                                                            v.put("currency", stripBlanks(v.get("currency")));
+                                                            v.put("currency", asCurrencyCode(stripBlanks(v.get("currency"))));
 
                                                             t.setSecurity(getOrCreateSecurity(v));
                                                         }))
@@ -326,7 +318,7 @@ public class LibertyVorsorgeAGPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "tax").optional() //
                         .match("^[\\d]+%[\\s]*V[\\s]*e[\\s]*r[\\s]*r[\\s]*e[\\s]*c[\\s]*h[\\s]*n[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*s[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*(?<currency>[A-Z\\s]{3,}) \\-(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            v.put("currency", stripBlanks(v.get("currency")));
+                            v.put("currency", asCurrencyCode(stripBlanks(v.get("currency"))));
 
                             processTaxEntries(t, v, type);
                         })
@@ -337,7 +329,7 @@ public class LibertyVorsorgeAGPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "tax").optional() //
                         .match("^S[\\s]*t[\\s]*e[\\s]*m[\\s]*p[\\s]*e[\\s]*l[\\s]*(?<currency>[A-Z\\s]{3,}) \\-(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            v.put("currency", stripBlanks(v.get("currency")));
+                            v.put("currency", asCurrencyCode(stripBlanks(v.get("currency"))));
 
                             processTaxEntries(t, v, type);
                         });
@@ -353,7 +345,7 @@ public class LibertyVorsorgeAGPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "fee").optional() //
                         .match("^A[\\s]*n[\\s]*d[\\s]*e[\\s]*r[\\s]*e[\\s]*S[\\s]*p[\\s]*e[\\s]*s[\\s]*e[\\s]*n[\\s]*(?<currency>[A-Z\\s]{3,}) \\-(?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            v.put("currency", stripBlanks(v.get("currency")));
+                            v.put("currency", asCurrencyCode(stripBlanks(v.get("currency"))));
                             v.put("fee", stripBlanks(v.get("fee")));
 
                             processFeeEntries(t, v, type);

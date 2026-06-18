@@ -100,11 +100,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
@@ -370,11 +366,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         // @formatter:off
                         // Sie erhalten eine neue Abrechnung.
@@ -561,11 +553,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         // @formatter:off
                         // ISIN (WKN) IE00BKPT2S34 (A2P1KU)
@@ -612,13 +600,11 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        .wrap((t, ctx) -> {
-                            var item = new TransactionItem(t);
-
+                        .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
-                            return item;
+                            return new TransactionItem(t);
                         });
     }
 
@@ -684,44 +670,50 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         // 13.07.2016 Ueberweisung Mustermann -5.000,00
         // 13.02.2020 Gutschrift/Dauerauftrag Max Mustermann 1,01
         // 16.02.2020 Lastschrift XYZ GmbH -10,00
+        // 16.02.2020 Abbuchung XYZ GmbH -10,00
+        // 16.03.2026 Echtzeitüberweisung Peter Pan Bla -1.000,00
         // 06.03.2023 Kontolöschung -1.161,10
         // @formatter:on
         var removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
                         + "(Ueberweisung" //
                         + "|Dauerauftrag\\/Terminueberw\\." //
                         + "|Lastschrift" //
+                        + "|Abbuchung" //
+                        + "|Echtzeit.berweisung" //
                         + "|Kontol.schung)" //
                         + ".* \\-[\\.,\\d]+$");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.REMOVAL);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
 
                         .section("date", "note", "amount") //
                         .documentContext("currency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
-                                        + "(?<note>Ueberweisung" //
+                                        + "(?<note>(Ueberweisung" //
                                         + "|Dauerauftrag\\/Terminueberw\\." //
                                         + "|Lastschrift" //
+                                        + "|Abbuchung" //
+                                        + "|Echtzeit.berweisung" //
                                         + "|Kontol.schung)" //
-                                        + ".* \\-(?<amount>[\\.,\\d]+)$") //
+                                        + ".*) \\-(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
 
                             // Formatting some notes
-                            if ("Ueberweisung".equals(v.get("note")))
-                                v.put("note", "Überweisung");
+                            var note = v.get("note");
+                            if (note != null)
+                            {
+                                if (note.contains("Ueberweisung"))
+                                    note = note.replace("Ueberweisung", "Überweisung");
 
-                            if ("Dauerauftrag/Terminueberw.".equals(v.get("note")))
-                                v.put("note", "Dauerauftrag/Terminüberweisung");
+                                if (note.contains("Dauerauftrag/Terminueberw."))
+                                    note = note.replace("Dauerauftrag/Terminueberw.", "Dauerauftrag/Terminüberweisung");
+                            }
 
-                            t.setNote(v.get("note"));
+                            t.setNote(note);
                         })
 
                         .wrap(TransactionItem::new));
@@ -731,6 +723,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         // 14.02.2020 Dauerauftrag/Terminueberw. Max Mustermann -30,00
         // 29.04.2021 Gehalt/Rente Hauptkasse des Freistaates Sachsen 806,83
         // 13.10.2020 Gutschrift-VWL 40,00
+        // 13.10.2020 Retoure XYZ GmbH 40,00
+        // 13.10.2020 Bezuege Stadt XYZ 40,00
         // 04.06.2024 Lastschrift-Einzug mvezSX fnHyElys 5.300,00
         // @formatter:on
         var depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
@@ -738,31 +732,37 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         + "|Gutschrift\\/Dauerauftrag" //
                         + "|Gehalt\\/Rente" //
                         + "|Gutschrift"
+                        + "|Retoure"
+                        + "|Bezuege"
                         + "|Lastschrift\\-Einzug)" //
                         + ".* [\\.,\\d]+$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "note", "amount") //
                         .documentContext("currency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
-                                        + "(?<note>Gutschrift\\-VWL" //
+                                        + "(?<note>(Gutschrift\\-VWL" //
                                         + "|Gutschrift\\/Dauerauftrag" //
                                         + "|Gehalt\\/Rente" //
                                         + "|Gutschrift"
+                                        + "|Retoure"
+                                        + "|Bezuege"
                                         + "|Lastschrift\\-Einzug)" //
-                                        + ".* (?<amount>[\\.,\\d]+)$") //
+                                        + ".*) (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
-                            t.setNote(v.get("note"));
+
+                            // Formatting some notes
+                            var note = v.get("note");
+                            if (note != null && note.contains("Bezuege"))
+                                note = note.replace("Bezuege", "Bezüge");
+
+                            t.setNote(note);
                         })
 
                         .wrap(TransactionItem::new));
@@ -771,11 +771,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .oneOf( //
                                         // @formatter:off
@@ -788,7 +784,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                         .documentContextOptionally("taxDate1", "taxDate2", "taxDate3", "tax1", "tax2", "tax3")
                                                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (Zinsertrag|Zinsgutschrift) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
-                                                            var amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+                                                            var amount = Money.of(v.get("currency"), asAmount(v.get("amount")));
 
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setMonetaryAmount(amount);
@@ -796,7 +792,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                             if (v.containsKey("taxDate1") && v.containsKey("tax1")
                                                                             && t.getDateTime().equals(asDate(v.get("taxDate1"))))
                                                             {
-                                                                var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax1")));
+                                                                var tax = Money.of(v.get("currency"), asAmount(v.get("tax1")));
                                                                 t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                                                                 t.addUnit(new Unit(Unit.Type.TAX, tax));
                                                             }
@@ -804,7 +800,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                             if (v.containsKey("taxDate2") && v.containsKey("tax2")
                                                                             && t.getDateTime().equals(asDate(v.get("taxDate2"))))
                                                             {
-                                                                var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax2")));
+                                                                var tax = Money.of(v.get("currency"), asAmount(v.get("tax2")));
                                                                 t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                                                                 t.addUnit(new Unit(Unit.Type.TAX, tax));
                                                             }
@@ -812,7 +808,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                             if (v.containsKey("taxDate3") && v.containsKey("tax3")
                                                                             && t.getDateTime().equals(asDate(v.get("taxDate3"))))
                                                             {
-                                                                var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax3")));
+                                                                var tax = Money.of(v.get("currency"), asAmount(v.get("tax3")));
                                                                 t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                                                                 t.addUnit(new Unit(Unit.Type.TAX, tax));
                                                             }
@@ -827,11 +823,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         type.addBlock(feesBlock);
         feesBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .section("date", "amount") //
                         .documentContext("currency") //
@@ -862,11 +854,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                        .subject(() -> {
-                            var portfolioTransaction = new PortfolioTransaction();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
-                            return portfolioTransaction;
-                        })
+                        .subject(() -> new PortfolioTransaction(PortfolioTransaction.Type.DELIVERY_INBOUND))
 
                         // @formatter:off
                         // Is type --> "Ausgang" change from DELIVERY_INBOUND to DELIVERY_OUTBOUND
@@ -983,12 +971,12 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                             if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                             {
                                 // Account 1
-                                v.put("currency", v.get("currency1"));
+                                v.put("currency", asCurrencyCode(v.get("currency1")));
                                 v.put("tax", v.get("tax1"));
                                 processTaxEntries(t, v, type);
 
                                 // Account 2
-                                v.put("currency", v.get("currency2"));
+                                v.put("currency", asCurrencyCode(v.get("currency2")));
                                 v.put("tax", v.get("tax2"));
                                 processTaxEntries(t, v, type);
                             }
@@ -1018,12 +1006,12 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                             if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                             {
                                 // Account 1
-                                v.put("currency", v.get("currency1"));
+                                v.put("currency", asCurrencyCode(v.get("currency1")));
                                 v.put("tax", v.get("tax1"));
                                 processTaxEntries(t, v, type);
 
                                 // Account 2
-                                v.put("currency", v.get("currency2"));
+                                v.put("currency", asCurrencyCode(v.get("currency2")));
                                 v.put("tax", v.get("tax2"));
                                 processTaxEntries(t, v, type);
                             }
@@ -1053,12 +1041,12 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                             if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                             {
                                 // Account 1
-                                v.put("currency", v.get("currency1"));
+                                v.put("currency", asCurrencyCode(v.get("currency1")));
                                 v.put("tax", v.get("tax1"));
                                 processTaxEntries(t, v, type);
 
                                 // Account 2
-                                v.put("currency", v.get("currency2"));
+                                v.put("currency", asCurrencyCode(v.get("currency2")));
                                 v.put("tax", v.get("tax2"));
                                 processTaxEntries(t, v, type);
                             }

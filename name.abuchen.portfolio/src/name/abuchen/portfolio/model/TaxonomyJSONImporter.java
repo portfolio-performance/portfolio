@@ -267,13 +267,13 @@ public class TaxonomyJSONImporter
                     if (path.contains(classification))
                     {
                         result.addChange(new ChangeEntry(Classification.class, Operation.ERROR, MessageFormat.format(
-                                        "Cannot move category ''{0}'' under itself", classification.getName())));
+                                        "Cannot move category ''{0}'' under itself", classification.getName()))); //$NON-NLS-1$
                         continue;
                     }
 
                     result.addModifiedObject(classification);
                     result.addChange(new ChangeEntry(Classification.class, Operation.UPDATE, MessageFormat.format(
-                                    "Move category ''{0}'' to ''{1}''", classification.getName(), parent.getName())));
+                                    "Move category ''{0}'' to ''{1}''", classification.getName(), parent.getName()))); //$NON-NLS-1$
 
                     classification.getParent().getChildren().remove(classification);
                     parent.addChild(classification);
@@ -295,7 +295,7 @@ public class TaxonomyJSONImporter
                 {
                     result.addModifiedObject(classification);
                     result.addChange(new ChangeEntry(Classification.class, Operation.UPDATE, MessageFormat
-                                    .format("Update description for category ''{0}''", classification.getName())));
+                                    .format("Update description for category ''{0}''", classification.getName()))); //$NON-NLS-1$
 
                     classification.setNote(description);
                 }
@@ -337,7 +337,7 @@ public class TaxonomyJSONImporter
 
                 result.addCreatedObject(newClassification);
                 result.addChange(new ChangeEntry(Classification.class, Operation.CREATE,
-                                MessageFormat.format("Create new category ''{0}''", getPathString(newClassification))));
+                                MessageFormat.format("Create new category ''{0}''", getPathString(newClassification)))); //$NON-NLS-1$
 
                 parent.addChild(newClassification);
 
@@ -374,7 +374,7 @@ public class TaxonomyJSONImporter
             {
                 var name = (String) identifiers.get("name"); //$NON-NLS-1$
                 result.addChange(new ChangeEntry(InvestmentVehicle.class, Operation.SKIPPED,
-                                MessageFormat.format("Instrument not found: {0}", name != null ? name : "unknown")));
+                                MessageFormat.format("Instrument not found: {0}", name != null ? name : "unknown"))); //$NON-NLS-1$ //$NON-NLS-2$
                 continue;
             }
 
@@ -382,8 +382,8 @@ public class TaxonomyJSONImporter
             {
                 var name = (String) identifiers.get("name"); //$NON-NLS-1$
                 result.addChange(new ChangeEntry(InvestmentVehicle.class, Operation.WARNING,
-                                MessageFormat.format("{0} instruments found with identifiers from JSON: {1}",
-                                                investmentVehicles.size(), name != null ? name : "unknown")));
+                                MessageFormat.format("{0} instruments found with identifiers from JSON: {1}", //$NON-NLS-1$
+                                                investmentVehicles.size(), name != null ? name : "unknown"))); //$NON-NLS-1$
             }
 
             try
@@ -400,7 +400,7 @@ public class TaxonomyJSONImporter
                     else
                     {
                         result.addChange(new ChangeEntry(InvestmentVehicle.class, Operation.WARNING, MessageFormat
-                                        .format("Ignoring assignment {0} because instrument was matched by another entry from the JSON already.",
+                                        .format("Ignoring assignment {0} because instrument was matched by another entry from the JSON already.", //$NON-NLS-1$
                                                         vehicle.getName())));
                     }
                 }
@@ -409,8 +409,8 @@ public class TaxonomyJSONImporter
             {
                 // happens if attributes cannot be cast to the expected type
                 var name = (String) identifiers.get("name"); //$NON-NLS-1$
-                throw new IOException(MessageFormat.format("Invalid data format for instrument {0}: {1}",
-                                name != null ? name : "unknown", e.getMessage()), e);
+                throw new IOException(MessageFormat.format("Invalid data format for instrument {0}: {1}", //$NON-NLS-1$
+                                name != null ? name : "unknown", e.getMessage()), e); //$NON-NLS-1$
             }
         }
     }
@@ -461,7 +461,7 @@ public class TaxonomyJSONImporter
             if (classification == null)
             {
                 result.addChange(new ChangeEntry(Assignment.class, Operation.SKIPPED,
-                                MessageFormat.format("Category not found for {0}", investmentVehicle.getName())));
+                                MessageFormat.format("Category not found for {0}", investmentVehicle.getName()))); //$NON-NLS-1$
 
                 continue;
             }
@@ -474,7 +474,7 @@ public class TaxonomyJSONImporter
             if (weightValue == 0)
             {
                 result.addChange(new ChangeEntry(Assignment.class, Operation.SKIPPED,
-                                MessageFormat.format("Skipping assignment with weight {0} for {1} in {2}", weight,
+                                MessageFormat.format("Skipping assignment with weight {0} for {1} in {2}", weight, //$NON-NLS-1$
                                                 investmentVehicle.getName(), getPathString(classification))));
                 continue;
             }
@@ -482,7 +482,7 @@ public class TaxonomyJSONImporter
             if (totalWeight + weightValue > Classification.ONE_HUNDRED_PERCENT)
             {
                 result.addChange(new ChangeEntry(Assignment.class, Operation.ERROR,
-                                MessageFormat.format("Total weight exceeds 100% for {0} in {1}",
+                                MessageFormat.format("Total weight exceeds 100% for {0} in {1}", //$NON-NLS-1$
                                                 investmentVehicle.getName(), getPathString(classification))));
                 continue;
             }
@@ -498,7 +498,7 @@ public class TaxonomyJSONImporter
                 {
                     result.addModifiedObject(existingAssignment);
                     result.addChange(new ChangeEntry(Assignment.class, Operation.UPDATE,
-                                    MessageFormat.format("Updated weight {0} for {1} in {2}",
+                                    MessageFormat.format("Updated weight {0} for {1} in {2}", //$NON-NLS-1$
                                                     Values.WeightPercent.format(weightValue),
                                                     investmentVehicle.getName(), getPathString(classification))));
 
@@ -518,7 +518,7 @@ public class TaxonomyJSONImporter
 
                 result.addCreatedObject(newAssignment);
                 result.addChange(new ChangeEntry(Assignment.class, Operation.CREATE,
-                                MessageFormat.format("Created assignment with weight {0} for {1} in {2}",
+                                MessageFormat.format("Created assignment with weight {0} for {1} in {2}", //$NON-NLS-1$
                                                 Values.WeightPercent.format(weightValue), investmentVehicle.getName(),
                                                 getPathString(classification))));
 
@@ -529,7 +529,7 @@ public class TaxonomyJSONImporter
         for (var entry : existingAssignments.entrySet())
         {
             result.addChange(new ChangeEntry(Assignment.class, Operation.DELETE,
-                            MessageFormat.format("Deleted assignment with weight {0} for {1} in {2}",
+                            MessageFormat.format("Deleted assignment with weight {0} for {1} in {2}", //$NON-NLS-1$
                                             Values.WeightPercent.format(entry.getValue().getWeight()),
                                             investmentVehicle.getName(), getPathString(entry.getKey()))));
 
@@ -562,7 +562,7 @@ public class TaxonomyJSONImporter
         {
             parent.getChildren().remove(child);
             result.addChange(new ChangeEntry(Classification.class, Operation.DELETE,
-                            MessageFormat.format("Remove category ''{0}'' not present in JSON", child.getName())));
+                            MessageFormat.format("Remove category ''{0}'' not present in JSON", child.getName()))); //$NON-NLS-1$
         }
 
         // retrieve the children in the order they were processed
@@ -610,7 +610,7 @@ public class TaxonomyJSONImporter
             var assignment = pair.getRight();
 
             result.addChange(new ChangeEntry(Assignment.class, Operation.DELETE,
-                            MessageFormat.format("Deleted assignment with weight {0} for {1} in {2} (not in JSON)",
+                            MessageFormat.format("Deleted assignment with weight {0} for {1} in {2} (not in JSON)", //$NON-NLS-1$
                                             Values.WeightPercent.format(assignment.getWeight()),
                                             assignment.getInvestmentVehicle().getName(),
                                             getPathString(classification))));
@@ -721,7 +721,7 @@ public class TaxonomyJSONImporter
         {
             result.addModifiedObject(classification);
             result.addChange(new ChangeEntry(Classification.class, Operation.UPDATE, MessageFormat
-                            .format("Update name for category ''{0}'' to ''{1}''", classification.getName(), newName)));
+                            .format("Update name for category ''{0}'' to ''{1}''", classification.getName(), newName))); //$NON-NLS-1$
             classification.setName(newName);
         }
     }
@@ -732,7 +732,7 @@ public class TaxonomyJSONImporter
         {
             result.addModifiedObject(classification);
             result.addChange(new ChangeEntry(Classification.class, Operation.UPDATE,
-                            MessageFormat.format("Update color for category ''{0}''", classification.getName())));
+                            MessageFormat.format("Update color for category ''{0}''", classification.getName()))); //$NON-NLS-1$
             classification.setColor(newColor);
         }
     }

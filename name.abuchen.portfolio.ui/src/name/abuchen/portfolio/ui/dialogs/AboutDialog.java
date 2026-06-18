@@ -63,7 +63,7 @@ public class AboutDialog extends Dialog
     protected Control createDialogArea(Composite parent)
     {
         var container = new Composite(parent, SWT.NONE);
-        container.setBackground(Colors.WHITE);
+        container.setBackground(Colors.theme().defaultBackground());
         GridDataFactory.fillDefaults().grab(true, true).hint(700, 500).applyTo(container);
         GridLayoutFactory.fillDefaults().spacing(5, 5).margins(5, 5).applyTo(container);
 
@@ -100,7 +100,7 @@ public class AboutDialog extends Dialog
     {
         var aboutText = MessageFormat.format(Messages.AboutText,
                         PortfolioPlugin.getDefault().getBundle().getVersion().toString(), //
-                        DateTimeFormatter.ofPattern("MMMM yyyy").format(BuildInfo.INSTANCE.getBuildTime()), //$NON-NLS-1$
+                        DateTimeFormatter.ofPattern("LLLL yyyy").format(BuildInfo.INSTANCE.getBuildTime()), //$NON-NLS-1$
                         System.getProperty("osgi.os"), //$NON-NLS-1$
                         System.getProperty("osgi.arch"), //$NON-NLS-1$
                         System.getProperty("java.vm.version"), //$NON-NLS-1$
@@ -108,7 +108,7 @@ public class AboutDialog extends Dialog
 
         var area = new Composite(parent, SWT.NONE);
 
-        area.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+        area.setBackground(Colors.theme().defaultBackground());
         getShell().setText(Messages.LabelAbout);
 
         var imageLabel = new Label(area, SWT.NONE);

@@ -151,7 +151,16 @@ public class PortfolioPlugin implements BundleActivator
 
     public static final void log(IStatus status)
     {
-        Platform.getLog(FrameworkUtil.getBundle(PortfolioPlugin.class)).log(status);
+        try
+        {
+            Platform.getLog(FrameworkUtil.getBundle(PortfolioPlugin.class)).log(status);
+        }
+        catch (NullPointerException | IllegalArgumentException e)
+        {
+            // when running unit tests via Infinitest, the platform log is not
+            // available
+            System.err.println(status); // NOSONAR
+        }
     }
 
     public static void log(String message, Throwable t)

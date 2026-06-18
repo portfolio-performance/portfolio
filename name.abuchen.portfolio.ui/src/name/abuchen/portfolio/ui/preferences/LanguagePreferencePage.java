@@ -65,7 +65,8 @@ public class LanguagePreferencePage extends PreferencePage
         DANISH("da", "Dansk"), //$NON-NLS-1$ //$NON-NLS-2$
         TURKISH("tr", "Türk"), //$NON-NLS-1$ //$NON-NLS-2$
         VIETNAMESE("vi", "Tiếng Việt"), //$NON-NLS-1$ //$NON-NLS-2$
-        CATALAN("ca", "Català"); //$NON-NLS-1$ //$NON-NLS-2$
+        CATALAN("ca", "Català"), //$NON-NLS-1$ //$NON-NLS-2$
+        FINNISH("fi", "Suomi"); //$NON-NLS-1$ //$NON-NLS-2$
 
         private String code;
         private String label;

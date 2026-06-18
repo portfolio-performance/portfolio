@@ -1,0 +1,29 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.5
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH, SUCURSAL EN ESPAÑA  C/ VELAZQUEZ 50 - PLANTA 5, MADRID 28001 - MADRID
+FtrrS CRnoW NNootb PÁGINA 1 de 1
+LtLkSE pmL de la jLJLsu 819- SA 8 FECHA 02.02.2026
+94157 OZrBJRMkE EJECUCIÓN 44a4-10f3
+SAVEBACK 9a96-8457
+CUENTA DE VALORES 0478962602
+LIQUIDACIÓN DE VALORES EN SAVEBACK
+DESCRIPCIÓN
+Ejecución del Saveback el 02.02.2026 en Lang und Schwarz Exchange.
+La contrapartida de la transacción es Lang & Schwarz TradeCenter AG & Co. KG.
+POSICIÓN CANTIDAD COTIZACIÓN PROMEDIO IMPORTE
+FTSE All-World USD (Acc) 0,761108 7,292 EUR 5,55 EUR
+ISIN: IE000716YHJ7
+TOTAL 5,55 EUR
+RESERVA
+CUENTA DE EFECTIVO FECHA VALOR IMPORTE
+gc4509555062007729324536 2026-02-04 -5,55 EUR
+FTSE All-World USD (Acc) en custodia no colectiva segura
+Este documento se ha creado automáticamente y por lo tanto no necesita firma.
+Si no se indica IVA, se trata de un servicio libre de IVA según § 4 núm. 8 UStG.
+Trade Republic Bank GmbH, Sucursal en España www.traderepublic.es Domicilio social: Trade Republic Bank GmbH Directores generales
+C/ Velazquez 50 - Planta 5 NIF-IVA DE307510626 Brunnenstrasse 19-21, 10119 Berlín, Alemania Andreas Torner
+28001, Madrid, Madrid Registrada en el Registro Mercantil del juzgado local de Gernot Mittendorfer
+NIF: W0322893I Charlottenburg con el número HRB 244347 B, Alemania Christian Hecker
+Thomas Pischke

@@ -16,7 +16,6 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 
 import com.google.common.collect.Lists;
@@ -24,6 +23,7 @@ import com.google.common.collect.Lists;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
@@ -117,7 +117,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
     protected Composite createBody(Composite parent)
     {
         Composite composite = new Composite(parent, SWT.NONE);
-        composite.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+        composite.setBackground(Colors.theme().defaultBackground());
 
         chart = new TimelineChart(composite);
         chart.getTitle().setVisible(false);

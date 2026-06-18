@@ -1092,6 +1092,40 @@ public class DeutscheBankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf12()
+    {
+        var extractor = new DeutscheBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf12.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BP3QZ825"), hasWkn("A12ATF"), hasTicker(null), //
+                        hasName("ISIV-E.MSCI WMF U.ETF DLA FUNDS"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-03-20T08:00:46"), hasShares(0.3945), //
+                        hasSource("Kauf12.txt"), //
+                        hasNote("Belegnummer 1595497338 / 718623085"), //
+                        hasAmount("EUR", 32.60), hasGrossValue("EUR", 32.60), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.0))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         var extractor = new DeutscheBankPDFExtractor(new Client());

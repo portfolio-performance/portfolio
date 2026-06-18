@@ -250,7 +250,7 @@ public class PortfolioPart implements ClientInputListener
         ProgressBar bar = null;
 
         container = new Composite(parent, SWT.NONE);
-        container.setBackground(Colors.WHITE);
+        container.setBackground(Colors.theme().defaultBackground());
         container.setLayout(new FormLayout());
 
         Label image = new Label(container, SWT.NONE);

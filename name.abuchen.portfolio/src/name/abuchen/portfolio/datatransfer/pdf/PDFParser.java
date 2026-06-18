@@ -253,12 +253,8 @@ import name.abuchen.portfolio.model.TypedMap;
                     endLine = findBlockEnd(lines, startLine, endLine);
                     if (endLine == -1)
                         continue;
-                    spans.add(new LineSpan(startLine, endLine));
                 }
-                else
-                {
-                    spans.add(new LineSpan(startLine, endLine));
-                }
+                spans.add(new LineSpan(startLine, endLine));
             }
 
             return spans;

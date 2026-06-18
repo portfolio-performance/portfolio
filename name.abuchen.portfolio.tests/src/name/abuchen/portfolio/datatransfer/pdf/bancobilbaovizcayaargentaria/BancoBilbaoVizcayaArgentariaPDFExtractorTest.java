@@ -6,6 +6,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -286,7 +287,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-05-28T00:00"), hasShares(33.00), //
+                        hasDate("2025-05-28T00:00"), hasExDate(null), hasShares(33.00), //
                         hasSource("Dividendos01.txt"), //
                         hasAmount("EUR", 3.57), hasGrossValue("EUR", 7.83), //
                         hasTaxes("EUR", 2.44), hasFees("EUR", 1.82))));
@@ -319,7 +320,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-06-16T00:00"), hasShares(6.00), //
+                        hasDate("2025-06-16T00:00"), hasExDate(null), hasShares(6.00), //
                         hasSource("Dividendos02.txt"), //
                         hasAmount("EUR", 0.00), hasGrossValue("EUR", 1.08), //
                         hasForexGrossValue("USD", 1.26), //
@@ -353,7 +354,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-06-16T00:00"), hasShares(6.00), //
+                        hasDate("2025-06-16T00:00"), hasExDate(null), hasShares(6.00), //
                         hasSource("Dividendos02.txt"), //
                         hasAmount("EUR", 0.00), hasGrossValue("EUR", 1.08), //
                         hasTaxes("EUR", 0.33), hasFees("EUR", 0.75), //

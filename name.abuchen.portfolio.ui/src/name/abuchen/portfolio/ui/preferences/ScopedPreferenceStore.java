@@ -4,7 +4,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html Contributors:
  * IBM Corporation - initial API and implementation Yves YANG
- * <yves.yang@soyatec.com> - Initial Fix for Bug 138078 [Preferences]
+ * <yves.yang at soyatec.com> - Initial Fix for Bug 138078 [Preferences]
  * Preferences Store for i18n support COPIED FROM ECLIPSE BECAUSE E4 PENDANT IS
  * MISSING
  * https://github.com/eclipse/eclipse.platform.ui/blob/7e26a4a0bc4b7b490bd7ed01366e5114230596ce/bundles/org.eclipse.ui.workbench/Eclipse%20UI/org/eclipse/ui/preferences/ScopedPreferenceStore.java
