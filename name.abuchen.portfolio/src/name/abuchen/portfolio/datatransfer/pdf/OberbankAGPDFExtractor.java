@@ -3,17 +3,11 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.regex.Pattern;
-
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
-import name.abuchen.portfolio.datatransfer.pdf.PDFParser.LineSpan;
-import name.abuchen.portfolio.datatransfer.pdf.PDFParser.SplittingStrategy;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -108,6 +102,7 @@ public class OberbankAGPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("isin", "name", "nameContinued") //
                                                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) (Zugang|Abgang) Stk[\\s]*\\.[\\s]+[\\.,\\d]+$") //
                                                         .match("^(?<nameContinued>.*)$") //
+                                                        .match("^Kurs[\\s]+[\\.,\\d]+ (?<currency>[A-Z]{3})[\\s]+Kurswert[\\s]+[A-Z]{3}[\\s]+[\\.,\\d]+")
                                                         .assign((t, v) -> {
                                                             t.setSecurity(getOrCreateSecurity(v));
                                                         }),
@@ -119,6 +114,7 @@ public class OberbankAGPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("isin", "name", "nameContinued") //
                                                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) (Zugang|Abgang) [A-Z]{3}[\\s]+[\\.,\\d]+$") //
                                                         .match("^(?<nameContinued>.*)$") //
+                                                        .match("^Kurs[\\s]+[\\.,\\d]+ (?<currency>[A-Z]{3})[\\s]+Kurswert[\\s]+[A-Z]{3}[\\s]+[\\.,\\d]+")
                                                         .assign((t, v) -> {
                                                             t.setSecurity(getOrCreateSecurity(v));
                                                         }))
@@ -343,7 +339,6 @@ public class OberbankAGPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // @formatter:off
-                        // @formatter:off
                         // Ertrag 0,67 USD
                         // 15 % QUSt a 1,1797 v. 26.02.2026 EUR                4,11
                         // @formatter:on
@@ -386,40 +381,7 @@ public class OberbankAGPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<PortfolioTransaction>();
 
-        // Delivery inbound and outbound documents have multiple pages. The
-        // first two start with the same line,
-        // e.g.: Durchführungsanzeig e Freier Erhalt
-        //
-        // Repeated occurrences must be ignored to prevent the creation of
-        // duplicate blocks.
-        var startsWith = Pattern.compile("^Durchf.hrungsanzeig[\\s]*e[\\s]+" //
-                        + "(Freie Lieferung" //
-                        + "|Freier Erhalt)$");
-        var splittingStrategy = (SplittingStrategy) lines -> {
-            var blockIdentifiers = new HashSet<String>();
-
-            // first: find the start of the blocks
-            var blockStarts = new ArrayList<Integer>();
-
-            for (var ii = 0; ii < lines.length; ii++)
-            {
-                var matcher = startsWith.matcher(lines[ii]);
-                if (matcher.matches() && blockIdentifiers.add(lines[ii]))
-                    blockStarts.add(ii);
-            }
-
-            // second: convert to line spans
-            var spans = new ArrayList<LineSpan>();
-            for (var ii = 0; ii < blockStarts.size(); ii++)
-            {
-                int startLine = blockStarts.get(ii);
-                var endLine = ii + 1 < blockStarts.size() ? blockStarts.get(ii + 1) - 1 : lines.length - 1;
-                spans.add(new LineSpan(startLine, endLine));
-            }
-            return spans;
-        };
-
-        var firstRelevantLine = new Block(splittingStrategy);
+        var firstRelevantLine = new Block();
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -476,7 +438,7 @@ public class OberbankAGPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
-                        //   steuerlicher Anschaffungswert:                                                 1.199,76 EUR
+                        //   Anschaffungskurswert:                                                 1.199,76 EUR
                         // @formatter:on
                         .section("currency", "amount")
                         .match("^[\\s]*Anschaffungskurswert:[\\s]+(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
