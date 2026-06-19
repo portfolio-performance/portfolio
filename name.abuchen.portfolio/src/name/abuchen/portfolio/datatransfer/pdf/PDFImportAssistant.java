@@ -176,6 +176,7 @@ public class PDFImportAssistant
             try
             {
                 inputFile.convertPDFtoText();
+                inputFile.convertPDFtoLayoutStructure();
 
                 var extracted = false;
 
