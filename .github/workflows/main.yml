@@ -13,7 +13,7 @@ jobs:
     if: github.ref != 'refs/heads/master' || github.repository != 'portfolio-performance/portfolio'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -52,7 +52,7 @@ jobs:
     if: github.ref == 'refs/heads/master' && github.repository == 'portfolio-performance/portfolio'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0  # full history required by Sonar for blame and new-code detection
 
