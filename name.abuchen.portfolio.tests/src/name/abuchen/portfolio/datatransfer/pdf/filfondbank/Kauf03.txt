@@ -1,0 +1,60 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.84.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Depotführung: Ihr der FFB benannte Vermittler:
+Fondsvermittlung24.de GmbH 
+Heidenkampsweg 75 
+20097 Hamburg
+Fax: 040 52473790
+Herrn info@fondsvermittlung24.de
+RunYq nwWGF 
+ZxQdq WyqX 479 
+95400 qHjmAkYM
+Es schreibt Ihnen:
+FFB Kundenbetreuung
+Kronberg im Taunus, 16. Juni 2026
+Fondsabrechnung
+Auszug 18 
+Depotinhaber pGoPV zqcjq 
+Depotnummer 5060823916 (Privatvermögen)
+Transaktion Fondsname Betrag Preis Anteile 
+Auftrags-Nr. WKN / ISIN Wechselkurs Preisdatum Bestand alt 
+Fondsgesellschaft Währungsbetrag Zwischengewinn Bestand neu 
+Verwahrart, Lagerland Rücknahmepreis
+Kauf HSBC MSCI WORLD ETF 400,00 EUR 48,8000 USD 9,451
+2667709223 A1C9KK / IE00B4X9L533 1,153073 USD 15.06.2026 309,460 
+HSBC Global Asset Management 461,23 USD 0,0000 EUR 318,911 
+(Deutschland) GmbH 
+Wertpapierrechnung, Grossbritannien 48,8000 USD 
+Abrechnungsbetrag 400,00 EUR 
+Ausgabeaufschlag / Provision (0,00 %) 0,00 EUR 
+Handelsuhrzeit 11:15:38
+Kauf Future of Defense UCITS ETF Ac 400,00 EUR 20,7550 USD 22,223
+2667756179 A3EB9T / IE000OJ5TQP4 1,153073 USD 15.06.2026 769,784 
+HANetf Management Ltd. 461,23 USD 0,0000 EUR 792,007 
+Wertpapierrechnung, Grossbritannien 20,7550 USD 
+Abrechnungsbetrag 400,00 EUR 
+Ausgabeaufschlag / Provision (0,00 %) 0,00 EUR 
+Handelsuhrzeit 11:14:49
+Kauf Avaron Emerging Europe Fund C 400,00 EUR 51,8709 EUR 7,711
+2667761620 A0PEF0 / EE3600102901 15.06.2026 95,851 
+AS Avaron Asset Management 0,0000 EUR 103,562 
+Wertpapierrechnung, Estland 51,8709 EUR 
+Abrechnungsbetrag 400,00 EUR 
+Ausgabeaufschlag / Provision (0,00 %) 0,00 EUR
+Steuerliche Informationen
+Erteilter Freistellungsauftrag 115,00 EUR gültig bis: unbefristet Verlustverrechnungstopf neu 0,00 EUR 
+davon noch verfügbar 0,00 EUR Quellensteuertopf neu 0,00 EUR
+Hinweise: 
+Auslandszahlungen, die 50.000 EUR übersteigen, sind gemäß der Außenwirtschaftsverordnung (AWV) durch Sie meldepflichtig. Weitergehende Informationen zur 
+Meldepflicht nach AWV erhalten Sie direkt von der Deutschen Bundesbank, unter www.bundesbank.de oder unter der Rufnummer 0800 1234 111. 
+Einwendungen gegen diese Fondsabrechnung wegen Unrichtigkeit oder Unvollständigkeit richten Sie bitte schriftlich spätestens einen Monat nach Zugang an: 
+FIL Fondsbank GmbH, Beschwerdemanagement, Postfach 11 06 63, 60041 Frankfurt am Main.
+Seite 1 (1)
+FIL Fondsbank GmbH Postanschrift: Vorsitzender Geschäftsführung: Sitz: Kronberg im Taunus 
+Kastanienhöhe 1 Postfach 11 06 63 des Aufsichtsrats: Jan Schepanek (Sprecher) Amtsgericht 
+61476 Kronberg im Taunus 60041 Frankfurt am Main Ferdinand-Alexander Leisten Tina Kern Königstein HRB 8336 
+info@ffb.de Telefon 069 77060-200 Matthias Weiß Umsatzsteuer-ID Nr. 
+www.ffb.de DE213709602
+ABGST_V1.0
