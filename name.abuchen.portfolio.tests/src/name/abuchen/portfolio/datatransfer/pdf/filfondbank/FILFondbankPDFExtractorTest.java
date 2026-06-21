@@ -169,6 +169,129 @@ public class FILFondbankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf03()
+    {
+        var extractor = new FILFondbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(3L));
+        assertThat(countBuySell(results), is(3L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(6));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B4X9L533"), hasWkn("A1C9KK"), hasTicker(null), //
+                        hasName("HSBC MSCI WORLD ETF"), //
+                        hasCurrencyCode("USD"))));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE000OJ5TQP4"), hasWkn("A3EB9T"), hasTicker(null), //
+                        hasName("Future of Defense UCITS ETF Ac"), //
+                        hasCurrencyCode("USD"))));
+        assertThat(results, hasItem(security( //
+                        hasIsin("EE3600102901"), hasWkn("A0PEF0"), hasTicker(null), //
+                        hasName("Avaron Emerging Europe Fund C"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-06-15T11:15:38"), hasShares(9.451), //
+                        hasSource("Kauf03.txt"), //
+                        hasNote("Auftrags-Nr. 2667709223"), //
+                        hasAmount("EUR", 400.00), hasGrossValue("EUR", 400.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        hasForexGrossValue("USD", 461.23))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-06-15T11:14:49"), hasShares(22.223), //
+                        hasSource("Kauf03.txt"), //
+                        hasNote("Auftrags-Nr. 2667756179"), //
+                        hasAmount("EUR", 400.00), hasGrossValue("EUR", 400.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        hasForexGrossValue("USD", 461.23))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-06-15T11:14:49"), hasShares(7.711), //
+                        hasSource("Kauf03.txt"), //
+                        hasNote("Auftrags-Nr. 2667761620"), //
+                        hasAmount("EUR", 400.00), hasGrossValue("EUR", 400.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00) //
+        )));
+    }
+
+    @Test
+    public void testWertpapierKauf03WithSecurityInEUR()
+    {
+        var client = new Client();
+        addSecurity(client, "IE00B4X9L533", "A1C9KK", "HSBC MSCI WORLD ETF", "EUR");
+        addSecurity(client, "IE000OJ5TQP4", "A3EB9T", "Future of Defense UCITS ETF Ac", "EUR");
+        addSecurity(client, "EE3600102901", "A0PEF0", "Avaron Emerging Europe Fund C", "EUR");
+
+        var extractor = new FILFondbankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(3L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-06-15T11:15:38"), hasShares(9.451), //
+                        hasSource("Kauf03.txt"), //
+                        hasNote("Auftrags-Nr. 2667709223"), //
+                        hasAmount("EUR", 400.00), hasGrossValue("EUR", 400.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-06-15T11:14:49"), hasShares(22.223), //
+                        hasSource("Kauf03.txt"), //
+                        hasNote("Auftrags-Nr. 2667756179"), //
+                        hasAmount("EUR", 400.00), hasGrossValue("EUR", 400.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-06-15T11:14:49"), hasShares(7.711), //
+                        hasSource("Kauf03.txt"), //
+                        hasNote("Auftrags-Nr. 2667761620"), //
+                        hasAmount("EUR", 400.00), hasGrossValue("EUR", 400.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    private void addSecurity(Client client, String isin, String wkn, String name, String currency)
+    {
+        var security = new Security(name, currency);
+        security.setIsin(isin);
+        security.setWkn(wkn);
+        client.addSecurity(security);
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         var extractor = new FILFondbankPDFExtractor(new Client());
