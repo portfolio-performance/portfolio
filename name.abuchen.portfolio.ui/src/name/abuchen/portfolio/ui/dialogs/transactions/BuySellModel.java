@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 
 import java.time.LocalDateTime;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -17,9 +18,9 @@ import name.abuchen.portfolio.ui.Messages;
 
     protected Account account;
 
-    public BuySellModel(Client client, PortfolioTransaction.Type type)
+    public BuySellModel(NegativeValue negativeValue, Client client, PortfolioTransaction.Type type)
     {
-        super(client, type);
+        super(negativeValue, client, type);
 
         if (!accepts(type))
             throw new IllegalArgumentException("type " + type + " not accepted for this model"); //$NON-NLS-1$ //$NON-NLS-2$

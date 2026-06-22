@@ -19,6 +19,7 @@ import org.apache.commons.csv.CSVRecord;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -38,9 +39,12 @@ public class TradeRepublicCSVExtractor implements Extractor
     private static final String CATEGORY_CASH = "CASH";
     private static final String CATEGORY_CORPORATE_ACTION = "CORPORATE_ACTION";
 
-    public TradeRepublicCSVExtractor(Client client)
+    private NegativeValue negativeValue;
+
+    public TradeRepublicCSVExtractor(Client client, NegativeValue negativeValue)
     {
         this.client = client;
+        this.negativeValue = negativeValue;
     }
 
     public Client getClient()
@@ -944,5 +948,17 @@ public class TradeRepublicCSVExtractor implements Extractor
     {
         var item = createFailureItem(csvRecord, securityCache, source);
         return new SkippedItem(item, reason);
+    }
+
+    @Override
+    public NegativeValue getNegativeValue()
+    {
+        return negativeValue;
+    }
+
+    @Override
+    public void setNegativeValue(NegativeValue negativeValue)
+    {
+        this.negativeValue = negativeValue;
     }
 }

@@ -7,10 +7,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 
 public class ClientTestUtilities
 {
+    private static NegativeValue negativeValue = new NegativeValue();
+
     public static String toString(Client client)
     {
         return toString(client, false);
@@ -31,7 +34,7 @@ public class ClientTestUtilities
         try
         {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            new ClientFactory.XmlSerialization(withIdReferences).save(client, stream);
+            new ClientFactory.XmlSerialization(negativeValue, withIdReferences).save(client, stream);
             stream.close();
             return new String(stream.toByteArray());
         }

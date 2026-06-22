@@ -45,6 +45,7 @@ import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.UnicreditPDFExtractor;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -58,10 +59,13 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class UnicreditPDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testWertpapierKauf01()
     {
         var extractor = new UnicreditPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -112,6 +116,7 @@ public class UnicreditPDFExtractorTest
     public void testWertpapierKauf02()
     {
         var extractor = new UnicreditPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -162,6 +167,7 @@ public class UnicreditPDFExtractorTest
     public void testWertpapierKauf03()
     {
         var extractor = new UnicreditPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -204,6 +210,7 @@ public class UnicreditPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new UnicreditPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -237,6 +244,7 @@ public class UnicreditPDFExtractorTest
     public void testWertpapierKauf04()
     {
         var extractor = new UnicreditPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -271,6 +279,7 @@ public class UnicreditPDFExtractorTest
     public void testWertpapierVerkauf01()
     {
         var extractor = new UnicreditPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -321,6 +330,7 @@ public class UnicreditPDFExtractorTest
     public void testWertpapierVerkauf02()
     {
         var extractor = new UnicreditPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -355,6 +365,7 @@ public class UnicreditPDFExtractorTest
     public void testDividende01()
     {
         var extractor = new UnicreditPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -400,6 +411,7 @@ public class UnicreditPDFExtractorTest
     public void testDividende02()
     {
         var extractor = new UnicreditPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

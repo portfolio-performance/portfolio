@@ -36,15 +36,19 @@ import org.junit.Test;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.SunrisePDFExtractor;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 
 @SuppressWarnings("nls")
 public class SunrisePDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testWertpapierKauf01()
     {
         var extractor = new SunrisePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -79,6 +83,7 @@ public class SunrisePDFExtractorTest
     public void testWertpapierKauf02()
     {
         var extractor = new SunrisePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -113,6 +118,7 @@ public class SunrisePDFExtractorTest
     public void testWertpapierKauf03()
     {
         var extractor = new SunrisePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -147,6 +153,7 @@ public class SunrisePDFExtractorTest
     public void testWertpapierKauf04()
     {
         var extractor = new SunrisePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -181,6 +188,7 @@ public class SunrisePDFExtractorTest
     public void testWertpapierKauf05()
     {
         var extractor = new SunrisePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -215,6 +223,7 @@ public class SunrisePDFExtractorTest
     public void testDividende22()
     {
         var extractor = new SunrisePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

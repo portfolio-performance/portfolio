@@ -24,15 +24,19 @@ import org.junit.Test;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.WitheBoxGmbHPDFExtractor;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 
 @SuppressWarnings("nls")
 public class WitheBoxGmbHPDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testGebuehrenabrechnung01()
     {
         var extractor = new WitheBoxGmbHPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -57,6 +61,7 @@ public class WitheBoxGmbHPDFExtractorTest
     public void testGebuehrenabrechnung02()
     {
         var extractor = new WitheBoxGmbHPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -85,6 +90,7 @@ public class WitheBoxGmbHPDFExtractorTest
     public void testGebuehrenabrechnung03()
     {
         var extractor = new WitheBoxGmbHPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.junit.Test;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -19,12 +20,14 @@ import name.abuchen.portfolio.ui.Messages;
 
 public class BuySellModelTest
 {
+    NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testBuyTotal()
     {
         // fees and taxes added on top of gross value:
         // shares 100, price 5, sub-total 500, fees 11, taxes 22, total 533
-        var model = new BuySellModel(new Client(), PortfolioTransaction.Type.BUY);
+        var model = new BuySellModel(negativeValue, new Client(), PortfolioTransaction.Type.BUY);
         model.setShares(100L * Values.Share.factor());
         model.setQuote(BigDecimal.valueOf(5.0));
         assertThat(model.getCalculationStatus(), is(ValidationStatus.ok()));
@@ -41,7 +44,7 @@ public class BuySellModelTest
     {
         // fees and taxes deducted from gross value
         // shares 100, price 5, sub-total 500, fees 11, taxes 22, total 467
-        var model = new BuySellModel(new Client(), PortfolioTransaction.Type.SELL);
+        var model = new BuySellModel(negativeValue, new Client(), PortfolioTransaction.Type.SELL);
         model.setShares(100L * Values.Share.factor());
         model.setQuote(BigDecimal.valueOf(5.0));
         assertThat(model.getCalculationStatus(), is(ValidationStatus.ok()));
@@ -56,7 +59,7 @@ public class BuySellModelTest
     @Test
     public void testChangedShares()
     {
-        var model = new BuySellModel(new Client(), PortfolioTransaction.Type.BUY);
+        var model = new BuySellModel(negativeValue, new Client(), PortfolioTransaction.Type.BUY);
         model.setShares(100L * Values.Share.factor());
         model.setQuote(BigDecimal.valueOf(5.0));
 
@@ -70,7 +73,7 @@ public class BuySellModelTest
     @Test
     public void testChangedGrossValue()
     {
-        var model = new BuySellModel(new Client(), PortfolioTransaction.Type.BUY);
+        var model = new BuySellModel(negativeValue, new Client(), PortfolioTransaction.Type.BUY);
         model.setShares(100L * Values.Share.factor());
         model.setQuote(BigDecimal.valueOf(5.0));
 
@@ -83,7 +86,7 @@ public class BuySellModelTest
     @Test
     public void testChangedTotal()
     {
-        var model = new BuySellModel(new Client(), PortfolioTransaction.Type.BUY);
+        var model = new BuySellModel(negativeValue, new Client(), PortfolioTransaction.Type.BUY);
         model.setShares(100L * Values.Share.factor());
         model.setQuote(BigDecimal.valueOf(5.0));
 
@@ -96,7 +99,7 @@ public class BuySellModelTest
     @Test
     public void testStatusErrors()
     {
-        var model = new BuySellModel(new Client(), PortfolioTransaction.Type.BUY);
+        var model = new BuySellModel(negativeValue, new Client(), PortfolioTransaction.Type.BUY);
 
         // number of shares needs to be != 0
         model.setShares(0L);
@@ -127,7 +130,7 @@ public class BuySellModelTest
     public void testWithSecurity()
     {
         // some properties can be fetched from a Security object
-        var model = new BuySellModel(new Client(), PortfolioTransaction.Type.BUY);
+        var model = new BuySellModel(negativeValue, new Client(), PortfolioTransaction.Type.BUY);
         var security = new Security("Acme Corporation", "USD");
         var date = LocalDate.now();
         security.addPrice(new SecurityPrice(date, 5L * Values.Quote.factor()));

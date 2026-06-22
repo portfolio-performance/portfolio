@@ -47,6 +47,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
@@ -59,6 +60,7 @@ import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.TestCoinSearchProvider;
 import name.abuchen.portfolio.datatransfer.pdf.TradeRepublicPDFExtractor;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -76,6 +78,8 @@ import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
 @SuppressWarnings("nls")
 public class TradeRepublicPDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     TradeRepublicPDFExtractor cryptExtractor = new TradeRepublicPDFExtractor(new Client())
     {
         @Override
@@ -85,10 +89,18 @@ public class TradeRepublicPDFExtractorTest
         }
     };
 
+    @Before
+    public void init()
+    {
+        cryptExtractor.setNegativeValue(negativeValue);
+    }
+
     @Test
     public void testWertpapierKauf01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -139,6 +151,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierKauf02()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -189,6 +202,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierKauf03()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -239,6 +253,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierKauf04()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -289,6 +304,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierKauf05()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -339,6 +355,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierKauf06()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -389,6 +406,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierKauf07()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -439,6 +457,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierKauf08()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -489,6 +508,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierKauf09()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -523,6 +543,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierKauf10()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -557,6 +578,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierKauf11()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -591,6 +613,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierKauf12()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -625,6 +648,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierKauf13()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -659,6 +683,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierKauf14()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -693,6 +718,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierKauf15()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -727,6 +753,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierKauf16()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -761,6 +788,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierKauf17()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -795,6 +823,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierKauf18()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -829,6 +858,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierKauf19()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -863,6 +893,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierKauf20()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -897,6 +928,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierKauf21()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -965,6 +997,7 @@ public class TradeRepublicPDFExtractorTest
     public void testSecurityBuy01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -999,6 +1032,7 @@ public class TradeRepublicPDFExtractorTest
     public void testSecurityBuy02()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1033,6 +1067,7 @@ public class TradeRepublicPDFExtractorTest
     public void testCompra01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1067,6 +1102,7 @@ public class TradeRepublicPDFExtractorTest
     public void testSecurityAcquisto01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1101,6 +1137,7 @@ public class TradeRepublicPDFExtractorTest
     public void testSecurityAcquisto02()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1135,6 +1172,7 @@ public class TradeRepublicPDFExtractorTest
     public void testSecurityAcquisto03()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1509,6 +1547,7 @@ public class TradeRepublicPDFExtractorTest
     public void testAchat01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1559,6 +1598,7 @@ public class TradeRepublicPDFExtractorTest
     public void testAchat02()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1593,6 +1633,7 @@ public class TradeRepublicPDFExtractorTest
     public void testAchat03()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1627,6 +1668,7 @@ public class TradeRepublicPDFExtractorTest
     public void testAchat04()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1661,6 +1703,7 @@ public class TradeRepublicPDFExtractorTest
     public void testAchat05()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1695,6 +1738,7 @@ public class TradeRepublicPDFExtractorTest
     public void testAchat06()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1729,6 +1773,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1803,6 +1848,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug02()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1837,6 +1883,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug03()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1871,6 +1918,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug04()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1925,6 +1973,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug05()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1991,6 +2040,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug06()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2093,6 +2143,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug07()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2255,6 +2306,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug08()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2343,6 +2395,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug09()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2389,6 +2442,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug10()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2419,6 +2473,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug11()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2481,6 +2536,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug12()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2553,6 +2609,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug13()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2621,6 +2678,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug14()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2661,6 +2719,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug15()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2707,6 +2766,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug16()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2743,6 +2803,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug17()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2767,6 +2828,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug18()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2797,6 +2859,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug19()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2873,6 +2936,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug20()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2901,6 +2965,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug21()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3029,6 +3094,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug22()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3053,6 +3119,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug23()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3091,6 +3158,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug24()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3123,6 +3191,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug25()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3155,6 +3224,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug26()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3263,6 +3333,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug27()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3493,6 +3564,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug28()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3517,6 +3589,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug29()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3545,6 +3618,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug30()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3809,6 +3883,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug31()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3891,6 +3966,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug32()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3915,6 +3991,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug33()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3948,6 +4025,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug34()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3981,6 +4059,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug35()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4010,6 +4089,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug36()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4040,6 +4120,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug37()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4067,6 +4148,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug38()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4096,6 +4178,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug39()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4120,6 +4203,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKontoauszug40()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4181,6 +4265,7 @@ public class TradeRepublicPDFExtractorTest
     public void testEstrattoContoRiassuntivo01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4240,6 +4325,7 @@ public class TradeRepublicPDFExtractorTest
     public void testReleveDeCompte01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4288,6 +4374,7 @@ public class TradeRepublicPDFExtractorTest
     public void testReleveDeCompte02()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4326,6 +4413,7 @@ public class TradeRepublicPDFExtractorTest
     public void testReleveDeCompte03()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4372,6 +4460,7 @@ public class TradeRepublicPDFExtractorTest
     public void testTransaccionesDeCuenta01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4830,6 +4919,7 @@ public class TradeRepublicPDFExtractorTest
     public void testTransaccionesDeCuenta02()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4952,6 +5042,7 @@ public class TradeRepublicPDFExtractorTest
     public void testTransaccionesDeCuenta03()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -5042,6 +5133,7 @@ public class TradeRepublicPDFExtractorTest
     public void testTransaccionesDeCuenta04()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -5075,6 +5167,7 @@ public class TradeRepublicPDFExtractorTest
     public void testTransaccionesDeCuenta05()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -5117,6 +5210,7 @@ public class TradeRepublicPDFExtractorTest
     public void testTransaccionesDeCuenta06()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -5151,6 +5245,7 @@ public class TradeRepublicPDFExtractorTest
     public void testTransaccionesDeCuenta07()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -5197,6 +5292,7 @@ public class TradeRepublicPDFExtractorTest
     public void testTransaccionesDeCuenta08()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -5251,6 +5347,7 @@ public class TradeRepublicPDFExtractorTest
     public void testAccountStatementSummary01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -5287,6 +5384,7 @@ public class TradeRepublicPDFExtractorTest
     public void testAccountStatementSummary02()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -5345,6 +5443,7 @@ public class TradeRepublicPDFExtractorTest
     public void testTransaccionesDeCuenta09()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -5377,6 +5476,7 @@ public class TradeRepublicPDFExtractorTest
     public void testSteuerabrechnung01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -5413,6 +5513,7 @@ public class TradeRepublicPDFExtractorTest
     public void testSteuerabrechnung02()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -5447,6 +5548,7 @@ public class TradeRepublicPDFExtractorTest
     public void testSteuerabrechnung03()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -5481,6 +5583,7 @@ public class TradeRepublicPDFExtractorTest
     public void testSteuerabrechnung04()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -5515,6 +5618,7 @@ public class TradeRepublicPDFExtractorTest
     public void testSteueroptimierung01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -5543,6 +5647,7 @@ public class TradeRepublicPDFExtractorTest
     public void testSteueroptimierung02()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -5571,6 +5676,7 @@ public class TradeRepublicPDFExtractorTest
     public void testSteueroptimierung03()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -5599,6 +5705,7 @@ public class TradeRepublicPDFExtractorTest
     public void testSteuerkorrektur01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -5647,6 +5754,7 @@ public class TradeRepublicPDFExtractorTest
     public void testStornoSteuerkorrektur01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -5690,6 +5798,7 @@ public class TradeRepublicPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradeRepublicPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -5727,6 +5836,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierVerkauf01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -5777,6 +5887,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierVerkauf02()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -5843,6 +5954,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierVerkauf03()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -5909,6 +6021,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierVerkauf04()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -5958,6 +6071,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierVerkauf05()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -6007,6 +6121,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierVerkauf06()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -6072,6 +6187,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierVerkauf07()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -6138,6 +6254,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierVerkauf08()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -6204,6 +6321,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierVerkauf09()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -6238,6 +6356,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierVerkauf10()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -6272,6 +6391,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierVerkauf11()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -6413,6 +6533,7 @@ public class TradeRepublicPDFExtractorTest
     public void testSecuritySell01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -6447,6 +6568,7 @@ public class TradeRepublicPDFExtractorTest
     public void testVenta01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -6481,6 +6603,7 @@ public class TradeRepublicPDFExtractorTest
     public void testVente01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -6515,6 +6638,7 @@ public class TradeRepublicPDFExtractorTest
     public void testRepayment01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -6549,6 +6673,7 @@ public class TradeRepublicPDFExtractorTest
     public void testTilgung01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -6614,6 +6739,7 @@ public class TradeRepublicPDFExtractorTest
     public void testTilgung02()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -6663,6 +6789,7 @@ public class TradeRepublicPDFExtractorTest
     public void testTilgung03()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -6697,6 +6824,7 @@ public class TradeRepublicPDFExtractorTest
     public void testAusbuchung01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -6731,6 +6859,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividendeStorno01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -6785,6 +6914,7 @@ public class TradeRepublicPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradeRepublicPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -6825,6 +6955,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividendeStorno02()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -6882,6 +7013,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividendeStorno03()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -6918,6 +7050,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividende01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -6973,6 +7106,7 @@ public class TradeRepublicPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradeRepublicPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -7016,6 +7150,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividende02()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -7072,6 +7207,7 @@ public class TradeRepublicPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradeRepublicPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -7116,6 +7252,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividende03()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -7172,6 +7309,7 @@ public class TradeRepublicPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradeRepublicPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -7216,6 +7354,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividende04()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -7262,6 +7401,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividende05()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -7317,6 +7457,7 @@ public class TradeRepublicPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradeRepublicPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -7360,6 +7501,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividende06()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -7416,6 +7558,7 @@ public class TradeRepublicPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradeRepublicPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -7460,6 +7603,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividende07()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -7515,6 +7659,7 @@ public class TradeRepublicPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradeRepublicPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -7558,6 +7703,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividende08()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -7613,6 +7759,7 @@ public class TradeRepublicPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradeRepublicPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -7656,6 +7803,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividende09()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -7702,6 +7850,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividende10()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -7749,6 +7898,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividende11()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -7795,6 +7945,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividende12()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -7870,6 +8021,7 @@ public class TradeRepublicPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradeRepublicPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -7933,6 +8085,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividende13()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -7979,6 +8132,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividende14()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -8034,6 +8188,7 @@ public class TradeRepublicPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradeRepublicPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -8077,6 +8232,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividende15()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -8119,6 +8275,7 @@ public class TradeRepublicPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradeRepublicPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -8148,6 +8305,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividende16()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -8199,6 +8357,7 @@ public class TradeRepublicPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradeRepublicPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -8236,6 +8395,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividende17()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -8278,6 +8438,7 @@ public class TradeRepublicPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradeRepublicPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -8307,6 +8468,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividende18()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -8342,6 +8504,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividende19()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -8385,6 +8548,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividende20()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -8427,6 +8591,7 @@ public class TradeRepublicPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradeRepublicPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -8456,6 +8621,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividende21()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -8491,6 +8657,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividende22()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -8526,6 +8693,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividende23()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -8568,6 +8736,7 @@ public class TradeRepublicPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradeRepublicPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -8597,6 +8766,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividende24()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -8639,6 +8809,7 @@ public class TradeRepublicPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradeRepublicPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -8668,6 +8839,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividende25()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -8711,6 +8883,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividende26()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -8745,6 +8918,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividende27()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -8787,6 +8961,7 @@ public class TradeRepublicPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradeRepublicPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -8816,6 +8991,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividende28()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -8858,6 +9034,7 @@ public class TradeRepublicPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradeRepublicPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -8887,6 +9064,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividende29()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -8929,6 +9107,7 @@ public class TradeRepublicPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradeRepublicPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -9104,6 +9283,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividend01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -9146,6 +9326,7 @@ public class TradeRepublicPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradeRepublicPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -9175,6 +9356,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividend02()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -9217,6 +9399,7 @@ public class TradeRepublicPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradeRepublicPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -9246,6 +9429,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividend03()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -9281,6 +9465,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividend04()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -9323,6 +9508,7 @@ public class TradeRepublicPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradeRepublicPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -9352,6 +9538,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividend05()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -9394,6 +9581,7 @@ public class TradeRepublicPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradeRepublicPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -9423,6 +9611,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividend06()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -9465,6 +9654,7 @@ public class TradeRepublicPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradeRepublicPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -9494,6 +9684,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividend07()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -9536,6 +9727,7 @@ public class TradeRepublicPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradeRepublicPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -9565,6 +9757,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividend08()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -9607,6 +9800,7 @@ public class TradeRepublicPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradeRepublicPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -9636,6 +9830,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividend09()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -9678,6 +9873,7 @@ public class TradeRepublicPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradeRepublicPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -9707,6 +9903,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDividendo01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -9749,6 +9946,7 @@ public class TradeRepublicPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradeRepublicPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -9778,6 +9976,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDistribuzione01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -9813,6 +10012,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKaptialreduktion01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -9867,6 +10067,7 @@ public class TradeRepublicPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradeRepublicPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -9909,6 +10110,7 @@ public class TradeRepublicPDFExtractorTest
     public void testKapitalerhoehungGegenBar01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -9946,6 +10148,7 @@ public class TradeRepublicPDFExtractorTest
     public void testDepotuebertragEingehend()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -9982,6 +10185,7 @@ public class TradeRepublicPDFExtractorTest
     public void testSpinOff01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -10018,6 +10222,7 @@ public class TradeRepublicPDFExtractorTest
     public void testUmtausch01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -10054,6 +10259,7 @@ public class TradeRepublicPDFExtractorTest
     public void testUmtausch02()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -10090,6 +10296,7 @@ public class TradeRepublicPDFExtractorTest
     public void testVorabpauschale01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -10135,6 +10342,7 @@ public class TradeRepublicPDFExtractorTest
     public void testVorabpauschale02()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -10171,6 +10379,7 @@ public class TradeRepublicPDFExtractorTest
     public void testVorabpauschale03()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -10205,6 +10414,7 @@ public class TradeRepublicPDFExtractorTest
     public void testVorabpauschale04()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -10239,6 +10449,7 @@ public class TradeRepublicPDFExtractorTest
     public void testVorabpauschale05()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -10273,6 +10484,7 @@ public class TradeRepublicPDFExtractorTest
     public void testSparplan01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -10323,6 +10535,7 @@ public class TradeRepublicPDFExtractorTest
     public void testSparplan02()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -10373,6 +10586,7 @@ public class TradeRepublicPDFExtractorTest
     public void testSparplan03()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -10423,6 +10637,7 @@ public class TradeRepublicPDFExtractorTest
     public void testSparplan04()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -10473,6 +10688,7 @@ public class TradeRepublicPDFExtractorTest
     public void testSparplan05()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -10523,6 +10739,7 @@ public class TradeRepublicPDFExtractorTest
     public void testSparplan06()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -10557,6 +10774,8 @@ public class TradeRepublicPDFExtractorTest
     public void testSparplan07()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -10591,6 +10810,8 @@ public class TradeRepublicPDFExtractorTest
     public void testSparplan08()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -10625,6 +10846,8 @@ public class TradeRepublicPDFExtractorTest
     public void testSparplan09()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -10659,6 +10882,8 @@ public class TradeRepublicPDFExtractorTest
     public void testSparplan10()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -10693,6 +10918,8 @@ public class TradeRepublicPDFExtractorTest
     public void testSparplan11()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -10761,6 +10988,8 @@ public class TradeRepublicPDFExtractorTest
     public void testPianoDinvestimento01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -10795,6 +11024,8 @@ public class TradeRepublicPDFExtractorTest
     public void testPlanDeInvestion01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -10829,6 +11060,8 @@ public class TradeRepublicPDFExtractorTest
     public void testPlanDeInvestion02()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -10863,6 +11096,7 @@ public class TradeRepublicPDFExtractorTest
     public void testFusion01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -10914,6 +11148,7 @@ public class TradeRepublicPDFExtractorTest
     public void testSplit01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -10950,6 +11185,8 @@ public class TradeRepublicPDFExtractorTest
     public void testZwangsuebernahme01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -10991,6 +11228,7 @@ public class TradeRepublicPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradeRepublicPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -11024,6 +11262,7 @@ public class TradeRepublicPDFExtractorTest
     public void testSteuerlicherUmtausch01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -11060,6 +11299,7 @@ public class TradeRepublicPDFExtractorTest
     public void testSteuerlicherUmtausch02()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -11096,6 +11336,7 @@ public class TradeRepublicPDFExtractorTest
     public void testVergleichsverfahren01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -11147,6 +11388,7 @@ public class TradeRepublicPDFExtractorTest
     public void testTitelumtausch01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -11198,6 +11440,8 @@ public class TradeRepublicPDFExtractorTest
     public void testEinzahlungsabrechnung01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -11226,6 +11470,8 @@ public class TradeRepublicPDFExtractorTest
     public void testEinzahlungsabrechnung02()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -11254,6 +11500,8 @@ public class TradeRepublicPDFExtractorTest
     public void testEinzahlungsabrechnung03()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -11282,6 +11530,8 @@ public class TradeRepublicPDFExtractorTest
     public void testReglementDuVersement01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -11310,6 +11560,8 @@ public class TradeRepublicPDFExtractorTest
     public void testZinsabrechnung01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -11338,6 +11590,8 @@ public class TradeRepublicPDFExtractorTest
     public void testZinsabrechnung02()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -11366,6 +11620,8 @@ public class TradeRepublicPDFExtractorTest
     public void testZinsabrechnung03()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -11394,6 +11650,8 @@ public class TradeRepublicPDFExtractorTest
     public void testZinsabrechnung04()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -11430,6 +11688,8 @@ public class TradeRepublicPDFExtractorTest
     public void testZinsabrechnung05()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -11458,6 +11718,8 @@ public class TradeRepublicPDFExtractorTest
     public void testZinsabrechnung06()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -11494,6 +11756,8 @@ public class TradeRepublicPDFExtractorTest
     public void testZinsabrechnung07()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -11522,6 +11786,8 @@ public class TradeRepublicPDFExtractorTest
     public void testZinsabrechnung08()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -11558,6 +11824,8 @@ public class TradeRepublicPDFExtractorTest
     public void testZinsabrechnung09()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -11586,6 +11854,8 @@ public class TradeRepublicPDFExtractorTest
     public void testRapportDInterets01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -11614,6 +11884,8 @@ public class TradeRepublicPDFExtractorTest
     public void testZinsabrechnung10()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -11642,6 +11914,8 @@ public class TradeRepublicPDFExtractorTest
     public void testRapportDInterets02()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -11670,6 +11944,8 @@ public class TradeRepublicPDFExtractorTest
     public void testRescontoInteressiMaturati01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -11699,6 +11975,8 @@ public class TradeRepublicPDFExtractorTest
     public void testInterestInvoice01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -11727,6 +12005,8 @@ public class TradeRepublicPDFExtractorTest
     public void testInterestInvoice02()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -11756,6 +12036,8 @@ public class TradeRepublicPDFExtractorTest
     public void testSynthese01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -11784,6 +12066,8 @@ public class TradeRepublicPDFExtractorTest
     public void testUeberweisungsdetails01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -11808,6 +12092,8 @@ public class TradeRepublicPDFExtractorTest
     public void testUeberweisungsdetails02()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -11832,6 +12118,8 @@ public class TradeRepublicPDFExtractorTest
     public void testExAnte01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -11866,6 +12154,8 @@ public class TradeRepublicPDFExtractorTest
     public void testExAnte02()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -11900,6 +12190,8 @@ public class TradeRepublicPDFExtractorTest
     public void testExAnte03()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

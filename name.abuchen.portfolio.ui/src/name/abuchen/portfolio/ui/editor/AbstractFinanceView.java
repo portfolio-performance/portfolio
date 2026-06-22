@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
@@ -43,6 +44,9 @@ public abstract class AbstractFinanceView
     private final String identifier = getClass().getSimpleName() + "-newsash"; //$NON-NLS-1$
 
     @Inject
+    protected NegativeValue negativeValue;
+
+    @Inject
     private IEclipseContext context;
 
     @Inject
@@ -54,7 +58,8 @@ public abstract class AbstractFinanceView
     /**
      * Track editor activation and delay updates until the editor is deactivated
      */
-    private final EditorActivationState editorActivationState = new EditorActivationState();
+    @Inject
+    private EditorActivationState editorActivationState;
 
     private Composite top;
     private InformationPane pane;
@@ -407,5 +412,10 @@ public abstract class AbstractFinanceView
     public IStylingEngine getStylingEngine()
     {
         return stylingEngine;
+    }
+
+    public NegativeValue getNegativeValue()
+    {
+        return negativeValue;
     }
 }

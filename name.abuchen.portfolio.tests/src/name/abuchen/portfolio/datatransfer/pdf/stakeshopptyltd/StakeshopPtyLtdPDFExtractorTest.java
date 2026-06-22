@@ -35,16 +35,20 @@ import org.junit.Test;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.StakeshopPtyLtdPDFExtractor;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 
 @SuppressWarnings("nls")
 public class StakeshopPtyLtdPDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testSecurityBuy01()
     {
         var extractor = new StakeshopPtyLtdPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -83,6 +87,7 @@ public class StakeshopPtyLtdPDFExtractorTest
         client.addSecurity(flt);
 
         var extractor = new StakeshopPtyLtdPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -110,6 +115,7 @@ public class StakeshopPtyLtdPDFExtractorTest
     public void testSecurityBuy02()
     {
         var extractor = new StakeshopPtyLtdPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -142,6 +148,7 @@ public class StakeshopPtyLtdPDFExtractorTest
     public void testSecuritySell01()
     {
         var extractor = new StakeshopPtyLtdPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -174,6 +181,7 @@ public class StakeshopPtyLtdPDFExtractorTest
     public void testSecuritySell02()
     {
         var extractor = new StakeshopPtyLtdPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

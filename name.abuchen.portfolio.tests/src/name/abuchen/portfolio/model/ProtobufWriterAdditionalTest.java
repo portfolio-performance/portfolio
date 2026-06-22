@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -19,6 +20,7 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class ProtobufWriterAdditionalTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
 
     @Test
     public void testSavingFutureDates() throws IOException
@@ -32,7 +34,7 @@ public class ProtobufWriterAdditionalTest
 
         // convert to binary format and back
 
-        ProtobufWriter protobufWriter = new ProtobufWriter();
+        ProtobufWriter protobufWriter = new ProtobufWriter(negativeValue);
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         protobufWriter.save(client, stream);
@@ -84,7 +86,7 @@ public class ProtobufWriterAdditionalTest
         account.setCurrencyCode(CurrencyUnit.USD);
 
         // save client with invalid data
-        ProtobufWriter protobufWriter = new ProtobufWriter();
+        ProtobufWriter protobufWriter = new ProtobufWriter(negativeValue);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         protobufWriter.save(client, stream);
         stream.close();
@@ -129,7 +131,7 @@ public class ProtobufWriterAdditionalTest
         account.addTransaction(dividend);
 
         // Save to binary format
-        var protobufWriter = new ProtobufWriter();
+        var protobufWriter = new ProtobufWriter(negativeValue);
         var stream = new ByteArrayOutputStream();
         protobufWriter.save(client, stream);
         stream.close();

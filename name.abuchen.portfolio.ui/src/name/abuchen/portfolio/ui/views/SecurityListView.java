@@ -109,7 +109,8 @@ public class SecurityListView extends AbstractFinanceView
                     if (fileName == null)
                         return;
 
-                    CSVImportWizard wizard = new CSVImportWizard(getClient(), getPreferenceStore(), new File(fileName));
+                    CSVImportWizard wizard = new CSVImportWizard(negativeValue, getClient(), getPreferenceStore(),
+                                    new File(fileName));
                     inject(wizard);
 
                     // pre-select import of securities

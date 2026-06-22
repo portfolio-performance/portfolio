@@ -29,15 +29,19 @@ import org.junit.Test;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.BondoraCapitalPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 
 @SuppressWarnings("nls")
 public class BondoraCapitalPDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testKontoauszug01()
     {
         var extractor = new BondoraCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -74,6 +78,7 @@ public class BondoraCapitalPDFExtractorTest
     public void testKontoauszug02()
     {
         var extractor = new BondoraCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -122,6 +127,7 @@ public class BondoraCapitalPDFExtractorTest
     public void testKontoauszug03()
     {
         var extractor = new BondoraCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -162,6 +168,7 @@ public class BondoraCapitalPDFExtractorTest
     public void testKontoauszug04()
     {
         var extractor = new BondoraCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -210,6 +217,7 @@ public class BondoraCapitalPDFExtractorTest
     public void testKontoauszug05()
     {
         var extractor = new BondoraCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -250,6 +258,7 @@ public class BondoraCapitalPDFExtractorTest
     public void testKontoauszug06()
     {
         var extractor = new BondoraCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -294,6 +303,7 @@ public class BondoraCapitalPDFExtractorTest
     public void testKontoauszug07()
     {
         var extractor = new BondoraCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -326,6 +336,7 @@ public class BondoraCapitalPDFExtractorTest
     public void testKontoauszug08()
     {
         var extractor = new BondoraCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -366,6 +377,7 @@ public class BondoraCapitalPDFExtractorTest
     public void testKontoauszug09()
     {
         var extractor = new BondoraCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -414,6 +426,7 @@ public class BondoraCapitalPDFExtractorTest
     public void testKontoauszug10()
     {
         var extractor = new BondoraCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -466,6 +479,7 @@ public class BondoraCapitalPDFExtractorTest
     public void testKontoauszug11()
     {
         var extractor = new BondoraCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -510,6 +524,7 @@ public class BondoraCapitalPDFExtractorTest
     public void testKontoauszug12()
     {
         var extractor = new BondoraCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -554,6 +569,7 @@ public class BondoraCapitalPDFExtractorTest
     public void testKontoauszug13()
     {
         var extractor = new BondoraCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -606,6 +622,7 @@ public class BondoraCapitalPDFExtractorTest
     public void testKontoauszug14()
     {
         var extractor = new BondoraCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -638,6 +655,7 @@ public class BondoraCapitalPDFExtractorTest
     public void testKontoauszug15()
     {
         var extractor = new BondoraCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -678,6 +696,7 @@ public class BondoraCapitalPDFExtractorTest
     public void testKontoauszug16()
     {
         var extractor = new BondoraCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -710,6 +729,7 @@ public class BondoraCapitalPDFExtractorTest
     public void testKontoauszug17()
     {
         var extractor = new BondoraCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

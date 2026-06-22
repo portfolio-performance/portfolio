@@ -40,6 +40,7 @@ import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.VDKBankNVPDFExtractor;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -48,10 +49,13 @@ import name.abuchen.portfolio.model.Security;
 @SuppressWarnings("nls")
 public class VDKBankNVPDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testAankoop01()
     {
         var extractor = new VDKBankNVPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -93,6 +97,7 @@ public class VDKBankNVPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new VDKBankNVPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -126,6 +131,7 @@ public class VDKBankNVPDFExtractorTest
     public void testVerkoop01()
     {
         var extractor = new VDKBankNVPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -160,6 +166,7 @@ public class VDKBankNVPDFExtractorTest
     public void testVerkoop02()
     {
         var extractor = new VDKBankNVPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -201,6 +208,7 @@ public class VDKBankNVPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new VDKBankNVPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -234,6 +242,7 @@ public class VDKBankNVPDFExtractorTest
     public void testDividende01()
     {
         var extractor = new VDKBankNVPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

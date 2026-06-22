@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
@@ -23,6 +24,7 @@ import org.eclipse.swt.widgets.Shell;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.datatransfer.traderepublic.TradeRepublicCSVExtractor;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -33,6 +35,9 @@ import name.abuchen.portfolio.ui.wizards.datatransfer.ImportExtractedItemsWizard
 
 public class ImportTradeRepublicHandler
 {
+    @Inject
+    protected NegativeValue negativeValue;
+
     @CanExecute
     boolean isVisible(@Named(IServiceConstants.ACTIVE_PART) MPart part)
     {
@@ -62,7 +67,7 @@ public class ImportTradeRepublicHandler
 
         try
         {
-            var extractor = new TradeRepublicCSVExtractor(client);
+            var extractor = new TradeRepublicCSVExtractor(client, negativeValue);
 
             var portfolioPart = (PortfolioPart) part.getObject();
             var helper = new FilePathHelper(portfolioPart, UIConstants.Preferences.CSV_IMPORT_PATH);
