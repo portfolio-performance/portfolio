@@ -1,0 +1,21 @@
+{
+  "trades": {
+    "detailed": [
+      {
+        "trade_id": 700555666,
+        "order_id": "600777888",
+        "date": "2026-02-10 17:45:33",
+        "instr_nm": "MSFT.US",
+        "instr_type": 1,
+        "operation": "sell",
+        "issue_nb": "US5949181045",
+        "curr_c": "USD",
+        "q": 2,
+        "summ": 830.60,
+        "commission": 4.15,
+        "commission_currency": "EUR",
+        "comment": "Currency exchange of trade (USD) to a currency exchange of the service plan (EUR) is 0.9000"
+      }
+    ]
+  }
+}

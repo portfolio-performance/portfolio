@@ -1,0 +1,21 @@
+{
+  "trades": {
+    "detailed": [
+      {
+        "trade_id": 700111222,
+        "order_id": "600333444",
+        "date": "2026-02-03 14:22:10",
+        "instr_nm": "AAPL.US",
+        "instr_type": 1,
+        "operation": "buy",
+        "issue_nb": "US0378331005",
+        "curr_c": "USD",
+        "q": 5,
+        "summ": 1102.50,
+        "commission": 5.52,
+        "commission_currency": "EUR",
+        "comment": "Currency exchange of trade (USD) to a currency exchange of the service plan (EUR) is 0.9200"
+      }
+    ]
+  }
+}

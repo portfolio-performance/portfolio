@@ -1,0 +1,13 @@
+{
+  "cash_in_outs": [
+    {
+      "type": "bank",
+      "datetime": "2026-02-01 09:15:00",
+      "currency": "EUR",
+      "amount": "5000.00000000",
+      "transaction_id": 1234567890,
+      "comment": "Top up account through a bank transfer",
+      "offbalance": null
+    }
+  ]
+}
