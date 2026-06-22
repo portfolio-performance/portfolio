@@ -37,6 +37,24 @@
 	    <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.84.2" date="2026-06-22">
+      <description>
+        <ul>
+          <li>New: Added the Borsa İstanbul trade calendar with Hijri date support.</li>
+          <li>Improvement: Enhanced PDF importers for BNP Paribas, Bondora Capital, Boursorama, Credit Suisse, DAB Bank, DADAT, Debitum Investments, ING, Trade Republic, and WirBank.</li>
+          <li>Improvement: Securities performance view now keeps the selection when changing view settings.</li>
+          <li>Fix: Colorized the profit/loss column in base currency.</li>
+          <li>Fix: Corrected Finnish month name formatting in the UI.</li>
+          <li>Fix: Fixed incorrect excess return values in the performance heatmap.</li>
+          <li xml:lang="de">Neu: Handelskalender der Borsa İstanbul mit Unterstützung für Hidschra-Datumsangaben hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für BNP Paribas, Bondora Capital, Boursorama, Credit Suisse, DAB Bank, DADAT, Debitum Investments, ING, Trade Republic und WirBank verbessert.</li>
+          <li xml:lang="de">Verbesserung: Wertpapier-Performance-Ansicht behält die Auswahl beim Ändern der Anzeigeeinstellungen bei.</li>
+          <li xml:lang="de">Fix: Spalte „Gewinn/Verlust“ in Basiswährung farblich hervorgehoben.</li>
+          <li xml:lang="de">Fehlerbehebung: Formatierung finnischer Monatsnamen in der Benutzeroberfläche korrigiert.</li>
+          <li xml:lang="de">Fehlerbehebung: Falsche Werte für die Mehrrendite in der Performance-Heatmap korrigiert.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.84.1" date="2026-06-03">
       <description>
         <ul>
