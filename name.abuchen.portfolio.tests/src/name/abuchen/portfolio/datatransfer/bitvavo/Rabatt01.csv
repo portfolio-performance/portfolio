@@ -1,0 +1,2 @@
+Timezone,Date,Time,Type,Currency,Amount,Quote Currency,Quote Price,Received / Paid Currency,Received / Paid Amount,Fee currency,Fee amount,Status,Transaction ID,Address
+Europe/Berlin,2025-01-15,14:23:12,rebate,EUR,0.50,,,,,,,Completed,e5f6a7b8-c9d0-1234-efab-345678901234,
