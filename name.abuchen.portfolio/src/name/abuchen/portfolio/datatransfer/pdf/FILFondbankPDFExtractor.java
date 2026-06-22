@@ -246,6 +246,12 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                             // @formatter:on
                             type.getCurrentContext().remove("sale");
 
+                            // @formatter:off
+                            // Remove the trade time so that a following transaction
+                            // without its own "Handelsuhrzeit" does not inherit this one.
+                            // @formatter:on
+                            type.getCurrentContext().remove("time");
+
                             return new BuySellEntryItem(t);
                         });
 

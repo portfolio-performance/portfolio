@@ -217,7 +217,7 @@ public class FILFondbankPDFExtractorTest
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         hasForexGrossValue("USD", 461.23))));
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-06-15T11:14:49"), hasShares(7.711), //
+                        hasDate("2026-06-15T00:00"), hasShares(7.711), //
                         hasSource("Kauf03.txt"), //
                         hasNote("Auftrags-Nr. 2667761620"), //
                         hasAmount("EUR", 400.00), hasGrossValue("EUR", 400.00), //
@@ -271,7 +271,7 @@ public class FILFondbankPDFExtractorTest
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-06-15T11:14:49"), hasShares(7.711), //
+                        hasDate("2026-06-15T00:00"), hasShares(7.711), //
                         hasSource("Kauf03.txt"), //
                         hasNote("Auftrags-Nr. 2667761620"), //
                         hasAmount("EUR", 400.00), hasGrossValue("EUR", 400.00), //
