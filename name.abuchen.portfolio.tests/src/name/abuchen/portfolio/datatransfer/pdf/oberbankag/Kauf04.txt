@@ -1,0 +1,36 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.6.qualifier
+System: macosx | aarch64 | 21.0.9+10-LTS | Eclipse Adoptium
+-----------------------------------------
+Wertpapier-Abrechnu n g   Ausgabe Fonds aus Dauerauftrag
+888888 - 05.02.2020
+Depotnummer Betreuer
+Mustermann Max 111-1111.11 Z 3
+23
+Wertpapiernummer Bezeichnung Nominale/Stück
+AT0000A06NX7 Oberbank Vermögensmanagement (T) Zugang Stk .               0,58
+Miteigentumsanteile - Thesaurierend
+Kurs 136,9 EUR Kurswert EUR               79,40
+Spesen EUR                0,20
+Summe EUR               79,60
+Handelszeitpunkt: 05.02.2020 00:00:01
+Handelsplatz: AT/Fonds
+Gegenpartei Oberbank AG
+Auftrags-Nr. 999999-28.01.2020
+Schlusstag 05.02.2020
+Kassatag 07.02.2020
+Verrechnung
+Verwahrart, Positionsdaten
+SVK Sammelverwahrung Wert 07.02.2020 EUR               79,60
+zu Lasten Konto AT11 1111 1111 1111 1111
+Wien
+      Seite 1 von 2
+Oberbank AG, Rechtsform: Aktiengesellschaft, Sitz: Linz, Firmenbuch Nr. FN 79063w, Landesgericht Linz, DVR: 0019020, UID-Nr. ATU22852606
+Wertpapier-Abrechnung
+888888 - 05.02.2020
+Depotbezeichnung Depotnummer Betreuer
+Mustermann Max 111-1111.11 Z 3
+23
+Fondsgesellschaft: 3BANKEN GENERALI INVESTMENT-GES.M.B.H.
+Auftragszeitpunkt: 05.02.2020 um 19:07:29 Uhr
+Oberbank AG, Rechtsform: Aktiengesellschaft, Sitz: Linz, Firmenbuch Nr. FN 79063w, Landesgericht Linz, DVR: 0019020, UID-Nr. ATU22852606       Seite 2 von 2
