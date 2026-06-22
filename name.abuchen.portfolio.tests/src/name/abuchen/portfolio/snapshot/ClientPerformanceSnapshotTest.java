@@ -423,6 +423,38 @@ public class ClientPerformanceSnapshotTest
     }
 
     @Test
+    public void testDividendUsesExDateForPeriodAttribution()
+    {
+        Client client = new Client();
+
+        Security security = new SecurityBuilder().addTo(client);
+        Account account = new AccountBuilder().addTo(client);
+
+        AccountTransaction withExDate = new AccountTransaction();
+        withExDate.setDateTime(LocalDateTime.parse("2012-01-10T00:00"));
+        withExDate.setExDate(LocalDateTime.parse("2011-12-15T00:00"));
+        withExDate.setType(AccountTransaction.Type.DIVIDENDS);
+        withExDate.setSecurity(security);
+        withExDate.setMonetaryAmount(Money.of(CurrencyUnit.EUR, 100_00));
+
+        AccountTransaction withoutExDate = new AccountTransaction();
+        withoutExDate.setDateTime(LocalDateTime.parse("2012-01-10T00:00"));
+        withoutExDate.setType(AccountTransaction.Type.DIVIDENDS);
+        withoutExDate.setSecurity(security);
+        withoutExDate.setMonetaryAmount(Money.of(CurrencyUnit.EUR, 50_00));
+
+        account.addTransaction(withExDate);
+        account.addTransaction(withoutExDate);
+
+        CurrencyConverter converter = new TestCurrencyConverter();
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
+
+        assertThat(snapshot.getValue(CategoryType.EARNINGS), is(Money.of(CurrencyUnit.EUR, 100_00)));
+        assertThat(snapshot.getEarnings().size(), is(1));
+        assertThat(snapshot.getEarnings().get(0).getTransaction(), is(withExDate));
+    }
+
+    @Test
     public void testInboundDeliveryWithFees()
     {
         Client client = new Client();

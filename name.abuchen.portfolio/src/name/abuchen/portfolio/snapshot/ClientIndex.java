@@ -17,6 +17,7 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.Dates;
 import name.abuchen.portfolio.util.Interval;
+import name.abuchen.portfolio.util.SnapshotUtil;
 
 /* package */class ClientIndex extends PerformanceIndex
 {
@@ -124,10 +125,12 @@ import name.abuchen.portfolio.util.Interval;
         {
             account.getTransactions() //
                             .stream() //
-                            .filter(t -> !t.getDateTime().toLocalDate().isBefore(interval.getStart())
-                                            && !t.getDateTime().toLocalDate().isAfter(interval.getEnd()))
+                            .filter(t -> {
+                                LocalDate date = SnapshotUtil.getPerformanceDateTime(t).toLocalDate();
+                                return !date.isBefore(interval.getStart()) && !date.isAfter(interval.getEnd());
+                            })
                             .forEach(t -> { // NOSONAR
-                                LocalDate d = t.getDateTime().toLocalDate();
+                                LocalDate d = SnapshotUtil.getPerformanceDateTime(t).toLocalDate();
                                 switch (t.getType())
                                 {
                                     case DEPOSIT:
