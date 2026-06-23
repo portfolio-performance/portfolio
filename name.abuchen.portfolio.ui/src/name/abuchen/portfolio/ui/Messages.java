@@ -1207,7 +1207,17 @@ public class Messages extends NLS
     public static String PDFImportWizardAssistant;
     public static String PDFImportWizardDescription;
     public static String PDFImportWizardErroneousFiles;
+    public static String PDFImportWizardErroneousFilesWithManualEntry;
     public static String PDFImportWizardExtractor;
+    public static String PDFImportWizardManualEntryDeleteTransaction;
+    public static String PDFImportWizardManualEntryDescription;
+    public static String PDFImportWizardManualEntryPDFView;
+    public static String PDFImportWizardManualEntryPageRenderError;
+    public static String PDFImportWizardManualEntryPageOf;
+    public static String PDFImportWizardManualEntryTextView;
+    public static String PDFImportWizardManualEntryTitle;
+    public static String PDFImportWizardManualEntryEditTransaction;
+    public static String PDFImportWizardCancelConfirmation;
     public static String PDFImportWizardMsgExtracting;
     public static String PDFImportWizardTitle;
     public static String PerformanceChartLabelCPI;

@@ -65,8 +65,8 @@ public class ImportIBHandler
         {
             Extractor extractor = new IBFlexStatementExtractor(client);
 
-            PortfolioPart portPart = (PortfolioPart) part.getObject();
-            FilePathHelper helper = new FilePathHelper(portPart, UIConstants.Preferences.CSV_IMPORT_PATH);
+            PortfolioPart portfolioPart = (PortfolioPart) part.getObject();
+            FilePathHelper helper = new FilePathHelper(portfolioPart, UIConstants.Preferences.CSV_IMPORT_PATH);
 
             FileDialog fileDialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
             fileDialog.setText(extractor.getLabel());
@@ -95,9 +95,10 @@ public class ImportIBHandler
             if (!errors.isEmpty())
                 e.put(files.get(0).getFile(), errors);
 
-            IPreferenceStore preferences = portPart.getPreferenceStore();
+            IPreferenceStore preferences = portfolioPart.getPreferenceStore();
 
-            ImportExtractedItemsWizard wizard = new ImportExtractedItemsWizard(client, preferences, result, e);
+            ImportExtractedItemsWizard wizard = new ImportExtractedItemsWizard(client, preferences, result, e,
+                            java.util.Collections.emptyMap(), portfolioPart);
             Dialog dialog = new WizardDialog(Display.getDefault().getActiveShell(), wizard);
             dialog.open();
         }

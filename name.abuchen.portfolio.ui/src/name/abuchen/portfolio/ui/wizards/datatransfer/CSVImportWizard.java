@@ -211,7 +211,8 @@ public class CSVImportWizard extends Wizard
         }
         else
         {
-            new ImportController(client).perform(List.of(reviewPage));
+            var newSecurities = new ImportController(client).perform(List.of(reviewPage));
+            ImportController.configureNewSecurities(client, newSecurities);
         }
 
         return true;

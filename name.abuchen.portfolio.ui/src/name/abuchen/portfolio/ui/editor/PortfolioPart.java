@@ -170,7 +170,7 @@ public class PortfolioPart implements ClientInputListener
         var composite = new Composite(navigationBar, SWT.NONE);
         composite.setData(UIConstants.CSS.CLASS_NAME, "sidebar"); //$NON-NLS-1$
         GridDataFactory.fillDefaults().grab(true, false).applyTo(composite);
-        
+
         var layout = new FillLayout();
         layout.marginWidth = 10;
         composite.setLayout(layout);
@@ -624,7 +624,24 @@ public class PortfolioPart implements ClientInputListener
 
     public <T> T make(Class<T> type, Object... parameters)
     {
+        return make(type, null, parameters);
+    }
+
+    /**
+     * Creates an object like {@link #make(Class, Object...)} but uses the given
+     * shell as the active shell. This is required when the object (for example
+     * a dialog injecting {@link IServiceConstants#ACTIVE_SHELL}) is created on
+     * top of a plain JFace dialog, whose shell is not tracked as the E4 active
+     * shell. Without this the dialog would be parented to the main window and
+     * push that window to the foreground.
+     */
+    public <T> T make(Class<T> type, Shell activeShell, Object... parameters)
+    {
         IEclipseContext c2 = EclipseContextFactory.create();
+        c2.set(ExchangeRateProviderFactory.class, this.clientInput.getExchangeRateProviderFacory());
+        c2.set(IPreferenceStore.class, this.clientInput.getPreferenceStore());
+        if (activeShell != null)
+            c2.set(IServiceConstants.ACTIVE_SHELL, activeShell);
         if (parameters != null)
             for (Object param : parameters)
                 c2.set(param.getClass().getName(), param);

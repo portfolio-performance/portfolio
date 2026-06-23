@@ -106,7 +106,7 @@ public class ImportTradeRepublicHandler
 
             var preferences = portfolioPart.getPreferenceStore();
 
-            var wizard = new ImportExtractedItemsWizard(client, preferences, result, e);
+            var wizard = new ImportExtractedItemsWizard(client, preferences, result, e, new HashMap<>(), portfolioPart);
             var dialog = new WizardDialog(Display.getDefault().getActiveShell(), wizard);
             dialog.open();
         }
