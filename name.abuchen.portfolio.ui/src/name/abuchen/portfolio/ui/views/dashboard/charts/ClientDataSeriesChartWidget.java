@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.Values;
@@ -26,6 +27,7 @@ import name.abuchen.portfolio.ui.util.format.AmountNumberFormat;
 import name.abuchen.portfolio.ui.util.format.ThousandsNumberFormat;
 import name.abuchen.portfolio.ui.views.dashboard.ChartHeightConfig;
 import name.abuchen.portfolio.ui.views.dashboard.ChartShowYAxisConfig;
+import name.abuchen.portfolio.ui.views.dashboard.ClientFilterConfig;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardData;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardResources;
 import name.abuchen.portfolio.ui.views.dashboard.DataSeriesConfig;
@@ -100,6 +102,7 @@ public class ClientDataSeriesChartWidget extends WidgetDelegate<PerformanceIndex
     {
         super(widget, dashboardData);
 
+        addConfig(new ClientFilterConfig(this));
         addConfig(new DataSeriesConfig(this, false));
         addConfig(new AspectConfig(this));
         addConfig(new ReportingPeriodConfig(this));
@@ -149,7 +152,12 @@ public class ClientDataSeriesChartWidget extends WidgetDelegate<PerformanceIndex
         DataSeries serie = get(DataSeriesConfig.class).getDataSeries();
         Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now());
 
-        return () -> cache.lookup(serie, interval);
+        return () -> {
+            var selectedFilter = get(ClientFilterConfig.class).getSelectedFilter();
+            Client filteredClient = selectedFilter.filter(getClient());
+
+            return cache.lookup(serie, filteredClient, selectedFilter.toString(), interval);
+        };
     }
 
     @Override

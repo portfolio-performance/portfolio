@@ -10,6 +10,7 @@ import java.util.function.Supplier;
 import org.eclipse.swt.widgets.Composite;
 
 import name.abuchen.portfolio.math.Risk.Drawdown;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Messages;
@@ -46,9 +47,14 @@ public class MaxDrawdownDurationWidget extends AbstractIndicatorWidget<Performan
     @Override
     public Supplier<PerformanceIndex> getUpdateTask()
     {
-        return () -> getDashboardData().getDataSeriesCache() //
-                        .lookup(get(DataSeriesConfig.class).getDataSeries(), get(ReportingPeriodConfig.class)
-                                        .getReportingPeriod().toInterval(LocalDate.now()));
+        return () -> {
+            var selectedFilter = get(ClientFilterConfig.class).getSelectedFilter();
+            Client filteredClient = selectedFilter.filter(getClient());
+
+            return getDashboardData().getDataSeriesCache().lookup(get(DataSeriesConfig.class).getDataSeries(),
+                            filteredClient, selectedFilter.toString(),
+                            get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now()));
+        };
     }
 
     @Override
