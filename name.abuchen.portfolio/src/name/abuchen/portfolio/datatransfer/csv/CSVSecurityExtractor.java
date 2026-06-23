@@ -13,6 +13,7 @@ import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.DateField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 
 /* package */class CSVSecurityExtractor extends BaseCSVExtractor
@@ -32,6 +33,9 @@ import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
         fields.add(new DateField("date", Messages.CSVColumn_DateQuote).setOptional(true)); //$NON-NLS-1$
         fields.add(new AmountField("quote", Messages.CSVColumn_Quote, "Schluss", "Schlusskurs", "Close") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                         .setOptional(true));
+
+        getClient().getSettings().getAttributeTypes().filter(attribute -> attribute.supports(Security.class)).forEach(
+                        attribute -> fields.add(new Field(attribute.getId(), attribute.getName()).setOptional(true)));
     }
 
     @Override
@@ -72,7 +76,27 @@ import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 
         // check if the data contains price
 
+        importAttributes(security, rawValues, field2column);
+
         getSecurityPrice(Messages.CSVColumn_DateQuote, rawValues, field2column)
                         .ifPresent(price -> items.add(new SecurityPriceItem(security, price)));
+    }
+
+    private void importAttributes(Security security, String[] rawValues, Map<String, Column> field2column)
+    {
+        getClient().getSettings().getAttributeTypes().filter(attribute -> attribute.supports(Security.class))
+                        .forEach(attribute -> {
+                            String value = getText(attribute.getName(), rawValues, field2column);
+
+                            if (value == null)
+                                return;
+
+                            Object converted = attribute.getConverter().fromString(value);
+
+                            if (converted != null)
+                                security.getAttributes().put(attribute, converted);
+                            else
+                                security.getAttributes().remove(attribute);
+                        });
     }
 }
