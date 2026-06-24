@@ -22,5 +22,11 @@
 <ConversionRate reportDate="20250326" fromCurrency="USD" toCurrency="GBP" rate="0.7722" />
 </ConversionRates>
 </FlexStatement>
+<FlexStatement accountId="U1234567" fromDate="20250201" toDate="20250331" period="LastQuarter" whenGenerated="20250327;120000">
+<AccountInformation accountId="U1234567" acctAlias="C" model="" currency="EUR" name="John Doe" accountType="Individual" customerType="Individual" />
+<CashTransactions>
+<CashTransaction accountId="U1234567" acctAlias="" model="" currency="KRW" fxRateToBase="0.00064" assetCategory="STK" subCategory="COMMON" symbol="KRDIV" description="KRDIV(KR0000000001) CASH DIVIDEND KRW 1,550 PER SHARE (Return of Capital)" conid="76543210" securityID="KR0000000001" securityIDType="ISIN" isin="KR0000000001" amount="3100" type="Dividends" reportDate="20250327" />
+</CashTransactions>
+</FlexStatement>
 </FlexStatements>
 </FlexQueryResponse>

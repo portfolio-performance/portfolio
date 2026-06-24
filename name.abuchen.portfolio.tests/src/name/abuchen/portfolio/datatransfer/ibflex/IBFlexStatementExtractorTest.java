@@ -3709,6 +3709,12 @@ public class IBFlexStatementExtractorTest
         gbdv.setWkn("12345678");
         client.addSecurity(gbdv);
 
+        var krdiv = new Security("Korean Dividend Test Security", "KRW");
+        krdiv.setTickerSymbol("KRDIV");
+        krdiv.setIsin("KR0000000001");
+        krdiv.setWkn("76543210");
+        client.addSecurity(krdiv);
+
         var referenceAccount = new Account("A");
         referenceAccount.setCurrencyCode("EUR");
         client.addAccount(referenceAccount);
@@ -3724,7 +3730,7 @@ public class IBFlexStatementExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L)); // Securities already exist
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(countAccountTransactions(results), is(5L));
 
         // Find the first dividend transaction (HIDR - USD->GBP)
         List<AccountTransaction> transactions = results.stream() //
@@ -3733,7 +3739,7 @@ public class IBFlexStatementExtractorTest
                         .filter(t -> t.getType() == AccountTransaction.Type.DIVIDENDS) //
                         .toList();
 
-        assertThat(transactions.size(), is(4));
+        assertThat(transactions.size(), is(5));
 
         // Test first transaction: HIDR (USD->GBP)
         AccountTransaction hidrTransaction = transactions.stream() //
@@ -3869,5 +3875,17 @@ public class IBFlexStatementExtractorTest
         BigDecimal gbxToUsd = new BigDecimal("0.01").multiply(BigDecimal.ONE.divide(new BigDecimal("0.7722"), 10, RoundingMode.HALF_DOWN));
         BigDecimal gbdvExpectedRate = BigDecimal.ONE.divide(gbxToUsd, 10, RoundingMode.HALF_DOWN);
         assertThat(gbdvUnit.getExchangeRate().subtract(gbdvExpectedRate).abs().compareTo(eqqqTolerance) < 0, is(true));
+
+        // Test fifth transaction: grouped per-share dividend value
+        AccountTransaction krdivTransaction = transactions.stream() //
+                        .filter(t -> "KRDIV".equals(t.getSecurity().getTickerSymbol())) //
+                        .findFirst() //
+                        .orElseThrow(() -> new AssertionError("KRDIV dividend transaction not found"));
+
+        assertThat(krdivTransaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(krdivTransaction.getDateTime(), is(LocalDateTime.parse("2025-03-27T00:00")));
+        assertThat(krdivTransaction.getCurrencyCode(), is("KRW"));
+        assertThat(krdivTransaction.getAmount(), is(Values.Amount.factorize(3100)));
+        assertThat(krdivTransaction.getShares(), is(Values.Share.factorize(2)));
     }
 }
