@@ -3013,4 +3013,45 @@ public class PostfinancePDFExtractorTest
                         hasDate("2025-01-04"), hasAmount("CHF", 70.30), //
                         hasSource("Kontoauszug06.txt"), hasNote("Kauf/Dienstleistung"))));
     }
+
+    @Test
+    public void testKontoauszug07()
+    {
+        var extractor = new PostfinancePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug7MitPFPay.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "CHF");
+
+        // assert transaction
+        assertThat(results, hasItem(removal( //
+                        hasDate("2026-03-01"), //
+                        hasAmount("CHF", 30.00), //
+                        hasSource("Kontoauszug7MitPFPay.txt"), //
+                        hasNote("PF Pay Kauf/Online Shopping"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal( //
+                        hasDate("2026-03-02"), //
+                        hasAmount("CHF", 20.00), //
+                        hasSource("Kontoauszug7MitPFPay.txt"), //
+                        hasNote("PF Pay Kauf/Online Shopping"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal( //
+                        hasDate("2026-03-03"), //
+                        hasAmount("CHF", 10.00), //
+                        hasSource("Kontoauszug7MitPFPay.txt"), //
+                        hasNote("PF Pay Kauf/Online Shopping vom 03.03.2026"))));
+    }
 }
