@@ -18,7 +18,7 @@ jobs:
           fetch-depth: 0
 
       - name: Cache Maven and Sonar artifacts
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.m2/repository
@@ -57,7 +57,7 @@ jobs:
           fetch-depth: 0  # full history required by Sonar for blame and new-code detection
 
       - name: Cache Maven and Sonar artifacts
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.m2/repository
