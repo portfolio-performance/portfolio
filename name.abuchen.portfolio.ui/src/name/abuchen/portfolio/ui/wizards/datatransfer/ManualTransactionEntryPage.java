@@ -99,6 +99,8 @@ public class ManualTransactionEntryPage extends AbstractWizardPage
 
     private PDFViewer pdfViewer;
     private ExtractedItemsTable itemsTable;
+    private Composite buttonRow;
+    private boolean editorOpen;
 
     public ManualTransactionEntryPage(PortfolioPart part, Client client, List<Security> additionalSecurities,
                     PDFInputFile inputFile, Account targetAccount, Portfolio targetPortfolio)
@@ -149,7 +151,7 @@ public class ManualTransactionEntryPage extends AbstractWizardPage
 
         // one button per common transaction type plus a "More" drop-down for
         // the remaining types
-        var buttonRow = new Composite(container, SWT.NONE);
+        buttonRow = new Composite(container, SWT.NONE);
         buttonRow.setLayout(new GridLayout(PRIMARY_TYPES.size() + 1, false));
         buttonRow.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
@@ -193,6 +195,10 @@ public class ManualTransactionEntryPage extends AbstractWizardPage
 
     private void openDialog(TransactionType type)
     {
+        // only one transaction editor may be open at a time (see openModeless)
+        if (editorOpen)
+            return;
+
         var session = ShadowSession.create(client, additionalSecurities);
 
         AbstractTransactionDialog dialog;
@@ -211,17 +217,16 @@ public class ManualTransactionEntryPage extends AbstractWizardPage
         if (shadowPortfolio != null)
             dialog.setPortfolio(shadowPortfolio);
 
-        dialog.open();
-
-        if (dialog.hasAtLeastOneSuccessfulEdit())
-        {
-            entries.addAll(session.harvest());
-            itemsTable.refresh();
-        }
+        openModeless(dialog, () -> entries.addAll(session.harvest()));
     }
 
     private void editEntry(ExtractedEntry extractedEntry)
     {
+        // only one transaction editor may be open at a time (see openModeless);
+        // this also blocks the table's "Edit" context menu while editing
+        if (editorOpen)
+            return;
+
         var item = extractedEntry.getItem();
         var subject = item.getSubject();
 
@@ -270,17 +275,94 @@ public class ManualTransactionEntryPage extends AbstractWizardPage
         if (dialog == null)
             return;
 
-        dialog.open();
-
-        if (dialog.hasAtLeastOneSuccessfulEdit())
-        {
+        var theDialog = dialog;
+        openModeless(theDialog, () -> {
             // replace the edited entry in place: any additional transactions
             // created via "Save and new" follow right after it
             var index = entries.indexOf(extractedEntry);
-            entries.remove(extractedEntry);
-            entries.addAll(index, session.harvest());
-            itemsTable.refresh();
-        }
+            if (index < 0)
+            {
+                // the entry is no longer in the list (should not happen while
+                // the page input is frozen, but guard against it): append the
+                // harvested transactions instead of inserting at -1
+                entries.addAll(session.harvest());
+            }
+            else
+            {
+                entries.remove(extractedEntry);
+                entries.addAll(index, session.harvest());
+            }
+        });
+    }
+
+    /**
+     * Opens a transaction dialog modeless (so the PDF text view stays
+     * selectable / copyable) and non-blocking, freezing the wizard and the
+     * page's own type-buttons until the dialog closes. The harvest runs in the
+     * dialog shell's dispose listener.
+     * <p>
+     * The dispose listener must read <em>only</em>
+     * {@link AbstractTransactionDialog#hasAtLeastOneSuccessfulEdit()} and the
+     * shadow session; the transaction was already committed by
+     * {@code model.applyChanges()} before the shell closed, so it must never
+     * touch the (now disposed) dialog widgets or its data binding context.
+     */
+    private void openModeless(AbstractTransactionDialog dialog, Runnable onSuccessfulEdit)
+    {
+        var importDialog = getImportWizardDialog();
+
+        dialog.setModeless(true);
+        dialog.open();
+
+        // Freeze only after open() succeeded: if dialog creation/opening threw,
+        // the page was never frozen and there is nothing to undo.
+        //
+        // Exactly one editor at a time: the flag blocks a second editor from the
+        // buttons or the table's "Edit" context menu (see openDialog/editEntry).
+        // The wizard chrome is frozen and the type-buttons disabled so the user
+        // cannot finish/navigate or start a new transaction mid-edit. The table
+        // itself stays usable: deleting or re-assigning other rows is harmless
+        // because the target row's index is (re)computed when the editor closes.
+        editorOpen = true;
+        if (importDialog != null)
+            importDialog.setEditing(true);
+        setButtonRowEnabled(false);
+
+        dialog.getShell().addDisposeListener(e -> {
+            try
+            {
+                if (dialog.hasAtLeastOneSuccessfulEdit())
+                {
+                    onSuccessfulEdit.run();
+                    if (!itemsTable.getTableViewer().getControl().isDisposed())
+                        itemsTable.refresh();
+                }
+            }
+            finally
+            {
+                // unfreeze unless the wizard itself is being torn down
+                if (importDialog != null && !importDialog.getShell().isDisposed())
+                {
+                    importDialog.setEditing(false);
+                    getContainer().updateButtons();
+                }
+                if (!buttonRow.isDisposed())
+                    setButtonRowEnabled(true);
+                editorOpen = false;
+            }
+        });
+    }
+
+    private ImportWizardDialog getImportWizardDialog()
+    {
+        var container = getContainer();
+        return container instanceof ImportWizardDialog d ? d : null;
+    }
+
+    private void setButtonRowEnabled(boolean enabled)
+    {
+        for (var child : buttonRow.getChildren())
+            child.setEnabled(enabled);
     }
 
     public List<Extractor.Item> getItems()

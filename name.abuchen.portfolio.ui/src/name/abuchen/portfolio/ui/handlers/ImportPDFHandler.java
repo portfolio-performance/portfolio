@@ -27,7 +27,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
@@ -45,6 +44,7 @@ import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.FilePathHelper;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportExtractedItemsWizard;
+import name.abuchen.portfolio.ui.wizards.datatransfer.ImportWizardDialog;
 
 public class ImportPDFHandler
 {
@@ -195,7 +195,7 @@ public class ImportPDFHandler
                         wizard.setTarget(account);
                     if (portfolio != null)
                         wizard.setTarget(portfolio);
-                    Dialog wizardDialog = new WizardDialog(shell, wizard);
+                    Dialog wizardDialog = new ImportWizardDialog(shell, wizard);
                     wizardDialog.open();
                 }
                 finally
