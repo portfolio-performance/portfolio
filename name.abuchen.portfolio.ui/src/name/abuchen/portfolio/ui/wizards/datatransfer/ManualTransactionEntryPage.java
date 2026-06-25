@@ -26,6 +26,7 @@ import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.UnrecognizedPDFCache;
 import name.abuchen.portfolio.ui.util.swt.PDFViewer;
 import name.abuchen.portfolio.ui.dialogs.transactions.AbstractTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
@@ -94,6 +95,7 @@ public class ManualTransactionEntryPage extends AbstractWizardPage
     private final PDFInputFile inputFile;
     private final Account targetAccount;
     private final Portfolio targetPortfolio;
+    private final UnrecognizedPDFCache debugCache;
 
     private final List<ExtractedEntry> entries = new ArrayList<>();
 
@@ -101,9 +103,11 @@ public class ManualTransactionEntryPage extends AbstractWizardPage
     private ExtractedItemsTable itemsTable;
     private Composite buttonRow;
     private boolean editorOpen;
+    private boolean capturedForDebug;
 
     public ManualTransactionEntryPage(PortfolioPart part, Client client, List<Security> additionalSecurities,
-                    PDFInputFile inputFile, Account targetAccount, Portfolio targetPortfolio)
+                    PDFInputFile inputFile, Account targetAccount, Portfolio targetPortfolio,
+                    UnrecognizedPDFCache debugCache)
     {
         super("manual-" + inputFile.getName());
 
@@ -113,6 +117,7 @@ public class ManualTransactionEntryPage extends AbstractWizardPage
         this.inputFile = inputFile;
         this.targetAccount = targetAccount;
         this.targetPortfolio = targetPortfolio;
+        this.debugCache = debugCache;
 
         setTitle(MessageFormat.format(Messages.PDFImportWizardManualEntryTitle, inputFile.getName()));
         setDescription(Messages.PDFImportWizardManualEntryDescription);
@@ -334,6 +339,11 @@ public class ManualTransactionEntryPage extends AbstractWizardPage
                 if (dialog.hasAtLeastOneSuccessfulEdit())
                 {
                     onSuccessfulEdit.run();
+                    if (!capturedForDebug && !entries.isEmpty())
+                    {
+                        debugCache.add(inputFile.getName(), inputFile.getText(), inputFile.getPDFBoxVersion());
+                        capturedForDebug = true;
+                    }
                     if (!itemsTable.getTableViewer().getControl().isDisposed())
                         itemsTable.refresh();
                 }

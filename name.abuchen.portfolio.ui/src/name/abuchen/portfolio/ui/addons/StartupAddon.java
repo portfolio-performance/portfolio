@@ -40,6 +40,7 @@ import name.abuchen.portfolio.ui.log.LogEntryCache;
 import name.abuchen.portfolio.ui.update.UpdateHelper;
 import name.abuchen.portfolio.ui.util.ProgressMonitorFactory;
 import name.abuchen.portfolio.ui.util.RecentFilesCache;
+import name.abuchen.portfolio.ui.util.UnrecognizedPDFCache;
 import name.abuchen.portfolio.ui.util.swt.ActiveShell;
 
 public class StartupAddon
@@ -142,6 +143,12 @@ public class StartupAddon
     public void setupRecentFilesCache(RecentFilesCache cache)
     {
         // force creation of recent files cache
+    }
+
+    @PostConstruct
+    public void setupUnrecognizedPdfCache(UnrecognizedPDFCache cache)
+    {
+        // force creation of the unrecognized-PDF cache
     }
 
     @Inject

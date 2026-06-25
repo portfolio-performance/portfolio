@@ -191,6 +191,7 @@ public class ImportPDFHandler
                 try
                 {
                     var wizard = new ImportExtractedItemsWizard(client, preferences, result, errors, failedFiles, part);
+                    part.inject(wizard);
                     if (account != null)
                         wizard.setTarget(account);
                     if (portfolio != null)

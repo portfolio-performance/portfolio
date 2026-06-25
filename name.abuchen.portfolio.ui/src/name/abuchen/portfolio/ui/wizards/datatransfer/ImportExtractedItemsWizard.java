@@ -4,9 +4,12 @@ import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+
+import jakarta.inject.Inject;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -29,6 +32,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.jobs.ConsistencyChecksJob;
+import name.abuchen.portfolio.ui.util.UnrecognizedPDFCache;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public final class ImportExtractedItemsWizard extends Wizard
@@ -67,6 +71,9 @@ public final class ImportExtractedItemsWizard extends Wizard
     private Map<File, List<Exception>> errors;
     private Map<File, PDFInputFile> failedInputFiles;
     private PortfolioPart part;
+
+    @Inject
+    private UnrecognizedPDFCache debugCache;
 
     private List<ReviewExtractedItemsPage> pages = new ArrayList<>();
     private List<ManualTransactionEntryPage> manualPages = new ArrayList<>();
@@ -197,18 +204,22 @@ public final class ImportExtractedItemsWizard extends Wizard
                             addPage(page);
                         });
 
-        // Add manual entry pages for failed PDF files
-        for (var entry : failedInputFiles.entrySet())
-        {
-            var inputFile = entry.getValue();
-            if (inputFile.getText() != null)
-            {
-                var manualPage = new ManualTransactionEntryPage(part, client, additionalSecurities,
-                                inputFile, account, portfolio);
-                manualPages.add(manualPage);
-                addPage(manualPage);
-            }
-        }
+        // Add manual entry pages for failed PDF files, sorted for deterministic order
+        var fileComparator = Comparator.comparingLong(File::lastModified).thenComparing(File::getPath);
+        failedInputFiles.entrySet().stream()
+                        .sorted((a, b) -> fileComparator.compare(a.getKey(), b.getKey()))
+                        .forEach(entry -> {
+                            var inputFile = entry.getValue();
+                            if (inputFile.getText() != null)
+                            {
+                                debugCache.add(inputFile.getName(), inputFile.getText(),
+                                                inputFile.getPDFBoxVersion());
+                                var manualPage = new ManualTransactionEntryPage(part, client,
+                                                additionalSecurities, inputFile, account, portfolio, debugCache);
+                                manualPages.add(manualPage);
+                                addPage(manualPage);
+                            }
+                        });
 
         AbstractWizardPage.attachPageListenerTo(getContainer());
     }

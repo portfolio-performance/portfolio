@@ -1200,7 +1200,16 @@ public class Messages extends NLS
     public static String OptionDateIsInThePast;
     public static String PageDescriptionSelectSecurity;
     public static String PageTitleSelectSecurity;
+    public static String PDFImportDebugAnonymizeDescription;
+    public static String PDFImportDebugAnonymizeTitle;
+    public static String PDFImportDebugBrowse;
+    public static String PDFImportDebugClearList;
+    public static String PDFImportDebugColumnCapturedAt;
+    public static String PDFImportDebugColumnDocument;
     public static String PDFImportDebugInformation;
+    public static String PDFImportDebugInformationHeadline;
+    public static String PDFImportDebugSelectSourceDescription;
+    public static String PDFImportDebugSelectSourceTitle;
     public static String PDFImportDebugTextExtraction;
     public static String PDFImportErrorParsingDocument;
     public static String PDFImportFilterName;

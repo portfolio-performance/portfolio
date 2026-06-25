@@ -99,6 +99,7 @@ public class ImportIBHandler
 
             ImportExtractedItemsWizard wizard = new ImportExtractedItemsWizard(client, preferences, result, e,
                             java.util.Collections.emptyMap(), portfolioPart);
+            portfolioPart.inject(wizard);
             Dialog dialog = new ImportWizardDialog(Display.getDefault().getActiveShell(), wizard);
             dialog.open();
         }
