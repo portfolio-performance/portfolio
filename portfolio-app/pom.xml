@@ -73,7 +73,7 @@
 		<repository>
 			<id>swt-portfolio-fork</id>
 			<layout>p2</layout>
-			<url>https://portfolio-performance.github.io/eclipse.platform.swt-fork-update-site/R4_38/</url>
+			<url>https://portfolio-performance.github.io/eclipse.platform.swt-fork-update-site/R4_40/</url>
 		</repository>
 	</repositories>
 
