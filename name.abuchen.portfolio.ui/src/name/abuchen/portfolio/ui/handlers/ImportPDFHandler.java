@@ -6,12 +6,12 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -27,7 +27,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
@@ -35,6 +34,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFImportAssistant;
+import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
@@ -44,6 +44,7 @@ import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.FilePathHelper;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportExtractedItemsWizard;
+import name.abuchen.portfolio.ui.wizards.datatransfer.ImportWizardDialog;
 
 public class ImportPDFHandler
 {
@@ -69,6 +70,7 @@ public class ImportPDFHandler
     private static List<File> unzipFileToTempDir(File zipfile, File tempDir) throws IOException
     {
         List<File> extractedFiles = new ArrayList<>();
+        Path tempDirPath = tempDir.toPath().normalize();
         try (FileInputStream zipfs = new FileInputStream(zipfile); ZipInputStream zipin = new ZipInputStream(zipfs))
         {
             ZipEntry entry;
@@ -77,8 +79,11 @@ public class ImportPDFHandler
                 if (entry.isDirectory() || entry.getName() == null || !entry.getName().toLowerCase().endsWith(".pdf")) //$NON-NLS-1$
                     continue;
 
-                Path tempFile = Paths.get(tempDir.getAbsolutePath(), entry.getName());
-                Files.createDirectories(tempFile);
+                Path tempFile = tempDirPath.resolve(entry.getName()).normalize();
+                if (!tempFile.startsWith(tempDirPath))
+                    throw new IOException("Invalid zip entry: " + entry.getName()); //$NON-NLS-1$
+
+                Files.createDirectories(tempFile.getParent());
                 Files.copy(zipin, tempFile, StandardCopyOption.REPLACE_EXISTING);
                 extractedFiles.add(tempFile.toFile());
             }
@@ -123,14 +128,11 @@ public class ImportPDFHandler
             for (String filename : filenames)
             {
                 File file = new File(fileDialog.getFilterPath(), filename);
-                if (filename.endsWith(".zip")) //$NON-NLS-1$
+                if (filename.toLowerCase(Locale.ROOT).endsWith(".zip")) //$NON-NLS-1$
                 {
                     File tempDir = Files.createTempDirectory("portfolio_import_").toFile(); //$NON-NLS-1$
                     filesToDelete.add(tempDir);
-                    List<File> extractedFiles = unzipFileToTempDir(file, tempDir);
-                    // Place files in front of tempDir in deletion list
-                    filesToDelete.addAll(filesToDelete.size() - 1, extractedFiles);
-                    files.addAll(extractedFiles);
+                    files.addAll(unzipFileToTempDir(file, tempDir));
                 }
                 else
                 {
@@ -138,7 +140,10 @@ public class ImportPDFHandler
                 }
             }
 
-            runImportWithFiles(part, shell, client, account, portfolio, files);
+            List<File> filesToDeleteAfterImport = List.copyOf(filesToDelete);
+            runImportWithFiles(part, shell, client, account, portfolio, files,
+                            () -> deleteFiles(filesToDeleteAfterImport));
+            filesToDelete.clear();
         }
         catch (IOException e)
         {
@@ -148,17 +153,19 @@ public class ImportPDFHandler
         }
         finally
         {
-            for (File f : filesToDelete)
-            {
-                boolean deleted = f.delete();
-                if (!deleted)
-                    f.deleteOnExit();
-            }
+            deleteFiles(filesToDelete);
         }
     }
 
     public static void runImportWithFiles(PortfolioPart part, Shell shell, Client client, Account account,
                     Portfolio portfolio, List<File> files)
+    {
+        runImportWithFiles(part, shell, client, account, portfolio, files, () -> {
+        });
+    }
+
+    private static void runImportWithFiles(PortfolioPart part, Shell shell, Client client, Account account,
+                    Portfolio portfolio, List<File> files, Runnable afterImportDialog)
     {
         // sort files to import purchase documents first (that typically create
         // securities with better names)
@@ -170,22 +177,32 @@ public class ImportPDFHandler
         {
             Map<File, List<Exception>> errors = new HashMap<>();
             Map<Extractor, List<Extractor.Item>> result = new HashMap<>();
+            Map<File, PDFInputFile> failedFiles = new HashMap<>();
 
             IRunnableWithProgress operation = monitor -> {
                 PDFImportAssistant assistent = new PDFImportAssistant(client, files);
                 result.putAll(assistent.run(monitor, errors));
+                failedFiles.putAll(assistent.getFailedInputFiles());
             };
 
             new ProgressMonitorDialog(shell).run(true, true, operation);
 
             Display.getDefault().asyncExec(() -> {
-                ImportExtractedItemsWizard wizard = new ImportExtractedItemsWizard(client, preferences, result, errors);
-                if (account != null)
-                    wizard.setTarget(account);
-                if (portfolio != null)
-                    wizard.setTarget(portfolio);
-                Dialog wizardDialog = new WizardDialog(shell, wizard);
-                wizardDialog.open();
+                try
+                {
+                    var wizard = new ImportExtractedItemsWizard(client, preferences, result, errors, failedFiles, part);
+                    part.inject(wizard);
+                    if (account != null)
+                        wizard.setTarget(account);
+                    if (portfolio != null)
+                        wizard.setTarget(portfolio);
+                    Dialog wizardDialog = new ImportWizardDialog(shell, wizard);
+                    wizardDialog.open();
+                }
+                finally
+                {
+                    afterImportDialog.run();
+                }
             });
         }
         catch (IllegalArgumentException | InvocationTargetException | InterruptedException e)
@@ -194,5 +211,31 @@ public class ImportPDFHandler
             String message = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
             MessageDialog.openError(shell, Messages.LabelError, message);
         }
+    }
+
+    private static void deleteFiles(List<File> files)
+    {
+        for (File f : files)
+            deleteFile(f);
+    }
+
+    private static void deleteFile(File file)
+    {
+        if (!file.exists())
+            return;
+
+        if (file.isDirectory())
+        {
+            File[] children = file.listFiles();
+            if (children != null)
+            {
+                for (File child : children)
+                    deleteFile(child);
+            }
+        }
+
+        boolean deleted = file.delete();
+        if (!deleted)
+            file.deleteOnExit();
     }
 }

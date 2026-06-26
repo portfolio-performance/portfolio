@@ -16,7 +16,6 @@ import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
@@ -31,6 +30,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.editor.FilePathHelper;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportExtractedItemsWizard;
+import name.abuchen.portfolio.ui.wizards.datatransfer.ImportWizardDialog;
 
 public class ImportIBHandler
 {
@@ -65,8 +65,8 @@ public class ImportIBHandler
         {
             Extractor extractor = new IBFlexStatementExtractor(client);
 
-            PortfolioPart portPart = (PortfolioPart) part.getObject();
-            FilePathHelper helper = new FilePathHelper(portPart, UIConstants.Preferences.CSV_IMPORT_PATH);
+            PortfolioPart portfolioPart = (PortfolioPart) part.getObject();
+            FilePathHelper helper = new FilePathHelper(portfolioPart, UIConstants.Preferences.CSV_IMPORT_PATH);
 
             FileDialog fileDialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
             fileDialog.setText(extractor.getLabel());
@@ -95,10 +95,12 @@ public class ImportIBHandler
             if (!errors.isEmpty())
                 e.put(files.get(0).getFile(), errors);
 
-            IPreferenceStore preferences = portPart.getPreferenceStore();
+            IPreferenceStore preferences = portfolioPart.getPreferenceStore();
 
-            ImportExtractedItemsWizard wizard = new ImportExtractedItemsWizard(client, preferences, result, e);
-            Dialog dialog = new WizardDialog(Display.getDefault().getActiveShell(), wizard);
+            ImportExtractedItemsWizard wizard = new ImportExtractedItemsWizard(client, preferences, result, e,
+                            java.util.Collections.emptyMap(), portfolioPart);
+            portfolioPart.inject(wizard);
+            Dialog dialog = new ImportWizardDialog(Display.getDefault().getActiveShell(), wizard);
             dialog.open();
         }
         catch (IllegalArgumentException e)
