@@ -20,6 +20,9 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.ledger.compatibility.LedgerAccountTransactionEdit;
+import name.abuchen.portfolio.model.ledger.compatibility.LedgerAccountTransactionEditor;
+import name.abuchen.portfolio.model.ledger.projection.LedgerBackedAccountTransaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.util.Interval;
@@ -57,12 +60,27 @@ public class AccountPerformanceTaxRefundTestCase
 
         // if the tax_refund is for a security, it must not be included in the
         // performance of the account
-        AccountTransaction taxRefund = account.getTransactions().get(1);
+        AccountTransaction taxRefund = account.getTransactions().stream() //
+                        .filter(transaction -> transaction.getType() == AccountTransaction.Type.TAX_REFUND) //
+                        .findFirst().orElseThrow();
         assertThat(taxRefund.getType(), is(AccountTransaction.Type.TAX_REFUND));
-        taxRefund.setSecurity(new Security());
+        setSecurity(taxRefund, new Security());
 
         accountPerformance = PerformanceIndex.forAccount(client, converter, account, period, warnings);
         assertThat(warnings, empty());
         assertThat(accountPerformance.getFinalAccumulatedPercentage(), lessThan(calculatedTtwror));
+    }
+
+    private void setSecurity(AccountTransaction transaction, Security security)
+    {
+        if (transaction instanceof LedgerBackedAccountTransaction ledgerBacked)
+        {
+            new LedgerAccountTransactionEditor().apply(ledgerBacked,
+                            LedgerAccountTransactionEdit.builder().security(security).build());
+        }
+        else
+        {
+            transaction.setSecurity(security);
+        }
     }
 }
