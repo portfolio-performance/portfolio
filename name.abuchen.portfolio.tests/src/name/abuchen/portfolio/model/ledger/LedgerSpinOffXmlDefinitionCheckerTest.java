@@ -30,7 +30,8 @@ import name.abuchen.portfolio.model.ledger.configuration.rule.LedgerRequirementG
 public final class LedgerSpinOffXmlDefinitionCheckerTest
 {
     private static final Path XML_EXAMPLE = Path
-                    .of("docs/ledger-v6/examples/ledger-v6-spin-off-siemens-energy-example.xml");
+                    .of("name.abuchen.portfolio.tests", "src", "name", "abuchen", "portfolio", "model", "ledger",
+                                    "ledger-v6-spin-off-siemens-energy-example.xml");
 
     /**
      * Checks the persistence scenario: siemens energy xml example matches static ledger definitions.

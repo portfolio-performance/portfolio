@@ -1710,6 +1710,9 @@ public class ClientFactory
                 removeSourceAttributeFromTaxonomy(client);
             case 68: // NOSONAR
                 // added exDate date field
+            case 69: // NOSONAR
+                // enable PP Ledger - projections derived from
+                // ledger data for AccountTransaction / PortfolioTransaction
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;

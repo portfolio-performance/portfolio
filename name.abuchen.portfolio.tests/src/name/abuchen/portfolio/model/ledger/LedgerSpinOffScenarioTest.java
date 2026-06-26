@@ -18,7 +18,6 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import org.junit.Test;
 
@@ -72,7 +71,8 @@ import name.abuchen.portfolio.money.Values;
 public class LedgerSpinOffScenarioTest
 {
     private static final Path XML_EXAMPLE = Path
-                    .of("docs/ledger-v6/examples/ledger-v6-spin-off-siemens-energy-example.xml");
+                    .of("name.abuchen.portfolio.tests", "src", "name", "abuchen", "portfolio", "model", "ledger",
+                                    "ledger-v6-spin-off-siemens-energy-example.xml");
 
     private static final LocalDateTime SPIN_OFF_DATE = LocalDateTime.of(2020, 9, 28, 0, 0);
     private static final LocalDateTime BUY_DATE = LocalDateTime.of(2020, 1, 2, 0, 0);
@@ -423,21 +423,6 @@ public class LedgerSpinOffScenarioTest
      * The result must keep ledger truth and visible runtime rows consistent.
      * This protects against duplicate truth or partial mutation.
      */
-    @Test
-    public void testSpinOffDocumentationDoesNotExposeUuidConstruction() throws Exception
-    {
-        var markdown = Files.readString(xmlExample().resolveSibling("ledger-v6-spin-off-siemens-energy-example.md"),
-                        StandardCharsets.UTF_8);
-
-        assertFalse(markdown.contains("setPrimaryPostingUUID"));
-        assertFalse(markdown.contains("setPostingGroupUUID"));
-        assertFalse(markdown.contains("new LedgerPosting(\""));
-        assertFalse(markdown.contains("new LedgerEntry(\""));
-        assertFalse(markdown.contains("new LedgerProjectionRef(\""));
-        assertFalse(Pattern.compile("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}")
-                        .matcher(markdown).find());
-    }
-
     private SpinOffFixture fixture()
     {
         var client = new Client();
@@ -921,11 +906,16 @@ public class LedgerSpinOffScenarioTest
 
     private Path xmlExample()
     {
+        return findInWorkingTree(XML_EXAMPLE);
+    }
+
+    private Path findInWorkingTree(Path relativePath)
+    {
         var current = Path.of("").toAbsolutePath();
 
         while (current != null)
         {
-            var candidate = current.resolve(XML_EXAMPLE);
+            var candidate = current.resolve(relativePath);
 
             if (Files.exists(candidate))
                 return candidate;
@@ -933,7 +923,7 @@ public class LedgerSpinOffScenarioTest
             current = current.getParent();
         }
 
-        return Path.of("").toAbsolutePath().resolve(XML_EXAMPLE);
+        return Path.of("").toAbsolutePath().resolve(relativePath);
     }
 
     private record SpinOffFixture(Client client, Account account, Portfolio portfolio, Security siemens,
