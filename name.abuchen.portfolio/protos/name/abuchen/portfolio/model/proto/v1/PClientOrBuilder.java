@@ -267,6 +267,21 @@ java.lang.String defaultValue);
       getBaseCurrencyBytes();
 
   /**
+   * <code>.name.abuchen.portfolio.PLedger ledger = 13;</code>
+   * @return Whether the ledger field is set.
+   */
+  boolean hasLedger();
+  /**
+   * <code>.name.abuchen.portfolio.PLedger ledger = 13;</code>
+   * @return The ledger.
+   */
+  name.abuchen.portfolio.model.proto.v1.PLedger getLedger();
+  /**
+   * <code>.name.abuchen.portfolio.PLedger ledger = 13;</code>
+   */
+  name.abuchen.portfolio.model.proto.v1.PLedgerOrBuilder getLedgerOrBuilder();
+
+  /**
    * <pre>
    * Extension data using Any type for maximum flexibility
    * </pre>

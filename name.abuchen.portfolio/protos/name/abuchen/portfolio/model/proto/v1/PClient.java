@@ -543,6 +543,32 @@ java.lang.String defaultValue) {
     }
   }
 
+  public static final int LEDGER_FIELD_NUMBER = 13;
+  private name.abuchen.portfolio.model.proto.v1.PLedger ledger_;
+  /**
+   * <code>.name.abuchen.portfolio.PLedger ledger = 13;</code>
+   * @return Whether the ledger field is set.
+   */
+  @java.lang.Override
+  public boolean hasLedger() {
+    return ledger_ != null;
+  }
+  /**
+   * <code>.name.abuchen.portfolio.PLedger ledger = 13;</code>
+   * @return The ledger.
+   */
+  @java.lang.Override
+  public name.abuchen.portfolio.model.proto.v1.PLedger getLedger() {
+    return ledger_ == null ? name.abuchen.portfolio.model.proto.v1.PLedger.getDefaultInstance() : ledger_;
+  }
+  /**
+   * <code>.name.abuchen.portfolio.PLedger ledger = 13;</code>
+   */
+  @java.lang.Override
+  public name.abuchen.portfolio.model.proto.v1.PLedgerOrBuilder getLedgerOrBuilder() {
+    return ledger_ == null ? name.abuchen.portfolio.model.proto.v1.PLedger.getDefaultInstance() : ledger_;
+  }
+
   public static final int EXTENSIONS_FIELD_NUMBER = 99;
   @SuppressWarnings("serial")
   private java.util.List<com.google.protobuf.Any> extensions_;
@@ -657,6 +683,9 @@ java.lang.String defaultValue) {
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(baseCurrency_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 12, baseCurrency_);
     }
+    if (ledger_ != null) {
+      output.writeMessage(13, getLedger());
+    }
     for (int i = 0; i < extensions_.size(); i++) {
       output.writeMessage(99, extensions_.get(i));
     }
@@ -722,6 +751,10 @@ java.lang.String defaultValue) {
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(baseCurrency_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(12, baseCurrency_);
     }
+    if (ledger_ != null) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(13, getLedger());
+    }
     for (int i = 0; i < extensions_.size(); i++) {
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(99, extensions_.get(i));
@@ -768,6 +801,11 @@ java.lang.String defaultValue) {
     }
     if (!getBaseCurrency()
         .equals(other.getBaseCurrency())) return false;
+    if (hasLedger() != other.hasLedger()) return false;
+    if (hasLedger()) {
+      if (!getLedger()
+          .equals(other.getLedger())) return false;
+    }
     if (!getExtensionsList()
         .equals(other.getExtensionsList())) return false;
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
@@ -825,6 +863,10 @@ java.lang.String defaultValue) {
     }
     hash = (37 * hash) + BASECURRENCY_FIELD_NUMBER;
     hash = (53 * hash) + getBaseCurrency().hashCode();
+    if (hasLedger()) {
+      hash = (37 * hash) + LEDGER_FIELD_NUMBER;
+      hash = (53 * hash) + getLedger().hashCode();
+    }
     if (getExtensionsCount() > 0) {
       hash = (37 * hash) + EXTENSIONS_FIELD_NUMBER;
       hash = (53 * hash) + getExtensionsList().hashCode();
@@ -1044,13 +1086,18 @@ java.lang.String defaultValue) {
         settingsBuilder_ = null;
       }
       baseCurrency_ = "";
+      ledger_ = null;
+      if (ledgerBuilder_ != null) {
+        ledgerBuilder_.dispose();
+        ledgerBuilder_ = null;
+      }
       if (extensionsBuilder_ == null) {
         extensions_ = java.util.Collections.emptyList();
       } else {
         extensions_ = null;
         extensionsBuilder_.clear();
       }
-      bitField0_ = (bitField0_ & ~0x00001000);
+      bitField0_ = (bitField0_ & ~0x00002000);
       return this;
     }
 
@@ -1157,9 +1204,9 @@ java.lang.String defaultValue) {
         result.dashboards_ = dashboardsBuilder_.build();
       }
       if (extensionsBuilder_ == null) {
-        if (((bitField0_ & 0x00001000) != 0)) {
+        if (((bitField0_ & 0x00002000) != 0)) {
           extensions_ = java.util.Collections.unmodifiableList(extensions_);
-          bitField0_ = (bitField0_ & ~0x00001000);
+          bitField0_ = (bitField0_ & ~0x00002000);
         }
         result.extensions_ = extensions_;
       } else {
@@ -1183,6 +1230,11 @@ java.lang.String defaultValue) {
       }
       if (((from_bitField0_ & 0x00000800) != 0)) {
         result.baseCurrency_ = baseCurrency_;
+      }
+      if (((from_bitField0_ & 0x00001000) != 0)) {
+        result.ledger_ = ledgerBuilder_ == null
+            ? ledger_
+            : ledgerBuilder_.build();
       }
     }
 
@@ -1420,11 +1472,14 @@ java.lang.String defaultValue) {
         bitField0_ |= 0x00000800;
         onChanged();
       }
+      if (other.hasLedger()) {
+        mergeLedger(other.getLedger());
+      }
       if (extensionsBuilder_ == null) {
         if (!other.extensions_.isEmpty()) {
           if (extensions_.isEmpty()) {
             extensions_ = other.extensions_;
-            bitField0_ = (bitField0_ & ~0x00001000);
+            bitField0_ = (bitField0_ & ~0x00002000);
           } else {
             ensureExtensionsIsMutable();
             extensions_.addAll(other.extensions_);
@@ -1437,7 +1492,7 @@ java.lang.String defaultValue) {
             extensionsBuilder_.dispose();
             extensionsBuilder_ = null;
             extensions_ = other.extensions_;
-            bitField0_ = (bitField0_ & ~0x00001000);
+            bitField0_ = (bitField0_ & ~0x00002000);
             extensionsBuilder_ = 
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getExtensionsFieldBuilder() : null;
@@ -1602,6 +1657,13 @@ java.lang.String defaultValue) {
               bitField0_ |= 0x00000800;
               break;
             } // case 98
+            case 106: {
+              input.readMessage(
+                  getLedgerFieldBuilder().getBuilder(),
+                  extensionRegistry);
+              bitField0_ |= 0x00001000;
+              break;
+            } // case 106
             case 794: {
               com.google.protobuf.Any m =
                   input.readMessage(
@@ -3902,12 +3964,131 @@ java.lang.String defaultValue) {
       return this;
     }
 
+    private name.abuchen.portfolio.model.proto.v1.PLedger ledger_;
+    private com.google.protobuf.SingleFieldBuilderV3<
+        name.abuchen.portfolio.model.proto.v1.PLedger, name.abuchen.portfolio.model.proto.v1.PLedger.Builder, name.abuchen.portfolio.model.proto.v1.PLedgerOrBuilder> ledgerBuilder_;
+    /**
+     * <code>.name.abuchen.portfolio.PLedger ledger = 13;</code>
+     * @return Whether the ledger field is set.
+     */
+    public boolean hasLedger() {
+      return ((bitField0_ & 0x00001000) != 0);
+    }
+    /**
+     * <code>.name.abuchen.portfolio.PLedger ledger = 13;</code>
+     * @return The ledger.
+     */
+    public name.abuchen.portfolio.model.proto.v1.PLedger getLedger() {
+      if (ledgerBuilder_ == null) {
+        return ledger_ == null ? name.abuchen.portfolio.model.proto.v1.PLedger.getDefaultInstance() : ledger_;
+      } else {
+        return ledgerBuilder_.getMessage();
+      }
+    }
+    /**
+     * <code>.name.abuchen.portfolio.PLedger ledger = 13;</code>
+     */
+    public Builder setLedger(name.abuchen.portfolio.model.proto.v1.PLedger value) {
+      if (ledgerBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ledger_ = value;
+      } else {
+        ledgerBuilder_.setMessage(value);
+      }
+      bitField0_ |= 0x00001000;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>.name.abuchen.portfolio.PLedger ledger = 13;</code>
+     */
+    public Builder setLedger(
+        name.abuchen.portfolio.model.proto.v1.PLedger.Builder builderForValue) {
+      if (ledgerBuilder_ == null) {
+        ledger_ = builderForValue.build();
+      } else {
+        ledgerBuilder_.setMessage(builderForValue.build());
+      }
+      bitField0_ |= 0x00001000;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>.name.abuchen.portfolio.PLedger ledger = 13;</code>
+     */
+    public Builder mergeLedger(name.abuchen.portfolio.model.proto.v1.PLedger value) {
+      if (ledgerBuilder_ == null) {
+        if (((bitField0_ & 0x00001000) != 0) &&
+          ledger_ != null &&
+          ledger_ != name.abuchen.portfolio.model.proto.v1.PLedger.getDefaultInstance()) {
+          getLedgerBuilder().mergeFrom(value);
+        } else {
+          ledger_ = value;
+        }
+      } else {
+        ledgerBuilder_.mergeFrom(value);
+      }
+      bitField0_ |= 0x00001000;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>.name.abuchen.portfolio.PLedger ledger = 13;</code>
+     */
+    public Builder clearLedger() {
+      bitField0_ = (bitField0_ & ~0x00001000);
+      ledger_ = null;
+      if (ledgerBuilder_ != null) {
+        ledgerBuilder_.dispose();
+        ledgerBuilder_ = null;
+      }
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>.name.abuchen.portfolio.PLedger ledger = 13;</code>
+     */
+    public name.abuchen.portfolio.model.proto.v1.PLedger.Builder getLedgerBuilder() {
+      bitField0_ |= 0x00001000;
+      onChanged();
+      return getLedgerFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>.name.abuchen.portfolio.PLedger ledger = 13;</code>
+     */
+    public name.abuchen.portfolio.model.proto.v1.PLedgerOrBuilder getLedgerOrBuilder() {
+      if (ledgerBuilder_ != null) {
+        return ledgerBuilder_.getMessageOrBuilder();
+      } else {
+        return ledger_ == null ?
+            name.abuchen.portfolio.model.proto.v1.PLedger.getDefaultInstance() : ledger_;
+      }
+    }
+    /**
+     * <code>.name.abuchen.portfolio.PLedger ledger = 13;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        name.abuchen.portfolio.model.proto.v1.PLedger, name.abuchen.portfolio.model.proto.v1.PLedger.Builder, name.abuchen.portfolio.model.proto.v1.PLedgerOrBuilder> 
+        getLedgerFieldBuilder() {
+      if (ledgerBuilder_ == null) {
+        ledgerBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            name.abuchen.portfolio.model.proto.v1.PLedger, name.abuchen.portfolio.model.proto.v1.PLedger.Builder, name.abuchen.portfolio.model.proto.v1.PLedgerOrBuilder>(
+                getLedger(),
+                getParentForChildren(),
+                isClean());
+        ledger_ = null;
+      }
+      return ledgerBuilder_;
+    }
+
     private java.util.List<com.google.protobuf.Any> extensions_ =
       java.util.Collections.emptyList();
     private void ensureExtensionsIsMutable() {
-      if (!((bitField0_ & 0x00001000) != 0)) {
+      if (!((bitField0_ & 0x00002000) != 0)) {
         extensions_ = new java.util.ArrayList<com.google.protobuf.Any>(extensions_);
-        bitField0_ |= 0x00001000;
+        bitField0_ |= 0x00002000;
        }
     }
 
@@ -4101,7 +4282,7 @@ java.lang.String defaultValue) {
     public Builder clearExtensions() {
       if (extensionsBuilder_ == null) {
         extensions_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00001000);
+        bitField0_ = (bitField0_ & ~0x00002000);
         onChanged();
       } else {
         extensionsBuilder_.clear();
@@ -4206,7 +4387,7 @@ java.lang.String defaultValue) {
         extensionsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
             com.google.protobuf.Any, com.google.protobuf.Any.Builder, com.google.protobuf.AnyOrBuilder>(
                 extensions_,
-                ((bitField0_ & 0x00001000) != 0),
+                ((bitField0_ & 0x00002000) != 0),
                 getParentForChildren(),
                 isClean());
         extensions_ = null;
