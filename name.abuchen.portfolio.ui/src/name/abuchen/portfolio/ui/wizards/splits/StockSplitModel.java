@@ -11,6 +11,7 @@ import name.abuchen.portfolio.model.SecurityEvent;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionPair;
+import name.abuchen.portfolio.model.ledger.compatibility.LedgerShareAdjustmentHelper;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 
@@ -108,6 +109,15 @@ public class StockSplitModel extends BindingHelper.Model
     @Override
     public void applyChanges()
     {
+        List<TransactionPair<?>> transactions = isChangeTransactions() ? security.getTransactions(getClient()) //
+                        : List.of();
+        List<Transaction> affectedTransactions = transactions.stream().map(pair -> (Transaction) pair.getTransaction())
+                        .filter(t -> t.getDateTime().toLocalDate().isBefore(exDate)).toList();
+        var ledgerShareAdjustmentPlan = isChangeTransactions() ? LedgerShareAdjustmentHelper.plan(getClient(), security,
+                        affectedTransactions, this::calculateNewStock) : LedgerShareAdjustmentHelper.emptyPlan();
+
+        ledgerShareAdjustmentPlan.apply();
+
         // save stock split ratio as technical values (and hence do not format
         // in the local of user) in order to restore/retrieve ratio later
         SecurityEvent event = new SecurityEvent(exDate, SecurityEvent.Type.STOCK_SPLIT, newShares + ":" + oldShares); //$NON-NLS-1$
@@ -115,11 +125,9 @@ public class StockSplitModel extends BindingHelper.Model
 
         if (isChangeTransactions())
         {
-            List<TransactionPair<?>> transactions = security.getTransactions(getClient());
-            for (TransactionPair<?> pair : transactions)
+            for (Transaction t : affectedTransactions)
             {
-                Transaction t = pair.getTransaction();
-                if (t.getDateTime().toLocalDate().isBefore(exDate))
+                if (!ledgerShareAdjustmentPlan.isLedgerBacked(t))
                     t.setShares(calculateNewStock(t.getShares()));
             }
         }

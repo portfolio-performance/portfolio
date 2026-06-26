@@ -10,6 +10,12 @@ import java.util.Optional;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.model.ledger.LedgerEntry;
+import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
+import name.abuchen.portfolio.model.ledger.compatibility.LedgerAccountOnlyTransactionCreator;
+import name.abuchen.portfolio.model.ledger.compatibility.LedgerBuySellTransactionCreator;
+import name.abuchen.portfolio.model.ledger.compatibility.LedgerDeliveryTransactionCreator;
+import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -19,6 +25,16 @@ import name.abuchen.portfolio.util.TradeCalendarManager;
 
 public class InvestmentPlan implements Named, Adaptable, Attributable
 {
+    public static final class UnsupportedLedgerGenerationException extends IOException
+    {
+        private static final long serialVersionUID = 1L;
+
+        public UnsupportedLedgerGenerationException(String message)
+        {
+            super(message);
+        }
+    }
+
     public enum Type
     {
         PURCHASE_OR_DELIVERY, DEPOSIT, REMOVAL, INTEREST
@@ -66,6 +82,7 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
     private Type type;
 
     private List<Transaction> transactions = new ArrayList<>();
+    private List<LedgerExecutionRef> ledgerExecutionRefs = new ArrayList<>();
 
     public InvestmentPlan()
     {
@@ -225,6 +242,19 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
         return this.transactions;
     }
 
+    public List<LedgerExecutionRef> getLedgerExecutionRefs()
+    {
+        if (ledgerExecutionRefs == null)
+            ledgerExecutionRefs = new ArrayList<>();
+
+        return ledgerExecutionRefs;
+    }
+
+    public void addLedgerExecutionRef(LedgerExecutionRef executionRef)
+    {
+        getLedgerExecutionRefs().add(executionRef);
+    }
+
     /**
      * Returns a list of transaction pairs, i.e. transaction and the owner
      * (account or portfolio). As the list of transactions is part of the XML
@@ -241,6 +271,17 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
             else
                 answer.add(new TransactionPair<>(lookupOwner(client, (PortfolioTransaction) t),
                                 (PortfolioTransaction) t));
+        }
+
+        for (LedgerExecutionRef ref : getLedgerExecutionRefs())
+        {
+            var transaction = ref.resolve(client);
+
+            if (transaction instanceof AccountTransaction at)
+                answer.add(new TransactionPair<>(lookupOwner(client, at), at));
+            else
+                answer.add(new TransactionPair<>(lookupOwner(client, (PortfolioTransaction) transaction),
+                                (PortfolioTransaction) transaction));
         }
 
         return answer;
@@ -277,11 +318,111 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
     public void removeTransaction(PortfolioTransaction transaction)
     {
         this.transactions.remove(transaction);
+        removeLedgerExecutionRef(transaction);
     }
 
     public void removeTransaction(AccountTransaction transaction)
     {
         this.transactions.remove(transaction);
+        removeLedgerExecutionRef(transaction);
+    }
+
+    private void removeLedgerExecutionRef(Transaction transaction)
+    {
+        if (!(transaction instanceof LedgerBackedTransaction ledgerBackedTransaction))
+            return;
+
+        var ref = LedgerExecutionRef.of(ledgerBackedTransaction);
+        getLedgerExecutionRefs().removeIf(existing -> sameExecutionRef(existing, ref));
+    }
+
+    public void removeLedgerExecutionRefs(LedgerEntry entry)
+    {
+        java.util.Objects.requireNonNull(entry);
+
+        getLedgerExecutionRefs().removeIf(existing -> entry.getProjectionRefs().stream().anyMatch(projection -> //
+                        sameExecutionRef(existing,
+                                        new LedgerExecutionRef(entry.getUUID(), projection.getUUID(),
+                                                        projection.getRole()))));
+    }
+
+    private boolean sameExecutionRef(LedgerExecutionRef left, LedgerExecutionRef right)
+    {
+        return java.util.Objects.equals(left.getLedgerEntryUUID(), right.getLedgerEntryUUID())
+                        && java.util.Objects.equals(left.getProjectionUUID(), right.getProjectionUUID())
+                        && left.getProjectionRole() == right.getProjectionRole();
+    }
+
+    public static final class LedgerExecutionRef
+    {
+        private String ledgerEntryUUID;
+        private String projectionUUID;
+        private LedgerProjectionRole projectionRole;
+
+        public LedgerExecutionRef()
+        {
+            // needed for xstream de-serialization
+        }
+
+        public LedgerExecutionRef(String ledgerEntryUUID, String projectionUUID, LedgerProjectionRole projectionRole)
+        {
+            this.ledgerEntryUUID = ledgerEntryUUID;
+            this.projectionUUID = projectionUUID;
+            this.projectionRole = projectionRole;
+        }
+
+        public static LedgerExecutionRef of(LedgerBackedTransaction transaction)
+        {
+            return new LedgerExecutionRef(transaction.getLedgerEntry().getUUID(),
+                            transaction.getLedgerProjectionRef().getUUID(),
+                            transaction.getLedgerProjectionRef().getRole());
+        }
+
+        public String getLedgerEntryUUID()
+        {
+            return ledgerEntryUUID;
+        }
+
+        public String getProjectionUUID()
+        {
+            return projectionUUID;
+        }
+
+        public LedgerProjectionRole getProjectionRole()
+        {
+            return projectionRole;
+        }
+
+        private Transaction resolve(Client client)
+        {
+            var candidates = new ArrayList<Transaction>();
+
+            for (var account : client.getAccounts())
+                account.getTransactions().stream().filter(this::matches).forEach(candidates::add);
+
+            for (var portfolio : client.getPortfolios())
+                portfolio.getTransactions().stream().filter(this::matches).forEach(candidates::add);
+
+            if (candidates.size() == 1)
+                return candidates.get(0);
+
+            throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_CORE_001
+                            .message("Ambiguous ledger execution reference " + ledgerEntryUUID)); //$NON-NLS-1$
+        }
+
+        private boolean matches(Transaction transaction)
+        {
+            if (!(transaction instanceof LedgerBackedTransaction ledgerBackedTransaction))
+                return false;
+
+            return ledgerEntryUUID.equals(ledgerBackedTransaction.getLedgerEntry().getUUID())
+                            && (projectionUUID == null
+                                            || projectionUUID.equals(
+                                                            ledgerBackedTransaction.getLedgerProjectionRef().getUUID()))
+                            && (projectionRole == null
+                                            || projectionRole == ledgerBackedTransaction.getLedgerProjectionRef()
+                                                            .getRole());
+        }
     }
 
     public String getCurrencyCode()
@@ -311,6 +452,20 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
         for (Transaction t : transactions)
         {
             LocalDate date = t.getDateTime().toLocalDate();
+            if (last == null || last.isBefore(date))
+                last = date;
+        }
+
+        return Optional.ofNullable(last);
+    }
+
+    public Optional<LocalDate> getLastDate(Client client)
+    {
+        LocalDate last = getLastDate().orElse(null);
+
+        for (LedgerExecutionRef ref : getLedgerExecutionRefs())
+        {
+            LocalDate date = ref.resolve(client).getDateTime().toLocalDate();
             if (last == null || last.isBefore(date))
                 last = date;
         }
@@ -430,6 +585,54 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
         return newlyCreated;
     }
 
+    public LocalDate getDateOfNextTransactionToBeGenerated(Client client)
+    {
+        Optional<LocalDate> lastDate = getLastDate(client);
+
+        if (lastDate.isPresent())
+        {
+            return next(lastDate.get());
+        }
+        else
+        {
+            LocalDate startDate = start.toLocalDate();
+
+            TradeCalendar tradeCalendar = security != null ? TradeCalendarManager.getInstance(security)
+                            : TradeCalendarManager.getDefaultInstance();
+            while (tradeCalendar.isHoliday(startDate))
+                startDate = startDate.plusDays(1);
+
+            return startDate;
+        }
+    }
+
+    public List<TransactionPair<?>> generateTransactions(Client client, CurrencyConverter converter) throws IOException
+    {
+        LocalDate transactionDate = getDateOfNextTransactionToBeGenerated(client);
+        List<TransactionPair<?>> newlyCreated = new ArrayList<>();
+
+        LocalDate now = LocalDate.now();
+
+        while (!transactionDate.isAfter(now))
+        {
+            TransactionPair<?> transaction = createLedgerTransaction(client, converter, transactionDate);
+            addLedgerExecutionRefIfAbsent((LedgerBackedTransaction) transaction.getTransaction());
+            newlyCreated.add(transaction);
+
+            transactionDate = next(transactionDate);
+        }
+
+        return newlyCreated;
+    }
+
+    private void addLedgerExecutionRefIfAbsent(LedgerBackedTransaction transaction)
+    {
+        var ref = LedgerExecutionRef.of(transaction);
+
+        if (getLedgerExecutionRefs().stream().noneMatch(existing -> sameExecutionRef(existing, ref)))
+            addLedgerExecutionRef(ref);
+    }
+
     private TransactionPair<?> createTransaction(CurrencyConverter converter, LocalDate tDate) throws IOException
     {
         Type planType = getPlanType();
@@ -440,6 +643,20 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
             return createAccountTx(converter, tDate);
         else
             throw new IllegalArgumentException("unsupported plan type " + planType.name()); //$NON-NLS-1$
+    }
+
+    private TransactionPair<?> createLedgerTransaction(Client client, CurrencyConverter converter, LocalDate tDate)
+                    throws IOException
+    {
+        Type planType = getPlanType();
+
+        if (planType == Type.PURCHASE_OR_DELIVERY)
+            return createLedgerSecurityTx(client, converter, tDate);
+        else if (planType == Type.DEPOSIT || planType == Type.REMOVAL || planType == Type.INTEREST)
+            return createLedgerAccountTx(client, converter, tDate);
+        else
+            throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_CORE_002
+                            .message("unsupported plan type " + planType.name())); //$NON-NLS-1$
     }
 
     private TransactionPair<?> createSecurityTx(CurrencyConverter converter, LocalDate tDate) throws IOException
@@ -525,6 +742,70 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
         }
     }
 
+    private TransactionPair<?> createLedgerSecurityTx(Client client, CurrencyConverter converter, LocalDate tDate)
+                    throws IOException
+    {
+        var generated = generatedSecurityFacts(converter, tDate);
+        var note = MessageFormat.format(Messages.InvestmentPlanAutoNoteLabel,
+                        Values.DateTime.format(LocalDateTime.now()), name);
+
+        if (account != null)
+        {
+            var entry = new LedgerBuySellTransactionCreator(client).create(portfolio, account,
+                            PortfolioTransaction.Type.BUY, tDate.atStartOfDay(), amount, generated.currencyCode(),
+                            getSecurity(), generated.shares(), generated.units(), note, null);
+            return new TransactionPair<>(portfolio, entry.getPortfolioTransaction());
+        }
+        else
+        {
+            var transaction = new LedgerDeliveryTransactionCreator(client).create(portfolio,
+                            PortfolioTransaction.Type.DELIVERY_INBOUND, tDate.atStartOfDay(), amount,
+                            generated.currencyCode(), security, generated.shares(), null, null, generated.units(), note,
+                            null);
+            return new TransactionPair<>(portfolio, transaction);
+        }
+    }
+
+    private GeneratedSecurityFacts generatedSecurityFacts(CurrencyConverter converter, LocalDate tDate)
+                    throws IOException
+    {
+        String targetCurrencyCode = getCurrencyCode();
+        boolean needsCurrencyConversion = !targetCurrencyCode.equals(security.getCurrencyCode());
+
+        Transaction.Unit forex = null;
+        long price = getSecurity().getSecurityPrice(tDate).getValue();
+
+        if (price == 0L)
+            throw new IOException(MessageFormat.format(
+                            Messages.MsgErrorInvestmentPlanMissingSecurityPricesToGenerateTransaction,
+                            getSecurity().getName()));
+
+        long availableAmount = amount - fees - taxes;
+
+        if (needsCurrencyConversion)
+        {
+            Money availableMoney = Money.of(targetCurrencyCode, availableAmount);
+            availableAmount = converter.with(security.getCurrencyCode()).convert(tDate, availableMoney).getAmount();
+
+            forex = new Transaction.Unit(Unit.Type.GROSS_VALUE, availableMoney,
+                            Money.of(security.getCurrencyCode(), availableAmount),
+                            converter.with(targetCurrencyCode).getRate(tDate, security.getCurrencyCode()).getValue());
+        }
+
+        long shares = Math
+                        .round((double) availableAmount * Values.Share.factor() * Values.Quote.factorToMoney() / price);
+
+        var units = new ArrayList<Transaction.Unit>();
+        if (fees != 0)
+            units.add(new Transaction.Unit(Unit.Type.FEE, Money.of(targetCurrencyCode, fees)));
+        if (taxes != 0)
+            units.add(new Transaction.Unit(Unit.Type.TAX, Money.of(targetCurrencyCode, taxes)));
+        if (forex != null)
+            units.add(forex);
+
+        return new GeneratedSecurityFacts(targetCurrencyCode, shares, units);
+    }
+
     private TransactionPair<?> createAccountTx(CurrencyConverter converter, LocalDate tDate)
     {
         AccountTransaction.Type transactionType;
@@ -564,6 +845,55 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
 
         account.addTransaction(transaction);
         return new TransactionPair<>(account, transaction);
+    }
+
+    private TransactionPair<?> createLedgerAccountTx(Client client, CurrencyConverter converter, LocalDate tDate)
+                    throws UnsupportedLedgerGenerationException
+    {
+        AccountTransaction.Type transactionType;
+
+        switch (type)
+        {
+            case DEPOSIT:
+                transactionType = AccountTransaction.Type.DEPOSIT;
+                break;
+            case REMOVAL:
+                transactionType = AccountTransaction.Type.REMOVAL;
+                break;
+            case INTEREST:
+                transactionType = AccountTransaction.Type.INTEREST;
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
+
+        Money monetaryAmount = Money.of(getCurrencyCode(), amount);
+
+        boolean needsCurrencyConversion = !getCurrencyCode().equals(account.getCurrencyCode());
+        if (needsCurrencyConversion)
+            monetaryAmount = converter.with(account.getCurrencyCode()).at(tDate).apply(monetaryAmount);
+
+        var units = new ArrayList<Transaction.Unit>();
+        if (taxes != 0)
+            units.add(new Transaction.Unit(Transaction.Unit.Type.TAX, Money.of(account.getCurrencyCode(), taxes)));
+
+        if (!units.isEmpty()
+                        && (transactionType == AccountTransaction.Type.DEPOSIT
+                                        || transactionType == AccountTransaction.Type.REMOVAL))
+            throw new UnsupportedLedgerGenerationException(LedgerDiagnosticCode.LEDGER_CORE_003
+                            .message("Ledger investment plan generation cannot preserve units for " + transactionType)); //$NON-NLS-1$
+
+        var transaction = new LedgerAccountOnlyTransactionCreator(client).create(account, transactionType,
+                        tDate.atStartOfDay(), monetaryAmount.getAmount(), monetaryAmount.getCurrencyCode(), null, units,
+                        MessageFormat.format(Messages.InvestmentPlanAutoNoteLabel,
+                                        Values.DateTime.format(LocalDateTime.now()), name),
+                        null);
+
+        return new TransactionPair<>(account, transaction);
+    }
+
+    private record GeneratedSecurityFacts(String currencyCode, long shares, List<Transaction.Unit> units)
+    {
     }
 
     @Override

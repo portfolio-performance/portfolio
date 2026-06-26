@@ -53,7 +53,7 @@ public final class CreateInvestmentPlanTxJob extends AbstractClientJob
             getClient().getPlans().stream().filter(InvestmentPlan::isAutoGenerate).forEach(plan -> {
                 try
                 {
-                    List<TransactionPair<?>> transactions = plan.generateTransactions(converter);
+                    List<TransactionPair<?>> transactions = plan.generateTransactions(getClient(), converter);
                     if (!transactions.isEmpty())
                         tx.put(plan, transactions);
                 }

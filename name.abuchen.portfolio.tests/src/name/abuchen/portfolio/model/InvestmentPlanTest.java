@@ -1,11 +1,18 @@
 package name.abuchen.portfolio.model;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -20,12 +27,19 @@ import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
+import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator;
+import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.TradeCalendar;
 import name.abuchen.portfolio.util.TradeCalendarManager;
 
+/**
+ * Tests investment plan behavior, including generated ledger-backed bookings.
+ * These tests make sure plans can still resolve generated transactions after ledger-aware updates and conversions.
+ */
 @SuppressWarnings("nls")
 public class InvestmentPlanTest
 {
@@ -47,6 +61,11 @@ public class InvestmentPlanTest
         this.investmentPlan.setInterval(1);
     }
 
+    /**
+     * Checks the generated booking scenario: generation of buy transaction.
+     * The plan reference must resolve to the intended transaction after the operation.
+     * This prevents stale or ambiguous generated booking references.
+     */
     @Test
     public void testGenerationOfBuyTransaction() throws IOException
     {
@@ -100,6 +119,11 @@ public class InvestmentPlanTest
         assertThat(newlyGenerated.get(0).getTransaction().getDateTime(), is(LocalDateTime.parse("2016-05-31T00:00")));
     }
 
+    /**
+     * Checks the generated booking scenario: generation of delivery transaction.
+     * The plan reference must resolve to the intended transaction after the operation.
+     * This prevents stale or ambiguous generated booking references.
+     */
     @Test
     public void testGenerationOfDeliveryTransaction() throws IOException
     {
@@ -138,6 +162,11 @@ public class InvestmentPlanTest
         assertThat(((PortfolioTransaction) tx.get(1)).getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
     }
 
+    /**
+     * Checks the generated booking scenario: generation of deposit transaction.
+     * The plan reference must resolve to the intended transaction after the operation.
+     * This prevents stale or ambiguous generated booking references.
+     */
     @Test
     public void testGenerationOfDepositTransaction() throws IOException
     {
@@ -176,6 +205,11 @@ public class InvestmentPlanTest
         assertThat(((AccountTransaction) tx.get(1)).getType(), is(AccountTransaction.Type.DEPOSIT));
     }
 
+    /**
+     * Checks the generated booking scenario: generation of removal transaction.
+     * The plan reference must resolve to the intended transaction after the operation.
+     * This prevents stale or ambiguous generated booking references.
+     */
     @Test
     public void testGenerationOfRemovalTransaction() throws IOException
     {
@@ -204,6 +238,11 @@ public class InvestmentPlanTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100))));
     }
 
+    /**
+     * Checks the generated booking scenario: generation of interest transaction.
+     * The plan reference must resolve to the intended transaction after the operation.
+     * This prevents stale or ambiguous generated booking references.
+     */
     @Test
     public void testGenerationOfInterestTransaction() throws IOException
     {
@@ -235,6 +274,11 @@ public class InvestmentPlanTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10))));
     }
 
+    /**
+     * Checks the generated booking scenario: no generation with start in future.
+     * The plan reference must resolve to the intended transaction after the operation.
+     * This prevents stale or ambiguous generated booking references.
+     */
     @Test
     public void testNoGenerationWithStartInFuture() throws IOException
     {
@@ -290,6 +334,11 @@ public class InvestmentPlanTest
         investmentPlan.generateTransactions(new TestCurrencyConverter());
     }
 
+    /**
+     * Checks the generated booking scenario: generation of weekly buy transaction.
+     * The plan reference must resolve to the intended transaction after the operation.
+     * This prevents stale or ambiguous generated booking references.
+     */
     @Test
     public void testGenerationOfWeeklyBuyTransaction() throws IOException
     {
@@ -359,6 +408,11 @@ public class InvestmentPlanTest
         assertThat(newlyGenerated.get(2).getTransaction().getDateTime(), is(LocalDateTime.parse("2016-04-08T00:00")));
     }
 
+    /**
+     * Checks the generated booking scenario: weekly from18 march2024.
+     * The plan reference must resolve to the intended transaction after the operation.
+     * This prevents stale or ambiguous generated booking references.
+     */
     @Test
     public void testWeeklyFrom18March2024() throws IOException
     {
@@ -378,6 +432,442 @@ public class InvestmentPlanTest
         assertThat(tx.get(1).getDateTime(), is(LocalDateTime.parse("2024-03-25T00:00")));
         assertThat(tx.get(2).getDateTime(), is(LocalDateTime.parse("2024-04-02T00:00")));
         assertThat(tx.get(3).getDateTime(), is(LocalDateTime.parse("2024-04-08T00:00")));
+    }
+
+    /**
+     * Checks the generated booking scenario: ledger generation of buy stores portfolio execution ref.
+     * The plan reference must resolve to the intended transaction after the operation.
+     * This prevents stale or ambiguous generated booking references.
+     */
+    @Test
+    public void testLedgerGenerationOfBuyStoresPortfolioExecutionRef() throws IOException
+    {
+        investmentPlan.setName("Buy Plan");
+        investmentPlan.setType(InvestmentPlan.Type.PURCHASE_OR_DELIVERY);
+        investmentPlan.setAccount(account);
+        investmentPlan.setPortfolio(portfolio);
+        investmentPlan.setSecurity(security);
+        investmentPlan.setFees(Values.Amount.factorize(1));
+        investmentPlan.setTaxes(Values.Amount.factorize(2));
+        investmentPlan.setStart(LocalDate.now().minusMonths(1));
+        investmentPlan.setInterval(12);
+
+        List<TransactionPair<?>> generated = investmentPlan.generateTransactions(client, new TestCurrencyConverter());
+
+        assertThat(generated, hasSize(1));
+        assertThat(investmentPlan.getTransactions(), hasSize(0));
+        assertThat(investmentPlan.getLedgerExecutionRefs(), hasSize(1));
+        assertThat(client.getLedger().getEntries(), hasSize(1));
+        assertThat(account.getTransactions(), hasSize(1));
+        assertThat(portfolio.getTransactions(), hasSize(1));
+        assertThat(client.getAllTransactions(), hasSize(1));
+
+        var transaction = generated.get(0).getTransaction();
+        assertThat(transaction, instanceOf(LedgerBackedTransaction.class));
+        assertThat(transaction, instanceOf(PortfolioTransaction.class));
+        assertThat(((PortfolioTransaction) transaction).getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2))));
+
+        var ledgerBacked = (LedgerBackedTransaction) transaction;
+        var ref = investmentPlan.getLedgerExecutionRefs().get(0);
+        assertThat(ref.getLedgerEntryUUID(), is(ledgerBacked.getLedgerEntry().getUUID()));
+        assertThat(ref.getProjectionUUID(), is(ledgerBacked.getLedgerProjectionRef().getUUID()));
+        assertThat(ref.getProjectionRole(), is(LedgerProjectionRole.PORTFOLIO));
+        assertThat(investmentPlan.getTransactions(client).get(0).getTransaction(), is(transaction));
+        assertValidLedger();
+    }
+
+    /**
+     * Checks the generated booking scenario: ledger generation of delivery stores portfolio execution ref.
+     * The plan reference must resolve to the intended transaction after the operation.
+     * This prevents stale or ambiguous generated booking references.
+     */
+    @Test
+    public void testLedgerGenerationOfDeliveryStoresPortfolioExecutionRef() throws IOException
+    {
+        investmentPlan.setName("Delivery Plan");
+        investmentPlan.setType(InvestmentPlan.Type.PURCHASE_OR_DELIVERY);
+        investmentPlan.setPortfolio(portfolio);
+        investmentPlan.setSecurity(security);
+        investmentPlan.setStart(LocalDate.now().minusMonths(1));
+        investmentPlan.setInterval(12);
+
+        List<TransactionPair<?>> generated = investmentPlan.generateTransactions(client, new TestCurrencyConverter());
+
+        assertThat(generated, hasSize(1));
+        assertThat(investmentPlan.getTransactions(), hasSize(0));
+        assertThat(investmentPlan.getLedgerExecutionRefs(), hasSize(1));
+        assertThat(client.getLedger().getEntries(), hasSize(1));
+        assertThat(portfolio.getTransactions(), hasSize(1));
+        assertThat(client.getAllTransactions(), hasSize(1));
+
+        var transaction = generated.get(0).getTransaction();
+        assertThat(transaction, instanceOf(LedgerBackedTransaction.class));
+        assertThat(transaction, instanceOf(PortfolioTransaction.class));
+        assertThat(((PortfolioTransaction) transaction).getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
+
+        var ledgerBacked = (LedgerBackedTransaction) transaction;
+        var ref = investmentPlan.getLedgerExecutionRefs().get(0);
+        assertThat(ref.getLedgerEntryUUID(), is(ledgerBacked.getLedgerEntry().getUUID()));
+        assertThat(ref.getProjectionUUID(), is(ledgerBacked.getLedgerProjectionRef().getUUID()));
+        assertThat(ref.getProjectionRole(), is(LedgerProjectionRole.DELIVERY_INBOUND));
+        assertThat(investmentPlan.getTransactions(client).get(0).getTransaction(), is(transaction));
+        assertValidLedger();
+    }
+
+    /**
+     * Checks the generated booking scenario: ledger generation of account only stores account execution ref.
+     * The plan reference must resolve to the intended transaction after the operation.
+     * This prevents stale or ambiguous generated booking references.
+     */
+    @Test
+    public void testLedgerGenerationOfAccountOnlyStoresAccountExecutionRef() throws IOException
+    {
+        investmentPlan.setName("Interest Plan");
+        investmentPlan.setType(InvestmentPlan.Type.INTEREST);
+        investmentPlan.setAccount(account);
+        investmentPlan.setAmount(Values.Amount.factorize(200));
+        investmentPlan.setTaxes(Values.Amount.factorize(10));
+        investmentPlan.setStart(LocalDate.now().minusMonths(1));
+        investmentPlan.setInterval(12);
+
+        List<TransactionPair<?>> generated = investmentPlan.generateTransactions(client, new TestCurrencyConverter());
+
+        assertThat(generated, hasSize(1));
+        assertThat(investmentPlan.getTransactions(), hasSize(0));
+        assertThat(investmentPlan.getLedgerExecutionRefs(), hasSize(1));
+        assertThat(client.getLedger().getEntries(), hasSize(1));
+        assertThat(account.getTransactions(), hasSize(1));
+        assertThat(client.getAllTransactions(), hasSize(1));
+
+        var transaction = generated.get(0).getTransaction();
+        assertThat(transaction, instanceOf(LedgerBackedTransaction.class));
+        assertThat(transaction, instanceOf(AccountTransaction.class));
+        assertThat(((AccountTransaction) transaction).getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(200))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10))));
+
+        var ledgerBacked = (LedgerBackedTransaction) transaction;
+        var ref = investmentPlan.getLedgerExecutionRefs().get(0);
+        assertThat(ref.getLedgerEntryUUID(), is(ledgerBacked.getLedgerEntry().getUUID()));
+        assertThat(ref.getProjectionUUID(), is(ledgerBacked.getLedgerProjectionRef().getUUID()));
+        assertThat(ref.getProjectionRole(), is(LedgerProjectionRole.ACCOUNT));
+        assertThat(investmentPlan.getTransactions(client).get(0).getTransaction(), is(transaction));
+        assertValidLedger();
+    }
+
+    /**
+     * Checks the generated booking scenario: ledger generation of deposit without units stores account execution ref.
+     * The plan reference must resolve to the intended transaction after the operation.
+     * This prevents stale or ambiguous generated booking references.
+     */
+    @Test
+    public void testLedgerGenerationOfDepositWithoutUnitsStoresAccountExecutionRef() throws IOException
+    {
+        investmentPlan.setName("Deposit Plan");
+        investmentPlan.setType(InvestmentPlan.Type.DEPOSIT);
+        investmentPlan.setAccount(account);
+        investmentPlan.setAmount(Values.Amount.factorize(200));
+        investmentPlan.setStart(LocalDate.now().minusMonths(1));
+        investmentPlan.setInterval(12);
+
+        List<TransactionPair<?>> generated = investmentPlan.generateTransactions(client, new TestCurrencyConverter());
+
+        assertThat(generated, hasSize(1));
+        assertThat(investmentPlan.getTransactions(), hasSize(0));
+        assertThat(investmentPlan.getLedgerExecutionRefs(), hasSize(1));
+        assertThat(client.getLedger().getEntries(), hasSize(1));
+        assertThat(account.getTransactions(), hasSize(1));
+        assertThat(client.getAllTransactions(), hasSize(1));
+
+        var transaction = generated.get(0).getTransaction();
+        assertThat(transaction, instanceOf(LedgerBackedTransaction.class));
+        assertThat(transaction, instanceOf(AccountTransaction.class));
+        assertThat(((AccountTransaction) transaction).getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(200))));
+
+        var ledgerBacked = (LedgerBackedTransaction) transaction;
+        var ref = investmentPlan.getLedgerExecutionRefs().get(0);
+        assertThat(ref.getLedgerEntryUUID(), is(ledgerBacked.getLedgerEntry().getUUID()));
+        assertThat(ref.getProjectionUUID(), is(ledgerBacked.getLedgerProjectionRef().getUUID()));
+        assertThat(ref.getProjectionRole(), is(LedgerProjectionRole.ACCOUNT));
+        assertValidLedger();
+    }
+
+    /**
+     * Checks the generated booking scenario: ledger generation rejects unsupported deposit units before mutation.
+     * The plan reference must resolve to the intended transaction after the operation.
+     * This prevents stale or ambiguous generated booking references.
+     */
+    @Test
+    public void testLedgerGenerationRejectsUnsupportedDepositUnitsBeforeMutation()
+    {
+        assertUnsupportedAccountOnlyUnitsRejectedBeforeMutation(InvestmentPlan.Type.DEPOSIT);
+    }
+
+    /**
+     * Checks the generated booking scenario: ledger generation rejects unsupported removal units before mutation.
+     * The plan reference must resolve to the intended transaction after the operation.
+     * This prevents stale or ambiguous generated booking references.
+     */
+    @Test
+    public void testLedgerGenerationRejectsUnsupportedRemovalUnitsBeforeMutation()
+    {
+        assertUnsupportedAccountOnlyUnitsRejectedBeforeMutation(InvestmentPlan.Type.REMOVAL);
+    }
+
+    /**
+     * Checks the generated booking scenario: ledger generation is idempotent and removal clears execution ref.
+     * The plan reference must resolve to the intended transaction after the operation.
+     * This prevents stale or ambiguous generated booking references.
+     */
+    @Test
+    public void testLedgerGenerationIsIdempotentAndRemovalClearsExecutionRef() throws IOException
+    {
+        investmentPlan.setName("Idempotent Plan");
+        investmentPlan.setType(InvestmentPlan.Type.PURCHASE_OR_DELIVERY);
+        investmentPlan.setAccount(account);
+        investmentPlan.setPortfolio(portfolio);
+        investmentPlan.setSecurity(security);
+        investmentPlan.setStart(LocalDate.now().minusMonths(1));
+        investmentPlan.setInterval(12);
+
+        List<TransactionPair<?>> generated = investmentPlan.generateTransactions(client, new TestCurrencyConverter());
+        investmentPlan.generateTransactions(client, new TestCurrencyConverter());
+        var generatedDate = generated.get(0).getTransaction().getDateTime().toLocalDate();
+
+        assertThat(client.getLedger().getEntries(), hasSize(1));
+        assertThat(account.getTransactions(), hasSize(1));
+        assertThat(portfolio.getTransactions(), hasSize(1));
+        assertThat(investmentPlan.getLedgerExecutionRefs(), hasSize(1));
+        assertTrue(investmentPlan.getLastDate().isEmpty());
+        assertThat(investmentPlan.getLastDate(client).orElseThrow(), is(generatedDate));
+        assertTrue(investmentPlan.getDateOfNextTransactionToBeGenerated(client).isAfter(generatedDate));
+
+        investmentPlan.removeTransaction((PortfolioTransaction) generated.get(0).getTransaction());
+
+        assertThat(investmentPlan.getLedgerExecutionRefs(), hasSize(0));
+        assertThat(client.getLedger().getEntries(), hasSize(1));
+        assertThat(portfolio.getTransactions(), hasSize(1));
+    }
+
+    /**
+     * Checks the generated booking scenario: ledger deletion clears execution refs before protobuf roundtrip.
+     * The plan reference must resolve to the intended transaction after the operation.
+     * This prevents stale or ambiguous generated booking references.
+     */
+    @Test
+    public void testLedgerDeletionClearsExecutionRefsBeforeProtobufRoundtrip() throws IOException
+    {
+        investmentPlan.setName("Deleted Ledger Plan");
+        investmentPlan.setType(InvestmentPlan.Type.PURCHASE_OR_DELIVERY);
+        investmentPlan.setAccount(account);
+        investmentPlan.setPortfolio(portfolio);
+        investmentPlan.setSecurity(security);
+        investmentPlan.setStart(LocalDate.now().minusMonths(1));
+        investmentPlan.setInterval(12);
+        client.addPlan(investmentPlan);
+
+        InvestmentPlan unrelatedPlan = new InvestmentPlan();
+        unrelatedPlan.setName("Unrelated Ledger Plan");
+        unrelatedPlan.setType(InvestmentPlan.Type.PURCHASE_OR_DELIVERY);
+        unrelatedPlan.setAccount(account);
+        unrelatedPlan.setPortfolio(portfolio);
+        unrelatedPlan.setSecurity(security);
+        unrelatedPlan.setStart(LocalDate.now().minusMonths(1));
+        unrelatedPlan.setInterval(12);
+        unrelatedPlan.setAmount(Values.Amount.factorize(100));
+        client.addPlan(unrelatedPlan);
+
+        var generated = investmentPlan.generateTransactions(client, new TestCurrencyConverter());
+        var unrelatedGenerated = unrelatedPlan.generateTransactions(client, new TestCurrencyConverter());
+        var deletedPortfolioProjection = (PortfolioTransaction) generated.get(0).getTransaction();
+        var deletedLedgerProjection = (LedgerBackedTransaction) deletedPortfolioProjection;
+        var deletedEntryUUID = deletedLedgerProjection.getLedgerEntry().getUUID();
+        var accountProjection = (AccountTransaction) deletedPortfolioProjection.getCrossEntry()
+                        .getCrossTransaction(deletedPortfolioProjection);
+        var unrelatedEntryUUID = ((LedgerBackedTransaction) unrelatedGenerated.get(0).getTransaction()).getLedgerEntry()
+                        .getUUID();
+
+        account.deleteTransaction(accountProjection, client);
+
+        assertFalse(client.getLedger().getEntries().stream().anyMatch(entry -> entry.getUUID().equals(deletedEntryUUID)));
+        assertThat(client.getLedger().getEntries().stream().filter(entry -> entry.getUUID().equals(unrelatedEntryUUID))
+                        .count(), is(1L));
+        assertThat(account.getTransactions(), hasSize(1));
+        assertThat(portfolio.getTransactions(), hasSize(1));
+        assertFalse(account.getTransactions().stream()
+                        .anyMatch(transaction -> transaction.getUUID().equals(accountProjection.getUUID())));
+        assertFalse(portfolio.getTransactions().stream()
+                        .anyMatch(transaction -> transaction.getUUID().equals(deletedPortfolioProjection.getUUID())));
+        assertThat(investmentPlan.getLedgerExecutionRefs(), hasSize(0));
+        assertThat(investmentPlan.getTransactions(client), hasSize(0));
+        assertThat(unrelatedPlan.getLedgerExecutionRefs(), hasSize(1));
+        assertThat(unrelatedPlan.getTransactions(client), hasSize(1));
+
+        String xml = ClientTestUtilities.toString(client);
+        assertFalse(xml.contains(deletedEntryUUID));
+        Client xmlLoaded = ClientFactory.load(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
+        assertThat(xmlLoaded.getPlans().get(0).getLedgerExecutionRefs(), hasSize(0));
+        assertThat(xmlLoaded.getPlans().get(0).getTransactions(xmlLoaded), hasSize(0));
+        assertThat(xmlLoaded.getPlans().get(1).getLedgerExecutionRefs(), hasSize(1));
+        assertFalse(xmlLoaded.getAccounts().get(0).getTransactions().stream()
+                        .anyMatch(transaction -> transaction.getUUID().equals(accountProjection.getUUID())));
+        assertFalse(xmlLoaded.getPortfolios().get(0).getTransactions().stream()
+                        .anyMatch(transaction -> transaction.getUUID().equals(deletedPortfolioProjection.getUUID())));
+        assertFalse(xmlLoaded.getLedger().getEntries().stream().anyMatch(entry -> entry.getUUID().equals(deletedEntryUUID)));
+
+        Client loaded = loadProtobuf(client);
+        assertThat(loaded.getPlans().get(0).getLedgerExecutionRefs(), hasSize(0));
+        assertThat(loaded.getPlans().get(0).getTransactions(loaded), hasSize(0));
+        assertThat(loaded.getPlans().get(1).getLedgerExecutionRefs(), hasSize(1));
+        assertFalse(loaded.getLedger().getEntries().stream().anyMatch(entry -> entry.getUUID().equals(deletedEntryUUID)));
+    }
+
+    /**
+     * Checks the generated booking scenario: owner delete ledger backed account only transaction removes ledger truth before xml roundtrip.
+     * The plan reference must resolve to the intended transaction after the operation.
+     * This prevents stale or ambiguous generated booking references.
+     */
+    @Test
+    public void testOwnerDeleteLedgerBackedAccountOnlyTransactionRemovesLedgerTruthBeforeXmlRoundtrip() throws IOException
+    {
+        investmentPlan.setName("Deleted Account Plan");
+        investmentPlan.setType(InvestmentPlan.Type.INTEREST);
+        investmentPlan.setAccount(account);
+        investmentPlan.setAmount(Values.Amount.factorize(200));
+        investmentPlan.setTaxes(Values.Amount.factorize(10));
+        investmentPlan.setStart(LocalDate.now().minusMonths(1));
+        investmentPlan.setInterval(12);
+        client.addPlan(investmentPlan);
+
+        var generated = investmentPlan.generateTransactions(client, new TestCurrencyConverter());
+        var deletedProjection = (AccountTransaction) generated.get(0).getTransaction();
+        var deletedEntryUUID = ((LedgerBackedTransaction) deletedProjection).getLedgerEntry().getUUID();
+
+        account.deleteTransaction(deletedProjection, client);
+
+        assertThat(account.getTransactions(), hasSize(0));
+        assertThat(client.getLedger().getEntries(), hasSize(0));
+        assertThat(investmentPlan.getLedgerExecutionRefs(), hasSize(0));
+        assertThat(investmentPlan.getTransactions(client), hasSize(0));
+
+        String xml = ClientTestUtilities.toString(client);
+        assertFalse(xml.contains(deletedEntryUUID));
+
+        Client loaded = ClientFactory.load(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
+
+        assertThat(loaded.getLedger().getEntries(), hasSize(0));
+        assertThat(loaded.getAccounts().get(0).getTransactions(), hasSize(0));
+        assertThat(loaded.getPlans().get(0).getLedgerExecutionRefs(), hasSize(0));
+        assertThat(loaded.getPlans().get(0).getTransactions(loaded), hasSize(0));
+    }
+
+    /**
+     * Checks the generated booking scenario: generated ledger execution refs survive xml and protobuf roundtrip.
+     * The plan reference must resolve to the intended transaction after the operation.
+     * This prevents stale or ambiguous generated booking references.
+     */
+    @Test
+    public void testGeneratedLedgerExecutionRefsSurviveXmlAndProtobufRoundtrip() throws IOException
+    {
+        investmentPlan.setName("Roundtrip Plan");
+        investmentPlan.setType(InvestmentPlan.Type.PURCHASE_OR_DELIVERY);
+        investmentPlan.setAccount(account);
+        investmentPlan.setPortfolio(portfolio);
+        investmentPlan.setSecurity(security);
+        investmentPlan.setStart(LocalDate.now().minusMonths(1));
+        investmentPlan.setInterval(12);
+        client.addPlan(investmentPlan);
+
+        var generated = investmentPlan.generateTransactions(client, new TestCurrencyConverter());
+        var expected = (LedgerBackedTransaction) generated.get(0).getTransaction();
+
+        String xml = ClientTestUtilities.toString(client);
+        assertThat(xml, containsString("<ledger-execution-ref>"));
+        assertFalse(xml.contains("<account-transaction"));
+        assertFalse(xml.contains("<portfolio-transaction"));
+
+        var xmlLoaded = ClientFactory.load(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
+        assertGeneratedPlanRefRoundtrip(xmlLoaded, expected);
+
+        var protobufLoaded = loadProtobuf(client);
+        assertGeneratedPlanRefRoundtrip(protobufLoaded, expected);
+    }
+
+    /**
+     * Checks the generated booking scenario: ambiguous ledger execution ref without projection identity is rejected.
+     * The plan reference must resolve to the intended transaction after the operation.
+     * This prevents stale or ambiguous generated booking references.
+     */
+    @Test
+    public void testAmbiguousLedgerExecutionRefWithoutProjectionIdentityIsRejected() throws IOException
+    {
+        investmentPlan.setName("Ambiguous Plan");
+        investmentPlan.setType(InvestmentPlan.Type.PURCHASE_OR_DELIVERY);
+        investmentPlan.setAccount(account);
+        investmentPlan.setPortfolio(portfolio);
+        investmentPlan.setSecurity(security);
+        investmentPlan.setStart(LocalDate.now().minusMonths(1));
+        investmentPlan.setInterval(12);
+
+        var generated = investmentPlan.generateTransactions(client, new TestCurrencyConverter());
+        var ledgerBacked = (LedgerBackedTransaction) generated.get(0).getTransaction();
+        investmentPlan.getLedgerExecutionRefs().clear();
+        investmentPlan.addLedgerExecutionRef(
+                        new InvestmentPlan.LedgerExecutionRef(ledgerBacked.getLedgerEntry().getUUID(), null, null));
+
+        assertThrows(IllegalArgumentException.class, () -> investmentPlan.getTransactions(client));
+    }
+
+    private void assertGeneratedPlanRefRoundtrip(Client loaded, LedgerBackedTransaction expected)
+    {
+        var loadedPlan = loaded.getPlans().get(0);
+        assertThat(loadedPlan.getTransactions(), hasSize(0));
+        assertThat(loadedPlan.getLedgerExecutionRefs(), hasSize(1));
+
+        var ref = loadedPlan.getLedgerExecutionRefs().get(0);
+        assertThat(ref.getLedgerEntryUUID(), is(expected.getLedgerEntry().getUUID()));
+        assertThat(ref.getProjectionUUID(), is(expected.getLedgerProjectionRef().getUUID()));
+        assertThat(ref.getProjectionRole(), is(LedgerProjectionRole.PORTFOLIO));
+
+        var resolved = loadedPlan.getTransactions(loaded).get(0).getTransaction();
+        assertThat(resolved, instanceOf(LedgerBackedTransaction.class));
+        assertThat(resolved.getUUID(), is(expected.getLedgerProjectionRef().getUUID()));
+        assertThat(((PortfolioTransaction) resolved).getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(loaded.getLedger().getEntries(), hasSize(1));
+        assertThat(loaded.getAllTransactions(), hasSize(1));
+        assertTrue(LedgerStructuralValidator.validate(loaded.getLedger()).isOK());
+    }
+
+    private void assertUnsupportedAccountOnlyUnitsRejectedBeforeMutation(InvestmentPlan.Type type)
+    {
+        investmentPlan.setName("Unsupported Account Plan");
+        investmentPlan.setType(type);
+        investmentPlan.setAccount(account);
+        investmentPlan.setTaxes(Values.Amount.factorize(10));
+        investmentPlan.setStart(LocalDate.now().minusMonths(1));
+        investmentPlan.setInterval(12);
+
+        assertThrows(InvestmentPlan.UnsupportedLedgerGenerationException.class,
+                        () -> investmentPlan.generateTransactions(client, new TestCurrencyConverter()));
+        assertThat(client.getLedger().getEntries(), hasSize(0));
+        assertThat(account.getTransactions(), hasSize(0));
+        assertThat(investmentPlan.getLedgerExecutionRefs(), hasSize(0));
+    }
+
+    private Client loadProtobuf(Client source) throws IOException
+    {
+        var stream = new ByteArrayOutputStream();
+        new ProtobufWriter().save(source, stream);
+        return new ProtobufWriter().load(new ByteArrayInputStream(stream.toByteArray()));
+    }
+
+    private void assertValidLedger()
+    {
+        var result = LedgerStructuralValidator.validate(client.getLedger());
+        assertTrue(result.getIssues().toString(), result.isOK());
     }
 
 }

@@ -37,40 +37,7 @@ public class DividendsAndInterestCheck implements Check
         @Override
         public List<QuickFix> getAvailableFixes()
         {
-            List<QuickFix> answer = new ArrayList<QuickFix>();
-            answer.add(new ConvertFix(transaction, target));
-            answer.add(new DeleteTransactionFix<AccountTransaction>(client, account, transaction));
-            return answer;
-        }
-    }
-
-    private static final class ConvertFix implements QuickFix
-    {
-        private AccountTransaction transaction;
-        private Type target;
-
-        public ConvertFix(AccountTransaction transaction, Type target)
-        {
-            this.transaction = transaction;
-            this.target = target;
-        }
-
-        @Override
-        public String getLabel()
-        {
-            return MessageFormat.format(Messages.FixConvertToType, target);
-        }
-
-        @Override
-        public void execute()
-        {
-            transaction.setType(target);
-        }
-
-        @Override
-        public String getDoneLabel()
-        {
-            return MessageFormat.format(Messages.FixConvertToTypeDone, target);
+            return List.of(new DeleteTransactionFix<AccountTransaction>(client, account, transaction));
         }
     }
 

@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.checks.impl;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 import name.abuchen.portfolio.Messages;
@@ -26,8 +25,6 @@ import name.abuchen.portfolio.model.Client;
     @Override
     public List<QuickFix> getAvailableFixes()
     {
-        List<QuickFix> answer = new ArrayList<QuickFix>();
-        answer.add(new DeleteTransactionFix<AccountTransaction>(client, account, transaction));
-        return answer;
+        return List.of(new DeleteTransactionFix<AccountTransaction>(client, account, transaction));
     }
 }

@@ -12,6 +12,10 @@ import org.junit.Test;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
+import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.jobs.CreateInvestmentPlanTxJob;
 
 @SuppressWarnings("nls")
 public class InvestmentPlanModelTest
@@ -50,5 +54,32 @@ public class InvestmentPlanModelTest
 
         assertThat(model.getAmount(), is(100L));
         assertThat(model.getCalculationStatus(), is(Status.OK_STATUS));
+    }
+
+    @Test
+    public void testAutoGenerationJobHandlesUnsupportedLedgerPlanWithoutMutation() throws InterruptedException
+    {
+        Client client = new Client();
+        Account account = new Account("Account");
+        account.setCurrencyCode(CurrencyUnit.EUR);
+        client.addAccount(account);
+
+        InvestmentPlan investmentPlan = new InvestmentPlan("Unsupported Plan");
+        investmentPlan.setType(InvestmentPlan.Type.REMOVAL);
+        investmentPlan.setAccount(account);
+        investmentPlan.setAmount(Values.Amount.factorize(100));
+        investmentPlan.setTaxes(Values.Amount.factorize(10));
+        investmentPlan.setStart(LocalDateTime.now().minusMonths(1));
+        investmentPlan.setInterval(12);
+        investmentPlan.setAutoGenerate(true);
+        client.addPlan(investmentPlan);
+
+        var job = new CreateInvestmentPlanTxJob(client, new ExchangeRateProviderFactory(client));
+        job.schedule();
+        job.join();
+
+        assertThat(job.getResult().isOK(), is(true));
+        assertThat(account.getTransactions().size(), is(0));
+        assertThat(investmentPlan.getLedgerExecutionRefs().size(), is(0));
     }
 }
