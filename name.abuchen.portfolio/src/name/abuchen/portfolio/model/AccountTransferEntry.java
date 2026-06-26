@@ -9,6 +9,7 @@ public class AccountTransferEntry implements CrossEntry, Annotated
     private AccountTransaction transactionFrom;
     private Account accountTo;
     private AccountTransaction transactionTo;
+    private boolean readOnly;
 
     public AccountTransferEntry()
     {
@@ -23,25 +24,45 @@ public class AccountTransferEntry implements CrossEntry, Annotated
     /* protobuf only */ AccountTransferEntry(Account accountFrom, AccountTransaction txFrom, Account accountTo,
                     AccountTransaction txTo)
     {
+        this(accountFrom, txFrom, accountTo, txTo, false);
+    }
+
+    private AccountTransferEntry(Account accountFrom, AccountTransaction txFrom, Account accountTo,
+                    AccountTransaction txTo, boolean readOnly)
+    {
         this.transactionFrom = txFrom;
-        this.transactionFrom.setType(AccountTransaction.Type.TRANSFER_OUT);
-        this.transactionFrom.setCrossEntry(this);
-
         this.transactionTo = txTo;
-        this.transactionTo.setType(AccountTransaction.Type.TRANSFER_IN);
-        this.transactionTo.setCrossEntry(this);
-
         this.accountFrom = accountFrom;
         this.accountTo = accountTo;
+        this.readOnly = readOnly;
+
+        if (!readOnly)
+        {
+            this.transactionFrom.setType(AccountTransaction.Type.TRANSFER_OUT);
+            this.transactionFrom.setCrossEntry(this);
+
+            this.transactionTo.setType(AccountTransaction.Type.TRANSFER_IN);
+            this.transactionTo.setCrossEntry(this);
+        }
+    }
+
+    public static AccountTransferEntry readOnly(Account accountFrom, AccountTransaction txFrom, Account accountTo,
+                    AccountTransaction txTo)
+    {
+        return new AccountTransferEntry(accountFrom, txFrom, accountTo, txTo, true);
     }
 
     public void setSourceTransaction(AccountTransaction transaction)
     {
+        assertWritable();
+
         this.transactionFrom = transaction;
     }
 
     public void setTargetTransaction(AccountTransaction transaction)
     {
+        assertWritable();
+
         this.transactionTo = transaction;
     }
 
@@ -57,6 +78,8 @@ public class AccountTransferEntry implements CrossEntry, Annotated
 
     public void setSourceAccount(Account account)
     {
+        assertWritable();
+
         this.accountFrom = account;
     }
 
@@ -67,6 +90,8 @@ public class AccountTransferEntry implements CrossEntry, Annotated
 
     public void setTargetAccount(Account account)
     {
+        assertWritable();
+
         this.accountTo = account;
     }
 
@@ -77,18 +102,24 @@ public class AccountTransferEntry implements CrossEntry, Annotated
 
     public void setDate(LocalDateTime date)
     {
+        assertWritable();
+
         this.transactionFrom.setDateTime(date);
         this.transactionTo.setDateTime(date);
     }
 
     public void setAmount(long amount)
     {
+        assertWritable();
+
         this.transactionFrom.setAmount(amount);
         this.transactionTo.setAmount(amount);
     }
 
     public void setCurrencyCode(String currencyCode)
     {
+        assertWritable();
+
         this.transactionFrom.setCurrencyCode(currencyCode);
         this.transactionTo.setCurrencyCode(currencyCode);
     }
@@ -102,6 +133,8 @@ public class AccountTransferEntry implements CrossEntry, Annotated
     @Override
     public void setNote(String note)
     {
+        assertWritable();
+
         this.transactionFrom.setNote(note);
         this.transactionTo.setNote(note);
     }
@@ -115,6 +148,8 @@ public class AccountTransferEntry implements CrossEntry, Annotated
     @Override
     public void setSource(String source)
     {
+        assertWritable();
+
         this.transactionFrom.setSource(source);
         this.transactionTo.setSource(source);
     }
@@ -122,6 +157,8 @@ public class AccountTransferEntry implements CrossEntry, Annotated
     @Override
     public void insert()
     {
+        assertWritable();
+
         // perform both currency checks *before* adding the transactions to
         // avoid partially added transfer
 
@@ -151,9 +188,19 @@ public class AccountTransferEntry implements CrossEntry, Annotated
     public void updateFrom(Transaction t)
     {
         if (t == transactionFrom)
+        {
+            if (readOnly)
+                return;
+
             copyAttributesOver(transactionFrom, transactionTo);
+        }
         else if (t == transactionTo)
+        {
+            if (readOnly)
+                return;
+
             copyAttributesOver(transactionTo, transactionFrom);
+        }
         else
             throw new UnsupportedOperationException();
     }
@@ -178,6 +225,8 @@ public class AccountTransferEntry implements CrossEntry, Annotated
     @Override
     public void setOwner(Transaction t, TransactionOwner<? extends Transaction> owner)
     {
+        assertWritable();
+
         if (!(owner instanceof Account))
             throw new IllegalArgumentException("owner isn't an account for transaction " + t); //$NON-NLS-1$
 
@@ -209,5 +258,11 @@ public class AccountTransferEntry implements CrossEntry, Annotated
             return accountFrom;
         else
             throw new UnsupportedOperationException();
+    }
+
+    private void assertWritable()
+    {
+        if (readOnly)
+            throw new UnsupportedOperationException("Ledger-backed account transfer cross entries are read-only"); //$NON-NLS-1$
     }
 }

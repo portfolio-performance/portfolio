@@ -2,6 +2,9 @@ package name.abuchen.portfolio.model;
 
 import java.util.List;
 
+import name.abuchen.portfolio.model.ledger.compatibility.LedgerTransactionDeleter;
+import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
+
 /**
  * A transaction owner has transactions.
  * 
@@ -29,6 +32,12 @@ public interface TransactionOwner<T extends Transaction>
      */
     default void deleteTransaction(T transaction, Client client)
     {
+        if (transaction instanceof LedgerBackedTransaction ledgerBackedTransaction)
+        {
+            new LedgerTransactionDeleter(client).delete(ledgerBackedTransaction);
+            return;
+        }
+
         if (transaction.getCrossEntry() != null)
         {
             Transaction other = transaction.getCrossEntry().getCrossTransaction(transaction);

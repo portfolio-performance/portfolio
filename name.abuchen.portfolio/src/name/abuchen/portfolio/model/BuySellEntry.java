@@ -11,6 +11,7 @@ public class BuySellEntry implements CrossEntry, Annotated
     private PortfolioTransaction portfolioTransaction;
     private Account account;
     private AccountTransaction accountTransaction;
+    private boolean readOnly;
 
     public BuySellEntry()
     {
@@ -31,17 +32,35 @@ public class BuySellEntry implements CrossEntry, Annotated
     /* protobuf only */ BuySellEntry(Portfolio portfolio, PortfolioTransaction portfolioTx, Account account,
                     AccountTransaction accountTx)
     {
+        this(portfolio, portfolioTx, account, accountTx, false);
+    }
+
+    private BuySellEntry(Portfolio portfolio, PortfolioTransaction portfolioTx, Account account,
+                    AccountTransaction accountTx, boolean readOnly)
+    {
         this.portfolio = portfolio;
         this.portfolioTransaction = portfolioTx;
-        this.portfolioTransaction.setCrossEntry(this);
-
         this.account = account;
         this.accountTransaction = accountTx;
-        this.accountTransaction.setCrossEntry(this);
+        this.readOnly = readOnly;
+
+        if (!readOnly)
+        {
+            this.portfolioTransaction.setCrossEntry(this);
+            this.accountTransaction.setCrossEntry(this);
+        }
+    }
+
+    public static BuySellEntry readOnly(Portfolio portfolio, PortfolioTransaction portfolioTx, Account account,
+                    AccountTransaction accountTx)
+    {
+        return new BuySellEntry(portfolio, portfolioTx, account, accountTx, true);
     }
 
     public void setPortfolio(Portfolio portfolio)
     {
+        assertWritable();
+
         this.portfolio = portfolio;
     }
 
@@ -52,6 +71,8 @@ public class BuySellEntry implements CrossEntry, Annotated
 
     public void setAccount(Account account)
     {
+        assertWritable();
+
         this.account = account;
     }
 
@@ -62,41 +83,55 @@ public class BuySellEntry implements CrossEntry, Annotated
 
     public void setDate(LocalDateTime date)
     {
+        assertWritable();
+
         this.portfolioTransaction.setDateTime(date);
         this.accountTransaction.setDateTime(date);
     }
 
     public void setType(Type type)
     {
+        assertWritable();
+
         this.portfolioTransaction.setType(type);
         this.accountTransaction.setType(AccountTransaction.Type.valueOf(type.name()));
     }
 
     public void setSecurity(Security security)
     {
+        assertWritable();
+
         this.portfolioTransaction.setSecurity(security);
         this.accountTransaction.setSecurity(security);
     }
 
     public void setShares(long shares)
     {
+        assertWritable();
+
         this.portfolioTransaction.setShares(shares);
     }
 
     public void setAmount(long amount)
     {
+        assertWritable();
+
         this.portfolioTransaction.setAmount(amount);
         this.accountTransaction.setAmount(amount);
     }
 
     public void setCurrencyCode(String currencyCode)
     {
+        assertWritable();
+
         this.portfolioTransaction.setCurrencyCode(currencyCode);
         this.accountTransaction.setCurrencyCode(currencyCode);
     }
 
     public void setMonetaryAmount(Money amount)
     {
+        assertWritable();
+
         this.portfolioTransaction.setMonetaryAmount(amount);
         this.accountTransaction.setMonetaryAmount(amount);
     }
@@ -110,6 +145,8 @@ public class BuySellEntry implements CrossEntry, Annotated
     @Override
     public void setNote(String note)
     {
+        assertWritable();
+
         this.portfolioTransaction.setNote(note);
         this.accountTransaction.setNote(note);
     }
@@ -123,6 +160,8 @@ public class BuySellEntry implements CrossEntry, Annotated
     @Override
     public void setSource(String source)
     {
+        assertWritable();
+
         this.portfolioTransaction.setSource(source);
         this.accountTransaction.setSource(source);
     }
@@ -130,6 +169,8 @@ public class BuySellEntry implements CrossEntry, Annotated
     @Override
     public void insert()
     {
+        assertWritable();
+
         // add first the account transaction which might fail due to
         // a currency mismatch
         account.addTransaction(accountTransaction);
@@ -141,12 +182,18 @@ public class BuySellEntry implements CrossEntry, Annotated
     {
         if (t == accountTransaction)
         {
+            if (readOnly)
+                return;
+
             portfolioTransaction.setDateTime(accountTransaction.getDateTime());
             portfolioTransaction.setSecurity(accountTransaction.getSecurity());
             portfolioTransaction.setNote(accountTransaction.getNote());
         }
         else if (t == portfolioTransaction)
         {
+            if (readOnly)
+                return;
+
             accountTransaction.setDateTime(portfolioTransaction.getDateTime());
             accountTransaction.setSecurity(portfolioTransaction.getSecurity());
             accountTransaction.setNote(portfolioTransaction.getNote());
@@ -172,6 +219,8 @@ public class BuySellEntry implements CrossEntry, Annotated
     @Override
     public void setOwner(Transaction t, TransactionOwner<? extends Transaction> owner)
     {
+        assertWritable();
+
         if (t.equals(portfolioTransaction) && owner instanceof Portfolio p)
             portfolio = p;
         else if (t.equals(accountTransaction) && owner instanceof Account a)
@@ -210,5 +259,11 @@ public class BuySellEntry implements CrossEntry, Annotated
     public AccountTransaction getAccountTransaction()
     {
         return accountTransaction;
+    }
+
+    private void assertWritable()
+    {
+        if (readOnly)
+            throw new UnsupportedOperationException("Ledger-backed buy/sell cross entries are read-only"); //$NON-NLS-1$
     }
 }

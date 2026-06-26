@@ -5,6 +5,10 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.Month;
 
@@ -12,6 +16,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.model.ledger.compatibility.LedgerAccountTransferTransactionCreator;
+import name.abuchen.portfolio.model.ledger.compatibility.LedgerBuySellTransactionCreator;
+import name.abuchen.portfolio.model.ledger.compatibility.LedgerPortfolioTransferTransactionCreator;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -252,5 +259,85 @@ public class CrossEntryTest
         portfolioA.deleteTransaction(pA, client);
         assertThat(portfolioA.getTransactions().size(), is(0));
         assertThat(portfolioB.getTransactions().size(), is(0));
+    }
+
+    @Test
+    public void testLedgerBackedBuySellTransactionPairDeleteRemovesWholeEntry() throws Exception
+    {
+        Portfolio portfolio = client.getPortfolios().get(0);
+        Account account = client.getAccounts().get(0);
+        Security security = client.getSecurities().get(0);
+
+        account.setCurrencyCode(CurrencyUnit.EUR);
+        portfolio.setReferenceAccount(account);
+
+        var entry = new LedgerBuySellTransactionCreator(client).create(portfolio, account, PortfolioTransaction.Type.BUY,
+                        LocalDateTime.now(), Values.Amount.factorize(1000), CurrencyUnit.EUR, security,
+                        Values.Share.factorize(1), java.util.List.of(), "note", "source"); //$NON-NLS-1$ //$NON-NLS-2$
+
+        new TransactionPair<>(portfolio, entry.getPortfolioTransaction()).deleteTransaction(client);
+
+        assertThat(client.getLedger().getEntries().size(), is(0));
+        assertThat(portfolio.getTransactions().size(), is(0));
+        assertThat(account.getTransactions().size(), is(0));
+        assertThat(reloadXml(client).getAllTransactions().size(), is(0));
+    }
+
+    @Test
+    public void testLedgerBackedAccountTransferTransactionPairDeleteRemovesWholeEntry()
+    {
+        Account accountA = client.getAccounts().get(0);
+        Account accountB = client.getAccounts().get(1);
+
+        accountA.setCurrencyCode(CurrencyUnit.EUR);
+        accountB.setCurrencyCode(CurrencyUnit.EUR);
+
+        var entry = new LedgerAccountTransferTransactionCreator(client).create(accountA, accountB, LocalDateTime.now(),
+                        Values.Amount.factorize(1000), CurrencyUnit.EUR, Values.Amount.factorize(1000),
+                        CurrencyUnit.EUR, null, null, "note", "source"); //$NON-NLS-1$ //$NON-NLS-2$
+
+        new TransactionPair<>(accountA, entry.getSourceTransaction()).deleteTransaction(client);
+
+        assertThat(client.getLedger().getEntries().size(), is(0));
+        assertThat(accountA.getTransactions().size(), is(0));
+        assertThat(accountB.getTransactions().size(), is(0));
+    }
+
+    @Test
+    public void testLedgerBackedPortfolioTransferTransactionPairDeleteRemovesWholeEntry()
+    {
+        Portfolio portfolioA = client.getPortfolios().get(0);
+        Portfolio portfolioB = client.getPortfolios().get(1);
+        Security security = client.getSecurities().get(0);
+
+        var entry = new LedgerPortfolioTransferTransactionCreator(client).create(portfolioA, portfolioB, security,
+                        LocalDateTime.now(), Values.Share.factorize(1), Values.Amount.factorize(1000),
+                        CurrencyUnit.EUR, "note", "source"); //$NON-NLS-1$ //$NON-NLS-2$
+
+        new TransactionPair<>(portfolioA, entry.getSourceTransaction()).deleteTransaction(client);
+
+        assertThat(client.getLedger().getEntries().size(), is(0));
+        assertThat(portfolioA.getTransactions().size(), is(0));
+        assertThat(portfolioB.getTransactions().size(), is(0));
+    }
+
+    private Client reloadXml(Client client) throws Exception
+    {
+        return ClientFactory.load(new ByteArrayInputStream(saveXml(client).getBytes(StandardCharsets.UTF_8)));
+    }
+
+    private String saveXml(Client client) throws Exception
+    {
+        var file = File.createTempFile("ledger-pair-delete", ".xml"); //$NON-NLS-1$ //$NON-NLS-2$
+
+        try
+        {
+            ClientFactory.save(client, file);
+            return Files.readString(file.toPath(), StandardCharsets.UTF_8);
+        }
+        finally
+        {
+            Files.deleteIfExists(file.toPath());
+        }
     }
 }

@@ -5,6 +5,8 @@ import java.util.Comparator;
 import java.util.Objects;
 import java.util.Optional;
 
+import name.abuchen.portfolio.model.ledger.compatibility.LedgerTransactionDeleter;
+import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
 import name.abuchen.portfolio.money.Values;
 
 /**
@@ -47,6 +49,14 @@ public class TransactionPair<T extends Transaction> implements Adaptable
         return transaction;
     }
 
+    public Optional<String> getLedgerEntryUUID()
+    {
+        if (transaction instanceof LedgerBackedTransaction ledgerBackedTransaction)
+            return Optional.of(ledgerBackedTransaction.getLedgerEntry().getUUID());
+
+        return Optional.empty();
+    }
+
     /**
      * Returns this if it wraps an AccountTransaction.
      */
@@ -87,6 +97,12 @@ public class TransactionPair<T extends Transaction> implements Adaptable
      */
     public void deleteTransaction(Client client)
     {
+        if (transaction instanceof LedgerBackedTransaction ledgerBackedTransaction)
+        {
+            new LedgerTransactionDeleter(client).delete(ledgerBackedTransaction);
+            return;
+        }
+
         owner.deleteTransaction(transaction, client);
     }
 

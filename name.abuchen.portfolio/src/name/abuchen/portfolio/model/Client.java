@@ -21,6 +21,7 @@ import com.google.protobuf.Any;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Classification.Assignment;
+import name.abuchen.portfolio.model.ledger.Ledger;
 import name.abuchen.portfolio.money.CurrencyUnit;
 
 public class Client
@@ -67,6 +68,8 @@ public class Client
 
     private Map<String, String> properties;
     private ClientSettings settings;
+
+    private Ledger ledger = new Ledger();
 
     /**
      * Extension data for third-party extensions using protobuf Any type. This
@@ -116,6 +119,9 @@ public class Client
             settings = new ClientSettings();
         else
             settings.doPostLoadInitialization();
+
+        if (ledger == null)
+            ledger = new Ledger();
 
         // Add this missing initialization:
         if (extensions == null)
@@ -191,6 +197,11 @@ public class Client
         if (extension != null)
             this.extensions = new ArrayList<>();
         this.extensions.add(extension);
+    }
+
+    public Ledger getLedger()
+    {
+        return ledger;
     }
 
     public List<InvestmentPlan> getPlans()

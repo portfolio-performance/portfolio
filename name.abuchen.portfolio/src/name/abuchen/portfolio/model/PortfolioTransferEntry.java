@@ -8,6 +8,7 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
     private PortfolioTransaction transactionFrom;
     private Portfolio portfolioTo;
     private PortfolioTransaction transactionTo;
+    private boolean readOnly;
 
     public PortfolioTransferEntry()
     {
@@ -22,25 +23,45 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
     /* protobuf only */ PortfolioTransferEntry(Portfolio portfolioFrom, PortfolioTransaction txFrom,
                     Portfolio portfolioTo, PortfolioTransaction txTo)
     {
+        this(portfolioFrom, txFrom, portfolioTo, txTo, false);
+    }
+
+    private PortfolioTransferEntry(Portfolio portfolioFrom, PortfolioTransaction txFrom,
+                    Portfolio portfolioTo, PortfolioTransaction txTo, boolean readOnly)
+    {
         this.transactionFrom = txFrom;
-        this.transactionFrom.setType(PortfolioTransaction.Type.TRANSFER_OUT);
-        this.transactionFrom.setCrossEntry(this);
-
         this.transactionTo = txTo;
-        this.transactionTo.setType(PortfolioTransaction.Type.TRANSFER_IN);
-        this.transactionTo.setCrossEntry(this);
-
         this.portfolioFrom = portfolioFrom;
         this.portfolioTo = portfolioTo;
+        this.readOnly = readOnly;
+
+        if (!readOnly)
+        {
+            this.transactionFrom.setType(PortfolioTransaction.Type.TRANSFER_OUT);
+            this.transactionFrom.setCrossEntry(this);
+
+            this.transactionTo.setType(PortfolioTransaction.Type.TRANSFER_IN);
+            this.transactionTo.setCrossEntry(this);
+        }
+    }
+
+    public static PortfolioTransferEntry readOnly(Portfolio portfolioFrom, PortfolioTransaction txFrom,
+                    Portfolio portfolioTo, PortfolioTransaction txTo)
+    {
+        return new PortfolioTransferEntry(portfolioFrom, txFrom, portfolioTo, txTo, true);
     }
 
     public void setSourceTransaction(PortfolioTransaction transaction)
     {
+        assertWritable();
+
         this.transactionFrom = transaction;
     }
 
     public void setTargetTransaction(PortfolioTransaction transaction)
     {
+        assertWritable();
+
         this.transactionTo = transaction;
     }
 
@@ -56,11 +77,15 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
 
     public void setSourcePortfolio(Portfolio portfolio)
     {
+        assertWritable();
+
         this.portfolioFrom = portfolio;
     }
 
     public void setTargetPortfolio(Portfolio portfolio)
     {
+        assertWritable();
+
         this.portfolioTo = portfolio;
     }
 
@@ -76,30 +101,40 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
 
     public void setDate(LocalDateTime date)
     {
+        assertWritable();
+
         this.transactionFrom.setDateTime(date);
         this.transactionTo.setDateTime(date);
     }
 
     public void setSecurity(Security security)
     {
+        assertWritable();
+
         this.transactionFrom.setSecurity(security);
         this.transactionTo.setSecurity(security);
     }
 
     public void setShares(long shares)
     {
+        assertWritable();
+
         this.transactionFrom.setShares(shares);
         this.transactionTo.setShares(shares);
     }
 
     public void setAmount(long amount)
     {
+        assertWritable();
+
         this.transactionFrom.setAmount(amount);
         this.transactionTo.setAmount(amount);
     }
 
     public void setCurrencyCode(String currencyCode)
     {
+        assertWritable();
+
         this.transactionFrom.setCurrencyCode(currencyCode);
         this.transactionTo.setCurrencyCode(currencyCode);
     }
@@ -113,6 +148,8 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
     @Override
     public void setNote(String note)
     {
+        assertWritable();
+
         this.transactionFrom.setNote(note);
         this.transactionTo.setNote(note);
     }
@@ -126,6 +163,8 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
     @Override
     public void setSource(String source)
     {
+        assertWritable();
+
         this.transactionFrom.setSource(source);
         this.transactionTo.setSource(source);
     }
@@ -133,6 +172,8 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
     @Override
     public void insert()
     {
+        assertWritable();
+
         portfolioFrom.addTransaction(transactionFrom);
         portfolioTo.addTransaction(transactionTo);
     }
@@ -141,9 +182,19 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
     public void updateFrom(Transaction t)
     {
         if (t.equals(transactionFrom))
+        {
+            if (readOnly)
+                return;
+
             copyAttributesOver(transactionFrom, transactionTo);
+        }
         else if (t.equals(transactionTo))
+        {
+            if (readOnly)
+                return;
+
             copyAttributesOver(transactionTo, transactionFrom);
+        }
         else
             throw new UnsupportedOperationException("unable to update from transaction " + t); //$NON-NLS-1$
     }
@@ -170,6 +221,8 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
     @Override
     public void setOwner(Transaction t, TransactionOwner<? extends Transaction> owner)
     {
+        assertWritable();
+
         if (!(owner instanceof Portfolio))
             throw new IllegalArgumentException(
                             "invalid owner type for owner " + owner + " when trying to set it to transaction " + t); //$NON-NLS-1$ //$NON-NLS-2$
@@ -202,5 +255,11 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
             return portfolioFrom;
         else
             throw new UnsupportedOperationException("unable to get cross owner for transaction " + t); //$NON-NLS-1$
+    }
+
+    private void assertWritable()
+    {
+        if (readOnly)
+            throw new UnsupportedOperationException("Ledger-backed portfolio transfer cross entries are read-only"); //$NON-NLS-1$
     }
 }
