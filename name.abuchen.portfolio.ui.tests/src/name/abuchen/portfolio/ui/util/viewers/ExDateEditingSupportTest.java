@@ -15,9 +15,17 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.TransactionPair;
 
+/**
+ * Tests inline ex-date value handling used by legacy and ledger-aware update paths.
+ * These tests make sure clearing and parsing ex-date values produces the expected model value.
+ */
 @SuppressWarnings("nls")
 public class ExDateEditingSupportTest
 {
+    /**
+     * Verifies that a blank ex-date cell clears the field and notifies listeners with a null value.
+     * Ledger-aware callers rely on the same UI signal to clear the persisted ex-date fact safely.
+     */
     @Test
     public void blankValueClearsExDateAndNotifiesNullAsNewValue()
     {
@@ -48,6 +56,10 @@ public class ExDateEditingSupportTest
         assertThat(support.getValue(element), is(""));
     }
 
+    /**
+     * Verifies that a date-only ex-date input is stored at the start of that day.
+     * The inline editor must provide the same value shape to legacy and ledger-aware update paths.
+     */
     @Test
     public void parsedLocalDateIsStoredAsLocalDateTimeAtStartOfDay()
     {

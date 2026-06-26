@@ -64,6 +64,8 @@ public class ValueEditingSupport extends PropertyEditingSupport
     @Override
     public void setValue(Object element, Object value) throws Exception
     {
+        checkLedgerInlineField(element);
+
         Object subject = adapt(element);
 
         Number newValue = stringToLong.convert(String.valueOf(value));

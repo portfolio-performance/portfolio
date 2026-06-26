@@ -28,6 +28,8 @@ public class StringEditingSupport extends PropertyEditingSupport
     @Override
     public final void setValue(Object element, Object value) throws Exception
     {
+        checkLedgerInlineField(element);
+
         Object subject = adapt(element);
 
         String newValue = (String) value;

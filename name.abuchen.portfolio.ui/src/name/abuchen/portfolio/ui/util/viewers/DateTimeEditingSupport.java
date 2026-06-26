@@ -22,6 +22,10 @@ public class DateTimeEditingSupport extends PropertyEditingSupport
                     DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM),
                     DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT), //
                     DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG), //
+                    DateTimeFormatter.ofPattern("d.M.yyyy, H:mm"), //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("d.M.yy, H:mm"), //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("d.M.yyyy H:mm"), //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("d.M.yy H:mm"), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("d.M.yyyy HH:mm"), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("d.M.yy HH:mm"), //$NON-NLS-1$
                     DateTimeFormatter.ISO_DATE_TIME };
@@ -61,6 +65,8 @@ public class DateTimeEditingSupport extends PropertyEditingSupport
     @Override
     public final void setValue(Object element, Object value) throws Exception
     {
+        checkLedgerInlineField(element);
+
         String inputValue = String.valueOf(value).trim();
         LocalDateTime newValue = null;
 

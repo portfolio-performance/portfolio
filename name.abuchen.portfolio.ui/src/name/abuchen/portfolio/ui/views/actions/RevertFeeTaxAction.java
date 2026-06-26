@@ -9,20 +9,19 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.LedgerAccountTypeToggleConverter;
 import name.abuchen.portfolio.model.TransactionPair;
 
-public class RevertInterestAction extends Action
+public class RevertFeeTaxAction extends Action
 {
     private final Client client;
     private final TransactionPair<AccountTransaction> transaction;
 
-    public RevertInterestAction(Client client, TransactionPair<AccountTransaction> transaction)
+    public RevertFeeTaxAction(Client client, TransactionPair<AccountTransaction> transaction)
     {
         this.client = client;
         this.transaction = transaction;
 
         AccountTransaction tx = transaction.getTransaction();
         Type type = tx.getType();
-        if (type != AccountTransaction.Type.INTEREST
-                        && type != AccountTransaction.Type.INTEREST_CHARGE)
+        if (type != Type.FEES && type != Type.FEES_REFUND && type != Type.TAXES && type != Type.TAX_REFUND)
             throw new IllegalArgumentException("unsupported transaction type " + type + " for transaction " + tx); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
@@ -40,10 +39,14 @@ public class RevertInterestAction extends Action
         }
 
         Type type = tx.getType();
-        if (AccountTransaction.Type.INTEREST.equals(type))
-            tx.setType(AccountTransaction.Type.INTEREST_CHARGE);
-        else if (AccountTransaction.Type.INTEREST_CHARGE.equals(type))
-            tx.setType(AccountTransaction.Type.INTEREST);
+        if (type == Type.FEES)
+            tx.setType(Type.FEES_REFUND);
+        else if (type == Type.FEES_REFUND)
+            tx.setType(Type.FEES);
+        else if (type == Type.TAXES)
+            tx.setType(Type.TAX_REFUND);
+        else if (type == Type.TAX_REFUND)
+            tx.setType(Type.TAXES);
         else
             throw new IllegalArgumentException(
                             "unsupported transaction type " + type + " for transaction " + tx); //$NON-NLS-1$ //$NON-NLS-2$

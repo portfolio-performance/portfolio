@@ -7,6 +7,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.inject.Inject;
@@ -25,6 +26,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 
 import name.abuchen.portfolio.json.JClient;
+import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
 import name.abuchen.portfolio.ui.Images;
@@ -61,7 +65,7 @@ public class AllTransactionsView extends AbstractFinanceView
     @Override
     public void notifyModelUpdated()
     {
-        var allTransactions = getClient().getAllTransactions();
+        var allTransactions = getTransactionsForView(getClient());
         table.setInput(allTransactions);
 
         updateTitle(Messages.LabelAllTransactions + " (" //$NON-NLS-1$
@@ -153,10 +157,7 @@ public class AllTransactionsView extends AbstractFinanceView
                 if (clientFilter == null)
                     return true;
                 TransactionPair<?> tx = (TransactionPair<?>) element;
-                // check owner and cross owner
-                return clientFilter.hasElement(tx.getOwner()) || (tx.getTransaction().getCrossEntry() != null
-                                && clientFilter.hasElement(tx.getTransaction().getCrossEntry() //
-                                                .getCrossOwner(tx.getTransaction())));
+                return matchesClientFilter(clientFilter, tx);
             }
         });
 
@@ -166,6 +167,47 @@ public class AllTransactionsView extends AbstractFinanceView
         notifyModelUpdated();
 
         return table.getControl();
+    }
+
+    static List<TransactionPair<?>> getTransactionsForView(Client client)
+    {
+        List<TransactionPair<?>> transactions = new ArrayList<>();
+
+        for (var portfolio : client.getPortfolios())
+            portfolio.getTransactions().stream().map(t -> new TransactionPair<>(portfolio, t))
+                            .forEach(transactions::add);
+
+        for (var account : client.getAccounts())
+            account.getTransactions().stream()
+                            .filter(t -> t.getType() != AccountTransaction.Type.BUY
+                                            && t.getType() != AccountTransaction.Type.SELL)
+                            .map(t -> new TransactionPair<>(account, t)).forEach(transactions::add);
+
+        return transactions;
+    }
+
+    static boolean matchesClientFilter(PortfolioClientFilter clientFilter, TransactionPair<?> tx)
+    {
+        if (isTransfer(tx))
+            return clientFilter.hasElement(tx.getOwner());
+
+        // check owner and cross owner
+        return clientFilter.hasElement(tx.getOwner()) || (tx.getTransaction().getCrossEntry() != null
+                        && clientFilter.hasElement(tx.getTransaction().getCrossEntry()
+                                        .getCrossOwner(tx.getTransaction())));
+    }
+
+    private static boolean isTransfer(TransactionPair<?> tx)
+    {
+        var transaction = tx.getTransaction();
+
+        return transaction instanceof AccountTransaction accountTransaction
+                        && (accountTransaction.getType() == AccountTransaction.Type.TRANSFER_IN
+                                        || accountTransaction.getType() == AccountTransaction.Type.TRANSFER_OUT)
+                        || transaction instanceof PortfolioTransaction portfolioTransaction
+                                        && (portfolioTransaction.getType() == PortfolioTransaction.Type.TRANSFER_IN
+                                                        || portfolioTransaction
+                                                                        .getType() == PortfolioTransaction.Type.TRANSFER_OUT);
     }
 
     @Override

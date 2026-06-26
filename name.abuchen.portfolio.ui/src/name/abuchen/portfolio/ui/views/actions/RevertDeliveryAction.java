@@ -1,8 +1,10 @@
 package name.abuchen.portfolio.ui.views.actions;
 
+
 import org.eclipse.jface.action.Action;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.LedgerDeliveryDirectionConverter;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Transaction.Unit;
@@ -33,6 +35,14 @@ public class RevertDeliveryAction extends Action
     public void run()
     {
         PortfolioTransaction tx = transaction.getTransaction();
+        var converter = new LedgerDeliveryDirectionConverter(client);
+
+        if (converter.canReverse(transaction))
+        {
+            converter.reverse(transaction);
+            client.markDirty();
+            return;
+        }
 
         // when converting between inbound and outbound deliveries, we keep the
         // price of the security the same, but add or subtract fees and taxes

@@ -31,8 +31,8 @@ public class PreferencesInitializer extends AbstractPreferenceInitializer
         store.setDefault(UIConstants.Preferences.STORE_SETTINGS_NEXT_TO_FILE, false);
         store.setDefault(UIConstants.Preferences.DOUBLE_CLICK_CELL_TO_EDIT, true);
         store.setDefault(UIConstants.Preferences.ENABLE_SWTCHART_PIECHARTS,
-                        Platform.getOS().equals(Platform.OS_LINUX) || (Platform.getOS().equals(Platform.OS_MACOSX)
-                                        && Platform.getOSArch().equals(Platform.ARCH_X86_64)
+                        Platform.OS_LINUX.equals(Platform.getOS()) || (Platform.OS_MACOSX.equals(Platform.getOS())
+                                        && Platform.ARCH_X86_64.equals(Platform.getOSArch())
                                         && compareOSVersion("13.0") >= 0)); //$NON-NLS-1$
         store.setDefault(UIConstants.Preferences.ALPHAVANTAGE_CALL_FREQUENCY_LIMIT, 5);
         store.setDefault(UIConstants.Preferences.CALENDAR, "default"); //$NON-NLS-1$
