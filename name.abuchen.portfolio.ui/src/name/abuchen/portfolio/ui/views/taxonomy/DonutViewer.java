@@ -73,6 +73,8 @@ import name.abuchen.portfolio.ui.views.IPieChart;
     @Override
     public void nodeChange(TaxonomyNode node)
     {
-        chart.refresh(null);
+        // chart is null while the control has not yet been created lazily
+        if (chart != null)
+            chart.refresh(null);
     }
 }

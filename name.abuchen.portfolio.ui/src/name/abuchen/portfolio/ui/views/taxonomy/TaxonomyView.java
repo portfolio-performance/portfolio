@@ -25,6 +25,7 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
@@ -55,6 +56,9 @@ import name.abuchen.portfolio.ui.wizards.datatransfer.taxonomy.TaxonomyImportDia
 
 public class TaxonomyView extends AbstractFinanceView implements PropertyChangeListener, ReportingPeriodListener
 {
+    /** marker on a slot composite whose page control is created lazily */
+    private static final String KEY_LAZY = "lazy"; //$NON-NLS-1$
+
     private class FilterDropDown extends DropDown implements IMenuListener
     {
         public FilterDropDown(IPreferenceStore preferenceStore)
@@ -403,8 +407,22 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
         for (Page page : pages)
         {
-            Control control = page.createControl(container);
-            control.setData(page);
+            // The PieChartViewer and DonutViewer are expensive to create
+            // (especially on Windows). Defer creating their control until the
+            // page is activated for the first time. An empty slot composite
+            // keeps the child index in sync with the page index.
+            if (page instanceof PieChartViewer || page instanceof DonutViewer)
+            {
+                Composite slot = new Composite(container, SWT.NONE);
+                slot.setLayout(new FillLayout());
+                slot.setData(page);
+                slot.setData(KEY_LAZY, Boolean.TRUE);
+            }
+            else
+            {
+                Control control = page.createControl(container);
+                control.setData(page);
+            }
         }
 
         activateView(getPart().getPreferenceStore().getInt(identifierView));
@@ -424,11 +442,20 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
             if (layout.topControl != null)
                 ((Page) layout.topControl.getData()).afterPage();
 
-            Page page = (Page) children[index].getData();
+            Control child = children[index];
+            Page page = (Page) child.getData();
+
+            // lazily create the control the first time the page is activated
+            if (Boolean.TRUE.equals(child.getData(KEY_LAZY)) && child instanceof Composite slot
+                            && slot.getChildren().length == 0)
+            {
+                page.createControl(slot);
+                slot.layout();
+            }
 
             page.beforePage();
 
-            layout.topControl = children[index];
+            layout.topControl = child;
             container.layout();
 
             for (int ii = 0; ii < viewActions.size(); ii++)
