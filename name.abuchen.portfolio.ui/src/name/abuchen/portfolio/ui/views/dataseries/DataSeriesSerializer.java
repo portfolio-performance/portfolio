@@ -24,7 +24,7 @@ public class DataSeriesSerializer
         if (config != null && config.trim().length() > 0)
             load(set, config, series);
 
-        if (series.isEmpty())
+        if (series.isEmpty() && set.getUseCase() != DataSeries.UseCase.CORRELATION_MATRIX)
             set.getAvailableSeries().stream().filter(
                             s -> s.getType() == DataSeries.Type.CLIENT && (s.getInstance() == ClientDataSeries.TOTALS
                                             || s.getInstance() == ClientDataSeries.TRANSFERALS))
