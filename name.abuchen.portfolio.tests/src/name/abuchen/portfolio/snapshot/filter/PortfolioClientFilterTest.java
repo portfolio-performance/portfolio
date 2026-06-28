@@ -1,14 +1,18 @@
 package name.abuchen.portfolio.snapshot.filter;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.junit.Before;
@@ -21,6 +25,7 @@ import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
+import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -34,6 +39,9 @@ import name.abuchen.portfolio.snapshot.AccountSnapshot;
 @SuppressWarnings("nls")
 public class PortfolioClientFilterTest
 {
+    private static final int HALF = Classification.ONE_HUNDRED_PERCENT / 2;
+    private static final int EIGHTY = Classification.ONE_HUNDRED_PERCENT * 8 / 10;
+
     private Client client;
 
     /**
@@ -287,4 +295,192 @@ public class PortfolioClientFilterTest
         assertThat(dividendTx.size(), is(2));
     }
 
+    @Test
+    public void testCanonicalFormAndWeightAccessors()
+    {
+        Portfolio p = client.getPortfolios().get(0);
+
+        var def = new PortfolioClientFilter(Arrays.asList(p), Collections.emptyList());
+
+        // an explicit 100% entry must be normalized away (canonical form) so it
+        // stays equal to the default filter
+        var explicit = new PortfolioClientFilter(Arrays.asList(p), Collections.emptyList(),
+                        Map.of(p, Classification.ONE_HUNDRED_PERCENT));
+        assertThat(explicit, is(def));
+        assertThat(explicit.hashCode(), is(def.hashCode()));
+        assertThat(def.getWeight(p), is(Classification.ONE_HUNDRED_PERCENT));
+
+        var half = new PortfolioClientFilter(new ArrayList<>(Arrays.asList(p)),
+                        new ArrayList<>(Collections.emptyList()), new HashMap<>());
+        half.setWeight(p, HALF);
+        assertThat(half.getWeight(p), is(HALF));
+        assertThat(half, is(not(def)));
+
+        // setting back to 100% removes the entry -> equal to default again
+        half.setWeight(p, Classification.ONE_HUNDRED_PERCENT);
+        assertThat(half, is(def));
+
+        // removeElement drops the weight; absent -> 100%
+        half.setWeight(p, HALF);
+        half.removeElement(p);
+        assertThat(half.getWeight(p), is(Classification.ONE_HUNDRED_PERCENT));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetWeightRejectsZero()
+    {
+        Portfolio p = client.getPortfolios().get(0);
+        new PortfolioClientFilter(new ArrayList<>(Arrays.asList(p)), new ArrayList<>()).setWeight(p, 0);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetWeightRejectsAboveHundredPercent()
+    {
+        Portfolio p = client.getPortfolios().get(0);
+        new PortfolioClientFilter(new ArrayList<>(Arrays.asList(p)), new ArrayList<>()).setWeight(p,
+                        Classification.ONE_HUNDRED_PERCENT + 1);
+    }
+
+    @Test
+    public void testAccountAtFiftyPercentScalesAllCashFlows()
+    {
+        Account accountA = client.getAccounts().get(0);
+
+        Client result = new PortfolioClientFilter(Collections.emptyList(), Arrays.asList(accountA),
+                        Map.of(accountA, HALF)).filter(client);
+
+        Account account = result.getAccounts().get(0);
+
+        // deposit 100 -> 50, buy 100 -> removal 50, dividend 10 -> deposit 5
+        // => funds 50 - 50 + 5 = 5
+        assertThat(AccountSnapshot.create(account, new TestCurrencyConverter(), LocalDate.parse("2016-09-03"))
+                        .getFunds(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5))));
+    }
+
+    @Test
+    public void testSecuritiesAccountAtFiftyWithFullReferenceAccount()
+    {
+        Portfolio portfolioA = client.getPortfolios().get(0);
+        Account referenceA = portfolioA.getReferenceAccount();
+
+        Client result = new PortfolioClientFilter(Arrays.asList(portfolioA), Arrays.asList(referenceA),
+                        Map.of(portfolioA, HALF)).filter(client);
+
+        Portfolio portfolio = result.getPortfolios().get(0);
+        Account account = result.getAccounts().get(0);
+
+        // the buy is split: common part at 50% (amount 50, half a share)
+        assertThat(portfolio.getTransactions().stream() //
+                        .filter(t -> t.getType() == PortfolioTransaction.Type.BUY) //
+                        .anyMatch(t -> t.getAmount() == Values.Amount.factorize(50)), is(true));
+        // ... with a 50 removal in the (fully owned) reference account
+        assertThat(account.getTransactions().stream() //
+                        .filter(t -> t.getType() == AccountTransaction.Type.REMOVAL) //
+                        .anyMatch(t -> t.getAmount() == Values.Amount.factorize(50)), is(true));
+
+        // dividend booked at the portfolio weight (5) + a balancing deposit (5)
+        // so the fully-owned account keeps its cash but only 5 counts as income
+        assertThat(account.getTransactions().stream() //
+                        .filter(t -> t.getType() == AccountTransaction.Type.DIVIDENDS) //
+                        .anyMatch(t -> t.getAmount() == Values.Amount.factorize(5)), is(true));
+        assertThat(account.getTransactions().stream() //
+                        .filter(t -> t.getType() == AccountTransaction.Type.DEPOSIT) //
+                        .anyMatch(t -> t.getAmount() == Values.Amount.factorize(5)), is(true));
+    }
+
+    @Test
+    public void testFullSecuritiesAccountWithReferenceAccountAtFiftyKeepsSecurityCashFlowAndCorrection()
+    {
+        Portfolio portfolioA = client.getPortfolios().get(0);
+        Account referenceA = portfolioA.getReferenceAccount();
+
+        Client result = new PortfolioClientFilter(Arrays.asList(portfolioA), Arrays.asList(referenceA),
+                        Map.of(referenceA, HALF)).filter(client);
+
+        Account account = result.getAccounts().get(0);
+
+        assertThat(account.getTransactions().stream() //
+                        .filter(t -> t.getType() == AccountTransaction.Type.DIVIDENDS) //
+                        .anyMatch(t -> t.getAmount() == Values.Amount.factorize(10)), is(true));
+        assertThat(account.getTransactions().stream() //
+                        .filter(t -> t.getType() == AccountTransaction.Type.REMOVAL) //
+                        .anyMatch(t -> t.getAmount() == Values.Amount.factorize(5)), is(true));
+    }
+
+    @Test
+    public void testIncludedAccountWithMixedCandidatePortfolioWeightsUsesMaximumWithCorrection()
+    {
+        Portfolio portfolioA = client.getPortfolios().get(0);
+        Portfolio portfolioB = client.getPortfolios().get(1);
+        Account referenceA = portfolioA.getReferenceAccount();
+
+        portfolioB.setReferenceAccount(referenceA);
+
+        Client result = new PortfolioClientFilter(Arrays.asList(portfolioA, portfolioB), Arrays.asList(referenceA),
+                        Map.of(referenceA, HALF, portfolioA, HALF, portfolioB, EIGHTY)).filter(client);
+
+        Account account = result.getAccounts().get(0);
+
+        assertThat(account.getTransactions().stream() //
+                        .filter(t -> t.getType() == AccountTransaction.Type.DIVIDENDS) //
+                        .anyMatch(t -> t.getAmount() == Values.Amount.factorize(8)), is(true));
+        assertThat(account.getTransactions().stream() //
+                        .filter(t -> t.getType() == AccountTransaction.Type.REMOVAL) //
+                        .anyMatch(t -> t.getAmount() == Values.Amount.factorize(3)), is(true));
+    }
+
+    @Test
+    public void testPortfolioTransferWithMismatchedWeightsCreatesDeliveryDelta()
+    {
+        Portfolio portfolioA = client.getPortfolios().get(0);
+        Portfolio portfolioB = client.getPortfolios().get(1);
+
+        PortfolioTransferEntry entry = new PortfolioTransferEntry(portfolioA, portfolioB);
+        entry.setDate(LocalDateTime.parse("2016-04-01T00:00"));
+        entry.setAmount(Values.Amount.factorize(10));
+        entry.setShares(Values.Share.factorize(1));
+        entry.setSecurity(client.getSecurities().get(0));
+        entry.insert();
+
+        // source A @ 100% -> target B @ 50%: linked transfer of half a share +
+        // an outbound delivery of the excess half on the higher-weighted source
+        Client result = new PortfolioClientFilter(Arrays.asList(portfolioA, portfolioB), Collections.emptyList(),
+                        Map.of(portfolioB, HALF)).filter(client);
+
+        Portfolio a = byName(result.getPortfolios(), "A");
+        Portfolio b = byName(result.getPortfolios(), "B");
+
+        assertThat(transferDate(a.getTransactions(), PortfolioTransaction.Type.TRANSFER_OUT,
+                        Values.Share.factorize(0.5)), is(true));
+        assertThat(transferDate(a.getTransactions(), PortfolioTransaction.Type.DELIVERY_OUTBOUND,
+                        Values.Share.factorize(0.5)), is(true));
+        assertThat(transferDate(b.getTransactions(), PortfolioTransaction.Type.TRANSFER_IN,
+                        Values.Share.factorize(0.5)), is(true));
+        // target is not the higher-weighted side -> no inbound delivery delta
+        assertThat(result.getPortfolios().stream().flatMap(p -> p.getTransactions().stream())
+                        .filter(t -> t.getDateTime().equals(LocalDateTime.parse("2016-04-01T00:00")))
+                        .anyMatch(t -> t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND), is(false));
+
+        // reverse direction A @ 50% -> target B @ 100%: inbound delivery delta
+        // on B
+        Client reverse = new PortfolioClientFilter(Arrays.asList(portfolioA, portfolioB), Collections.emptyList(),
+                        Map.of(portfolioA, HALF)).filter(client);
+        Portfolio bReverse = byName(reverse.getPortfolios(), "B");
+        assertThat(transferDate(bReverse.getTransactions(), PortfolioTransaction.Type.DELIVERY_INBOUND,
+                        Values.Share.factorize(0.5)), is(true));
+    }
+
+    private static Portfolio byName(List<Portfolio> portfolios, String name)
+    {
+        return portfolios.stream().filter(p -> name.equals(p.getName())).findFirst().orElseThrow();
+    }
+
+    private static boolean transferDate(List<PortfolioTransaction> transactions, PortfolioTransaction.Type type,
+                    long shares)
+    {
+        return transactions.stream() //
+                        .filter(t -> t.getType() == type) //
+                        .filter(t -> t.getDateTime().equals(LocalDateTime.parse("2016-04-01T00:00"))) //
+                        .anyMatch(t -> t.getShares() == shares);
+    }
 }

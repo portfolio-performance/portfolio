@@ -26,6 +26,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ConfigurationSet;
 import name.abuchen.portfolio.model.ConfigurationSet.Configuration;
@@ -262,19 +263,68 @@ public final class ClientFilterMenu implements IMenuListener
         if (uuids == null || uuids.isEmpty())
             return Optional.empty();
 
-        String[] ids = uuids.split(","); //$NON-NLS-1$
-        if (ids.length == 0)
+        String[] tokens = uuids.split(","); //$NON-NLS-1$
+        if (tokens.length == 0)
             return Optional.empty();
 
         Map<String, Object> uuid2object = new HashMap<>();
         client.getPortfolios().forEach(p -> uuid2object.put(p.getUUID(), p));
         client.getAccounts().forEach(a -> uuid2object.put(a.getUUID(), a));
 
-        return Optional.of(buildItem(id, name,
-                        Arrays.stream(ids).map(uuid2object::get).filter(Objects::nonNull).toArray()));
+        // lenient parsing: a token is "uuid" or "uuid:weight". An unknown UUID
+        // is dropped; a malformed or out-of-range weight is ignored (element
+        // kept at 100%). The persistence layer must never throw when loading.
+        var elements = new ArrayList<Object>();
+        var weights = new HashMap<Object, Integer>();
+
+        for (var token : tokens)
+        {
+            String uuid = token;
+            Integer weight = null;
+
+            int separator = token.indexOf(':');
+            if (separator >= 0)
+            {
+                uuid = token.substring(0, separator);
+                weight = parseWeight(token.substring(separator + 1));
+            }
+
+            var element = uuid2object.get(uuid);
+            if (element == null)
+                continue;
+
+            elements.add(element);
+            if (weight != null)
+                weights.put(element, weight);
+        }
+
+        if (elements.isEmpty())
+            return Optional.empty();
+
+        return Optional.of(buildItem(id, name, elements.toArray(), weights));
+    }
+
+    private static Integer parseWeight(String value)
+    {
+        try
+        {
+            int weight = Integer.parseInt(value.trim());
+            if (weight < 1 || weight > Classification.ONE_HUNDRED_PERCENT)
+                return null;
+            return weight;
+        }
+        catch (NumberFormatException e)
+        {
+            return null;
+        }
     }
 
     private static Item buildItem(String ident, String label, Object[] selected)
+    {
+        return buildItem(ident, label, selected, Collections.emptyMap());
+    }
+
+    private static Item buildItem(String ident, String label, Object[] selected, Map<Object, Integer> weights)
     {
         List<Portfolio> portfolios = Arrays.stream(selected).filter(Portfolio.class::isInstance).map(o -> (Portfolio) o)
                         .toList();
@@ -284,16 +334,24 @@ public final class ClientFilterMenu implements IMenuListener
         if (label.isEmpty())
             label = Arrays.stream(selected).map(String::valueOf).collect(Collectors.joining(", ")); //$NON-NLS-1$
 
-        String uuids = buildUUIDs(selected);
+        PortfolioClientFilter filter = new PortfolioClientFilter(portfolios, accounts, weights);
 
-        return new Item(ident, label, uuids, new PortfolioClientFilter(portfolios, accounts));
+        return new Item(ident, label, buildUUIDs(filter), filter);
     }
 
-    public static String buildUUIDs(Object[] selected)
+    /**
+     * Serializes the elements of the filter as a comma-separated list of
+     * {@code uuid} or {@code uuid:weight} tokens. The weight suffix is only
+     * emitted when the element is weighted below 100%, keeping the string clean
+     * and backward-compatible.
+     */
+    public static String buildUUIDs(PortfolioClientFilter filter)
     {
-        return Arrays.stream(selected)
-                        .map(o -> o instanceof Account account ? account.getUUID() : ((Portfolio) o).getUUID())
-                        .collect(Collectors.joining(",")); //$NON-NLS-1$
+        return Arrays.stream(filter.getAllElements()).map(o -> {
+            String uuid = o instanceof Account account ? account.getUUID() : ((Portfolio) o).getUUID();
+            int weight = filter.getWeight(o);
+            return weight == Classification.ONE_HUNDRED_PERCENT ? uuid : uuid + ":" + weight; //$NON-NLS-1$
+        }).collect(Collectors.joining(",")); //$NON-NLS-1$
     }
 
     public boolean hasActiveFilter()
