@@ -64,6 +64,7 @@ import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.MoneyTrailDataSource;
+import name.abuchen.portfolio.ui.util.RetiredObjectLabelStyle;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
@@ -334,6 +335,14 @@ public class PerformanceView extends AbstractHistoricView
             {
                 if (element instanceof ClientPerformanceSnapshot.Category)
                     return boldFont;
+                return null;
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                if (element instanceof ClientPerformanceSnapshot.Position position)
+                    return RetiredObjectLabelStyle.foreground(position.getSecurity());
                 return null;
             }
         });
@@ -815,6 +824,13 @@ public class PerformanceView extends AbstractHistoricView
             {
                 GroupEarningsByAccount.Item item = (GroupEarningsByAccount.Item) element;
                 return LogoManager.instance().getDefaultColumnImage(item.getAccount(), getClient().getSettings());
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                GroupEarningsByAccount.Item item = (GroupEarningsByAccount.Item) element;
+                return RetiredObjectLabelStyle.foreground(item.getAccount());
             }
         });
         column.setSorter(ColumnViewerSorter.create(GroupEarningsByAccount.Item.class, "account")); //$NON-NLS-1$

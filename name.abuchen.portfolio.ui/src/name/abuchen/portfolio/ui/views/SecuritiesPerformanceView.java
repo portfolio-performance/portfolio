@@ -87,6 +87,7 @@ import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu.Item;
 import name.abuchen.portfolio.ui.util.DropDown;
+import name.abuchen.portfolio.ui.util.RetiredObjectLabelStyle;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodListener;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -956,7 +957,18 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
 
         // security name
         column = new NameColumn(getClient());
-        column.setLabelProvider(new RowElementLabelProvider(column, aggregate -> Messages.ColumnSum));
+        column.setLabelProvider(new RowElementLabelProvider(column, aggregate -> Messages.ColumnSum)
+        {
+            @Override
+            public Color getForeground(Object element)
+            {
+                var row = (RowElement) element;
+                if (row.performanceRecord != null)
+                    return RetiredObjectLabelStyle.foreground(row.performanceRecord.getSecurity());
+
+                return super.getForeground(element);
+            }
+        });
         column.getEditingSupport().addListener(new TouchClientListener(getClient()));
         column.setSortDirction(SWT.UP);
         recordColumns.addColumn(column);

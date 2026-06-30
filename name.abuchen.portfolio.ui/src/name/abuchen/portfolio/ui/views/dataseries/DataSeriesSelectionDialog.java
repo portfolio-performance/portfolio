@@ -31,7 +31,6 @@ import org.eclipse.swt.widgets.Tree;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.LocaleSenstiveViewerComparator;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries.Type;
@@ -312,21 +311,7 @@ public class DataSeriesSelectionDialog extends Dialog
                 if (node.dataSeries == null)
                     return Images.UNASSIGNED_CATEGORY.image();
 
-                if (node.dataSeries.getType() == DataSeries.Type.SECURITY
-                                || node.dataSeries.getType() == DataSeries.Type.SECURITY_BENCHMARK)
-                    return LogoManager.instance().getDefaultColumnImage(node.dataSeries.getInstance(),
-                                    client.getSettings());
-
-                if (node.dataSeries.getType() == DataSeries.Type.DERIVED_DATA_SERIES
-                                && ((DerivedDataSeries) node.dataSeries.getInstance()).getBaseDataSeries()
-                                                .getType() == DataSeries.Type.SECURITY)
-                    return LogoManager.instance()
-                                    .getDefaultColumnImage(
-                                                    ((DerivedDataSeries) node.dataSeries.getInstance())
-                                                                    .getBaseDataSeries().getInstance(),
-                                                    client.getSettings());
-                else
-                    return node.dataSeries.getImage();
+                return node.dataSeries.getImage(client.getSettings());
             }
 
             @Override

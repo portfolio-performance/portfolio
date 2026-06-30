@@ -30,6 +30,7 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -47,6 +48,7 @@ import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.LogoManager;
+import name.abuchen.portfolio.ui.util.RetiredObjectLabelStyle;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
@@ -262,6 +264,13 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
             {
                 InvestmentVehicle vehicle = ((PaymentsViewModel.Line) element).getVehicle();
                 return vehicle != null || ((PaymentsViewModel.Line) element).getConsolidatedRetired() ? null : boldFont;
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                InvestmentVehicle vehicle = ((PaymentsViewModel.Line) element).getVehicle();
+                return RetiredObjectLabelStyle.foreground(vehicle);
             }
         });
 

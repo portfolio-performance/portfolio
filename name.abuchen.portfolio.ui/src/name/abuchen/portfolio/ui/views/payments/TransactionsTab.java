@@ -35,6 +35,7 @@ import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.LogoManager;
+import name.abuchen.portfolio.ui.util.RetiredObjectLabelStyle;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.ValueColorScheme;
 import name.abuchen.portfolio.ui.util.viewers.Column;
@@ -170,6 +171,13 @@ public class TransactionsTab implements PaymentsTab
             {
                 Security security = ((TransactionPair<?>) element).getTransaction().getSecurity();
                 return LogoManager.instance().getDefaultColumnImage(security, model.getClient().getSettings());
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                Security security = ((TransactionPair<?>) element).getTransaction().getSecurity();
+                return RetiredObjectLabelStyle.foreground(security);
             }
         });
         ColumnViewerSorter.createIgnoreCase(e -> {
@@ -317,6 +325,12 @@ public class TransactionsTab implements PaymentsTab
             {
                 Object owner = ((TransactionPair<?>) element).getOwner();
                 return LogoManager.instance().getDefaultColumnImage(owner, model.getClient().getSettings());
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return RetiredObjectLabelStyle.foreground(((TransactionPair<?>) element).getOwner());
             }
         });
         ColumnViewerSorter.createIgnoreCase(e -> ((TransactionPair<?>) e).getOwner().toString()).attachTo(column);

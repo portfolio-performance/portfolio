@@ -92,6 +92,7 @@ import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.AttributeComparator;
 import name.abuchen.portfolio.ui.util.CacheKey;
 import name.abuchen.portfolio.ui.util.LabelOnly;
+import name.abuchen.portfolio.ui.util.RetiredObjectLabelStyle;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.ValueColorScheme;
 import name.abuchen.portfolio.ui.util.action.MenuContribution;
@@ -433,6 +434,12 @@ public class StatementOfAssetsViewer
                 if (((Element) e).isCategory())
                     return null;
                 return super.getImage(e);
+            }
+
+            @Override
+            public Color getForeground(Object e)
+            {
+                return RetiredObjectLabelStyle.foreground(((Element) e).getSubject());
             }
         });
         column.setEditingSupport(new StringEditingSupport(Named.class, "name") //$NON-NLS-1$

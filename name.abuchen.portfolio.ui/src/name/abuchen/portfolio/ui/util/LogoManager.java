@@ -39,6 +39,13 @@ public final class LogoManager
         return logo != null ? logo : getFallbackColumnImage(object, disabled);
     }
 
+    public Image getAttributeImage(Attributable object, AttributeType attribute)
+    {
+        return usesRetiredAlpha(object, attribute, false)
+                        ? ImageManager.instance().getImageWithAlpha(object, attribute, ImageManager.RETIRED_ALPHA)
+                        : ImageManager.instance().getImage(object, attribute);
+    }
+
     public boolean hasCustomLogo(Attributable object, ClientSettings settings)
     {
         if (object == null)
@@ -71,24 +78,66 @@ public final class LogoManager
         if (object instanceof Attributable target)
         {
             Optional<AttributeType> logoAttr = settings.getOptionalLogoAttributeType(target.getClass());
-            return logoAttr.isPresent() ? ImageManager.instance().getImage(target, logoAttr.get(), disabled) : null;
+            if (!logoAttr.isPresent())
+                return null;
+
+            AttributeType attribute = logoAttr.get();
+            if (usesRetiredAlpha(target, attribute, disabled))
+                return ImageManager.instance().getImageWithAlpha(target, attribute, ImageManager.RETIRED_ALPHA);
+
+            return ImageManager.instance().getImage(target, attribute, disabled);
         }
         return null;
     }
 
     private Image getFallbackColumnImage(Object object, boolean disabled)
     {
-        if (object instanceof Account)
-            return Images.ACCOUNT.image(disabled);
+        if (object instanceof Account account)
+            return usesRetiredAlpha(account, disabled) ? Images.ACCOUNT.imageWithAlpha(ImageManager.RETIRED_ALPHA)
+                            : Images.ACCOUNT.image(disabled);
         else if (object instanceof Security security)
+        {
+            if (usesRetiredAlpha(security, disabled))
+                return Images.SECURITY_RETIRED.imageWithAlpha(ImageManager.RETIRED_ALPHA);
+
             return security.isRetired() ? Images.SECURITY_RETIRED.image(disabled) : Images.SECURITY.image(disabled);
-        else if (object instanceof Portfolio)
-            return Images.PORTFOLIO.image(disabled);
+        }
+        else if (object instanceof Portfolio portfolio)
+            return usesRetiredAlpha(portfolio, disabled) ? Images.PORTFOLIO.imageWithAlpha(ImageManager.RETIRED_ALPHA)
+                            : Images.PORTFOLIO.image(disabled);
         else if (object instanceof InvestmentPlan)
             return Images.INVESTMENTPLAN.image(disabled);
         else if (object instanceof Classification)
             return Images.CATEGORY.image(disabled);
         else
             return null;
+    }
+
+    static boolean usesRetiredAlpha(Attributable object, AttributeType attribute, boolean disabled)
+    {
+        return !disabled && isLogoAttribute(attribute) && isRetiredLogoOwner(object);
+    }
+
+    static boolean usesRetiredAlpha(Object object, boolean disabled)
+    {
+        return !disabled && isRetiredLogoOwner(object);
+    }
+
+    private static boolean isLogoAttribute(AttributeType attribute)
+    {
+        return attribute != null && attribute.getConverter() instanceof AttributeType.ImageConverter
+                        && "logo".equalsIgnoreCase(attribute.getName()); //$NON-NLS-1$
+    }
+
+    private static boolean isRetiredLogoOwner(Object object)
+    {
+        if (object instanceof Account account)
+            return account.isRetired();
+        else if (object instanceof Portfolio portfolio)
+            return portfolio.isRetired();
+        else if (object instanceof Security security)
+            return security.isRetired();
+        else
+            return false;
     }
 }
