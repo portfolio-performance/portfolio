@@ -10,12 +10,14 @@ import org.eclipse.swtchart.LineStyle;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.ClientSettings;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
+import name.abuchen.portfolio.ui.util.LogoManager;
 
 /**
  * A data series available to add to charts.
@@ -287,6 +289,20 @@ public final class DataSeries implements Adaptable
                 return Images.GROUPEDACCOUNTS.image();
             default:
                 return null;
+        }
+    }
+
+    public Image getImage(ClientSettings settings)
+    {
+        DataSeries baseDataSeries = instance instanceof DerivedDataSeries derived ? derived.getBaseDataSeries() : this;
+
+        switch (baseDataSeries.type)
+        {
+            case SECURITY, SECURITY_BENCHMARK, ACCOUNT, ACCOUNT_PRETAX, PORTFOLIO, PORTFOLIO_PRETAX,
+                            PORTFOLIO_PLUS_ACCOUNT, PORTFOLIO_PLUS_ACCOUNT_PRETAX:
+                return LogoManager.instance().getDefaultColumnImage(baseDataSeries.instance, settings);
+            default:
+                return getImage();
         }
     }
 

@@ -24,7 +24,6 @@ import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 import name.abuchen.portfolio.model.Attributes;
 import name.abuchen.portfolio.model.Bookmark;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.ImageManager;
 import name.abuchen.portfolio.model.LimitPrice;
 import name.abuchen.portfolio.model.LimitPriceSettings;
 import name.abuchen.portfolio.model.Security;
@@ -34,6 +33,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
+import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.viewers.AttributeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.BooleanAttributeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.CellItemImageClickedListener;
@@ -117,7 +117,7 @@ public class AttributeColumn extends Column
             if (attribute.getConverter() instanceof ImageConverter)
             {
                 Attributable attributable = Adaptor.adapt(Attributable.class, element);
-                return ImageManager.instance().getImage(attributable, attribute);
+                return LogoManager.instance().getAttributeImage(attributable, attribute);
             }
             return null;
         }

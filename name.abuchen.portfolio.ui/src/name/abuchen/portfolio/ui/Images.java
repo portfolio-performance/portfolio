@@ -171,6 +171,18 @@ public enum Images
         return image;
     }
 
+    public static Image resolveWithAlpha(String file, int alpha)
+    {
+        String key = file + ":alpha:" + alpha; //$NON-NLS-1$
+        Image image = imageRegistry.get(key);
+        if (image != null)
+            return image;
+
+        image = ImageManager.getAlphaVersion(resolve(file, false), alpha);
+        imageRegistry.put(key, image);
+        return image;
+    }
+
     private static ImageDescriptor descriptor(String file)
     {
         ImageDescriptor descriptor = imageRegistry.getDescriptor(file);
@@ -198,6 +210,11 @@ public enum Images
     public Image image(boolean disabled)
     {
         return resolve(file, disabled);
+    }
+
+    public Image imageWithAlpha(int alpha)
+    {
+        return resolveWithAlpha(file, alpha);
     }
 
     public String getImageURI()
