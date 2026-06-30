@@ -17,6 +17,7 @@ import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionOwner;
+import name.abuchen.portfolio.model.ledger.compatibility.LedgerAccountTransferTransactionCreator;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 import name.abuchen.portfolio.money.Money;
@@ -66,6 +67,29 @@ public class AccountTransferModel extends AbstractModel
         if (targetAccount == null)
             throw new UnsupportedOperationException(Messages.MsgAccountToMissing);
 
+        var ledgerTransferCreator = new LedgerAccountTransferTransactionCreator(client);
+        var dateTime = LocalDateTime.of(date, time);
+        var sourceAmount = sourceAccount.getCurrencyCode().equals(targetAccount.getCurrencyCode()) ? amount : fxAmount;
+        var sourceForex = sourceAccount.getCurrencyCode().equals(targetAccount.getCurrencyCode()) ? null
+                        : Money.of(targetAccount.getCurrencyCode(), amount);
+        var sourceExchangeRate = sourceForex != null ? getInverseExchangeRate() : null;
+
+        if (source != null && ledgerTransferCreator.isLedgerBacked(source))
+        {
+            ledgerTransferCreator.update(source, sourceAccount, targetAccount, dateTime, sourceAmount,
+                            sourceAccount.getCurrencyCode(), amount, targetAccount.getCurrencyCode(), sourceForex,
+                            sourceExchangeRate, note, source.getSource());
+            return;
+        }
+
+        if (source == null)
+        {
+            ledgerTransferCreator.create(sourceAccount, targetAccount, dateTime, sourceAmount,
+                            sourceAccount.getCurrencyCode(), amount, targetAccount.getCurrencyCode(), sourceForex,
+                            sourceExchangeRate, note, null);
+            return;
+        }
+
         AccountTransferEntry t;
 
         if (source != null && sourceAccount.equals(source.getOwner(source.getSourceTransaction()))
@@ -96,7 +120,7 @@ public class AccountTransferModel extends AbstractModel
 
         }
 
-        t.setDate(LocalDateTime.of(date, time));
+        t.setDate(dateTime);
         t.setNote(note);
 
         // if source and target account have the same currencies, no forex data
@@ -167,7 +191,8 @@ public class AccountTransferModel extends AbstractModel
         }
         else
         {
-            this.exchangeRate = BigDecimal.ONE;
+            this.exchangeRate = new LedgerAccountTransferTransactionCreator(client).getSourceExchangeRate(entry)
+                            .orElse(BigDecimal.ONE);
         }
     }
 

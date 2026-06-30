@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views.actions;
 
+
 import org.eclipse.jface.action.Action;
 
 import name.abuchen.portfolio.model.Account;
@@ -7,6 +8,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.CrossEntry;
+import name.abuchen.portfolio.model.LedgerTransferDirectionConverter;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
@@ -49,9 +51,18 @@ public class RevertTransferAction extends Action
     {
         Transaction tx = transaction.getTransaction();
         CrossEntry e = tx.getCrossEntry();
+        var converter = new LedgerTransferDirectionConverter(client);
+
         if (e instanceof PortfolioTransferEntry)
         {
             PortfolioTransferEntry entry = (PortfolioTransferEntry) transaction.getTransaction().getCrossEntry();
+
+            if (converter.canReverse(entry))
+            {
+                converter.reverse(entry);
+                client.markDirty();
+                return;
+            }
 
             Portfolio oldSource = entry.getSourcePortfolio();
             entry.setSourcePortfolio((Portfolio) entry.getTargetPortfolio());
@@ -66,6 +77,13 @@ public class RevertTransferAction extends Action
         else if (e instanceof AccountTransferEntry)
         {
             AccountTransferEntry entry = (AccountTransferEntry) transaction.getTransaction().getCrossEntry();
+
+            if (converter.canReverse(entry))
+            {
+                converter.reverse(entry);
+                client.markDirty();
+                return;
+            }
 
             Account oldSource = entry.getSourceAccount();
             entry.setSourceAccount(entry.getTargetAccount());

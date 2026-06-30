@@ -14,13 +14,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.google.protobuf.Any;
@@ -32,6 +36,23 @@ import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.ClientFactory.ClientPersister;
 import name.abuchen.portfolio.model.ConfigurationSet.Configuration;
 import name.abuchen.portfolio.model.SecurityEvent.DividendEvent;
+import name.abuchen.portfolio.model.ledger.Ledger;
+import name.abuchen.portfolio.model.ledger.LedgerDiagnosticMessageFormatter;
+import name.abuchen.portfolio.model.ledger.LedgerEntry;
+import name.abuchen.portfolio.model.ledger.LedgerParameter;
+import name.abuchen.portfolio.model.ledger.LedgerParameter.ValueKind;
+import name.abuchen.portfolio.model.ledger.LedgerPosting;
+import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
+import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
+import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator;
+import name.abuchen.portfolio.model.ledger.ProjectionMembership;
+import name.abuchen.portfolio.model.ledger.ProjectionMembershipRole;
+import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
+import name.abuchen.portfolio.model.ledger.configuration.LedgerParameterType;
+import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
+import name.abuchen.portfolio.model.ledger.legacy.LegacyTransactionToLedgerMigrator;
+import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
+import name.abuchen.portfolio.model.ledger.projection.LedgerProjectionService;
 import name.abuchen.portfolio.model.proto.v1.PAccount;
 import name.abuchen.portfolio.model.proto.v1.PAnyValue;
 import name.abuchen.portfolio.model.proto.v1.PAttributeType;
@@ -43,7 +64,17 @@ import name.abuchen.portfolio.model.proto.v1.PFullHistoricalPrice;
 import name.abuchen.portfolio.model.proto.v1.PHistoricalPrice;
 import name.abuchen.portfolio.model.proto.v1.PInvestmentPlan;
 import name.abuchen.portfolio.model.proto.v1.PInvestmentPlan.Type;
+import name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef;
 import name.abuchen.portfolio.model.proto.v1.PKeyValue;
+import name.abuchen.portfolio.model.proto.v1.PLedger;
+import name.abuchen.portfolio.model.proto.v1.PLedgerEntry;
+import name.abuchen.portfolio.model.proto.v1.PLedgerParameter;
+import name.abuchen.portfolio.model.proto.v1.PLedgerParameterValueKind;
+import name.abuchen.portfolio.model.proto.v1.PLedgerPosting;
+import name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership;
+import name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipRole;
+import name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef;
+import name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRole;
 import name.abuchen.portfolio.model.proto.v1.PMap;
 import name.abuchen.portfolio.model.proto.v1.PPortfolio;
 import name.abuchen.portfolio.model.proto.v1.PSecurity;
@@ -128,7 +159,16 @@ import name.abuchen.portfolio.money.Money;
         loadSecurities(newClient, client, lookup);
         loadAccounts(newClient, client, lookup);
         loadPortfolios(newClient, client, lookup);
-        loadTransactions(newClient, lookup);
+
+        boolean hasLedgerTruth = hasLedgerTruth(newClient);
+        Set<String> ledgerProjectionUUIDs = Collections.emptySet();
+        if (hasLedgerTruth)
+        {
+            loadLedger(newClient.getLedger(), client, lookup);
+            ledgerProjectionUUIDs = ledgerProjectionUUIDs(client.getLedger());
+        }
+
+        loadTransactions(newClient, lookup, ledgerProjectionUUIDs);
 
         client.getProperties().putAll(newClient.getPropertiesMap());
         loadTaxonomies(newClient, client, lookup);
@@ -140,6 +180,16 @@ import name.abuchen.portfolio.money.Money;
         client.getSaveFlags().add(SaveFlag.BINARY);
 
         ClientFactory.upgradeModel(client);
+
+        if (hasLedgerTruth)
+        {
+            LedgerProjectionService.adaptLegacyScalarMemberships(client);
+            LedgerProjectionService.restoreIfValid(client);
+        }
+        else
+        {
+            new LegacyTransactionToLedgerMigrator().migrate(client);
+        }
 
         return client;
     }
@@ -304,10 +354,13 @@ import name.abuchen.portfolio.money.Money;
         }
     }
 
-    private void loadTransactions(PClient newClient, Lookup lookup)
+    private void loadTransactions(PClient newClient, Lookup lookup, Set<String> ledgerProjectionUUIDs)
     {
         for (PTransaction newTransaction : newClient.getTransactionsList())
         {
+            if (isLedgerCompatibilityShadow(newTransaction, ledgerProjectionUUIDs))
+                continue;
+
             PTransaction.Type type = newTransaction.getType();
 
             switch (type)
@@ -545,6 +598,12 @@ import name.abuchen.portfolio.money.Money;
         }
     }
 
+    private boolean isLedgerCompatibilityShadow(PTransaction newTransaction, Set<String> ledgerProjectionUUIDs)
+    {
+        return ledgerProjectionUUIDs.contains(newTransaction.getUuid())
+                        || (newTransaction.hasOtherUuid() && ledgerProjectionUUIDs.contains(newTransaction.getOtherUuid()));
+    }
+
     private void loadCommonTransaction(PTransaction newTransaction, Transaction t, Lookup lookup,
                     boolean requiresSecurity)
     {
@@ -605,6 +664,139 @@ import name.abuchen.portfolio.money.Money;
             {
                 t.addUnit(new Transaction.Unit(type, amount));
             }
+        }
+    }
+
+    private boolean hasLedgerTruth(PClient newClient)
+    {
+        return newClient.hasLedger() && newClient.getLedger().getEntriesCount() > 0;
+    }
+
+    private Set<String> ledgerProjectionUUIDs(Ledger ledger)
+    {
+        return ledger.getEntries().stream() //
+                        .flatMap(entry -> entry.getProjectionRefs().stream()) //
+                        .map(LedgerProjectionRef::getUUID) //
+                        .collect(Collectors.toCollection(HashSet::new));
+    }
+
+    private void loadLedger(PLedger newLedger, Client client, Lookup lookup)
+    {
+        for (PLedgerEntry newEntry : newLedger.getEntriesList())
+        {
+            LedgerEntry entry = LedgerModelLoadSupport.newEntry(newEntry.getUuid(),
+                            LedgerEntryType.fromProtobufId(newEntry.getTypeId()),
+                            fromTimestamp(newEntry.getDateTime()));
+
+            if (newEntry.hasNote())
+                LedgerModelLoadSupport.setEntryNote(entry, newEntry.getNote());
+            if (newEntry.hasSource())
+                LedgerModelLoadSupport.setEntrySource(entry, newEntry.getSource());
+            if (newEntry.hasUpdatedAt())
+                LedgerModelLoadSupport.setEntryUpdatedAt(entry, fromUpdatedAtTimestamp(newEntry.getUpdatedAt()));
+
+            for (PLedgerParameter newParameter : newEntry.getParametersList())
+                LedgerModelLoadSupport.addEntryParameter(entry, loadLedgerParameter(newParameter, lookup));
+
+            for (PLedgerPosting newPosting : newEntry.getPostingsList())
+                LedgerModelLoadSupport.addPosting(entry, loadLedgerPosting(newPosting, lookup));
+
+            for (PLedgerProjectionRef newProjectionRef : newEntry.getProjectionRefsList())
+                LedgerModelLoadSupport.addProjectionRef(entry, loadLedgerProjectionRef(newProjectionRef, lookup));
+
+            if (newEntry.hasUpdatedAt())
+                LedgerModelLoadSupport.setEntryUpdatedAt(entry, fromUpdatedAtTimestamp(newEntry.getUpdatedAt()));
+
+            LedgerModelLoadSupport.addEntry(client.getLedger(), entry);
+        }
+    }
+
+    private LedgerPosting loadLedgerPosting(PLedgerPosting newPosting, Lookup lookup)
+    {
+        LedgerPosting posting = LedgerModelLoadSupport.newPosting(newPosting.getUuid(),
+                        LedgerPostingType.fromCode(newPosting.getTypeCode()));
+
+        LedgerModelLoadSupport.setPostingAmount(posting, newPosting.getAmount());
+        if (newPosting.hasCurrency())
+            LedgerModelLoadSupport.setPostingCurrency(posting, newPosting.getCurrency());
+        if (newPosting.hasForexAmount())
+            LedgerModelLoadSupport.setPostingForexAmount(posting, newPosting.getForexAmount());
+        if (newPosting.hasForexCurrency())
+            LedgerModelLoadSupport.setPostingForexCurrency(posting, newPosting.getForexCurrency());
+        if (newPosting.hasExchangeRate())
+            LedgerModelLoadSupport.setPostingExchangeRate(posting,
+                            fromDecimalValue(newPosting.getExchangeRate()));
+        if (newPosting.hasSecurity())
+            LedgerModelLoadSupport.setPostingSecurity(posting, lookup.getSecurity(newPosting.getSecurity()));
+        LedgerModelLoadSupport.setPostingShares(posting, newPosting.getShares());
+        if (newPosting.hasAccount())
+            LedgerModelLoadSupport.setPostingAccount(posting, lookup.getAccount(newPosting.getAccount()));
+        if (newPosting.hasPortfolio())
+            LedgerModelLoadSupport.setPostingPortfolio(posting, lookup.getPortfolio(newPosting.getPortfolio()));
+
+        for (PLedgerParameter newParameter : newPosting.getParametersList())
+            LedgerModelLoadSupport.addPostingParameter(posting, loadLedgerParameter(newParameter, lookup));
+
+        return posting;
+    }
+
+    private LedgerProjectionRef loadLedgerProjectionRef(PLedgerProjectionRef newProjectionRef, Lookup lookup)
+    {
+        LedgerProjectionRef projectionRef = LedgerModelLoadSupport.newProjectionRef(newProjectionRef.getUuid(),
+                        fromProto(newProjectionRef.getRole()));
+
+        if (newProjectionRef.hasAccount())
+            LedgerModelLoadSupport.setProjectionRefAccount(projectionRef,
+                            lookup.getAccount(newProjectionRef.getAccount()));
+        if (newProjectionRef.hasPortfolio())
+            LedgerModelLoadSupport.setProjectionRefPortfolio(projectionRef,
+                            lookup.getPortfolio(newProjectionRef.getPortfolio()));
+
+        for (PLedgerProjectionMembership newMembership : newProjectionRef.getMembershipsList())
+            LedgerModelLoadSupport.addProjectionRefMembership(projectionRef, newMembership.getPostingUUID(),
+                            fromProto(newMembership.getRole()));
+
+        return projectionRef;
+    }
+
+    private LedgerParameter<?> loadLedgerParameter(PLedgerParameter newParameter, Lookup lookup)
+    {
+        LedgerParameterType type = LedgerParameterType.fromCode(newParameter.getTypeCode());
+
+        switch (newParameter.getValueKind())
+        {
+            case LEDGER_PARAMETER_VALUE_KIND_STRING:
+                return LedgerParameter.ofString(type, newParameter.getStringValue());
+            case LEDGER_PARAMETER_VALUE_KIND_DECIMAL:
+                return LedgerParameter.ofDecimal(type, fromDecimalValue(newParameter.getDecimalValue()));
+            case LEDGER_PARAMETER_VALUE_KIND_LONG:
+                return LedgerParameter.ofLong(type, newParameter.getLongValue());
+            case LEDGER_PARAMETER_VALUE_KIND_MONEY:
+                return LedgerParameter.ofMoney(type,
+                                Money.of(newParameter.getMoneyCurrency(), newParameter.getMoneyAmount()));
+            case LEDGER_PARAMETER_VALUE_KIND_SECURITY:
+                return LedgerParameter.ofSecurity(type, lookup.getSecurity(newParameter.getSecurity()));
+            case LEDGER_PARAMETER_VALUE_KIND_ACCOUNT:
+                return LedgerParameter.ofAccount(type, lookup.getAccount(newParameter.getAccount()));
+            case LEDGER_PARAMETER_VALUE_KIND_PORTFOLIO:
+                return LedgerParameter.ofPortfolio(type, lookup.getPortfolio(newParameter.getPortfolio()));
+            case LEDGER_PARAMETER_VALUE_KIND_BOOLEAN:
+                if (!newParameter.hasBooleanValue())
+                    throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_PERSIST_009
+                                    .message(Messages.LedgerProtobufBooleanParameterMissingBooleanValue));
+                return LedgerParameter.ofBoolean(type, Boolean.valueOf(newParameter.getBooleanValue()));
+            case LEDGER_PARAMETER_VALUE_KIND_LOCAL_DATE:
+                if (!newParameter.hasLocalDateValue())
+                    throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_PERSIST_010
+                                    .message(Messages.LedgerProtobufLocalDateParameterMissingLocalDateValue));
+                return LedgerParameter.ofLocalDate(type, LocalDate.ofEpochDay(newParameter.getLocalDateValue()));
+            case LEDGER_PARAMETER_VALUE_KIND_LOCAL_DATE_TIME:
+                return LedgerParameter.ofLocalDateTime(type,
+                                fromLocalDateTime(newParameter.getLocalDateTimeValue()));
+            case LEDGER_PARAMETER_VALUE_KIND_UNSPECIFIED:
+            case UNRECOGNIZED:
+            default:
+                throw new UnsupportedOperationException(newParameter.getValueKind().toString());
         }
     }
 
@@ -826,13 +1018,46 @@ import name.abuchen.portfolio.money.Money;
             for (String uuid : newPlan.getTransactionsList())
             {
                 Transaction t = uuid2transaction.get(uuid);
-                if (t == null)
-                    throw new UnsupportedOperationException(uuid);
-                plan.getTransactions().add(t);
+                if (t != null)
+                {
+                    plan.getTransactions().add(t);
+                    continue;
+                }
+
+                InvestmentPlan.LedgerExecutionRef executionRef = ledgerExecutionRefForProjectionUUID(client, uuid);
+                if (executionRef != null)
+                {
+                    plan.addLedgerExecutionRef(executionRef);
+                    continue;
+                }
+
+                throw new UnsupportedOperationException(uuid);
+            }
+
+            for (PInvestmentPlanLedgerExecutionRef newRef : newPlan.getLedgerExecutionRefsList())
+            {
+                plan.addLedgerExecutionRef(new InvestmentPlan.LedgerExecutionRef(newRef.getLedgerEntryUUID(),
+                                newRef.hasProjectionUUID() ? newRef.getProjectionUUID() : null,
+                                newRef.hasProjectionRole() ? fromProto(newRef.getProjectionRole()) : null));
             }
 
             client.addPlan(plan);
         }
+    }
+
+    private InvestmentPlan.LedgerExecutionRef ledgerExecutionRefForProjectionUUID(Client client, String projectionUUID)
+    {
+        for (LedgerEntry entry : client.getLedger().getEntries())
+        {
+            for (LedgerProjectionRef projectionRef : entry.getProjectionRefs())
+            {
+                if (projectionRef.getUUID().equals(projectionUUID))
+                    return new InvestmentPlan.LedgerExecutionRef(entry.getUUID(), projectionRef.getUUID(),
+                                    projectionRef.getRole());
+            }
+        }
+
+        return null;
     }
 
     private void loadExtensions(PClient newClient, Client client)
@@ -866,6 +1091,7 @@ import name.abuchen.portfolio.money.Money;
         saveSecurities(client, newClient);
         saveAccounts(client, newClient);
         savePortfolios(client, newClient);
+        saveLedger(client, newClient);
         saveTransactions(client, newClient);
 
         newClient.putAllProperties(client.getProperties());
@@ -1044,11 +1270,159 @@ import name.abuchen.portfolio.money.Money;
         }
     }
 
+    private void saveLedger(Client client, PClient.Builder newClient)
+    {
+        validateLedger(client);
+
+        PLedger.Builder newLedger = PLedger.newBuilder();
+
+        for (LedgerEntry entry : client.getLedger().getEntries())
+            newLedger.addEntries(saveLedgerEntry(entry));
+
+        newClient.setLedger(newLedger);
+    }
+
+    private PLedgerEntry saveLedgerEntry(LedgerEntry entry)
+    {
+        PLedgerEntry.Builder newEntry = PLedgerEntry.newBuilder();
+
+        newEntry.setUuid(entry.getUUID());
+        newEntry.setTypeId(entry.getType().getProtobufId());
+        newEntry.setDateTime(asTimestamp(entry.getDateTime()));
+
+        if (entry.getNote() != null)
+            newEntry.setNote(entry.getNote());
+        if (entry.getSource() != null)
+            newEntry.setSource(entry.getSource());
+        if (entry.getUpdatedAt() != null)
+            newEntry.setUpdatedAt(asUpdatedAtTimestamp(entry.getUpdatedAt()));
+
+        for (LedgerParameter<?> parameter : entry.getParameters())
+            newEntry.addParameters(saveLedgerParameter(parameter));
+
+        for (LedgerPosting posting : entry.getPostings())
+            newEntry.addPostings(saveLedgerPosting(posting));
+
+        for (LedgerProjectionRef projectionRef : entry.getProjectionRefs())
+            newEntry.addProjectionRefs(saveLedgerProjectionRef(projectionRef));
+
+        return newEntry.build();
+    }
+
+    private PLedgerPosting saveLedgerPosting(LedgerPosting posting)
+    {
+        PLedgerPosting.Builder newPosting = PLedgerPosting.newBuilder();
+
+        newPosting.setUuid(posting.getUUID());
+        newPosting.setTypeCode(posting.getType().getCode());
+        newPosting.setAmount(posting.getAmount());
+
+        if (posting.getCurrency() != null)
+            newPosting.setCurrency(posting.getCurrency());
+        if (posting.getForexAmount() != null)
+            newPosting.setForexAmount(posting.getForexAmount());
+        if (posting.getForexCurrency() != null)
+            newPosting.setForexCurrency(posting.getForexCurrency());
+        if (posting.getExchangeRate() != null)
+            newPosting.setExchangeRate(asDecimalValue(posting.getExchangeRate()));
+        if (posting.getSecurity() != null)
+            newPosting.setSecurity(posting.getSecurity().getUUID());
+        newPosting.setShares(posting.getShares());
+        if (posting.getAccount() != null)
+            newPosting.setAccount(posting.getAccount().getUUID());
+        if (posting.getPortfolio() != null)
+            newPosting.setPortfolio(posting.getPortfolio().getUUID());
+
+        for (LedgerParameter<?> parameter : posting.getParameters())
+            newPosting.addParameters(saveLedgerParameter(parameter));
+
+        return newPosting.build();
+    }
+
+    private PLedgerProjectionRef saveLedgerProjectionRef(LedgerProjectionRef projectionRef)
+    {
+        PLedgerProjectionRef.Builder newProjectionRef = PLedgerProjectionRef.newBuilder();
+
+        newProjectionRef.setUuid(projectionRef.getUUID());
+        newProjectionRef.setRole(toProto(projectionRef.getRole()));
+        if (projectionRef.getAccount() != null)
+            newProjectionRef.setAccount(projectionRef.getAccount().getUUID());
+        if (projectionRef.getPortfolio() != null)
+            newProjectionRef.setPortfolio(projectionRef.getPortfolio().getUUID());
+        for (ProjectionMembership membership : projectionRef.getMemberships())
+            newProjectionRef.addMemberships(saveLedgerProjectionMembership(membership));
+
+        return newProjectionRef.build();
+    }
+
+    private PLedgerProjectionMembership saveLedgerProjectionMembership(ProjectionMembership membership)
+    {
+        PLedgerProjectionMembership.Builder newMembership = PLedgerProjectionMembership.newBuilder();
+
+        newMembership.setPostingUUID(membership.getPostingUUID());
+        newMembership.setRole(toProto(membership.getRole()));
+
+        return newMembership.build();
+    }
+
+    private PLedgerParameter saveLedgerParameter(LedgerParameter<?> parameter)
+    {
+        PLedgerParameter.Builder newParameter = PLedgerParameter.newBuilder();
+
+        newParameter.setTypeCode(parameter.getType().getCode());
+        newParameter.setValueKind(toProto(parameter.getValueKind()));
+
+        switch (parameter.getValueKind())
+        {
+            case STRING:
+                newParameter.setStringValue((String) parameter.getValue());
+                break;
+            case DECIMAL:
+                newParameter.setDecimalValue(asDecimalValue((BigDecimal) parameter.getValue()));
+                break;
+            case LONG:
+                newParameter.setLongValue((Long) parameter.getValue());
+                break;
+            case MONEY:
+                Money money = (Money) parameter.getValue();
+                newParameter.setMoneyAmount(money.getAmount());
+                newParameter.setMoneyCurrency(money.getCurrencyCode());
+                break;
+            case SECURITY:
+                newParameter.setSecurity(((Security) parameter.getValue()).getUUID());
+                break;
+            case ACCOUNT:
+                newParameter.setAccount(((Account) parameter.getValue()).getUUID());
+                break;
+            case PORTFOLIO:
+                newParameter.setPortfolio(((Portfolio) parameter.getValue()).getUUID());
+                break;
+            case BOOLEAN:
+                newParameter.setBooleanValue(((Boolean) parameter.getValue()).booleanValue());
+                break;
+            case LOCAL_DATE:
+                newParameter.setLocalDateValue(((LocalDate) parameter.getValue()).toEpochDay());
+                break;
+            case LOCAL_DATE_TIME:
+                newParameter.setLocalDateTimeValue(asLocalDateTime((java.time.LocalDateTime) parameter.getValue()));
+                break;
+            default:
+                throw new UnsupportedOperationException(parameter.getValueKind().toString());
+        }
+
+        return newParameter.build();
+    }
+
     private void saveTransactions(Client client, PClient.Builder newClient)
     {
+        Set<String> ledgerProjectionUUIDs = ledgerProjectionUUIDs(client.getLedger());
+        saveLedgerCompatibilityShadows(client, newClient);
+
         for (Portfolio portfolio : client.getPortfolios())
         {
-            portfolio.getTransactions().stream().filter(t -> t.getType() != PortfolioTransaction.Type.TRANSFER_IN)
+            portfolio.getTransactions().stream()
+                            .filter(t -> t.getType() != PortfolioTransaction.Type.TRANSFER_IN)
+                            .filter(t -> shouldSaveLegacyTransaction(t, ledgerProjectionUUIDs))
                             .forEach(t -> addTransaction(newClient, portfolio, t));
         }
 
@@ -1057,10 +1431,55 @@ import name.abuchen.portfolio.money.Money;
 
         for (Account account : client.getAccounts())
         {
-            account.getTransactions().stream().filter(t -> !exclude.contains(t.getType()))
+            account.getTransactions().stream() //
+                            .filter(t -> !exclude.contains(t.getType()))
+                            .filter(t -> shouldSaveLegacyTransaction(t, ledgerProjectionUUIDs))
                             .forEach(t -> addTransaction(newClient, account, t));
         }
 
+    }
+
+    private void saveLedgerCompatibilityShadows(Client client, PClient.Builder newClient)
+    {
+        for (LedgerEntry entry : client.getLedger().getEntries())
+        {
+            if (!entry.getType().isLegacyFixedShape())
+                continue;
+
+            for (Transaction transaction : LedgerProjectionService.createProjections(entry))
+            {
+                if (!shouldSaveLedgerCompatibilityShadow(transaction))
+                    continue;
+
+                LedgerBackedTransaction ledgerBackedTransaction = (LedgerBackedTransaction) transaction;
+                LedgerProjectionRef projectionRef = ledgerBackedTransaction.getLedgerProjectionRef();
+
+                if (transaction instanceof AccountTransaction accountTransaction)
+                    addTransaction(newClient, projectionRef.getAccount(), accountTransaction);
+                else if (transaction instanceof PortfolioTransaction portfolioTransaction)
+                    addTransaction(newClient, projectionRef.getPortfolio(), portfolioTransaction);
+                else
+                    throw new UnsupportedOperationException(transaction.getClass().getName());
+            }
+        }
+    }
+
+    private boolean shouldSaveLedgerCompatibilityShadow(Transaction transaction)
+    {
+        if (transaction instanceof AccountTransaction accountTransaction)
+            return accountTransaction.getType() != AccountTransaction.Type.BUY
+                            && accountTransaction.getType() != AccountTransaction.Type.SELL
+                            && accountTransaction.getType() != AccountTransaction.Type.TRANSFER_IN;
+
+        if (transaction instanceof PortfolioTransaction portfolioTransaction)
+            return portfolioTransaction.getType() != PortfolioTransaction.Type.TRANSFER_IN;
+
+        return false;
+    }
+
+    private boolean shouldSaveLegacyTransaction(Transaction transaction, Set<String> ledgerProjectionUUIDs)
+    {
+        return !(transaction instanceof LedgerBackedTransaction) && !ledgerProjectionUUIDs.contains(transaction.getUUID());
     }
 
     private void addTransaction(PClient.Builder newClient, Portfolio portfolio, PortfolioTransaction t)
@@ -1411,10 +1830,198 @@ import name.abuchen.portfolio.money.Money;
                     throw new UnsupportedOperationException();
             }
 
-            plan.getTransactions().forEach(t -> newPlan.addTransactions(t.getUUID()));
+            Set<String> ledgerExecutionRefKeys = new HashSet<>();
+
+            plan.getTransactions().forEach(t -> {
+                if (t instanceof LedgerBackedTransaction ledgerBackedTransaction)
+                    addLedgerExecutionRef(newPlan, InvestmentPlan.LedgerExecutionRef.of(ledgerBackedTransaction),
+                                    ledgerExecutionRefKeys);
+                else
+                    newPlan.addTransactions(t.getUUID());
+            });
+
+            plan.getLedgerExecutionRefs()
+                            .forEach(ref -> addLedgerExecutionRef(newPlan, ref, ledgerExecutionRefKeys));
 
             newClient.addPlans(newPlan);
         });
+    }
+
+    private void addLedgerExecutionRef(PInvestmentPlan.Builder newPlan, InvestmentPlan.LedgerExecutionRef ref,
+                    Set<String> keys)
+    {
+        String key = ref.getLedgerEntryUUID() + "|" + ref.getProjectionUUID() + "|" + ref.getProjectionRole(); //$NON-NLS-1$ //$NON-NLS-2$
+
+        if (!keys.add(key))
+            return;
+
+        PInvestmentPlanLedgerExecutionRef.Builder newRef = PInvestmentPlanLedgerExecutionRef.newBuilder();
+        newRef.setLedgerEntryUUID(ref.getLedgerEntryUUID());
+
+        if (ref.getProjectionUUID() != null)
+            newRef.setProjectionUUID(ref.getProjectionUUID());
+        if (ref.getProjectionRole() != null)
+            newRef.setProjectionRole(toProto(ref.getProjectionRole()));
+
+        newPlan.addLedgerExecutionRefs(newRef);
+    }
+
+    private void validateLedger(Client client)
+    {
+        var ledger = client.getLedger();
+        var result = LedgerStructuralValidator.validate(ledger);
+
+        if (!result.isOK())
+        {
+            LedgerProjectionService.logSkipped(ledger, result);
+            throw new UnsupportedOperationException(
+                            LedgerDiagnosticCode.LEDGER_PERSIST_002
+                                            .message(MessageFormat.format(
+                                                            Messages.LedgerProtobufInvalidLedgerPersistenceState,
+                                                            LedgerDiagnosticMessageFormatter.formatValidationResult(
+                                                                            ledger, result))));
+        }
+    }
+
+    private PLedgerProjectionRole toProto(LedgerProjectionRole role)
+    {
+        switch (role)
+        {
+            case ACCOUNT:
+                return PLedgerProjectionRole.LEDGER_PROJECTION_ROLE_ACCOUNT;
+            case PORTFOLIO:
+                return PLedgerProjectionRole.LEDGER_PROJECTION_ROLE_PORTFOLIO;
+            case SOURCE_ACCOUNT:
+                return PLedgerProjectionRole.LEDGER_PROJECTION_ROLE_SOURCE_ACCOUNT;
+            case TARGET_ACCOUNT:
+                return PLedgerProjectionRole.LEDGER_PROJECTION_ROLE_TARGET_ACCOUNT;
+            case SOURCE_PORTFOLIO:
+                return PLedgerProjectionRole.LEDGER_PROJECTION_ROLE_SOURCE_PORTFOLIO;
+            case TARGET_PORTFOLIO:
+                return PLedgerProjectionRole.LEDGER_PROJECTION_ROLE_TARGET_PORTFOLIO;
+            case DELIVERY:
+                return PLedgerProjectionRole.LEDGER_PROJECTION_ROLE_DELIVERY;
+            case DELIVERY_INBOUND:
+                return PLedgerProjectionRole.LEDGER_PROJECTION_ROLE_DELIVERY_INBOUND;
+            case DELIVERY_OUTBOUND:
+                return PLedgerProjectionRole.LEDGER_PROJECTION_ROLE_DELIVERY_OUTBOUND;
+            case CASH_COMPENSATION:
+                return PLedgerProjectionRole.LEDGER_PROJECTION_ROLE_CASH_COMPENSATION;
+            case OLD_SECURITY_LEG:
+                return PLedgerProjectionRole.LEDGER_PROJECTION_ROLE_OLD_SECURITY_LEG;
+            case NEW_SECURITY_LEG:
+                return PLedgerProjectionRole.LEDGER_PROJECTION_ROLE_NEW_SECURITY_LEG;
+            default:
+                throw new UnsupportedOperationException(role.toString());
+        }
+    }
+
+    private LedgerProjectionRole fromProto(PLedgerProjectionRole role)
+    {
+        switch (role)
+        {
+            case LEDGER_PROJECTION_ROLE_ACCOUNT:
+                return LedgerProjectionRole.ACCOUNT;
+            case LEDGER_PROJECTION_ROLE_PORTFOLIO:
+                return LedgerProjectionRole.PORTFOLIO;
+            case LEDGER_PROJECTION_ROLE_SOURCE_ACCOUNT:
+                return LedgerProjectionRole.SOURCE_ACCOUNT;
+            case LEDGER_PROJECTION_ROLE_TARGET_ACCOUNT:
+                return LedgerProjectionRole.TARGET_ACCOUNT;
+            case LEDGER_PROJECTION_ROLE_SOURCE_PORTFOLIO:
+                return LedgerProjectionRole.SOURCE_PORTFOLIO;
+            case LEDGER_PROJECTION_ROLE_TARGET_PORTFOLIO:
+                return LedgerProjectionRole.TARGET_PORTFOLIO;
+            case LEDGER_PROJECTION_ROLE_DELIVERY:
+                return LedgerProjectionRole.DELIVERY;
+            case LEDGER_PROJECTION_ROLE_DELIVERY_INBOUND:
+                return LedgerProjectionRole.DELIVERY_INBOUND;
+            case LEDGER_PROJECTION_ROLE_DELIVERY_OUTBOUND:
+                return LedgerProjectionRole.DELIVERY_OUTBOUND;
+            case LEDGER_PROJECTION_ROLE_CASH_COMPENSATION:
+                return LedgerProjectionRole.CASH_COMPENSATION;
+            case LEDGER_PROJECTION_ROLE_OLD_SECURITY_LEG:
+                return LedgerProjectionRole.OLD_SECURITY_LEG;
+            case LEDGER_PROJECTION_ROLE_NEW_SECURITY_LEG:
+                return LedgerProjectionRole.NEW_SECURITY_LEG;
+            case LEDGER_PROJECTION_ROLE_UNSPECIFIED:
+            case UNRECOGNIZED:
+            default:
+                throw new UnsupportedOperationException(role.toString());
+        }
+    }
+
+    private PLedgerProjectionMembershipRole toProto(ProjectionMembershipRole role)
+    {
+        switch (role)
+        {
+            case PRIMARY:
+                return PLedgerProjectionMembershipRole.LEDGER_PROJECTION_MEMBERSHIP_ROLE_PRIMARY;
+            case GROUP_ANCHOR:
+                return PLedgerProjectionMembershipRole.LEDGER_PROJECTION_MEMBERSHIP_ROLE_GROUP_ANCHOR;
+            case FEE_UNIT:
+                return PLedgerProjectionMembershipRole.LEDGER_PROJECTION_MEMBERSHIP_ROLE_FEE_UNIT;
+            case TAX_UNIT:
+                return PLedgerProjectionMembershipRole.LEDGER_PROJECTION_MEMBERSHIP_ROLE_TAX_UNIT;
+            case GROSS_VALUE_UNIT:
+                return PLedgerProjectionMembershipRole.LEDGER_PROJECTION_MEMBERSHIP_ROLE_GROSS_VALUE_UNIT;
+            case FOREX_CONTEXT:
+                return PLedgerProjectionMembershipRole.LEDGER_PROJECTION_MEMBERSHIP_ROLE_FOREX_CONTEXT;
+            default:
+                throw new UnsupportedOperationException(role.toString());
+        }
+    }
+
+    private ProjectionMembershipRole fromProto(PLedgerProjectionMembershipRole role)
+    {
+        switch (role)
+        {
+            case LEDGER_PROJECTION_MEMBERSHIP_ROLE_PRIMARY:
+                return ProjectionMembershipRole.PRIMARY;
+            case LEDGER_PROJECTION_MEMBERSHIP_ROLE_GROUP_ANCHOR:
+                return ProjectionMembershipRole.GROUP_ANCHOR;
+            case LEDGER_PROJECTION_MEMBERSHIP_ROLE_FEE_UNIT:
+                return ProjectionMembershipRole.FEE_UNIT;
+            case LEDGER_PROJECTION_MEMBERSHIP_ROLE_TAX_UNIT:
+                return ProjectionMembershipRole.TAX_UNIT;
+            case LEDGER_PROJECTION_MEMBERSHIP_ROLE_GROSS_VALUE_UNIT:
+                return ProjectionMembershipRole.GROSS_VALUE_UNIT;
+            case LEDGER_PROJECTION_MEMBERSHIP_ROLE_FOREX_CONTEXT:
+                return ProjectionMembershipRole.FOREX_CONTEXT;
+            case LEDGER_PROJECTION_MEMBERSHIP_ROLE_UNSPECIFIED:
+            case UNRECOGNIZED:
+            default:
+                throw new UnsupportedOperationException(role.toString());
+        }
+    }
+
+    private PLedgerParameterValueKind toProto(ValueKind valueKind)
+    {
+        switch (valueKind)
+        {
+            case STRING:
+                return PLedgerParameterValueKind.LEDGER_PARAMETER_VALUE_KIND_STRING;
+            case DECIMAL:
+                return PLedgerParameterValueKind.LEDGER_PARAMETER_VALUE_KIND_DECIMAL;
+            case LONG:
+                return PLedgerParameterValueKind.LEDGER_PARAMETER_VALUE_KIND_LONG;
+            case MONEY:
+                return PLedgerParameterValueKind.LEDGER_PARAMETER_VALUE_KIND_MONEY;
+            case SECURITY:
+                return PLedgerParameterValueKind.LEDGER_PARAMETER_VALUE_KIND_SECURITY;
+            case ACCOUNT:
+                return PLedgerParameterValueKind.LEDGER_PARAMETER_VALUE_KIND_ACCOUNT;
+            case PORTFOLIO:
+                return PLedgerParameterValueKind.LEDGER_PARAMETER_VALUE_KIND_PORTFOLIO;
+            case BOOLEAN:
+                return PLedgerParameterValueKind.LEDGER_PARAMETER_VALUE_KIND_BOOLEAN;
+            case LOCAL_DATE:
+                return PLedgerParameterValueKind.LEDGER_PARAMETER_VALUE_KIND_LOCAL_DATE;
+            case LOCAL_DATE_TIME:
+                return PLedgerParameterValueKind.LEDGER_PARAMETER_VALUE_KIND_LOCAL_DATE_TIME;
+            default:
+                throw new UnsupportedOperationException(valueKind.toString());
+        }
     }
 
     private void saveExtensions(Client client, PClient.Builder newClient)

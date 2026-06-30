@@ -128,7 +128,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
 
         var exDate = new ExDateInput(editArea);
         exDate.bindDate(Properties.exDate.name());
-        exDate.setVisible(model().supportsSecurity() && model().getSecurity() != null
+        exDate.setVisible(model().supportsExDate() && model().getSecurity() != null
                         && !AccountTransactionModel.EMPTY_SECURITY.equals(model().getSecurity()));
 
         // shares
@@ -261,7 +261,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
 
         startingWith(dateTime.date.getControl()).thenRight(dateTime.time).thenRight(dateTime.button, 0);
 
-        if (model().supportsSecurity())
+        if (model().supportsExDate())
         {
             startingWith(dateTime.button).thenRight(exDate.checkBox).thenRight(exDate.date.getControl());
 

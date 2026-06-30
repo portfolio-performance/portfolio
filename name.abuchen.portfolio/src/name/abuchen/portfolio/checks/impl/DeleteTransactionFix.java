@@ -6,6 +6,8 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.model.TransactionPair;
+import name.abuchen.portfolio.model.ledger.compatibility.LedgerTransactionDeleter;
+import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
 
 /* package */class DeleteTransactionFix<T extends Transaction> implements QuickFix
 {
@@ -40,6 +42,12 @@ import name.abuchen.portfolio.model.TransactionPair;
     @Override
     public void execute()
     {
+        if (transaction instanceof LedgerBackedTransaction ledgerBackedTransaction)
+        {
+            new LedgerTransactionDeleter(client).delete(ledgerBackedTransaction);
+            return;
+        }
+
         owner.deleteTransaction(transaction, client);
     }
 }

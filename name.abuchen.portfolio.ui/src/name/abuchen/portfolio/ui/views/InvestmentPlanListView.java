@@ -257,13 +257,14 @@ public class InvestmentPlanListView extends AbstractFinanceView implements Modif
         support.addColumn(column);
 
         column = new Column(Messages.ColumnLastDate, SWT.None, 80);
-        column.setLabelProvider(new DateLabelProvider(e -> ((InvestmentPlan) e).getLastDate().orElse(null)));
+        column.setLabelProvider(
+                        new DateLabelProvider(e -> ((InvestmentPlan) e).getLastDate(getClient()).orElse(null)));
         ColumnViewerSorter.create(InvestmentPlan.class, "LastDate").attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnNextDate, SWT.None, 80);
-        column.setLabelProvider(
-                        new DateLabelProvider(e -> ((InvestmentPlan) e).getDateOfNextTransactionToBeGenerated()));
+        column.setLabelProvider(new DateLabelProvider(
+                        e -> ((InvestmentPlan) e).getDateOfNextTransactionToBeGenerated(getClient())));
         ColumnViewerSorter.create(InvestmentPlan.class, "DateOfNextTransactionToBeGenerated").attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
@@ -377,13 +378,13 @@ public class InvestmentPlanListView extends AbstractFinanceView implements Modif
                 try
                 {
                     CurrencyConverterImpl converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
-                    List<TransactionPair<?>> latest = plan.generateTransactions(converter);
+                    List<TransactionPair<?>> latest = plan.generateTransactions(getClient(), converter);
 
                     if (latest.isEmpty())
                     {
                         MessageDialog.openInformation(getActiveShell(), Messages.LabelInfo, MessageFormat.format(
                                         Messages.InvestmentPlanInfoNoTransactionsGenerated,
-                                        Values.Date.format(plan.getDateOfNextTransactionToBeGenerated())));
+                                        Values.Date.format(plan.getDateOfNextTransactionToBeGenerated(getClient()))));
                     }
                     else
                     {

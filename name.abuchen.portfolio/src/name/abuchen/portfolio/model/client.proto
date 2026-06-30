@@ -90,11 +90,11 @@ message PSecurity {
   optional string latestFeed = 14;
   optional string latestFeedURL = 15;
   optional PFullHistoricalPrice latest = 16;
-	
+
   repeated PKeyValue attributes = 17;
-	
+
   repeated PSecurityEvent events = 18;
-	
+
   repeated PKeyValue properties = 19;
 
   bool isRetired = 20;
@@ -113,9 +113,9 @@ message PAccount {
   string currencyCode = 3;
   optional string note = 4;
   bool isRetired = 5;
-	
+
   repeated PKeyValue attributes = 6;
-	
+
   google.protobuf.Timestamp updatedAt = 7;
 }
 
@@ -124,11 +124,11 @@ message PPortfolio {
   string name = 2;
   optional string note = 3;
   bool isRetired = 4;
-	
+
   optional string referenceAccount = 5;
-	
+
   repeated PKeyValue attributes = 6;
-	
+
   google.protobuf.Timestamp updatedAt = 7;
 }
 
@@ -164,20 +164,20 @@ message PTransaction {
     FEE = 13;
     FEE_REFUND = 14;
   }
-	
+
   string uuid = 1;
-	
+
   Type type = 2;
   optional string account = 3;
   optional string portfolio = 4;
   optional string otherAccount = 5;
   optional string otherPortfolio = 6;
-  
+
   optional string otherUuid = 7;
   optional google.protobuf.Timestamp otherUpdatedAt = 8;
-	
+
   google.protobuf.Timestamp date = 9;
-	
+
   string currencyCode = 10;
   int64 amount = 11;
   optional int64 shares = 12;
@@ -187,7 +187,7 @@ message PTransaction {
   repeated PTransactionUnit units = 15;
 
   google.protobuf.Timestamp updatedAt = 16;
-  
+
   optional string source = 17;
   optional PLocalDateTime exDate = 18;
 }
@@ -205,7 +205,7 @@ message PInvestmentPlan {
   optional string security = 3;
   optional string portfolio = 4;
   optional string account = 5;
-	
+
   repeated PKeyValue attributes = 6;
 
   bool autoGenerate = 7;
@@ -217,6 +217,123 @@ message PInvestmentPlan {
 
   int64 taxes = 13;
   Type type = 14;
+
+  repeated PInvestmentPlanLedgerExecutionRef ledgerExecutionRefs = 15;
+}
+
+message PInvestmentPlanLedgerExecutionRef {
+  string ledgerEntryUUID = 1;
+  optional string projectionUUID = 2;
+  optional PLedgerProjectionRole projectionRole = 3;
+}
+
+enum PLedgerProjectionRole {
+  LEDGER_PROJECTION_ROLE_UNSPECIFIED = 0;
+  LEDGER_PROJECTION_ROLE_ACCOUNT = 1;
+  LEDGER_PROJECTION_ROLE_PORTFOLIO = 2;
+  LEDGER_PROJECTION_ROLE_SOURCE_ACCOUNT = 3;
+  LEDGER_PROJECTION_ROLE_TARGET_ACCOUNT = 4;
+  LEDGER_PROJECTION_ROLE_SOURCE_PORTFOLIO = 5;
+  LEDGER_PROJECTION_ROLE_TARGET_PORTFOLIO = 6;
+  LEDGER_PROJECTION_ROLE_DELIVERY = 7;
+  LEDGER_PROJECTION_ROLE_DELIVERY_INBOUND = 8;
+  LEDGER_PROJECTION_ROLE_DELIVERY_OUTBOUND = 9;
+  LEDGER_PROJECTION_ROLE_CASH_COMPENSATION = 10;
+  LEDGER_PROJECTION_ROLE_OLD_SECURITY_LEG = 11;
+  LEDGER_PROJECTION_ROLE_NEW_SECURITY_LEG = 12;
+}
+
+enum PLedgerProjectionMembershipRole {
+  LEDGER_PROJECTION_MEMBERSHIP_ROLE_UNSPECIFIED = 0;
+  LEDGER_PROJECTION_MEMBERSHIP_ROLE_PRIMARY = 1;
+  LEDGER_PROJECTION_MEMBERSHIP_ROLE_GROUP_ANCHOR = 2;
+  LEDGER_PROJECTION_MEMBERSHIP_ROLE_FEE_UNIT = 3;
+  LEDGER_PROJECTION_MEMBERSHIP_ROLE_TAX_UNIT = 4;
+  LEDGER_PROJECTION_MEMBERSHIP_ROLE_GROSS_VALUE_UNIT = 5;
+  LEDGER_PROJECTION_MEMBERSHIP_ROLE_FOREX_CONTEXT = 6;
+}
+
+enum PLedgerParameterValueKind {
+  reserved 8, 9;
+  reserved "LEDGER_PARAMETER_VALUE_KIND_CORPORATE_ACTION_LEG", "LEDGER_PARAMETER_VALUE_KIND_COMPENSATION_KIND";
+
+  LEDGER_PARAMETER_VALUE_KIND_UNSPECIFIED = 0;
+  LEDGER_PARAMETER_VALUE_KIND_STRING = 1;
+  LEDGER_PARAMETER_VALUE_KIND_DECIMAL = 2;
+  LEDGER_PARAMETER_VALUE_KIND_LONG = 3;
+  LEDGER_PARAMETER_VALUE_KIND_MONEY = 4;
+  LEDGER_PARAMETER_VALUE_KIND_SECURITY = 5;
+  LEDGER_PARAMETER_VALUE_KIND_ACCOUNT = 6;
+  LEDGER_PARAMETER_VALUE_KIND_PORTFOLIO = 7;
+  LEDGER_PARAMETER_VALUE_KIND_LOCAL_DATE_TIME = 10;
+  LEDGER_PARAMETER_VALUE_KIND_BOOLEAN = 11;
+  LEDGER_PARAMETER_VALUE_KIND_LOCAL_DATE = 12;
+}
+
+message PLedger {
+  repeated PLedgerEntry entries = 1;
+}
+
+message PLedgerEntry {
+  string uuid = 1;
+  reserved 2;
+  google.protobuf.Timestamp dateTime = 3;
+  optional string note = 4;
+  optional string source = 5;
+  google.protobuf.Timestamp updatedAt = 6;
+  repeated PLedgerPosting postings = 7;
+  repeated PLedgerProjectionRef projectionRefs = 8;
+  optional uint32 typeId = 9;
+  repeated PLedgerParameter parameters = 10;
+}
+
+message PLedgerPosting {
+  string uuid = 1;
+  reserved 2;
+  int64 amount = 3;
+  optional string currency = 4;
+  optional int64 forexAmount = 5;
+  optional string forexCurrency = 6;
+  optional PDecimalValue exchangeRate = 7;
+  optional string security = 8;
+  int64 shares = 9;
+  optional string account = 10;
+  optional string portfolio = 11;
+  repeated PLedgerParameter parameters = 12;
+  optional string typeCode = 13;
+}
+
+message PLedgerProjectionRef {
+  string uuid = 1;
+  PLedgerProjectionRole role = 2;
+  optional string account = 3;
+  optional string portfolio = 4;
+  repeated PLedgerProjectionMembership memberships = 5;
+}
+
+message PLedgerProjectionMembership {
+  string postingUUID = 1;
+  PLedgerProjectionMembershipRole role = 2;
+}
+
+message PLedgerParameter {
+  reserved 1;
+  reserved 11;
+  reserved "enumValue";
+
+  PLedgerParameterValueKind valueKind = 2;
+  optional string stringValue = 3;
+  optional PDecimalValue decimalValue = 4;
+  optional int64 longValue = 5;
+  optional int64 moneyAmount = 6;
+  optional string moneyCurrency = 7;
+  optional string security = 8;
+  optional string account = 9;
+  optional string portfolio = 10;
+  optional PLocalDateTime localDateTimeValue = 12;
+  optional string typeCode = 13;
+  optional bool booleanValue = 14;
+  optional int64 localDateValue = 15; // epoch day, based on the epoch 1970-01-01
 }
 
 message PTaxonomy {
@@ -230,15 +347,15 @@ message PTaxonomy {
   message Classification {
     string id = 1;
     optional string parentId = 2;
-	
+
     string name = 3;
     optional string note = 4;
     string color = 5;
     int32 weight = 6;
     int32 rank = 7;
-	
+
     repeated PKeyValue data = 8;
-	
+
     repeated PTaxonomy.Assignment assignments = 9;
   }
 
@@ -246,7 +363,7 @@ message PTaxonomy {
   string name = 2;
   optional string source = 3;
   repeated string dimensions = 4;
-	
+
   repeated PTaxonomy.Classification classifications = 5;
 }
 
@@ -256,12 +373,12 @@ message PDashboard {
     string label = 2;
     map<string, string> configuration = 3;
   }
-	
+
   message Column {
     int32 weight = 1;
     repeated Widget widgets = 2;
   }
-	
+
   string name = 1;
   map<string, string> configuration = 2;
   repeated Column columns = 3;
@@ -299,7 +416,7 @@ message PSettings {
 
 message PClient {
   int32 version = 1;
-	
+
   repeated PSecurity securities = 2;
   repeated PAccount accounts = 3;
   repeated PPortfolio portfolios = 4;
@@ -307,15 +424,17 @@ message PClient {
 
   repeated PInvestmentPlan plans = 6;
 
-  repeated PWatchlist watchlists = 7;    
+  repeated PWatchlist watchlists = 7;
   repeated PTaxonomy taxonomies = 8;
   repeated PDashboard dashboards = 9;
 
   map<string, string> properties = 10;
-   
+
   PSettings settings = 11;
   string baseCurrency = 12;
-  
+
+  PLedger ledger = 13;
+
   // Extension data using Any type for maximum flexibility
   repeated google.protobuf.Any extensions = 99;
 }

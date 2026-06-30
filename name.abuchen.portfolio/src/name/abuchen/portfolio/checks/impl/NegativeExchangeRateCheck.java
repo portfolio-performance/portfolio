@@ -3,7 +3,10 @@ package name.abuchen.portfolio.checks.impl;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.Messages;
@@ -18,6 +21,9 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionPair;
+import name.abuchen.portfolio.model.ledger.LedgerEntry;
+import name.abuchen.portfolio.model.ledger.LedgerPosting;
+import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
 import name.abuchen.portfolio.money.Values;
 
 /**
@@ -78,11 +84,20 @@ public class NegativeExchangeRateCheck implements Check
     public List<Issue> execute(Client client)
     {
         List<Issue> issues = new ArrayList<>();
+        Set<String> reportedLedgerEntries = new HashSet<>();
 
         for (Account account : client.getAccounts())
         {
             for (AccountTransaction t : account.getTransactions()) // NOSONAR
             {
+                if (t instanceof LedgerBackedTransaction ledgerBacked)
+                {
+                    if (reportedLedgerEntries.add(ledgerBacked.getLedgerEntry().getUUID()))
+                        addLedgerBackedIssue(client, issues, new TransactionPair<>(account, t),
+                                        ledgerBacked.getLedgerEntry());
+                    continue;
+                }
+
                 if (t.getCrossEntry() instanceof BuySellEntry)
                     continue;
 
@@ -107,6 +122,14 @@ public class NegativeExchangeRateCheck implements Check
         {
             for (PortfolioTransaction t : portfolio.getTransactions()) // NOSONAR
             {
+                if (t instanceof LedgerBackedTransaction ledgerBacked)
+                {
+                    if (reportedLedgerEntries.add(ledgerBacked.getLedgerEntry().getUUID()))
+                        addLedgerBackedIssue(client, issues, new TransactionPair<>(portfolio, t),
+                                        ledgerBacked.getLedgerEntry());
+                    continue;
+                }
+
                 if (t.getType() == PortfolioTransaction.Type.TRANSFER_IN)
                     continue;
 
@@ -125,5 +148,30 @@ public class NegativeExchangeRateCheck implements Check
         }
 
         return issues;
+    }
+
+    private void addLedgerBackedIssue(Client client, List<Issue> issues, TransactionPair<?> pair, LedgerEntry entry)
+    {
+        firstNegativeExchangeRatePosting(entry).ifPresent(posting -> issues.add(
+                        new NegativeExchangeRateIssue(client, pair,
+                                        MessageFormat.format(Messages.IssueExchangeRateIsNegative,
+                                                        Values.ExchangeRate.format(posting.getExchangeRate()),
+                                                        transactionType(pair.getTransaction())))));
+    }
+
+    private Optional<LedgerPosting> firstNegativeExchangeRatePosting(LedgerEntry entry)
+    {
+        return entry.getPostings().stream() //
+                        .filter(posting -> posting.getExchangeRate() != null)
+                        .filter(posting -> posting.getExchangeRate().signum() < 0) //
+                        .findFirst();
+    }
+
+    private Object transactionType(Transaction transaction)
+    {
+        if (transaction instanceof AccountTransaction accountTransaction)
+            return accountTransaction.getType();
+
+        return ((PortfolioTransaction) transaction).getType();
     }
 }

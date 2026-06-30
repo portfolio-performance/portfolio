@@ -28,6 +28,30 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.model.ledger.LedgerEntry;
+import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
+import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
+import name.abuchen.portfolio.model.ledger.LedgerTransactionMetadata;
+import name.abuchen.portfolio.model.ledger.compatibility.LedgerAccountCashLeg;
+import name.abuchen.portfolio.model.ledger.compatibility.LedgerCreationUnit;
+import name.abuchen.portfolio.model.ledger.compatibility.LedgerCreationUnits;
+import name.abuchen.portfolio.model.ledger.compatibility.LedgerTransactionCreator;
+import name.abuchen.portfolio.model.ledger.configuration.CashCompensationKind;
+import name.abuchen.portfolio.model.ledger.configuration.CorporateActionKind;
+import name.abuchen.portfolio.model.ledger.configuration.CorporateActionSubtype;
+import name.abuchen.portfolio.model.ledger.configuration.EventStage;
+import name.abuchen.portfolio.model.ledger.configuration.FeeReason;
+import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
+import name.abuchen.portfolio.model.ledger.nativeentry.LedgerNativeEntryAssembler;
+import name.abuchen.portfolio.model.ledger.nativeentry.NativeCashCompensation;
+import name.abuchen.portfolio.model.ledger.nativeentry.NativeCorporateActionEvent;
+import name.abuchen.portfolio.model.ledger.nativeentry.NativeEntryMetadata;
+import name.abuchen.portfolio.model.ledger.nativeentry.NativeFee;
+import name.abuchen.portfolio.model.ledger.nativeentry.NativeSecurityLeg;
+import name.abuchen.portfolio.model.ledger.nativeentry.NativeTax;
+import name.abuchen.portfolio.model.ledger.nativeentry.Ratio;
+import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
+import name.abuchen.portfolio.model.ledger.projection.LedgerProjectionService;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
@@ -309,6 +333,117 @@ public class ClientPerformanceSnapshotTest
                         is(snapshot.getValue(CategoryType.FINAL_VALUE)
                                         .subtract(snapshot.getValue(CategoryType.TRANSFERS))
                                         .subtract(snapshot.getValue(CategoryType.INITIAL_VALUE))));
+    }
+
+    @Test
+    public void testLedgerNativeDepositProjectionUnitsCountedAsFeesAndTaxes()
+    {
+        Client client = new Client();
+        Account account = account();
+        Portfolio portfolio = new Portfolio();
+        Security security = new Security("SpinCo", CurrencyUnit.EUR);
+
+        client.addAccount(account);
+        client.addPortfolio(portfolio);
+        client.addSecurity(security);
+
+        LedgerNativeEntryAssembler.forClient(client).forType(LedgerEntryType.STOCK_DIVIDEND)
+                        .metadata(nativeMetadata())
+                        .event(nativeEvent(LedgerEntryType.STOCK_DIVIDEND))
+                        .securityLeg(NativeSecurityLeg.target() //
+                                        .portfolio(portfolio) //
+                                        .security(security) //
+                                        .shares(Values.Share.factorize(1)) //
+                                        .amount(Money.of(CurrencyUnit.EUR, 50_00)) //
+                                        .targetSecurity(security) //
+                                        .ratio(Ratio.of(BigDecimal.ONE, BigDecimal.ONE)) //
+                                        .projectAs(LedgerProjectionRole.DELIVERY_INBOUND) //
+                                        .build()) //
+                        .cashCompensation(NativeCashCompensation.builder() //
+                                        .account(account) //
+                                        .amount(Money.of(CurrencyUnit.EUR, 5_00)) //
+                                        .kind(CashCompensationKind.CASH_IN_LIEU) //
+                                        .build()) //
+                        .fee(NativeFee.of(account, Money.of(CurrencyUnit.EUR, 2_00),
+                                        FeeReason.CORPORATE_ACTION_FEE)) //
+                        .tax(NativeTax.withholding(account, Money.of(CurrencyUnit.EUR, 1_00))) //
+                        .buildAndAdd();
+        LedgerProjectionService.materialize(client);
+
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, new TestCurrencyConverter(),
+                        startDate, endDate);
+
+        assertThat(snapshot.getValue(CategoryType.FEES), is(Money.of(CurrencyUnit.EUR, 2_00)));
+        assertThat(snapshot.getValue(CategoryType.TAXES), is(Money.of(CurrencyUnit.EUR, 1_00)));
+        assertThat(snapshot.getFees().size(), is(1));
+        assertThat(snapshot.getTaxes().size(), is(1));
+    }
+
+    @Test
+    public void testLedgerNativeRemovalProjectionUnitsCountedAsFeesAndTaxes()
+    {
+        Client client = new Client();
+        Account account = account();
+        var transaction = ledgerBackedAccountTransaction(LedgerEntryType.RIGHTS_DISTRIBUTION,
+                        AccountTransaction.Type.REMOVAL, 5_00);
+
+        transaction.addUnit(new Unit(Unit.Type.FEE, Money.of(CurrencyUnit.EUR, 2_00)));
+        transaction.addUnit(new Unit(Unit.Type.TAX, Money.of(CurrencyUnit.EUR, 1_00)));
+        account.addTransaction(transaction);
+        client.addAccount(account);
+
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, new TestCurrencyConverter(),
+                        startDate, endDate);
+
+        assertThat(snapshot.getValue(CategoryType.FEES), is(Money.of(CurrencyUnit.EUR, 2_00)));
+        assertThat(snapshot.getValue(CategoryType.TAXES), is(Money.of(CurrencyUnit.EUR, 1_00)));
+        assertThat(snapshot.getValue(CategoryType.TRANSFERS), is(Money.of(CurrencyUnit.EUR, -5_00)));
+    }
+
+    @Test
+    public void testManualDepositAndRemovalUnitsAreNotCountedAsFeesAndTaxes()
+    {
+        Client client = new Client();
+        Account account = account();
+        var deposit = accountTransaction(AccountTransaction.Type.DEPOSIT, 5_00);
+        var removal = accountTransaction(AccountTransaction.Type.REMOVAL, 6_00);
+
+        deposit.addUnit(new Unit(Unit.Type.FEE, Money.of(CurrencyUnit.EUR, 2_00)));
+        deposit.addUnit(new Unit(Unit.Type.TAX, Money.of(CurrencyUnit.EUR, 1_00)));
+        removal.addUnit(new Unit(Unit.Type.FEE, Money.of(CurrencyUnit.EUR, 3_00)));
+        removal.addUnit(new Unit(Unit.Type.TAX, Money.of(CurrencyUnit.EUR, 4_00)));
+        account.addTransaction(deposit);
+        account.addTransaction(removal);
+        client.addAccount(account);
+
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, new TestCurrencyConverter(),
+                        startDate, endDate);
+
+        assertThat(snapshot.getValue(CategoryType.FEES), is(Money.of(CurrencyUnit.EUR, 0)));
+        assertThat(snapshot.getValue(CategoryType.TAXES), is(Money.of(CurrencyUnit.EUR, 0)));
+    }
+
+    @Test
+    public void testLegacyFixedLedgerBackedDepositAndRemovalUnitsAreNotCountedAsFeesAndTaxes()
+    {
+        Client client = new Client();
+        Account account = account();
+        var units = LedgerCreationUnits.of(LedgerCreationUnit.fee(Money.of(CurrencyUnit.EUR, 2_00)),
+                        LedgerCreationUnit.tax(Money.of(CurrencyUnit.EUR, 1_00)));
+        var creator = new LedgerTransactionCreator(client);
+
+        client.addAccount(account);
+        creator.createDeposit(LedgerTransactionMetadata.of(LocalDateTime.of(2011, Month.MARCH, 1, 0, 0)),
+                        LedgerAccountCashLeg.of(account, Money.of(CurrencyUnit.EUR, 5_00)), units);
+        creator.createRemoval(LedgerTransactionMetadata.of(LocalDateTime.of(2011, Month.MARCH, 2, 0, 0)),
+                        LedgerAccountCashLeg.of(account, Money.of(CurrencyUnit.EUR, 6_00)), units);
+        LedgerProjectionService.materialize(client);
+
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, new TestCurrencyConverter(),
+                        startDate, endDate);
+
+        assertThat(snapshot.getValue(CategoryType.FEES), is(Money.of(CurrencyUnit.EUR, 0)));
+        assertThat(snapshot.getValue(CategoryType.TAXES), is(Money.of(CurrencyUnit.EUR, 0)));
     }
 
     @Test
@@ -705,6 +840,52 @@ public class ClientPerformanceSnapshotTest
                         .getPosition().getShares(), is(Values.Share.factorize(-1)));
     }
 
+    private Account account()
+    {
+        var account = new Account();
+        account.setCurrencyCode(CurrencyUnit.EUR);
+        return account;
+    }
+
+    private AccountTransaction accountTransaction(AccountTransaction.Type type, long amount)
+    {
+        var transaction = new AccountTransaction();
+        transaction.setType(type);
+        transaction.setDateTime(LocalDateTime.of(2011, Month.MARCH, 1, 0, 0));
+        transaction.setCurrencyCode(CurrencyUnit.EUR);
+        transaction.setAmount(amount);
+        return transaction;
+    }
+
+    private NativeEntryMetadata nativeMetadata()
+    {
+        return NativeEntryMetadata.of(LocalDateTime.of(2011, Month.MARCH, 1, 0, 0));
+    }
+
+    private NativeCorporateActionEvent nativeEvent(LedgerEntryType entryType)
+    {
+        return NativeCorporateActionEvent.builder() //
+                        .kind(CorporateActionKind.valueOf(entryType.name())) //
+                        .subtype(CorporateActionSubtype.STANDARD) //
+                        .stage(EventStage.SETTLED) //
+                        .effectiveDate(LocalDate.of(2011, Month.MARCH, 1)) //
+                        .build();
+    }
+
+    private LedgerBackedAccountTransactionStub ledgerBackedAccountTransaction(LedgerEntryType entryType,
+                    AccountTransaction.Type transactionType, long amount)
+    {
+        var entry = new LedgerEntry();
+        entry.setType(entryType);
+
+        var transaction = new LedgerBackedAccountTransactionStub(entry);
+        transaction.setType(transactionType);
+        transaction.setDateTime(LocalDateTime.of(2011, Month.MARCH, 1, 0, 0));
+        transaction.setCurrencyCode(CurrencyUnit.EUR);
+        transaction.setAmount(amount);
+        return transaction;
+    }
+
     public static void assertThatCalculationWorksOut(ClientPerformanceSnapshot snapshot, CurrencyConverter converter)
     {
         MutableMoney valueAtEndOfPeriod = MutableMoney.of(converter.getTermCurrency());
@@ -718,5 +899,29 @@ public class ClientPerformanceSnapshotTest
         valueAtEndOfPeriod.add(snapshot.getValue(CategoryType.TRANSFERS));
 
         assertThat(valueAtEndOfPeriod.toMoney(), is(snapshot.getValue(CategoryType.FINAL_VALUE)));
+    }
+
+    private static final class LedgerBackedAccountTransactionStub extends AccountTransaction
+                    implements LedgerBackedTransaction
+    {
+        private final LedgerEntry entry;
+        private final LedgerProjectionRef projectionRef = new LedgerProjectionRef();
+
+        private LedgerBackedAccountTransactionStub(LedgerEntry entry)
+        {
+            this.entry = entry;
+        }
+
+        @Override
+        public LedgerEntry getLedgerEntry()
+        {
+            return entry;
+        }
+
+        @Override
+        public LedgerProjectionRef getLedgerProjectionRef()
+        {
+            return projectionRef;
+        }
     }
 }

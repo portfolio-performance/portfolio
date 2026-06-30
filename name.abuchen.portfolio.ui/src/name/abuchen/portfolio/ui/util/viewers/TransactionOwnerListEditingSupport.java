@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.util.viewers;
 
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -10,12 +11,23 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AccountTransferEntry;
+import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.CrossEntry;
+import name.abuchen.portfolio.model.LedgerDiagnosticCode;
 import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.model.TransactionPair;
+import name.abuchen.portfolio.model.ledger.compatibility.LedgerAccountTransferTransactionCreator;
+import name.abuchen.portfolio.model.ledger.compatibility.LedgerBuySellTransactionCreator;
+import name.abuchen.portfolio.model.ledger.compatibility.LedgerOwnerPatchHelper;
+import name.abuchen.portfolio.model.ledger.compatibility.LedgerPortfolioTransferTransactionCreator;
+import name.abuchen.portfolio.ui.Messages;
 
 /**
  * Creates a cell editor with a combo box of accounts or portfolios.
@@ -76,16 +88,49 @@ public class TransactionOwnerListEditingSupport extends ColumnEditingSupport
             return null;
     }
 
-    private CrossEntry getCrossEntry(Object element)
-    {
-        Transaction t = getTransaction(element);
-        return t != null ? t.getCrossEntry() : null;
-    }
-
     @Override
     public boolean canEdit(Object element)
     {
-        return getCrossEntry(element) != null;
+        Transaction transaction = getTransaction(element);
+        if (isLedgerNativeTargetedProjection(transaction))
+            return false;
+
+        return transaction != null && transaction.getCrossEntry() != null && canEdit(transaction);
+    }
+
+    private boolean isLedgerBacked(Transaction transaction)
+    {
+        if (transaction instanceof AccountTransaction
+                        && transaction.getCrossEntry() instanceof AccountTransferEntry entry)
+            return new LedgerAccountTransferTransactionCreator(client).isLedgerBacked(entry);
+
+        if (transaction instanceof PortfolioTransaction
+                        && transaction.getCrossEntry() instanceof PortfolioTransferEntry entry)
+            return new LedgerPortfolioTransferTransactionCreator(client).isLedgerBacked(entry);
+
+        if (transaction.getCrossEntry() instanceof BuySellEntry entry)
+            return new LedgerBuySellTransactionCreator(client).isLedgerBacked(entry);
+
+        return false;
+    }
+
+    private boolean canEdit(Transaction transaction)
+    {
+        CrossEntry crossEntry = transaction.getCrossEntry();
+
+        if (crossEntry instanceof AccountTransferEntry entry)
+            return !new LedgerAccountTransferTransactionCreator(client).isLedgerBacked(entry)
+                            || new LedgerAccountTransferTransactionCreator(client).canUpdate(entry);
+
+        if (crossEntry instanceof PortfolioTransferEntry entry)
+            return !new LedgerPortfolioTransferTransactionCreator(client).isLedgerBacked(entry)
+                            || new LedgerPortfolioTransferTransactionCreator(client).canUpdate(entry);
+
+        if (crossEntry instanceof BuySellEntry entry)
+            return !new LedgerBuySellTransactionCreator(client).isLedgerBacked(entry)
+                            || new LedgerBuySellTransactionCreator(client).canUpdate(entry);
+
+        return true;
     }
 
     @Override
@@ -193,6 +238,15 @@ public class TransactionOwnerListEditingSupport extends ColumnEditingSupport
         if (newValue.equals(oldValue))
             return;
 
+        validateOwnerChange(crossEntry, transaction, newValue);
+
+        if (isLedgerBacked(transaction))
+        {
+            setLedgerBackedValue(crossEntry, transaction, newValue);
+            notify(element, newValue, oldValue);
+            return;
+        }
+
         // since we are editing the transaction owner, we must first remove the
         // transaction and then re-insert it
 
@@ -204,5 +258,98 @@ public class TransactionOwnerListEditingSupport extends ColumnEditingSupport
         crossEntry.insert();
 
         notify(element, newValue, oldValue);
+    }
+
+    private void validateOwnerChange(CrossEntry crossEntry, Transaction transaction, TransactionOwner<?> newValue)
+    {
+        TransactionOwner<?> ownerToEdit = editMode.getOwner(crossEntry, transaction);
+
+        if (!ownerToEdit.getClass().isInstance(newValue))
+            throw new IllegalArgumentException("unsupported owner type " + newValue); //$NON-NLS-1$
+
+        if (ownerToEdit instanceof Account account && newValue instanceof Account newAccount
+                        && !account.getCurrencyCode().equals(newAccount.getCurrencyCode()))
+            throw new IllegalArgumentException("account owner changes require identical currencies"); //$NON-NLS-1$
+
+        if (crossEntry.getOwner(transaction).getClass().equals(crossEntry.getCrossOwner(transaction).getClass()))
+        {
+            TransactionOwner<?> otherOwner = editMode == EditMode.OWNER ? crossEntry.getCrossOwner(transaction)
+                            : crossEntry.getOwner(transaction);
+
+            if (newValue.equals(otherOwner))
+                throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_UI_012
+                                .message(Messages.LedgerTransactionOwnerListEditingSupportDistinctOwnersRequired));
+        }
+    }
+
+    private void setLedgerBackedValue(CrossEntry crossEntry, Transaction transaction, TransactionOwner<?> newValue)
+    {
+        if (crossEntry instanceof BuySellEntry entry)
+        {
+            updateBuySell(entry, newValue);
+            return;
+        }
+
+        if (crossEntry instanceof AccountTransferEntry entry && newValue instanceof Account account)
+        {
+            updateAccountTransfer(entry, editMode.getOwner(crossEntry, transaction), account);
+            return;
+        }
+
+        if (crossEntry instanceof PortfolioTransferEntry entry && newValue instanceof Portfolio portfolio)
+        {
+            updatePortfolioTransfer(entry, editMode.getOwner(crossEntry, transaction), portfolio);
+            return;
+        }
+
+        throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_UI_013
+                        .message(MessageFormat.format(
+                                        Messages.LedgerTransactionOwnerListEditingSupportUnsupportedOwnerEdit,
+                                        crossEntry)));
+    }
+
+    private void updateBuySell(BuySellEntry entry, TransactionOwner<?> newValue)
+    {
+        var helper = new LedgerOwnerPatchHelper(client);
+        if (newValue instanceof Account newAccount)
+            helper.moveBuySellAccountSide(entry, newAccount);
+        else if (newValue instanceof Portfolio newPortfolio)
+            helper.moveBuySellPortfolioSide(entry, newPortfolio);
+        else
+            throw new IllegalArgumentException(
+                            LedgerDiagnosticCode.LEDGER_UI_014.message(MessageFormat.format(
+                                            Messages.LedgerTransactionOwnerListEditingSupportUnsupportedOwnerType,
+                                            newValue)));
+    }
+
+    private void updateAccountTransfer(AccountTransferEntry entry, TransactionOwner<?> oldValue, Account newAccount)
+    {
+        var helper = new LedgerOwnerPatchHelper(client);
+
+        if (oldValue.equals(entry.getSourceAccount()))
+            helper.moveAccountTransferSource(entry, newAccount);
+        else if (oldValue.equals(entry.getTargetAccount()))
+            helper.moveAccountTransferTarget(entry, newAccount);
+        else
+            throw new IllegalArgumentException(
+                            LedgerDiagnosticCode.LEDGER_UI_015.message(MessageFormat.format(
+                                            Messages.LedgerTransactionOwnerListEditingSupportAccountTransferOwnerNotFound,
+                                            oldValue)));
+    }
+
+    private void updatePortfolioTransfer(PortfolioTransferEntry entry, TransactionOwner<?> oldValue,
+                    Portfolio newPortfolio)
+    {
+        var helper = new LedgerOwnerPatchHelper(client);
+
+        if (oldValue.equals(entry.getSourcePortfolio()))
+            helper.movePortfolioTransferSource(entry, newPortfolio);
+        else if (oldValue.equals(entry.getTargetPortfolio()))
+            helper.movePortfolioTransferTarget(entry, newPortfolio);
+        else
+            throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_UI_016
+                            .message(MessageFormat.format(
+                                            Messages.LedgerTransactionOwnerListEditingSupportPortfolioTransferOwnerNotFound,
+                                            oldValue)));
     }
 }

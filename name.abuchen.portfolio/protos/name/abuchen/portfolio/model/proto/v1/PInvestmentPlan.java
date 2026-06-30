@@ -25,6 +25,7 @@ private static final long serialVersionUID = 0L;
     transactions_ =
         com.google.protobuf.LazyStringArrayList.emptyList();
     type_ = 0;
+    ledgerExecutionRefs_ = java.util.Collections.emptyList();
   }
 
   @java.lang.Override
@@ -579,6 +580,47 @@ private static final long serialVersionUID = 0L;
     return result == null ? name.abuchen.portfolio.model.proto.v1.PInvestmentPlan.Type.UNRECOGNIZED : result;
   }
 
+  public static final int LEDGEREXECUTIONREFS_FIELD_NUMBER = 15;
+  @SuppressWarnings("serial")
+  private java.util.List<name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef> ledgerExecutionRefs_;
+  /**
+   * <code>repeated .name.abuchen.portfolio.PInvestmentPlanLedgerExecutionRef ledgerExecutionRefs = 15;</code>
+   */
+  @java.lang.Override
+  public java.util.List<name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef> getLedgerExecutionRefsList() {
+    return ledgerExecutionRefs_;
+  }
+  /**
+   * <code>repeated .name.abuchen.portfolio.PInvestmentPlanLedgerExecutionRef ledgerExecutionRefs = 15;</code>
+   */
+  @java.lang.Override
+  public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRefOrBuilder> 
+      getLedgerExecutionRefsOrBuilderList() {
+    return ledgerExecutionRefs_;
+  }
+  /**
+   * <code>repeated .name.abuchen.portfolio.PInvestmentPlanLedgerExecutionRef ledgerExecutionRefs = 15;</code>
+   */
+  @java.lang.Override
+  public int getLedgerExecutionRefsCount() {
+    return ledgerExecutionRefs_.size();
+  }
+  /**
+   * <code>repeated .name.abuchen.portfolio.PInvestmentPlanLedgerExecutionRef ledgerExecutionRefs = 15;</code>
+   */
+  @java.lang.Override
+  public name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef getLedgerExecutionRefs(int index) {
+    return ledgerExecutionRefs_.get(index);
+  }
+  /**
+   * <code>repeated .name.abuchen.portfolio.PInvestmentPlanLedgerExecutionRef ledgerExecutionRefs = 15;</code>
+   */
+  @java.lang.Override
+  public name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRefOrBuilder getLedgerExecutionRefsOrBuilder(
+      int index) {
+    return ledgerExecutionRefs_.get(index);
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -634,6 +676,9 @@ private static final long serialVersionUID = 0L;
     }
     if (type_ != name.abuchen.portfolio.model.proto.v1.PInvestmentPlan.Type.PURCHASE_OR_DELIVERY.getNumber()) {
       output.writeEnum(14, type_);
+    }
+    for (int i = 0; i < ledgerExecutionRefs_.size(); i++) {
+      output.writeMessage(15, ledgerExecutionRefs_.get(i));
     }
     getUnknownFields().writeTo(output);
   }
@@ -699,6 +744,10 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeEnumSize(14, type_);
     }
+    for (int i = 0; i < ledgerExecutionRefs_.size(); i++) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(15, ledgerExecutionRefs_.get(i));
+    }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
     return size;
@@ -753,6 +802,8 @@ private static final long serialVersionUID = 0L;
     if (getTaxes()
         != other.getTaxes()) return false;
     if (type_ != other.type_) return false;
+    if (!getLedgerExecutionRefsList()
+        .equals(other.getLedgerExecutionRefsList())) return false;
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -809,6 +860,10 @@ private static final long serialVersionUID = 0L;
         getTaxes());
     hash = (37 * hash) + TYPE_FIELD_NUMBER;
     hash = (53 * hash) + type_;
+    if (getLedgerExecutionRefsCount() > 0) {
+      hash = (37 * hash) + LEDGEREXECUTIONREFS_FIELD_NUMBER;
+      hash = (53 * hash) + getLedgerExecutionRefsList().hashCode();
+    }
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -959,6 +1014,13 @@ private static final long serialVersionUID = 0L;
           com.google.protobuf.LazyStringArrayList.emptyList();
       taxes_ = 0L;
       type_ = 0;
+      if (ledgerExecutionRefsBuilder_ == null) {
+        ledgerExecutionRefs_ = java.util.Collections.emptyList();
+      } else {
+        ledgerExecutionRefs_ = null;
+        ledgerExecutionRefsBuilder_.clear();
+      }
+      bitField0_ = (bitField0_ & ~0x00004000);
       return this;
     }
 
@@ -1000,6 +1062,15 @@ private static final long serialVersionUID = 0L;
         result.attributes_ = attributes_;
       } else {
         result.attributes_ = attributesBuilder_.build();
+      }
+      if (ledgerExecutionRefsBuilder_ == null) {
+        if (((bitField0_ & 0x00004000) != 0)) {
+          ledgerExecutionRefs_ = java.util.Collections.unmodifiableList(ledgerExecutionRefs_);
+          bitField0_ = (bitField0_ & ~0x00004000);
+        }
+        result.ledgerExecutionRefs_ = ledgerExecutionRefs_;
+      } else {
+        result.ledgerExecutionRefs_ = ledgerExecutionRefsBuilder_.build();
       }
     }
 
@@ -1147,6 +1218,32 @@ private static final long serialVersionUID = 0L;
       if (other.type_ != 0) {
         setTypeValue(other.getTypeValue());
       }
+      if (ledgerExecutionRefsBuilder_ == null) {
+        if (!other.ledgerExecutionRefs_.isEmpty()) {
+          if (ledgerExecutionRefs_.isEmpty()) {
+            ledgerExecutionRefs_ = other.ledgerExecutionRefs_;
+            bitField0_ = (bitField0_ & ~0x00004000);
+          } else {
+            ensureLedgerExecutionRefsIsMutable();
+            ledgerExecutionRefs_.addAll(other.ledgerExecutionRefs_);
+          }
+          onChanged();
+        }
+      } else {
+        if (!other.ledgerExecutionRefs_.isEmpty()) {
+          if (ledgerExecutionRefsBuilder_.isEmpty()) {
+            ledgerExecutionRefsBuilder_.dispose();
+            ledgerExecutionRefsBuilder_ = null;
+            ledgerExecutionRefs_ = other.ledgerExecutionRefs_;
+            bitField0_ = (bitField0_ & ~0x00004000);
+            ledgerExecutionRefsBuilder_ = 
+              com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                 getLedgerExecutionRefsFieldBuilder() : null;
+          } else {
+            ledgerExecutionRefsBuilder_.addAllMessages(other.ledgerExecutionRefs_);
+          }
+        }
+      }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
       return this;
@@ -1252,6 +1349,19 @@ private static final long serialVersionUID = 0L;
               bitField0_ |= 0x00002000;
               break;
             } // case 112
+            case 122: {
+              name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef m =
+                  input.readMessage(
+                      name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef.parser(),
+                      extensionRegistry);
+              if (ledgerExecutionRefsBuilder_ == null) {
+                ensureLedgerExecutionRefsIsMutable();
+                ledgerExecutionRefs_.add(m);
+              } else {
+                ledgerExecutionRefsBuilder_.addMessage(m);
+              }
+              break;
+            } // case 122
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -2287,6 +2397,246 @@ private static final long serialVersionUID = 0L;
       type_ = 0;
       onChanged();
       return this;
+    }
+
+    private java.util.List<name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef> ledgerExecutionRefs_ =
+      java.util.Collections.emptyList();
+    private void ensureLedgerExecutionRefsIsMutable() {
+      if (!((bitField0_ & 0x00004000) != 0)) {
+        ledgerExecutionRefs_ = new java.util.ArrayList<name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef>(ledgerExecutionRefs_);
+        bitField0_ |= 0x00004000;
+       }
+    }
+
+    private com.google.protobuf.RepeatedFieldBuilderV3<
+        name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef, name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef.Builder, name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRefOrBuilder> ledgerExecutionRefsBuilder_;
+
+    /**
+     * <code>repeated .name.abuchen.portfolio.PInvestmentPlanLedgerExecutionRef ledgerExecutionRefs = 15;</code>
+     */
+    public java.util.List<name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef> getLedgerExecutionRefsList() {
+      if (ledgerExecutionRefsBuilder_ == null) {
+        return java.util.Collections.unmodifiableList(ledgerExecutionRefs_);
+      } else {
+        return ledgerExecutionRefsBuilder_.getMessageList();
+      }
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PInvestmentPlanLedgerExecutionRef ledgerExecutionRefs = 15;</code>
+     */
+    public int getLedgerExecutionRefsCount() {
+      if (ledgerExecutionRefsBuilder_ == null) {
+        return ledgerExecutionRefs_.size();
+      } else {
+        return ledgerExecutionRefsBuilder_.getCount();
+      }
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PInvestmentPlanLedgerExecutionRef ledgerExecutionRefs = 15;</code>
+     */
+    public name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef getLedgerExecutionRefs(int index) {
+      if (ledgerExecutionRefsBuilder_ == null) {
+        return ledgerExecutionRefs_.get(index);
+      } else {
+        return ledgerExecutionRefsBuilder_.getMessage(index);
+      }
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PInvestmentPlanLedgerExecutionRef ledgerExecutionRefs = 15;</code>
+     */
+    public Builder setLedgerExecutionRefs(
+        int index, name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef value) {
+      if (ledgerExecutionRefsBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureLedgerExecutionRefsIsMutable();
+        ledgerExecutionRefs_.set(index, value);
+        onChanged();
+      } else {
+        ledgerExecutionRefsBuilder_.setMessage(index, value);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PInvestmentPlanLedgerExecutionRef ledgerExecutionRefs = 15;</code>
+     */
+    public Builder setLedgerExecutionRefs(
+        int index, name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef.Builder builderForValue) {
+      if (ledgerExecutionRefsBuilder_ == null) {
+        ensureLedgerExecutionRefsIsMutable();
+        ledgerExecutionRefs_.set(index, builderForValue.build());
+        onChanged();
+      } else {
+        ledgerExecutionRefsBuilder_.setMessage(index, builderForValue.build());
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PInvestmentPlanLedgerExecutionRef ledgerExecutionRefs = 15;</code>
+     */
+    public Builder addLedgerExecutionRefs(name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef value) {
+      if (ledgerExecutionRefsBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureLedgerExecutionRefsIsMutable();
+        ledgerExecutionRefs_.add(value);
+        onChanged();
+      } else {
+        ledgerExecutionRefsBuilder_.addMessage(value);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PInvestmentPlanLedgerExecutionRef ledgerExecutionRefs = 15;</code>
+     */
+    public Builder addLedgerExecutionRefs(
+        int index, name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef value) {
+      if (ledgerExecutionRefsBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureLedgerExecutionRefsIsMutable();
+        ledgerExecutionRefs_.add(index, value);
+        onChanged();
+      } else {
+        ledgerExecutionRefsBuilder_.addMessage(index, value);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PInvestmentPlanLedgerExecutionRef ledgerExecutionRefs = 15;</code>
+     */
+    public Builder addLedgerExecutionRefs(
+        name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef.Builder builderForValue) {
+      if (ledgerExecutionRefsBuilder_ == null) {
+        ensureLedgerExecutionRefsIsMutable();
+        ledgerExecutionRefs_.add(builderForValue.build());
+        onChanged();
+      } else {
+        ledgerExecutionRefsBuilder_.addMessage(builderForValue.build());
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PInvestmentPlanLedgerExecutionRef ledgerExecutionRefs = 15;</code>
+     */
+    public Builder addLedgerExecutionRefs(
+        int index, name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef.Builder builderForValue) {
+      if (ledgerExecutionRefsBuilder_ == null) {
+        ensureLedgerExecutionRefsIsMutable();
+        ledgerExecutionRefs_.add(index, builderForValue.build());
+        onChanged();
+      } else {
+        ledgerExecutionRefsBuilder_.addMessage(index, builderForValue.build());
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PInvestmentPlanLedgerExecutionRef ledgerExecutionRefs = 15;</code>
+     */
+    public Builder addAllLedgerExecutionRefs(
+        java.lang.Iterable<? extends name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef> values) {
+      if (ledgerExecutionRefsBuilder_ == null) {
+        ensureLedgerExecutionRefsIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, ledgerExecutionRefs_);
+        onChanged();
+      } else {
+        ledgerExecutionRefsBuilder_.addAllMessages(values);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PInvestmentPlanLedgerExecutionRef ledgerExecutionRefs = 15;</code>
+     */
+    public Builder clearLedgerExecutionRefs() {
+      if (ledgerExecutionRefsBuilder_ == null) {
+        ledgerExecutionRefs_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00004000);
+        onChanged();
+      } else {
+        ledgerExecutionRefsBuilder_.clear();
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PInvestmentPlanLedgerExecutionRef ledgerExecutionRefs = 15;</code>
+     */
+    public Builder removeLedgerExecutionRefs(int index) {
+      if (ledgerExecutionRefsBuilder_ == null) {
+        ensureLedgerExecutionRefsIsMutable();
+        ledgerExecutionRefs_.remove(index);
+        onChanged();
+      } else {
+        ledgerExecutionRefsBuilder_.remove(index);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PInvestmentPlanLedgerExecutionRef ledgerExecutionRefs = 15;</code>
+     */
+    public name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef.Builder getLedgerExecutionRefsBuilder(
+        int index) {
+      return getLedgerExecutionRefsFieldBuilder().getBuilder(index);
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PInvestmentPlanLedgerExecutionRef ledgerExecutionRefs = 15;</code>
+     */
+    public name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRefOrBuilder getLedgerExecutionRefsOrBuilder(
+        int index) {
+      if (ledgerExecutionRefsBuilder_ == null) {
+        return ledgerExecutionRefs_.get(index);  } else {
+        return ledgerExecutionRefsBuilder_.getMessageOrBuilder(index);
+      }
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PInvestmentPlanLedgerExecutionRef ledgerExecutionRefs = 15;</code>
+     */
+    public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRefOrBuilder> 
+         getLedgerExecutionRefsOrBuilderList() {
+      if (ledgerExecutionRefsBuilder_ != null) {
+        return ledgerExecutionRefsBuilder_.getMessageOrBuilderList();
+      } else {
+        return java.util.Collections.unmodifiableList(ledgerExecutionRefs_);
+      }
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PInvestmentPlanLedgerExecutionRef ledgerExecutionRefs = 15;</code>
+     */
+    public name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef.Builder addLedgerExecutionRefsBuilder() {
+      return getLedgerExecutionRefsFieldBuilder().addBuilder(
+          name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef.getDefaultInstance());
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PInvestmentPlanLedgerExecutionRef ledgerExecutionRefs = 15;</code>
+     */
+    public name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef.Builder addLedgerExecutionRefsBuilder(
+        int index) {
+      return getLedgerExecutionRefsFieldBuilder().addBuilder(
+          index, name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef.getDefaultInstance());
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PInvestmentPlanLedgerExecutionRef ledgerExecutionRefs = 15;</code>
+     */
+    public java.util.List<name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef.Builder> 
+         getLedgerExecutionRefsBuilderList() {
+      return getLedgerExecutionRefsFieldBuilder().getBuilderList();
+    }
+    private com.google.protobuf.RepeatedFieldBuilderV3<
+        name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef, name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef.Builder, name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRefOrBuilder> 
+        getLedgerExecutionRefsFieldBuilder() {
+      if (ledgerExecutionRefsBuilder_ == null) {
+        ledgerExecutionRefsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+            name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef, name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef.Builder, name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRefOrBuilder>(
+                ledgerExecutionRefs_,
+                ((bitField0_ & 0x00004000) != 0),
+                getParentForChildren(),
+                isClean());
+        ledgerExecutionRefs_ = null;
+      }
+      return ledgerExecutionRefsBuilder_;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

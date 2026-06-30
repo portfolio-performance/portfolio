@@ -7,6 +7,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.TransactionPair;
+import name.abuchen.portfolio.model.ledger.compatibility.LedgerDeliveryTransactionCreator;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.ui.Messages;
 
@@ -67,6 +68,23 @@ public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
             throw new UnsupportedOperationException(Messages.MsgMissingSecurity);
         if (portfolio.getReferenceAccount() == null)
             throw new UnsupportedOperationException(Messages.MsgMissingReferenceAccount);
+
+        var ledgerDeliveryCreator = new LedgerDeliveryTransactionCreator(client);
+
+        if (source != null && ledgerDeliveryCreator.canUpdate(source.getTransaction()))
+        {
+            ledgerDeliveryCreator.update(source.getTransaction(), portfolio, type, LocalDateTime.of(date, time), total,
+                            getTransactionCurrencyCode(), security, shares, null, null, buildUnits(), note,
+                            source.getTransaction().getSource());
+            return;
+        }
+
+        if (source == null)
+        {
+            ledgerDeliveryCreator.create(portfolio, type, LocalDateTime.of(date, time), total,
+                            getTransactionCurrencyCode(), security, shares, null, null, buildUnits(), note, null);
+            return;
+        }
 
         TransactionPair<PortfolioTransaction> entry;
 

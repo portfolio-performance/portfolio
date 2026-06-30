@@ -47,17 +47,19 @@ public class DetectDuplicatesAction implements ImportAction
                         .filter(p -> p.getSecurity() != null
                                         && p.getSecurity().equals(entry.getPortfolioTransaction().getSecurity()))
                         .iterator();
+        int investmentPlanMatches = 0;
         while (i.hasNext())
         {
-            var transactions = i.next().getTransactions();
-            for (Transaction t : transactions)
-            {
-                // use portfolio transaction, because it contains the number of
-                // shares
-                if (isInvestmentPlanDuplicate(entry.getPortfolioTransaction(), t))
-                    return new Status(Status.Code.WARNING, Messages.InvestmentPlanItemImportToolTip);
-            }
+            var transactions = i.next().getTransactions(client);
+            var matchingTransactions = findInvestmentPlanTransactions(entry.getPortfolioTransaction(),
+                            transactions.stream().map(pair -> (Transaction) pair.getTransaction()).toList());
+            investmentPlanMatches += matchingTransactions.size();
         }
+
+        if (investmentPlanMatches == 1)
+            return new Status(Status.Code.WARNING, Messages.InvestmentPlanItemImportToolTip);
+        else if (investmentPlanMatches > 1)
+            return new Status(Status.Code.WARNING, Messages.LabelPotentialDuplicate);
 
         Status status = check(entry.getAccountTransaction(), account.getTransactions());
         if (status.getCode() != Status.Code.OK)
@@ -74,18 +76,20 @@ public class DetectDuplicatesAction implements ImportAction
     @Override
     public Status process(PortfolioTransferEntry entry, Portfolio source, Portfolio target)
     {
-        return check(entry.getTargetTransaction(), source.getTransactions());
+        Status status = check(entry.getSourceTransaction(), source.getTransactions());
+        if (status.getCode() != Status.Code.OK)
+            return status;
+        return check(entry.getTargetTransaction(), target.getTransactions());
     }
 
     public Transaction findInvestmentPlanTransaction(Transaction subject, List<Transaction> transactions)
     {
-        for (Transaction t : transactions)
-        {
-            // search investment plan transactions for potential duplicates
-            if (isInvestmentPlanDuplicate(subject, t))
-                return t;
-        }
-        return null;
+        return findInvestmentPlanTransactions(subject, transactions).stream().findFirst().orElse(null);
+    }
+
+    List<Transaction> findInvestmentPlanTransactions(Transaction subject, List<Transaction> transactions)
+    {
+        return transactions.stream().filter(t -> isInvestmentPlanDuplicate(subject, t)).toList();
     }
 
     private Status check(AccountTransaction subject, List<AccountTransaction> transactions)

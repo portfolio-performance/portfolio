@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui;
 
+import static org.junit.Assert.assertFalse;
+
 import java.util.Collection;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -31,6 +33,16 @@ public class MessagesTest
     public void testMessages()
     {
         test("name.abuchen.portfolio.ui.messages", "LabelJSONPathHint"); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    @Test
+    public void testLedgerMessagesDoNotContainDiagnosticCodes()
+    {
+        ResourceBundle resources = ResourceBundle.getBundle("name.abuchen.portfolio.ui.messages", //$NON-NLS-1$
+                        Locale.forLanguageTag(language));
+
+        resources.keySet().stream().filter(key -> key.startsWith("Ledger")) //$NON-NLS-1$
+                        .forEach(key -> assertFalse(key, resources.getString(key).contains("LEDGER-"))); //$NON-NLS-1$
     }
 
     @Test

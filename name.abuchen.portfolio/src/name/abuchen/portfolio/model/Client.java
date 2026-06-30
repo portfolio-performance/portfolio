@@ -21,6 +21,7 @@ import com.google.protobuf.Any;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Classification.Assignment;
+import name.abuchen.portfolio.model.ledger.Ledger;
 import name.abuchen.portfolio.money.CurrencyUnit;
 
 public class Client
@@ -31,7 +32,7 @@ public class Client
         String WATCHLISTS = "watchlists"; //$NON-NLS-1$
     }
 
-    public static final int CURRENT_VERSION = 69;
+    public static final int CURRENT_VERSION = 70;
     public static final int VERSION_WITH_CURRENCY_SUPPORT = 29;
     public static final int VERSION_WITH_UNIQUE_FILTER_KEY = 57;
 
@@ -67,6 +68,8 @@ public class Client
 
     private Map<String, String> properties;
     private ClientSettings settings;
+
+    private Ledger ledger = new Ledger();
 
     /**
      * Extension data for third-party extensions using protobuf Any type. This
@@ -116,6 +119,9 @@ public class Client
             settings = new ClientSettings();
         else
             settings.doPostLoadInitialization();
+
+        if (ledger == null)
+            ledger = new Ledger();
 
         // Add this missing initialization:
         if (extensions == null)
@@ -191,6 +197,11 @@ public class Client
         if (extension != null)
             this.extensions = new ArrayList<>();
         this.extensions.add(extension);
+    }
+
+    public Ledger getLedger()
+    {
+        return ledger;
     }
 
     public List<InvestmentPlan> getPlans()

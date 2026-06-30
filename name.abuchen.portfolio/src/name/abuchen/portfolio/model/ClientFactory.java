@@ -20,6 +20,10 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.security.AlgorithmParameters;
 import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
@@ -67,17 +71,40 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.XStreamException;
+import com.thoughtworks.xstream.converters.Converter;
+import com.thoughtworks.xstream.converters.MarshallingContext;
+import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.converters.collections.MapConverter;
 import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
 import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
+import com.thoughtworks.xstream.io.HierarchicalStreamReader;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.mapper.Mapper;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 import name.abuchen.portfolio.model.Classification.Assignment;
+import name.abuchen.portfolio.model.InvestmentPlan.LedgerExecutionRef;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.model.ledger.Ledger;
+import name.abuchen.portfolio.model.ledger.LedgerDiagnosticMessageFormatter;
+import name.abuchen.portfolio.model.ledger.LedgerEntry;
+import name.abuchen.portfolio.model.ledger.LedgerParameter;
+import name.abuchen.portfolio.model.ledger.LedgerParameter.ValueKind;
+import name.abuchen.portfolio.model.ledger.LedgerPosting;
+import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
+import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
+import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator;
+import name.abuchen.portfolio.model.ledger.ProjectionMembership;
+import name.abuchen.portfolio.model.ledger.ProjectionMembershipRole;
+import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
+import name.abuchen.portfolio.model.ledger.configuration.LedgerParameterType;
+import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
+import name.abuchen.portfolio.model.ledger.legacy.LegacyTransactionToLedgerMigrator;
+import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
+import name.abuchen.portfolio.model.ledger.projection.LedgerProjectionService;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -116,6 +143,513 @@ public class ClientFactory
 
     }
 
+    private static Optional<String> readAttribute(HierarchicalStreamReader reader, String name)
+    {
+        return Optional.ofNullable(reader.getAttribute(name));
+    }
+
+    private static void writeAttribute(HierarchicalStreamWriter writer, String name, Object value)
+    {
+        if (value != null)
+            writer.addAttribute(name, String.valueOf(value));
+    }
+
+    private static void writeValue(HierarchicalStreamWriter writer, String nodeName, String value)
+    {
+        if (value == null)
+            return;
+
+        writer.startNode(nodeName);
+        writer.setValue(value);
+        writer.endNode();
+    }
+
+    private static void writeObject(HierarchicalStreamWriter writer, MarshallingContext context, String nodeName,
+                    Object value)
+    {
+        if (value == null)
+            return;
+
+        writer.startNode(nodeName);
+        context.convertAnother(value);
+        writer.endNode();
+    }
+
+    private static void writeCollection(HierarchicalStreamWriter writer, MarshallingContext context,
+                    String collectionNodeName, String itemNodeName, List<?> values)
+    {
+        writer.startNode(collectionNodeName);
+
+        for (var value : values)
+            writeObject(writer, context, itemNodeName, value);
+
+        writer.endNode();
+    }
+
+    private static void writeParameters(HierarchicalStreamWriter writer, MarshallingContext context,
+                    List<LedgerParameter<?>> parameters)
+    {
+        if (!parameters.isEmpty())
+            writeCollection(writer, context, "parameters", "ledger-parameter", parameters); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    private static class LedgerProjectionRefConverter implements Converter
+    {
+        @Override
+        public boolean canConvert(@SuppressWarnings("rawtypes") Class type)
+        {
+            return type == LedgerProjectionRef.class;
+        }
+
+        @Override
+        public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context)
+        {
+            var projectionRef = (LedgerProjectionRef) source;
+
+            writeAttribute(writer, "uuid", projectionRef.getUUID()); //$NON-NLS-1$
+            writeAttribute(writer, "role", projectionRef.getRole()); //$NON-NLS-1$
+            writeObject(writer, context, "account", projectionRef.getAccount()); //$NON-NLS-1$
+            writeObject(writer, context, "portfolio", projectionRef.getPortfolio()); //$NON-NLS-1$
+
+            if (!projectionRef.getMemberships().isEmpty())
+            {
+                writer.startNode("memberships"); //$NON-NLS-1$
+                for (ProjectionMembership membership : projectionRef.getMemberships())
+                    writeObject(writer, context, "membership", membership); //$NON-NLS-1$
+                writer.endNode();
+            }
+        }
+
+        @Override
+        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context)
+        {
+            var projectionRef = new LedgerProjectionRef();
+            var uuid = reader.getAttribute("uuid"); //$NON-NLS-1$
+            var role = reader.getAttribute("role"); //$NON-NLS-1$
+
+            if (uuid != null)
+                projectionRef.setUUID(uuid);
+            if (role != null)
+                projectionRef.setRole(LedgerProjectionRole.valueOf(role));
+
+            while (reader.hasMoreChildren())
+            {
+                reader.moveDown();
+
+                switch (reader.getNodeName())
+                {
+                    case "uuid" -> projectionRef.setUUID(reader.getValue()); //$NON-NLS-1$
+                    case "role" -> projectionRef.setRole((LedgerProjectionRole) context.convertAnother(projectionRef, //$NON-NLS-1$
+                                    LedgerProjectionRole.class));
+                    case "account" -> projectionRef.setAccount((Account) context.convertAnother(projectionRef, //$NON-NLS-1$
+                                    Account.class));
+                    case "portfolio" -> projectionRef.setPortfolio((Portfolio) context.convertAnother(projectionRef, //$NON-NLS-1$
+                                    Portfolio.class));
+                    case "primaryPostingUUID" -> projectionRef.setPrimaryPostingUUID(reader.getValue()); //$NON-NLS-1$
+                    case "postingGroupUUID" -> projectionRef.setPostingGroupUUID(reader.getValue()); //$NON-NLS-1$
+                    case "memberships" -> readMemberships(reader, context, projectionRef); //$NON-NLS-1$
+                    default -> {
+                        // Ignore unknown ProjectionRef fields to preserve load recovery behavior.
+                    }
+                }
+
+                reader.moveUp();
+            }
+
+            return projectionRef;
+        }
+
+        private void readMemberships(HierarchicalStreamReader reader, UnmarshallingContext context,
+                        LedgerProjectionRef projectionRef)
+        {
+            while (reader.hasMoreChildren())
+            {
+                reader.moveDown();
+                projectionRef.addMembership((ProjectionMembership) context.convertAnother(projectionRef,
+                                ProjectionMembership.class));
+                reader.moveUp();
+            }
+        }
+
+        private void writeAttribute(HierarchicalStreamWriter writer, String name, Object value)
+        {
+            if (value == null)
+                return;
+
+            writer.addAttribute(name, String.valueOf(value));
+        }
+
+        private void writeObject(HierarchicalStreamWriter writer, MarshallingContext context, String nodeName,
+                        Object value)
+        {
+            if (value == null)
+                return;
+
+            writer.startNode(nodeName);
+            context.convertAnother(value);
+            writer.endNode();
+        }
+    }
+
+    private static class LedgerEntryConverter implements Converter
+    {
+        @Override
+        public boolean canConvert(@SuppressWarnings("rawtypes") Class type)
+        {
+            return type == LedgerEntry.class;
+        }
+
+        @Override
+        public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context)
+        {
+            var entry = (LedgerEntry) source;
+
+            writeAttribute(writer, "uuid", entry.getUUID()); //$NON-NLS-1$
+            writeAttribute(writer, "type", entry.getType()); //$NON-NLS-1$
+            writeAttribute(writer, "dateTime", entry.getDateTime()); //$NON-NLS-1$
+            writeAttribute(writer, "updatedAt", entry.getUpdatedAt()); //$NON-NLS-1$
+            writeValue(writer, "note", entry.getNote()); //$NON-NLS-1$
+            writeValue(writer, "source", entry.getSource()); //$NON-NLS-1$
+            writeParameters(writer, context, entry.getParameters());
+            writeCollection(writer, context, "postings", "ledger-posting", entry.getPostings()); //$NON-NLS-1$ //$NON-NLS-2$
+            writeCollection(writer, context, "projectionRefs", "ledger-projection-ref", //$NON-NLS-1$ //$NON-NLS-2$
+                            entry.getProjectionRefs());
+        }
+
+        @Override
+        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context)
+        {
+            var entry = new LedgerEntry();
+            var updatedAt = reader.getAttribute("updatedAt"); //$NON-NLS-1$
+
+            readAttribute(reader, "uuid").ifPresent(entry::setUUID); //$NON-NLS-1$
+            readAttribute(reader, "type").map(LedgerEntryType::valueOf).ifPresent(entry::setType); //$NON-NLS-1$
+            readAttribute(reader, "dateTime").map(LocalDateTime::parse).ifPresent(entry::setDateTime); //$NON-NLS-1$
+
+            while (reader.hasMoreChildren())
+            {
+                reader.moveDown();
+
+                switch (reader.getNodeName())
+                {
+                    case "uuid" -> entry.setUUID(reader.getValue()); //$NON-NLS-1$
+                    case "type" -> entry.setType((LedgerEntryType) context.convertAnother(entry, //$NON-NLS-1$
+                                    LedgerEntryType.class));
+                    case "dateTime" -> entry.setDateTime((LocalDateTime) context.convertAnother(entry, //$NON-NLS-1$
+                                    LocalDateTime.class));
+                    case "updatedAt" -> updatedAt = reader.getValue(); //$NON-NLS-1$
+                    case "note" -> entry.setNote(reader.getValue()); //$NON-NLS-1$
+                    case "source" -> entry.setSource(reader.getValue()); //$NON-NLS-1$
+                    case "parameters" -> readParameters(reader, context, entry); //$NON-NLS-1$
+                    case "postings" -> readPostings(reader, context, entry); //$NON-NLS-1$
+                    case "projectionRefs" -> readProjectionRefs(reader, context, entry); //$NON-NLS-1$
+                    default -> {
+                        // Ignore unknown LedgerEntry fields to preserve load recovery behavior.
+                    }
+                }
+
+                reader.moveUp();
+            }
+
+            if (updatedAt != null)
+                entry.setUpdatedAt(Instant.parse(updatedAt));
+
+            return entry;
+        }
+
+        private void readParameters(HierarchicalStreamReader reader, UnmarshallingContext context, LedgerEntry entry)
+        {
+            while (reader.hasMoreChildren())
+            {
+                reader.moveDown();
+                entry.addParameter((LedgerParameter<?>) context.convertAnother(entry, LedgerParameter.class));
+                reader.moveUp();
+            }
+        }
+
+        private void readPostings(HierarchicalStreamReader reader, UnmarshallingContext context, LedgerEntry entry)
+        {
+            while (reader.hasMoreChildren())
+            {
+                reader.moveDown();
+                entry.addPosting((LedgerPosting) context.convertAnother(entry, LedgerPosting.class));
+                reader.moveUp();
+            }
+        }
+
+        private void readProjectionRefs(HierarchicalStreamReader reader, UnmarshallingContext context,
+                        LedgerEntry entry)
+        {
+            while (reader.hasMoreChildren())
+            {
+                reader.moveDown();
+                entry.addProjectionRef((LedgerProjectionRef) context.convertAnother(entry, LedgerProjectionRef.class));
+                reader.moveUp();
+            }
+        }
+    }
+
+    private static class LedgerPostingConverter implements Converter
+    {
+        @Override
+        public boolean canConvert(@SuppressWarnings("rawtypes") Class type)
+        {
+            return type == LedgerPosting.class;
+        }
+
+        @Override
+        public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context)
+        {
+            var posting = (LedgerPosting) source;
+
+            writeAttribute(writer, "uuid", posting.getUUID()); //$NON-NLS-1$
+            writeAttribute(writer, "type", posting.getType()); //$NON-NLS-1$
+            writeAttribute(writer, "amount", posting.getAmount()); //$NON-NLS-1$
+            writeAttribute(writer, "currency", posting.getCurrency()); //$NON-NLS-1$
+            writeAttribute(writer, "forexAmount", posting.getForexAmount()); //$NON-NLS-1$
+            writeAttribute(writer, "forexCurrency", posting.getForexCurrency()); //$NON-NLS-1$
+            writeAttribute(writer, "exchangeRate", posting.getExchangeRate()); //$NON-NLS-1$
+            writeAttribute(writer, "shares", posting.getShares()); //$NON-NLS-1$
+            writeObject(writer, context, "security", posting.getSecurity()); //$NON-NLS-1$
+            writeObject(writer, context, "account", posting.getAccount()); //$NON-NLS-1$
+            writeObject(writer, context, "portfolio", posting.getPortfolio()); //$NON-NLS-1$
+            writeParameters(writer, context, posting.getParameters());
+        }
+
+        @Override
+        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context)
+        {
+            var posting = new LedgerPosting();
+
+            readAttribute(reader, "uuid").ifPresent(posting::setUUID); //$NON-NLS-1$
+            readAttribute(reader, "type").map(LedgerPostingType::valueOf).ifPresent(posting::setType); //$NON-NLS-1$
+            readAttribute(reader, "amount").map(Long::parseLong).ifPresent(posting::setAmount); //$NON-NLS-1$
+            readAttribute(reader, "currency").ifPresent(posting::setCurrency); //$NON-NLS-1$
+            readAttribute(reader, "forexAmount").map(Long::valueOf).ifPresent(posting::setForexAmount); //$NON-NLS-1$
+            readAttribute(reader, "forexCurrency").ifPresent(posting::setForexCurrency); //$NON-NLS-1$
+            readAttribute(reader, "exchangeRate").map(BigDecimal::new).ifPresent(posting::setExchangeRate); //$NON-NLS-1$
+            readAttribute(reader, "shares").map(Long::parseLong).ifPresent(posting::setShares); //$NON-NLS-1$
+
+            while (reader.hasMoreChildren())
+            {
+                reader.moveDown();
+
+                switch (reader.getNodeName())
+                {
+                    case "uuid" -> posting.setUUID(reader.getValue()); //$NON-NLS-1$
+                    case "type" -> posting.setType((LedgerPostingType) context.convertAnother(posting, //$NON-NLS-1$
+                                    LedgerPostingType.class));
+                    case "amount" -> posting.setAmount(Long.parseLong(reader.getValue())); //$NON-NLS-1$
+                    case "currency" -> posting.setCurrency(reader.getValue()); //$NON-NLS-1$
+                    case "forexAmount" -> posting.setForexAmount(Long.valueOf(reader.getValue())); //$NON-NLS-1$
+                    case "forexCurrency" -> posting.setForexCurrency(reader.getValue()); //$NON-NLS-1$
+                    case "exchangeRate" -> posting.setExchangeRate(new BigDecimal(reader.getValue())); //$NON-NLS-1$
+                    case "security" -> posting.setSecurity((Security) context.convertAnother(posting, //$NON-NLS-1$
+                                    Security.class));
+                    case "shares" -> posting.setShares(Long.parseLong(reader.getValue())); //$NON-NLS-1$
+                    case "account" -> posting.setAccount((Account) context.convertAnother(posting, Account.class)); //$NON-NLS-1$
+                    case "portfolio" -> posting.setPortfolio((Portfolio) context.convertAnother(posting, //$NON-NLS-1$
+                                    Portfolio.class));
+                    case "parameters" -> readParameters(reader, context, posting); //$NON-NLS-1$
+                    default -> {
+                        // Ignore unknown LedgerPosting fields to preserve load recovery behavior.
+                    }
+                }
+
+                reader.moveUp();
+            }
+
+            return posting;
+        }
+
+        private void readParameters(HierarchicalStreamReader reader, UnmarshallingContext context,
+                        LedgerPosting posting)
+        {
+            while (reader.hasMoreChildren())
+            {
+                reader.moveDown();
+                posting.addParameter((LedgerParameter<?>) context.convertAnother(posting, LedgerParameter.class));
+                reader.moveUp();
+            }
+        }
+    }
+
+    private static class LedgerParameterConverter implements Converter
+    {
+        @Override
+        public boolean canConvert(@SuppressWarnings("rawtypes") Class type)
+        {
+            return type == LedgerParameter.class;
+        }
+
+        @Override
+        public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context)
+        {
+            var parameter = (LedgerParameter<?>) source;
+
+            writer.addAttribute("type", parameter.getType().getCode()); //$NON-NLS-1$
+            writer.addAttribute("valueKind", parameter.getValueKind().name()); //$NON-NLS-1$
+
+            switch (parameter.getValueKind())
+            {
+                case STRING, DECIMAL, LONG, BOOLEAN, LOCAL_DATE, LOCAL_DATE_TIME:
+                    writer.addAttribute("value", String.valueOf(parameter.getValue())); //$NON-NLS-1$
+                    break;
+                case MONEY:
+                    var money = (Money) parameter.getValue();
+                    writer.addAttribute("amount", String.valueOf(money.getAmount())); //$NON-NLS-1$
+                    writer.addAttribute("currency", money.getCurrencyCode()); //$NON-NLS-1$
+                    break;
+                case SECURITY, ACCOUNT, PORTFOLIO:
+                    writer.startNode("value"); //$NON-NLS-1$
+                    context.convertAnother(parameter.getValue());
+                    writer.endNode();
+                    break;
+                default:
+                    throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_PERSIST_003
+                                    .message(MessageFormat.format(Messages.LedgerParameterUnsupportedValueKind,
+                                                    parameter.getValueKind())));
+            }
+        }
+
+        @Override
+        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context)
+        {
+            LedgerParameterType type = typeOrNull(reader.getAttribute("type")); //$NON-NLS-1$
+            ValueKind valueKind = valueKindOrNull(reader.getAttribute("valueKind")); //$NON-NLS-1$
+            var scalarValue = reader.getAttribute("value"); //$NON-NLS-1$
+            var amount = reader.getAttribute("amount"); //$NON-NLS-1$
+            var currency = reader.getAttribute("currency"); //$NON-NLS-1$
+            Object parameterValue = null;
+
+            while (reader.hasMoreChildren())
+            {
+                reader.moveDown();
+
+                switch (reader.getNodeName())
+                {
+                    case "type" -> type = typeOrNull(reader.getValue()); //$NON-NLS-1$
+                    case "valueKind" -> valueKind = valueKindOrNull(reader.getValue()); //$NON-NLS-1$
+                    case "value" -> parameterValue = readValue(reader, context, valueKind); //$NON-NLS-1$
+                    default -> {
+                        // Ignore unknown LedgerParameter fields to keep XML load recovery tolerant.
+                    }
+                }
+
+                reader.moveUp();
+            }
+
+            if (type == null)
+                throw new IllegalArgumentException(
+                                LedgerDiagnosticCode.LEDGER_PERSIST_004.message(Messages.LedgerParameterMissingType));
+
+            if (valueKind == null)
+                throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_PERSIST_005
+                                .message(Messages.LedgerParameterMissingValueKind));
+
+            if (parameterValue == null)
+                parameterValue = readValue(scalarValue, amount, currency, valueKind);
+
+            return newParameter(type, valueKind, parameterValue);
+        }
+
+        private LedgerParameterType typeOrNull(String value)
+        {
+            if (Strings.isNullOrEmpty(value))
+                return null;
+
+            return LedgerParameterType.fromCode(value);
+        }
+
+        private ValueKind valueKindOrNull(String value)
+        {
+            if (Strings.isNullOrEmpty(value))
+                return null;
+
+            return ValueKind.valueOf(value);
+        }
+
+        private Object readValue(HierarchicalStreamReader reader, UnmarshallingContext context, ValueKind valueKind)
+        {
+            return switch (valueKind)
+            {
+                case STRING, DECIMAL, LONG, BOOLEAN, LOCAL_DATE, LOCAL_DATE_TIME -> readValue(reader.getValue(),
+                                valueKind);
+                case MONEY -> context.convertAnother(null, Money.class);
+                case SECURITY -> context.convertAnother(null, Security.class);
+                case ACCOUNT -> context.convertAnother(null, Account.class);
+                case PORTFOLIO -> context.convertAnother(null, Portfolio.class);
+            };
+        }
+
+        private Object readValue(String value, String amount, String currency, ValueKind valueKind)
+        {
+            return switch (valueKind)
+            {
+                case STRING, DECIMAL, LONG, BOOLEAN, LOCAL_DATE, LOCAL_DATE_TIME -> readValue(require(value, "value"), //$NON-NLS-1$
+                                valueKind);
+                case MONEY -> Money.of(require(currency, "currency"), Long.parseLong(require(amount, "amount"))); //$NON-NLS-1$ //$NON-NLS-2$
+                case SECURITY, ACCOUNT, PORTFOLIO -> throw new IllegalArgumentException(
+                                LedgerDiagnosticCode.LEDGER_PERSIST_006
+                                                .message(Messages.LedgerParameterReferenceValueMissingValueNode));
+            };
+        }
+
+        private Object readValue(String value, ValueKind valueKind)
+        {
+            return switch (valueKind)
+            {
+                case STRING -> value;
+                case DECIMAL -> new BigDecimal(value);
+                case LONG -> Long.valueOf(value);
+                case BOOLEAN -> Boolean.valueOf(value);
+                case LOCAL_DATE -> LocalDate.parse(value);
+                case LOCAL_DATE_TIME -> localDateTime(value);
+                case MONEY, SECURITY, ACCOUNT, PORTFOLIO -> throw new IllegalArgumentException(
+                                LedgerDiagnosticCode.LEDGER_PERSIST_007
+                                                .message(MessageFormat.format(
+                                                                Messages.LedgerParameterValueKindRequiresStructuredValue,
+                                                                valueKind)));
+            };
+        }
+
+        private LocalDateTime localDateTime(String value)
+        {
+            try
+            {
+                return LocalDateTime.parse(value);
+            }
+            catch (RuntimeException e)
+            {
+                return LocalDate.parse(value).atStartOfDay();
+            }
+        }
+
+        private String require(String value, String name)
+        {
+            if (value == null)
+                throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_PERSIST_008
+                                .message(MessageFormat.format(Messages.LedgerParameterMissingAttribute, name)));
+
+            return value;
+        }
+
+        private LedgerParameter<?> newParameter(LedgerParameterType type, ValueKind valueKind, Object value)
+        {
+            try
+            {
+                var constructor = LedgerParameter.class.getDeclaredConstructor(LedgerParameterType.class,
+                                ValueKind.class, Object.class);
+                constructor.setAccessible(true);
+                return constructor.newInstance(type, valueKind, value);
+            }
+            catch (ReflectiveOperationException e)
+            {
+                throw new IllegalStateException(e);
+            }
+        }
+    }
+
     /* package */ static class XmlSerialization
     {
         private boolean idReferences;
@@ -146,6 +680,7 @@ public class ClientFactory
                                     client.getVersion()));
 
                 upgradeModel(client);
+                initializeLedgerXmlState(client);
 
                 return client;
             }
@@ -158,10 +693,211 @@ public class ClientFactory
         void save(Client client, OutputStream output) throws IOException
         {
             Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+            var saveState = new LedgerXmlSaveState();
 
-            makeXStream(false).toXML(client, writer);
+            try
+            {
+                prepareLedgerXmlSave(client, saveState);
+                makeXStream(false).toXML(client, writer);
+                writer.flush();
+            }
+            finally
+            {
+                saveState.restore();
+            }
+        }
 
-            writer.flush();
+        private void initializeLedgerXmlState(Client client) throws IOException
+        {
+            if (client.getLedger().getEntries().isEmpty())
+            {
+                new LegacyTransactionToLedgerMigrator().migrate(client);
+                convertPlanTransactionsToLedgerRefs(client);
+                return;
+            }
+
+            LedgerProjectionService.adaptLegacyScalarMemberships(client);
+            removeLegacyProjectionShadows(client);
+            LedgerProjectionService.restoreIfValid(client);
+        }
+
+        private void prepareLedgerXmlSave(Client client, LedgerXmlSaveState saveState) throws IOException
+        {
+            validateLedger(client);
+
+            for (var account : client.getAccounts())
+                saveState.removeLedgerBackedTransactions(account.getTransactions());
+
+            for (var portfolio : client.getPortfolios())
+                saveState.removeLedgerBackedTransactions(portfolio.getTransactions());
+
+            for (var plan : client.getPlans())
+                saveState.replaceLedgerBackedPlanTransactions(plan);
+        }
+
+        private LedgerStructuralValidator.ValidationResult validateLedger(Client client) throws IOException
+        {
+            var result = LedgerStructuralValidator.validate(client.getLedger());
+
+            if (!result.isOK())
+            {
+                LedgerProjectionService.logSkipped(client.getLedger(), result);
+                throw new IOException(LedgerDiagnosticCode.LEDGER_PERSIST_001
+                                .message(MessageFormat.format(Messages.LedgerXmlInvalidLedgerStructure,
+                                                LedgerDiagnosticMessageFormatter.formatValidationResult(
+                                                                client.getLedger(), result))));
+            }
+
+            return result;
+        }
+
+        private void removeLegacyProjectionShadows(Client client)
+        {
+            convertPlanTransactionsToLedgerRefs(client);
+
+            var projectionUUIDs = ledgerProjectionUUIDs(client);
+
+            for (var account : client.getAccounts())
+                account.getTransactions().removeIf(transaction -> !(transaction instanceof LedgerBackedTransaction)
+                                && projectionUUIDs.contains(transaction.getUUID()));
+
+            for (var portfolio : client.getPortfolios())
+                portfolio.getTransactions().removeIf(transaction -> !(transaction instanceof LedgerBackedTransaction)
+                                && projectionUUIDs.contains(transaction.getUUID()));
+        }
+
+        private void convertPlanTransactionsToLedgerRefs(Client client)
+        {
+            var projectionUUIDs = ledgerProjectionUUIDs(client);
+
+            for (var plan : client.getPlans())
+            {
+                for (var transaction : List.copyOf(plan.getTransactions()))
+                {
+                    if (!projectionUUIDs.contains(transaction.getUUID()))
+                        continue;
+
+                    ledgerExecutionRef(client, transaction.getUUID()).ifPresent(ref -> {
+                        if (plan.getLedgerExecutionRefs().stream().noneMatch(existing -> sameExecutionRef(existing, ref)))
+                            plan.addLedgerExecutionRef(ref);
+                    });
+                    plan.getTransactions().remove(transaction);
+                }
+            }
+        }
+
+        private Set<String> ledgerProjectionUUIDs(Client client)
+        {
+            return client.getLedger().getEntries().stream() //
+                            .flatMap(entry -> entry.getProjectionRefs().stream()) //
+                            .map(LedgerProjectionRef::getUUID) //
+                            .collect(Collectors.toSet());
+        }
+
+        private Optional<LedgerExecutionRef> ledgerExecutionRef(Client client, String projectionUUID)
+        {
+            for (var entry : client.getLedger().getEntries())
+            {
+                for (var projection : entry.getProjectionRefs())
+                {
+                    if (projectionUUID.equals(projection.getUUID()))
+                        return Optional.of(new LedgerExecutionRef(entry.getUUID(), projection.getUUID(),
+                                        projection.getRole()));
+                }
+            }
+
+            return Optional.empty();
+        }
+
+        private boolean sameExecutionRef(LedgerExecutionRef left, LedgerExecutionRef right)
+        {
+            return Objects.equals(left.getLedgerEntryUUID(), right.getLedgerEntryUUID())
+                            && Objects.equals(left.getProjectionUUID(), right.getProjectionUUID())
+                            && left.getProjectionRole() == right.getProjectionRole();
+        }
+    }
+
+    private static final class LedgerXmlSaveState
+    {
+        private final List<RemovedListElement> removedElements = new ArrayList<>();
+        private final List<PlanRefsSnapshot> planRefsSnapshots = new ArrayList<>();
+
+        private void removeLedgerBackedTransactions(List<? extends Transaction> transactions)
+        {
+            for (var index = transactions.size() - 1; index >= 0; index--)
+            {
+                var transaction = transactions.get(index);
+
+                if (transaction instanceof LedgerBackedTransaction)
+                    remove(transactions, index);
+            }
+        }
+
+        private void replaceLedgerBackedPlanTransactions(InvestmentPlan plan)
+        {
+            var previousRefs = List.copyOf(plan.getLedgerExecutionRefs());
+            var snapshot = new PlanRefsSnapshot(plan, previousRefs);
+            var snapshotAdded = false;
+
+            for (var index = plan.getTransactions().size() - 1; index >= 0; index--)
+            {
+                var transaction = plan.getTransactions().get(index);
+
+                if (transaction instanceof LedgerBackedTransaction ledgerBackedTransaction)
+                {
+                    if (!snapshotAdded)
+                    {
+                        planRefsSnapshots.add(snapshot);
+                        snapshotAdded = true;
+                    }
+
+                    remove(plan.getTransactions(), index);
+
+                    var ref = LedgerExecutionRef.of(ledgerBackedTransaction);
+                    if (plan.getLedgerExecutionRefs().stream().noneMatch(existing -> sameExecutionRef(existing, ref)))
+                        plan.addLedgerExecutionRef(ref);
+                }
+            }
+        }
+
+        @SuppressWarnings("rawtypes")
+        private void remove(List list, int index)
+        {
+            removedElements.add(new RemovedListElement(list, index, list.remove(index)));
+        }
+
+        private boolean sameExecutionRef(LedgerExecutionRef left, LedgerExecutionRef right)
+        {
+            return Objects.equals(left.getLedgerEntryUUID(), right.getLedgerEntryUUID())
+                            && Objects.equals(left.getProjectionUUID(), right.getProjectionUUID())
+                            && left.getProjectionRole() == right.getProjectionRole();
+        }
+
+        private void restore()
+        {
+            for (var index = removedElements.size() - 1; index >= 0; index--)
+                removedElements.get(index).restore();
+
+            for (var snapshot : planRefsSnapshots)
+                snapshot.restore();
+        }
+    }
+
+    private record RemovedListElement(@SuppressWarnings("rawtypes") List list, int index, Object element)
+    {
+        @SuppressWarnings("unchecked")
+        private void restore()
+        {
+            list.add(index, element);
+        }
+    }
+
+    private record PlanRefsSnapshot(InvestmentPlan plan, List<LedgerExecutionRef> refs)
+    {
+        private void restore()
+        {
+            plan.getLedgerExecutionRefs().clear();
+            plan.getLedgerExecutionRefs().addAll(refs);
         }
     }
 
@@ -702,46 +1438,73 @@ public class ClientFactory
     {
         PortfolioLog.info(String.format("Saving %s with %s", file.getName(), flags.toString())); //$NON-NLS-1$
 
+        var target = file.toPath();
+        var directory = target.toAbsolutePath().getParent();
+        var tempFile = Files.createTempFile(directory, "portfolio-save-", ".tmp"); //$NON-NLS-1$ //$NON-NLS-2$
+        var moved = false;
+
         // open an output stream for the file using a 64 KB buffer to speed up
         // writing
-        try (FileOutputStream stream = new FileOutputStream(file);
-                        BufferedOutputStream output = new BufferedOutputStream(stream, 65536))
+        try
         {
-            // lock file while writing (apparently network-attache storage is
-            // garbling up the files if it already starts syncing while the file
-            // is still being written)
-            FileChannel channel = stream.getChannel();
-            FileLock lock = null;
-
-            try
+            try (FileOutputStream stream = new FileOutputStream(tempFile.toFile());
+                            BufferedOutputStream output = new BufferedOutputStream(stream, 65536))
             {
-                // On OS X fcntl does not support locking files on AFP or SMB
-                // https://bugs.openjdk.org/browse/JDK-8167023
-                if (!Platform.getOS().equals(Platform.OS_MACOSX))
-                    lock = channel.tryLock();
+                // lock file while writing (apparently network-attache storage is
+                // garbling up the files if it already starts syncing while the file
+                // is still being written)
+                FileChannel channel = stream.getChannel();
+                FileLock lock = null;
+
+                try
+                {
+                    // On OS X fcntl does not support locking files on AFP or SMB
+                    // https://bugs.openjdk.org/browse/JDK-8167023
+                    if (!Platform.OS_MACOSX.equals(Platform.getOS()))
+                        lock = channel.tryLock();
+                }
+                catch (IOException e)
+                {
+                    // also on some other platforms (for example reported for Linux
+                    // Mint, locks are not supported on SMB shares)
+
+                    PortfolioLog.warning(MessageFormat.format("Failed to acquire lock {0} with message {1}", //$NON-NLS-1$
+                                    tempFile.toAbsolutePath(), e.getMessage()));
+                }
+
+                ClientPersister persister = buildPersister(flags, password);
+                persister.save(client, output);
+
+                output.flush();
+
+                if (lock != null && lock.isValid())
+                    lock.release();
             }
-            catch (IOException e)
-            {
-                // also on some other platforms (for example reported for Linux
-                // Mint, locks are not supported on SMB shares)
 
-                PortfolioLog.warning(MessageFormat.format("Failed to acquire lock {0} with message {1}", //$NON-NLS-1$
-                                file.getAbsolutePath(), e.getMessage()));
-            }
-
-            ClientPersister persister = buildPersister(flags, password);
-            persister.save(client, output);
-
-            output.flush();
-
-            if (lock != null && lock.isValid())
-                lock.release();
-
+            moveSavedFile(tempFile, target);
+            moved = true;
             if (updateFlags)
             {
                 client.getSaveFlags().clear();
                 client.getSaveFlags().addAll(flags);
             }
+        }
+        finally
+        {
+            if (!moved)
+                Files.deleteIfExists(tempFile);
+        }
+    }
+
+    private static void moveSavedFile(Path tempFile, Path target) throws IOException
+    {
+        try
+        {
+            Files.move(tempFile, target, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+        }
+        catch (AtomicMoveNotSupportedException e)
+        {
+            Files.move(tempFile, target, StandardCopyOption.REPLACE_EXISTING);
         }
     }
 
@@ -947,6 +1710,9 @@ public class ClientFactory
                 removeSourceAttributeFromTaxonomy(client);
             case 68: // NOSONAR
                 // added exDate date field
+            case 69: // NOSONAR
+                // enable PP Ledger - projections derived from
+                // ledger data for AccountTransaction / PortfolioTransaction
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -1859,6 +2625,7 @@ public class ClientFactory
         var xstream = new XStream();
 
         xstream.allowTypesByWildcard(new String[] { "name.abuchen.portfolio.model.**" });
+        xstream.allowTypes(new Class[] { Money.class });
 
         xstream.setClassLoader(ClientFactory.class.getClassLoader());
 
@@ -1874,6 +2641,10 @@ public class ClientFactory
         xstream.registerConverter(new XStreamSecurityPriceConverter());
         xstream.registerConverter(
                         new PortfolioTransactionConverter(xstream.getMapper(), xstream.getReflectionProvider()));
+        xstream.registerConverter(new LedgerEntryConverter());
+        xstream.registerConverter(new LedgerPostingConverter());
+        xstream.registerConverter(new LedgerProjectionRefConverter());
+        xstream.registerConverter(new LedgerParameterConverter());
 
         xstream.registerConverter(new MapConverter(xstream.getMapper(), TypedMap.class));
         xstream.registerConverter(new XStreamArrayListConverter(xstream.getMapper()));
@@ -1891,12 +2662,41 @@ public class ClientFactory
         xstream.useAttributeFor(Transaction.Unit.class, "type");
         xstream.alias("account-transaction", AccountTransaction.class);
         xstream.alias("portfolio-transaction", PortfolioTransaction.class);
+        xstream.alias("ledger", Ledger.class);
+        xstream.alias("ledger-entry", LedgerEntry.class);
+        xstream.useAttributeFor(LedgerEntry.class, "uuid");
+        xstream.useAttributeFor(LedgerEntry.class, "type");
+        xstream.useAttributeFor(LedgerEntry.class, "dateTime");
+        xstream.useAttributeFor(LedgerEntry.class, "updatedAt");
+        xstream.alias("ledger-posting", LedgerPosting.class);
+        xstream.useAttributeFor(LedgerPosting.class, "uuid");
+        xstream.useAttributeFor(LedgerPosting.class, "type");
+        xstream.useAttributeFor(LedgerPosting.class, "amount");
+        xstream.useAttributeFor(LedgerPosting.class, "currency");
+        xstream.useAttributeFor(LedgerPosting.class, "forexAmount");
+        xstream.useAttributeFor(LedgerPosting.class, "forexCurrency");
+        xstream.useAttributeFor(LedgerPosting.class, "exchangeRate");
+        xstream.useAttributeFor(LedgerPosting.class, "shares");
+        xstream.alias("ledger-posting-parameter", LedgerParameter.class);
+        xstream.alias("ledger-posting-parameter-type", LedgerParameterType.class);
+        xstream.alias("ledger-projection-ref", LedgerProjectionRef.class);
+        xstream.alias("projection-membership", ProjectionMembership.class);
+        xstream.alias("membership", ProjectionMembership.class);
+        xstream.useAttributeFor(ProjectionMembership.class, "postingUUID");
+        xstream.useAttributeFor(ProjectionMembership.class, "role");
+        xstream.alias("projection-membership-role", ProjectionMembershipRole.class);
+        xstream.alias("ledger-parameter", LedgerParameter.class);
+        xstream.alias("ledger-parameter-type", LedgerParameterType.class);
+        xstream.alias("ledger-entry-type", LedgerEntryType.class);
+        xstream.alias("ledger-posting-type", LedgerPostingType.class);
+        xstream.alias("ledger-projection-role", LedgerProjectionRole.class);
         xstream.alias("security", Security.class);
         xstream.addImplicitCollection(Security.class, "properties");
         xstream.alias("latest", LatestSecurityPrice.class);
         xstream.alias("category", Category.class); // NOSONAR
         xstream.alias("watchlist", Watchlist.class);
         xstream.alias("investment-plan", InvestmentPlan.class);
+        xstream.alias("ledger-execution-ref", LedgerExecutionRef.class);
         xstream.alias("attribute-type", AttributeType.class);
 
         xstream.alias("price", SecurityPrice.class);

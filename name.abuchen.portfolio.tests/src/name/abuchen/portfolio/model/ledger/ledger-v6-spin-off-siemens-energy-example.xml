@@ -1,0 +1,676 @@
+<client>
+  <version>69</version>
+  <baseCurrency>EUR</baseCurrency>
+  <securities>
+    <security>
+      <uuid>10000000-0000-0000-0000-000000000003</uuid>
+      <name>Siemens AG</name>
+      <currencyCode>EUR</currencyCode>
+      <isin>DE0007236101</isin>
+      <tickerSymbol>SIE.DE</tickerSymbol>
+      <prices/>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <isRetired>false</isRetired>
+      <updatedAt>2026-06-15T08:00:00Z</updatedAt>
+    </security>
+    <security>
+      <uuid>10000000-0000-0000-0000-000000000004</uuid>
+      <name>Siemens Energy AG</name>
+      <currencyCode>EUR</currencyCode>
+      <isin>DE000ENER6Y0</isin>
+      <tickerSymbol>ENR.DE</tickerSymbol>
+      <prices/>
+      <attributes>
+        <map/>
+      </attributes>
+      <isRetired>false</isRetired>
+      <updatedAt>2026-06-15T08:00:00Z</updatedAt>
+    </security>
+  </securities>
+  <watchlists/>
+  <accounts>
+    <account>
+      <uuid>10000000-0000-0000-0000-000000000001</uuid>
+      <name>Spin-off cash account</name>
+      <currencyCode>EUR</currencyCode>
+      <isRetired>false</isRetired>
+      <transactions/>
+      <attributes>
+        <map/>
+      </attributes>
+      <updatedAt>2026-06-15T08:00:00Z</updatedAt>
+    </account>
+  </accounts>
+  <portfolios>
+    <portfolio>
+      <uuid>10000000-0000-0000-0000-000000000002</uuid>
+      <name>Corporate action proof portfolio</name>
+      <isRetired>false</isRetired>
+      <referenceAccount reference="../../../accounts/account"/>
+      <transactions/>
+      <attributes>
+        <map/>
+      </attributes>
+      <updatedAt>2026-06-15T10:40:41.103476400Z</updatedAt>
+    </portfolio>
+  </portfolios>
+  <plans/>
+  <taxonomies/>
+  <dashboards/>
+  <properties/>
+  <settings>
+    <bookmarks>
+      <bookmark>
+        <label>finance.yahoo.com</label>
+        <pattern>https://finance.yahoo.com/quote/{tickerSymbol}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>onvista.de</label>
+        <pattern>https://www.onvista.de/suche.html?SEARCH_VALUE={isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>finanzen.net</label>
+        <pattern>https://www.finanzen.net/suchergebnis.asp?frmAktiensucheTextfeld={isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>ariva.de</label>
+        <pattern>https://www.ariva.de/{isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>justetf.com  (ETF)</label>
+        <pattern>https://www.justetf.com/etf-profile.html?isin={isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>fondsweb.com</label>
+        <pattern>https://www.fondsweb.com/{isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>morningstar.de</label>
+        <pattern>https://www.morningstar.de/de/funds/SecuritySearchResults.aspx?type=ALL&amp;search={isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>extraETF.com (ETF)</label>
+        <pattern>https://extraetf.com/etf-profile/{isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>alleaktien.de (Aktie)</label>
+        <pattern>https://www.alleaktien.de/data/{isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>comdirect.de (Aktie)</label>
+        <pattern>https://www.comdirect.de/inf/aktien/{isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>comdirect.de (ETF)</label>
+        <pattern>https://www.comdirect.de/inf/etfs/{isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>divvydiary.com</label>
+        <pattern>https://divvydiary.com/symbols/{isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>trackingdifferences.com (ETF)</label>
+        <pattern>https://www.trackingdifferences.com/ETF/ISIN/{isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>tradingview.com</label>
+        <pattern>https://www.tradingview.com/chart/?symbol=XETR:{tickerSymbolPrefix}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>cnbc.com (Aktie)</label>
+        <pattern>https://www.cnbc.com/quotes/{tickerSymbolPrefix}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>nasdaq.com (Aktie)</label>
+        <pattern>https://www.nasdaq.com/market-activity/stocks/{tickerSymbolPrefix}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>aktienfinder.net (Aktie)</label>
+        <pattern>https://aktienfinder.net/aktien-profil/{isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>aktien.guide (Aktie)</label>
+        <pattern>http://aktien.guide/isin/aktien/{isin}</pattern>
+      </bookmark>
+    </bookmarks>
+    <attributeTypes>
+      <attribute-type>
+        <id>logo</id>
+        <name>Logo</name>
+        <columnLabel>Logo</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.String</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$ImageConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>logo</id>
+        <name>Logo</name>
+        <columnLabel>Logo</columnLabel>
+        <target>name.abuchen.portfolio.model.Account</target>
+        <type>java.lang.String</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$ImageConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>logo</id>
+        <name>Logo</name>
+        <columnLabel>Logo</columnLabel>
+        <target>name.abuchen.portfolio.model.Portfolio</target>
+        <type>java.lang.String</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$ImageConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>logo</id>
+        <name>Logo</name>
+        <columnLabel>Logo</columnLabel>
+        <target>name.abuchen.portfolio.model.InvestmentPlan</target>
+        <type>java.lang.String</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$ImageConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>ter</id>
+        <name>Gesamtkostenquote (TER)</name>
+        <columnLabel>TER</columnLabel>
+        <source>ter</source>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.Double</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$PercentConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>aum</id>
+        <name>Fondsgröße</name>
+        <columnLabel>Fondsgröße</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.Long</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$AmountPlainConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>vendor</id>
+        <name>Anbieter</name>
+        <columnLabel>Anbieter</columnLabel>
+        <source>vendor</source>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.String</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$StringConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>acquisitionFee</id>
+        <name>Kaufgebühr (prozentual)</name>
+        <columnLabel>Kaufgebühr</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.Double</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$PercentConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>managementFee</id>
+        <name>Verwaltungsgebühr (prozentual)</name>
+        <columnLabel>Verwaltungsgebühr</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.Double</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$PercentConverter</converterClass>
+      </attribute-type>
+    </attributeTypes>
+    <configurationSets>
+      <entry>
+        <string>name.abuchen.portfolio.ui.views.SecuritiesTable</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>467280c9-78a9-4302-9c9b-4d8750311a5f</uuid>
+              <name>Standard</name>
+              <data>{&quot;items&quot;:[{&quot;id&quot;:&quot;0&quot;,&quot;sortDirection&quot;:128,&quot;width&quot;:400},{&quot;id&quot;:&quot;note&quot;,&quot;width&quot;:200},{&quot;id&quot;:&quot;1&quot;,&quot;width&quot;:100},{&quot;id&quot;:&quot;2&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;7&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;4&quot;,&quot;width&quot;:60},{&quot;id&quot;:&quot;5&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;changeonpreviousamount&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;9&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;10&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;q-date-first-historic&quot;,&quot;width&quot;:80}]}</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+      <entry>
+        <string>name.abuchen.portfolio.ui.views.StatementOfAssetsViewer</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>d4542f7f-aa2f-4a29-be5d-f71786b2c021</uuid>
+              <name>Standard</name>
+              <data>{&quot;items&quot;:[{&quot;id&quot;:&quot;0&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;1&quot;,&quot;width&quot;:300},{&quot;id&quot;:&quot;2&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;4&quot;,&quot;width&quot;:60},{&quot;id&quot;:&quot;5&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;6&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;note&quot;,&quot;width&quot;:200}]}</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+      <entry>
+        <string>reporting-periods</string>
+        <config-set>
+          <configurations/>
+        </config-set>
+      </entry>
+      <entry>
+        <string>client-filter-definitions</string>
+        <config-set>
+          <configurations/>
+        </config-set>
+      </entry>
+      <entry>
+        <string>client-filter-selection</string>
+        <config-set>
+          <configurations/>
+        </config-set>
+      </entry>
+    </configurationSets>
+  </settings>
+  <ledger>
+    <entries>
+      <ledger-entry>
+        <uuid>20000000-0000-0000-0000-000000000001</uuid>
+        <type>SPIN_OFF</type>
+        <dateTime>2020-09-28T00:00</dateTime>
+        <note>Siemens Energy spin-off proof</note>
+        <source>Ledger-V6 Slice 13 proof</source>
+        <updatedAt>2026-06-15T08:00:00Z</updatedAt>
+        <parameters>
+          <ledger-parameter>
+            <type>CORPORATE_ACTION_KIND</type>
+            <valueKind>STRING</valueKind>
+            <value class="string">SPIN_OFF</value>
+          </ledger-parameter>
+          <ledger-parameter>
+            <type>CORPORATE_ACTION_SUBTYPE</type>
+            <valueKind>STRING</valueKind>
+            <value class="string">STANDARD</value>
+          </ledger-parameter>
+          <ledger-parameter>
+            <type>EVENT_REFERENCE</type>
+            <valueKind>STRING</valueKind>
+            <value class="string">Siemens Energy allocation</value>
+          </ledger-parameter>
+          <ledger-parameter>
+            <type>EVENT_STAGE</type>
+            <valueKind>STRING</valueKind>
+            <value class="string">SETTLED</value>
+          </ledger-parameter>
+          <ledger-parameter>
+            <type>EFFECTIVE_DATE</type>
+            <valueKind>LOCAL_DATE</valueKind>
+            <value class="local-date">2020-09-28</value>
+          </ledger-parameter>
+          <ledger-parameter>
+            <type>RECORD_DATE</type>
+            <valueKind>LOCAL_DATE</valueKind>
+            <value class="local-date">2020-09-25</value>
+          </ledger-parameter>
+          <ledger-parameter>
+            <type>PAYMENT_DATE</type>
+            <valueKind>LOCAL_DATE</valueKind>
+            <value class="local-date">2020-09-28</value>
+          </ledger-parameter>
+          <ledger-parameter>
+            <type>SETTLEMENT_DATE</type>
+            <valueKind>LOCAL_DATE</valueKind>
+            <value class="local-date">2020-09-28</value>
+          </ledger-parameter>
+        </parameters>
+        <postings>
+          <ledger-posting>
+            <uuid>20000000-0000-0000-0000-000000000002</uuid>
+            <type>SECURITY</type>
+            <amount>109960</amount>
+            <currency>EUR</currency>
+            <security reference="../../../../../../securities/security"/>
+            <shares>1000000000</shares>
+            <portfolio reference="../../../../../../portfolios/portfolio"/>
+            <parameters>
+              <ledger-parameter>
+                <type>CORPORATE_ACTION_LEG</type>
+                <valueKind>STRING</valueKind>
+                <value class="string">SOURCE_SECURITY</value>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>SOURCE_SECURITY</type>
+                <valueKind>SECURITY</valueKind>
+                <value class="security" reference="../../../../../../../../securities/security"/>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>TARGET_SECURITY</type>
+                <valueKind>SECURITY</valueKind>
+                <value class="security" reference="../../../../../../../../securities/security[2]"/>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>RATIO_NUMERATOR</type>
+                <valueKind>DECIMAL</valueKind>
+                <value class="big-decimal">1</value>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>RATIO_DENOMINATOR</type>
+                <valueKind>DECIMAL</valueKind>
+                <value class="big-decimal">2</value>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>COST_ALLOCATION_METHOD</type>
+                <valueKind>STRING</valueKind>
+                <value class="string">FMV_RATIO</value>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>SOURCE_COST_PERCENT</type>
+                <valueKind>DECIMAL</valueKind>
+                <value class="big-decimal">91</value>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>AFFECTED_SOURCE_QUANTITY</type>
+                <valueKind>DECIMAL</valueKind>
+                <value class="big-decimal">10</value>
+              </ledger-parameter>
+            </parameters>
+          </ledger-posting>
+          <ledger-posting>
+            <uuid>20000000-0000-0000-0000-000000000007</uuid>
+            <type>SECURITY</type>
+            <amount>109960</amount>
+            <currency>EUR</currency>
+            <security reference="../../../../../../securities/security"/>
+            <shares>1000000000</shares>
+            <portfolio reference="../../../../../../portfolios/portfolio"/>
+            <parameters>
+              <ledger-parameter>
+                <type>CORPORATE_ACTION_LEG</type>
+                <valueKind>STRING</valueKind>
+                <value class="string">TARGET_SECURITY</value>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>SOURCE_SECURITY</type>
+                <valueKind>SECURITY</valueKind>
+                <value class="security" reference="../../../../../../../../securities/security"/>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>TARGET_SECURITY</type>
+                <valueKind>SECURITY</valueKind>
+                <value class="security" reference="../../../../../../../../securities/security"/>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>RATIO_NUMERATOR</type>
+                <valueKind>DECIMAL</valueKind>
+                <value class="big-decimal">1</value>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>RATIO_DENOMINATOR</type>
+                <valueKind>DECIMAL</valueKind>
+                <value class="big-decimal">2</value>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>SAME_SECURITY_AS_SOURCE</type>
+                <valueKind>BOOLEAN</valueKind>
+                <value class="boolean">true</value>
+              </ledger-parameter>
+            </parameters>
+          </ledger-posting>
+          <ledger-posting>
+            <uuid>20000000-0000-0000-0000-000000000003</uuid>
+            <type>SECURITY</type>
+            <amount>10605</amount>
+            <currency>EUR</currency>
+            <security reference="../../../../../../securities/security[2]"/>
+            <shares>500000000</shares>
+            <portfolio reference="../../../../../../portfolios/portfolio"/>
+            <parameters>
+              <ledger-parameter>
+                <type>CORPORATE_ACTION_LEG</type>
+                <valueKind>STRING</valueKind>
+                <value class="string">TARGET_SECURITY</value>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>SOURCE_SECURITY</type>
+                <valueKind>SECURITY</valueKind>
+                <value class="security" reference="../../../../../../../../securities/security"/>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>TARGET_SECURITY</type>
+                <valueKind>SECURITY</valueKind>
+                <value class="security" reference="../../../../../../../../securities/security[2]"/>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>RATIO_NUMERATOR</type>
+                <valueKind>DECIMAL</valueKind>
+                <value class="big-decimal">1</value>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>RATIO_DENOMINATOR</type>
+                <valueKind>DECIMAL</valueKind>
+                <value class="big-decimal">2</value>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>TARGET_COST_PERCENT</type>
+                <valueKind>DECIMAL</valueKind>
+                <value class="big-decimal">9</value>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>REFERENCE_PRICE</type>
+                <valueKind>MONEY</valueKind>
+                <value class="name.abuchen.portfolio.money.Money" currency="EUR" amount="2100"/>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>FAIR_MARKET_VALUE</type>
+                <valueKind>MONEY</valueKind>
+                <value class="name.abuchen.portfolio.money.Money" currency="EUR" amount="10600"/>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>VALUATION_PRICE</type>
+                <valueKind>MONEY</valueKind>
+                <value class="name.abuchen.portfolio.money.Money" currency="EUR" amount="2100"/>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>MANUAL_VALUATION_OVERRIDE</type>
+                <valueKind>BOOLEAN</valueKind>
+                <value class="boolean">false</value>
+              </ledger-parameter>
+            </parameters>
+          </ledger-posting>
+          <ledger-posting>
+            <uuid>20000000-0000-0000-0000-000000000004</uuid>
+            <type>CASH_COMPENSATION</type>
+            <amount>500</amount>
+            <currency>EUR</currency>
+            <shares>0</shares>
+            <account reference="../../../../../../accounts/account"/>
+            <parameters>
+              <ledger-parameter>
+                <type>CORPORATE_ACTION_LEG</type>
+                <valueKind>STRING</valueKind>
+                <value class="string">CASH_COMPENSATION</value>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>CASH_ACCOUNT</type>
+                <valueKind>ACCOUNT</valueKind>
+                <value class="account" reference="../../../../../../../../accounts/account"/>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>CASH_COMPENSATION_KIND</type>
+                <valueKind>STRING</valueKind>
+                <value class="string">CASH_IN_LIEU</value>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>CASH_IN_LIEU_AMOUNT</type>
+                <valueKind>MONEY</valueKind>
+                <value class="name.abuchen.portfolio.money.Money" currency="EUR" amount="500"/>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>CASH_IN_LIEU_APPLIED</type>
+                <valueKind>BOOLEAN</valueKind>
+                <value class="boolean">true</value>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>FRACTION_QUANTITY</type>
+                <valueKind>DECIMAL</valueKind>
+                <value class="big-decimal">0.5</value>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>FRACTION_TREATMENT</type>
+                <valueKind>STRING</valueKind>
+                <value class="string">CASH_IN_LIEU</value>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>ROUNDING_MODE</type>
+                <valueKind>STRING</valueKind>
+                <value class="string">FLOOR</value>
+              </ledger-parameter>
+            </parameters>
+          </ledger-posting>
+          <ledger-posting>
+            <uuid>20000000-0000-0000-0000-000000000005</uuid>
+            <type>FEE</type>
+            <amount>200</amount>
+            <currency>EUR</currency>
+            <shares>0</shares>
+            <account reference="../../../../../../accounts/account"/>
+            <parameters>
+              <ledger-parameter>
+                <type>CORPORATE_ACTION_LEG</type>
+                <valueKind>STRING</valueKind>
+                <value class="string">FEE</value>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>FEE_REASON</type>
+                <valueKind>STRING</valueKind>
+                <value class="string">CORPORATE_ACTION_FEE</value>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>STAMP_DUTY</type>
+                <valueKind>BOOLEAN</valueKind>
+                <value class="boolean">false</value>
+              </ledger-parameter>
+            </parameters>
+          </ledger-posting>
+          <ledger-posting>
+            <uuid>20000000-0000-0000-0000-000000000006</uuid>
+            <type>TAX</type>
+            <amount>100</amount>
+            <currency>EUR</currency>
+            <shares>0</shares>
+            <account reference="../../../../../../accounts/account"/>
+            <parameters>
+              <ledger-parameter>
+                <type>CORPORATE_ACTION_LEG</type>
+                <valueKind>STRING</valueKind>
+                <value class="string">TAX</value>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>TAX_REASON</type>
+                <valueKind>STRING</valueKind>
+                <value class="string">WITHHOLDING_TAX</value>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>TAXABLE_DISTRIBUTION</type>
+                <valueKind>BOOLEAN</valueKind>
+                <value class="boolean">true</value>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>WITHHOLDING_TAX</type>
+                <valueKind>BOOLEAN</valueKind>
+                <value class="boolean">true</value>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>TRANSACTION_TAX</type>
+                <valueKind>BOOLEAN</valueKind>
+                <value class="boolean">false</value>
+              </ledger-parameter>
+              <ledger-parameter>
+                <type>RECLAIMABLE_TAX</type>
+                <valueKind>BOOLEAN</valueKind>
+                <value class="boolean">false</value>
+              </ledger-parameter>
+            </parameters>
+          </ledger-posting>
+        </postings>
+        <projectionRefs>
+          <ledger-projection-ref>
+            <uuid>30000000-0000-0000-0000-000000000001</uuid>
+            <role>OLD_SECURITY_LEG</role>
+            <portfolio reference="../../../../../../portfolios/portfolio"/>
+            <primaryPostingUUID>20000000-0000-0000-0000-000000000002</primaryPostingUUID>
+          </ledger-projection-ref>
+          <ledger-projection-ref>
+            <uuid>30000000-0000-0000-0000-000000000004</uuid>
+            <role>DELIVERY_INBOUND</role>
+            <portfolio reference="../../../../../../portfolios/portfolio"/>
+            <primaryPostingUUID>20000000-0000-0000-0000-000000000007</primaryPostingUUID>
+          </ledger-projection-ref>
+          <ledger-projection-ref>
+            <uuid>30000000-0000-0000-0000-000000000002</uuid>
+            <role>NEW_SECURITY_LEG</role>
+            <portfolio reference="../../../../../../portfolios/portfolio"/>
+            <primaryPostingUUID>20000000-0000-0000-0000-000000000003</primaryPostingUUID>
+          </ledger-projection-ref>
+          <ledger-projection-ref>
+            <uuid>30000000-0000-0000-0000-000000000003</uuid>
+            <role>CASH_COMPENSATION</role>
+            <account reference="../../../../../../accounts/account"/>
+            <primaryPostingUUID>20000000-0000-0000-0000-000000000004</primaryPostingUUID>
+            <postingGroupUUID>20000000-0000-0000-0000-000000000004</postingGroupUUID>
+          </ledger-projection-ref>
+        </projectionRefs>
+      </ledger-entry>
+      <ledger-entry>
+        <uuid>316212bb-23d1-486f-aaa9-fc2108d44e82</uuid>
+        <type>BUY</type>
+        <dateTime>2020-01-02T00:00</dateTime>
+        <updatedAt>2026-06-15T10:41:34.896212600Z</updatedAt>
+        <parameters/>
+        <postings>
+          <ledger-posting>
+            <uuid>29ef4ac0-ce62-4bfb-8bed-5dbabf5a8ca4</uuid>
+            <type>CASH</type>
+            <amount>118640</amount>
+            <currency>EUR</currency>
+            <shares>0</shares>
+            <account reference="../../../../../../accounts/account"/>
+            <parameters/>
+          </ledger-posting>
+          <ledger-posting>
+            <uuid>7898a9e0-ff1b-484b-81ff-37ad41d3b611</uuid>
+            <type>SECURITY</type>
+            <amount>118640</amount>
+            <currency>EUR</currency>
+            <security reference="../../../../../../securities/security"/>
+            <shares>1000000000</shares>
+            <portfolio reference="../../../../../../portfolios/portfolio"/>
+            <parameters/>
+          </ledger-posting>
+        </postings>
+        <projectionRefs>
+          <ledger-projection-ref>
+            <uuid>e34f70f5-810b-4224-868d-7069b89429e0</uuid>
+            <role>ACCOUNT</role>
+            <account reference="../../../../../../accounts/account"/>
+          </ledger-projection-ref>
+          <ledger-projection-ref>
+            <uuid>24495c80-fea8-491e-9b57-8ecf2991605e</uuid>
+            <role>PORTFOLIO</role>
+            <portfolio reference="../../../../../../portfolios/portfolio"/>
+          </ledger-projection-ref>
+        </projectionRefs>
+      </ledger-entry>
+      <ledger-entry>
+        <uuid>9f3dfe85-9707-40bf-9153-816cf063d290</uuid>
+        <type>DEPOSIT</type>
+        <dateTime>2019-12-30T00:00</dateTime>
+        <updatedAt>2026-06-15T10:41:50.210577100Z</updatedAt>
+        <parameters/>
+        <postings>
+          <ledger-posting>
+            <uuid>ed4ed7ce-87dc-4c1c-a3cd-32dc41370bf1</uuid>
+            <type>CASH</type>
+            <amount>1000000</amount>
+            <currency>EUR</currency>
+            <shares>0</shares>
+            <account reference="../../../../../../accounts/account"/>
+            <parameters/>
+          </ledger-posting>
+        </postings>
+        <projectionRefs>
+          <ledger-projection-ref>
+            <uuid>70b3914c-f7a5-4b13-9a4d-4310890a8dae</uuid>
+            <role>ACCOUNT</role>
+            <account reference="../../../../../../accounts/account"/>
+          </ledger-projection-ref>
+        </projectionRefs>
+      </ledger-entry>
+    </entries>
+  </ledger>
+</client>

@@ -22,13 +22,13 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.model.CostMethod;
-import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
@@ -156,8 +156,12 @@ public class SecurityPerformanceTaxRefundTestCase
                         SecurityTestCase.class.getResourceAsStream("security_performance_tax_refund_all_sold.xml"));
 
         Portfolio portfolio = client.getPortfolios().get(0);
-        PortfolioTransaction delivery = portfolio.getTransactions().get(0);
-        PortfolioTransaction sell = portfolio.getTransactions().get(1);
+        PortfolioTransaction delivery = portfolio.getTransactions().stream() //
+                        .filter(transaction -> transaction.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND) //
+                        .findFirst().orElseThrow();
+        PortfolioTransaction sell = portfolio.getTransactions().stream() //
+                        .filter(transaction -> transaction.getType() == PortfolioTransaction.Type.SELL) //
+                        .findFirst().orElseThrow();
         Interval period = Interval.of(LocalDate.parse("2013-12-06"), LocalDate.parse("2014-12-06"));
         TestCurrencyConverter converter = new TestCurrencyConverter();
         LazySecurityPerformanceSnapshot snapshot = LazySecurityPerformanceSnapshot.create(client, converter, period);

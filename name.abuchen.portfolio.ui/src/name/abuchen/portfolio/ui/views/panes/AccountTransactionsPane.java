@@ -41,10 +41,15 @@ import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.CrossEntry;
+import name.abuchen.portfolio.model.LedgerDiagnosticCode;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.TransactionPair;
+import name.abuchen.portfolio.model.ledger.compatibility.LedgerDividendTransactionCreator;
+import name.abuchen.portfolio.model.ledger.compatibility.LedgerInlineEditingField;
+import name.abuchen.portfolio.model.ledger.compatibility.LedgerInlineEditingPolicy;
+import name.abuchen.portfolio.model.ledger.compatibility.LedgerNativeComponentInspectorModel;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.money.Quote;
@@ -60,6 +65,7 @@ import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.StringToCurrencyConverter;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.ValueColorScheme;
 import name.abuchen.portfolio.ui.util.searchfilter.TransactionFilterDropDown;
@@ -75,6 +81,7 @@ import name.abuchen.portfolio.ui.util.viewers.ExDateEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.MoneyColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.TransactionOwnerListEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.TransactionTypeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
@@ -82,6 +89,7 @@ import name.abuchen.portfolio.ui.views.AccountContextMenu;
 import name.abuchen.portfolio.ui.views.AccountListView;
 import name.abuchen.portfolio.ui.views.actions.ConvertTransferToDepositRemovalAction;
 import name.abuchen.portfolio.ui.views.actions.CreateRemovalForDividendAction;
+import name.abuchen.portfolio.ui.views.actions.LedgerNativeComponentInspectorAction;
 import name.abuchen.portfolio.ui.views.columns.CalculatedQuoteColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
@@ -90,6 +98,52 @@ import name.abuchen.portfolio.ui.views.columns.WknColumn;
 
 public class AccountTransactionsPane implements InformationPanePage, ModificationListener
 {
+    private final class LedgerAwareDividendSharesEditingSupport extends ValueEditingSupport
+    {
+        private final StringToCurrencyConverter stringToShares = new StringToCurrencyConverter(Values.Share);
+
+        LedgerAwareDividendSharesEditingSupport()
+        {
+            super(AccountTransaction.class, "shares", Values.Share); //$NON-NLS-1$
+        }
+
+        @Override
+        public boolean canEdit(Object element)
+        {
+            return !isLedgerNativeTargetedProjection((AccountTransaction) element)
+                            && LedgerInlineEditingPolicy.isEditable(element, LedgerInlineEditingField.SHARES)
+                            && ((AccountTransaction) element).getType() == AccountTransaction.Type.DIVIDENDS;
+        }
+
+        @Override
+        public void setValue(Object element, Object value) throws Exception
+        {
+            if (!LedgerInlineEditingPolicy.isEditable(element, LedgerInlineEditingField.SHARES))
+                throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_UI_020
+                                .message(Messages.LedgerAccountTransactionsPaneUnsupportedSharesInlineEdit));
+
+            var transaction = (AccountTransaction) element;
+            var oldValue = Long.valueOf(transaction.getShares());
+            var newValue = Long.valueOf(stringToShares.convert(String.valueOf(value)).longValue());
+
+            if (newValue.equals(oldValue))
+                return;
+
+            var creator = new LedgerDividendTransactionCreator(client);
+            if (creator.canUpdate(transaction))
+            {
+                creator.update(transaction, account, transaction.getType(), transaction.getDateTime(),
+                                transaction.getAmount(), transaction.getCurrencyCode(), transaction.getSecurity(),
+                                newValue.longValue(), transaction.getExDate(), null, null,
+                                transaction.getUnits().toList(), transaction.getNote(), transaction.getSource());
+                notify(element, newValue, oldValue);
+                return;
+            }
+
+            super.setValue(element, value);
+        }
+    }
+
     @Inject
     private Client client;
 
@@ -375,15 +429,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
                 return colorFor((AccountTransaction) element);
             }
         });
-        new ValueEditingSupport(AccountTransaction.class, "shares", Values.Share) //$NON-NLS-1$
-        {
-            @Override
-            public boolean canEdit(Object element)
-            {
-                AccountTransaction t = (AccountTransaction) element;
-                return t.getType() == AccountTransaction.Type.DIVIDENDS;
-            }
-        }.addListener(this).attachTo(column);
+        new LedgerAwareDividendSharesEditingSupport().addListener(this).attachTo(column);
         transactionsColumns.addColumn(column);
 
         column = new CalculatedQuoteColumn("6", client, e -> { //$NON-NLS-1$
@@ -455,7 +501,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
             }
         });
         ColumnViewerSorter.create(e -> ((AccountTransaction) e).getExDate()).attachTo(column);
-        new ExDateEditingSupport().addListener(this).attachTo(column);
+        new ExDateEditingSupport(client).addListener(this).attachTo(column);
         column.setVisible(false);
         transactionsColumns.addColumn(column);
 
@@ -475,6 +521,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
             }
         });
         ColumnViewerSorter.createIgnoreCase(e -> ((AccountTransaction) e).getSource()).attachTo(column);
+        new StringEditingSupport(AccountTransaction.class, "source").addListener(this).attachTo(column); //$NON-NLS-1$
         transactionsColumns.addColumn(column);
 
         transactionsColumns.createColumns(true);
@@ -546,7 +593,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
                     AccountTransaction transaction = (AccountTransaction) ((IStructuredSelection) transactions
                                     .getSelection()).getFirstElement();
 
-                    if (account != null && transaction != null)
+                    if (account != null && transaction != null && !isLedgerNativeTargetedProjection(transaction))
                         createEditAction(account, transaction).run();
                 }
                 if (e.keyCode == 'd' && e.stateMask == SWT.MOD1)
@@ -554,7 +601,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
                     AccountTransaction transaction = (AccountTransaction) ((IStructuredSelection) transactions
                                     .getSelection()).getFirstElement();
 
-                    if (account != null && transaction != null)
+                    if (account != null && transaction != null && !isLedgerNativeTargetedProjection(transaction))
                         createCopyAction(account, transaction).run();
                 }
             }
@@ -571,6 +618,11 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
 
         if (transaction != null)
         {
+            LedgerNativeComponentInspectorAction.create(view, transaction).ifPresent(manager::add);
+
+            if (isLedgerNativeTargetedProjection(transaction))
+                return;
+
             Action action = createEditAction(account, transaction);
             action.setAccelerator(SWT.MOD1 | 'E');
             manager.add(action);
@@ -590,7 +642,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
             fillCreateRemovalForDividendAction(manager, selection);
         }
 
-        if (transaction != null)
+        if (transaction != null && !containsLedgerNativeTargetedProjection(selection))
         {
             manager.add(new Separator());
 
@@ -617,6 +669,9 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
 
     private void fillConvertTransferToDepositRemovalAction(IMenuManager manager, IStructuredSelection selection)
     {
+        if (containsLedgerNativeTargetedProjection(selection))
+            return;
+
         // create collection with all selected transactions
         Collection<AccountTransaction> accountTxCollection = new ArrayList<>(selection.size());
         Iterator<?> it = selection.iterator();
@@ -644,6 +699,9 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
 
     private void fillCreateRemovalForDividendAction(IMenuManager manager, IStructuredSelection selection)
     {
+        if (containsLedgerNativeTargetedProjection(selection))
+            return;
+
         // create collection with all selected transactions
         var dividendTransactionPairs = selection.stream()
                         .filter(t -> ((AccountTransaction) t).getType() == AccountTransaction.Type.DIVIDENDS)
@@ -655,6 +713,19 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
             manager.add(new Separator());
             manager.add(new CreateRemovalForDividendAction(client, dividendTransactionPairs));
         }
+    }
+
+    private static boolean containsLedgerNativeTargetedProjection(IStructuredSelection selection)
+    {
+        return selection.stream() //
+                        .filter(AccountTransaction.class::isInstance) //
+                        .map(AccountTransaction.class::cast) //
+                        .anyMatch(AccountTransactionsPane::isLedgerNativeTargetedProjection);
+    }
+
+    private static boolean isLedgerNativeTargetedProjection(AccountTransaction transaction)
+    {
+        return LedgerNativeComponentInspectorModel.isLedgerNativeTargetedProjection(transaction);
     }
 
     private Action createEditAction(Account account, AccountTransaction transaction)

@@ -24,6 +24,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 
@@ -129,6 +130,28 @@ public class DetectDuplicatesActionTest
         assertThat(status.getCode(), is(Code.WARNING));
     }
 
+    @Test
+    public void testPortfolioTransferDuplicateDetectionChecksSourceAndTargetPortfolios()
+    {
+        var action = new DetectDuplicatesAction(new Client());
+
+        var existingSource = getPortfolioTransferEntry();
+        var sourceCandidate = getPortfolioTransferEntry();
+
+        var sourceStatus = action.process(sourceCandidate, portfolio(existingSource.getSourceTransaction()),
+                        new Portfolio());
+
+        assertThat(sourceStatus.getCode(), is(Code.WARNING));
+
+        var existingTarget = getPortfolioTransferEntry();
+        var targetCandidate = getPortfolioTransferEntry();
+
+        var targetStatus = action.process(targetCandidate, new Portfolio(),
+                        portfolio(existingTarget.getTargetTransaction()));
+
+        assertThat(targetStatus.getCode(), is(Code.WARNING));
+    }
+
     private AccountTransaction getTestEntry(AccountTransaction.Type type)
     {
         var transaction = new AccountTransaction();
@@ -138,6 +161,17 @@ public class DetectDuplicatesActionTest
         transaction.setDateTime(LocalDateTime.of(2025, 12, 15, 0, 0));
 
         return transaction;
+    }
+
+    private PortfolioTransferEntry getPortfolioTransferEntry()
+    {
+        var entry = new PortfolioTransferEntry();
+        entry.setDate(LocalDateTime.of(2025, 12, 15, 0, 0));
+        entry.setAmount(1000);
+        entry.setCurrencyCode("EUR"); //$NON-NLS-1$
+        entry.setShares(100);
+
+        return entry;
     }
 
     private Account account(AccountTransaction t)

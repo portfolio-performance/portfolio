@@ -198,4 +198,28 @@ public interface PInvestmentPlanOrBuilder extends
    * @return The type.
    */
   name.abuchen.portfolio.model.proto.v1.PInvestmentPlan.Type getType();
+
+  /**
+   * <code>repeated .name.abuchen.portfolio.PInvestmentPlanLedgerExecutionRef ledgerExecutionRefs = 15;</code>
+   */
+  java.util.List<name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef> 
+      getLedgerExecutionRefsList();
+  /**
+   * <code>repeated .name.abuchen.portfolio.PInvestmentPlanLedgerExecutionRef ledgerExecutionRefs = 15;</code>
+   */
+  name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef getLedgerExecutionRefs(int index);
+  /**
+   * <code>repeated .name.abuchen.portfolio.PInvestmentPlanLedgerExecutionRef ledgerExecutionRefs = 15;</code>
+   */
+  int getLedgerExecutionRefsCount();
+  /**
+   * <code>repeated .name.abuchen.portfolio.PInvestmentPlanLedgerExecutionRef ledgerExecutionRefs = 15;</code>
+   */
+  java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRefOrBuilder> 
+      getLedgerExecutionRefsOrBuilderList();
+  /**
+   * <code>repeated .name.abuchen.portfolio.PInvestmentPlanLedgerExecutionRef ledgerExecutionRefs = 15;</code>
+   */
+  name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRefOrBuilder getLedgerExecutionRefsOrBuilder(
+      int index);
 }

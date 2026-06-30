@@ -157,38 +157,45 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     protected void writeToTransaction(PortfolioTransaction transaction)
     {
         transaction.clearUnits();
+        buildUnits().forEach(transaction::addUnit);
+    }
+
+    protected java.util.List<Transaction.Unit> buildUnits()
+    {
+        var units = new java.util.ArrayList<Transaction.Unit>();
 
         if (fees != 0)
-            transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.FEE, //
+            units.add(new Transaction.Unit(Transaction.Unit.Type.FEE, //
                             Money.of(getTransactionCurrencyCode(), fees)));
 
         if (taxes != 0)
-            transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.TAX, //
+            units.add(new Transaction.Unit(Transaction.Unit.Type.TAX, //
                             Money.of(getTransactionCurrencyCode(), taxes)));
 
         boolean hasForex = !getTransactionCurrencyCode().equals(getSecurityCurrencyCode());
         if (hasForex)
         {
             if (forexFees != 0)
-                transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.FEE, //
+                units.add(new Transaction.Unit(Transaction.Unit.Type.FEE, //
                                 Money.of(getTransactionCurrencyCode(),
                                                 Math.round(forexFees * exchangeRate.doubleValue())), //
                                 Money.of(getSecurityCurrencyCode(), forexFees), //
                                 exchangeRate));
 
             if (forexTaxes != 0)
-                transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.TAX, //
+                units.add(new Transaction.Unit(Transaction.Unit.Type.TAX, //
                                 Money.of(getTransactionCurrencyCode(),
                                                 Math.round(forexTaxes * exchangeRate.doubleValue())), //
                                 Money.of(getSecurityCurrencyCode(), forexTaxes), //
                                 exchangeRate));
 
-            transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.GROSS_VALUE, //
+            units.add(new Transaction.Unit(Transaction.Unit.Type.GROSS_VALUE, //
                             Money.of(getTransactionCurrencyCode(), convertedGrossValue), //
                             Money.of(getSecurityCurrencyCode(), grossValue), //
                             exchangeRate));
         }
 
+        return units;
     }
 
     @Override

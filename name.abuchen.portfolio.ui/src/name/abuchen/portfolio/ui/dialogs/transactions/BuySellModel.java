@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.dialogs.transactions;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import name.abuchen.portfolio.model.Account;
@@ -9,6 +10,8 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionOwner;
+import name.abuchen.portfolio.model.ledger.compatibility.LedgerBuySellTransactionCreator;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 
 /* package */class BuySellModel extends AbstractSecurityTransactionModel
@@ -47,7 +50,69 @@ import name.abuchen.portfolio.ui.Messages;
         this.type = e.getPortfolioTransaction().getType();
         this.portfolio = (Portfolio) e.getOwner(e.getPortfolioTransaction());
         this.account = (Account) e.getOwner(e.getAccountTransaction());
-        fillFromTransaction(e.getPortfolioTransaction());
+
+        if (new LedgerBuySellTransactionCreator(client).isLedgerBacked(e))
+            fillFromLedgerBackedTransaction(e.getPortfolioTransaction());
+        else
+            fillFromTransaction(e.getPortfolioTransaction());
+    }
+
+    private void fillFromLedgerBackedTransaction(PortfolioTransaction transaction)
+    {
+        this.security = transaction.getSecurity();
+
+        var transactionDate = transaction.getDateTime();
+        this.date = transactionDate.toLocalDate();
+        this.time = transactionDate.toLocalTime();
+
+        this.shares = transaction.getShares();
+        this.total = transaction.getAmount();
+        this.note = transaction.getNote();
+
+        this.exchangeRate = BigDecimal.ONE;
+        this.grossValue = 0;
+        this.convertedGrossValue = 0;
+        this.fees = 0;
+        this.taxes = 0;
+        this.forexFees = 0;
+        this.forexTaxes = 0;
+
+        transaction.getUnits().forEach(unit -> {
+            switch (unit.getType())
+            {
+                case GROSS_VALUE:
+                    this.exchangeRate = unit.getExchangeRate();
+                    this.grossValue = unit.getForex() != null ? unit.getForex().getAmount()
+                                    : unit.getAmount().getAmount();
+                    break;
+                case FEE:
+                    if (unit.getForex() != null)
+                        this.forexFees += unit.getForex().getAmount();
+                    else
+                        this.fees += unit.getAmount().getAmount();
+                    break;
+                case TAX:
+                    if (unit.getForex() != null)
+                        this.forexTaxes += unit.getForex().getAmount();
+                    else
+                        this.taxes += unit.getAmount().getAmount();
+                    break;
+                default:
+                    throw new UnsupportedOperationException();
+            }
+        });
+
+        if (grossValue == 0)
+        {
+            this.convertedGrossValue = calculateConvertedGrossValue();
+            this.grossValue = exchangeRate.compareTo(BigDecimal.ZERO) == 0 ? 0
+                            : Math.round(convertedGrossValue / exchangeRate.doubleValue());
+        }
+
+        if (shares != 0)
+            this.quote = BigDecimal.valueOf(grossValue * Values.Share.factor() / (shares * Values.Amount.divider()));
+
+        setExchangeRate(exchangeRate);
     }
 
     @Override
@@ -63,6 +128,24 @@ import name.abuchen.portfolio.ui.Messages;
             throw new UnsupportedOperationException(Messages.MsgMissingSecurity);
         if (account == null)
             throw new UnsupportedOperationException(Messages.MsgMissingReferenceAccount);
+
+        var ledgerCreator = new LedgerBuySellTransactionCreator(client);
+        var dateTime = LocalDateTime.of(date, time);
+        var units = buildUnits();
+
+        if (source != null && ledgerCreator.isLedgerBacked(source))
+        {
+            ledgerCreator.update(source, portfolio, account, type, dateTime, total, account.getCurrencyCode(), security,
+                            shares, units, note, source.getSource());
+            return;
+        }
+
+        if (source == null)
+        {
+            ledgerCreator.create(portfolio, account, type, dateTime, total, account.getCurrencyCode(), security, shares,
+                            units, note, null);
+            return;
+        }
 
         BuySellEntry entry;
 
@@ -91,7 +174,7 @@ import name.abuchen.portfolio.ui.Messages;
             }
         }
 
-        entry.setDate(LocalDateTime.of(date, time));
+        entry.setDate(dateTime);
         entry.setCurrencyCode(account.getCurrencyCode());
         entry.setSecurity(security);
         entry.setShares(shares);

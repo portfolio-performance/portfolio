@@ -18,18 +18,19 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.TransactionPair;
+import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.snapshot.security.CapitalGainsRecord;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
@@ -458,9 +459,11 @@ public class ClientPerformanceSnapshot
                         break;
                     case DEPOSIT:
                         mDeposits.add(value);
+                        addNativeAccountProjectionUnits(account, t, mFees, mTaxes, feesBySecurity, taxesBySecurity);
                         break;
                     case REMOVAL:
                         mRemovals.add(value);
+                        addNativeAccountProjectionUnits(account, t, mFees, mTaxes, feesBySecurity, taxesBySecurity);
                         break;
                     case FEES:
                         mFees.add(value);
@@ -568,6 +571,35 @@ public class ClientPerformanceSnapshot
                         .add(new Position(Messages.LabelDeposits, mDeposits.toMoney(), null));
         categories.get(CategoryType.TRANSFERS).positions
                         .add(new Position(Messages.LabelRemovals, mRemovals.toMoney(), null));
+    }
+
+    private void addNativeAccountProjectionUnits(Account account, AccountTransaction transaction, MutableMoney mFees,
+                    MutableMoney mTaxes, Map<Security, MutableMoney> feesBySecurity,
+                    Map<Security, MutableMoney> taxesBySecurity)
+    {
+        if (!(transaction instanceof LedgerBackedTransaction ledgerBackedTransaction)
+                        || ledgerBackedTransaction.getLedgerEntry() == null
+                        || ledgerBackedTransaction.getLedgerEntry().getType() == null
+                        || !ledgerBackedTransaction.getLedgerEntry().getType().isLedgerNativeTargeted())
+            return;
+
+        Money fee = transaction.getUnitSum(Unit.Type.FEE, converter);
+        if (!fee.isZero())
+        {
+            mFees.add(fee);
+            this.fees.add(new TransactionPair<AccountTransaction>(account, transaction));
+            feesBySecurity.computeIfAbsent(transaction.getSecurity(), s -> MutableMoney.of(converter.getTermCurrency()))
+                            .add(fee);
+        }
+
+        Money tax = transaction.getUnitSum(Unit.Type.TAX, converter);
+        if (!tax.isZero())
+        {
+            mTaxes.add(tax);
+            this.taxes.add(new TransactionPair<AccountTransaction>(account, transaction));
+            taxesBySecurity.computeIfAbsent(transaction.getSecurity(), s -> MutableMoney.of(converter.getTermCurrency()))
+                            .add(tax);
+        }
     }
 
     private void addEarningTransaction(Account account, AccountTransaction transaction, MutableMoney mEarnings,
