@@ -148,6 +148,9 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
     private final LazyValue<CostCalculationResult> costCalculation = new LazyValue<>(
                     () -> Calculation.perform(CostCalculation.class, converter, security, lineItems).getResult());
 
+    private final LazyValue<CostCalculationResult> dividendCostCalculation = new LazyValue<>(() -> Calculation
+                    .perform(CostCalculation.class, converter, security, lineItems, prePeriodLineItems).getResult());
+
     /**
      * cost of shares held
      */
@@ -164,9 +167,7 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
     }
 
     private final LazyValue<DividendCalculationResult> dividendCalculation = new LazyValue<>(() -> {
-        // ensure cost calculation is done (and has calculated
-        // moving averages)
-        costCalculation.get();
+        dividendCostCalculation.get();
         return Calculation.perform(DividendCalculation.class, converter, security, lineItems).getResult();
     });
 
