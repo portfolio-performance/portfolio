@@ -468,9 +468,13 @@ import name.abuchen.portfolio.model.TypedMap;
                     {
                         try
                         {
+                            var prevSkipReason = ctx.getSkipReason();
                             section.parse(filename, documentContext, lines, lineNo, lineNoEnd, ctx, target);
 
                             // if parsing was successful, then return
+
+                            if (prevSkipReason != null)
+                                ctx.skipTransaction(null); // reset skip marker
                             return;
                         }
                         catch (DuplicateSecurityException e)
@@ -484,7 +488,7 @@ import name.abuchen.portfolio.model.TypedMap;
                         }
                     }
 
-                    if (!isOptional)
+                    if (!isOptional && ctx.getSkipReason() == null)
                         throw new IllegalArgumentException(MessageFormat.format(
                                         Messages.MsgErrorNoneOfSubSectionsMatched, String.valueOf(subSections.size()),
                                         String.join(";\n", errors), lineNo + 1, //$NON-NLS-1$

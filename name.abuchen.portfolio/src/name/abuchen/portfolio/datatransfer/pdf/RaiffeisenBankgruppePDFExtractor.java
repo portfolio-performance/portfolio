@@ -267,7 +267,8 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^.*(Private Banking|Abrechnungsnr|Gesch.ftsart|Anlageverm.gen).*$", "^(Den Betrag buchen|Der Betrag wird|Dieser Beleg (tr.gt|wurde|wird)).*$");
+        var firstRelevantLine = new Block("^.*(Private Banking|Abrechnungsnr|Gesch.ftsart|Anlageverm.gen).*$",
+                        "^(Den Betrag buchen|Der Betrag wird|Dieser Beleg (tr.gt|wurde|wird)).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -275,6 +276,12 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
+                        .optionalOneOf( //
+                                        section -> section //
+                                                        .attributes("dummy") //
+                                                        .match("^Eink.nfte/Verlust.berhang aktuell (?<dummy>.*)$") //
+                                                        .assign((t, v) -> v.getTransactionContext().skipTransaction(
+                                                                        "second page without transaction")))
                         .oneOf( //
                                         // @formatter:off
                                         // Titel: AT0000A1TW21 RAIFF.-EMERGINGMARKETS-AKTIEN RZ(A)
@@ -503,6 +510,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                                         .attributes("note") //
                                                         .match("^.*Referenz: (?<note>[\\d]+).*$") //
                                                         .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(v.get("note")))))
+
                         // @formatter:off
                         // Ex-Tag 01.12.2021 Art der Dividende Quartalsdividende
                         // @formatter:on
