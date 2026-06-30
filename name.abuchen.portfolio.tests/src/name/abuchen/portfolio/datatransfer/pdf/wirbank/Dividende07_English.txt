@@ -1,0 +1,28 @@
+Portfolio Performance Version: 0.84.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Terzo Pension Foundation of WIR Bank
+Auberg 1
+4002 Basel
+E-Mail info@viac.ch
+Phone 0800 80 40 40
+www.viac.ch
+Contract 3.123.456.789
+Portfolio 3.123.456.789.05
+Mr
+Max Mustermann
+Blumentstrasse 11
+1234 City
+Basel, 28.05.2026
+Dividend Payment
+We have booked the following payment for you:
+Type of distribution: Refund Swiss withholding tax
+0.196 units UBS Canada
+ISIN: CH0030849613
+Distribution: CHF 0.23
+Amount CHF 0.05
+Amount credited: Value date 28.05.2026 CHF 0.05
+S. E. & O.
+Kind regards
+Terzo Pension Foundation
+Notice without signature
