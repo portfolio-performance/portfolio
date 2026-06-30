@@ -310,7 +310,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                                         .attributes("isin", "name", "name1", "currency") //
                                                         .match("^Titel: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)$") //
                                                         .match("^(?<name1>.*)$") //
-                                                        .match("^(Dividende|Ertrag): [\\.,\\d]+ (?<currency>[A-Z]{3})\\s*$") //
+                                                        .match("^(Dividende|Ertrag): [\\.,\\d]+ (?<currency>[A-Z]{3})[\\s]*$") //
                                                         .assign((t, v) -> {
                                                             if (!v.get("name1").startsWith("Dividende:") //
                                                                             || !v.get("name1").startsWith("Ertrag:") //
