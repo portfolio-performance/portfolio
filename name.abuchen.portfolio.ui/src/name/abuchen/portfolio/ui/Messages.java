@@ -746,6 +746,7 @@ public class Messages extends NLS
     public static String LabelHideMarkings;
     public static String LabelHistoricalReturnsAndVolatiltity;
     public static String LabelImportNotesFromSource;
+    public static String LabelImportTemplate;
     public static String LabelIncludeSecuritiesInPieChart;
     public static String LabelIncludeUnassignedCategoryInCharts;
     public static String LabelInfo;
@@ -1042,12 +1043,14 @@ public class Messages extends NLS
     public static String MenuEditInvestmentPlan;
     public static String MenuEditTransaction;
     public static String MenuExportChartData;
+    public static String MenuExportDashboardTemplate;
     public static String MenuExportData;
     public static String MenuExportDiagram;
     public static String MenuFilterTrades;
     public static String MenuHideColumn;
     public static String MenuHideInformationPane;
     public static String MenuHideSidebar;
+    public static String MenuImportDashboardTemplate;
     public static String MenuLabelSetAsStartPage;
     public static String MenuMoveDown;
     public static String MenuMoveUp;
