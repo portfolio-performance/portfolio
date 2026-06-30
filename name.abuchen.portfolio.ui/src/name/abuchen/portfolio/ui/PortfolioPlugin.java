@@ -20,6 +20,7 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 
+import name.abuchen.portfolio.model.ImageManager;
 import name.abuchen.portfolio.ui.preferences.ScopedPreferenceStore;
 
 public class PortfolioPlugin implements BundleActivator
@@ -57,6 +58,9 @@ public class PortfolioPlugin implements BundleActivator
         saveDialogSettings();
 
         Job.getJobManager().cancel(null);
+
+        Images.dispose();
+        ImageManager.instance().dispose();
     }
 
     private void setupProxyAuthenticator()

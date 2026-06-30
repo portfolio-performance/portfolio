@@ -39,6 +39,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.LogoManager;
+import name.abuchen.portfolio.ui.util.RetiredObjectLabelStyle;
 import name.abuchen.portfolio.ui.util.TabularDataSource;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -297,6 +298,13 @@ public class TradesTableViewer
                         return LogoManager.instance().getDefaultColumnImage(trade.getSecurity(),
                                         view.getClient().getSettings());
                     return null;
+                }
+
+                @Override
+                public Color getForeground(Object e)
+                {
+                    Trade trade = asTrade(e);
+                    return trade != null ? RetiredObjectLabelStyle.foreground(trade.getSecurity()) : null;
                 }
             }));
             column.setSorter(ColumnViewerSorter.create(e -> {
@@ -736,6 +744,13 @@ public class TradesTableViewer
                     return LogoManager.instance().getDefaultColumnImage(trade.getPortfolio(),
                                     view.getClient().getSettings());
                 return null;
+            }
+
+            @Override
+            public Color getForeground(Object e)
+            {
+                Trade trade = asTrade(e);
+                return trade != null ? RetiredObjectLabelStyle.foreground(trade.getPortfolio()) : null;
             }
         }));
         column.setSorter(ColumnViewerSorter.createIgnoreCase(portfolioName));

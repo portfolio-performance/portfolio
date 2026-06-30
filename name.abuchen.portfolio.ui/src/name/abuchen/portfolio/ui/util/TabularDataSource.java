@@ -185,9 +185,13 @@ public class TabularDataSource implements Named
         @Override
         public Color getForeground(Object element)
         {
-            return element instanceof FooterRow && column.backgroundColor != null
-                            ? Colors.getTextColor(column.backgroundColor)
-                            : null;
+            if (element instanceof FooterRow && column.backgroundColor != null)
+                return Colors.getTextColor(column.backgroundColor);
+
+            if (column.hasLogo && element instanceof Object[] row)
+                return RetiredObjectLabelStyle.foreground(row[colIndex]);
+
+            return null;
         }
 
         @Override
@@ -342,6 +346,8 @@ public class TabularDataSource implements Named
                     text = ""; //$NON-NLS-1$
 
                 l.setText(TextUtil.tooltip(text));
+                if (column.hasLogo)
+                    l.setForeground(RetiredObjectLabelStyle.foreground(row[ii]));
             }
         }
 
