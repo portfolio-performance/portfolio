@@ -191,3 +191,4 @@ public enum PLedgerParameterValueKind
 
   // @@protoc_insertion_point(enum_scope:name.abuchen.portfolio.PLedgerParameterValueKind)
 }
+

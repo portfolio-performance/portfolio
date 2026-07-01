@@ -26,6 +26,7 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.LazyStringArrayList.emptyList();
     type_ = 0;
     ledgerExecutionRefs_ = java.util.Collections.emptyList();
+    planKey_ = "";
   }
 
   @java.lang.Override
@@ -621,6 +622,53 @@ private static final long serialVersionUID = 0L;
     return ledgerExecutionRefs_.get(index);
   }
 
+  public static final int PLANKEY_FIELD_NUMBER = 16;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object planKey_ = "";
+  /**
+   * <code>optional string planKey = 16;</code>
+   * @return Whether the planKey field is set.
+   */
+  @java.lang.Override
+  public boolean hasPlanKey() {
+    return ((bitField0_ & 0x00000010) != 0);
+  }
+  /**
+   * <code>optional string planKey = 16;</code>
+   * @return The planKey.
+   */
+  @java.lang.Override
+  public java.lang.String getPlanKey() {
+    java.lang.Object ref = planKey_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      planKey_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>optional string planKey = 16;</code>
+   * @return The bytes for planKey.
+   */
+  @java.lang.Override
+  public com.google.protobuf.ByteString
+      getPlanKeyBytes() {
+    java.lang.Object ref = planKey_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      planKey_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -679,6 +727,9 @@ private static final long serialVersionUID = 0L;
     }
     for (int i = 0; i < ledgerExecutionRefs_.size(); i++) {
       output.writeMessage(15, ledgerExecutionRefs_.get(i));
+    }
+    if (((bitField0_ & 0x00000010) != 0)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 16, planKey_);
     }
     getUnknownFields().writeTo(output);
   }
@@ -748,6 +799,9 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(15, ledgerExecutionRefs_.get(i));
     }
+    if (((bitField0_ & 0x00000010) != 0)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(16, planKey_);
+    }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
     return size;
@@ -804,6 +858,11 @@ private static final long serialVersionUID = 0L;
     if (type_ != other.type_) return false;
     if (!getLedgerExecutionRefsList()
         .equals(other.getLedgerExecutionRefsList())) return false;
+    if (hasPlanKey() != other.hasPlanKey()) return false;
+    if (hasPlanKey()) {
+      if (!getPlanKey()
+          .equals(other.getPlanKey())) return false;
+    }
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -863,6 +922,10 @@ private static final long serialVersionUID = 0L;
     if (getLedgerExecutionRefsCount() > 0) {
       hash = (37 * hash) + LEDGEREXECUTIONREFS_FIELD_NUMBER;
       hash = (53 * hash) + getLedgerExecutionRefsList().hashCode();
+    }
+    if (hasPlanKey()) {
+      hash = (37 * hash) + PLANKEY_FIELD_NUMBER;
+      hash = (53 * hash) + getPlanKey().hashCode();
     }
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
@@ -1021,6 +1084,7 @@ private static final long serialVersionUID = 0L;
         ledgerExecutionRefsBuilder_.clear();
       }
       bitField0_ = (bitField0_ & ~0x00004000);
+      planKey_ = "";
       return this;
     }
 
@@ -1120,6 +1184,10 @@ private static final long serialVersionUID = 0L;
       }
       if (((from_bitField0_ & 0x00002000) != 0)) {
         result.type_ = type_;
+      }
+      if (((from_bitField0_ & 0x00008000) != 0)) {
+        result.planKey_ = planKey_;
+        to_bitField0_ |= 0x00000010;
       }
       result.bitField0_ |= to_bitField0_;
     }
@@ -1244,6 +1312,11 @@ private static final long serialVersionUID = 0L;
           }
         }
       }
+      if (other.hasPlanKey()) {
+        planKey_ = other.planKey_;
+        bitField0_ |= 0x00008000;
+        onChanged();
+      }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
       return this;
@@ -1362,6 +1435,11 @@ private static final long serialVersionUID = 0L;
               }
               break;
             } // case 122
+            case 130: {
+              planKey_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00008000;
+              break;
+            } // case 130
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -2637,6 +2715,85 @@ private static final long serialVersionUID = 0L;
         ledgerExecutionRefs_ = null;
       }
       return ledgerExecutionRefsBuilder_;
+    }
+
+    private java.lang.Object planKey_ = "";
+    /**
+     * <code>optional string planKey = 16;</code>
+     * @return Whether the planKey field is set.
+     */
+    public boolean hasPlanKey() {
+      return ((bitField0_ & 0x00008000) != 0);
+    }
+    /**
+     * <code>optional string planKey = 16;</code>
+     * @return The planKey.
+     */
+    public java.lang.String getPlanKey() {
+      java.lang.Object ref = planKey_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        planKey_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>optional string planKey = 16;</code>
+     * @return The bytes for planKey.
+     */
+    public com.google.protobuf.ByteString
+        getPlanKeyBytes() {
+      java.lang.Object ref = planKey_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        planKey_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>optional string planKey = 16;</code>
+     * @param value The planKey to set.
+     * @return This builder for chaining.
+     */
+    public Builder setPlanKey(
+        java.lang.String value) {
+      if (value == null) { throw new NullPointerException(); }
+      planKey_ = value;
+      bitField0_ |= 0x00008000;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string planKey = 16;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearPlanKey() {
+      planKey_ = getDefaultInstance().getPlanKey();
+      bitField0_ = (bitField0_ & ~0x00008000);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string planKey = 16;</code>
+     * @param value The bytes for planKey to set.
+     * @return This builder for chaining.
+     */
+    public Builder setPlanKeyBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
+      planKey_ = value;
+      bitField0_ |= 0x00008000;
+      onChanged();
+      return this;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

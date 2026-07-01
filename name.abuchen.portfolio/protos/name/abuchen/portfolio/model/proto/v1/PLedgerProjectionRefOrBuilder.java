@@ -67,7 +67,7 @@ public interface PLedgerProjectionRefOrBuilder extends
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
    */
-  java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership>
+  java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership> 
       getMembershipsList();
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
@@ -80,7 +80,7 @@ public interface PLedgerProjectionRefOrBuilder extends
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
    */
-  java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipOrBuilder>
+  java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipOrBuilder> 
       getMembershipsOrBuilderList();
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>

@@ -222,4 +222,21 @@ public interface PInvestmentPlanOrBuilder extends
    */
   name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRefOrBuilder getLedgerExecutionRefsOrBuilder(
       int index);
+
+  /**
+   * <code>optional string planKey = 16;</code>
+   * @return Whether the planKey field is set.
+   */
+  boolean hasPlanKey();
+  /**
+   * <code>optional string planKey = 16;</code>
+   * @return The planKey.
+   */
+  java.lang.String getPlanKey();
+  /**
+   * <code>optional string planKey = 16;</code>
+   * @return The bytes for planKey.
+   */
+  com.google.protobuf.ByteString
+      getPlanKeyBytes();
 }

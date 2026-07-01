@@ -694,6 +694,15 @@ import name.abuchen.portfolio.money.Money;
                 LedgerModelLoadSupport.setEntrySource(entry, newEntry.getSource());
             if (newEntry.hasUpdatedAt())
                 LedgerModelLoadSupport.setEntryUpdatedAt(entry, fromUpdatedAtTimestamp(newEntry.getUpdatedAt()));
+            if (newEntry.hasGeneratedByPlanKey())
+                LedgerModelLoadSupport.setGeneratedByPlanKey(entry, newEntry.getGeneratedByPlanKey());
+            if (newEntry.hasPlanExecutionDate())
+                LedgerModelLoadSupport.setPlanExecutionDate(entry,
+                                LocalDate.ofEpochDay(newEntry.getPlanExecutionDate()));
+            if (newEntry.hasPlanExecutionSequence())
+                LedgerModelLoadSupport.setPlanExecutionSequence(entry, newEntry.getPlanExecutionSequence());
+            if (newEntry.hasPreferredViewKind())
+                LedgerModelLoadSupport.setPreferredViewKind(entry, newEntry.getPreferredViewKind());
 
             for (PLedgerParameter newParameter : newEntry.getParametersList())
                 LedgerModelLoadSupport.addEntryParameter(entry, loadLedgerParameter(newParameter, lookup));
@@ -980,6 +989,8 @@ import name.abuchen.portfolio.money.Money;
             plan.setName(newPlan.getName());
             if (newPlan.hasNote())
                 plan.setNote(newPlan.getNote());
+            if (newPlan.hasPlanKey())
+                plan.setPlanKey(newPlan.getPlanKey());
 
             if (newPlan.hasSecurity())
                 plan.setSecurity(lookup.getSecurity(newPlan.getSecurity()));
@@ -1024,40 +1035,59 @@ import name.abuchen.portfolio.money.Money;
                     continue;
                 }
 
-                InvestmentPlan.LedgerExecutionRef executionRef = ledgerExecutionRefForProjectionUUID(client, uuid);
-                if (executionRef != null)
-                {
-                    plan.addLedgerExecutionRef(executionRef);
+                if (markPlanExecutionForProjectionUUID(client, plan, uuid))
                     continue;
-                }
 
                 throw new UnsupportedOperationException(uuid);
             }
 
             for (PInvestmentPlanLedgerExecutionRef newRef : newPlan.getLedgerExecutionRefsList())
-            {
-                plan.addLedgerExecutionRef(new InvestmentPlan.LedgerExecutionRef(newRef.getLedgerEntryUUID(),
-                                newRef.hasProjectionUUID() ? newRef.getProjectionUUID() : null,
-                                newRef.hasProjectionRole() ? fromProto(newRef.getProjectionRole()) : null));
-            }
+                markPlanExecutionForLegacyRef(client, plan, newRef);
 
             client.addPlan(plan);
         }
     }
 
-    private InvestmentPlan.LedgerExecutionRef ledgerExecutionRefForProjectionUUID(Client client, String projectionUUID)
+    private boolean markPlanExecutionForProjectionUUID(Client client, InvestmentPlan plan, String projectionUUID)
     {
         for (LedgerEntry entry : client.getLedger().getEntries())
         {
             for (LedgerProjectionRef projectionRef : entry.getProjectionRefs())
             {
                 if (projectionRef.getUUID().equals(projectionUUID))
-                    return new InvestmentPlan.LedgerExecutionRef(entry.getUUID(), projectionRef.getUUID(),
-                                    projectionRef.getRole());
+                {
+                    plan.markLedgerExecution(entry, entry.getDateTime().toLocalDate(), viewKind(projectionRef.getRole()));
+                    return true;
+                }
             }
         }
 
-        return null;
+        return false;
+    }
+
+    private void markPlanExecutionForLegacyRef(Client client, InvestmentPlan plan, PInvestmentPlanLedgerExecutionRef ref)
+    {
+        for (LedgerEntry entry : client.getLedger().getEntries())
+        {
+            if (!entry.getUUID().equals(ref.getLedgerEntryUUID()))
+                continue;
+
+            var preferredViewKind = ref.hasProjectionRole() ? viewKind(fromProto(ref.getProjectionRole())) : null;
+            plan.markLedgerExecution(entry, entry.getDateTime().toLocalDate(), preferredViewKind);
+            return;
+        }
+    }
+
+    private InvestmentPlan.LedgerExecutionViewKind viewKind(LedgerProjectionRole role)
+    {
+        if (role == null)
+            return null;
+
+        return switch (role)
+        {
+            case ACCOUNT, SOURCE_ACCOUNT, TARGET_ACCOUNT, CASH_COMPENSATION -> InvestmentPlan.LedgerExecutionViewKind.ACCOUNT;
+            default -> InvestmentPlan.LedgerExecutionViewKind.PORTFOLIO;
+        };
     }
 
     private void loadExtensions(PClient newClient, Client client)
@@ -1091,6 +1121,7 @@ import name.abuchen.portfolio.money.Money;
         saveSecurities(client, newClient);
         saveAccounts(client, newClient);
         savePortfolios(client, newClient);
+        prepareInvestmentPlanLedgerExecutions(client);
         saveLedger(client, newClient);
         saveTransactions(client, newClient);
 
@@ -1296,6 +1327,14 @@ import name.abuchen.portfolio.money.Money;
             newEntry.setSource(entry.getSource());
         if (entry.getUpdatedAt() != null)
             newEntry.setUpdatedAt(asUpdatedAtTimestamp(entry.getUpdatedAt()));
+        if (entry.getGeneratedByPlanKey() != null)
+            newEntry.setGeneratedByPlanKey(entry.getGeneratedByPlanKey());
+        if (entry.getPlanExecutionDate() != null)
+            newEntry.setPlanExecutionDate(entry.getPlanExecutionDate().toEpochDay());
+        if (entry.getPlanExecutionSequence() != null)
+            newEntry.setPlanExecutionSequence(entry.getPlanExecutionSequence());
+        if (entry.getPreferredViewKind() != null)
+            newEntry.setPreferredViewKind(entry.getPreferredViewKind());
 
         for (LedgerParameter<?> parameter : entry.getParameters())
             newEntry.addParameters(saveLedgerParameter(parameter));
@@ -1793,6 +1832,7 @@ import name.abuchen.portfolio.money.Money;
         client.getPlans().forEach(plan -> {
             PInvestmentPlan.Builder newPlan = PInvestmentPlan.newBuilder();
             newPlan.setName(plan.getName());
+            newPlan.setPlanKey(plan.getPlanKey());
             if (plan.getNote() != null)
                 newPlan.setNote(plan.getNote());
 
@@ -1830,40 +1870,23 @@ import name.abuchen.portfolio.money.Money;
                     throw new UnsupportedOperationException();
             }
 
-            Set<String> ledgerExecutionRefKeys = new HashSet<>();
-
             plan.getTransactions().forEach(t -> {
                 if (t instanceof LedgerBackedTransaction ledgerBackedTransaction)
-                    addLedgerExecutionRef(newPlan, InvestmentPlan.LedgerExecutionRef.of(ledgerBackedTransaction),
-                                    ledgerExecutionRefKeys);
+                    plan.markLedgerExecution(ledgerBackedTransaction);
                 else
                     newPlan.addTransactions(t.getUUID());
             });
-
-            plan.getLedgerExecutionRefs()
-                            .forEach(ref -> addLedgerExecutionRef(newPlan, ref, ledgerExecutionRefKeys));
 
             newClient.addPlans(newPlan);
         });
     }
 
-    private void addLedgerExecutionRef(PInvestmentPlan.Builder newPlan, InvestmentPlan.LedgerExecutionRef ref,
-                    Set<String> keys)
+    private void prepareInvestmentPlanLedgerExecutions(Client client)
     {
-        String key = ref.getLedgerEntryUUID() + "|" + ref.getProjectionUUID() + "|" + ref.getProjectionRole(); //$NON-NLS-1$ //$NON-NLS-2$
-
-        if (!keys.add(key))
-            return;
-
-        PInvestmentPlanLedgerExecutionRef.Builder newRef = PInvestmentPlanLedgerExecutionRef.newBuilder();
-        newRef.setLedgerEntryUUID(ref.getLedgerEntryUUID());
-
-        if (ref.getProjectionUUID() != null)
-            newRef.setProjectionUUID(ref.getProjectionUUID());
-        if (ref.getProjectionRole() != null)
-            newRef.setProjectionRole(toProto(ref.getProjectionRole()));
-
-        newPlan.addLedgerExecutionRefs(newRef);
+        for (var plan : client.getPlans())
+            for (var transaction : plan.getTransactions())
+                if (transaction instanceof LedgerBackedTransaction ledgerBackedTransaction)
+                    plan.markLedgerExecution(ledgerBackedTransaction);
     }
 
     private void validateLedger(Client client)

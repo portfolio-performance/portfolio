@@ -48,6 +48,7 @@ import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
 import name.abuchen.portfolio.model.ledger.projection.LedgerProjectionService;
 import name.abuchen.portfolio.model.proto.v1.PClient;
+import name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef;
 import name.abuchen.portfolio.model.proto.v1.PLedgerEntry;
 import name.abuchen.portfolio.model.proto.v1.PLedgerParameter;
 import name.abuchen.portfolio.model.proto.v1.PLedgerParameterValueKind;
@@ -717,11 +718,11 @@ public class LedgerProtobufPersistenceTest
     }
 
     /**
-     * Verifies that plan execution refs roundtrip through protobuf.
-     * The saved refs must still identify the generated ledger-backed booking after load.
+     * Verifies that plan execution metadata roundtrips through protobuf.
+     * The saved plan key must still identify the generated ledger-backed booking after load.
      */
     @Test
-    public void testInvestmentPlanLedgerExecutionRefsRoundtrip() throws IOException
+    public void testInvestmentPlanExecutionMetadataRoundtrip() throws IOException
     {
         var fixture = fixture();
         var buy = new LedgerTransactionCreator(fixture.client()).createBuy(metadata(), cashLeg(fixture.account(), 100),
@@ -738,42 +739,58 @@ public class LedgerProtobufPersistenceTest
         var proto = saveProto(fixture.client());
 
         assertThat(proto.getPlans(0).getTransactionsCount(), is(0));
-        assertThat(proto.getPlans(0).getLedgerExecutionRefsCount(), is(1));
-        assertThat(proto.getPlans(0).getLedgerExecutionRefs(0).getLedgerEntryUUID(), is(buy.getUUID()));
-        assertThat(proto.getPlans(0).getLedgerExecutionRefs(0).getProjectionUUID(), is(portfolioProjection.getUUID()));
-        assertThat(proto.getPlans(0).getLedgerExecutionRefs(0).getProjectionRole(),
-                        is(PLedgerProjectionRole.LEDGER_PROJECTION_ROLE_PORTFOLIO));
+        assertThat(proto.getPlans(0).getLedgerExecutionRefsCount(), is(0));
+        assertThat(proto.getPlans(0).hasPlanKey(), is(true));
+        assertThat(proto.getLedger().getEntries(0).getGeneratedByPlanKey(), is(proto.getPlans(0).getPlanKey()));
+        assertThat(proto.getLedger().getEntries(0).getPlanExecutionDate(),
+                        is(portfolioProjection.getDateTime().toLocalDate().toEpochDay()));
+        assertThat(proto.getLedger().getEntries(0).getPreferredViewKind(),
+                        is(InvestmentPlan.LedgerExecutionViewKind.PORTFOLIO.name()));
 
         var loaded = load(wrap(proto));
         var loadedPlan = loaded.getPlans().get(0);
 
         assertThat(loadedPlan.getTransactions().size(), is(0));
-        assertThat(loadedPlan.getLedgerExecutionRefs().size(), is(1));
+        assertThat(loadedPlan.getLedgerExecutionRefs().size(), is(0));
         assertThat(loadedPlan.getTransactions(loaded).size(), is(1));
         assertThat(loadedPlan.getTransactions(loaded).get(0).getOwner(), is(loaded.getPortfolios().get(0)));
-        assertThat(loadedPlan.getTransactions(loaded).get(0).getTransaction().getUUID(),
-                        is(portfolioProjection.getUUID()));
     }
 
     /**
-     * Verifies that ambiguous plan execution refs are rejected during protobuf load.
-     * A plan must not silently pick one of several possible projections.
+     * Verifies that legacy protobuf plan refs are consumed as migration input.
+     * The legacy ledger/projection UUIDs must not become the new plan relation.
      */
     @Test
-    public void testAmbiguousInvestmentPlanLedgerExecutionRefIsRejected() throws IOException
+    public void testLegacyInvestmentPlanLedgerExecutionRefMigratesToPlanMetadata() throws IOException
     {
         var fixture = fixture();
         var buy = new LedgerTransactionCreator(fixture.client()).createBuy(metadata(), cashLeg(fixture.account(), 100),
                         securityLeg(fixture.portfolio(), fixture.security(), 5, 100), LedgerCreationUnits.none())
                         .getEntry();
+        var portfolioProjection = buy.getProjectionRefs().stream()
+                        .filter(projection -> projection.getRole() == LedgerProjectionRole.PORTFOLIO).findFirst()
+                        .orElseThrow();
         var plan = plan(fixture);
 
-        plan.addLedgerExecutionRef(new InvestmentPlan.LedgerExecutionRef(buy.getUUID(), null, null));
         fixture.client().addPlan(plan);
 
-        var loaded = load(saveBytes(fixture.client()));
+        var proto = saveProto(fixture.client()).toBuilder();
+        proto.getPlansBuilder(0).clearPlanKey()
+                        .addLedgerExecutionRefs(PInvestmentPlanLedgerExecutionRef.newBuilder()
+                                        .setLedgerEntryUUID(buy.getUUID())
+                                        .setProjectionUUID(portfolioProjection.getUUID())
+                                        .setProjectionRole(PLedgerProjectionRole.LEDGER_PROJECTION_ROLE_PORTFOLIO));
 
-        assertThrows(IllegalArgumentException.class, () -> loaded.getPlans().get(0).getTransactions(loaded));
+        var loaded = load(wrap(proto.build()));
+        var loadedPlan = loaded.getPlans().get(0);
+        var loadedEntry = loaded.getLedger().getEntries().get(0);
+
+        assertThat(loadedPlan.getLedgerExecutionRefs().size(), is(0));
+        assertThat(loadedPlan.getTransactions(loaded).size(), is(1));
+        assertThat(loadedEntry.getGeneratedByPlanKey(), is(loadedPlan.getPlanKey()));
+        assertFalse(loadedEntry.getGeneratedByPlanKey().equals(buy.getUUID()));
+        assertFalse(loadedEntry.getGeneratedByPlanKey().equals(portfolioProjection.getUUID()));
+        assertThat(loadedEntry.getPreferredViewKind(), is(InvestmentPlan.LedgerExecutionViewKind.PORTFOLIO.name()));
     }
 
     /**

@@ -155,3 +155,4 @@ public enum PLedgerProjectionMembershipRole
 
   // @@protoc_insertion_point(enum_scope:name.abuchen.portfolio.PLedgerProjectionMembershipRole)
 }
+

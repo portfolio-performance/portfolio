@@ -145,7 +145,7 @@ public interface PLedgerPostingOrBuilder extends
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerParameter parameters = 12;</code>
    */
-  java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerParameter>
+  java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerParameter> 
       getParametersList();
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerParameter parameters = 12;</code>
@@ -158,7 +158,7 @@ public interface PLedgerPostingOrBuilder extends
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerParameter parameters = 12;</code>
    */
-  java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerParameterOrBuilder>
+  java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerParameterOrBuilder> 
       getParametersOrBuilderList();
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerParameter parameters = 12;</code>

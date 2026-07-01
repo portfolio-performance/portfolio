@@ -2,6 +2,7 @@ package name.abuchen.portfolio.model;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -49,6 +50,26 @@ final class LedgerModelLoadSupport
     static void setEntryUpdatedAt(LedgerEntry entry, Instant updatedAt)
     {
         Objects.requireNonNull(entry).setUpdatedAt(updatedAt);
+    }
+
+    static void setGeneratedByPlanKey(LedgerEntry entry, String generatedByPlanKey)
+    {
+        Objects.requireNonNull(entry).setGeneratedByPlanKey(generatedByPlanKey);
+    }
+
+    static void setPlanExecutionDate(LedgerEntry entry, LocalDate planExecutionDate)
+    {
+        Objects.requireNonNull(entry).setPlanExecutionDate(planExecutionDate);
+    }
+
+    static void setPlanExecutionSequence(LedgerEntry entry, Integer planExecutionSequence)
+    {
+        Objects.requireNonNull(entry).setPlanExecutionSequence(planExecutionSequence);
+    }
+
+    static void setPreferredViewKind(LedgerEntry entry, String preferredViewKind)
+    {
+        Objects.requireNonNull(entry).setPreferredViewKind(preferredViewKind);
     }
 
     static void addEntry(Ledger ledger, LedgerEntry entry)

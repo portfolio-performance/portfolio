@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.model.ledger;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,6 +24,10 @@ public class LedgerEntry
     private String note;
     private String source;
     private Instant updatedAt;
+    private String generatedByPlanKey;
+    private LocalDate planExecutionDate;
+    private Integer planExecutionSequence;
+    private String preferredViewKind;
     private List<LedgerParameter<?>> parameters = new ArrayList<>();
     private final List<LedgerPosting> postings = new ArrayList<>();
     private final List<LedgerProjectionRef> projectionRefs = new ArrayList<>();
@@ -101,6 +106,50 @@ public class LedgerEntry
     public void setUpdatedAt(Instant updatedAt)
     {
         this.updatedAt = updatedAt;
+    }
+
+    public String getGeneratedByPlanKey()
+    {
+        return generatedByPlanKey;
+    }
+
+    public void setGeneratedByPlanKey(String generatedByPlanKey)
+    {
+        this.generatedByPlanKey = generatedByPlanKey;
+        touch();
+    }
+
+    public LocalDate getPlanExecutionDate()
+    {
+        return planExecutionDate;
+    }
+
+    public void setPlanExecutionDate(LocalDate planExecutionDate)
+    {
+        this.planExecutionDate = planExecutionDate;
+        touch();
+    }
+
+    public Integer getPlanExecutionSequence()
+    {
+        return planExecutionSequence;
+    }
+
+    public void setPlanExecutionSequence(Integer planExecutionSequence)
+    {
+        this.planExecutionSequence = planExecutionSequence;
+        touch();
+    }
+
+    public String getPreferredViewKind()
+    {
+        return preferredViewKind;
+    }
+
+    public void setPreferredViewKind(String preferredViewKind)
+    {
+        this.preferredViewKind = preferredViewKind;
+        touch();
     }
 
     public List<LedgerParameter<?>> getParameters()

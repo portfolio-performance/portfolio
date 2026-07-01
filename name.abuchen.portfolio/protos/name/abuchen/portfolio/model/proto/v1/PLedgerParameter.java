@@ -85,7 +85,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs =
+      com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       stringValue_ = s;
@@ -101,7 +101,7 @@ private static final long serialVersionUID = 0L;
       getStringValueBytes() {
     java.lang.Object ref = stringValue_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b =
+      com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       stringValue_ = b;
@@ -196,7 +196,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs =
+      com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       moneyCurrency_ = s;
@@ -212,7 +212,7 @@ private static final long serialVersionUID = 0L;
       getMoneyCurrencyBytes() {
     java.lang.Object ref = moneyCurrency_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b =
+      com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       moneyCurrency_ = b;
@@ -243,7 +243,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs =
+      com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       security_ = s;
@@ -259,7 +259,7 @@ private static final long serialVersionUID = 0L;
       getSecurityBytes() {
     java.lang.Object ref = security_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b =
+      com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       security_ = b;
@@ -290,7 +290,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs =
+      com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       account_ = s;
@@ -306,7 +306,7 @@ private static final long serialVersionUID = 0L;
       getAccountBytes() {
     java.lang.Object ref = account_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b =
+      com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       account_ = b;
@@ -337,7 +337,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs =
+      com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       portfolio_ = s;
@@ -353,7 +353,7 @@ private static final long serialVersionUID = 0L;
       getPortfolioBytes() {
     java.lang.Object ref = portfolio_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b =
+      com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       portfolio_ = b;
@@ -410,7 +410,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs =
+      com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       typeCode_ = s;
@@ -426,7 +426,7 @@ private static final long serialVersionUID = 0L;
       getTypeCodeBytes() {
     java.lang.Object ref = typeCode_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b =
+      com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       typeCode_ = b;
@@ -1240,7 +1240,7 @@ private static final long serialVersionUID = 0L;
         getStringValueBytes() {
       java.lang.Object ref = stringValue_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
+        com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         stringValue_ = b;
@@ -1393,7 +1393,7 @@ private static final long serialVersionUID = 0L;
      * <code>optional .name.abuchen.portfolio.PDecimalValue decimalValue = 4;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        name.abuchen.portfolio.model.proto.v1.PDecimalValue, name.abuchen.portfolio.model.proto.v1.PDecimalValue.Builder, name.abuchen.portfolio.model.proto.v1.PDecimalValueOrBuilder>
+        name.abuchen.portfolio.model.proto.v1.PDecimalValue, name.abuchen.portfolio.model.proto.v1.PDecimalValue.Builder, name.abuchen.portfolio.model.proto.v1.PDecimalValueOrBuilder> 
         getDecimalValueFieldBuilder() {
       if (decimalValueBuilder_ == null) {
         decimalValueBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -1518,7 +1518,7 @@ private static final long serialVersionUID = 0L;
         getMoneyCurrencyBytes() {
       java.lang.Object ref = moneyCurrency_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
+        com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         moneyCurrency_ = b;
@@ -1597,7 +1597,7 @@ private static final long serialVersionUID = 0L;
         getSecurityBytes() {
       java.lang.Object ref = security_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
+        com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         security_ = b;
@@ -1676,7 +1676,7 @@ private static final long serialVersionUID = 0L;
         getAccountBytes() {
       java.lang.Object ref = account_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
+        com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         account_ = b;
@@ -1755,7 +1755,7 @@ private static final long serialVersionUID = 0L;
         getPortfolioBytes() {
       java.lang.Object ref = portfolio_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
+        com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         portfolio_ = b;
@@ -1908,7 +1908,7 @@ private static final long serialVersionUID = 0L;
      * <code>optional .name.abuchen.portfolio.PLocalDateTime localDateTimeValue = 12;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        name.abuchen.portfolio.model.proto.v1.PLocalDateTime, name.abuchen.portfolio.model.proto.v1.PLocalDateTime.Builder, name.abuchen.portfolio.model.proto.v1.PLocalDateTimeOrBuilder>
+        name.abuchen.portfolio.model.proto.v1.PLocalDateTime, name.abuchen.portfolio.model.proto.v1.PLocalDateTime.Builder, name.abuchen.portfolio.model.proto.v1.PLocalDateTimeOrBuilder> 
         getLocalDateTimeValueFieldBuilder() {
       if (localDateTimeValueBuilder_ == null) {
         localDateTimeValueBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -1953,7 +1953,7 @@ private static final long serialVersionUID = 0L;
         getTypeCodeBytes() {
       java.lang.Object ref = typeCode_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
+        com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         typeCode_ = b;
@@ -2158,3 +2158,4 @@ private static final long serialVersionUID = 0L;
   }
 
 }
+

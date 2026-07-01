@@ -86,7 +86,7 @@ public interface PLedgerEntryOrBuilder extends
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerPosting postings = 7;</code>
    */
-  java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerPosting>
+  java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerPosting> 
       getPostingsList();
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerPosting postings = 7;</code>
@@ -99,7 +99,7 @@ public interface PLedgerEntryOrBuilder extends
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerPosting postings = 7;</code>
    */
-  java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerPostingOrBuilder>
+  java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerPostingOrBuilder> 
       getPostingsOrBuilderList();
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerPosting postings = 7;</code>
@@ -110,7 +110,7 @@ public interface PLedgerEntryOrBuilder extends
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
    */
-  java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef>
+  java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef> 
       getProjectionRefsList();
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
@@ -123,7 +123,7 @@ public interface PLedgerEntryOrBuilder extends
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
    */
-  java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRefOrBuilder>
+  java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRefOrBuilder> 
       getProjectionRefsOrBuilderList();
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
@@ -145,7 +145,7 @@ public interface PLedgerEntryOrBuilder extends
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerParameter parameters = 10;</code>
    */
-  java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerParameter>
+  java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerParameter> 
       getParametersList();
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerParameter parameters = 10;</code>
@@ -158,11 +158,67 @@ public interface PLedgerEntryOrBuilder extends
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerParameter parameters = 10;</code>
    */
-  java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerParameterOrBuilder>
+  java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerParameterOrBuilder> 
       getParametersOrBuilderList();
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerParameter parameters = 10;</code>
    */
   name.abuchen.portfolio.model.proto.v1.PLedgerParameterOrBuilder getParametersOrBuilder(
       int index);
+
+  /**
+   * <code>optional string generatedByPlanKey = 11;</code>
+   * @return Whether the generatedByPlanKey field is set.
+   */
+  boolean hasGeneratedByPlanKey();
+  /**
+   * <code>optional string generatedByPlanKey = 11;</code>
+   * @return The generatedByPlanKey.
+   */
+  java.lang.String getGeneratedByPlanKey();
+  /**
+   * <code>optional string generatedByPlanKey = 11;</code>
+   * @return The bytes for generatedByPlanKey.
+   */
+  com.google.protobuf.ByteString
+      getGeneratedByPlanKeyBytes();
+
+  /**
+   * <code>optional int64 planExecutionDate = 12;</code>
+   * @return Whether the planExecutionDate field is set.
+   */
+  boolean hasPlanExecutionDate();
+  /**
+   * <code>optional int64 planExecutionDate = 12;</code>
+   * @return The planExecutionDate.
+   */
+  long getPlanExecutionDate();
+
+  /**
+   * <code>optional int32 planExecutionSequence = 13;</code>
+   * @return Whether the planExecutionSequence field is set.
+   */
+  boolean hasPlanExecutionSequence();
+  /**
+   * <code>optional int32 planExecutionSequence = 13;</code>
+   * @return The planExecutionSequence.
+   */
+  int getPlanExecutionSequence();
+
+  /**
+   * <code>optional string preferredViewKind = 14;</code>
+   * @return Whether the preferredViewKind field is set.
+   */
+  boolean hasPreferredViewKind();
+  /**
+   * <code>optional string preferredViewKind = 14;</code>
+   * @return The preferredViewKind.
+   */
+  java.lang.String getPreferredViewKind();
+  /**
+   * <code>optional string preferredViewKind = 14;</code>
+   * @return The bytes for preferredViewKind.
+   */
+  com.google.protobuf.ByteString
+      getPreferredViewKindBytes();
 }

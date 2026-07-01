@@ -219,6 +219,7 @@ message PInvestmentPlan {
   Type type = 14;
 
   repeated PInvestmentPlanLedgerExecutionRef ledgerExecutionRefs = 15;
+  optional string planKey = 16;
 }
 
 message PInvestmentPlanLedgerExecutionRef {
@@ -285,6 +286,10 @@ message PLedgerEntry {
   repeated PLedgerProjectionRef projectionRefs = 8;
   optional uint32 typeId = 9;
   repeated PLedgerParameter parameters = 10;
+  optional string generatedByPlanKey = 11;
+  optional int64 planExecutionDate = 12;
+  optional int32 planExecutionSequence = 13;
+  optional string preferredViewKind = 14;
 }
 
 message PLedgerPosting {

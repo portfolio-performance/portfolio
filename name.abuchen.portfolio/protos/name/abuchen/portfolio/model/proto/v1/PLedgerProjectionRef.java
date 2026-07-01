@@ -57,7 +57,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs =
+      com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       uuid_ = s;
@@ -73,7 +73,7 @@ private static final long serialVersionUID = 0L;
       getUuidBytes() {
     java.lang.Object ref = uuid_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b =
+      com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       uuid_ = b;
@@ -122,7 +122,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs =
+      com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       account_ = s;
@@ -138,7 +138,7 @@ private static final long serialVersionUID = 0L;
       getAccountBytes() {
     java.lang.Object ref = account_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b =
+      com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       account_ = b;
@@ -169,7 +169,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs =
+      com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       portfolio_ = s;
@@ -185,7 +185,7 @@ private static final long serialVersionUID = 0L;
       getPortfolioBytes() {
     java.lang.Object ref = portfolio_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b =
+      com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       portfolio_ = b;
@@ -209,7 +209,7 @@ private static final long serialVersionUID = 0L;
    * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
    */
   @java.lang.Override
-  public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipOrBuilder>
+  public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipOrBuilder> 
       getMembershipsOrBuilderList() {
     return memberships_;
   }
@@ -600,7 +600,7 @@ private static final long serialVersionUID = 0L;
             membershipsBuilder_ = null;
             memberships_ = other.memberships_;
             bitField0_ = (bitField0_ & ~0x00000010);
-            membershipsBuilder_ =
+            membershipsBuilder_ = 
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getMembershipsFieldBuilder() : null;
           } else {
@@ -709,7 +709,7 @@ private static final long serialVersionUID = 0L;
         getUuidBytes() {
       java.lang.Object ref = uuid_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
+        com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         uuid_ = b;
@@ -841,7 +841,7 @@ private static final long serialVersionUID = 0L;
         getAccountBytes() {
       java.lang.Object ref = account_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
+        com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         account_ = b;
@@ -920,7 +920,7 @@ private static final long serialVersionUID = 0L;
         getPortfolioBytes() {
       java.lang.Object ref = portfolio_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
+        com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         portfolio_ = b;
@@ -1162,7 +1162,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
      */
-    public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipOrBuilder>
+    public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipOrBuilder> 
          getMembershipsOrBuilderList() {
       if (membershipsBuilder_ != null) {
         return membershipsBuilder_.getMessageOrBuilderList();
@@ -1188,12 +1188,12 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
      */
-    public java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership.Builder>
+    public java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership.Builder> 
          getMembershipsBuilderList() {
       return getMembershipsFieldBuilder().getBuilderList();
     }
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership, name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership.Builder, name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipOrBuilder>
+        name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership, name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership.Builder, name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipOrBuilder> 
         getMembershipsFieldBuilder() {
       if (membershipsBuilder_ == null) {
         membershipsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
@@ -1269,3 +1269,4 @@ private static final long serialVersionUID = 0L;
   }
 
 }
+

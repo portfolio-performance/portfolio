@@ -22,6 +22,8 @@ private static final long serialVersionUID = 0L;
     postings_ = java.util.Collections.emptyList();
     projectionRefs_ = java.util.Collections.emptyList();
     parameters_ = java.util.Collections.emptyList();
+    generatedByPlanKey_ = "";
+    preferredViewKind_ = "";
   }
 
   @java.lang.Override
@@ -58,7 +60,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs =
+      com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       uuid_ = s;
@@ -74,7 +76,7 @@ private static final long serialVersionUID = 0L;
       getUuidBytes() {
     java.lang.Object ref = uuid_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b =
+      com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       uuid_ = b;
@@ -131,7 +133,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs =
+      com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       note_ = s;
@@ -147,7 +149,7 @@ private static final long serialVersionUID = 0L;
       getNoteBytes() {
     java.lang.Object ref = note_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b =
+      com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       note_ = b;
@@ -178,7 +180,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs =
+      com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       source_ = s;
@@ -194,7 +196,7 @@ private static final long serialVersionUID = 0L;
       getSourceBytes() {
     java.lang.Object ref = source_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b =
+      com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       source_ = b;
@@ -244,7 +246,7 @@ private static final long serialVersionUID = 0L;
    * <code>repeated .name.abuchen.portfolio.PLedgerPosting postings = 7;</code>
    */
   @java.lang.Override
-  public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerPostingOrBuilder>
+  public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerPostingOrBuilder> 
       getPostingsOrBuilderList() {
     return postings_;
   }
@@ -285,7 +287,7 @@ private static final long serialVersionUID = 0L;
    * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
    */
   @java.lang.Override
-  public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRefOrBuilder>
+  public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRefOrBuilder> 
       getProjectionRefsOrBuilderList() {
     return projectionRefs_;
   }
@@ -345,7 +347,7 @@ private static final long serialVersionUID = 0L;
    * <code>repeated .name.abuchen.portfolio.PLedgerParameter parameters = 10;</code>
    */
   @java.lang.Override
-  public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerParameterOrBuilder>
+  public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerParameterOrBuilder> 
       getParametersOrBuilderList() {
     return parameters_;
   }
@@ -370,6 +372,138 @@ private static final long serialVersionUID = 0L;
   public name.abuchen.portfolio.model.proto.v1.PLedgerParameterOrBuilder getParametersOrBuilder(
       int index) {
     return parameters_.get(index);
+  }
+
+  public static final int GENERATEDBYPLANKEY_FIELD_NUMBER = 11;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object generatedByPlanKey_ = "";
+  /**
+   * <code>optional string generatedByPlanKey = 11;</code>
+   * @return Whether the generatedByPlanKey field is set.
+   */
+  @java.lang.Override
+  public boolean hasGeneratedByPlanKey() {
+    return ((bitField0_ & 0x00000008) != 0);
+  }
+  /**
+   * <code>optional string generatedByPlanKey = 11;</code>
+   * @return The generatedByPlanKey.
+   */
+  @java.lang.Override
+  public java.lang.String getGeneratedByPlanKey() {
+    java.lang.Object ref = generatedByPlanKey_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      generatedByPlanKey_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>optional string generatedByPlanKey = 11;</code>
+   * @return The bytes for generatedByPlanKey.
+   */
+  @java.lang.Override
+  public com.google.protobuf.ByteString
+      getGeneratedByPlanKeyBytes() {
+    java.lang.Object ref = generatedByPlanKey_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      generatedByPlanKey_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
+  public static final int PLANEXECUTIONDATE_FIELD_NUMBER = 12;
+  private long planExecutionDate_ = 0L;
+  /**
+   * <code>optional int64 planExecutionDate = 12;</code>
+   * @return Whether the planExecutionDate field is set.
+   */
+  @java.lang.Override
+  public boolean hasPlanExecutionDate() {
+    return ((bitField0_ & 0x00000010) != 0);
+  }
+  /**
+   * <code>optional int64 planExecutionDate = 12;</code>
+   * @return The planExecutionDate.
+   */
+  @java.lang.Override
+  public long getPlanExecutionDate() {
+    return planExecutionDate_;
+  }
+
+  public static final int PLANEXECUTIONSEQUENCE_FIELD_NUMBER = 13;
+  private int planExecutionSequence_ = 0;
+  /**
+   * <code>optional int32 planExecutionSequence = 13;</code>
+   * @return Whether the planExecutionSequence field is set.
+   */
+  @java.lang.Override
+  public boolean hasPlanExecutionSequence() {
+    return ((bitField0_ & 0x00000020) != 0);
+  }
+  /**
+   * <code>optional int32 planExecutionSequence = 13;</code>
+   * @return The planExecutionSequence.
+   */
+  @java.lang.Override
+  public int getPlanExecutionSequence() {
+    return planExecutionSequence_;
+  }
+
+  public static final int PREFERREDVIEWKIND_FIELD_NUMBER = 14;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object preferredViewKind_ = "";
+  /**
+   * <code>optional string preferredViewKind = 14;</code>
+   * @return Whether the preferredViewKind field is set.
+   */
+  @java.lang.Override
+  public boolean hasPreferredViewKind() {
+    return ((bitField0_ & 0x00000040) != 0);
+  }
+  /**
+   * <code>optional string preferredViewKind = 14;</code>
+   * @return The preferredViewKind.
+   */
+  @java.lang.Override
+  public java.lang.String getPreferredViewKind() {
+    java.lang.Object ref = preferredViewKind_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      preferredViewKind_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>optional string preferredViewKind = 14;</code>
+   * @return The bytes for preferredViewKind.
+   */
+  @java.lang.Override
+  public com.google.protobuf.ByteString
+      getPreferredViewKindBytes() {
+    java.lang.Object ref = preferredViewKind_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      preferredViewKind_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
   }
 
   private byte memoizedIsInitialized = -1;
@@ -413,6 +547,18 @@ private static final long serialVersionUID = 0L;
     for (int i = 0; i < parameters_.size(); i++) {
       output.writeMessage(10, parameters_.get(i));
     }
+    if (((bitField0_ & 0x00000008) != 0)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 11, generatedByPlanKey_);
+    }
+    if (((bitField0_ & 0x00000010) != 0)) {
+      output.writeInt64(12, planExecutionDate_);
+    }
+    if (((bitField0_ & 0x00000020) != 0)) {
+      output.writeInt32(13, planExecutionSequence_);
+    }
+    if (((bitField0_ & 0x00000040) != 0)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 14, preferredViewKind_);
+    }
     getUnknownFields().writeTo(output);
   }
 
@@ -454,6 +600,20 @@ private static final long serialVersionUID = 0L;
     for (int i = 0; i < parameters_.size(); i++) {
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(10, parameters_.get(i));
+    }
+    if (((bitField0_ & 0x00000008) != 0)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(11, generatedByPlanKey_);
+    }
+    if (((bitField0_ & 0x00000010) != 0)) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt64Size(12, planExecutionDate_);
+    }
+    if (((bitField0_ & 0x00000020) != 0)) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(13, planExecutionSequence_);
+    }
+    if (((bitField0_ & 0x00000040) != 0)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(14, preferredViewKind_);
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -503,6 +663,26 @@ private static final long serialVersionUID = 0L;
     }
     if (!getParametersList()
         .equals(other.getParametersList())) return false;
+    if (hasGeneratedByPlanKey() != other.hasGeneratedByPlanKey()) return false;
+    if (hasGeneratedByPlanKey()) {
+      if (!getGeneratedByPlanKey()
+          .equals(other.getGeneratedByPlanKey())) return false;
+    }
+    if (hasPlanExecutionDate() != other.hasPlanExecutionDate()) return false;
+    if (hasPlanExecutionDate()) {
+      if (getPlanExecutionDate()
+          != other.getPlanExecutionDate()) return false;
+    }
+    if (hasPlanExecutionSequence() != other.hasPlanExecutionSequence()) return false;
+    if (hasPlanExecutionSequence()) {
+      if (getPlanExecutionSequence()
+          != other.getPlanExecutionSequence()) return false;
+    }
+    if (hasPreferredViewKind() != other.hasPreferredViewKind()) return false;
+    if (hasPreferredViewKind()) {
+      if (!getPreferredViewKind()
+          .equals(other.getPreferredViewKind())) return false;
+    }
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -547,6 +727,23 @@ private static final long serialVersionUID = 0L;
     if (getParametersCount() > 0) {
       hash = (37 * hash) + PARAMETERS_FIELD_NUMBER;
       hash = (53 * hash) + getParametersList().hashCode();
+    }
+    if (hasGeneratedByPlanKey()) {
+      hash = (37 * hash) + GENERATEDBYPLANKEY_FIELD_NUMBER;
+      hash = (53 * hash) + getGeneratedByPlanKey().hashCode();
+    }
+    if (hasPlanExecutionDate()) {
+      hash = (37 * hash) + PLANEXECUTIONDATE_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getPlanExecutionDate());
+    }
+    if (hasPlanExecutionSequence()) {
+      hash = (37 * hash) + PLANEXECUTIONSEQUENCE_FIELD_NUMBER;
+      hash = (53 * hash) + getPlanExecutionSequence();
+    }
+    if (hasPreferredViewKind()) {
+      hash = (37 * hash) + PREFERREDVIEWKIND_FIELD_NUMBER;
+      hash = (53 * hash) + getPreferredViewKind().hashCode();
     }
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
@@ -712,6 +909,10 @@ private static final long serialVersionUID = 0L;
         parametersBuilder_.clear();
       }
       bitField0_ = (bitField0_ & ~0x00000100);
+      generatedByPlanKey_ = "";
+      planExecutionDate_ = 0L;
+      planExecutionSequence_ = 0;
+      preferredViewKind_ = "";
       return this;
     }
 
@@ -802,6 +1003,22 @@ private static final long serialVersionUID = 0L;
         result.typeId_ = typeId_;
         to_bitField0_ |= 0x00000004;
       }
+      if (((from_bitField0_ & 0x00000200) != 0)) {
+        result.generatedByPlanKey_ = generatedByPlanKey_;
+        to_bitField0_ |= 0x00000008;
+      }
+      if (((from_bitField0_ & 0x00000400) != 0)) {
+        result.planExecutionDate_ = planExecutionDate_;
+        to_bitField0_ |= 0x00000010;
+      }
+      if (((from_bitField0_ & 0x00000800) != 0)) {
+        result.planExecutionSequence_ = planExecutionSequence_;
+        to_bitField0_ |= 0x00000020;
+      }
+      if (((from_bitField0_ & 0x00001000) != 0)) {
+        result.preferredViewKind_ = preferredViewKind_;
+        to_bitField0_ |= 0x00000040;
+      }
       result.bitField0_ |= to_bitField0_;
     }
 
@@ -856,7 +1073,7 @@ private static final long serialVersionUID = 0L;
             postingsBuilder_ = null;
             postings_ = other.postings_;
             bitField0_ = (bitField0_ & ~0x00000020);
-            postingsBuilder_ =
+            postingsBuilder_ = 
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getPostingsFieldBuilder() : null;
           } else {
@@ -882,7 +1099,7 @@ private static final long serialVersionUID = 0L;
             projectionRefsBuilder_ = null;
             projectionRefs_ = other.projectionRefs_;
             bitField0_ = (bitField0_ & ~0x00000040);
-            projectionRefsBuilder_ =
+            projectionRefsBuilder_ = 
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getProjectionRefsFieldBuilder() : null;
           } else {
@@ -911,13 +1128,29 @@ private static final long serialVersionUID = 0L;
             parametersBuilder_ = null;
             parameters_ = other.parameters_;
             bitField0_ = (bitField0_ & ~0x00000100);
-            parametersBuilder_ =
+            parametersBuilder_ = 
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getParametersFieldBuilder() : null;
           } else {
             parametersBuilder_.addAllMessages(other.parameters_);
           }
         }
+      }
+      if (other.hasGeneratedByPlanKey()) {
+        generatedByPlanKey_ = other.generatedByPlanKey_;
+        bitField0_ |= 0x00000200;
+        onChanged();
+      }
+      if (other.hasPlanExecutionDate()) {
+        setPlanExecutionDate(other.getPlanExecutionDate());
+      }
+      if (other.hasPlanExecutionSequence()) {
+        setPlanExecutionSequence(other.getPlanExecutionSequence());
+      }
+      if (other.hasPreferredViewKind()) {
+        preferredViewKind_ = other.preferredViewKind_;
+        bitField0_ |= 0x00001000;
+        onChanged();
       }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
@@ -1018,6 +1251,26 @@ private static final long serialVersionUID = 0L;
               }
               break;
             } // case 82
+            case 90: {
+              generatedByPlanKey_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000200;
+              break;
+            } // case 90
+            case 96: {
+              planExecutionDate_ = input.readInt64();
+              bitField0_ |= 0x00000400;
+              break;
+            } // case 96
+            case 104: {
+              planExecutionSequence_ = input.readInt32();
+              bitField0_ |= 0x00000800;
+              break;
+            } // case 104
+            case 114: {
+              preferredViewKind_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00001000;
+              break;
+            } // case 114
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -1060,7 +1313,7 @@ private static final long serialVersionUID = 0L;
         getUuidBytes() {
       java.lang.Object ref = uuid_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
+        com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         uuid_ = b;
@@ -1213,7 +1466,7 @@ private static final long serialVersionUID = 0L;
      * <code>.google.protobuf.Timestamp dateTime = 3;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder>
+        com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder> 
         getDateTimeFieldBuilder() {
       if (dateTimeBuilder_ == null) {
         dateTimeBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -1258,7 +1511,7 @@ private static final long serialVersionUID = 0L;
         getNoteBytes() {
       java.lang.Object ref = note_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
+        com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         note_ = b;
@@ -1337,7 +1590,7 @@ private static final long serialVersionUID = 0L;
         getSourceBytes() {
       java.lang.Object ref = source_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
+        com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         source_ = b;
@@ -1490,7 +1743,7 @@ private static final long serialVersionUID = 0L;
      * <code>.google.protobuf.Timestamp updatedAt = 6;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder>
+        com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder> 
         getUpdatedAtFieldBuilder() {
       if (updatedAtBuilder_ == null) {
         updatedAtBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -1698,7 +1951,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>repeated .name.abuchen.portfolio.PLedgerPosting postings = 7;</code>
      */
-    public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerPostingOrBuilder>
+    public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerPostingOrBuilder> 
          getPostingsOrBuilderList() {
       if (postingsBuilder_ != null) {
         return postingsBuilder_.getMessageOrBuilderList();
@@ -1724,12 +1977,12 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>repeated .name.abuchen.portfolio.PLedgerPosting postings = 7;</code>
      */
-    public java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerPosting.Builder>
+    public java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerPosting.Builder> 
          getPostingsBuilderList() {
       return getPostingsFieldBuilder().getBuilderList();
     }
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        name.abuchen.portfolio.model.proto.v1.PLedgerPosting, name.abuchen.portfolio.model.proto.v1.PLedgerPosting.Builder, name.abuchen.portfolio.model.proto.v1.PLedgerPostingOrBuilder>
+        name.abuchen.portfolio.model.proto.v1.PLedgerPosting, name.abuchen.portfolio.model.proto.v1.PLedgerPosting.Builder, name.abuchen.portfolio.model.proto.v1.PLedgerPostingOrBuilder> 
         getPostingsFieldBuilder() {
       if (postingsBuilder_ == null) {
         postingsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
@@ -1938,7 +2191,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
      */
-    public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRefOrBuilder>
+    public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRefOrBuilder> 
          getProjectionRefsOrBuilderList() {
       if (projectionRefsBuilder_ != null) {
         return projectionRefsBuilder_.getMessageOrBuilderList();
@@ -1964,12 +2217,12 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
      */
-    public java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef.Builder>
+    public java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef.Builder> 
          getProjectionRefsBuilderList() {
       return getProjectionRefsFieldBuilder().getBuilderList();
     }
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef, name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef.Builder, name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRefOrBuilder>
+        name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef, name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef.Builder, name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRefOrBuilder> 
         getProjectionRefsFieldBuilder() {
       if (projectionRefsBuilder_ == null) {
         projectionRefsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
@@ -2218,7 +2471,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>repeated .name.abuchen.portfolio.PLedgerParameter parameters = 10;</code>
      */
-    public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerParameterOrBuilder>
+    public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerParameterOrBuilder> 
          getParametersOrBuilderList() {
       if (parametersBuilder_ != null) {
         return parametersBuilder_.getMessageOrBuilderList();
@@ -2244,12 +2497,12 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>repeated .name.abuchen.portfolio.PLedgerParameter parameters = 10;</code>
      */
-    public java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerParameter.Builder>
+    public java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerParameter.Builder> 
          getParametersBuilderList() {
       return getParametersFieldBuilder().getBuilderList();
     }
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        name.abuchen.portfolio.model.proto.v1.PLedgerParameter, name.abuchen.portfolio.model.proto.v1.PLedgerParameter.Builder, name.abuchen.portfolio.model.proto.v1.PLedgerParameterOrBuilder>
+        name.abuchen.portfolio.model.proto.v1.PLedgerParameter, name.abuchen.portfolio.model.proto.v1.PLedgerParameter.Builder, name.abuchen.portfolio.model.proto.v1.PLedgerParameterOrBuilder> 
         getParametersFieldBuilder() {
       if (parametersBuilder_ == null) {
         parametersBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
@@ -2261,6 +2514,244 @@ private static final long serialVersionUID = 0L;
         parameters_ = null;
       }
       return parametersBuilder_;
+    }
+
+    private java.lang.Object generatedByPlanKey_ = "";
+    /**
+     * <code>optional string generatedByPlanKey = 11;</code>
+     * @return Whether the generatedByPlanKey field is set.
+     */
+    public boolean hasGeneratedByPlanKey() {
+      return ((bitField0_ & 0x00000200) != 0);
+    }
+    /**
+     * <code>optional string generatedByPlanKey = 11;</code>
+     * @return The generatedByPlanKey.
+     */
+    public java.lang.String getGeneratedByPlanKey() {
+      java.lang.Object ref = generatedByPlanKey_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        generatedByPlanKey_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>optional string generatedByPlanKey = 11;</code>
+     * @return The bytes for generatedByPlanKey.
+     */
+    public com.google.protobuf.ByteString
+        getGeneratedByPlanKeyBytes() {
+      java.lang.Object ref = generatedByPlanKey_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        generatedByPlanKey_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>optional string generatedByPlanKey = 11;</code>
+     * @param value The generatedByPlanKey to set.
+     * @return This builder for chaining.
+     */
+    public Builder setGeneratedByPlanKey(
+        java.lang.String value) {
+      if (value == null) { throw new NullPointerException(); }
+      generatedByPlanKey_ = value;
+      bitField0_ |= 0x00000200;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string generatedByPlanKey = 11;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearGeneratedByPlanKey() {
+      generatedByPlanKey_ = getDefaultInstance().getGeneratedByPlanKey();
+      bitField0_ = (bitField0_ & ~0x00000200);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string generatedByPlanKey = 11;</code>
+     * @param value The bytes for generatedByPlanKey to set.
+     * @return This builder for chaining.
+     */
+    public Builder setGeneratedByPlanKeyBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
+      generatedByPlanKey_ = value;
+      bitField0_ |= 0x00000200;
+      onChanged();
+      return this;
+    }
+
+    private long planExecutionDate_ ;
+    /**
+     * <code>optional int64 planExecutionDate = 12;</code>
+     * @return Whether the planExecutionDate field is set.
+     */
+    @java.lang.Override
+    public boolean hasPlanExecutionDate() {
+      return ((bitField0_ & 0x00000400) != 0);
+    }
+    /**
+     * <code>optional int64 planExecutionDate = 12;</code>
+     * @return The planExecutionDate.
+     */
+    @java.lang.Override
+    public long getPlanExecutionDate() {
+      return planExecutionDate_;
+    }
+    /**
+     * <code>optional int64 planExecutionDate = 12;</code>
+     * @param value The planExecutionDate to set.
+     * @return This builder for chaining.
+     */
+    public Builder setPlanExecutionDate(long value) {
+
+      planExecutionDate_ = value;
+      bitField0_ |= 0x00000400;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional int64 planExecutionDate = 12;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearPlanExecutionDate() {
+      bitField0_ = (bitField0_ & ~0x00000400);
+      planExecutionDate_ = 0L;
+      onChanged();
+      return this;
+    }
+
+    private int planExecutionSequence_ ;
+    /**
+     * <code>optional int32 planExecutionSequence = 13;</code>
+     * @return Whether the planExecutionSequence field is set.
+     */
+    @java.lang.Override
+    public boolean hasPlanExecutionSequence() {
+      return ((bitField0_ & 0x00000800) != 0);
+    }
+    /**
+     * <code>optional int32 planExecutionSequence = 13;</code>
+     * @return The planExecutionSequence.
+     */
+    @java.lang.Override
+    public int getPlanExecutionSequence() {
+      return planExecutionSequence_;
+    }
+    /**
+     * <code>optional int32 planExecutionSequence = 13;</code>
+     * @param value The planExecutionSequence to set.
+     * @return This builder for chaining.
+     */
+    public Builder setPlanExecutionSequence(int value) {
+
+      planExecutionSequence_ = value;
+      bitField0_ |= 0x00000800;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional int32 planExecutionSequence = 13;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearPlanExecutionSequence() {
+      bitField0_ = (bitField0_ & ~0x00000800);
+      planExecutionSequence_ = 0;
+      onChanged();
+      return this;
+    }
+
+    private java.lang.Object preferredViewKind_ = "";
+    /**
+     * <code>optional string preferredViewKind = 14;</code>
+     * @return Whether the preferredViewKind field is set.
+     */
+    public boolean hasPreferredViewKind() {
+      return ((bitField0_ & 0x00001000) != 0);
+    }
+    /**
+     * <code>optional string preferredViewKind = 14;</code>
+     * @return The preferredViewKind.
+     */
+    public java.lang.String getPreferredViewKind() {
+      java.lang.Object ref = preferredViewKind_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        preferredViewKind_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>optional string preferredViewKind = 14;</code>
+     * @return The bytes for preferredViewKind.
+     */
+    public com.google.protobuf.ByteString
+        getPreferredViewKindBytes() {
+      java.lang.Object ref = preferredViewKind_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        preferredViewKind_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>optional string preferredViewKind = 14;</code>
+     * @param value The preferredViewKind to set.
+     * @return This builder for chaining.
+     */
+    public Builder setPreferredViewKind(
+        java.lang.String value) {
+      if (value == null) { throw new NullPointerException(); }
+      preferredViewKind_ = value;
+      bitField0_ |= 0x00001000;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string preferredViewKind = 14;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearPreferredViewKind() {
+      preferredViewKind_ = getDefaultInstance().getPreferredViewKind();
+      bitField0_ = (bitField0_ & ~0x00001000);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string preferredViewKind = 14;</code>
+     * @param value The bytes for preferredViewKind to set.
+     * @return This builder for chaining.
+     */
+    public Builder setPreferredViewKindBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
+      preferredViewKind_ = value;
+      bitField0_ |= 0x00001000;
+      onChanged();
+      return this;
     }
     @java.lang.Override
     public final Builder setUnknownFields(
@@ -2325,3 +2816,4 @@ private static final long serialVersionUID = 0L;
   }
 
 }
+

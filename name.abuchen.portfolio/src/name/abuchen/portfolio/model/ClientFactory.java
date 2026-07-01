@@ -86,6 +86,7 @@ import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.InvestmentPlan.LedgerExecutionRef;
+import name.abuchen.portfolio.model.InvestmentPlan.LedgerExecutionViewKind;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.ledger.Ledger;
@@ -310,6 +311,15 @@ public class ClientFactory
             writeAttribute(writer, "updatedAt", entry.getUpdatedAt()); //$NON-NLS-1$
             writeValue(writer, "note", entry.getNote()); //$NON-NLS-1$
             writeValue(writer, "source", entry.getSource()); //$NON-NLS-1$
+            writeValue(writer, "generatedByPlanKey", entry.getGeneratedByPlanKey()); //$NON-NLS-1$
+            writeValue(writer, "planExecutionDate", //$NON-NLS-1$
+                            entry.getPlanExecutionDate() != null ? String.valueOf(entry.getPlanExecutionDate())
+                                            : null);
+            writeValue(writer, "planExecutionSequence", //$NON-NLS-1$
+                            entry.getPlanExecutionSequence() != null
+                                            ? String.valueOf(entry.getPlanExecutionSequence())
+                                            : null);
+            writeValue(writer, "preferredViewKind", entry.getPreferredViewKind()); //$NON-NLS-1$
             writeParameters(writer, context, entry.getParameters());
             writeCollection(writer, context, "postings", "ledger-posting", entry.getPostings()); //$NON-NLS-1$ //$NON-NLS-2$
             writeCollection(writer, context, "projectionRefs", "ledger-projection-ref", //$NON-NLS-1$ //$NON-NLS-2$
@@ -340,6 +350,11 @@ public class ClientFactory
                     case "updatedAt" -> updatedAt = reader.getValue(); //$NON-NLS-1$
                     case "note" -> entry.setNote(reader.getValue()); //$NON-NLS-1$
                     case "source" -> entry.setSource(reader.getValue()); //$NON-NLS-1$
+                    case "generatedByPlanKey" -> entry.setGeneratedByPlanKey(reader.getValue()); //$NON-NLS-1$
+                    case "planExecutionDate" -> entry.setPlanExecutionDate(LocalDate.parse(reader.getValue())); //$NON-NLS-1$
+                    case "planExecutionSequence" -> entry.setPlanExecutionSequence(
+                                    Integer.valueOf(reader.getValue())); //$NON-NLS-1$
+                    case "preferredViewKind" -> entry.setPreferredViewKind(reader.getValue()); //$NON-NLS-1$
                     case "parameters" -> readParameters(reader, context, entry); //$NON-NLS-1$
                     case "postings" -> readPostings(reader, context, entry); //$NON-NLS-1$
                     case "projectionRefs" -> readProjectionRefs(reader, context, entry); //$NON-NLS-1$
@@ -777,10 +792,7 @@ public class ClientFactory
                     if (!projectionUUIDs.contains(transaction.getUUID()))
                         continue;
 
-                    ledgerExecutionRef(client, transaction.getUUID()).ifPresent(ref -> {
-                        if (plan.getLedgerExecutionRefs().stream().noneMatch(existing -> sameExecutionRef(existing, ref)))
-                            plan.addLedgerExecutionRef(ref);
-                    });
+                    markPlanExecution(client, plan, transaction);
                     plan.getTransactions().remove(transaction);
                 }
             }
@@ -794,33 +806,35 @@ public class ClientFactory
                             .collect(Collectors.toSet());
         }
 
-        private Optional<LedgerExecutionRef> ledgerExecutionRef(Client client, String projectionUUID)
+        private void markPlanExecution(Client client, InvestmentPlan plan, Transaction transaction)
         {
             for (var entry : client.getLedger().getEntries())
             {
                 for (var projection : entry.getProjectionRefs())
                 {
-                    if (projectionUUID.equals(projection.getUUID()))
-                        return Optional.of(new LedgerExecutionRef(entry.getUUID(), projection.getUUID(),
-                                        projection.getRole()));
+                    if (transaction.getUUID().equals(projection.getUUID()))
+                    {
+                        plan.markLedgerExecution(entry, transaction.getDateTime().toLocalDate(),
+                                        viewKind(projection.getRole()));
+                        return;
+                    }
                 }
             }
-
-            return Optional.empty();
         }
 
-        private boolean sameExecutionRef(LedgerExecutionRef left, LedgerExecutionRef right)
+        private LedgerExecutionViewKind viewKind(LedgerProjectionRole role)
         {
-            return Objects.equals(left.getLedgerEntryUUID(), right.getLedgerEntryUUID())
-                            && Objects.equals(left.getProjectionUUID(), right.getProjectionUUID())
-                            && left.getProjectionRole() == right.getProjectionRole();
+            return switch (role)
+            {
+                case ACCOUNT, SOURCE_ACCOUNT, TARGET_ACCOUNT, CASH_COMPENSATION -> LedgerExecutionViewKind.ACCOUNT;
+                default -> LedgerExecutionViewKind.PORTFOLIO;
+            };
         }
     }
 
     private static final class LedgerXmlSaveState
     {
         private final List<RemovedListElement> removedElements = new ArrayList<>();
-        private final List<PlanRefsSnapshot> planRefsSnapshots = new ArrayList<>();
 
         private void removeLedgerBackedTransactions(List<? extends Transaction> transactions)
         {
@@ -835,27 +849,14 @@ public class ClientFactory
 
         private void replaceLedgerBackedPlanTransactions(InvestmentPlan plan)
         {
-            var previousRefs = List.copyOf(plan.getLedgerExecutionRefs());
-            var snapshot = new PlanRefsSnapshot(plan, previousRefs);
-            var snapshotAdded = false;
-
             for (var index = plan.getTransactions().size() - 1; index >= 0; index--)
             {
                 var transaction = plan.getTransactions().get(index);
 
                 if (transaction instanceof LedgerBackedTransaction ledgerBackedTransaction)
                 {
-                    if (!snapshotAdded)
-                    {
-                        planRefsSnapshots.add(snapshot);
-                        snapshotAdded = true;
-                    }
-
+                    plan.markLedgerExecution(ledgerBackedTransaction);
                     remove(plan.getTransactions(), index);
-
-                    var ref = LedgerExecutionRef.of(ledgerBackedTransaction);
-                    if (plan.getLedgerExecutionRefs().stream().noneMatch(existing -> sameExecutionRef(existing, ref)))
-                        plan.addLedgerExecutionRef(ref);
                 }
             }
         }
@@ -866,20 +867,10 @@ public class ClientFactory
             removedElements.add(new RemovedListElement(list, index, list.remove(index)));
         }
 
-        private boolean sameExecutionRef(LedgerExecutionRef left, LedgerExecutionRef right)
-        {
-            return Objects.equals(left.getLedgerEntryUUID(), right.getLedgerEntryUUID())
-                            && Objects.equals(left.getProjectionUUID(), right.getProjectionUUID())
-                            && left.getProjectionRole() == right.getProjectionRole();
-        }
-
         private void restore()
         {
             for (var index = removedElements.size() - 1; index >= 0; index--)
                 removedElements.get(index).restore();
-
-            for (var snapshot : planRefsSnapshots)
-                snapshot.restore();
         }
     }
 
@@ -889,15 +880,6 @@ public class ClientFactory
         private void restore()
         {
             list.add(index, element);
-        }
-    }
-
-    private record PlanRefsSnapshot(InvestmentPlan plan, List<LedgerExecutionRef> refs)
-    {
-        private void restore()
-        {
-            plan.getLedgerExecutionRefs().clear();
-            plan.getLedgerExecutionRefs().addAll(refs);
         }
     }
 
