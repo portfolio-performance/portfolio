@@ -131,17 +131,19 @@ public class ConfigurationStore
                                 a -> delete(config)));
 
                 int index = configSet.indexOf(config);
-                if (index > 0)
-                {
+                long count = configSet.getConfigurations().count();
+
+                if (index > 0 || index < count - 1)
                     manager.add(new Separator());
-                    manager.add(new SimpleAction(Messages.ChartBringToFront, a -> {
-                        configSet.remove(config);
-                        configSet.add(0, config);
-                        toolBar.removeAll();
-                        createToolBarItems(toolBar);
-                        toolBar.update(true);
-                    }));
-                }
+
+                if (index > 0)
+                    manager.add(new SimpleAction(Messages.MenuMoveLeft, a -> move(config, -1, toolBar)));
+
+                if (index < count - 1)
+                    manager.add(new SimpleAction(Messages.MenuMoveRight, a -> move(config, 1, toolBar)));
+
+                if (index > 0)
+                    manager.add(new SimpleAction(Messages.ChartBringToFront, a -> moveToFront(config, toolBar)));
             });
 
             item.setDefaultAction(new SimpleAction(a -> activate(config)));
@@ -153,6 +155,34 @@ public class ConfigurationStore
         createNew.setImageDescriptor(Images.VIEW_PLUS.descriptor());
         createNew.setToolTipText(Messages.ConfigurationNew);
         toolBar.add(createNew);
+    }
+
+    private void move(Configuration config, int direction, ToolBarManager toolBar)
+    {
+        int newIndex = configSet.indexOf(config) + direction;
+
+        if (newIndex < 0 || newIndex >= configSet.getConfigurations().count())
+            return;
+
+        configSet.remove(config);
+        configSet.add(newIndex, config);
+
+        rebuildToolBarItems(toolBar);
+    }
+
+    private void moveToFront(Configuration config, ToolBarManager toolBar)
+    {
+        configSet.remove(config);
+        configSet.add(0, config);
+
+        rebuildToolBarItems(toolBar);
+    }
+
+    private void rebuildToolBarItems(ToolBarManager toolBar)
+    {
+        toolBar.removeAll();
+        createToolBarItems(toolBar);
+        toolBar.update(true);
     }
 
     private void createNew(Configuration template)
