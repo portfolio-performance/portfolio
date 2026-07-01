@@ -65,6 +65,7 @@ import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
 public class AccountListView extends AbstractFinanceView implements ModificationListener
 {
     private static final String FILTER_INACTIVE_ACCOUNTS = "filter-redired-accounts"; //$NON-NLS-1$
+    private static final String SELECTED_ACCOUNT = AccountListView.class.getSimpleName() + "-selected-account"; //$NON-NLS-1$
 
     private TableViewer accounts;
 
@@ -174,7 +175,22 @@ public class AccountListView extends AbstractFinanceView implements Modification
         accounts.refresh();
 
         if (accounts.getTable().getItemCount() > 0)
-            accounts.setSelection(new StructuredSelection(accounts.getElementAt(0)), true);
+        {
+            var account = getLastSelectedAccount();
+            accounts.setSelection(new StructuredSelection(account != null ? account : accounts.getElementAt(0)), true);
+        }
+    }
+
+    private Account getLastSelectedAccount()
+    {
+        var uuid = getPreferenceStore().getString(SELECTED_ACCOUNT);
+        if (uuid == null || uuid.isEmpty())
+            return null;
+
+        return getClient().getAccounts().stream() //
+                        .filter(a -> uuid.equals(a.getUUID())) //
+                        .filter(a -> !isFiltered || !a.isRetired()) //
+                        .findFirst().orElse(null);
     }
 
     @Override
@@ -231,6 +247,8 @@ public class AccountListView extends AbstractFinanceView implements Modification
             var account = (Account) event.getStructuredSelection().getFirstElement();
             updateBalance(account);
             setInformationPaneInput(account);
+            if (account != null)
+                getPreferenceStore().setValue(SELECTED_ACCOUNT, account.getUUID());
         });
 
         return container;

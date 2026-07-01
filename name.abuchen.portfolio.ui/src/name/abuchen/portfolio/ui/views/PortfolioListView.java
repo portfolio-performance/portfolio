@@ -67,6 +67,7 @@ import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
 public class PortfolioListView extends AbstractFinanceView implements ModificationListener
 {
     private static final String FILTER_INACTIVE_PORTFOLIOS = "filter-retired-portfolios"; //$NON-NLS-1$
+    private static final String SELECTED_PORTFOLIO = PortfolioListView.class.getSimpleName() + "-selected-portfolio"; //$NON-NLS-1$
 
     @Inject
     private ExchangeRateProviderFactory factory;
@@ -114,7 +115,23 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
         portfolios.refresh();
 
         if (portfolios.getTable().getItemCount() > 0)
-            portfolios.setSelection(new StructuredSelection(portfolios.getElementAt(0)), true);
+        {
+            var portfolio = getLastSelectedPortfolio();
+            portfolios.setSelection(new StructuredSelection(portfolio != null ? portfolio : portfolios.getElementAt(0)),
+                            true);
+        }
+    }
+
+    private Portfolio getLastSelectedPortfolio()
+    {
+        var uuid = getPreferenceStore().getString(SELECTED_PORTFOLIO);
+        if (uuid == null || uuid.isEmpty())
+            return null;
+
+        return getClient().getPortfolios().stream() //
+                        .filter(p -> uuid.equals(p.getUUID())) //
+                        .filter(p -> !isFiltered || !p.isRetired()) //
+                        .findFirst().orElse(null);
     }
 
     @Override
@@ -299,6 +316,8 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
             Portfolio portfolio = (Portfolio) ((IStructuredSelection) event.getSelection()).getFirstElement();
 
             setInformationPaneInput(portfolio);
+            if (portfolio != null)
+                getPreferenceStore().setValue(SELECTED_PORTFOLIO, portfolio.getUUID());
         });
 
         hookContextMenu(portfolios.getTable(), this::fillPortfolioContextMenu);
