@@ -1,0 +1,32 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.84.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+tLLSq WIqcoCB PAGE 1 from 1
+VCM lrLM IsSW 8 DATE 24.06.2026
+0818 fFVSzlhC ORDER 6446-f769
+EXECUTION bd57-fac1
+SECURITIES ACCOUNT 0963152201
+SECURITIES SETTLEMENT
+OVERVIEW
+Market-Order Buy on 24.06.2026 at 19:21 (Europe/Berlin) on Trade Republic Bank GmbH.
+POSITION QUANTITY PRICE AMOUNT
+Developed Markets Dividend Leaders EUR (Dist) 4.827186 Pcs. 51.79 EUR 250.00 EUR
+ISIN: NL0011683594
+TOTAL 250.00 EUR
+BILLING
+POSITION AMOUNT
+External cost surcharge -1.00 EUR
+TOTAL -251.00 EUR
+BOOKING
+CLEARING ACCOUNT VALUE DATE AMOUNT
+MR36979482499516112254 2026-06-26 -251.00 EUR
+Developed Markets Dividend Leaders EUR (Dist) in collective safe custody in Germany
+This statement is generated automatically and therefore not signed.
+If no VAT is shown, it is according to § 4 No. 8 UStG for a sales tax-free service.
+Trade Republic Bank GmbH www.traderepublic.com Headquarters: Berlin Directors
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin VAT-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
