@@ -580,22 +580,34 @@ public class LedgerSpinOffScenarioTest
         assertThat(entry.getType(), is(LedgerEntryType.SPIN_OFF));
         assertThat(entry.getUpdatedAt(), is(UPDATED_AT));
         assertThat(entry.getPostings().size(), is(6));
-        assertThat(entry.getProjectionRefs().size(), is(4));
-        assertProjectionTargets(entry, LedgerProjectionRole.OLD_SECURITY_LEG,
-                        securityPosting(entry, siemens(client), CorporateActionLeg.SOURCE_SECURITY.getCode(),
-                                        siemensEnergy(client)),
-                        null);
-        assertProjectionTargets(entry, LedgerProjectionRole.DELIVERY_INBOUND,
-                        securityPosting(entry, siemens(client), CorporateActionLeg.TARGET_SECURITY.getCode(),
-                                        siemens(client)),
-                        null);
-        assertProjectionTargets(entry, LedgerProjectionRole.NEW_SECURITY_LEG,
-                        securityPosting(entry, siemensEnergy(client), CorporateActionLeg.TARGET_SECURITY.getCode(),
-                                        siemensEnergy(client)),
-                        null);
-        assertProjectionTargets(entry, LedgerProjectionRole.CASH_COMPENSATION,
-                        primaryPosting(entry, LedgerProjectionRole.CASH_COMPENSATION),
-                        primaryPosting(entry, LedgerProjectionRole.CASH_COMPENSATION));
+        var oldSecurityLeg = securityPosting(entry, siemens(client), CorporateActionLeg.SOURCE_SECURITY.getCode(),
+                        siemensEnergy(client));
+        var retainedSecurityLeg = securityPosting(entry, siemens(client), CorporateActionLeg.TARGET_SECURITY.getCode(),
+                        siemens(client));
+        var newSecurityLeg = securityPosting(entry, siemensEnergy(client), CorporateActionLeg.TARGET_SECURITY.getCode(),
+                        siemensEnergy(client));
+
+        if (entry.getProjectionRefs().isEmpty())
+        {
+            var compensationLeg = cashCompensationPosting(entry);
+
+            assertThat(oldSecurityLeg.getCorporateActionLeg(), is(CorporateActionLeg.SOURCE_SECURITY));
+            assertThat(retainedSecurityLeg.getCorporateActionLeg(), is(CorporateActionLeg.TARGET_SECURITY));
+            assertThat(retainedSecurityLeg.getLocalKey(), is(LedgerProjectionRole.DELIVERY_INBOUND.name()));
+            assertThat(newSecurityLeg.getCorporateActionLeg(), is(CorporateActionLeg.TARGET_SECURITY));
+            assertThat(newSecurityLeg.getLocalKey(), is(LedgerProjectionRole.NEW_SECURITY_LEG.name()));
+            assertThat(compensationLeg.getCorporateActionLeg(), is(CorporateActionLeg.CASH_COMPENSATION));
+        }
+        else
+        {
+            var compensationLeg = primaryPosting(entry, LedgerProjectionRole.CASH_COMPENSATION);
+
+            assertThat(entry.getProjectionRefs().size(), is(4));
+            assertProjectionTargets(entry, LedgerProjectionRole.OLD_SECURITY_LEG, oldSecurityLeg, null);
+            assertProjectionTargets(entry, LedgerProjectionRole.DELIVERY_INBOUND, retainedSecurityLeg, null);
+            assertProjectionTargets(entry, LedgerProjectionRole.NEW_SECURITY_LEG, newSecurityLeg, null);
+            assertProjectionTargets(entry, LedgerProjectionRole.CASH_COMPENSATION, compensationLeg, compensationLeg);
+        }
         assertThat(client.getPortfolios().get(0).getTransactions().size(), is(4));
         assertThat(client.getAccounts().get(0).getTransactions().size(), is(3));
         assertThat(buyProjection(client, siemens(client)).getType(), is(PortfolioTransaction.Type.BUY));
@@ -656,6 +668,14 @@ public class LedgerSpinOffScenarioTest
                         .filter(posting -> posting.getSecurity() == security)
                         .filter(posting -> hasCorporateActionLeg(posting, leg))
                         .filter(posting -> targetSecurity == null || hasTargetSecurity(posting, targetSecurity))
+                        .findFirst().orElseThrow();
+    }
+
+    private LedgerPosting cashCompensationPosting(LedgerEntry entry)
+    {
+        return entry.getPostings().stream()
+                        .filter(posting -> posting.getSemanticRole() == LedgerPostingSemanticRole.CASH_COMPENSATION)
+                        .filter(posting -> posting.getCorporateActionLeg() == CorporateActionLeg.CASH_COMPENSATION)
                         .findFirst().orElseThrow();
     }
 

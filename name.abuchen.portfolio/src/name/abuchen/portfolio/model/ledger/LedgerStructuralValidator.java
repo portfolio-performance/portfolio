@@ -282,6 +282,9 @@ public final class LedgerStructuralValidator
         if (entry.getType() == null || !entry.getType().isLegacyFixedShape())
             return;
 
+        if (entry.getProjectionRefs().isEmpty())
+            return;
+
         var expectedRoles = expectedProjectionRoles(entry.getType());
         var roleCounts = new EnumMap<LedgerProjectionRole, Integer>(LedgerProjectionRole.class);
 

@@ -18,7 +18,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
@@ -223,32 +222,34 @@ public class LedgerXmlPersistenceTest
                                         CorporateActionKind.SPIN_OFF.getCode()));
         LedgerProjectionService.materialize(client);
 
-        var entryUUID = client.getLedger().getEntries().get(0).getUUID();
-        var postingUUIDs = client.getLedger().getEntries().get(0).getPostings().stream().map(LedgerPosting::getUUID)
-                        .toList();
-        var projectionUUID = client.getLedger().getEntries().get(0).getProjectionRefs().get(0).getUUID();
         var xml = save(client);
 
         assertTrue(xml.contains("<ledger>"));
         assertFalse(xml.contains("<account-transaction"));
         assertFalse(xml.contains("LedgerBacked"));
+        assertNoLedgerUuidTruth(xml);
+        assertTrue(xml.contains("semanticRole=\"CASH\""));
+        assertTrue(xml.contains("unitRole=\"FEE\""));
+        assertTrue(xml.contains("unitRole=\"TAX\""));
+        assertTrue(xml.contains("unitRole=\"GROSS_VALUE\""));
         assertThat(account.getTransactions().size(), is(1));
         assertThat(account.getTransactions().get(0), instanceOf(LedgerBackedTransaction.class));
 
         var loaded = load(xml);
         var reloadedEntry = loaded.getLedger().getEntries().get(0);
         var reloadedProjection = loaded.getAccounts().get(0).getTransactions().get(0);
-        var reloadedPostingUUIDs = reloadedEntry.getPostings().stream().map(LedgerPosting::getUUID).toList();
+        var reloadedCashPosting = reloadedEntry.getPostings().stream()
+                        .filter(posting -> posting.getSemanticRole() == LedgerPostingSemanticRole.CASH).findFirst()
+                        .orElseThrow();
 
-        assertThat(reloadedEntry.getUUID(), is(entryUUID));
-        assertThat(reloadedPostingUUIDs, is(postingUUIDs));
-        assertThat(reloadedEntry.getProjectionRefs().get(0).getUUID(), is(projectionUUID));
+        assertTrue(reloadedEntry.getProjectionRefs().isEmpty());
         assertThat(reloadedEntry.getDateTime(), is(DATE_TIME));
         assertThat(reloadedEntry.getNote(), is("note"));
         assertThat(reloadedEntry.getSource(), is("source"));
         assertThat(reloadedEntry.getParameters().size(), is(1));
         assertThat(reloadedEntry.getParameters().get(0).getType(), is(LedgerParameterType.CORPORATE_ACTION_KIND));
         assertThat(reloadedEntry.getParameters().get(0).getValue(), is(CorporateActionKind.SPIN_OFF.getCode()));
+        assertThat(reloadedCashPosting.getDirection(), is(LedgerPostingDirection.NEUTRAL));
         assertThat(reloadedProjection, instanceOf(LedgerBackedTransaction.class));
         assertThat(reloadedProjection.getExDate(), is(EX_DATE));
         assertThat(reloadedProjection.getUnits().count(), is(3L));
@@ -287,11 +288,6 @@ public class LedgerXmlPersistenceTest
     {
         var client = legacyLedgerParameterCompatibilityClient();
         var entry = client.getLedger().getEntries().get(0);
-        var sourceProjection = projection(entry, LedgerProjectionRole.OLD_SECURITY_LEG);
-        var cashProjection = projection(entry, LedgerProjectionRole.CASH_COMPENSATION);
-        var expectedSourcePostingUUID = sourceProjection.getPrimaryPostingUUID();
-        var expectedCashPostingUUID = cashProjection.getPrimaryPostingUUID();
-        var expectedCashGroupUUID = cashProjection.getPostingGroupUUID();
         var expectedParameterCount = parameterCount(entry);
         var xml = save(client);
         var legacyXml = legacyLedgerParameterXml(xml);
@@ -301,10 +297,10 @@ public class LedgerXmlPersistenceTest
 
         var loaded = load(legacyXml);
         var loadedEntry = loaded.getLedger().getEntries().get(0);
-        var loadedSourceProjection = projection(loadedEntry, LedgerProjectionRole.OLD_SECURITY_LEG);
-        var loadedCashProjection = projection(loadedEntry, LedgerProjectionRole.CASH_COMPENSATION);
-        var loadedSourcePosting = posting(loadedEntry, expectedSourcePostingUUID);
-        var loadedCashPosting = posting(loadedEntry, expectedCashPostingUUID);
+        var loadedSourcePosting = semanticPosting(loadedEntry, LedgerPostingSemanticRole.SECURITY,
+                        CorporateActionLeg.SOURCE_SECURITY);
+        var loadedCashPosting = semanticPosting(loadedEntry, LedgerPostingSemanticRole.CASH_COMPENSATION,
+                        CorporateActionLeg.CASH_COMPENSATION);
         var loadedAccount = loaded.getAccounts().get(0);
         var loadedPortfolio = loaded.getPortfolios().get(0);
         var loadedSourceSecurity = loaded.getSecurities().get(0);
@@ -317,12 +313,8 @@ public class LedgerXmlPersistenceTest
                         is(CashCompensationKind.CASH_IN_LIEU.getCode()));
         assertSame(loadedPortfolio, loadedSourcePosting.getPortfolio());
         assertSame(loadedSourceSecurity, loadedSourcePosting.getSecurity());
-        assertSame(loadedPortfolio, loadedSourceProjection.getPortfolio());
         assertSame(loadedAccount, loadedCashPosting.getAccount());
-        assertSame(loadedAccount, loadedCashProjection.getAccount());
-        assertThat(primaryPostingUUID(loadedSourceProjection), is(expectedSourcePostingUUID));
-        assertThat(primaryPostingUUID(loadedCashProjection), is(expectedCashPostingUUID));
-        assertThat(postingGroupUUID(loadedCashProjection), is(expectedCashGroupUUID));
+        assertTrue(loadedEntry.getProjectionRefs().isEmpty());
         assertThat(loaded.getAccounts().get(0).getTransactions().get(0), instanceOf(LedgerBackedTransaction.class));
         assertThat(loaded.getPortfolios().get(0).getTransactions().stream()
                         .filter(LedgerBackedTransaction.class::isInstance).count(), is(2L));
@@ -332,6 +324,7 @@ public class LedgerXmlPersistenceTest
         assertFalse(currentXml.contains("<ledger-posting-parameter>"));
         assertFalse(currentXml.contains("ledger-posting-parameter-type"));
         assertFalse(currentXml.contains("LedgerBacked"));
+        assertNoLedgerUuidTruth(currentXml);
         assertTrue(currentXml.contains("<ledger-parameter type=\"CORPORATE_ACTION_LEG\" "
                         + "valueKind=\"STRING\" value=\"SOURCE_SECURITY\"/>"));
     }
@@ -438,28 +431,6 @@ public class LedgerXmlPersistenceTest
     }
 
     /**
-     * Verifies that preparation failures restore owner lists, projection refs, and order.
-     * Save-time cleanup must be atomic from the caller's point of view.
-     */
-    @Test
-    public void testPreparationFailureRestoresOwnerListsRefsAndOrder() throws Exception
-    {
-        var plan = new FailingLedgerExecutionRefPlan();
-        var fixture = saveRestoreFixture(plan);
-        var accountBefore = List.copyOf(fixture.account().getTransactions());
-        var portfolioBefore = List.copyOf(fixture.portfolio().getTransactions());
-        var planBefore = List.copyOf(fixture.plan().getTransactions());
-        var refsBefore = List.copyOf(fixture.plan().getLedgerExecutionRefs());
-
-        assertThrows(IllegalStateException.class, () -> save(fixture.client()));
-
-        assertThat(fixture.account().getTransactions(), is(accountBefore));
-        assertThat(fixture.portfolio().getTransactions(), is(portfolioBefore));
-        assertThat(fixture.plan().getTransactions(), is(planBefore));
-        assertThat(fixture.plan().getLedgerExecutionRefs(), is(refsBefore));
-    }
-
-    /**
      * Verifies that invalid ledger XML save failures include formatted diagnostics.
      * The caller must see the concrete ledger validation problem instead of a generic error.
      */
@@ -493,11 +464,11 @@ public class LedgerXmlPersistenceTest
     }
 
     /**
-     * Verifies that plan execution refs roundtrip through XML and still resolve.
-     * A generated booking must be found from the ledger entry and projection after reload.
+     * Verifies that plan execution metadata roundtrips through XML and still resolves.
+     * A generated booking must be found from the ledger entry metadata after reload.
      */
     @Test
-    public void testInvestmentPlanLedgerExecutionRefsRoundtripAndResolve() throws Exception
+    public void testInvestmentPlanExecutionMetadataRoundtripAndResolve() throws Exception
     {
         var client = new Client();
         var account = register(client, account());
@@ -518,18 +489,27 @@ public class LedgerXmlPersistenceTest
 
         var xml = save(client);
 
-        assertTrue(xml.contains("<ledger-execution-ref>"));
+        assertFalse(xml.contains("<ledger-execution-ref>"));
+        assertTrue(xml.contains("<planKey>" + plan.getPlanKey() + "</planKey>"));
+        assertTrue(xml.contains("<generatedByPlanKey>" + plan.getPlanKey() + "</generatedByPlanKey>"));
+        assertTrue(xml.contains("<planExecutionDate>" + DATE_TIME.toLocalDate() + "</planExecutionDate>"));
+        assertTrue(xml.contains("<preferredViewKind>PORTFOLIO</preferredViewKind>"));
         assertFalse(xml.contains("LedgerBacked"));
+        assertNoLedgerUuidTruth(xml);
 
         var loaded = load(xml);
         var loadedPlan = loaded.getPlans().get(0);
+        var loadedEntry = loaded.getLedger().getEntries().get(0);
 
         assertThat(loadedPlan.getTransactions().size(), is(0));
-        assertThat(loadedPlan.getLedgerExecutionRefs().size(), is(1));
-        assertThat(loadedPlan.getLedgerExecutionRefs().get(0).getProjectionUUID(), is(portfolioProjection.getUUID()));
+        assertThat(loadedPlan.getLedgerExecutionRefs().size(), is(0));
+        assertThat(loadedEntry.getGeneratedByPlanKey(), is(loadedPlan.getPlanKey()));
+        assertThat(loadedEntry.getPlanExecutionDate(), is(DATE_TIME.toLocalDate()));
+        assertThat(loadedEntry.getPreferredViewKind(), is("PORTFOLIO"));
         assertThat(loadedPlan.getTransactions(loaded).size(), is(1));
         assertThat(loadedPlan.getTransactions(loaded).get(0).getOwner(), is(loaded.getPortfolios().get(0)));
-        assertThat(loadedPlan.getTransactions(loaded).get(0).getTransaction().getUUID(), is(portfolioProjection.getUUID()));
+        assertThat(loadedPlan.getTransactions(loaded).get(0).getTransaction(),
+                        instanceOf(LedgerBackedTransaction.class));
     }
 
     /**
@@ -638,6 +618,20 @@ public class LedgerXmlPersistenceTest
     private void assertValid(Client client)
     {
         assertTrue(LedgerStructuralValidator.validate(client.getLedger()).isOK());
+    }
+
+    private void assertNoLedgerUuidTruth(String xml)
+    {
+        assertFalse(xml.matches("(?s).*<ledger-entry[^>]*\\buuid=.*"));
+        assertFalse(xml.matches("(?s).*<ledger-posting[^>]*\\buuid=.*"));
+        assertFalse(xml.contains("<projectionRefs>"));
+        assertFalse(xml.contains("<ledger-projection-ref"));
+        assertFalse(xml.contains("<projection-membership"));
+        assertFalse(xml.contains("<membership"));
+        assertFalse(xml.contains("projectionUUID"));
+        assertFalse(xml.contains("postingUUID"));
+        assertFalse(xml.contains("primaryPostingUUID"));
+        assertFalse(xml.contains("postingGroupUUID"));
     }
 
     private Account register(Client client, Account account)
@@ -774,27 +768,11 @@ public class LedgerXmlPersistenceTest
                         .sum();
     }
 
-    private LedgerProjectionRef projection(LedgerEntry entry, LedgerProjectionRole role)
+    private LedgerPosting semanticPosting(LedgerEntry entry, LedgerPostingSemanticRole semanticRole,
+                    CorporateActionLeg corporateActionLeg)
     {
-        return entry.getProjectionRefs().stream().filter(projection -> projection.getRole() == role).findFirst()
-                        .orElseThrow();
-    }
-
-    private String primaryPostingUUID(LedgerProjectionRef projection)
-    {
-        return projection.getPrimaryMembership().map(ProjectionMembership::getPostingUUID)
-                        .orElse(projection.getPrimaryPostingUUID());
-    }
-
-    private String postingGroupUUID(LedgerProjectionRef projection)
-    {
-        return projection.getMembershipsByRole(ProjectionMembershipRole.GROUP_ANCHOR).stream().findFirst()
-                        .map(ProjectionMembership::getPostingUUID).orElse(projection.getPostingGroupUUID());
-    }
-
-    private LedgerPosting posting(LedgerEntry entry, String uuid)
-    {
-        return entry.getPostings().stream().filter(posting -> uuid.equals(posting.getUUID())).findFirst()
+        return entry.getPostings().stream().filter(posting -> posting.getSemanticRole() == semanticRole)
+                        .filter(posting -> posting.getCorporateActionLeg() == corporateActionLeg).findFirst()
                         .orElseThrow();
     }
 
@@ -850,29 +828,6 @@ public class LedgerXmlPersistenceTest
         public void write(int b) throws IOException
         {
             throw new IOException("forced serialization failure");
-        }
-    }
-
-    private static final class FailingLedgerExecutionRefPlan extends InvestmentPlan
-    {
-        private final List<LedgerExecutionRef> refs = new FailingLedgerExecutionRefList();
-
-        @Override
-        public List<LedgerExecutionRef> getLedgerExecutionRefs()
-        {
-            return refs;
-        }
-    }
-
-    private static final class FailingLedgerExecutionRefList extends ArrayList<InvestmentPlan.LedgerExecutionRef>
-    {
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        public boolean add(InvestmentPlan.LedgerExecutionRef ref)
-        {
-            super.add(ref);
-            throw new IllegalStateException("forced preparation failure");
         }
     }
 }

@@ -28,6 +28,9 @@ import name.abuchen.portfolio.model.ledger.LedgerDiagnosticMessageFormatter;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerParameter;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
+import name.abuchen.portfolio.model.ledger.LedgerPostingDirection;
+import name.abuchen.portfolio.model.ledger.LedgerPostingSemanticRole;
+import name.abuchen.portfolio.model.ledger.LedgerPostingUnitRole;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator;
@@ -131,6 +134,8 @@ public final class LegacyTransactionToLedgerMigrator
                             LedgerParameter.ofLocalDateTime(LedgerParameterType.EX_DATE,
                                             transaction.getExDate()));
 
+        MigrationGraphBuilder.markPrimary(posting, MigrationGraphBuilder.semanticRole(postingType),
+                        LedgerPostingDirection.NEUTRAL, LedgerProjectionRole.ACCOUNT);
         MigrationGraphBuilder.addPosting(entry, posting);
         var unitPostings = MigrationGraphBuilder.addUnitPostings(entry, transaction);
         var projection = MigrationGraphBuilder.accountProjection(transaction.getUUID(), LedgerProjectionRole.ACCOUNT,
@@ -211,6 +216,14 @@ public final class LegacyTransactionToLedgerMigrator
         var cashPosting = MigrationGraphBuilder.cashPosting(LedgerPostingType.CASH, account, accountTransaction);
         var securityPosting = MigrationGraphBuilder.securityPosting(portfolio, portfolioTransaction);
 
+        MigrationGraphBuilder.markPrimary(cashPosting, LedgerPostingSemanticRole.CASH,
+                        entryType == LedgerEntryType.BUY ? LedgerPostingDirection.OUTBOUND
+                                        : LedgerPostingDirection.INBOUND,
+                        LedgerProjectionRole.ACCOUNT);
+        MigrationGraphBuilder.markPrimary(securityPosting, LedgerPostingSemanticRole.SECURITY,
+                        entryType == LedgerEntryType.BUY ? LedgerPostingDirection.INBOUND
+                                        : LedgerPostingDirection.OUTBOUND,
+                        LedgerProjectionRole.PORTFOLIO);
         MigrationGraphBuilder.addPosting(entry, cashPosting);
         MigrationGraphBuilder.addPosting(entry, securityPosting);
         var unitPostings = MigrationGraphBuilder.addUnitPostings(entry, portfolioTransaction);
@@ -301,6 +314,10 @@ public final class LegacyTransactionToLedgerMigrator
         var targetPosting = MigrationGraphBuilder.cashPosting(LedgerPostingType.CASH, targetAccount,
                         targetTransaction);
 
+        MigrationGraphBuilder.markPrimary(sourcePosting, LedgerPostingSemanticRole.CASH,
+                        LedgerPostingDirection.OUTBOUND, LedgerProjectionRole.SOURCE_ACCOUNT);
+        MigrationGraphBuilder.markPrimary(targetPosting, LedgerPostingSemanticRole.CASH,
+                        LedgerPostingDirection.INBOUND, LedgerProjectionRole.TARGET_ACCOUNT);
         MigrationGraphBuilder.addPosting(entry, sourcePosting);
         MigrationGraphBuilder.addPosting(entry, targetPosting);
         MigrationGraphBuilder.addProjectionRef(entry, MigrationGraphBuilder.accountProjection(
@@ -366,6 +383,10 @@ public final class LegacyTransactionToLedgerMigrator
         var sourcePosting = MigrationGraphBuilder.securityPosting(sourcePortfolio, sourceTransaction);
         var targetPosting = MigrationGraphBuilder.securityPosting(targetPortfolio, targetTransaction);
 
+        MigrationGraphBuilder.markPrimary(sourcePosting, LedgerPostingSemanticRole.SECURITY,
+                        LedgerPostingDirection.OUTBOUND, LedgerProjectionRole.SOURCE_PORTFOLIO);
+        MigrationGraphBuilder.markPrimary(targetPosting, LedgerPostingSemanticRole.SECURITY,
+                        LedgerPostingDirection.INBOUND, LedgerProjectionRole.TARGET_PORTFOLIO);
         MigrationGraphBuilder.addPosting(entry, sourcePosting);
         MigrationGraphBuilder.addPosting(entry, targetPosting);
         MigrationGraphBuilder.addProjectionRef(entry, MigrationGraphBuilder.portfolioProjection(
@@ -474,6 +495,10 @@ public final class LegacyTransactionToLedgerMigrator
         var entry = MigrationGraphBuilder.entry(transaction, entryType);
         var posting = MigrationGraphBuilder.securityPosting(portfolio, transaction);
 
+        MigrationGraphBuilder.markPrimary(posting, LedgerPostingSemanticRole.SECURITY,
+                        entryType == LedgerEntryType.DELIVERY_INBOUND ? LedgerPostingDirection.INBOUND
+                                        : LedgerPostingDirection.OUTBOUND,
+                        role);
         MigrationGraphBuilder.addPosting(entry, posting);
         var unitPostings = MigrationGraphBuilder.addUnitPostings(entry, transaction);
         var projection = MigrationGraphBuilder.portfolioProjection(transaction.getUUID(), role, portfolio,
@@ -737,7 +762,54 @@ public final class LegacyTransactionToLedgerMigrator
                 posting.setExchangeRate(unit.getExchangeRate());
             }
 
+            markUnit(posting);
+
             return posting;
+        }
+
+        private static void markPrimary(LedgerPosting posting, LedgerPostingSemanticRole semanticRole,
+                        LedgerPostingDirection direction, LedgerProjectionRole role)
+        {
+            posting.setSemanticRole(semanticRole);
+            posting.setDirection(direction);
+            posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
+            posting.setLocalKey(role.name());
+        }
+
+        private static void markUnit(LedgerPosting posting)
+        {
+            posting.setSemanticRole(semanticRole(posting.getType()));
+            posting.setUnitRole(unitRole(posting.getType()));
+        }
+
+        private static LedgerPostingSemanticRole semanticRole(LedgerPostingType type)
+        {
+            return switch (type)
+            {
+                case CASH -> LedgerPostingSemanticRole.CASH;
+                case SECURITY -> LedgerPostingSemanticRole.SECURITY;
+                case FEE -> LedgerPostingSemanticRole.FEE;
+                case TAX -> LedgerPostingSemanticRole.TAX;
+                case GROSS_VALUE -> LedgerPostingSemanticRole.GROSS_VALUE;
+                case CASH_COMPENSATION -> LedgerPostingSemanticRole.CASH_COMPENSATION;
+                case RIGHT -> LedgerPostingSemanticRole.RIGHT;
+                case BOND -> LedgerPostingSemanticRole.BOND;
+                case ACCRUED_INTEREST -> LedgerPostingSemanticRole.ACCRUED_INTEREST;
+                case PRINCIPAL_REDEMPTION -> LedgerPostingSemanticRole.PRINCIPAL_REDEMPTION;
+                case FOREX -> LedgerPostingSemanticRole.FOREX_CONTEXT;
+            };
+        }
+
+        private static LedgerPostingUnitRole unitRole(LedgerPostingType type)
+        {
+            return switch (type)
+            {
+                case FEE -> LedgerPostingUnitRole.FEE;
+                case TAX -> LedgerPostingUnitRole.TAX;
+                case GROSS_VALUE -> LedgerPostingUnitRole.GROSS_VALUE;
+                default -> throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_IMPORT_021
+                                .message("Unsupported unit posting type: " + type)); //$NON-NLS-1$
+            };
         }
 
         private static String migratedEntryUUID(LedgerEntryType type, String primaryProjectionUUID)

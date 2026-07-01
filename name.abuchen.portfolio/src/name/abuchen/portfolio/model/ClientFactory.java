@@ -95,11 +95,15 @@ import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerParameter;
 import name.abuchen.portfolio.model.ledger.LedgerParameter.ValueKind;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
+import name.abuchen.portfolio.model.ledger.LedgerPostingDirection;
+import name.abuchen.portfolio.model.ledger.LedgerPostingSemanticRole;
+import name.abuchen.portfolio.model.ledger.LedgerPostingUnitRole;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator;
 import name.abuchen.portfolio.model.ledger.ProjectionMembership;
 import name.abuchen.portfolio.model.ledger.ProjectionMembershipRole;
+import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerParameterType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
@@ -305,7 +309,6 @@ public class ClientFactory
         {
             var entry = (LedgerEntry) source;
 
-            writeAttribute(writer, "uuid", entry.getUUID()); //$NON-NLS-1$
             writeAttribute(writer, "type", entry.getType()); //$NON-NLS-1$
             writeAttribute(writer, "dateTime", entry.getDateTime()); //$NON-NLS-1$
             writeAttribute(writer, "updatedAt", entry.getUpdatedAt()); //$NON-NLS-1$
@@ -322,8 +325,6 @@ public class ClientFactory
             writeValue(writer, "preferredViewKind", entry.getPreferredViewKind()); //$NON-NLS-1$
             writeParameters(writer, context, entry.getParameters());
             writeCollection(writer, context, "postings", "ledger-posting", entry.getPostings()); //$NON-NLS-1$ //$NON-NLS-2$
-            writeCollection(writer, context, "projectionRefs", "ledger-projection-ref", //$NON-NLS-1$ //$NON-NLS-2$
-                            entry.getProjectionRefs());
         }
 
         @Override
@@ -417,7 +418,6 @@ public class ClientFactory
         {
             var posting = (LedgerPosting) source;
 
-            writeAttribute(writer, "uuid", posting.getUUID()); //$NON-NLS-1$
             writeAttribute(writer, "type", posting.getType()); //$NON-NLS-1$
             writeAttribute(writer, "amount", posting.getAmount()); //$NON-NLS-1$
             writeAttribute(writer, "currency", posting.getCurrency()); //$NON-NLS-1$
@@ -425,6 +425,12 @@ public class ClientFactory
             writeAttribute(writer, "forexCurrency", posting.getForexCurrency()); //$NON-NLS-1$
             writeAttribute(writer, "exchangeRate", posting.getExchangeRate()); //$NON-NLS-1$
             writeAttribute(writer, "shares", posting.getShares()); //$NON-NLS-1$
+            writeAttribute(writer, "semanticRole", posting.getSemanticRole()); //$NON-NLS-1$
+            writeAttribute(writer, "direction", posting.getDirection()); //$NON-NLS-1$
+            writeAttribute(writer, "corporateActionLeg", posting.getCorporateActionLeg()); //$NON-NLS-1$
+            writeAttribute(writer, "unitRole", posting.getUnitRole()); //$NON-NLS-1$
+            writeAttribute(writer, "groupKey", posting.getGroupKey()); //$NON-NLS-1$
+            writeAttribute(writer, "localKey", posting.getLocalKey()); //$NON-NLS-1$
             writeObject(writer, context, "security", posting.getSecurity()); //$NON-NLS-1$
             writeObject(writer, context, "account", posting.getAccount()); //$NON-NLS-1$
             writeObject(writer, context, "portfolio", posting.getPortfolio()); //$NON-NLS-1$
@@ -444,6 +450,16 @@ public class ClientFactory
             readAttribute(reader, "forexCurrency").ifPresent(posting::setForexCurrency); //$NON-NLS-1$
             readAttribute(reader, "exchangeRate").map(BigDecimal::new).ifPresent(posting::setExchangeRate); //$NON-NLS-1$
             readAttribute(reader, "shares").map(Long::parseLong).ifPresent(posting::setShares); //$NON-NLS-1$
+            readAttribute(reader, "semanticRole").map(LedgerPostingSemanticRole::valueOf) //$NON-NLS-1$
+                            .ifPresent(posting::setSemanticRole);
+            readAttribute(reader, "direction").map(LedgerPostingDirection::valueOf) //$NON-NLS-1$
+                            .ifPresent(posting::setDirection);
+            readAttribute(reader, "corporateActionLeg").map(CorporateActionLeg::valueOf) //$NON-NLS-1$
+                            .ifPresent(posting::setCorporateActionLeg);
+            readAttribute(reader, "unitRole").map(LedgerPostingUnitRole::valueOf) //$NON-NLS-1$
+                            .ifPresent(posting::setUnitRole);
+            readAttribute(reader, "groupKey").ifPresent(posting::setGroupKey); //$NON-NLS-1$
+            readAttribute(reader, "localKey").ifPresent(posting::setLocalKey); //$NON-NLS-1$
 
             while (reader.hasMoreChildren())
             {
@@ -465,6 +481,19 @@ public class ClientFactory
                     case "account" -> posting.setAccount((Account) context.convertAnother(posting, Account.class)); //$NON-NLS-1$
                     case "portfolio" -> posting.setPortfolio((Portfolio) context.convertAnother(posting, //$NON-NLS-1$
                                     Portfolio.class));
+                    case "semanticRole" -> posting.setSemanticRole( //$NON-NLS-1$
+                                    (LedgerPostingSemanticRole) context.convertAnother(posting,
+                                                    LedgerPostingSemanticRole.class));
+                    case "direction" -> posting.setDirection( //$NON-NLS-1$
+                                    (LedgerPostingDirection) context.convertAnother(posting,
+                                                    LedgerPostingDirection.class));
+                    case "corporateActionLeg" -> posting.setCorporateActionLeg( //$NON-NLS-1$
+                                    (CorporateActionLeg) context.convertAnother(posting, CorporateActionLeg.class));
+                    case "unitRole" -> posting.setUnitRole( //$NON-NLS-1$
+                                    (LedgerPostingUnitRole) context.convertAnother(posting,
+                                                    LedgerPostingUnitRole.class));
+                    case "groupKey" -> posting.setGroupKey(reader.getValue()); //$NON-NLS-1$
+                    case "localKey" -> posting.setLocalKey(reader.getValue()); //$NON-NLS-1$
                     case "parameters" -> readParameters(reader, context, posting); //$NON-NLS-1$
                     default -> {
                         // Ignore unknown LedgerPosting fields to preserve load recovery behavior.
@@ -740,11 +769,19 @@ public class ClientFactory
         {
             validateLedger(client);
 
+            var projectionUUIDs = ledgerProjectionUUIDs(client);
+
             for (var account : client.getAccounts())
+            {
+                saveState.removeLegacyProjectionShadows(account.getTransactions(), projectionUUIDs);
                 saveState.removeLedgerBackedTransactions(account.getTransactions());
+            }
 
             for (var portfolio : client.getPortfolios())
+            {
+                saveState.removeLegacyProjectionShadows(portfolio.getTransactions(), projectionUUIDs);
                 saveState.removeLedgerBackedTransactions(portfolio.getTransactions());
+            }
 
             for (var plan : client.getPlans())
                 saveState.replaceLedgerBackedPlanTransactions(plan);
@@ -843,6 +880,17 @@ public class ClientFactory
                 var transaction = transactions.get(index);
 
                 if (transaction instanceof LedgerBackedTransaction)
+                    remove(transactions, index);
+            }
+        }
+
+        private void removeLegacyProjectionShadows(List<? extends Transaction> transactions, Set<String> projectionUUIDs)
+        {
+            for (var index = transactions.size() - 1; index >= 0; index--)
+            {
+                var transaction = transactions.get(index);
+
+                if (!(transaction instanceof LedgerBackedTransaction) && projectionUUIDs.contains(transaction.getUUID()))
                     remove(transactions, index);
             }
         }
