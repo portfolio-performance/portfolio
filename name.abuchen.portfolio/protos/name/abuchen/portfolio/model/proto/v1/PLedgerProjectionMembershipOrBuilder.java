@@ -8,25 +8,33 @@ public interface PLedgerProjectionMembershipOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>string postingUUID = 1;</code>
+   * <code>string postingUUID = 1 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerProjectionMembership.postingUUID is deprecated.
+   *     See client.proto;l=325
    * @return The postingUUID.
    */
-  java.lang.String getPostingUUID();
+  @java.lang.Deprecated java.lang.String getPostingUUID();
   /**
-   * <code>string postingUUID = 1;</code>
+   * <code>string postingUUID = 1 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerProjectionMembership.postingUUID is deprecated.
+   *     See client.proto;l=325
    * @return The bytes for postingUUID.
    */
-  com.google.protobuf.ByteString
+  @java.lang.Deprecated com.google.protobuf.ByteString
       getPostingUUIDBytes();
 
   /**
-   * <code>.name.abuchen.portfolio.PLedgerProjectionMembershipRole role = 2;</code>
+   * <code>.name.abuchen.portfolio.PLedgerProjectionMembershipRole role = 2 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerProjectionMembership.role is deprecated.
+   *     See client.proto;l=326
    * @return The enum numeric value on the wire for role.
    */
-  int getRoleValue();
+  @java.lang.Deprecated int getRoleValue();
   /**
-   * <code>.name.abuchen.portfolio.PLedgerProjectionMembershipRole role = 2;</code>
+   * <code>.name.abuchen.portfolio.PLedgerProjectionMembershipRole role = 2 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerProjectionMembership.role is deprecated.
+   *     See client.proto;l=326
    * @return The role.
    */
-  name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipRole getRole();
+  @java.lang.Deprecated name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipRole getRole();
 }

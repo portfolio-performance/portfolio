@@ -8,83 +8,103 @@ public interface PLedgerProjectionRefOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>string uuid = 1;</code>
+   * <code>string uuid = 1 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.uuid is deprecated.
+   *     See client.proto;l=317
    * @return The uuid.
    */
-  java.lang.String getUuid();
+  @java.lang.Deprecated java.lang.String getUuid();
   /**
-   * <code>string uuid = 1;</code>
+   * <code>string uuid = 1 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.uuid is deprecated.
+   *     See client.proto;l=317
    * @return The bytes for uuid.
    */
-  com.google.protobuf.ByteString
+  @java.lang.Deprecated com.google.protobuf.ByteString
       getUuidBytes();
 
   /**
-   * <code>.name.abuchen.portfolio.PLedgerProjectionRole role = 2;</code>
+   * <code>.name.abuchen.portfolio.PLedgerProjectionRole role = 2 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.role is deprecated.
+   *     See client.proto;l=318
    * @return The enum numeric value on the wire for role.
    */
-  int getRoleValue();
+  @java.lang.Deprecated int getRoleValue();
   /**
-   * <code>.name.abuchen.portfolio.PLedgerProjectionRole role = 2;</code>
+   * <code>.name.abuchen.portfolio.PLedgerProjectionRole role = 2 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.role is deprecated.
+   *     See client.proto;l=318
    * @return The role.
    */
-  name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRole getRole();
+  @java.lang.Deprecated name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRole getRole();
 
   /**
-   * <code>optional string account = 3;</code>
+   * <code>optional string account = 3 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.account is deprecated.
+   *     See client.proto;l=319
    * @return Whether the account field is set.
    */
-  boolean hasAccount();
+  @java.lang.Deprecated boolean hasAccount();
   /**
-   * <code>optional string account = 3;</code>
+   * <code>optional string account = 3 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.account is deprecated.
+   *     See client.proto;l=319
    * @return The account.
    */
-  java.lang.String getAccount();
+  @java.lang.Deprecated java.lang.String getAccount();
   /**
-   * <code>optional string account = 3;</code>
+   * <code>optional string account = 3 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.account is deprecated.
+   *     See client.proto;l=319
    * @return The bytes for account.
    */
-  com.google.protobuf.ByteString
+  @java.lang.Deprecated com.google.protobuf.ByteString
       getAccountBytes();
 
   /**
-   * <code>optional string portfolio = 4;</code>
+   * <code>optional string portfolio = 4 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.portfolio is deprecated.
+   *     See client.proto;l=320
    * @return Whether the portfolio field is set.
    */
-  boolean hasPortfolio();
+  @java.lang.Deprecated boolean hasPortfolio();
   /**
-   * <code>optional string portfolio = 4;</code>
+   * <code>optional string portfolio = 4 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.portfolio is deprecated.
+   *     See client.proto;l=320
    * @return The portfolio.
    */
-  java.lang.String getPortfolio();
+  @java.lang.Deprecated java.lang.String getPortfolio();
   /**
-   * <code>optional string portfolio = 4;</code>
+   * <code>optional string portfolio = 4 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.portfolio is deprecated.
+   *     See client.proto;l=320
    * @return The bytes for portfolio.
    */
-  com.google.protobuf.ByteString
+  @java.lang.Deprecated com.google.protobuf.ByteString
       getPortfolioBytes();
 
   /**
-   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
+   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5 [deprecated = true];</code>
    */
-  java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership> 
+  @java.lang.Deprecated java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership>
       getMembershipsList();
   /**
-   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
+   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5 [deprecated = true];</code>
    */
-  name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership getMemberships(int index);
+  @java.lang.Deprecated name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership getMemberships(int index);
   /**
-   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
+   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5 [deprecated = true];</code>
    */
-  int getMembershipsCount();
+  @java.lang.Deprecated int getMembershipsCount();
   /**
-   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
+   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5 [deprecated = true];</code>
    */
-  java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipOrBuilder> 
+  @java.lang.Deprecated java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipOrBuilder>
       getMembershipsOrBuilderList();
   /**
-   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
+   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5 [deprecated = true];</code>
    */
-  name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipOrBuilder getMembershipsOrBuilder(
+  @java.lang.Deprecated name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipOrBuilder getMembershipsOrBuilder(
       int index);
 }

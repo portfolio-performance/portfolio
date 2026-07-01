@@ -44,16 +44,18 @@ private static final long serialVersionUID = 0L;
   @SuppressWarnings("serial")
   private volatile java.lang.Object postingUUID_ = "";
   /**
-   * <code>string postingUUID = 1;</code>
+   * <code>string postingUUID = 1 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerProjectionMembership.postingUUID is deprecated.
+   *     See client.proto;l=325
    * @return The postingUUID.
    */
   @java.lang.Override
-  public java.lang.String getPostingUUID() {
+  @java.lang.Deprecated public java.lang.String getPostingUUID() {
     java.lang.Object ref = postingUUID_;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       postingUUID_ = s;
@@ -61,15 +63,17 @@ private static final long serialVersionUID = 0L;
     }
   }
   /**
-   * <code>string postingUUID = 1;</code>
+   * <code>string postingUUID = 1 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerProjectionMembership.postingUUID is deprecated.
+   *     See client.proto;l=325
    * @return The bytes for postingUUID.
    */
   @java.lang.Override
-  public com.google.protobuf.ByteString
+  @java.lang.Deprecated public com.google.protobuf.ByteString
       getPostingUUIDBytes() {
     java.lang.Object ref = postingUUID_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       postingUUID_ = b;
@@ -82,17 +86,21 @@ private static final long serialVersionUID = 0L;
   public static final int ROLE_FIELD_NUMBER = 2;
   private int role_ = 0;
   /**
-   * <code>.name.abuchen.portfolio.PLedgerProjectionMembershipRole role = 2;</code>
+   * <code>.name.abuchen.portfolio.PLedgerProjectionMembershipRole role = 2 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerProjectionMembership.role is deprecated.
+   *     See client.proto;l=326
    * @return The enum numeric value on the wire for role.
    */
-  @java.lang.Override public int getRoleValue() {
+  @java.lang.Override @java.lang.Deprecated public int getRoleValue() {
     return role_;
   }
   /**
-   * <code>.name.abuchen.portfolio.PLedgerProjectionMembershipRole role = 2;</code>
+   * <code>.name.abuchen.portfolio.PLedgerProjectionMembershipRole role = 2 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerProjectionMembership.role is deprecated.
+   *     See client.proto;l=326
    * @return The role.
    */
-  @java.lang.Override public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipRole getRole() {
+  @java.lang.Override @java.lang.Deprecated public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipRole getRole() {
     name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipRole result = name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipRole.forNumber(role_);
     return result == null ? name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipRole.UNRECOGNIZED : result;
   }
@@ -413,10 +421,12 @@ private static final long serialVersionUID = 0L;
 
     private java.lang.Object postingUUID_ = "";
     /**
-     * <code>string postingUUID = 1;</code>
+     * <code>string postingUUID = 1 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionMembership.postingUUID is deprecated.
+     *     See client.proto;l=325
      * @return The postingUUID.
      */
-    public java.lang.String getPostingUUID() {
+    @java.lang.Deprecated public java.lang.String getPostingUUID() {
       java.lang.Object ref = postingUUID_;
       if (!(ref instanceof java.lang.String)) {
         com.google.protobuf.ByteString bs =
@@ -429,14 +439,16 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>string postingUUID = 1;</code>
+     * <code>string postingUUID = 1 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionMembership.postingUUID is deprecated.
+     *     See client.proto;l=325
      * @return The bytes for postingUUID.
      */
-    public com.google.protobuf.ByteString
+    @java.lang.Deprecated public com.google.protobuf.ByteString
         getPostingUUIDBytes() {
       java.lang.Object ref = postingUUID_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         postingUUID_ = b;
@@ -446,11 +458,13 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>string postingUUID = 1;</code>
+     * <code>string postingUUID = 1 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionMembership.postingUUID is deprecated.
+     *     See client.proto;l=325
      * @param value The postingUUID to set.
      * @return This builder for chaining.
      */
-    public Builder setPostingUUID(
+    @java.lang.Deprecated public Builder setPostingUUID(
         java.lang.String value) {
       if (value == null) { throw new NullPointerException(); }
       postingUUID_ = value;
@@ -459,21 +473,25 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>string postingUUID = 1;</code>
+     * <code>string postingUUID = 1 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionMembership.postingUUID is deprecated.
+     *     See client.proto;l=325
      * @return This builder for chaining.
      */
-    public Builder clearPostingUUID() {
+    @java.lang.Deprecated public Builder clearPostingUUID() {
       postingUUID_ = getDefaultInstance().getPostingUUID();
       bitField0_ = (bitField0_ & ~0x00000001);
       onChanged();
       return this;
     }
     /**
-     * <code>string postingUUID = 1;</code>
+     * <code>string postingUUID = 1 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionMembership.postingUUID is deprecated.
+     *     See client.proto;l=325
      * @param value The bytes for postingUUID to set.
      * @return This builder for chaining.
      */
-    public Builder setPostingUUIDBytes(
+    @java.lang.Deprecated public Builder setPostingUUIDBytes(
         com.google.protobuf.ByteString value) {
       if (value == null) { throw new NullPointerException(); }
       checkByteStringIsUtf8(value);
@@ -485,38 +503,46 @@ private static final long serialVersionUID = 0L;
 
     private int role_ = 0;
     /**
-     * <code>.name.abuchen.portfolio.PLedgerProjectionMembershipRole role = 2;</code>
+     * <code>.name.abuchen.portfolio.PLedgerProjectionMembershipRole role = 2 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionMembership.role is deprecated.
+     *     See client.proto;l=326
      * @return The enum numeric value on the wire for role.
      */
-    @java.lang.Override public int getRoleValue() {
+    @java.lang.Override @java.lang.Deprecated public int getRoleValue() {
       return role_;
     }
     /**
-     * <code>.name.abuchen.portfolio.PLedgerProjectionMembershipRole role = 2;</code>
+     * <code>.name.abuchen.portfolio.PLedgerProjectionMembershipRole role = 2 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionMembership.role is deprecated.
+     *     See client.proto;l=326
      * @param value The enum numeric value on the wire for role to set.
      * @return This builder for chaining.
      */
-    public Builder setRoleValue(int value) {
+    @java.lang.Deprecated public Builder setRoleValue(int value) {
       role_ = value;
       bitField0_ |= 0x00000002;
       onChanged();
       return this;
     }
     /**
-     * <code>.name.abuchen.portfolio.PLedgerProjectionMembershipRole role = 2;</code>
+     * <code>.name.abuchen.portfolio.PLedgerProjectionMembershipRole role = 2 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionMembership.role is deprecated.
+     *     See client.proto;l=326
      * @return The role.
      */
     @java.lang.Override
-    public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipRole getRole() {
+    @java.lang.Deprecated public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipRole getRole() {
       name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipRole result = name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipRole.forNumber(role_);
       return result == null ? name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipRole.UNRECOGNIZED : result;
     }
     /**
-     * <code>.name.abuchen.portfolio.PLedgerProjectionMembershipRole role = 2;</code>
+     * <code>.name.abuchen.portfolio.PLedgerProjectionMembershipRole role = 2 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionMembership.role is deprecated.
+     *     See client.proto;l=326
      * @param value The role to set.
      * @return This builder for chaining.
      */
-    public Builder setRole(name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipRole value) {
+    @java.lang.Deprecated public Builder setRole(name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipRole value) {
       if (value == null) {
         throw new NullPointerException();
       }
@@ -526,10 +552,12 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.name.abuchen.portfolio.PLedgerProjectionMembershipRole role = 2;</code>
+     * <code>.name.abuchen.portfolio.PLedgerProjectionMembershipRole role = 2 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionMembership.role is deprecated.
+     *     See client.proto;l=326
      * @return This builder for chaining.
      */
-    public Builder clearRole() {
+    @java.lang.Deprecated public Builder clearRole() {
       bitField0_ = (bitField0_ & ~0x00000002);
       role_ = 0;
       onChanged();

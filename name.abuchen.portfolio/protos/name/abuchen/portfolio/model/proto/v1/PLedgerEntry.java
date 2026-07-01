@@ -51,16 +51,18 @@ private static final long serialVersionUID = 0L;
   @SuppressWarnings("serial")
   private volatile java.lang.Object uuid_ = "";
   /**
-   * <code>string uuid = 1;</code>
+   * <code>string uuid = 1 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerEntry.uuid is deprecated.
+   *     See client.proto;l=278
    * @return The uuid.
    */
   @java.lang.Override
-  public java.lang.String getUuid() {
+  @java.lang.Deprecated public java.lang.String getUuid() {
     java.lang.Object ref = uuid_;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       uuid_ = s;
@@ -68,15 +70,17 @@ private static final long serialVersionUID = 0L;
     }
   }
   /**
-   * <code>string uuid = 1;</code>
+   * <code>string uuid = 1 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerEntry.uuid is deprecated.
+   *     See client.proto;l=278
    * @return The bytes for uuid.
    */
   @java.lang.Override
-  public com.google.protobuf.ByteString
+  @java.lang.Deprecated public com.google.protobuf.ByteString
       getUuidBytes() {
     java.lang.Object ref = uuid_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       uuid_ = b;
@@ -133,7 +137,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       note_ = s;
@@ -149,7 +153,7 @@ private static final long serialVersionUID = 0L;
       getNoteBytes() {
     java.lang.Object ref = note_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       note_ = b;
@@ -180,7 +184,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       source_ = s;
@@ -196,7 +200,7 @@ private static final long serialVersionUID = 0L;
       getSourceBytes() {
     java.lang.Object ref = source_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       source_ = b;
@@ -246,7 +250,7 @@ private static final long serialVersionUID = 0L;
    * <code>repeated .name.abuchen.portfolio.PLedgerPosting postings = 7;</code>
    */
   @java.lang.Override
-  public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerPostingOrBuilder> 
+  public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerPostingOrBuilder>
       getPostingsOrBuilderList() {
     return postings_;
   }
@@ -277,39 +281,39 @@ private static final long serialVersionUID = 0L;
   @SuppressWarnings("serial")
   private java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef> projectionRefs_;
   /**
-   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
+   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8 [deprecated = true];</code>
    */
   @java.lang.Override
-  public java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef> getProjectionRefsList() {
+  @java.lang.Deprecated public java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef> getProjectionRefsList() {
     return projectionRefs_;
   }
   /**
-   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
+   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8 [deprecated = true];</code>
    */
   @java.lang.Override
-  public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRefOrBuilder> 
+  @java.lang.Deprecated public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRefOrBuilder>
       getProjectionRefsOrBuilderList() {
     return projectionRefs_;
   }
   /**
-   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
+   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8 [deprecated = true];</code>
    */
   @java.lang.Override
-  public int getProjectionRefsCount() {
+  @java.lang.Deprecated public int getProjectionRefsCount() {
     return projectionRefs_.size();
   }
   /**
-   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
+   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8 [deprecated = true];</code>
    */
   @java.lang.Override
-  public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef getProjectionRefs(int index) {
+  @java.lang.Deprecated public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef getProjectionRefs(int index) {
     return projectionRefs_.get(index);
   }
   /**
-   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
+   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8 [deprecated = true];</code>
    */
   @java.lang.Override
-  public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRefOrBuilder getProjectionRefsOrBuilder(
+  @java.lang.Deprecated public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRefOrBuilder getProjectionRefsOrBuilder(
       int index) {
     return projectionRefs_.get(index);
   }
@@ -347,7 +351,7 @@ private static final long serialVersionUID = 0L;
    * <code>repeated .name.abuchen.portfolio.PLedgerParameter parameters = 10;</code>
    */
   @java.lang.Override
-  public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerParameterOrBuilder> 
+  public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerParameterOrBuilder>
       getParametersOrBuilderList() {
     return parameters_;
   }
@@ -395,7 +399,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       generatedByPlanKey_ = s;
@@ -411,7 +415,7 @@ private static final long serialVersionUID = 0L;
       getGeneratedByPlanKeyBytes() {
     java.lang.Object ref = generatedByPlanKey_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       generatedByPlanKey_ = b;
@@ -480,7 +484,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       preferredViewKind_ = s;
@@ -496,7 +500,7 @@ private static final long serialVersionUID = 0L;
       getPreferredViewKindBytes() {
     java.lang.Object ref = preferredViewKind_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       preferredViewKind_ = b;
@@ -1073,7 +1077,7 @@ private static final long serialVersionUID = 0L;
             postingsBuilder_ = null;
             postings_ = other.postings_;
             bitField0_ = (bitField0_ & ~0x00000020);
-            postingsBuilder_ = 
+            postingsBuilder_ =
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getPostingsFieldBuilder() : null;
           } else {
@@ -1099,7 +1103,7 @@ private static final long serialVersionUID = 0L;
             projectionRefsBuilder_ = null;
             projectionRefs_ = other.projectionRefs_;
             bitField0_ = (bitField0_ & ~0x00000040);
-            projectionRefsBuilder_ = 
+            projectionRefsBuilder_ =
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getProjectionRefsFieldBuilder() : null;
           } else {
@@ -1128,7 +1132,7 @@ private static final long serialVersionUID = 0L;
             parametersBuilder_ = null;
             parameters_ = other.parameters_;
             bitField0_ = (bitField0_ & ~0x00000100);
-            parametersBuilder_ = 
+            parametersBuilder_ =
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getParametersFieldBuilder() : null;
           } else {
@@ -1290,10 +1294,12 @@ private static final long serialVersionUID = 0L;
 
     private java.lang.Object uuid_ = "";
     /**
-     * <code>string uuid = 1;</code>
+     * <code>string uuid = 1 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerEntry.uuid is deprecated.
+     *     See client.proto;l=278
      * @return The uuid.
      */
-    public java.lang.String getUuid() {
+    @java.lang.Deprecated public java.lang.String getUuid() {
       java.lang.Object ref = uuid_;
       if (!(ref instanceof java.lang.String)) {
         com.google.protobuf.ByteString bs =
@@ -1306,14 +1312,16 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>string uuid = 1;</code>
+     * <code>string uuid = 1 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerEntry.uuid is deprecated.
+     *     See client.proto;l=278
      * @return The bytes for uuid.
      */
-    public com.google.protobuf.ByteString
+    @java.lang.Deprecated public com.google.protobuf.ByteString
         getUuidBytes() {
       java.lang.Object ref = uuid_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         uuid_ = b;
@@ -1323,11 +1331,13 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>string uuid = 1;</code>
+     * <code>string uuid = 1 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerEntry.uuid is deprecated.
+     *     See client.proto;l=278
      * @param value The uuid to set.
      * @return This builder for chaining.
      */
-    public Builder setUuid(
+    @java.lang.Deprecated public Builder setUuid(
         java.lang.String value) {
       if (value == null) { throw new NullPointerException(); }
       uuid_ = value;
@@ -1336,21 +1346,25 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>string uuid = 1;</code>
+     * <code>string uuid = 1 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerEntry.uuid is deprecated.
+     *     See client.proto;l=278
      * @return This builder for chaining.
      */
-    public Builder clearUuid() {
+    @java.lang.Deprecated public Builder clearUuid() {
       uuid_ = getDefaultInstance().getUuid();
       bitField0_ = (bitField0_ & ~0x00000001);
       onChanged();
       return this;
     }
     /**
-     * <code>string uuid = 1;</code>
+     * <code>string uuid = 1 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerEntry.uuid is deprecated.
+     *     See client.proto;l=278
      * @param value The bytes for uuid to set.
      * @return This builder for chaining.
      */
-    public Builder setUuidBytes(
+    @java.lang.Deprecated public Builder setUuidBytes(
         com.google.protobuf.ByteString value) {
       if (value == null) { throw new NullPointerException(); }
       checkByteStringIsUtf8(value);
@@ -1466,7 +1480,7 @@ private static final long serialVersionUID = 0L;
      * <code>.google.protobuf.Timestamp dateTime = 3;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder> 
+        com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder>
         getDateTimeFieldBuilder() {
       if (dateTimeBuilder_ == null) {
         dateTimeBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -1511,7 +1525,7 @@ private static final long serialVersionUID = 0L;
         getNoteBytes() {
       java.lang.Object ref = note_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         note_ = b;
@@ -1590,7 +1604,7 @@ private static final long serialVersionUID = 0L;
         getSourceBytes() {
       java.lang.Object ref = source_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         source_ = b;
@@ -1743,7 +1757,7 @@ private static final long serialVersionUID = 0L;
      * <code>.google.protobuf.Timestamp updatedAt = 6;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder> 
+        com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder>
         getUpdatedAtFieldBuilder() {
       if (updatedAtBuilder_ == null) {
         updatedAtBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -1951,7 +1965,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>repeated .name.abuchen.portfolio.PLedgerPosting postings = 7;</code>
      */
-    public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerPostingOrBuilder> 
+    public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerPostingOrBuilder>
          getPostingsOrBuilderList() {
       if (postingsBuilder_ != null) {
         return postingsBuilder_.getMessageOrBuilderList();
@@ -1977,12 +1991,12 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>repeated .name.abuchen.portfolio.PLedgerPosting postings = 7;</code>
      */
-    public java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerPosting.Builder> 
+    public java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerPosting.Builder>
          getPostingsBuilderList() {
       return getPostingsFieldBuilder().getBuilderList();
     }
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        name.abuchen.portfolio.model.proto.v1.PLedgerPosting, name.abuchen.portfolio.model.proto.v1.PLedgerPosting.Builder, name.abuchen.portfolio.model.proto.v1.PLedgerPostingOrBuilder> 
+        name.abuchen.portfolio.model.proto.v1.PLedgerPosting, name.abuchen.portfolio.model.proto.v1.PLedgerPosting.Builder, name.abuchen.portfolio.model.proto.v1.PLedgerPostingOrBuilder>
         getPostingsFieldBuilder() {
       if (postingsBuilder_ == null) {
         postingsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
@@ -2009,9 +2023,9 @@ private static final long serialVersionUID = 0L;
         name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef, name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef.Builder, name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRefOrBuilder> projectionRefsBuilder_;
 
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8 [deprecated = true];</code>
      */
-    public java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef> getProjectionRefsList() {
+    @java.lang.Deprecated public java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef> getProjectionRefsList() {
       if (projectionRefsBuilder_ == null) {
         return java.util.Collections.unmodifiableList(projectionRefs_);
       } else {
@@ -2019,9 +2033,9 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8 [deprecated = true];</code>
      */
-    public int getProjectionRefsCount() {
+    @java.lang.Deprecated public int getProjectionRefsCount() {
       if (projectionRefsBuilder_ == null) {
         return projectionRefs_.size();
       } else {
@@ -2029,9 +2043,9 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8 [deprecated = true];</code>
      */
-    public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef getProjectionRefs(int index) {
+    @java.lang.Deprecated public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef getProjectionRefs(int index) {
       if (projectionRefsBuilder_ == null) {
         return projectionRefs_.get(index);
       } else {
@@ -2039,9 +2053,9 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8 [deprecated = true];</code>
      */
-    public Builder setProjectionRefs(
+    @java.lang.Deprecated public Builder setProjectionRefs(
         int index, name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef value) {
       if (projectionRefsBuilder_ == null) {
         if (value == null) {
@@ -2056,9 +2070,9 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8 [deprecated = true];</code>
      */
-    public Builder setProjectionRefs(
+    @java.lang.Deprecated public Builder setProjectionRefs(
         int index, name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef.Builder builderForValue) {
       if (projectionRefsBuilder_ == null) {
         ensureProjectionRefsIsMutable();
@@ -2070,9 +2084,9 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8 [deprecated = true];</code>
      */
-    public Builder addProjectionRefs(name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef value) {
+    @java.lang.Deprecated public Builder addProjectionRefs(name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef value) {
       if (projectionRefsBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -2086,9 +2100,9 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8 [deprecated = true];</code>
      */
-    public Builder addProjectionRefs(
+    @java.lang.Deprecated public Builder addProjectionRefs(
         int index, name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef value) {
       if (projectionRefsBuilder_ == null) {
         if (value == null) {
@@ -2103,9 +2117,9 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8 [deprecated = true];</code>
      */
-    public Builder addProjectionRefs(
+    @java.lang.Deprecated public Builder addProjectionRefs(
         name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef.Builder builderForValue) {
       if (projectionRefsBuilder_ == null) {
         ensureProjectionRefsIsMutable();
@@ -2117,9 +2131,9 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8 [deprecated = true];</code>
      */
-    public Builder addProjectionRefs(
+    @java.lang.Deprecated public Builder addProjectionRefs(
         int index, name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef.Builder builderForValue) {
       if (projectionRefsBuilder_ == null) {
         ensureProjectionRefsIsMutable();
@@ -2131,9 +2145,9 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8 [deprecated = true];</code>
      */
-    public Builder addAllProjectionRefs(
+    @java.lang.Deprecated public Builder addAllProjectionRefs(
         java.lang.Iterable<? extends name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef> values) {
       if (projectionRefsBuilder_ == null) {
         ensureProjectionRefsIsMutable();
@@ -2146,9 +2160,9 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8 [deprecated = true];</code>
      */
-    public Builder clearProjectionRefs() {
+    @java.lang.Deprecated public Builder clearProjectionRefs() {
       if (projectionRefsBuilder_ == null) {
         projectionRefs_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000040);
@@ -2159,9 +2173,9 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8 [deprecated = true];</code>
      */
-    public Builder removeProjectionRefs(int index) {
+    @java.lang.Deprecated public Builder removeProjectionRefs(int index) {
       if (projectionRefsBuilder_ == null) {
         ensureProjectionRefsIsMutable();
         projectionRefs_.remove(index);
@@ -2172,16 +2186,16 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8 [deprecated = true];</code>
      */
-    public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef.Builder getProjectionRefsBuilder(
+    @java.lang.Deprecated public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef.Builder getProjectionRefsBuilder(
         int index) {
       return getProjectionRefsFieldBuilder().getBuilder(index);
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8 [deprecated = true];</code>
      */
-    public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRefOrBuilder getProjectionRefsOrBuilder(
+    @java.lang.Deprecated public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRefOrBuilder getProjectionRefsOrBuilder(
         int index) {
       if (projectionRefsBuilder_ == null) {
         return projectionRefs_.get(index);  } else {
@@ -2189,9 +2203,9 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8 [deprecated = true];</code>
      */
-    public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRefOrBuilder> 
+    @java.lang.Deprecated public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRefOrBuilder>
          getProjectionRefsOrBuilderList() {
       if (projectionRefsBuilder_ != null) {
         return projectionRefsBuilder_.getMessageOrBuilderList();
@@ -2200,29 +2214,29 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8 [deprecated = true];</code>
      */
-    public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef.Builder addProjectionRefsBuilder() {
+    @java.lang.Deprecated public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef.Builder addProjectionRefsBuilder() {
       return getProjectionRefsFieldBuilder().addBuilder(
           name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef.getDefaultInstance());
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8 [deprecated = true];</code>
      */
-    public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef.Builder addProjectionRefsBuilder(
+    @java.lang.Deprecated public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef.Builder addProjectionRefsBuilder(
         int index) {
       return getProjectionRefsFieldBuilder().addBuilder(
           index, name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef.getDefaultInstance());
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8 [deprecated = true];</code>
      */
-    public java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef.Builder> 
+    @java.lang.Deprecated public java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef.Builder>
          getProjectionRefsBuilderList() {
       return getProjectionRefsFieldBuilder().getBuilderList();
     }
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef, name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef.Builder, name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRefOrBuilder> 
+        name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef, name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef.Builder, name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRefOrBuilder>
         getProjectionRefsFieldBuilder() {
       if (projectionRefsBuilder_ == null) {
         projectionRefsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
@@ -2471,7 +2485,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>repeated .name.abuchen.portfolio.PLedgerParameter parameters = 10;</code>
      */
-    public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerParameterOrBuilder> 
+    public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerParameterOrBuilder>
          getParametersOrBuilderList() {
       if (parametersBuilder_ != null) {
         return parametersBuilder_.getMessageOrBuilderList();
@@ -2497,12 +2511,12 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>repeated .name.abuchen.portfolio.PLedgerParameter parameters = 10;</code>
      */
-    public java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerParameter.Builder> 
+    public java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerParameter.Builder>
          getParametersBuilderList() {
       return getParametersFieldBuilder().getBuilderList();
     }
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        name.abuchen.portfolio.model.proto.v1.PLedgerParameter, name.abuchen.portfolio.model.proto.v1.PLedgerParameter.Builder, name.abuchen.portfolio.model.proto.v1.PLedgerParameterOrBuilder> 
+        name.abuchen.portfolio.model.proto.v1.PLedgerParameter, name.abuchen.portfolio.model.proto.v1.PLedgerParameter.Builder, name.abuchen.portfolio.model.proto.v1.PLedgerParameterOrBuilder>
         getParametersFieldBuilder() {
       if (parametersBuilder_ == null) {
         parametersBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
@@ -2548,7 +2562,7 @@ private static final long serialVersionUID = 0L;
         getGeneratedByPlanKeyBytes() {
       java.lang.Object ref = generatedByPlanKey_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         generatedByPlanKey_ = b;
@@ -2707,7 +2721,7 @@ private static final long serialVersionUID = 0L;
         getPreferredViewKindBytes() {
       java.lang.Object ref = preferredViewKind_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         preferredViewKind_ = b;

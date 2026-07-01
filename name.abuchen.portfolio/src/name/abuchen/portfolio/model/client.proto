@@ -276,14 +276,14 @@ message PLedger {
 }
 
 message PLedgerEntry {
-  string uuid = 1;
+  string uuid = 1 [deprecated = true];
   reserved 2;
   google.protobuf.Timestamp dateTime = 3;
   optional string note = 4;
   optional string source = 5;
   google.protobuf.Timestamp updatedAt = 6;
   repeated PLedgerPosting postings = 7;
-  repeated PLedgerProjectionRef projectionRefs = 8;
+  repeated PLedgerProjectionRef projectionRefs = 8 [deprecated = true];
   optional uint32 typeId = 9;
   repeated PLedgerParameter parameters = 10;
   optional string generatedByPlanKey = 11;
@@ -293,7 +293,7 @@ message PLedgerEntry {
 }
 
 message PLedgerPosting {
-  string uuid = 1;
+  string uuid = 1 [deprecated = true];
   reserved 2;
   int64 amount = 3;
   optional string currency = 4;
@@ -306,19 +306,25 @@ message PLedgerPosting {
   optional string portfolio = 11;
   repeated PLedgerParameter parameters = 12;
   optional string typeCode = 13;
+  optional string semanticRole = 14;
+  optional string direction = 15;
+  optional string corporateActionLeg = 16;
+  optional string unitRole = 17;
+  optional string groupKey = 18;
+  optional string localKey = 19;
 }
 
 message PLedgerProjectionRef {
-  string uuid = 1;
-  PLedgerProjectionRole role = 2;
-  optional string account = 3;
-  optional string portfolio = 4;
-  repeated PLedgerProjectionMembership memberships = 5;
+  string uuid = 1 [deprecated = true];
+  PLedgerProjectionRole role = 2 [deprecated = true];
+  optional string account = 3 [deprecated = true];
+  optional string portfolio = 4 [deprecated = true];
+  repeated PLedgerProjectionMembership memberships = 5 [deprecated = true];
 }
 
 message PLedgerProjectionMembership {
-  string postingUUID = 1;
-  PLedgerProjectionMembershipRole role = 2;
+  string postingUUID = 1 [deprecated = true];
+  PLedgerProjectionMembershipRole role = 2 [deprecated = true];
 }
 
 message PLedgerParameter {

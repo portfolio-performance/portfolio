@@ -8,15 +8,19 @@ public interface PLedgerPostingOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>string uuid = 1;</code>
+   * <code>string uuid = 1 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerPosting.uuid is deprecated.
+   *     See client.proto;l=295
    * @return The uuid.
    */
-  java.lang.String getUuid();
+  @java.lang.Deprecated java.lang.String getUuid();
   /**
-   * <code>string uuid = 1;</code>
+   * <code>string uuid = 1 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerPosting.uuid is deprecated.
+   *     See client.proto;l=295
    * @return The bytes for uuid.
    */
-  com.google.protobuf.ByteString
+  @java.lang.Deprecated com.google.protobuf.ByteString
       getUuidBytes();
 
   /**
@@ -145,7 +149,7 @@ public interface PLedgerPostingOrBuilder extends
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerParameter parameters = 12;</code>
    */
-  java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerParameter> 
+  java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerParameter>
       getParametersList();
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerParameter parameters = 12;</code>
@@ -158,7 +162,7 @@ public interface PLedgerPostingOrBuilder extends
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerParameter parameters = 12;</code>
    */
-  java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerParameterOrBuilder> 
+  java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerParameterOrBuilder>
       getParametersOrBuilderList();
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerParameter parameters = 12;</code>
@@ -182,4 +186,106 @@ public interface PLedgerPostingOrBuilder extends
    */
   com.google.protobuf.ByteString
       getTypeCodeBytes();
+
+  /**
+   * <code>optional string semanticRole = 14;</code>
+   * @return Whether the semanticRole field is set.
+   */
+  boolean hasSemanticRole();
+  /**
+   * <code>optional string semanticRole = 14;</code>
+   * @return The semanticRole.
+   */
+  java.lang.String getSemanticRole();
+  /**
+   * <code>optional string semanticRole = 14;</code>
+   * @return The bytes for semanticRole.
+   */
+  com.google.protobuf.ByteString
+      getSemanticRoleBytes();
+
+  /**
+   * <code>optional string direction = 15;</code>
+   * @return Whether the direction field is set.
+   */
+  boolean hasDirection();
+  /**
+   * <code>optional string direction = 15;</code>
+   * @return The direction.
+   */
+  java.lang.String getDirection();
+  /**
+   * <code>optional string direction = 15;</code>
+   * @return The bytes for direction.
+   */
+  com.google.protobuf.ByteString
+      getDirectionBytes();
+
+  /**
+   * <code>optional string corporateActionLeg = 16;</code>
+   * @return Whether the corporateActionLeg field is set.
+   */
+  boolean hasCorporateActionLeg();
+  /**
+   * <code>optional string corporateActionLeg = 16;</code>
+   * @return The corporateActionLeg.
+   */
+  java.lang.String getCorporateActionLeg();
+  /**
+   * <code>optional string corporateActionLeg = 16;</code>
+   * @return The bytes for corporateActionLeg.
+   */
+  com.google.protobuf.ByteString
+      getCorporateActionLegBytes();
+
+  /**
+   * <code>optional string unitRole = 17;</code>
+   * @return Whether the unitRole field is set.
+   */
+  boolean hasUnitRole();
+  /**
+   * <code>optional string unitRole = 17;</code>
+   * @return The unitRole.
+   */
+  java.lang.String getUnitRole();
+  /**
+   * <code>optional string unitRole = 17;</code>
+   * @return The bytes for unitRole.
+   */
+  com.google.protobuf.ByteString
+      getUnitRoleBytes();
+
+  /**
+   * <code>optional string groupKey = 18;</code>
+   * @return Whether the groupKey field is set.
+   */
+  boolean hasGroupKey();
+  /**
+   * <code>optional string groupKey = 18;</code>
+   * @return The groupKey.
+   */
+  java.lang.String getGroupKey();
+  /**
+   * <code>optional string groupKey = 18;</code>
+   * @return The bytes for groupKey.
+   */
+  com.google.protobuf.ByteString
+      getGroupKeyBytes();
+
+  /**
+   * <code>optional string localKey = 19;</code>
+   * @return Whether the localKey field is set.
+   */
+  boolean hasLocalKey();
+  /**
+   * <code>optional string localKey = 19;</code>
+   * @return The localKey.
+   */
+  java.lang.String getLocalKey();
+  /**
+   * <code>optional string localKey = 19;</code>
+   * @return The bytes for localKey.
+   */
+  com.google.protobuf.ByteString
+      getLocalKeyBytes();
 }

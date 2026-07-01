@@ -24,11 +24,12 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerParameter;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
+import name.abuchen.portfolio.model.ledger.LedgerPostingDirection;
+import name.abuchen.portfolio.model.ledger.LedgerPostingSemanticRole;
+import name.abuchen.portfolio.model.ledger.LedgerPostingUnitRole;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator;
 import name.abuchen.portfolio.model.ledger.LedgerTransactionMetadata;
-import name.abuchen.portfolio.model.ledger.ProjectionMembershipRole;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerAccountCashLeg;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerCashTransferLeg;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerCreationUnit;
@@ -42,6 +43,7 @@ import name.abuchen.portfolio.model.ledger.compatibility.LedgerPortfolioTransfer
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerPortfolioTransferSecurity;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerSecurityQuantity;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerTransactionCreator;
+import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerParameterType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
@@ -52,7 +54,6 @@ import name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef;
 import name.abuchen.portfolio.model.proto.v1.PLedgerEntry;
 import name.abuchen.portfolio.model.proto.v1.PLedgerParameter;
 import name.abuchen.portfolio.model.proto.v1.PLedgerParameterValueKind;
-import name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef;
 import name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRole;
 import name.abuchen.portfolio.model.proto.v1.PTransaction;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -76,7 +77,7 @@ public class LedgerProtobufPersistenceTest
      * The shadow row is derived compatibility data, not a second booking source.
      */
     @Test
-    public void testSaveWritesLedgerTruthOnField13AndAccountShadow() throws IOException
+    public void testSaveWritesSemanticLedgerTruthOnField13AndAccountShadow() throws IOException
     {
         var fixture = fixture();
         var created = new LedgerTransactionCreator(fixture.client()).createDeposit(metadata(),
@@ -84,34 +85,43 @@ public class LedgerProtobufPersistenceTest
         created.getEntry().setUpdatedAt(UPDATED_AT);
 
         var proto = saveProto(fixture.client());
-        var projectionUUID = created.getEntry().getProjectionRefs().get(0).getUUID();
+        var shadowUUID = shadowUUID(created.getEntry(), LedgerProjectionRole.ACCOUNT);
+        var ledgerEntry = proto.getLedger().getEntries(0);
+        var posting = ledgerEntry.getPostings(0);
 
         assertThat(PClient.getDescriptor().findFieldByName("ledger").getNumber(), is(13));
-        assertThat(PLedgerProjectionRef.getDescriptor().findFieldByName("primaryPostingUUID"), nullValue());
-        assertThat(PLedgerProjectionRef.getDescriptor().findFieldByName("postingGroupUUID"), nullValue());
+        assertNoLedgerUuidTruth(proto);
         assertTrue(proto.hasLedger());
         assertThat(proto.getLedger().getEntriesCount(), is(1));
-        assertThat(proto.getLedger().getEntries(0).getUuid(), is(created.getEntry().getUUID()));
+        assertThat(ledgerEntry.getUuid(), is(""));
+        assertThat(ledgerEntry.getProjectionRefsCount(), is(0));
+        assertThat(posting.getUuid(), is(""));
+        assertThat(posting.getSemanticRole(), is(LedgerPostingSemanticRole.CASH.name()));
+        assertThat(posting.getDirection(), is(LedgerPostingDirection.NEUTRAL.name()));
+        assertThat(posting.getUnitRole(), is(LedgerPostingUnitRole.PRIMARY.name()));
         assertThat(proto.getTransactionsCount(), is(1));
-        assertThat(proto.getTransactions(0).getUuid(), is(projectionUUID));
+        assertThat(proto.getTransactions(0).getUuid(), is(shadowUUID));
         assertThat(proto.getTransactions(0).getType(), is(PTransaction.Type.DEPOSIT));
 
         var loaded = load(saveBytes(fixture.client()));
 
         assertThat(loaded.getLedger().getEntries().size(), is(1));
+        assertThat(loaded.getLedger().getEntries().get(0).getProjectionRefs().size(), is(0));
+        assertThat(loaded.getLedger().getEntries().get(0).getPostings().get(0).getSemanticRole(),
+                        is(LedgerPostingSemanticRole.CASH));
         assertThat(loaded.getAccounts().get(0).getTransactions().size(), is(1));
         assertThat(loaded.getAccounts().get(0).getTransactions().get(0), instanceOf(LedgerBackedTransaction.class));
-        assertThat(loaded.getAccounts().get(0).getTransactions().get(0).getUUID(), is(projectionUUID));
         assertThat(loaded.getAllTransactions().size(), is(1));
+        assertThat(saveProto(loaded).getLedger(), is(proto.getLedger()));
         assertValid(loaded);
     }
 
     /**
-     * Verifies that dividend protobuf roundtrip preserves ex-date, units, forex, and UUIDs.
+     * Verifies that dividend protobuf roundtrip preserves ex-date, units, forex, and semantic roles.
      * The restored ledger-backed projection must represent the same dividend booking.
      */
     @Test
-    public void testDividendRoundtripPreservesExDateUnitsForexAndUUIDs() throws IOException
+    public void testDividendRoundtripPreservesExDateUnitsForexAndSemantics() throws IOException
     {
         var fixture = fixture();
         var creator = new LedgerTransactionCreator(fixture.client());
@@ -134,31 +144,37 @@ public class LedgerProtobufPersistenceTest
                                                                         new BigDecimal("1.1000"))),
                                         LedgerOptionalSecurity.of(fixture.security()), units, EX_DATE));
         var entry = created.getEntry();
-        var postingUUIDs = entry.getPostings().stream().map(LedgerPosting::getUUID).toList();
-        var projectionUUID = entry.getProjectionRefs().get(0).getUUID();
         entry.setUpdatedAt(UPDATED_AT);
 
-        var loaded = load(saveBytes(fixture.client()));
+        var proto = saveProto(fixture.client());
+        assertNoLedgerUuidTruth(proto);
+        assertThat(proto.getLedger().getEntries(0).getProjectionRefsCount(), is(0));
+        assertTrue(proto.getLedger().getEntries(0).getPostingsList().stream()
+                        .anyMatch(posting -> LedgerPostingUnitRole.FEE.name().equals(posting.getUnitRole())));
+        assertTrue(proto.getLedger().getEntries(0).getPostingsList().stream()
+                        .anyMatch(posting -> LedgerPostingUnitRole.TAX.name().equals(posting.getUnitRole())));
+        assertTrue(proto.getLedger().getEntries(0).getPostingsList().stream()
+                        .anyMatch(posting -> LedgerPostingUnitRole.GROSS_VALUE.name().equals(posting.getUnitRole())));
+
+        var loaded = load(wrap(proto));
         var reloadedEntry = loaded.getLedger().getEntries().get(0);
         var reloadedProjection = loaded.getAccounts().get(0).getTransactions().get(0);
         var cashPosting = reloadedEntry.getPostings().get(0);
 
-        assertThat(reloadedEntry.getUUID(), is(entry.getUUID()));
         assertThat(reloadedEntry.getType(), is(LedgerEntryType.DIVIDENDS));
         assertThat(reloadedEntry.getDateTime(), is(DATE_TIME));
         assertThat(reloadedEntry.getNote(), is("note"));
         assertThat(reloadedEntry.getSource(), is("source"));
         assertThat(reloadedEntry.getUpdatedAt(), is(UPDATED_AT));
-        assertThat(reloadedEntry.getPostings().stream().map(LedgerPosting::getUUID).toList(), is(postingUUIDs));
-        assertThat(reloadedEntry.getProjectionRefs().get(0).getUUID(), is(projectionUUID));
-        assertThat(reloadedEntry.getProjectionRefs().get(0).getPrimaryMembership().orElseThrow().getPostingUUID(),
-                        is(postingUUIDs.get(0)));
-        assertTrue(reloadedEntry.getProjectionRefs().get(0)
-                        .hasMembershipRole(ProjectionMembershipRole.FEE_UNIT));
-        assertTrue(reloadedEntry.getProjectionRefs().get(0)
-                        .hasMembershipRole(ProjectionMembershipRole.TAX_UNIT));
-        assertTrue(reloadedEntry.getProjectionRefs().get(0)
-                        .hasMembershipRole(ProjectionMembershipRole.GROSS_VALUE_UNIT));
+        assertThat(reloadedEntry.getProjectionRefs().size(), is(0));
+        assertThat(cashPosting.getSemanticRole(), is(LedgerPostingSemanticRole.CASH));
+        assertThat(cashPosting.getUnitRole(), is(LedgerPostingUnitRole.PRIMARY));
+        assertTrue(reloadedEntry.getPostings().stream()
+                        .anyMatch(posting -> posting.getUnitRole() == LedgerPostingUnitRole.FEE));
+        assertTrue(reloadedEntry.getPostings().stream()
+                        .anyMatch(posting -> posting.getUnitRole() == LedgerPostingUnitRole.TAX));
+        assertTrue(reloadedEntry.getPostings().stream()
+                        .anyMatch(posting -> posting.getUnitRole() == LedgerPostingUnitRole.GROSS_VALUE));
         assertThat(cashPosting.getForexAmount(), is(Long.valueOf(Values.Amount.factorize(110))));
         assertThat(cashPosting.getForexCurrency(), is(CurrencyUnit.USD));
         assertThat(cashPosting.getExchangeRate(), is(new BigDecimal("1.1000")));
@@ -166,21 +182,21 @@ public class LedgerProtobufPersistenceTest
         assertThat(reloadedProjection.getUnits().count(), is(3L));
         assertTrue(cashPosting.getParameters().stream()
                         .anyMatch(parameter -> parameter.getType() == LedgerParameterType.EX_DATE));
+        assertThat(saveProto(loaded).getLedger(), is(proto.getLedger()));
         assertValid(loaded);
     }
 
     /**
-     * Verifies that protobuf load preserves ledger graph identity, order, and parameters.
+     * Verifies that protobuf load preserves ledger graph order, parameters, and semantic selectors.
      * Runtime projections must be rebuilt from the same persisted ledger facts.
      */
     @Test
-    public void testProtobufLoadPreservesLedgerGraphIdentityOrderAndParameters() throws IOException
+    public void testProtobufLoadPreservesLedgerGraphOrderParametersAndSemantics() throws IOException
     {
         var fixture = fixture();
         var entry = new LedgerEntry("entry-protobuf-load-graph");
         var cashPosting = new LedgerPosting("posting-protobuf-load-a");
         var feePosting = new LedgerPosting("posting-protobuf-load-b");
-        var projection = new LedgerProjectionRef("projection-protobuf-load");
 
         entry.setType(LedgerEntryType.DIVIDENDS);
         entry.setDateTime(DATE_TIME);
@@ -194,6 +210,10 @@ public class LedgerProtobufPersistenceTest
         cashPosting.setSecurity(fixture.security());
         cashPosting.setAmount(Values.Amount.factorize(100));
         cashPosting.setCurrency(CurrencyUnit.EUR);
+        cashPosting.setSemanticRole(LedgerPostingSemanticRole.CASH);
+        cashPosting.setDirection(LedgerPostingDirection.NEUTRAL);
+        cashPosting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
+        cashPosting.setGroupKey("dividend");
         cashPosting.addParameter(LedgerParameter.ofLocalDateTime(LedgerParameterType.EX_DATE, EX_DATE));
         cashPosting.addParameter(LedgerParameter.ofMoney(LedgerParameterType.FAIR_MARKET_VALUE, money(100)));
 
@@ -201,24 +221,21 @@ public class LedgerProtobufPersistenceTest
         feePosting.setAccount(fixture.account());
         feePosting.setAmount(Values.Amount.factorize(1));
         feePosting.setCurrency(CurrencyUnit.EUR);
+        feePosting.setSemanticRole(LedgerPostingSemanticRole.FEE);
+        feePosting.setUnitRole(LedgerPostingUnitRole.FEE);
+        feePosting.setGroupKey("dividend");
         feePosting.addParameter(LedgerParameter.ofSecurity(LedgerParameterType.TARGET_SECURITY, fixture.security()));
-
-        projection.setRole(LedgerProjectionRole.ACCOUNT);
-        projection.setAccount(fixture.account());
-        projection.setPrimaryPostingTargetUUID(cashPosting.getUUID());
-        projection.setPostingGroupTargetUUID(feePosting.getUUID());
 
         entry.addPosting(cashPosting);
         entry.addPosting(feePosting);
-        entry.addProjectionRef(projection);
         entry.setUpdatedAt(UPDATED_AT);
         fixture.client().getLedger().addEntry(entry);
 
         var proto = saveProto(fixture.client());
+        assertNoLedgerUuidTruth(proto);
         var loaded = load(wrap(proto));
         var reloadedEntry = loaded.getLedger().getEntries().get(0);
 
-        assertThat(reloadedEntry.getUUID(), is(entry.getUUID()));
         assertThat(reloadedEntry.getType(), is(LedgerEntryType.DIVIDENDS));
         assertThat(reloadedEntry.getDateTime(), is(DATE_TIME));
         assertThat(reloadedEntry.getNote(), is("protobuf load note"));
@@ -228,20 +245,23 @@ public class LedgerProtobufPersistenceTest
                         is(List.of(LedgerParameterType.EVENT_REFERENCE, LedgerParameterType.CORPORATE_ACTION_KIND)));
         assertThat(reloadedEntry.getParameters().stream().map(parameter -> parameter.getValue()).toList(),
                         is(List.of("event-reference", "SPIN_OFF")));
-        assertThat(reloadedEntry.getPostings().stream().map(LedgerPosting::getUUID).toList(),
-                        is(List.of(cashPosting.getUUID(), feePosting.getUUID())));
+        assertThat(reloadedEntry.getProjectionRefs().size(), is(0));
+        assertThat(reloadedEntry.getPostings().stream().map(LedgerPosting::getType).toList(),
+                        is(List.of(LedgerPostingType.CASH, LedgerPostingType.FEE)));
+        assertThat(reloadedEntry.getPostings().stream().map(LedgerPosting::getSemanticRole).toList(),
+                        is(List.of(LedgerPostingSemanticRole.CASH, LedgerPostingSemanticRole.FEE)));
+        assertThat(reloadedEntry.getPostings().stream().map(LedgerPosting::getUnitRole).toList(),
+                        is(List.of(LedgerPostingUnitRole.PRIMARY, LedgerPostingUnitRole.FEE)));
+        assertThat(reloadedEntry.getPostings().stream().map(LedgerPosting::getGroupKey).toList(),
+                        is(List.of("dividend", "dividend")));
         assertThat(reloadedEntry.getPostings().get(0).getParameters().stream()
                         .map(parameter -> parameter.getType()).toList(),
                         is(List.of(LedgerParameterType.EX_DATE, LedgerParameterType.FAIR_MARKET_VALUE)));
         assertThat(reloadedEntry.getPostings().get(1).getParameters().get(0).getType(),
                         is(LedgerParameterType.TARGET_SECURITY));
         assertSame(loaded.getSecurities().get(0), reloadedEntry.getPostings().get(1).getParameters().get(0).getValue());
-        assertThat(reloadedEntry.getProjectionRefs().get(0).getUUID(), is(projection.getUUID()));
-        assertThat(reloadedEntry.getProjectionRefs().get(0).getPrimaryMembership().orElseThrow().getPostingUUID(),
-                        is(cashPosting.getUUID()));
-        assertThat(reloadedEntry.getProjectionRefs().get(0)
-                        .getMembershipsByRole(ProjectionMembershipRole.GROUP_ANCHOR).get(0).getPostingUUID(),
-                        is(feePosting.getUUID()));
+        assertThat(loaded.getAccounts().get(0).getTransactions().size(), is(1));
+        assertThat(loaded.getAccounts().get(0).getTransactions().get(0), instanceOf(LedgerBackedTransaction.class));
         assertThat(saveProto(loaded).getLedger(), is(proto.getLedger()));
         assertValid(loaded);
     }
@@ -295,49 +315,49 @@ public class LedgerProtobufPersistenceTest
         assertThat(proto.getLedger().getEntriesCount(), is(6));
         assertThat(proto.getTransactionsCount(), is(6));
 
-        assertCommonShadowFields(buyShadow, projectionUUID(buy, LedgerProjectionRole.PORTFOLIO),
+        assertCommonShadowFields(buyShadow, shadowUUID(buy, LedgerProjectionRole.PORTFOLIO),
                         PTransaction.Type.PURCHASE, 100);
         assertThat(buyShadow.getPortfolio(), is(fixture.portfolio().getUUID()));
         assertThat(buyShadow.getAccount(), is(fixture.account().getUUID()));
-        assertThat(buyShadow.getOtherUuid(), is(projectionUUID(buy, LedgerProjectionRole.ACCOUNT)));
+        assertThat(buyShadow.getOtherUuid(), is(shadowUUID(buy, LedgerProjectionRole.ACCOUNT)));
         assertThat(buyShadow.getSecurity(), is(fixture.security().getUUID()));
         assertThat(buyShadow.getShares(), is(Values.Share.factorize(5)));
         assertThat(buyShadow.getUnitsCount(), is(1));
         assertUnit(buyShadow.getUnits(0), Transaction.Unit.Type.FEE, 3, CurrencyUnit.USD, 6, new BigDecimal("0.5000"));
 
-        assertCommonShadowFields(sellShadow, projectionUUID(sell, LedgerProjectionRole.PORTFOLIO),
+        assertCommonShadowFields(sellShadow, shadowUUID(sell, LedgerProjectionRole.PORTFOLIO),
                         PTransaction.Type.SALE, 50);
         assertThat(sellShadow.getPortfolio(), is(fixture.portfolio().getUUID()));
         assertThat(sellShadow.getAccount(), is(fixture.account().getUUID()));
-        assertThat(sellShadow.getOtherUuid(), is(projectionUUID(sell, LedgerProjectionRole.ACCOUNT)));
+        assertThat(sellShadow.getOtherUuid(), is(shadowUUID(sell, LedgerProjectionRole.ACCOUNT)));
         assertThat(sellShadow.getSecurity(), is(fixture.security().getUUID()));
         assertThat(sellShadow.getShares(), is(Values.Share.factorize(2)));
 
-        assertCommonShadowFields(cashTransferShadow, projectionUUID(cashTransfer, LedgerProjectionRole.SOURCE_ACCOUNT),
+        assertCommonShadowFields(cashTransferShadow, shadowUUID(cashTransfer, LedgerProjectionRole.SOURCE_ACCOUNT),
                         PTransaction.Type.CASH_TRANSFER, 10);
         assertThat(cashTransferShadow.getAccount(), is(fixture.account().getUUID()));
         assertThat(cashTransferShadow.getOtherAccount(), is(fixture.otherAccount().getUUID()));
         assertThat(cashTransferShadow.getOtherUuid(),
-                        is(projectionUUID(cashTransfer, LedgerProjectionRole.TARGET_ACCOUNT)));
+                        is(shadowUUID(cashTransfer, LedgerProjectionRole.TARGET_ACCOUNT)));
 
         assertCommonShadowFields(securityTransferShadow,
-                        projectionUUID(securityTransfer, LedgerProjectionRole.SOURCE_PORTFOLIO),
+                        shadowUUID(securityTransfer, LedgerProjectionRole.SOURCE_PORTFOLIO),
                         PTransaction.Type.SECURITY_TRANSFER, 30);
         assertThat(securityTransferShadow.getPortfolio(), is(fixture.portfolio().getUUID()));
         assertThat(securityTransferShadow.getOtherPortfolio(), is(fixture.otherPortfolio().getUUID()));
         assertThat(securityTransferShadow.getOtherUuid(),
-                        is(projectionUUID(securityTransfer, LedgerProjectionRole.TARGET_PORTFOLIO)));
+                        is(shadowUUID(securityTransfer, LedgerProjectionRole.TARGET_PORTFOLIO)));
         assertThat(securityTransferShadow.getSecurity(), is(fixture.security().getUUID()));
         assertThat(securityTransferShadow.getShares(), is(Values.Share.factorize(3)));
 
-        assertCommonShadowFields(outboundDeliveryShadow, projectionUUID(delivery, LedgerProjectionRole.DELIVERY_OUTBOUND),
+        assertCommonShadowFields(outboundDeliveryShadow, shadowUUID(delivery, LedgerProjectionRole.DELIVERY_OUTBOUND),
                         PTransaction.Type.OUTBOUND_DELIVERY, 20);
         assertThat(outboundDeliveryShadow.getPortfolio(), is(fixture.portfolio().getUUID()));
         assertThat(outboundDeliveryShadow.getSecurity(), is(fixture.security().getUUID()));
         assertThat(outboundDeliveryShadow.getShares(), is(Values.Share.factorize(1)));
 
         assertCommonShadowFields(inboundDeliveryShadow,
-                        projectionUUID(inboundDelivery, LedgerProjectionRole.DELIVERY_INBOUND),
+                        shadowUUID(inboundDelivery, LedgerProjectionRole.DELIVERY_INBOUND),
                         PTransaction.Type.INBOUND_DELIVERY, 80);
         assertThat(inboundDeliveryShadow.getPortfolio(), is(fixture.otherPortfolio().getUUID()));
         assertThat(inboundDeliveryShadow.getSecurity(), is(fixture.security().getUUID()));
@@ -408,37 +428,37 @@ public class LedgerProtobufPersistenceTest
 
         assertThat(loaded.getLedger().getEntries().size(), is(4));
         assertThat(loaded.getAllTransactions().size(), is(4));
-        assertProjectionUUIDs(loaded, LedgerEntryType.BUY, projectionUUID(buy, LedgerProjectionRole.ACCOUNT),
-                        projectionUUID(buy, LedgerProjectionRole.PORTFOLIO));
+        assertProjectionUUIDs(loaded, LedgerEntryType.BUY, shadowUUID(buy, LedgerProjectionRole.ACCOUNT),
+                        shadowUUID(buy, LedgerProjectionRole.PORTFOLIO));
         assertProjectionUUIDs(loaded, LedgerEntryType.CASH_TRANSFER,
-                        projectionUUID(cashTransfer, LedgerProjectionRole.SOURCE_ACCOUNT),
-                        projectionUUID(cashTransfer, LedgerProjectionRole.TARGET_ACCOUNT));
+                        shadowUUID(cashTransfer, LedgerProjectionRole.SOURCE_ACCOUNT),
+                        shadowUUID(cashTransfer, LedgerProjectionRole.TARGET_ACCOUNT));
         assertProjectionUUIDs(loaded, LedgerEntryType.SECURITY_TRANSFER,
-                        projectionUUID(securityTransfer, LedgerProjectionRole.SOURCE_PORTFOLIO),
-                        projectionUUID(securityTransfer, LedgerProjectionRole.TARGET_PORTFOLIO));
+                        shadowUUID(securityTransfer, LedgerProjectionRole.SOURCE_PORTFOLIO),
+                        shadowUUID(securityTransfer, LedgerProjectionRole.TARGET_PORTFOLIO));
         assertProjectionUUIDs(loaded, LedgerEntryType.DELIVERY_INBOUND,
-                        projectionUUID(delivery, LedgerProjectionRole.DELIVERY_INBOUND));
+                        shadowUUID(delivery, LedgerProjectionRole.DELIVERY_INBOUND));
 
         var loadedAccountBuy = ledgerBacked(loaded.getAccounts().get(0).getTransactions(),
-                        projectionUUID(buy, LedgerProjectionRole.ACCOUNT));
+                        shadowUUID(buy, LedgerProjectionRole.ACCOUNT));
         var loadedPortfolioBuy = ledgerBacked(loaded.getPortfolios().get(0).getTransactions(),
-                        projectionUUID(buy, LedgerProjectionRole.PORTFOLIO));
+                        shadowUUID(buy, LedgerProjectionRole.PORTFOLIO));
         assertSame(loadedPortfolioBuy, loadedAccountBuy.getCrossEntry().getCrossTransaction(loadedAccountBuy));
         assertSame(loaded.getPortfolios().get(0), loadedAccountBuy.getCrossEntry().getCrossOwner(loadedAccountBuy));
 
         var loadedCashTransferOut = ledgerBacked(loaded.getAccounts().get(0).getTransactions(),
-                        projectionUUID(cashTransfer, LedgerProjectionRole.SOURCE_ACCOUNT));
+                        shadowUUID(cashTransfer, LedgerProjectionRole.SOURCE_ACCOUNT));
         var loadedCashTransferIn = ledgerBacked(loaded.getAccounts().get(1).getTransactions(),
-                        projectionUUID(cashTransfer, LedgerProjectionRole.TARGET_ACCOUNT));
+                        shadowUUID(cashTransfer, LedgerProjectionRole.TARGET_ACCOUNT));
         assertThat(((AccountTransaction) loadedCashTransferOut).getType(), is(AccountTransaction.Type.TRANSFER_OUT));
         assertThat(((AccountTransaction) loadedCashTransferIn).getType(), is(AccountTransaction.Type.TRANSFER_IN));
         assertSame(loadedCashTransferIn, loadedCashTransferOut.getCrossEntry().getCrossTransaction(loadedCashTransferOut));
         assertSame(loaded.getAccounts().get(1), loadedCashTransferOut.getCrossEntry().getCrossOwner(loadedCashTransferOut));
 
         var loadedSecurityTransferOut = ledgerBacked(loaded.getPortfolios().get(0).getTransactions(),
-                        projectionUUID(securityTransfer, LedgerProjectionRole.SOURCE_PORTFOLIO));
+                        shadowUUID(securityTransfer, LedgerProjectionRole.SOURCE_PORTFOLIO));
         var loadedSecurityTransferIn = ledgerBacked(loaded.getPortfolios().get(1).getTransactions(),
-                        projectionUUID(securityTransfer, LedgerProjectionRole.TARGET_PORTFOLIO));
+                        shadowUUID(securityTransfer, LedgerProjectionRole.TARGET_PORTFOLIO));
         assertThat(((PortfolioTransaction) loadedSecurityTransferOut).getType(), is(PortfolioTransaction.Type.TRANSFER_OUT));
         assertThat(((PortfolioTransaction) loadedSecurityTransferIn).getType(), is(PortfolioTransaction.Type.TRANSFER_IN));
         assertSame(loadedSecurityTransferIn,
@@ -479,7 +499,7 @@ public class LedgerProtobufPersistenceTest
         var loaded = load(wrap(oldProto));
         var entry = onlyEntry(loaded, LedgerEntryType.DIVIDENDS);
         var projection = (AccountTransaction) ledgerBacked(loaded.getAccounts().get(0).getTransactions(),
-                        projectionUUID(dividend, LedgerProjectionRole.ACCOUNT));
+                        shadowUUID(dividend, LedgerProjectionRole.ACCOUNT));
 
         assertThat(loaded.getLedger().getEntries().size(), is(1));
         assertThat(loaded.getAllTransactions().size(), is(1));
@@ -656,6 +676,55 @@ public class LedgerProtobufPersistenceTest
     }
 
     /**
+     * Verifies that Corporate Actions remain native Ledger entries in protobuf.
+     * No Corporate Action-specific legacy PTransaction enum values may be introduced.
+     */
+    @Test
+    public void testLegacyTransactionTypeEnumDoesNotContainCorporateActions()
+    {
+        var transactionTypes = java.util.Arrays.stream(PTransaction.Type.values()).map(Enum::name).toList();
+
+        assertFalse(transactionTypes.contains("SPIN_OFF"));
+        assertFalse(transactionTypes.contains("STOCK_DIVIDEND"));
+        assertFalse(transactionTypes.contains("BONUS_ISSUE"));
+        assertFalse(transactionTypes.contains("RIGHTS_DISTRIBUTION"));
+        assertFalse(transactionTypes.contains("BOND_CONVERSION"));
+    }
+
+    /**
+     * Verifies that native Corporate Actions persist as semantic Ledger protobuf truth.
+     * They must not require legacy transaction types or persisted projection refs.
+     */
+    @Test
+    public void testNativeCorporateActionsRoundtripAsSemanticLedgerTruth() throws IOException
+    {
+        for (var entryType : List.of(LedgerEntryType.SPIN_OFF, LedgerEntryType.STOCK_DIVIDEND,
+                        LedgerEntryType.BONUS_ISSUE, LedgerEntryType.RIGHTS_DISTRIBUTION,
+                        LedgerEntryType.BOND_CONVERSION))
+        {
+            var fixture = fixture();
+            addNativeEntry(fixture, entryType);
+
+            var proto = saveProto(fixture.client());
+
+            assertNoLedgerUuidTruth(proto);
+            assertThat(proto.getTransactionsCount(), is(0));
+            assertThat(proto.getLedger().getEntries(0).getTypeId(), is(entryType.getProtobufId()));
+            assertTrue(proto.getLedger().getEntries(0).getPostingsList().stream()
+                            .anyMatch(posting -> posting.hasCorporateActionLeg()));
+
+            var loaded = load(wrap(proto));
+            var reloadedEntry = loaded.getLedger().getEntries().get(0);
+
+            assertThat(reloadedEntry.getType(), is(entryType));
+            assertThat(reloadedEntry.getProjectionRefs().size(), is(0));
+            assertTrue(reloadedEntry.getPostings().stream()
+                            .anyMatch(posting -> posting.getCorporateActionLeg() != null));
+            assertValid(loaded);
+        }
+    }
+
+    /**
      * Verifies that a boolean ledger parameter must use the matching protobuf value field.
      * Loading must reject a mismatched value shape instead of coercing it.
      */
@@ -757,11 +826,11 @@ public class LedgerProtobufPersistenceTest
     }
 
     /**
-     * Verifies that legacy protobuf plan refs are consumed as migration input.
-     * The legacy ledger/projection UUIDs must not become the new plan relation.
+     * Verifies that legacy protobuf plan refs are not treated as Ledger identity.
+     * The old ledger/projection UUIDs must not become the new plan relation.
      */
     @Test
-    public void testLegacyInvestmentPlanLedgerExecutionRefMigratesToPlanMetadata() throws IOException
+    public void testLegacyInvestmentPlanLedgerExecutionRefDoesNotBecomePlanMetadata() throws IOException
     {
         var fixture = fixture();
         var buy = new LedgerTransactionCreator(fixture.client()).createBuy(metadata(), cashLeg(fixture.account(), 100),
@@ -786,11 +855,11 @@ public class LedgerProtobufPersistenceTest
         var loadedEntry = loaded.getLedger().getEntries().get(0);
 
         assertThat(loadedPlan.getLedgerExecutionRefs().size(), is(0));
-        assertThat(loadedPlan.getTransactions(loaded).size(), is(1));
-        assertThat(loadedEntry.getGeneratedByPlanKey(), is(loadedPlan.getPlanKey()));
-        assertFalse(loadedEntry.getGeneratedByPlanKey().equals(buy.getUUID()));
-        assertFalse(loadedEntry.getGeneratedByPlanKey().equals(portfolioProjection.getUUID()));
-        assertThat(loadedEntry.getPreferredViewKind(), is(InvestmentPlan.LedgerExecutionViewKind.PORTFOLIO.name()));
+        assertThat(loadedPlan.getTransactions(loaded).size(), is(0));
+        assertThat(loadedEntry.getGeneratedByPlanKey(), nullValue());
+        assertFalse(loadedPlan.getPlanKey().equals(buy.getUUID()));
+        assertFalse(loadedPlan.getPlanKey().equals(portfolioProjection.getUUID()));
+        assertThat(loadedEntry.getPreferredViewKind(), nullValue());
     }
 
     /**
@@ -806,13 +875,10 @@ public class LedgerProtobufPersistenceTest
         var proto = saveProto(fixture.client()).toBuilder();
         var entry = proto.getLedgerBuilder().getEntriesBuilder(0);
         entry.addPostings(entry.getPostings(0));
-        var loaded = load(wrap(proto.build()));
-        var result = LedgerStructuralValidator.validate(loaded.getLedger());
 
-        assertFalse(result.isOK());
-        assertTrue(result.hasIssue(LedgerStructuralValidator.IssueCode.DUPLICATE_POSTING_UUID));
-        assertThat(loaded.getLedger().getEntries().size(), is(fixture.client().getLedger().getEntries().size()));
-        assertTrue(loaded.getAllTransactions().isEmpty());
+        var exception = assertThrows(IllegalArgumentException.class, () -> load(wrap(proto.build())));
+
+        assertTrue(exception.getMessage(), exception.getMessage().contains("AMBIGUOUS_SEMANTIC_PRIMARY"));
     }
 
     /**
@@ -890,14 +956,17 @@ public class LedgerProtobufPersistenceTest
         otherPortfolio.setUpdatedAt(UPDATED_AT);
         var security = new Security("Security", CurrencyUnit.EUR);
         security.setUpdatedAt(UPDATED_AT);
+        var otherSecurity = new Security("Other Security", CurrencyUnit.EUR);
+        otherSecurity.setUpdatedAt(UPDATED_AT);
 
         client.addAccount(account);
         client.addAccount(otherAccount);
         client.addPortfolio(portfolio);
         client.addPortfolio(otherPortfolio);
         client.addSecurity(security);
+        client.addSecurity(otherSecurity);
 
-        return new ClientFixture(client, account, otherAccount, portfolio, otherPortfolio, security);
+        return new ClientFixture(client, account, otherAccount, portfolio, otherPortfolio, security, otherSecurity);
     }
 
     private ClientFixture fixtureWithDividendAndExDate()
@@ -948,6 +1017,72 @@ public class LedgerProtobufPersistenceTest
         return plan;
     }
 
+    private void addNativeEntry(ClientFixture fixture, LedgerEntryType entryType)
+    {
+        var entry = new LedgerEntry();
+
+        entry.setType(entryType);
+        entry.setDateTime(DATE_TIME);
+        entry.setNote("Native corporate action");
+        entry.setSource("protobuf-test");
+
+        switch (entryType)
+        {
+            case SPIN_OFF:
+                entry.addPosting(nativeSecurityPosting(fixture, LedgerPostingType.SECURITY,
+                                CorporateActionLeg.SOURCE_SECURITY, fixture.security(), LedgerPostingDirection.OUTBOUND,
+                                LedgerProjectionRole.OLD_SECURITY_LEG));
+                entry.addPosting(nativeSecurityPosting(fixture, LedgerPostingType.SECURITY,
+                                CorporateActionLeg.TARGET_SECURITY, fixture.otherSecurity(),
+                                LedgerPostingDirection.INBOUND, LedgerProjectionRole.NEW_SECURITY_LEG));
+                break;
+            case STOCK_DIVIDEND:
+            case BONUS_ISSUE:
+                entry.addPosting(nativeSecurityPosting(fixture, LedgerPostingType.SECURITY,
+                                CorporateActionLeg.TARGET_SECURITY, fixture.otherSecurity(),
+                                LedgerPostingDirection.INBOUND, LedgerProjectionRole.DELIVERY_INBOUND));
+                break;
+            case RIGHTS_DISTRIBUTION:
+                entry.addPosting(nativeSecurityPosting(fixture, LedgerPostingType.SECURITY,
+                                CorporateActionLeg.DISTRIBUTED_SECURITY, fixture.otherSecurity(),
+                                LedgerPostingDirection.INBOUND, LedgerProjectionRole.NEW_SECURITY_LEG));
+                break;
+            case BOND_CONVERSION:
+                entry.addPosting(nativeSecurityPosting(fixture, LedgerPostingType.BOND,
+                                CorporateActionLeg.CONVERSION_SOURCE, fixture.security(), LedgerPostingDirection.OUTBOUND,
+                                LedgerProjectionRole.OLD_SECURITY_LEG));
+                entry.addPosting(nativeSecurityPosting(fixture, LedgerPostingType.BOND,
+                                CorporateActionLeg.CONVERSION_TARGET, fixture.otherSecurity(),
+                                LedgerPostingDirection.INBOUND, LedgerProjectionRole.NEW_SECURITY_LEG));
+                break;
+            default:
+                throw new IllegalArgumentException(entryType.name());
+        }
+
+        fixture.client().getLedger().addEntry(entry);
+    }
+
+    private LedgerPosting nativeSecurityPosting(ClientFixture fixture, LedgerPostingType postingType,
+                    CorporateActionLeg leg, Security security, LedgerPostingDirection direction, LedgerProjectionRole role)
+    {
+        var posting = new LedgerPosting();
+
+        posting.setType(postingType);
+        posting.setPortfolio(fixture.portfolio());
+        posting.setSecurity(security);
+        posting.setShares(Values.Share.factorize(5));
+        posting.setAmount(Values.Amount.factorize(50));
+        posting.setCurrency(CurrencyUnit.EUR);
+        posting.setSemanticRole(postingType == LedgerPostingType.BOND ? LedgerPostingSemanticRole.BOND
+                        : LedgerPostingSemanticRole.SECURITY);
+        posting.setDirection(direction);
+        posting.setCorporateActionLeg(leg);
+        posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
+        posting.setLocalKey(role.name());
+
+        return posting;
+    }
+
     private PTransaction transaction(PClient client, PTransaction.Type type)
     {
         return client.getTransactionsList().stream().filter(transaction -> transaction.getType() == type).findFirst()
@@ -977,6 +1112,18 @@ public class LedgerProtobufPersistenceTest
         assertThat(unit.getType().name(), is(type.name()));
     }
 
+    private void assertNoLedgerUuidTruth(PClient client)
+    {
+        for (var entry : client.getLedger().getEntriesList())
+        {
+            assertThat(entry.getUuid(), is(""));
+            assertThat(entry.getProjectionRefsCount(), is(0));
+
+            for (var posting : entry.getPostingsList())
+                assertThat(posting.getUuid(), is(""));
+        }
+    }
+
     private void assertProjectionUUIDs(Client client, LedgerEntryType type, String... projectionUUIDs)
     {
         var actual = onlyEntry(client, type).getProjectionRefs().stream().map(ref -> ref.getUUID()).toList();
@@ -998,10 +1145,9 @@ public class LedgerProtobufPersistenceTest
                         .filter(transaction -> uuid.equals(transaction.getUUID())).findFirst().orElseThrow();
     }
 
-    private String projectionUUID(name.abuchen.portfolio.model.ledger.LedgerEntry entry, LedgerProjectionRole role)
+    private String shadowUUID(name.abuchen.portfolio.model.ledger.LedgerEntry entry, LedgerProjectionRole role)
     {
-        return entry.getProjectionRefs().stream().filter(ref -> ref.getRole() == role).findFirst().orElseThrow()
-                        .getUUID();
+        return "ledger-shadow:" + entry.getUUID() + ":" + role; //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     private byte[] saveBytes(Client client) throws IOException
@@ -1085,7 +1231,7 @@ public class LedgerProtobufPersistenceTest
     }
 
     private record ClientFixture(Client client, Account account, Account otherAccount, Portfolio portfolio,
-                    Portfolio otherPortfolio, Security security)
+                    Portfolio otherPortfolio, Security security, Security otherSecurity)
     {
     }
 }

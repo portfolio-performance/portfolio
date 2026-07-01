@@ -24,6 +24,12 @@ private static final long serialVersionUID = 0L;
     portfolio_ = "";
     parameters_ = java.util.Collections.emptyList();
     typeCode_ = "";
+    semanticRole_ = "";
+    direction_ = "";
+    corporateActionLeg_ = "";
+    unitRole_ = "";
+    groupKey_ = "";
+    localKey_ = "";
   }
 
   @java.lang.Override
@@ -51,16 +57,18 @@ private static final long serialVersionUID = 0L;
   @SuppressWarnings("serial")
   private volatile java.lang.Object uuid_ = "";
   /**
-   * <code>string uuid = 1;</code>
+   * <code>string uuid = 1 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerPosting.uuid is deprecated.
+   *     See client.proto;l=295
    * @return The uuid.
    */
   @java.lang.Override
-  public java.lang.String getUuid() {
+  @java.lang.Deprecated public java.lang.String getUuid() {
     java.lang.Object ref = uuid_;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       uuid_ = s;
@@ -68,15 +76,17 @@ private static final long serialVersionUID = 0L;
     }
   }
   /**
-   * <code>string uuid = 1;</code>
+   * <code>string uuid = 1 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerPosting.uuid is deprecated.
+   *     See client.proto;l=295
    * @return The bytes for uuid.
    */
   @java.lang.Override
-  public com.google.protobuf.ByteString
+  @java.lang.Deprecated public com.google.protobuf.ByteString
       getUuidBytes() {
     java.lang.Object ref = uuid_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       uuid_ = b;
@@ -118,7 +128,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       currency_ = s;
@@ -134,7 +144,7 @@ private static final long serialVersionUID = 0L;
       getCurrencyBytes() {
     java.lang.Object ref = currency_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       currency_ = b;
@@ -184,7 +194,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       forexCurrency_ = s;
@@ -200,7 +210,7 @@ private static final long serialVersionUID = 0L;
       getForexCurrencyBytes() {
     java.lang.Object ref = forexCurrency_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       forexCurrency_ = b;
@@ -257,7 +267,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       security_ = s;
@@ -273,7 +283,7 @@ private static final long serialVersionUID = 0L;
       getSecurityBytes() {
     java.lang.Object ref = security_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       security_ = b;
@@ -315,7 +325,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       account_ = s;
@@ -331,7 +341,7 @@ private static final long serialVersionUID = 0L;
       getAccountBytes() {
     java.lang.Object ref = account_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       account_ = b;
@@ -362,7 +372,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       portfolio_ = s;
@@ -378,7 +388,7 @@ private static final long serialVersionUID = 0L;
       getPortfolioBytes() {
     java.lang.Object ref = portfolio_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       portfolio_ = b;
@@ -402,7 +412,7 @@ private static final long serialVersionUID = 0L;
    * <code>repeated .name.abuchen.portfolio.PLedgerParameter parameters = 12;</code>
    */
   @java.lang.Override
-  public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerParameterOrBuilder> 
+  public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerParameterOrBuilder>
       getParametersOrBuilderList() {
     return parameters_;
   }
@@ -450,7 +460,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       typeCode_ = s;
@@ -466,10 +476,292 @@ private static final long serialVersionUID = 0L;
       getTypeCodeBytes() {
     java.lang.Object ref = typeCode_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       typeCode_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
+  public static final int SEMANTICROLE_FIELD_NUMBER = 14;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object semanticRole_ = "";
+  /**
+   * <code>optional string semanticRole = 14;</code>
+   * @return Whether the semanticRole field is set.
+   */
+  @java.lang.Override
+  public boolean hasSemanticRole() {
+    return ((bitField0_ & 0x00000100) != 0);
+  }
+  /**
+   * <code>optional string semanticRole = 14;</code>
+   * @return The semanticRole.
+   */
+  @java.lang.Override
+  public java.lang.String getSemanticRole() {
+    java.lang.Object ref = semanticRole_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs =
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      semanticRole_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>optional string semanticRole = 14;</code>
+   * @return The bytes for semanticRole.
+   */
+  @java.lang.Override
+  public com.google.protobuf.ByteString
+      getSemanticRoleBytes() {
+    java.lang.Object ref = semanticRole_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b =
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      semanticRole_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
+  public static final int DIRECTION_FIELD_NUMBER = 15;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object direction_ = "";
+  /**
+   * <code>optional string direction = 15;</code>
+   * @return Whether the direction field is set.
+   */
+  @java.lang.Override
+  public boolean hasDirection() {
+    return ((bitField0_ & 0x00000200) != 0);
+  }
+  /**
+   * <code>optional string direction = 15;</code>
+   * @return The direction.
+   */
+  @java.lang.Override
+  public java.lang.String getDirection() {
+    java.lang.Object ref = direction_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs =
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      direction_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>optional string direction = 15;</code>
+   * @return The bytes for direction.
+   */
+  @java.lang.Override
+  public com.google.protobuf.ByteString
+      getDirectionBytes() {
+    java.lang.Object ref = direction_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b =
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      direction_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
+  public static final int CORPORATEACTIONLEG_FIELD_NUMBER = 16;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object corporateActionLeg_ = "";
+  /**
+   * <code>optional string corporateActionLeg = 16;</code>
+   * @return Whether the corporateActionLeg field is set.
+   */
+  @java.lang.Override
+  public boolean hasCorporateActionLeg() {
+    return ((bitField0_ & 0x00000400) != 0);
+  }
+  /**
+   * <code>optional string corporateActionLeg = 16;</code>
+   * @return The corporateActionLeg.
+   */
+  @java.lang.Override
+  public java.lang.String getCorporateActionLeg() {
+    java.lang.Object ref = corporateActionLeg_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs =
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      corporateActionLeg_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>optional string corporateActionLeg = 16;</code>
+   * @return The bytes for corporateActionLeg.
+   */
+  @java.lang.Override
+  public com.google.protobuf.ByteString
+      getCorporateActionLegBytes() {
+    java.lang.Object ref = corporateActionLeg_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b =
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      corporateActionLeg_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
+  public static final int UNITROLE_FIELD_NUMBER = 17;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object unitRole_ = "";
+  /**
+   * <code>optional string unitRole = 17;</code>
+   * @return Whether the unitRole field is set.
+   */
+  @java.lang.Override
+  public boolean hasUnitRole() {
+    return ((bitField0_ & 0x00000800) != 0);
+  }
+  /**
+   * <code>optional string unitRole = 17;</code>
+   * @return The unitRole.
+   */
+  @java.lang.Override
+  public java.lang.String getUnitRole() {
+    java.lang.Object ref = unitRole_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs =
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      unitRole_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>optional string unitRole = 17;</code>
+   * @return The bytes for unitRole.
+   */
+  @java.lang.Override
+  public com.google.protobuf.ByteString
+      getUnitRoleBytes() {
+    java.lang.Object ref = unitRole_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b =
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      unitRole_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
+  public static final int GROUPKEY_FIELD_NUMBER = 18;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object groupKey_ = "";
+  /**
+   * <code>optional string groupKey = 18;</code>
+   * @return Whether the groupKey field is set.
+   */
+  @java.lang.Override
+  public boolean hasGroupKey() {
+    return ((bitField0_ & 0x00001000) != 0);
+  }
+  /**
+   * <code>optional string groupKey = 18;</code>
+   * @return The groupKey.
+   */
+  @java.lang.Override
+  public java.lang.String getGroupKey() {
+    java.lang.Object ref = groupKey_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs =
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      groupKey_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>optional string groupKey = 18;</code>
+   * @return The bytes for groupKey.
+   */
+  @java.lang.Override
+  public com.google.protobuf.ByteString
+      getGroupKeyBytes() {
+    java.lang.Object ref = groupKey_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b =
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      groupKey_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
+  public static final int LOCALKEY_FIELD_NUMBER = 19;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object localKey_ = "";
+  /**
+   * <code>optional string localKey = 19;</code>
+   * @return Whether the localKey field is set.
+   */
+  @java.lang.Override
+  public boolean hasLocalKey() {
+    return ((bitField0_ & 0x00002000) != 0);
+  }
+  /**
+   * <code>optional string localKey = 19;</code>
+   * @return The localKey.
+   */
+  @java.lang.Override
+  public java.lang.String getLocalKey() {
+    java.lang.Object ref = localKey_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs =
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      localKey_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>optional string localKey = 19;</code>
+   * @return The bytes for localKey.
+   */
+  @java.lang.Override
+  public com.google.protobuf.ByteString
+      getLocalKeyBytes() {
+    java.lang.Object ref = localKey_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b =
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      localKey_ = b;
       return b;
     } else {
       return (com.google.protobuf.ByteString) ref;
@@ -526,6 +818,24 @@ private static final long serialVersionUID = 0L;
     if (((bitField0_ & 0x00000080) != 0)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 13, typeCode_);
     }
+    if (((bitField0_ & 0x00000100) != 0)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 14, semanticRole_);
+    }
+    if (((bitField0_ & 0x00000200) != 0)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 15, direction_);
+    }
+    if (((bitField0_ & 0x00000400) != 0)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 16, corporateActionLeg_);
+    }
+    if (((bitField0_ & 0x00000800) != 0)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 17, unitRole_);
+    }
+    if (((bitField0_ & 0x00001000) != 0)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 18, groupKey_);
+    }
+    if (((bitField0_ & 0x00002000) != 0)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 19, localKey_);
+    }
     getUnknownFields().writeTo(output);
   }
 
@@ -575,6 +885,24 @@ private static final long serialVersionUID = 0L;
     }
     if (((bitField0_ & 0x00000080) != 0)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(13, typeCode_);
+    }
+    if (((bitField0_ & 0x00000100) != 0)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(14, semanticRole_);
+    }
+    if (((bitField0_ & 0x00000200) != 0)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(15, direction_);
+    }
+    if (((bitField0_ & 0x00000400) != 0)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(16, corporateActionLeg_);
+    }
+    if (((bitField0_ & 0x00000800) != 0)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(17, unitRole_);
+    }
+    if (((bitField0_ & 0x00001000) != 0)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(18, groupKey_);
+    }
+    if (((bitField0_ & 0x00002000) != 0)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(19, localKey_);
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -639,6 +967,36 @@ private static final long serialVersionUID = 0L;
       if (!getTypeCode()
           .equals(other.getTypeCode())) return false;
     }
+    if (hasSemanticRole() != other.hasSemanticRole()) return false;
+    if (hasSemanticRole()) {
+      if (!getSemanticRole()
+          .equals(other.getSemanticRole())) return false;
+    }
+    if (hasDirection() != other.hasDirection()) return false;
+    if (hasDirection()) {
+      if (!getDirection()
+          .equals(other.getDirection())) return false;
+    }
+    if (hasCorporateActionLeg() != other.hasCorporateActionLeg()) return false;
+    if (hasCorporateActionLeg()) {
+      if (!getCorporateActionLeg()
+          .equals(other.getCorporateActionLeg())) return false;
+    }
+    if (hasUnitRole() != other.hasUnitRole()) return false;
+    if (hasUnitRole()) {
+      if (!getUnitRole()
+          .equals(other.getUnitRole())) return false;
+    }
+    if (hasGroupKey() != other.hasGroupKey()) return false;
+    if (hasGroupKey()) {
+      if (!getGroupKey()
+          .equals(other.getGroupKey())) return false;
+    }
+    if (hasLocalKey() != other.hasLocalKey()) return false;
+    if (hasLocalKey()) {
+      if (!getLocalKey()
+          .equals(other.getLocalKey())) return false;
+    }
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -694,6 +1052,30 @@ private static final long serialVersionUID = 0L;
     if (hasTypeCode()) {
       hash = (37 * hash) + TYPECODE_FIELD_NUMBER;
       hash = (53 * hash) + getTypeCode().hashCode();
+    }
+    if (hasSemanticRole()) {
+      hash = (37 * hash) + SEMANTICROLE_FIELD_NUMBER;
+      hash = (53 * hash) + getSemanticRole().hashCode();
+    }
+    if (hasDirection()) {
+      hash = (37 * hash) + DIRECTION_FIELD_NUMBER;
+      hash = (53 * hash) + getDirection().hashCode();
+    }
+    if (hasCorporateActionLeg()) {
+      hash = (37 * hash) + CORPORATEACTIONLEG_FIELD_NUMBER;
+      hash = (53 * hash) + getCorporateActionLeg().hashCode();
+    }
+    if (hasUnitRole()) {
+      hash = (37 * hash) + UNITROLE_FIELD_NUMBER;
+      hash = (53 * hash) + getUnitRole().hashCode();
+    }
+    if (hasGroupKey()) {
+      hash = (37 * hash) + GROUPKEY_FIELD_NUMBER;
+      hash = (53 * hash) + getGroupKey().hashCode();
+    }
+    if (hasLocalKey()) {
+      hash = (37 * hash) + LOCALKEY_FIELD_NUMBER;
+      hash = (53 * hash) + getLocalKey().hashCode();
     }
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
@@ -853,6 +1235,12 @@ private static final long serialVersionUID = 0L;
       }
       bitField0_ = (bitField0_ & ~0x00000400);
       typeCode_ = "";
+      semanticRole_ = "";
+      direction_ = "";
+      corporateActionLeg_ = "";
+      unitRole_ = "";
+      groupKey_ = "";
+      localKey_ = "";
       return this;
     }
 
@@ -943,6 +1331,30 @@ private static final long serialVersionUID = 0L;
         result.typeCode_ = typeCode_;
         to_bitField0_ |= 0x00000080;
       }
+      if (((from_bitField0_ & 0x00001000) != 0)) {
+        result.semanticRole_ = semanticRole_;
+        to_bitField0_ |= 0x00000100;
+      }
+      if (((from_bitField0_ & 0x00002000) != 0)) {
+        result.direction_ = direction_;
+        to_bitField0_ |= 0x00000200;
+      }
+      if (((from_bitField0_ & 0x00004000) != 0)) {
+        result.corporateActionLeg_ = corporateActionLeg_;
+        to_bitField0_ |= 0x00000400;
+      }
+      if (((from_bitField0_ & 0x00008000) != 0)) {
+        result.unitRole_ = unitRole_;
+        to_bitField0_ |= 0x00000800;
+      }
+      if (((from_bitField0_ & 0x00010000) != 0)) {
+        result.groupKey_ = groupKey_;
+        to_bitField0_ |= 0x00001000;
+      }
+      if (((from_bitField0_ & 0x00020000) != 0)) {
+        result.localKey_ = localKey_;
+        to_bitField0_ |= 0x00002000;
+      }
       result.bitField0_ |= to_bitField0_;
     }
 
@@ -1018,7 +1430,7 @@ private static final long serialVersionUID = 0L;
             parametersBuilder_ = null;
             parameters_ = other.parameters_;
             bitField0_ = (bitField0_ & ~0x00000400);
-            parametersBuilder_ = 
+            parametersBuilder_ =
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getParametersFieldBuilder() : null;
           } else {
@@ -1029,6 +1441,36 @@ private static final long serialVersionUID = 0L;
       if (other.hasTypeCode()) {
         typeCode_ = other.typeCode_;
         bitField0_ |= 0x00000800;
+        onChanged();
+      }
+      if (other.hasSemanticRole()) {
+        semanticRole_ = other.semanticRole_;
+        bitField0_ |= 0x00001000;
+        onChanged();
+      }
+      if (other.hasDirection()) {
+        direction_ = other.direction_;
+        bitField0_ |= 0x00002000;
+        onChanged();
+      }
+      if (other.hasCorporateActionLeg()) {
+        corporateActionLeg_ = other.corporateActionLeg_;
+        bitField0_ |= 0x00004000;
+        onChanged();
+      }
+      if (other.hasUnitRole()) {
+        unitRole_ = other.unitRole_;
+        bitField0_ |= 0x00008000;
+        onChanged();
+      }
+      if (other.hasGroupKey()) {
+        groupKey_ = other.groupKey_;
+        bitField0_ |= 0x00010000;
+        onChanged();
+      }
+      if (other.hasLocalKey()) {
+        localKey_ = other.localKey_;
+        bitField0_ |= 0x00020000;
         onChanged();
       }
       this.mergeUnknownFields(other.getUnknownFields());
@@ -1127,6 +1569,36 @@ private static final long serialVersionUID = 0L;
               bitField0_ |= 0x00000800;
               break;
             } // case 106
+            case 114: {
+              semanticRole_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00001000;
+              break;
+            } // case 114
+            case 122: {
+              direction_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00002000;
+              break;
+            } // case 122
+            case 130: {
+              corporateActionLeg_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00004000;
+              break;
+            } // case 130
+            case 138: {
+              unitRole_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00008000;
+              break;
+            } // case 138
+            case 146: {
+              groupKey_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00010000;
+              break;
+            } // case 146
+            case 154: {
+              localKey_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00020000;
+              break;
+            } // case 154
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -1146,10 +1618,12 @@ private static final long serialVersionUID = 0L;
 
     private java.lang.Object uuid_ = "";
     /**
-     * <code>string uuid = 1;</code>
+     * <code>string uuid = 1 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerPosting.uuid is deprecated.
+     *     See client.proto;l=295
      * @return The uuid.
      */
-    public java.lang.String getUuid() {
+    @java.lang.Deprecated public java.lang.String getUuid() {
       java.lang.Object ref = uuid_;
       if (!(ref instanceof java.lang.String)) {
         com.google.protobuf.ByteString bs =
@@ -1162,14 +1636,16 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>string uuid = 1;</code>
+     * <code>string uuid = 1 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerPosting.uuid is deprecated.
+     *     See client.proto;l=295
      * @return The bytes for uuid.
      */
-    public com.google.protobuf.ByteString
+    @java.lang.Deprecated public com.google.protobuf.ByteString
         getUuidBytes() {
       java.lang.Object ref = uuid_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         uuid_ = b;
@@ -1179,11 +1655,13 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>string uuid = 1;</code>
+     * <code>string uuid = 1 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerPosting.uuid is deprecated.
+     *     See client.proto;l=295
      * @param value The uuid to set.
      * @return This builder for chaining.
      */
-    public Builder setUuid(
+    @java.lang.Deprecated public Builder setUuid(
         java.lang.String value) {
       if (value == null) { throw new NullPointerException(); }
       uuid_ = value;
@@ -1192,21 +1670,25 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>string uuid = 1;</code>
+     * <code>string uuid = 1 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerPosting.uuid is deprecated.
+     *     See client.proto;l=295
      * @return This builder for chaining.
      */
-    public Builder clearUuid() {
+    @java.lang.Deprecated public Builder clearUuid() {
       uuid_ = getDefaultInstance().getUuid();
       bitField0_ = (bitField0_ & ~0x00000001);
       onChanged();
       return this;
     }
     /**
-     * <code>string uuid = 1;</code>
+     * <code>string uuid = 1 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerPosting.uuid is deprecated.
+     *     See client.proto;l=295
      * @param value The bytes for uuid to set.
      * @return This builder for chaining.
      */
-    public Builder setUuidBytes(
+    @java.lang.Deprecated public Builder setUuidBytes(
         com.google.protobuf.ByteString value) {
       if (value == null) { throw new NullPointerException(); }
       checkByteStringIsUtf8(value);
@@ -1280,7 +1762,7 @@ private static final long serialVersionUID = 0L;
         getCurrencyBytes() {
       java.lang.Object ref = currency_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         currency_ = b;
@@ -1399,7 +1881,7 @@ private static final long serialVersionUID = 0L;
         getForexCurrencyBytes() {
       java.lang.Object ref = forexCurrency_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         forexCurrency_ = b;
@@ -1552,7 +2034,7 @@ private static final long serialVersionUID = 0L;
      * <code>optional .name.abuchen.portfolio.PDecimalValue exchangeRate = 7;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        name.abuchen.portfolio.model.proto.v1.PDecimalValue, name.abuchen.portfolio.model.proto.v1.PDecimalValue.Builder, name.abuchen.portfolio.model.proto.v1.PDecimalValueOrBuilder> 
+        name.abuchen.portfolio.model.proto.v1.PDecimalValue, name.abuchen.portfolio.model.proto.v1.PDecimalValue.Builder, name.abuchen.portfolio.model.proto.v1.PDecimalValueOrBuilder>
         getExchangeRateFieldBuilder() {
       if (exchangeRateBuilder_ == null) {
         exchangeRateBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -1597,7 +2079,7 @@ private static final long serialVersionUID = 0L;
         getSecurityBytes() {
       java.lang.Object ref = security_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         security_ = b;
@@ -1708,7 +2190,7 @@ private static final long serialVersionUID = 0L;
         getAccountBytes() {
       java.lang.Object ref = account_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         account_ = b;
@@ -1787,7 +2269,7 @@ private static final long serialVersionUID = 0L;
         getPortfolioBytes() {
       java.lang.Object ref = portfolio_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         portfolio_ = b;
@@ -2029,7 +2511,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>repeated .name.abuchen.portfolio.PLedgerParameter parameters = 12;</code>
      */
-    public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerParameterOrBuilder> 
+    public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerParameterOrBuilder>
          getParametersOrBuilderList() {
       if (parametersBuilder_ != null) {
         return parametersBuilder_.getMessageOrBuilderList();
@@ -2055,12 +2537,12 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>repeated .name.abuchen.portfolio.PLedgerParameter parameters = 12;</code>
      */
-    public java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerParameter.Builder> 
+    public java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerParameter.Builder>
          getParametersBuilderList() {
       return getParametersFieldBuilder().getBuilderList();
     }
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        name.abuchen.portfolio.model.proto.v1.PLedgerParameter, name.abuchen.portfolio.model.proto.v1.PLedgerParameter.Builder, name.abuchen.portfolio.model.proto.v1.PLedgerParameterOrBuilder> 
+        name.abuchen.portfolio.model.proto.v1.PLedgerParameter, name.abuchen.portfolio.model.proto.v1.PLedgerParameter.Builder, name.abuchen.portfolio.model.proto.v1.PLedgerParameterOrBuilder>
         getParametersFieldBuilder() {
       if (parametersBuilder_ == null) {
         parametersBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
@@ -2106,7 +2588,7 @@ private static final long serialVersionUID = 0L;
         getTypeCodeBytes() {
       java.lang.Object ref = typeCode_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         typeCode_ = b;
@@ -2149,6 +2631,480 @@ private static final long serialVersionUID = 0L;
       checkByteStringIsUtf8(value);
       typeCode_ = value;
       bitField0_ |= 0x00000800;
+      onChanged();
+      return this;
+    }
+
+    private java.lang.Object semanticRole_ = "";
+    /**
+     * <code>optional string semanticRole = 14;</code>
+     * @return Whether the semanticRole field is set.
+     */
+    public boolean hasSemanticRole() {
+      return ((bitField0_ & 0x00001000) != 0);
+    }
+    /**
+     * <code>optional string semanticRole = 14;</code>
+     * @return The semanticRole.
+     */
+    public java.lang.String getSemanticRole() {
+      java.lang.Object ref = semanticRole_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        semanticRole_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>optional string semanticRole = 14;</code>
+     * @return The bytes for semanticRole.
+     */
+    public com.google.protobuf.ByteString
+        getSemanticRoleBytes() {
+      java.lang.Object ref = semanticRole_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        semanticRole_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>optional string semanticRole = 14;</code>
+     * @param value The semanticRole to set.
+     * @return This builder for chaining.
+     */
+    public Builder setSemanticRole(
+        java.lang.String value) {
+      if (value == null) { throw new NullPointerException(); }
+      semanticRole_ = value;
+      bitField0_ |= 0x00001000;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string semanticRole = 14;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearSemanticRole() {
+      semanticRole_ = getDefaultInstance().getSemanticRole();
+      bitField0_ = (bitField0_ & ~0x00001000);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string semanticRole = 14;</code>
+     * @param value The bytes for semanticRole to set.
+     * @return This builder for chaining.
+     */
+    public Builder setSemanticRoleBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
+      semanticRole_ = value;
+      bitField0_ |= 0x00001000;
+      onChanged();
+      return this;
+    }
+
+    private java.lang.Object direction_ = "";
+    /**
+     * <code>optional string direction = 15;</code>
+     * @return Whether the direction field is set.
+     */
+    public boolean hasDirection() {
+      return ((bitField0_ & 0x00002000) != 0);
+    }
+    /**
+     * <code>optional string direction = 15;</code>
+     * @return The direction.
+     */
+    public java.lang.String getDirection() {
+      java.lang.Object ref = direction_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        direction_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>optional string direction = 15;</code>
+     * @return The bytes for direction.
+     */
+    public com.google.protobuf.ByteString
+        getDirectionBytes() {
+      java.lang.Object ref = direction_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        direction_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>optional string direction = 15;</code>
+     * @param value The direction to set.
+     * @return This builder for chaining.
+     */
+    public Builder setDirection(
+        java.lang.String value) {
+      if (value == null) { throw new NullPointerException(); }
+      direction_ = value;
+      bitField0_ |= 0x00002000;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string direction = 15;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearDirection() {
+      direction_ = getDefaultInstance().getDirection();
+      bitField0_ = (bitField0_ & ~0x00002000);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string direction = 15;</code>
+     * @param value The bytes for direction to set.
+     * @return This builder for chaining.
+     */
+    public Builder setDirectionBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
+      direction_ = value;
+      bitField0_ |= 0x00002000;
+      onChanged();
+      return this;
+    }
+
+    private java.lang.Object corporateActionLeg_ = "";
+    /**
+     * <code>optional string corporateActionLeg = 16;</code>
+     * @return Whether the corporateActionLeg field is set.
+     */
+    public boolean hasCorporateActionLeg() {
+      return ((bitField0_ & 0x00004000) != 0);
+    }
+    /**
+     * <code>optional string corporateActionLeg = 16;</code>
+     * @return The corporateActionLeg.
+     */
+    public java.lang.String getCorporateActionLeg() {
+      java.lang.Object ref = corporateActionLeg_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        corporateActionLeg_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>optional string corporateActionLeg = 16;</code>
+     * @return The bytes for corporateActionLeg.
+     */
+    public com.google.protobuf.ByteString
+        getCorporateActionLegBytes() {
+      java.lang.Object ref = corporateActionLeg_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        corporateActionLeg_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>optional string corporateActionLeg = 16;</code>
+     * @param value The corporateActionLeg to set.
+     * @return This builder for chaining.
+     */
+    public Builder setCorporateActionLeg(
+        java.lang.String value) {
+      if (value == null) { throw new NullPointerException(); }
+      corporateActionLeg_ = value;
+      bitField0_ |= 0x00004000;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string corporateActionLeg = 16;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearCorporateActionLeg() {
+      corporateActionLeg_ = getDefaultInstance().getCorporateActionLeg();
+      bitField0_ = (bitField0_ & ~0x00004000);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string corporateActionLeg = 16;</code>
+     * @param value The bytes for corporateActionLeg to set.
+     * @return This builder for chaining.
+     */
+    public Builder setCorporateActionLegBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
+      corporateActionLeg_ = value;
+      bitField0_ |= 0x00004000;
+      onChanged();
+      return this;
+    }
+
+    private java.lang.Object unitRole_ = "";
+    /**
+     * <code>optional string unitRole = 17;</code>
+     * @return Whether the unitRole field is set.
+     */
+    public boolean hasUnitRole() {
+      return ((bitField0_ & 0x00008000) != 0);
+    }
+    /**
+     * <code>optional string unitRole = 17;</code>
+     * @return The unitRole.
+     */
+    public java.lang.String getUnitRole() {
+      java.lang.Object ref = unitRole_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        unitRole_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>optional string unitRole = 17;</code>
+     * @return The bytes for unitRole.
+     */
+    public com.google.protobuf.ByteString
+        getUnitRoleBytes() {
+      java.lang.Object ref = unitRole_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        unitRole_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>optional string unitRole = 17;</code>
+     * @param value The unitRole to set.
+     * @return This builder for chaining.
+     */
+    public Builder setUnitRole(
+        java.lang.String value) {
+      if (value == null) { throw new NullPointerException(); }
+      unitRole_ = value;
+      bitField0_ |= 0x00008000;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string unitRole = 17;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearUnitRole() {
+      unitRole_ = getDefaultInstance().getUnitRole();
+      bitField0_ = (bitField0_ & ~0x00008000);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string unitRole = 17;</code>
+     * @param value The bytes for unitRole to set.
+     * @return This builder for chaining.
+     */
+    public Builder setUnitRoleBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
+      unitRole_ = value;
+      bitField0_ |= 0x00008000;
+      onChanged();
+      return this;
+    }
+
+    private java.lang.Object groupKey_ = "";
+    /**
+     * <code>optional string groupKey = 18;</code>
+     * @return Whether the groupKey field is set.
+     */
+    public boolean hasGroupKey() {
+      return ((bitField0_ & 0x00010000) != 0);
+    }
+    /**
+     * <code>optional string groupKey = 18;</code>
+     * @return The groupKey.
+     */
+    public java.lang.String getGroupKey() {
+      java.lang.Object ref = groupKey_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        groupKey_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>optional string groupKey = 18;</code>
+     * @return The bytes for groupKey.
+     */
+    public com.google.protobuf.ByteString
+        getGroupKeyBytes() {
+      java.lang.Object ref = groupKey_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        groupKey_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>optional string groupKey = 18;</code>
+     * @param value The groupKey to set.
+     * @return This builder for chaining.
+     */
+    public Builder setGroupKey(
+        java.lang.String value) {
+      if (value == null) { throw new NullPointerException(); }
+      groupKey_ = value;
+      bitField0_ |= 0x00010000;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string groupKey = 18;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearGroupKey() {
+      groupKey_ = getDefaultInstance().getGroupKey();
+      bitField0_ = (bitField0_ & ~0x00010000);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string groupKey = 18;</code>
+     * @param value The bytes for groupKey to set.
+     * @return This builder for chaining.
+     */
+    public Builder setGroupKeyBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
+      groupKey_ = value;
+      bitField0_ |= 0x00010000;
+      onChanged();
+      return this;
+    }
+
+    private java.lang.Object localKey_ = "";
+    /**
+     * <code>optional string localKey = 19;</code>
+     * @return Whether the localKey field is set.
+     */
+    public boolean hasLocalKey() {
+      return ((bitField0_ & 0x00020000) != 0);
+    }
+    /**
+     * <code>optional string localKey = 19;</code>
+     * @return The localKey.
+     */
+    public java.lang.String getLocalKey() {
+      java.lang.Object ref = localKey_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        localKey_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>optional string localKey = 19;</code>
+     * @return The bytes for localKey.
+     */
+    public com.google.protobuf.ByteString
+        getLocalKeyBytes() {
+      java.lang.Object ref = localKey_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        localKey_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>optional string localKey = 19;</code>
+     * @param value The localKey to set.
+     * @return This builder for chaining.
+     */
+    public Builder setLocalKey(
+        java.lang.String value) {
+      if (value == null) { throw new NullPointerException(); }
+      localKey_ = value;
+      bitField0_ |= 0x00020000;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string localKey = 19;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearLocalKey() {
+      localKey_ = getDefaultInstance().getLocalKey();
+      bitField0_ = (bitField0_ & ~0x00020000);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string localKey = 19;</code>
+     * @param value The bytes for localKey to set.
+     * @return This builder for chaining.
+     */
+    public Builder setLocalKeyBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
+      localKey_ = value;
+      bitField0_ |= 0x00020000;
       onChanged();
       return this;
     }

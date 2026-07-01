@@ -48,16 +48,18 @@ private static final long serialVersionUID = 0L;
   @SuppressWarnings("serial")
   private volatile java.lang.Object uuid_ = "";
   /**
-   * <code>string uuid = 1;</code>
+   * <code>string uuid = 1 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.uuid is deprecated.
+   *     See client.proto;l=317
    * @return The uuid.
    */
   @java.lang.Override
-  public java.lang.String getUuid() {
+  @java.lang.Deprecated public java.lang.String getUuid() {
     java.lang.Object ref = uuid_;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       uuid_ = s;
@@ -65,15 +67,17 @@ private static final long serialVersionUID = 0L;
     }
   }
   /**
-   * <code>string uuid = 1;</code>
+   * <code>string uuid = 1 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.uuid is deprecated.
+   *     See client.proto;l=317
    * @return The bytes for uuid.
    */
   @java.lang.Override
-  public com.google.protobuf.ByteString
+  @java.lang.Deprecated public com.google.protobuf.ByteString
       getUuidBytes() {
     java.lang.Object ref = uuid_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       uuid_ = b;
@@ -86,17 +90,21 @@ private static final long serialVersionUID = 0L;
   public static final int ROLE_FIELD_NUMBER = 2;
   private int role_ = 0;
   /**
-   * <code>.name.abuchen.portfolio.PLedgerProjectionRole role = 2;</code>
+   * <code>.name.abuchen.portfolio.PLedgerProjectionRole role = 2 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.role is deprecated.
+   *     See client.proto;l=318
    * @return The enum numeric value on the wire for role.
    */
-  @java.lang.Override public int getRoleValue() {
+  @java.lang.Override @java.lang.Deprecated public int getRoleValue() {
     return role_;
   }
   /**
-   * <code>.name.abuchen.portfolio.PLedgerProjectionRole role = 2;</code>
+   * <code>.name.abuchen.portfolio.PLedgerProjectionRole role = 2 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.role is deprecated.
+   *     See client.proto;l=318
    * @return The role.
    */
-  @java.lang.Override public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRole getRole() {
+  @java.lang.Override @java.lang.Deprecated public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRole getRole() {
     name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRole result = name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRole.forNumber(role_);
     return result == null ? name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRole.UNRECOGNIZED : result;
   }
@@ -105,24 +113,28 @@ private static final long serialVersionUID = 0L;
   @SuppressWarnings("serial")
   private volatile java.lang.Object account_ = "";
   /**
-   * <code>optional string account = 3;</code>
+   * <code>optional string account = 3 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.account is deprecated.
+   *     See client.proto;l=319
    * @return Whether the account field is set.
    */
   @java.lang.Override
-  public boolean hasAccount() {
+  @java.lang.Deprecated public boolean hasAccount() {
     return ((bitField0_ & 0x00000001) != 0);
   }
   /**
-   * <code>optional string account = 3;</code>
+   * <code>optional string account = 3 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.account is deprecated.
+   *     See client.proto;l=319
    * @return The account.
    */
   @java.lang.Override
-  public java.lang.String getAccount() {
+  @java.lang.Deprecated public java.lang.String getAccount() {
     java.lang.Object ref = account_;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       account_ = s;
@@ -130,15 +142,17 @@ private static final long serialVersionUID = 0L;
     }
   }
   /**
-   * <code>optional string account = 3;</code>
+   * <code>optional string account = 3 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.account is deprecated.
+   *     See client.proto;l=319
    * @return The bytes for account.
    */
   @java.lang.Override
-  public com.google.protobuf.ByteString
+  @java.lang.Deprecated public com.google.protobuf.ByteString
       getAccountBytes() {
     java.lang.Object ref = account_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       account_ = b;
@@ -152,24 +166,28 @@ private static final long serialVersionUID = 0L;
   @SuppressWarnings("serial")
   private volatile java.lang.Object portfolio_ = "";
   /**
-   * <code>optional string portfolio = 4;</code>
+   * <code>optional string portfolio = 4 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.portfolio is deprecated.
+   *     See client.proto;l=320
    * @return Whether the portfolio field is set.
    */
   @java.lang.Override
-  public boolean hasPortfolio() {
+  @java.lang.Deprecated public boolean hasPortfolio() {
     return ((bitField0_ & 0x00000002) != 0);
   }
   /**
-   * <code>optional string portfolio = 4;</code>
+   * <code>optional string portfolio = 4 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.portfolio is deprecated.
+   *     See client.proto;l=320
    * @return The portfolio.
    */
   @java.lang.Override
-  public java.lang.String getPortfolio() {
+  @java.lang.Deprecated public java.lang.String getPortfolio() {
     java.lang.Object ref = portfolio_;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       portfolio_ = s;
@@ -177,15 +195,17 @@ private static final long serialVersionUID = 0L;
     }
   }
   /**
-   * <code>optional string portfolio = 4;</code>
+   * <code>optional string portfolio = 4 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.portfolio is deprecated.
+   *     See client.proto;l=320
    * @return The bytes for portfolio.
    */
   @java.lang.Override
-  public com.google.protobuf.ByteString
+  @java.lang.Deprecated public com.google.protobuf.ByteString
       getPortfolioBytes() {
     java.lang.Object ref = portfolio_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       portfolio_ = b;
@@ -199,39 +219,39 @@ private static final long serialVersionUID = 0L;
   @SuppressWarnings("serial")
   private java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership> memberships_;
   /**
-   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
+   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5 [deprecated = true];</code>
    */
   @java.lang.Override
-  public java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership> getMembershipsList() {
+  @java.lang.Deprecated public java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership> getMembershipsList() {
     return memberships_;
   }
   /**
-   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
+   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5 [deprecated = true];</code>
    */
   @java.lang.Override
-  public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipOrBuilder> 
+  @java.lang.Deprecated public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipOrBuilder>
       getMembershipsOrBuilderList() {
     return memberships_;
   }
   /**
-   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
+   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5 [deprecated = true];</code>
    */
   @java.lang.Override
-  public int getMembershipsCount() {
+  @java.lang.Deprecated public int getMembershipsCount() {
     return memberships_.size();
   }
   /**
-   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
+   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5 [deprecated = true];</code>
    */
   @java.lang.Override
-  public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership getMemberships(int index) {
+  @java.lang.Deprecated public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership getMemberships(int index) {
     return memberships_.get(index);
   }
   /**
-   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
+   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5 [deprecated = true];</code>
    */
   @java.lang.Override
-  public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipOrBuilder getMembershipsOrBuilder(
+  @java.lang.Deprecated public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipOrBuilder getMembershipsOrBuilder(
       int index) {
     return memberships_.get(index);
   }
@@ -600,7 +620,7 @@ private static final long serialVersionUID = 0L;
             membershipsBuilder_ = null;
             memberships_ = other.memberships_;
             bitField0_ = (bitField0_ & ~0x00000010);
-            membershipsBuilder_ = 
+            membershipsBuilder_ =
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getMembershipsFieldBuilder() : null;
           } else {
@@ -686,10 +706,12 @@ private static final long serialVersionUID = 0L;
 
     private java.lang.Object uuid_ = "";
     /**
-     * <code>string uuid = 1;</code>
+     * <code>string uuid = 1 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.uuid is deprecated.
+     *     See client.proto;l=317
      * @return The uuid.
      */
-    public java.lang.String getUuid() {
+    @java.lang.Deprecated public java.lang.String getUuid() {
       java.lang.Object ref = uuid_;
       if (!(ref instanceof java.lang.String)) {
         com.google.protobuf.ByteString bs =
@@ -702,14 +724,16 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>string uuid = 1;</code>
+     * <code>string uuid = 1 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.uuid is deprecated.
+     *     See client.proto;l=317
      * @return The bytes for uuid.
      */
-    public com.google.protobuf.ByteString
+    @java.lang.Deprecated public com.google.protobuf.ByteString
         getUuidBytes() {
       java.lang.Object ref = uuid_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         uuid_ = b;
@@ -719,11 +743,13 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>string uuid = 1;</code>
+     * <code>string uuid = 1 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.uuid is deprecated.
+     *     See client.proto;l=317
      * @param value The uuid to set.
      * @return This builder for chaining.
      */
-    public Builder setUuid(
+    @java.lang.Deprecated public Builder setUuid(
         java.lang.String value) {
       if (value == null) { throw new NullPointerException(); }
       uuid_ = value;
@@ -732,21 +758,25 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>string uuid = 1;</code>
+     * <code>string uuid = 1 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.uuid is deprecated.
+     *     See client.proto;l=317
      * @return This builder for chaining.
      */
-    public Builder clearUuid() {
+    @java.lang.Deprecated public Builder clearUuid() {
       uuid_ = getDefaultInstance().getUuid();
       bitField0_ = (bitField0_ & ~0x00000001);
       onChanged();
       return this;
     }
     /**
-     * <code>string uuid = 1;</code>
+     * <code>string uuid = 1 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.uuid is deprecated.
+     *     See client.proto;l=317
      * @param value The bytes for uuid to set.
      * @return This builder for chaining.
      */
-    public Builder setUuidBytes(
+    @java.lang.Deprecated public Builder setUuidBytes(
         com.google.protobuf.ByteString value) {
       if (value == null) { throw new NullPointerException(); }
       checkByteStringIsUtf8(value);
@@ -758,38 +788,46 @@ private static final long serialVersionUID = 0L;
 
     private int role_ = 0;
     /**
-     * <code>.name.abuchen.portfolio.PLedgerProjectionRole role = 2;</code>
+     * <code>.name.abuchen.portfolio.PLedgerProjectionRole role = 2 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.role is deprecated.
+     *     See client.proto;l=318
      * @return The enum numeric value on the wire for role.
      */
-    @java.lang.Override public int getRoleValue() {
+    @java.lang.Override @java.lang.Deprecated public int getRoleValue() {
       return role_;
     }
     /**
-     * <code>.name.abuchen.portfolio.PLedgerProjectionRole role = 2;</code>
+     * <code>.name.abuchen.portfolio.PLedgerProjectionRole role = 2 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.role is deprecated.
+     *     See client.proto;l=318
      * @param value The enum numeric value on the wire for role to set.
      * @return This builder for chaining.
      */
-    public Builder setRoleValue(int value) {
+    @java.lang.Deprecated public Builder setRoleValue(int value) {
       role_ = value;
       bitField0_ |= 0x00000002;
       onChanged();
       return this;
     }
     /**
-     * <code>.name.abuchen.portfolio.PLedgerProjectionRole role = 2;</code>
+     * <code>.name.abuchen.portfolio.PLedgerProjectionRole role = 2 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.role is deprecated.
+     *     See client.proto;l=318
      * @return The role.
      */
     @java.lang.Override
-    public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRole getRole() {
+    @java.lang.Deprecated public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRole getRole() {
       name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRole result = name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRole.forNumber(role_);
       return result == null ? name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRole.UNRECOGNIZED : result;
     }
     /**
-     * <code>.name.abuchen.portfolio.PLedgerProjectionRole role = 2;</code>
+     * <code>.name.abuchen.portfolio.PLedgerProjectionRole role = 2 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.role is deprecated.
+     *     See client.proto;l=318
      * @param value The role to set.
      * @return This builder for chaining.
      */
-    public Builder setRole(name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRole value) {
+    @java.lang.Deprecated public Builder setRole(name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRole value) {
       if (value == null) {
         throw new NullPointerException();
       }
@@ -799,10 +837,12 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.name.abuchen.portfolio.PLedgerProjectionRole role = 2;</code>
+     * <code>.name.abuchen.portfolio.PLedgerProjectionRole role = 2 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.role is deprecated.
+     *     See client.proto;l=318
      * @return This builder for chaining.
      */
-    public Builder clearRole() {
+    @java.lang.Deprecated public Builder clearRole() {
       bitField0_ = (bitField0_ & ~0x00000002);
       role_ = 0;
       onChanged();
@@ -811,17 +851,21 @@ private static final long serialVersionUID = 0L;
 
     private java.lang.Object account_ = "";
     /**
-     * <code>optional string account = 3;</code>
+     * <code>optional string account = 3 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.account is deprecated.
+     *     See client.proto;l=319
      * @return Whether the account field is set.
      */
-    public boolean hasAccount() {
+    @java.lang.Deprecated public boolean hasAccount() {
       return ((bitField0_ & 0x00000004) != 0);
     }
     /**
-     * <code>optional string account = 3;</code>
+     * <code>optional string account = 3 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.account is deprecated.
+     *     See client.proto;l=319
      * @return The account.
      */
-    public java.lang.String getAccount() {
+    @java.lang.Deprecated public java.lang.String getAccount() {
       java.lang.Object ref = account_;
       if (!(ref instanceof java.lang.String)) {
         com.google.protobuf.ByteString bs =
@@ -834,14 +878,16 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>optional string account = 3;</code>
+     * <code>optional string account = 3 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.account is deprecated.
+     *     See client.proto;l=319
      * @return The bytes for account.
      */
-    public com.google.protobuf.ByteString
+    @java.lang.Deprecated public com.google.protobuf.ByteString
         getAccountBytes() {
       java.lang.Object ref = account_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         account_ = b;
@@ -851,11 +897,13 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>optional string account = 3;</code>
+     * <code>optional string account = 3 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.account is deprecated.
+     *     See client.proto;l=319
      * @param value The account to set.
      * @return This builder for chaining.
      */
-    public Builder setAccount(
+    @java.lang.Deprecated public Builder setAccount(
         java.lang.String value) {
       if (value == null) { throw new NullPointerException(); }
       account_ = value;
@@ -864,21 +912,25 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>optional string account = 3;</code>
+     * <code>optional string account = 3 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.account is deprecated.
+     *     See client.proto;l=319
      * @return This builder for chaining.
      */
-    public Builder clearAccount() {
+    @java.lang.Deprecated public Builder clearAccount() {
       account_ = getDefaultInstance().getAccount();
       bitField0_ = (bitField0_ & ~0x00000004);
       onChanged();
       return this;
     }
     /**
-     * <code>optional string account = 3;</code>
+     * <code>optional string account = 3 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.account is deprecated.
+     *     See client.proto;l=319
      * @param value The bytes for account to set.
      * @return This builder for chaining.
      */
-    public Builder setAccountBytes(
+    @java.lang.Deprecated public Builder setAccountBytes(
         com.google.protobuf.ByteString value) {
       if (value == null) { throw new NullPointerException(); }
       checkByteStringIsUtf8(value);
@@ -890,17 +942,21 @@ private static final long serialVersionUID = 0L;
 
     private java.lang.Object portfolio_ = "";
     /**
-     * <code>optional string portfolio = 4;</code>
+     * <code>optional string portfolio = 4 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.portfolio is deprecated.
+     *     See client.proto;l=320
      * @return Whether the portfolio field is set.
      */
-    public boolean hasPortfolio() {
+    @java.lang.Deprecated public boolean hasPortfolio() {
       return ((bitField0_ & 0x00000008) != 0);
     }
     /**
-     * <code>optional string portfolio = 4;</code>
+     * <code>optional string portfolio = 4 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.portfolio is deprecated.
+     *     See client.proto;l=320
      * @return The portfolio.
      */
-    public java.lang.String getPortfolio() {
+    @java.lang.Deprecated public java.lang.String getPortfolio() {
       java.lang.Object ref = portfolio_;
       if (!(ref instanceof java.lang.String)) {
         com.google.protobuf.ByteString bs =
@@ -913,14 +969,16 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>optional string portfolio = 4;</code>
+     * <code>optional string portfolio = 4 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.portfolio is deprecated.
+     *     See client.proto;l=320
      * @return The bytes for portfolio.
      */
-    public com.google.protobuf.ByteString
+    @java.lang.Deprecated public com.google.protobuf.ByteString
         getPortfolioBytes() {
       java.lang.Object ref = portfolio_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         portfolio_ = b;
@@ -930,11 +988,13 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>optional string portfolio = 4;</code>
+     * <code>optional string portfolio = 4 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.portfolio is deprecated.
+     *     See client.proto;l=320
      * @param value The portfolio to set.
      * @return This builder for chaining.
      */
-    public Builder setPortfolio(
+    @java.lang.Deprecated public Builder setPortfolio(
         java.lang.String value) {
       if (value == null) { throw new NullPointerException(); }
       portfolio_ = value;
@@ -943,21 +1003,25 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>optional string portfolio = 4;</code>
+     * <code>optional string portfolio = 4 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.portfolio is deprecated.
+     *     See client.proto;l=320
      * @return This builder for chaining.
      */
-    public Builder clearPortfolio() {
+    @java.lang.Deprecated public Builder clearPortfolio() {
       portfolio_ = getDefaultInstance().getPortfolio();
       bitField0_ = (bitField0_ & ~0x00000008);
       onChanged();
       return this;
     }
     /**
-     * <code>optional string portfolio = 4;</code>
+     * <code>optional string portfolio = 4 [deprecated = true];</code>
+     * @deprecated name.abuchen.portfolio.PLedgerProjectionRef.portfolio is deprecated.
+     *     See client.proto;l=320
      * @param value The bytes for portfolio to set.
      * @return This builder for chaining.
      */
-    public Builder setPortfolioBytes(
+    @java.lang.Deprecated public Builder setPortfolioBytes(
         com.google.protobuf.ByteString value) {
       if (value == null) { throw new NullPointerException(); }
       checkByteStringIsUtf8(value);
@@ -980,9 +1044,9 @@ private static final long serialVersionUID = 0L;
         name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership, name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership.Builder, name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipOrBuilder> membershipsBuilder_;
 
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5 [deprecated = true];</code>
      */
-    public java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership> getMembershipsList() {
+    @java.lang.Deprecated public java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership> getMembershipsList() {
       if (membershipsBuilder_ == null) {
         return java.util.Collections.unmodifiableList(memberships_);
       } else {
@@ -990,9 +1054,9 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5 [deprecated = true];</code>
      */
-    public int getMembershipsCount() {
+    @java.lang.Deprecated public int getMembershipsCount() {
       if (membershipsBuilder_ == null) {
         return memberships_.size();
       } else {
@@ -1000,9 +1064,9 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5 [deprecated = true];</code>
      */
-    public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership getMemberships(int index) {
+    @java.lang.Deprecated public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership getMemberships(int index) {
       if (membershipsBuilder_ == null) {
         return memberships_.get(index);
       } else {
@@ -1010,9 +1074,9 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5 [deprecated = true];</code>
      */
-    public Builder setMemberships(
+    @java.lang.Deprecated public Builder setMemberships(
         int index, name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership value) {
       if (membershipsBuilder_ == null) {
         if (value == null) {
@@ -1027,9 +1091,9 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5 [deprecated = true];</code>
      */
-    public Builder setMemberships(
+    @java.lang.Deprecated public Builder setMemberships(
         int index, name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership.Builder builderForValue) {
       if (membershipsBuilder_ == null) {
         ensureMembershipsIsMutable();
@@ -1041,9 +1105,9 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5 [deprecated = true];</code>
      */
-    public Builder addMemberships(name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership value) {
+    @java.lang.Deprecated public Builder addMemberships(name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership value) {
       if (membershipsBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -1057,9 +1121,9 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5 [deprecated = true];</code>
      */
-    public Builder addMemberships(
+    @java.lang.Deprecated public Builder addMemberships(
         int index, name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership value) {
       if (membershipsBuilder_ == null) {
         if (value == null) {
@@ -1074,9 +1138,9 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5 [deprecated = true];</code>
      */
-    public Builder addMemberships(
+    @java.lang.Deprecated public Builder addMemberships(
         name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership.Builder builderForValue) {
       if (membershipsBuilder_ == null) {
         ensureMembershipsIsMutable();
@@ -1088,9 +1152,9 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5 [deprecated = true];</code>
      */
-    public Builder addMemberships(
+    @java.lang.Deprecated public Builder addMemberships(
         int index, name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership.Builder builderForValue) {
       if (membershipsBuilder_ == null) {
         ensureMembershipsIsMutable();
@@ -1102,9 +1166,9 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5 [deprecated = true];</code>
      */
-    public Builder addAllMemberships(
+    @java.lang.Deprecated public Builder addAllMemberships(
         java.lang.Iterable<? extends name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership> values) {
       if (membershipsBuilder_ == null) {
         ensureMembershipsIsMutable();
@@ -1117,9 +1181,9 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5 [deprecated = true];</code>
      */
-    public Builder clearMemberships() {
+    @java.lang.Deprecated public Builder clearMemberships() {
       if (membershipsBuilder_ == null) {
         memberships_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000010);
@@ -1130,9 +1194,9 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5 [deprecated = true];</code>
      */
-    public Builder removeMemberships(int index) {
+    @java.lang.Deprecated public Builder removeMemberships(int index) {
       if (membershipsBuilder_ == null) {
         ensureMembershipsIsMutable();
         memberships_.remove(index);
@@ -1143,16 +1207,16 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5 [deprecated = true];</code>
      */
-    public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership.Builder getMembershipsBuilder(
+    @java.lang.Deprecated public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership.Builder getMembershipsBuilder(
         int index) {
       return getMembershipsFieldBuilder().getBuilder(index);
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5 [deprecated = true];</code>
      */
-    public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipOrBuilder getMembershipsOrBuilder(
+    @java.lang.Deprecated public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipOrBuilder getMembershipsOrBuilder(
         int index) {
       if (membershipsBuilder_ == null) {
         return memberships_.get(index);  } else {
@@ -1160,9 +1224,9 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5 [deprecated = true];</code>
      */
-    public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipOrBuilder> 
+    @java.lang.Deprecated public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipOrBuilder>
          getMembershipsOrBuilderList() {
       if (membershipsBuilder_ != null) {
         return membershipsBuilder_.getMessageOrBuilderList();
@@ -1171,29 +1235,29 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5 [deprecated = true];</code>
      */
-    public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership.Builder addMembershipsBuilder() {
+    @java.lang.Deprecated public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership.Builder addMembershipsBuilder() {
       return getMembershipsFieldBuilder().addBuilder(
           name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership.getDefaultInstance());
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5 [deprecated = true];</code>
      */
-    public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership.Builder addMembershipsBuilder(
+    @java.lang.Deprecated public name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership.Builder addMembershipsBuilder(
         int index) {
       return getMembershipsFieldBuilder().addBuilder(
           index, name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership.getDefaultInstance());
     }
     /**
-     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5;</code>
+     * <code>repeated .name.abuchen.portfolio.PLedgerProjectionMembership memberships = 5 [deprecated = true];</code>
      */
-    public java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership.Builder> 
+    @java.lang.Deprecated public java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership.Builder>
          getMembershipsBuilderList() {
       return getMembershipsFieldBuilder().getBuilderList();
     }
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership, name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership.Builder, name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipOrBuilder> 
+        name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership, name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership.Builder, name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipOrBuilder>
         getMembershipsFieldBuilder() {
       if (membershipsBuilder_ == null) {
         membershipsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<

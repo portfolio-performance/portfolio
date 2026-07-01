@@ -8,15 +8,19 @@ public interface PLedgerEntryOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>string uuid = 1;</code>
+   * <code>string uuid = 1 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerEntry.uuid is deprecated.
+   *     See client.proto;l=278
    * @return The uuid.
    */
-  java.lang.String getUuid();
+  @java.lang.Deprecated java.lang.String getUuid();
   /**
-   * <code>string uuid = 1;</code>
+   * <code>string uuid = 1 [deprecated = true];</code>
+   * @deprecated name.abuchen.portfolio.PLedgerEntry.uuid is deprecated.
+   *     See client.proto;l=278
    * @return The bytes for uuid.
    */
-  com.google.protobuf.ByteString
+  @java.lang.Deprecated com.google.protobuf.ByteString
       getUuidBytes();
 
   /**
@@ -86,7 +90,7 @@ public interface PLedgerEntryOrBuilder extends
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerPosting postings = 7;</code>
    */
-  java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerPosting> 
+  java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerPosting>
       getPostingsList();
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerPosting postings = 7;</code>
@@ -99,7 +103,7 @@ public interface PLedgerEntryOrBuilder extends
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerPosting postings = 7;</code>
    */
-  java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerPostingOrBuilder> 
+  java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerPostingOrBuilder>
       getPostingsOrBuilderList();
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerPosting postings = 7;</code>
@@ -108,27 +112,27 @@ public interface PLedgerEntryOrBuilder extends
       int index);
 
   /**
-   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
+   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8 [deprecated = true];</code>
    */
-  java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef> 
+  @java.lang.Deprecated java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef>
       getProjectionRefsList();
   /**
-   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
+   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8 [deprecated = true];</code>
    */
-  name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef getProjectionRefs(int index);
+  @java.lang.Deprecated name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef getProjectionRefs(int index);
   /**
-   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
+   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8 [deprecated = true];</code>
    */
-  int getProjectionRefsCount();
+  @java.lang.Deprecated int getProjectionRefsCount();
   /**
-   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
+   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8 [deprecated = true];</code>
    */
-  java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRefOrBuilder> 
+  @java.lang.Deprecated java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRefOrBuilder>
       getProjectionRefsOrBuilderList();
   /**
-   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8;</code>
+   * <code>repeated .name.abuchen.portfolio.PLedgerProjectionRef projectionRefs = 8 [deprecated = true];</code>
    */
-  name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRefOrBuilder getProjectionRefsOrBuilder(
+  @java.lang.Deprecated name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRefOrBuilder getProjectionRefsOrBuilder(
       int index);
 
   /**
@@ -145,7 +149,7 @@ public interface PLedgerEntryOrBuilder extends
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerParameter parameters = 10;</code>
    */
-  java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerParameter> 
+  java.util.List<name.abuchen.portfolio.model.proto.v1.PLedgerParameter>
       getParametersList();
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerParameter parameters = 10;</code>
@@ -158,7 +162,7 @@ public interface PLedgerEntryOrBuilder extends
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerParameter parameters = 10;</code>
    */
-  java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerParameterOrBuilder> 
+  java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PLedgerParameterOrBuilder>
       getParametersOrBuilderList();
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerParameter parameters = 10;</code>

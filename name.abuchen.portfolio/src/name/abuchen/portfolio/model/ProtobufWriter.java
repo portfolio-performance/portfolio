@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.google.protobuf.Any;
@@ -42,11 +43,13 @@ import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerParameter;
 import name.abuchen.portfolio.model.ledger.LedgerParameter.ValueKind;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
+import name.abuchen.portfolio.model.ledger.LedgerPostingDirection;
+import name.abuchen.portfolio.model.ledger.LedgerPostingSemanticRole;
+import name.abuchen.portfolio.model.ledger.LedgerPostingUnitRole;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator;
-import name.abuchen.portfolio.model.ledger.ProjectionMembership;
-import name.abuchen.portfolio.model.ledger.ProjectionMembershipRole;
+import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerParameterType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
@@ -71,9 +74,6 @@ import name.abuchen.portfolio.model.proto.v1.PLedgerEntry;
 import name.abuchen.portfolio.model.proto.v1.PLedgerParameter;
 import name.abuchen.portfolio.model.proto.v1.PLedgerParameterValueKind;
 import name.abuchen.portfolio.model.proto.v1.PLedgerPosting;
-import name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembership;
-import name.abuchen.portfolio.model.proto.v1.PLedgerProjectionMembershipRole;
-import name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef;
 import name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRole;
 import name.abuchen.portfolio.model.proto.v1.PMap;
 import name.abuchen.portfolio.model.proto.v1.PPortfolio;
@@ -128,6 +128,7 @@ import name.abuchen.portfolio.money.Money;
     }
 
     private static final byte[] SIGNATURE = new byte[] { 'P', 'P', 'P', 'B', 'V', '1' };
+    private static final String LEDGER_COMPATIBILITY_SHADOW_PREFIX = "ledger-shadow:"; //$NON-NLS-1$
 
     @Override
     public Client load(InputStream input) throws IOException
@@ -168,7 +169,7 @@ import name.abuchen.portfolio.money.Money;
             ledgerProjectionUUIDs = ledgerProjectionUUIDs(client.getLedger());
         }
 
-        loadTransactions(newClient, lookup, ledgerProjectionUUIDs);
+        loadTransactions(newClient, lookup, ledgerProjectionUUIDs, hasLedgerTruth);
 
         client.getProperties().putAll(newClient.getPropertiesMap());
         loadTaxonomies(newClient, client, lookup);
@@ -354,11 +355,12 @@ import name.abuchen.portfolio.money.Money;
         }
     }
 
-    private void loadTransactions(PClient newClient, Lookup lookup, Set<String> ledgerProjectionUUIDs)
+    private void loadTransactions(PClient newClient, Lookup lookup, Set<String> ledgerProjectionUUIDs,
+                    boolean hasLedgerTruth)
     {
         for (PTransaction newTransaction : newClient.getTransactionsList())
         {
-            if (isLedgerCompatibilityShadow(newTransaction, ledgerProjectionUUIDs))
+            if (isLedgerCompatibilityShadow(newTransaction, ledgerProjectionUUIDs, hasLedgerTruth))
                 continue;
 
             PTransaction.Type type = newTransaction.getType();
@@ -598,10 +600,19 @@ import name.abuchen.portfolio.money.Money;
         }
     }
 
-    private boolean isLedgerCompatibilityShadow(PTransaction newTransaction, Set<String> ledgerProjectionUUIDs)
+    private boolean isLedgerCompatibilityShadow(PTransaction newTransaction, Set<String> ledgerProjectionUUIDs,
+                    boolean hasLedgerTruth)
     {
-        return ledgerProjectionUUIDs.contains(newTransaction.getUuid())
+        return hasLedgerTruth && (isLedgerCompatibilityShadowUUID(newTransaction.getUuid())
+                        || (newTransaction.hasOtherUuid()
+                                        && isLedgerCompatibilityShadowUUID(newTransaction.getOtherUuid())))
+                        || ledgerProjectionUUIDs.contains(newTransaction.getUuid())
                         || (newTransaction.hasOtherUuid() && ledgerProjectionUUIDs.contains(newTransaction.getOtherUuid()));
+    }
+
+    private boolean isLedgerCompatibilityShadowUUID(String uuid)
+    {
+        return uuid != null && uuid.startsWith(LEDGER_COMPATIBILITY_SHADOW_PREFIX);
     }
 
     private void loadCommonTransaction(PTransaction newTransaction, Transaction t, Lookup lookup,
@@ -684,7 +695,7 @@ import name.abuchen.portfolio.money.Money;
     {
         for (PLedgerEntry newEntry : newLedger.getEntriesList())
         {
-            LedgerEntry entry = LedgerModelLoadSupport.newEntry(newEntry.getUuid(),
+            LedgerEntry entry = LedgerModelLoadSupport.newEntry(UUID.randomUUID().toString(),
                             LedgerEntryType.fromProtobufId(newEntry.getTypeId()),
                             fromTimestamp(newEntry.getDateTime()));
 
@@ -710,9 +721,6 @@ import name.abuchen.portfolio.money.Money;
             for (PLedgerPosting newPosting : newEntry.getPostingsList())
                 LedgerModelLoadSupport.addPosting(entry, loadLedgerPosting(newPosting, lookup));
 
-            for (PLedgerProjectionRef newProjectionRef : newEntry.getProjectionRefsList())
-                LedgerModelLoadSupport.addProjectionRef(entry, loadLedgerProjectionRef(newProjectionRef, lookup));
-
             if (newEntry.hasUpdatedAt())
                 LedgerModelLoadSupport.setEntryUpdatedAt(entry, fromUpdatedAtTimestamp(newEntry.getUpdatedAt()));
 
@@ -722,7 +730,7 @@ import name.abuchen.portfolio.money.Money;
 
     private LedgerPosting loadLedgerPosting(PLedgerPosting newPosting, Lookup lookup)
     {
-        LedgerPosting posting = LedgerModelLoadSupport.newPosting(newPosting.getUuid(),
+        LedgerPosting posting = LedgerModelLoadSupport.newPosting(UUID.randomUUID().toString(),
                         LedgerPostingType.fromCode(newPosting.getTypeCode()));
 
         LedgerModelLoadSupport.setPostingAmount(posting, newPosting.getAmount());
@@ -742,6 +750,18 @@ import name.abuchen.portfolio.money.Money;
             LedgerModelLoadSupport.setPostingAccount(posting, lookup.getAccount(newPosting.getAccount()));
         if (newPosting.hasPortfolio())
             LedgerModelLoadSupport.setPostingPortfolio(posting, lookup.getPortfolio(newPosting.getPortfolio()));
+        if (newPosting.hasSemanticRole())
+            posting.setSemanticRole(LedgerPostingSemanticRole.valueOf(newPosting.getSemanticRole()));
+        if (newPosting.hasDirection())
+            posting.setDirection(LedgerPostingDirection.valueOf(newPosting.getDirection()));
+        if (newPosting.hasCorporateActionLeg())
+            posting.setCorporateActionLeg(corporateActionLeg(newPosting.getCorporateActionLeg()));
+        if (newPosting.hasUnitRole())
+            posting.setUnitRole(LedgerPostingUnitRole.valueOf(newPosting.getUnitRole()));
+        if (newPosting.hasGroupKey())
+            posting.setGroupKey(newPosting.getGroupKey());
+        if (newPosting.hasLocalKey())
+            posting.setLocalKey(newPosting.getLocalKey());
 
         for (PLedgerParameter newParameter : newPosting.getParametersList())
             LedgerModelLoadSupport.addPostingParameter(posting, loadLedgerParameter(newParameter, lookup));
@@ -749,23 +769,13 @@ import name.abuchen.portfolio.money.Money;
         return posting;
     }
 
-    private LedgerProjectionRef loadLedgerProjectionRef(PLedgerProjectionRef newProjectionRef, Lookup lookup)
+    private CorporateActionLeg corporateActionLeg(String code)
     {
-        LedgerProjectionRef projectionRef = LedgerModelLoadSupport.newProjectionRef(newProjectionRef.getUuid(),
-                        fromProto(newProjectionRef.getRole()));
+        for (var leg : CorporateActionLeg.values())
+            if (leg.getCode().equals(code))
+                return leg;
 
-        if (newProjectionRef.hasAccount())
-            LedgerModelLoadSupport.setProjectionRefAccount(projectionRef,
-                            lookup.getAccount(newProjectionRef.getAccount()));
-        if (newProjectionRef.hasPortfolio())
-            LedgerModelLoadSupport.setProjectionRefPortfolio(projectionRef,
-                            lookup.getPortfolio(newProjectionRef.getPortfolio()));
-
-        for (PLedgerProjectionMembership newMembership : newProjectionRef.getMembershipsList())
-            LedgerModelLoadSupport.addProjectionRefMembership(projectionRef, newMembership.getPostingUUID(),
-                            fromProto(newMembership.getRole()));
-
-        return projectionRef;
+        return CorporateActionLeg.valueOf(code);
     }
 
     private LedgerParameter<?> loadLedgerParameter(PLedgerParameter newParameter, Lookup lookup)
@@ -1317,7 +1327,6 @@ import name.abuchen.portfolio.money.Money;
     {
         PLedgerEntry.Builder newEntry = PLedgerEntry.newBuilder();
 
-        newEntry.setUuid(entry.getUUID());
         newEntry.setTypeId(entry.getType().getProtobufId());
         newEntry.setDateTime(asTimestamp(entry.getDateTime()));
 
@@ -1342,9 +1351,6 @@ import name.abuchen.portfolio.money.Money;
         for (LedgerPosting posting : entry.getPostings())
             newEntry.addPostings(saveLedgerPosting(posting));
 
-        for (LedgerProjectionRef projectionRef : entry.getProjectionRefs())
-            newEntry.addProjectionRefs(saveLedgerProjectionRef(projectionRef));
-
         return newEntry.build();
     }
 
@@ -1352,7 +1358,6 @@ import name.abuchen.portfolio.money.Money;
     {
         PLedgerPosting.Builder newPosting = PLedgerPosting.newBuilder();
 
-        newPosting.setUuid(posting.getUUID());
         newPosting.setTypeCode(posting.getType().getCode());
         newPosting.setAmount(posting.getAmount());
 
@@ -1371,37 +1376,23 @@ import name.abuchen.portfolio.money.Money;
             newPosting.setAccount(posting.getAccount().getUUID());
         if (posting.getPortfolio() != null)
             newPosting.setPortfolio(posting.getPortfolio().getUUID());
+        if (posting.getSemanticRole() != null)
+            newPosting.setSemanticRole(posting.getSemanticRole().name());
+        if (posting.getDirection() != null)
+            newPosting.setDirection(posting.getDirection().name());
+        if (posting.getCorporateActionLeg() != null)
+            newPosting.setCorporateActionLeg(posting.getCorporateActionLeg().getCode());
+        if (posting.getUnitRole() != null)
+            newPosting.setUnitRole(posting.getUnitRole().name());
+        if (posting.getGroupKey() != null)
+            newPosting.setGroupKey(posting.getGroupKey());
+        if (posting.getLocalKey() != null)
+            newPosting.setLocalKey(posting.getLocalKey());
 
         for (LedgerParameter<?> parameter : posting.getParameters())
             newPosting.addParameters(saveLedgerParameter(parameter));
 
         return newPosting.build();
-    }
-
-    private PLedgerProjectionRef saveLedgerProjectionRef(LedgerProjectionRef projectionRef)
-    {
-        PLedgerProjectionRef.Builder newProjectionRef = PLedgerProjectionRef.newBuilder();
-
-        newProjectionRef.setUuid(projectionRef.getUUID());
-        newProjectionRef.setRole(toProto(projectionRef.getRole()));
-        if (projectionRef.getAccount() != null)
-            newProjectionRef.setAccount(projectionRef.getAccount().getUUID());
-        if (projectionRef.getPortfolio() != null)
-            newProjectionRef.setPortfolio(projectionRef.getPortfolio().getUUID());
-        for (ProjectionMembership membership : projectionRef.getMemberships())
-            newProjectionRef.addMemberships(saveLedgerProjectionMembership(membership));
-
-        return newProjectionRef.build();
-    }
-
-    private PLedgerProjectionMembership saveLedgerProjectionMembership(ProjectionMembership membership)
-    {
-        PLedgerProjectionMembership.Builder newMembership = PLedgerProjectionMembership.newBuilder();
-
-        newMembership.setPostingUUID(membership.getPostingUUID());
-        newMembership.setRole(toProto(membership.getRole()));
-
-        return newMembership.build();
     }
 
     private PLedgerParameter saveLedgerParameter(LedgerParameter<?> parameter)
@@ -1518,35 +1509,50 @@ import name.abuchen.portfolio.money.Money;
 
     private boolean shouldSaveLegacyTransaction(Transaction transaction, Set<String> ledgerProjectionUUIDs)
     {
-        return !(transaction instanceof LedgerBackedTransaction) && !ledgerProjectionUUIDs.contains(transaction.getUUID());
+        return !(transaction instanceof LedgerBackedTransaction) //
+                        && !isLedgerCompatibilityShadowUUID(transaction.getUUID()) //
+                        && !ledgerProjectionUUIDs.contains(transaction.getUUID());
+    }
+
+    private String protobufTransactionUUID(Transaction transaction)
+    {
+        if (transaction instanceof LedgerBackedTransaction ledgerBackedTransaction)
+        {
+            var projectionRef = ledgerBackedTransaction.getLedgerProjectionRef();
+
+            return LEDGER_COMPATIBILITY_SHADOW_PREFIX + ledgerBackedTransaction.getLedgerEntry().getUUID()
+                            + ":" + projectionRef.getRole(); //$NON-NLS-1$
+        }
+
+        return transaction.getUUID();
     }
 
     private void addTransaction(PClient.Builder newClient, Portfolio portfolio, PortfolioTransaction t)
     {
         PTransaction.Builder newTransaction = PTransaction.newBuilder();
         newTransaction.setPortfolio(portfolio.getUUID());
-        newTransaction.setUuid(t.getUUID());
+        newTransaction.setUuid(protobufTransactionUUID(t));
 
         switch (t.getType())
         {
             case BUY:
                 newTransaction.setTypeValue(PTransaction.Type.PURCHASE_VALUE);
                 newTransaction.setAccount(t.getCrossEntry().getCrossOwner(t).getUUID());
-                newTransaction.setOtherUuid(t.getCrossEntry().getCrossTransaction(t).getUUID());
+                newTransaction.setOtherUuid(protobufTransactionUUID(t.getCrossEntry().getCrossTransaction(t)));
                 newTransaction.setOtherUpdatedAt(
                                 asUpdatedAtTimestamp(t.getCrossEntry().getCrossTransaction(t).getUpdatedAt()));
                 break;
             case SELL:
                 newTransaction.setTypeValue(PTransaction.Type.SALE_VALUE);
                 newTransaction.setAccount(t.getCrossEntry().getCrossOwner(t).getUUID());
-                newTransaction.setOtherUuid(t.getCrossEntry().getCrossTransaction(t).getUUID());
+                newTransaction.setOtherUuid(protobufTransactionUUID(t.getCrossEntry().getCrossTransaction(t)));
                 newTransaction.setOtherUpdatedAt(
                                 asUpdatedAtTimestamp(t.getCrossEntry().getCrossTransaction(t).getUpdatedAt()));
                 break;
             case TRANSFER_OUT:
                 newTransaction.setTypeValue(PTransaction.Type.SECURITY_TRANSFER_VALUE);
                 newTransaction.setOtherPortfolio(t.getCrossEntry().getCrossOwner(t).getUUID());
-                newTransaction.setOtherUuid(t.getCrossEntry().getCrossTransaction(t).getUUID());
+                newTransaction.setOtherUuid(protobufTransactionUUID(t.getCrossEntry().getCrossTransaction(t)));
                 newTransaction.setOtherUpdatedAt(
                                 asUpdatedAtTimestamp(t.getCrossEntry().getCrossTransaction(t).getUpdatedAt()));
                 break;
@@ -1570,7 +1576,7 @@ import name.abuchen.portfolio.money.Money;
     {
         PTransaction.Builder newTransaction = PTransaction.newBuilder();
         newTransaction.setAccount(account.getUUID());
-        newTransaction.setUuid(t.getUUID());
+        newTransaction.setUuid(protobufTransactionUUID(t));
 
         switch (t.getType())
         {
@@ -1606,7 +1612,7 @@ import name.abuchen.portfolio.money.Money;
             case TRANSFER_OUT:
                 newTransaction.setTypeValue(PTransaction.Type.CASH_TRANSFER_VALUE);
                 newTransaction.setOtherAccount(t.getCrossEntry().getCrossOwner(t).getUUID());
-                newTransaction.setOtherUuid(t.getCrossEntry().getCrossTransaction(t).getUUID());
+                newTransaction.setOtherUuid(protobufTransactionUUID(t.getCrossEntry().getCrossTransaction(t)));
                 newTransaction.setOtherUpdatedAt(
                                 asUpdatedAtTimestamp(t.getCrossEntry().getCrossTransaction(t).getUpdatedAt()));
                 break;
@@ -1906,39 +1912,6 @@ import name.abuchen.portfolio.money.Money;
         }
     }
 
-    private PLedgerProjectionRole toProto(LedgerProjectionRole role)
-    {
-        switch (role)
-        {
-            case ACCOUNT:
-                return PLedgerProjectionRole.LEDGER_PROJECTION_ROLE_ACCOUNT;
-            case PORTFOLIO:
-                return PLedgerProjectionRole.LEDGER_PROJECTION_ROLE_PORTFOLIO;
-            case SOURCE_ACCOUNT:
-                return PLedgerProjectionRole.LEDGER_PROJECTION_ROLE_SOURCE_ACCOUNT;
-            case TARGET_ACCOUNT:
-                return PLedgerProjectionRole.LEDGER_PROJECTION_ROLE_TARGET_ACCOUNT;
-            case SOURCE_PORTFOLIO:
-                return PLedgerProjectionRole.LEDGER_PROJECTION_ROLE_SOURCE_PORTFOLIO;
-            case TARGET_PORTFOLIO:
-                return PLedgerProjectionRole.LEDGER_PROJECTION_ROLE_TARGET_PORTFOLIO;
-            case DELIVERY:
-                return PLedgerProjectionRole.LEDGER_PROJECTION_ROLE_DELIVERY;
-            case DELIVERY_INBOUND:
-                return PLedgerProjectionRole.LEDGER_PROJECTION_ROLE_DELIVERY_INBOUND;
-            case DELIVERY_OUTBOUND:
-                return PLedgerProjectionRole.LEDGER_PROJECTION_ROLE_DELIVERY_OUTBOUND;
-            case CASH_COMPENSATION:
-                return PLedgerProjectionRole.LEDGER_PROJECTION_ROLE_CASH_COMPENSATION;
-            case OLD_SECURITY_LEG:
-                return PLedgerProjectionRole.LEDGER_PROJECTION_ROLE_OLD_SECURITY_LEG;
-            case NEW_SECURITY_LEG:
-                return PLedgerProjectionRole.LEDGER_PROJECTION_ROLE_NEW_SECURITY_LEG;
-            default:
-                throw new UnsupportedOperationException(role.toString());
-        }
-    }
-
     private LedgerProjectionRole fromProto(PLedgerProjectionRole role)
     {
         switch (role)
@@ -1968,50 +1941,6 @@ import name.abuchen.portfolio.money.Money;
             case LEDGER_PROJECTION_ROLE_NEW_SECURITY_LEG:
                 return LedgerProjectionRole.NEW_SECURITY_LEG;
             case LEDGER_PROJECTION_ROLE_UNSPECIFIED:
-            case UNRECOGNIZED:
-            default:
-                throw new UnsupportedOperationException(role.toString());
-        }
-    }
-
-    private PLedgerProjectionMembershipRole toProto(ProjectionMembershipRole role)
-    {
-        switch (role)
-        {
-            case PRIMARY:
-                return PLedgerProjectionMembershipRole.LEDGER_PROJECTION_MEMBERSHIP_ROLE_PRIMARY;
-            case GROUP_ANCHOR:
-                return PLedgerProjectionMembershipRole.LEDGER_PROJECTION_MEMBERSHIP_ROLE_GROUP_ANCHOR;
-            case FEE_UNIT:
-                return PLedgerProjectionMembershipRole.LEDGER_PROJECTION_MEMBERSHIP_ROLE_FEE_UNIT;
-            case TAX_UNIT:
-                return PLedgerProjectionMembershipRole.LEDGER_PROJECTION_MEMBERSHIP_ROLE_TAX_UNIT;
-            case GROSS_VALUE_UNIT:
-                return PLedgerProjectionMembershipRole.LEDGER_PROJECTION_MEMBERSHIP_ROLE_GROSS_VALUE_UNIT;
-            case FOREX_CONTEXT:
-                return PLedgerProjectionMembershipRole.LEDGER_PROJECTION_MEMBERSHIP_ROLE_FOREX_CONTEXT;
-            default:
-                throw new UnsupportedOperationException(role.toString());
-        }
-    }
-
-    private ProjectionMembershipRole fromProto(PLedgerProjectionMembershipRole role)
-    {
-        switch (role)
-        {
-            case LEDGER_PROJECTION_MEMBERSHIP_ROLE_PRIMARY:
-                return ProjectionMembershipRole.PRIMARY;
-            case LEDGER_PROJECTION_MEMBERSHIP_ROLE_GROUP_ANCHOR:
-                return ProjectionMembershipRole.GROUP_ANCHOR;
-            case LEDGER_PROJECTION_MEMBERSHIP_ROLE_FEE_UNIT:
-                return ProjectionMembershipRole.FEE_UNIT;
-            case LEDGER_PROJECTION_MEMBERSHIP_ROLE_TAX_UNIT:
-                return ProjectionMembershipRole.TAX_UNIT;
-            case LEDGER_PROJECTION_MEMBERSHIP_ROLE_GROSS_VALUE_UNIT:
-                return ProjectionMembershipRole.GROSS_VALUE_UNIT;
-            case LEDGER_PROJECTION_MEMBERSHIP_ROLE_FOREX_CONTEXT:
-                return ProjectionMembershipRole.FOREX_CONTEXT;
-            case LEDGER_PROJECTION_MEMBERSHIP_ROLE_UNSPECIFIED:
             case UNRECOGNIZED:
             default:
                 throw new UnsupportedOperationException(role.toString());
