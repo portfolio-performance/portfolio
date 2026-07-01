@@ -45,6 +45,11 @@ public class PreferencesInitializer extends AbstractPreferenceInitializer
 
         // Value color scheme
         store.setDefault(UIConstants.Preferences.VALUE_COLOR_SCHEME, ValueColorScheme.STANDARD_SCHEME);
+
+        // MCP
+        store.setDefault(UIConstants.Preferences.MCP_ENABLED, false);
+        store.setDefault(UIConstants.Preferences.MCP_PORT, MCPPreferencePage.DEFAULT_MCP_PORT);
+        store.setDefault(UIConstants.Preferences.MCP_AUTOSAVE, false);
     }
 
     public static int compareOSVersion(String version)

@@ -33,6 +33,7 @@ import name.abuchen.portfolio.ui.preferences.GeneralPreferencePage;
 import name.abuchen.portfolio.ui.preferences.HistoricalPricesPreferencePage;
 import name.abuchen.portfolio.ui.preferences.LanguagePreferencePage;
 import name.abuchen.portfolio.ui.preferences.LeewayPreferencePage;
+import name.abuchen.portfolio.ui.preferences.MCPPreferencePage;
 import name.abuchen.portfolio.ui.preferences.MyDividends24PreferencePage;
 import name.abuchen.portfolio.ui.preferences.PPIDPreferencePage;
 import name.abuchen.portfolio.ui.preferences.PresentationPreferencePage;
@@ -97,6 +98,7 @@ public class OpenPreferenceDialogHandler
         pm.addTo("api", new PreferenceNode("quandl", new QuandlPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
 
         pm.addToRoot(new PreferenceNode("proxy", new ProxyPreferencePage())); //$NON-NLS-1$
+        pm.addToRoot(new PreferenceNode("mcp", new MCPPreferencePage())); //$NON-NLS-1$
         pm.addToRoot(new PreferenceNode("experiments", new ExperimentsPreferencePage())); //$NON-NLS-1$
         if (UpdateHelper.isInAppUpdateEnabled())
             pm.addToRoot(new PreferenceNode("updates", new UpdatePreferencePage())); //$NON-NLS-1$

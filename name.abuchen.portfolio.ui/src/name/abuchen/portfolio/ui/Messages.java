@@ -1251,6 +1251,7 @@ public class Messages extends NLS
     public static String PrefDescriptionPortfolioPerformanceID;
     public static String PrefDescriptionPortfolioReport;
     public static String PrefDescriptionProxy;
+    public static String PrefDescriptionMCP;
     public static String PrefDescriptionQuandl;
     public static String PrefDescriptionTwelveData;
     public static String PrefDivvyDiaryAPIKey;
@@ -1263,6 +1264,10 @@ public class Messages extends NLS
     public static String PrefLabelNote;
     public static String PrefLabelProxyHost;
     public static String PrefLabelProxyPort;
+    public static String PrefLabelMCPAutosave;
+    public static String PrefLabelMCPConnectionConfig;
+    public static String PrefLabelMCPEnabled;
+    public static String PrefLabelMCPPort;
     public static String PrefLabelQuoteDigits;
     public static String PrefLabelSharesDigits;
     public static String PrefLabelUseIndirectQuotation;
@@ -1300,6 +1305,7 @@ public class Messages extends NLS
     public static String PrefTitlePortfolioReport;
     public static String PrefTitlePresentation;
     public static String PrefTitleProxy;
+    public static String PrefTitleMCP;
     public static String PrefTitleQuandl;
     public static String PrefTitleTwelveData;
     public static String PrefTwelveDataAPIKey;

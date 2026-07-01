@@ -305,6 +305,21 @@ public interface UIConstants
          */
         String VALUE_COLOR_SCHEME = "VALUE_COLOR_SCHEME"; //$NON-NLS-1$
 
+        /**
+         * Preference key whether the local MCP server is enabled.
+         */
+        String MCP_ENABLED = "MCP_ENABLED"; //$NON-NLS-1$
+
+        /**
+         * Preference key for the local MCP server port.
+         */
+        String MCP_PORT = "MCP_PORT"; //$NON-NLS-1$
+
+        /**
+         * Preference key whether MCP mutations are saved to disk automatically.
+         */
+        String MCP_AUTOSAVE = "MCP_AUTOSAVE"; //$NON-NLS-1$
+
     }
 
     interface Theme // NOSONAR
