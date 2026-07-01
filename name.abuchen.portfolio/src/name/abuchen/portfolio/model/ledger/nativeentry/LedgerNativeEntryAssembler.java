@@ -18,6 +18,9 @@ import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerMutationContext;
 import name.abuchen.portfolio.model.ledger.LedgerParameter;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
+import name.abuchen.portfolio.model.ledger.LedgerPostingDirection;
+import name.abuchen.portfolio.model.ledger.LedgerPostingSemanticRole;
+import name.abuchen.portfolio.model.ledger.LedgerPostingUnitRole;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator;
@@ -239,6 +242,8 @@ public final class LedgerNativeEntryAssembler
             posting.setSecurity(leg.getSecurity());
             posting.setShares(leg.getShares());
             applyMoney(posting, leg.getAmount());
+            markPrimary(posting, semanticRole(leg.getPostingType()), direction(leg.getProjectionRole()),
+                            corporateActionLeg(leg.getLegCode()), leg.getProjectionRole());
 
             if (leg.getLegCode() != null)
                 addPostingParameter(posting, leg.getPostingType(),
@@ -261,6 +266,8 @@ public final class LedgerNativeEntryAssembler
             posting.setType(LedgerPostingType.CASH_COMPENSATION);
             posting.setAccount(compensation.getAccount());
             applyMoney(posting, compensation.getAmount());
+            markPrimary(posting, LedgerPostingSemanticRole.CASH_COMPENSATION, LedgerPostingDirection.NEUTRAL,
+                            CorporateActionLeg.CASH_COMPENSATION, LedgerProjectionRole.CASH_COMPENSATION);
 
             if (compensation.getAccount() != null)
                 addPostingParameter(posting, LedgerPostingType.CASH_COMPENSATION,
@@ -299,6 +306,8 @@ public final class LedgerNativeEntryAssembler
             posting.setType(LedgerPostingType.FEE);
             posting.setAccount(fee.getAccount());
             applyMoney(posting, fee.getAmount());
+            markUnit(posting, LedgerPostingSemanticRole.FEE, LedgerPostingUnitRole.FEE,
+                            LedgerProjectionRole.CASH_COMPENSATION.name());
             addPostingParameter(posting, LedgerPostingType.FEE,
                             new NativeParameterValue(LedgerParameterType.CORPORATE_ACTION_LEG,
                                             CorporateActionLeg.FEE.getCode()));
@@ -317,6 +326,8 @@ public final class LedgerNativeEntryAssembler
             posting.setType(LedgerPostingType.TAX);
             posting.setAccount(tax.getAccount());
             applyMoney(posting, tax.getAmount());
+            markUnit(posting, LedgerPostingSemanticRole.TAX, LedgerPostingUnitRole.TAX,
+                            LedgerProjectionRole.CASH_COMPENSATION.name());
             addPostingParameter(posting, LedgerPostingType.TAX,
                             new NativeParameterValue(LedgerParameterType.CORPORATE_ACTION_LEG,
                                             CorporateActionLeg.TAX.getCode()));
@@ -335,6 +346,75 @@ public final class LedgerNativeEntryAssembler
 
             posting.setAmount(amount.getAmount());
             posting.setCurrency(amount.getCurrencyCode());
+        }
+
+        private void markPrimary(LedgerPosting posting, LedgerPostingSemanticRole semanticRole,
+                        LedgerPostingDirection direction, CorporateActionLeg leg, LedgerProjectionRole projectionRole)
+        {
+            posting.setSemanticRole(semanticRole);
+            posting.setDirection(direction);
+            posting.setCorporateActionLeg(leg);
+            posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
+
+            if (projectionRole != null)
+            {
+                posting.setGroupKey(projectionRole.name());
+                posting.setLocalKey(projectionRole.name());
+            }
+        }
+
+        private void markUnit(LedgerPosting posting, LedgerPostingSemanticRole semanticRole,
+                        LedgerPostingUnitRole unitRole, String groupKey)
+        {
+            posting.setSemanticRole(semanticRole);
+            posting.setUnitRole(unitRole);
+            posting.setGroupKey(groupKey);
+        }
+
+        private LedgerPostingSemanticRole semanticRole(LedgerPostingType type)
+        {
+            return switch (type)
+            {
+                case SECURITY -> LedgerPostingSemanticRole.SECURITY;
+                case RIGHT -> LedgerPostingSemanticRole.RIGHT;
+                case BOND -> LedgerPostingSemanticRole.BOND;
+                case CASH_COMPENSATION -> LedgerPostingSemanticRole.CASH_COMPENSATION;
+                case FEE -> LedgerPostingSemanticRole.FEE;
+                case TAX -> LedgerPostingSemanticRole.TAX;
+                case ACCRUED_INTEREST -> LedgerPostingSemanticRole.ACCRUED_INTEREST;
+                case PRINCIPAL_REDEMPTION -> LedgerPostingSemanticRole.PRINCIPAL_REDEMPTION;
+                case CASH -> LedgerPostingSemanticRole.CASH;
+                case GROSS_VALUE -> LedgerPostingSemanticRole.GROSS_VALUE;
+                case FOREX -> LedgerPostingSemanticRole.FOREX_CONTEXT;
+            };
+        }
+
+        private LedgerPostingDirection direction(LedgerProjectionRole role)
+        {
+            if (role == null)
+                return LedgerPostingDirection.NEUTRAL;
+
+            return switch (role)
+            {
+                case SOURCE_ACCOUNT, SOURCE_PORTFOLIO, OLD_SECURITY_LEG, DELIVERY_OUTBOUND ->
+                    LedgerPostingDirection.OUTBOUND;
+                case TARGET_ACCOUNT, TARGET_PORTFOLIO, NEW_SECURITY_LEG, DELIVERY, DELIVERY_INBOUND ->
+                    LedgerPostingDirection.INBOUND;
+                case ACCOUNT, PORTFOLIO, CASH_COMPENSATION -> LedgerPostingDirection.NEUTRAL;
+            };
+        }
+
+        private CorporateActionLeg corporateActionLeg(String code)
+        {
+            if (code == null)
+                return null;
+
+            for (var leg : CorporateActionLeg.values())
+                if (leg.getCode().equals(code))
+                    return leg;
+
+            throw issue(LedgerNativeEntryAssemblyIssue.PARAMETER_CODE_NOT_ALLOWED,
+                            code + " is not a corporate action leg"); //$NON-NLS-1$
         }
 
         private void addPortfolioProjection(LedgerEntry entry, LedgerProjectionRole role, Portfolio portfolio,

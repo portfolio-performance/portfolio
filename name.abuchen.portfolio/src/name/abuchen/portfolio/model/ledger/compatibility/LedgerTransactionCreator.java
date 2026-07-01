@@ -12,6 +12,9 @@ import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerMutationContext;
 import name.abuchen.portfolio.model.ledger.LedgerParameter;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
+import name.abuchen.portfolio.model.ledger.LedgerPostingDirection;
+import name.abuchen.portfolio.model.ledger.LedgerPostingSemanticRole;
+import name.abuchen.portfolio.model.ledger.LedgerPostingUnitRole;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.LedgerTransactionMetadata;
@@ -108,6 +111,8 @@ public final class LedgerTransactionCreator
 
         applySecurity(cashPosting, dividend.getSecurity());
         cashPosting.setShares(dividend.getShares());
+        markPrimary(cashPosting, LedgerPostingSemanticRole.CASH, LedgerPostingDirection.NEUTRAL,
+                        LedgerProjectionRole.ACCOUNT);
 
         if (dividend.hasExDate())
             cashPosting.addParameter(
@@ -163,6 +168,10 @@ public final class LedgerTransactionCreator
 
         var sourcePosting = createCashPosting(LedgerPostingType.CASH, source);
         var targetPosting = createCashPosting(LedgerPostingType.CASH, target);
+        markPrimary(sourcePosting, LedgerPostingSemanticRole.CASH, LedgerPostingDirection.OUTBOUND,
+                        LedgerProjectionRole.SOURCE_ACCOUNT);
+        markPrimary(targetPosting, LedgerPostingSemanticRole.CASH, LedgerPostingDirection.INBOUND,
+                        LedgerProjectionRole.TARGET_ACCOUNT);
 
         entry.addPosting(sourcePosting);
         entry.addPosting(targetPosting);
@@ -193,6 +202,10 @@ public final class LedgerTransactionCreator
 
         var sourcePosting = createSecurityPosting(source, security);
         var targetPosting = createSecurityPosting(target, security);
+        markPrimary(sourcePosting, LedgerPostingSemanticRole.SECURITY, LedgerPostingDirection.OUTBOUND,
+                        LedgerProjectionRole.SOURCE_PORTFOLIO);
+        markPrimary(targetPosting, LedgerPostingSemanticRole.SECURITY, LedgerPostingDirection.INBOUND,
+                        LedgerProjectionRole.TARGET_PORTFOLIO);
 
         entry.addPosting(sourcePosting);
         entry.addPosting(targetPosting);
@@ -216,6 +229,7 @@ public final class LedgerTransactionCreator
         var posting = createCashPosting(postingType, cashLeg);
 
         applySecurity(posting, security);
+        markPrimary(posting, semanticRole(postingType), LedgerPostingDirection.NEUTRAL, LedgerProjectionRole.ACCOUNT);
 
         entry.addPosting(posting);
         var unitPostings = addUnitPostings(entry, units);
@@ -241,6 +255,7 @@ public final class LedgerTransactionCreator
         posting.setSecurity(securityQuantity.getSecurity());
         posting.setShares(securityQuantity.getShares());
         applyMoney(posting, value, deliveryLeg.getForex());
+        markPrimary(posting, LedgerPostingSemanticRole.SECURITY, direction(role), role);
 
         entry.addPosting(posting);
         var unitPostings = addUnitPostings(entry, deliveryLeg.getUnits());
@@ -262,6 +277,10 @@ public final class LedgerTransactionCreator
 
         var cashPosting = createCashPosting(LedgerPostingType.CASH, cashLeg);
         var securityPosting = createSecurityPosting(securityLeg);
+        markPrimary(cashPosting, LedgerPostingSemanticRole.CASH, cashDirection(entryType),
+                        LedgerProjectionRole.ACCOUNT);
+        markPrimary(securityPosting, LedgerPostingSemanticRole.SECURITY, securityDirection(entryType),
+                        LedgerProjectionRole.PORTFOLIO);
 
         entry.addPosting(cashPosting);
         entry.addPosting(securityPosting);
@@ -351,6 +370,7 @@ public final class LedgerTransactionCreator
 
             posting.setType(unit.getPostingType());
             applyMoney(posting, unit.getAmount(), unit.getForex());
+            markUnit(posting);
             entry.addPosting(posting);
             postings.add(posting);
         }
@@ -389,6 +409,83 @@ public final class LedgerTransactionCreator
     {
         if (security.isPresent())
             posting.setSecurity(security.getSecurity());
+    }
+
+    private void markPrimary(LedgerPosting posting, LedgerPostingSemanticRole semanticRole,
+                    LedgerPostingDirection direction, LedgerProjectionRole role)
+    {
+        posting.setSemanticRole(semanticRole);
+        posting.setDirection(direction);
+        posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
+        posting.setLocalKey(role.name());
+    }
+
+    private void markUnit(LedgerPosting posting)
+    {
+        posting.setSemanticRole(semanticRole(posting.getType()));
+        posting.setUnitRole(unitRole(posting.getType()));
+    }
+
+    private LedgerPostingSemanticRole semanticRole(LedgerPostingType type)
+    {
+        return switch (type)
+        {
+            case CASH -> LedgerPostingSemanticRole.CASH;
+            case SECURITY -> LedgerPostingSemanticRole.SECURITY;
+            case FEE -> LedgerPostingSemanticRole.FEE;
+            case TAX -> LedgerPostingSemanticRole.TAX;
+            case GROSS_VALUE -> LedgerPostingSemanticRole.GROSS_VALUE;
+            case CASH_COMPENSATION -> LedgerPostingSemanticRole.CASH_COMPENSATION;
+            case RIGHT -> LedgerPostingSemanticRole.RIGHT;
+            case BOND -> LedgerPostingSemanticRole.BOND;
+            case ACCRUED_INTEREST -> LedgerPostingSemanticRole.ACCRUED_INTEREST;
+            case PRINCIPAL_REDEMPTION -> LedgerPostingSemanticRole.PRINCIPAL_REDEMPTION;
+            case FOREX -> LedgerPostingSemanticRole.FOREX_CONTEXT;
+        };
+    }
+
+    private LedgerPostingUnitRole unitRole(LedgerPostingType type)
+    {
+        return switch (type)
+        {
+            case FEE -> LedgerPostingUnitRole.FEE;
+            case TAX -> LedgerPostingUnitRole.TAX;
+            case GROSS_VALUE -> LedgerPostingUnitRole.GROSS_VALUE;
+            default -> throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_CONVERT_062
+                            .message("Unsupported unit posting type: " + type)); //$NON-NLS-1$
+        };
+    }
+
+    private LedgerPostingDirection cashDirection(LedgerEntryType entryType)
+    {
+        return switch (entryType)
+        {
+            case BUY -> LedgerPostingDirection.OUTBOUND;
+            case SELL -> LedgerPostingDirection.INBOUND;
+            default -> LedgerPostingDirection.NEUTRAL;
+        };
+    }
+
+    private LedgerPostingDirection securityDirection(LedgerEntryType entryType)
+    {
+        return switch (entryType)
+        {
+            case BUY -> LedgerPostingDirection.INBOUND;
+            case SELL -> LedgerPostingDirection.OUTBOUND;
+            default -> LedgerPostingDirection.NEUTRAL;
+        };
+    }
+
+    private LedgerPostingDirection direction(LedgerProjectionRole role)
+    {
+        return switch (role)
+        {
+            case SOURCE_ACCOUNT, SOURCE_PORTFOLIO, OLD_SECURITY_LEG, DELIVERY_OUTBOUND ->
+                LedgerPostingDirection.OUTBOUND;
+            case TARGET_ACCOUNT, TARGET_PORTFOLIO, NEW_SECURITY_LEG, DELIVERY, DELIVERY_INBOUND ->
+                LedgerPostingDirection.INBOUND;
+            default -> LedgerPostingDirection.NEUTRAL;
+        };
     }
 
     private LedgerProjectionRef accountProjection(Account account, LedgerPosting posting)

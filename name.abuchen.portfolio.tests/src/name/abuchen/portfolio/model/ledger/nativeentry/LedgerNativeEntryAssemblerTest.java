@@ -25,10 +25,14 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.ledger.Ledger;
 import name.abuchen.portfolio.model.ledger.LedgerParameter;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
+import name.abuchen.portfolio.model.ledger.LedgerPostingDirection;
+import name.abuchen.portfolio.model.ledger.LedgerPostingSemanticRole;
+import name.abuchen.portfolio.model.ledger.LedgerPostingUnitRole;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator;
 import name.abuchen.portfolio.model.ledger.ProjectionMembershipRole;
 import name.abuchen.portfolio.model.ledger.configuration.CashCompensationKind;
+import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionKind;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionSubtype;
 import name.abuchen.portfolio.model.ledger.configuration.EventStage;
@@ -42,6 +46,8 @@ import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerReportingClass;
 import name.abuchen.portfolio.model.ledger.configuration.RoundingModeCode;
 import name.abuchen.portfolio.model.ledger.configuration.TaxReason;
+import name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor;
+import name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptorService;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
@@ -398,6 +404,45 @@ public class LedgerNativeEntryAssemblerTest
         assertThat(fixture.client.getLedger().getEntries().size(), is(0));
     }
 
+    @Test
+    public void testNativeAssemblerEmitsSemanticPostingsForSiemensSpinOff()
+    {
+        var fixture = fixture();
+        var entry = spinOffWithRetainedAndNewLegs(fixture).buildDetached().getEntry();
+        var oldLeg = descriptor(entry, LedgerProjectionRole.OLD_SECURITY_LEG).getPrimaryPosting();
+        var retainedLeg = descriptor(entry, LedgerProjectionRole.DELIVERY_INBOUND).getPrimaryPosting();
+        var newLeg = descriptor(entry, LedgerProjectionRole.NEW_SECURITY_LEG).getPrimaryPosting();
+        var compensation = descriptor(entry, LedgerProjectionRole.CASH_COMPENSATION).getPrimaryPosting();
+
+        assertPrimarySemantics(oldLeg, LedgerPostingSemanticRole.SECURITY, LedgerPostingDirection.OUTBOUND,
+                        CorporateActionLeg.SOURCE_SECURITY, LedgerProjectionRole.OLD_SECURITY_LEG);
+        assertPrimarySemantics(retainedLeg, LedgerPostingSemanticRole.SECURITY, LedgerPostingDirection.INBOUND,
+                        CorporateActionLeg.TARGET_SECURITY, LedgerProjectionRole.DELIVERY_INBOUND);
+        assertPrimarySemantics(newLeg, LedgerPostingSemanticRole.SECURITY, LedgerPostingDirection.INBOUND,
+                        CorporateActionLeg.TARGET_SECURITY, LedgerProjectionRole.NEW_SECURITY_LEG);
+        assertPrimarySemantics(compensation, LedgerPostingSemanticRole.CASH_COMPENSATION,
+                        LedgerPostingDirection.NEUTRAL, CorporateActionLeg.CASH_COMPENSATION,
+                        LedgerProjectionRole.CASH_COMPENSATION);
+        assertThat(entry.getPostings().stream().filter(posting -> posting.getType() == LedgerPostingType.FEE)
+                        .findFirst().orElseThrow().getGroupKey(), is(LedgerProjectionRole.CASH_COMPENSATION.name()));
+        assertThat(entry.getPostings().stream().filter(posting -> posting.getType() == LedgerPostingType.TAX)
+                        .findFirst().orElseThrow().getUnitRole(), is(LedgerPostingUnitRole.TAX));
+    }
+
+    @Test
+    public void testNativeAssemblerDescriptorsCoverCorporateActionFamilies()
+    {
+        assertThat(roles(stockDividendEntry(fixture()).buildDetached().getEntry()),
+                        is(java.util.Set.of(LedgerProjectionRole.DELIVERY_INBOUND)));
+        assertThat(roles(bonusIssueEntry(fixture()).buildDetached().getEntry()),
+                        is(java.util.Set.of(LedgerProjectionRole.DELIVERY_INBOUND)));
+        assertThat(roles(rightsDistributionEntry(fixture()).buildDetached().getEntry()),
+                        is(java.util.Set.of(LedgerProjectionRole.NEW_SECURITY_LEG)));
+        assertThat(roles(bondConversionEntry(fixture()).buildDetached().getEntry()),
+                        is(java.util.Set.of(LedgerProjectionRole.OLD_SECURITY_LEG,
+                                        LedgerProjectionRole.NEW_SECURITY_LEG)));
+    }
+
     /**
      * Checks the Ledger-V6 scenario: build and add creates spin off and materializes runtime projections.
      * The result must keep ledger truth and visible runtime rows consistent.
@@ -604,6 +649,93 @@ public class LedgerNativeEntryAssemblerTest
                         .event(event(LedgerEntryType.SPIN_OFF));
     }
 
+    private static LedgerNativeEntryAssembler.EntryBuilder spinOffWithRetainedAndNewLegs(Fixture fixture)
+    {
+        return baseSpinOff(fixture) //
+                        .securityLeg(sourceLeg(fixture).build()) //
+                        .securityLeg(targetLeg(fixture).projectAs(LedgerProjectionRole.DELIVERY_INBOUND).build()) //
+                        .securityLeg(targetLeg(fixture).projectAs(LedgerProjectionRole.NEW_SECURITY_LEG).build()) //
+                        .cashCompensation(NativeCashCompensation.builder() //
+                                        .account(fixture.account) //
+                                        .amount(money(5)) //
+                                        .kind(CashCompensationKind.CASH_IN_LIEU) //
+                                        .applied(true) //
+                                        .fractionQuantity(new BigDecimal("0.5")) //
+                                        .fractionTreatment(FractionTreatment.CASH_IN_LIEU) //
+                                        .roundingMode(RoundingModeCode.FLOOR) //
+                                        .build()) //
+                        .fee(NativeFee.of(fixture.account, money(2), FeeReason.CORPORATE_ACTION_FEE)) //
+                        .tax(NativeTax.withholding(fixture.account, money(1)));
+    }
+
+    private static LedgerNativeEntryAssembler.EntryBuilder stockDividendEntry(Fixture fixture)
+    {
+        return LedgerNativeEntryAssembler.forClient(fixture.client) //
+                        .forType(LedgerEntryType.STOCK_DIVIDEND) //
+                        .metadata(metadata()) //
+                        .event(event(LedgerEntryType.STOCK_DIVIDEND)) //
+                        .securityLeg(targetLeg(fixture).projectAs(LedgerProjectionRole.DELIVERY_INBOUND).build());
+    }
+
+    private static LedgerNativeEntryAssembler.EntryBuilder bonusIssueEntry(Fixture fixture)
+    {
+        return LedgerNativeEntryAssembler.forClient(fixture.client) //
+                        .forType(LedgerEntryType.BONUS_ISSUE) //
+                        .metadata(metadata()) //
+                        .event(event(LedgerEntryType.BONUS_ISSUE)) //
+                        .securityLeg(targetLeg(fixture).projectAs(LedgerProjectionRole.DELIVERY_INBOUND).build());
+    }
+
+    private static LedgerNativeEntryAssembler.EntryBuilder rightsDistributionEntry(Fixture fixture)
+    {
+        var distributedSecurity = NativeSecurityLeg.ofType(LedgerPostingType.SECURITY) //
+                        .legCode(CorporateActionLeg.DISTRIBUTED_SECURITY.getCode()) //
+                        .portfolio(fixture.portfolio) //
+                        .security(fixture.siemensEnergy) //
+                        .shares(Values.Share.factorize(5)) //
+                        .amount(money(50)) //
+                        .projectAs(LedgerProjectionRole.NEW_SECURITY_LEG) //
+                        .build();
+
+        return LedgerNativeEntryAssembler.forClient(fixture.client) //
+                        .forType(LedgerEntryType.RIGHTS_DISTRIBUTION) //
+                        .metadata(metadata()) //
+                        .event(event(LedgerEntryType.RIGHTS_DISTRIBUTION)) //
+                        .securityLeg(distributedSecurity);
+    }
+
+    private static LedgerNativeEntryAssembler.EntryBuilder bondConversionEntry(Fixture fixture)
+    {
+        var sourceBond = NativeSecurityLeg.ofType(LedgerPostingType.BOND) //
+                        .legCode(CorporateActionLeg.CONVERSION_SOURCE.getCode()) //
+                        .portfolio(fixture.portfolio) //
+                        .security(fixture.siemens) //
+                        .shares(Values.Share.factorize(10)) //
+                        .amount(money(100)) //
+                        .parameter(LedgerParameterType.SOURCE_SECURITY, fixture.siemens) //
+                        .parameter(LedgerParameterType.NOMINAL_VALUE, money(100)) //
+                        .parameter(LedgerParameterType.QUOTATION_STYLE, "PERCENT") //
+                        .parameter(LedgerParameterType.CONVERSION_RATIO, BigDecimal.valueOf(2)) //
+                        .projectAs(LedgerProjectionRole.OLD_SECURITY_LEG) //
+                        .build();
+        var targetSecurity = NativeSecurityLeg.ofType(LedgerPostingType.SECURITY) //
+                        .legCode(CorporateActionLeg.CONVERSION_TARGET.getCode()) //
+                        .portfolio(fixture.portfolio) //
+                        .security(fixture.siemensEnergy) //
+                        .shares(Values.Share.factorize(5)) //
+                        .amount(money(50)) //
+                        .parameter(LedgerParameterType.TARGET_SECURITY, fixture.siemensEnergy) //
+                        .projectAs(LedgerProjectionRole.NEW_SECURITY_LEG) //
+                        .build();
+
+        return LedgerNativeEntryAssembler.forClient(fixture.client) //
+                        .forType(LedgerEntryType.BOND_CONVERSION) //
+                        .metadata(metadata()) //
+                        .event(event(LedgerEntryType.BOND_CONVERSION)) //
+                        .securityLeg(sourceBond) //
+                        .securityLeg(targetSecurity);
+    }
+
     private static NativeEntryMetadata metadata()
     {
         return NativeEntryMetadata.of(LocalDateTime.of(2020, 9, 28, 0, 0)) //
@@ -658,6 +790,40 @@ public class LedgerNativeEntryAssemblerTest
     private static LedgerParameter<?> parameter(Collection<LedgerParameter<?>> parameters, LedgerParameterType type)
     {
         return parameters.stream().filter(parameter -> parameter.getType() == type).findFirst().orElseThrow();
+    }
+
+    private static DerivedProjectionDescriptor descriptor(name.abuchen.portfolio.model.ledger.LedgerEntry entry,
+                    LedgerProjectionRole role)
+    {
+        return descriptors(entry).stream().filter(descriptor -> descriptor.getRole() == role).findFirst()
+                        .orElseThrow();
+    }
+
+    private static java.util.List<DerivedProjectionDescriptor> descriptors(
+                    name.abuchen.portfolio.model.ledger.LedgerEntry entry)
+    {
+        var result = new DerivedProjectionDescriptorService().derive(entry);
+
+        assertTrue(result.formatDiagnostics(), result.isOK());
+
+        return result.getDescriptors();
+    }
+
+    private static java.util.Set<LedgerProjectionRole> roles(name.abuchen.portfolio.model.ledger.LedgerEntry entry)
+    {
+        return descriptors(entry).stream().map(DerivedProjectionDescriptor::getRole)
+                        .collect(Collectors.toSet());
+    }
+
+    private static void assertPrimarySemantics(LedgerPosting posting, LedgerPostingSemanticRole semanticRole,
+                    LedgerPostingDirection direction, CorporateActionLeg leg, LedgerProjectionRole role)
+    {
+        assertThat(posting.getSemanticRole(), is(semanticRole));
+        assertThat(posting.getDirection(), is(direction));
+        assertThat(posting.getCorporateActionLeg(), is(leg));
+        assertThat(posting.getUnitRole(), is(LedgerPostingUnitRole.PRIMARY));
+        assertThat(posting.getGroupKey(), is(role.name()));
+        assertThat(posting.getLocalKey(), is(role.name()));
     }
 
     private static LedgerBackedTransaction portfolioProjection(Portfolio portfolio, LedgerProjectionRole role)

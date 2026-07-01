@@ -325,6 +325,108 @@ public class LedgerTransactionCreatorTest
                         LedgerProjectionRole.SOURCE_PORTFOLIO, LedgerProjectionRole.TARGET_PORTFOLIO);
     }
 
+    @Test
+    public void testCreateStandardFamiliesEmitSemanticPostings()
+    {
+        assertAccountOnlySemantics(LedgerEntryType.DEPOSIT,
+                        creator -> creator.createDeposit(metadata(), cashLeg(account(), 10)).getEntry(),
+                        LedgerPostingType.CASH, LedgerPostingSemanticRole.CASH);
+        assertAccountOnlySemantics(LedgerEntryType.REMOVAL,
+                        creator -> creator.createRemoval(metadata(), cashLeg(account(), 10)).getEntry(),
+                        LedgerPostingType.CASH, LedgerPostingSemanticRole.CASH);
+        assertAccountOnlySemantics(LedgerEntryType.INTEREST,
+                        creator -> creator.createInterest(metadata(), cashLeg(account(), 10),
+                                        LedgerOptionalSecurity.none(), LedgerCreationUnits.none()).getEntry(),
+                        LedgerPostingType.CASH, LedgerPostingSemanticRole.CASH);
+        assertAccountOnlySemantics(LedgerEntryType.INTEREST_CHARGE,
+                        creator -> creator.createInterestCharge(metadata(), cashLeg(account(), 10),
+                                        LedgerOptionalSecurity.none(), LedgerCreationUnits.none()).getEntry(),
+                        LedgerPostingType.CASH, LedgerPostingSemanticRole.CASH);
+        assertAccountOnlySemantics(LedgerEntryType.DIVIDENDS,
+                        creator -> creator.createDividend(metadata(),
+                                        LedgerDividend.withoutExDate(cashLeg(account(), 10),
+                                                        LedgerOptionalSecurity.of(security()),
+                                                        LedgerCreationUnits.none()))
+                                        .getEntry(),
+                        LedgerPostingType.CASH, LedgerPostingSemanticRole.CASH);
+        assertAccountOnlySemantics(LedgerEntryType.FEES,
+                        creator -> creator.createFee(metadata(), cashLeg(account(), 10),
+                                        LedgerOptionalSecurity.none(), LedgerCreationUnits.none()).getEntry(),
+                        LedgerPostingType.FEE, LedgerPostingSemanticRole.FEE);
+        assertAccountOnlySemantics(LedgerEntryType.FEES_REFUND,
+                        creator -> creator.createFeeRefund(metadata(), cashLeg(account(), 10),
+                                        LedgerOptionalSecurity.none(), LedgerCreationUnits.none()).getEntry(),
+                        LedgerPostingType.FEE, LedgerPostingSemanticRole.FEE);
+        assertAccountOnlySemantics(LedgerEntryType.TAXES,
+                        creator -> creator.createTax(metadata(), cashLeg(account(), 10),
+                                        LedgerOptionalSecurity.none(), LedgerCreationUnits.none()).getEntry(),
+                        LedgerPostingType.TAX, LedgerPostingSemanticRole.TAX);
+        assertAccountOnlySemantics(LedgerEntryType.TAX_REFUND,
+                        creator -> creator.createTaxRefund(metadata(), cashLeg(account(), 10),
+                                        LedgerOptionalSecurity.none(), LedgerCreationUnits.none()).getEntry(),
+                        LedgerPostingType.TAX, LedgerPostingSemanticRole.TAX);
+
+        var client = new Client();
+        var creator = new LedgerTransactionCreator(client);
+        var buy = creator.createBuy(metadata(), cashLeg(account(), 10), portfolioLeg(new Portfolio(), 10),
+                        LedgerCreationUnits.of(LedgerCreationUnit.fee(money(1)))).getEntry();
+
+        assertPrimarySemantics(buy.getPostings().get(0), LedgerPostingType.CASH, LedgerPostingSemanticRole.CASH,
+                        LedgerPostingDirection.OUTBOUND, LedgerProjectionRole.ACCOUNT);
+        assertPrimarySemantics(buy.getPostings().get(1), LedgerPostingType.SECURITY,
+                        LedgerPostingSemanticRole.SECURITY, LedgerPostingDirection.INBOUND,
+                        LedgerProjectionRole.PORTFOLIO);
+        assertUnitSemantics(posting(buy, LedgerPostingType.FEE), LedgerPostingSemanticRole.FEE,
+                        LedgerPostingUnitRole.FEE);
+
+        var sell = creator.createSell(metadata(), cashLeg(account(), 10), portfolioLeg(new Portfolio(), 10),
+                        LedgerCreationUnits.none()).getEntry();
+
+        assertPrimarySemantics(sell.getPostings().get(0), LedgerPostingType.CASH, LedgerPostingSemanticRole.CASH,
+                        LedgerPostingDirection.INBOUND, LedgerProjectionRole.ACCOUNT);
+        assertPrimarySemantics(sell.getPostings().get(1), LedgerPostingType.SECURITY,
+                        LedgerPostingSemanticRole.SECURITY, LedgerPostingDirection.OUTBOUND,
+                        LedgerProjectionRole.PORTFOLIO);
+    }
+
+    @Test
+    public void testCreateTransferAndDeliveryFamiliesEmitDirectionalSemanticPostings()
+    {
+        var client = new Client();
+        var creator = new LedgerTransactionCreator(client);
+        var inbound = creator.createInboundDelivery(metadata(), deliveryLeg(new Portfolio())).getEntry();
+        var outbound = creator.createOutboundDelivery(metadata(), deliveryLeg(new Portfolio())).getEntry();
+
+        assertPrimarySemantics(inbound.getPostings().get(0), LedgerPostingType.SECURITY,
+                        LedgerPostingSemanticRole.SECURITY, LedgerPostingDirection.INBOUND,
+                        LedgerProjectionRole.DELIVERY_INBOUND);
+        assertPrimarySemantics(outbound.getPostings().get(0), LedgerPostingType.SECURITY,
+                        LedgerPostingSemanticRole.SECURITY, LedgerPostingDirection.OUTBOUND,
+                        LedgerProjectionRole.DELIVERY_OUTBOUND);
+
+        var cashTransfer = creator.createAccountTransfer(metadata(), LedgerCashTransferLeg.of(account(), money(10)),
+                        LedgerCashTransferLeg.of(account(), money(10))).getEntry();
+
+        assertPrimarySemantics(cashTransfer.getPostings().get(0), LedgerPostingType.CASH,
+                        LedgerPostingSemanticRole.CASH, LedgerPostingDirection.OUTBOUND,
+                        LedgerProjectionRole.SOURCE_ACCOUNT);
+        assertPrimarySemantics(cashTransfer.getPostings().get(1), LedgerPostingType.CASH,
+                        LedgerPostingSemanticRole.CASH, LedgerPostingDirection.INBOUND,
+                        LedgerProjectionRole.TARGET_ACCOUNT);
+
+        var securityTransfer = creator.createPortfolioTransfer(metadata(),
+                        LedgerPortfolioTransferSecurity.of(security(), Values.Share.factorize(5)),
+                        LedgerPortfolioTransferLeg.of(new Portfolio(), money(10)),
+                        LedgerPortfolioTransferLeg.of(new Portfolio(), money(10))).getEntry();
+
+        assertPrimarySemantics(securityTransfer.getPostings().get(0), LedgerPostingType.SECURITY,
+                        LedgerPostingSemanticRole.SECURITY, LedgerPostingDirection.OUTBOUND,
+                        LedgerProjectionRole.SOURCE_PORTFOLIO);
+        assertPrimarySemantics(securityTransfer.getPostings().get(1), LedgerPostingType.SECURITY,
+                        LedgerPostingSemanticRole.SECURITY, LedgerPostingDirection.INBOUND,
+                        LedgerProjectionRole.TARGET_PORTFOLIO);
+    }
+
     /**
      * Checks the ledger-backed editing scenario: create dividend preserves ex-date units and forex.
      * The visible transaction must reflect the ledger entry after the operation.
@@ -600,6 +702,37 @@ public class LedgerTransactionCreatorTest
         assertThat(posting.getForexAmount(), is(forexAmount));
         assertThat(posting.getForexCurrency(), is(CurrencyUnit.USD));
         assertThat(posting.getExchangeRate(), is(exchangeRate));
+    }
+
+    private void assertAccountOnlySemantics(LedgerEntryType type,
+                    java.util.function.Function<LedgerTransactionCreator, LedgerEntry> factory,
+                    LedgerPostingType postingType, LedgerPostingSemanticRole semanticRole)
+    {
+        var client = new Client();
+        var entry = factory.apply(new LedgerTransactionCreator(client));
+
+        assertThat(entry.getType(), is(type));
+        assertPrimarySemantics(entry.getPostings().get(0), postingType, semanticRole, LedgerPostingDirection.NEUTRAL,
+                        LedgerProjectionRole.ACCOUNT);
+        assertOK(client);
+    }
+
+    private void assertPrimarySemantics(LedgerPosting posting, LedgerPostingType type,
+                    LedgerPostingSemanticRole semanticRole, LedgerPostingDirection direction,
+                    LedgerProjectionRole localKey)
+    {
+        assertThat(posting.getType(), is(type));
+        assertThat(posting.getSemanticRole(), is(semanticRole));
+        assertThat(posting.getDirection(), is(direction));
+        assertThat(posting.getUnitRole(), is(LedgerPostingUnitRole.PRIMARY));
+        assertThat(posting.getLocalKey(), is(localKey.name()));
+    }
+
+    private void assertUnitSemantics(LedgerPosting posting, LedgerPostingSemanticRole semanticRole,
+                    LedgerPostingUnitRole unitRole)
+    {
+        assertThat(posting.getSemanticRole(), is(semanticRole));
+        assertThat(posting.getUnitRole(), is(unitRole));
     }
 
     private LedgerProjectionRef projection(LedgerEntry entry, LedgerProjectionRole role)

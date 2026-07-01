@@ -216,11 +216,11 @@ public final class LedgerNativeEntryDefinitionValidator
                     List<ValidationIssue> issues)
     {
         var refs = entry.getProjectionRefs().stream().filter(ref -> ref.getRole() == projectionRole).toList();
-        var sameTypePostings = entry.getPostings().stream().filter(posting -> posting.getType() == leg.getPostingType())
-                        .toList();
+        var matchingLegPostings = entry.getPostings().stream()
+                        .filter(posting -> postingMatchesLeg(entry.getType(), posting, leg)).toList();
         var matchingPostings = new ArrayList<LedgerPosting>();
 
-        if (refs.isEmpty() && (requiresLeg(leg.getCardinality()) || !sameTypePostings.isEmpty()))
+        if (refs.isEmpty() && (requiresLeg(leg.getCardinality()) || !matchingLegPostings.isEmpty()))
             issues.add(issue(IssueCode.REQUIRED_PROJECTION_MISSING,
                             LedgerDiagnosticCode.LEDGER_STRUCT_042
                                             .message("Native leg projection is missing: " + projectionRole), //$NON-NLS-1$
@@ -246,7 +246,8 @@ public final class LedgerNativeEntryDefinitionValidator
             {
                 if (postingMatchesLeg(entry.getType(), posting, leg))
                     matchingPostings.add(posting);
-                else
+                else if (!postingMatchesAnyLegWithProjectionRole(entry.getType(), posting, definition,
+                                projectionRole))
                     issues.add(issue(IssueCode.PROJECTION_PRIMARY_POSTING_MISMATCH,
                                     LedgerDiagnosticCode.LEDGER_STRUCT_044.message(
                                                     "Projection primary posting does not match native leg " //$NON-NLS-1$
@@ -285,6 +286,14 @@ public final class LedgerNativeEntryDefinitionValidator
         validateAllowedProjectionRole(definition, entry, leg, projectionRole, issues);
 
         return new LegMatch(matchingPostings);
+    }
+
+    private static boolean postingMatchesAnyLegWithProjectionRole(LedgerEntryType entryType, LedgerPosting posting,
+                    LedgerEntryDefinition definition, LedgerProjectionRole projectionRole)
+    {
+        return definition.getLegDefinitions().stream()
+                        .filter(leg -> leg.getProjectionRole().filter(projectionRole::equals).isPresent())
+                        .anyMatch(leg -> postingMatchesLeg(entryType, posting, leg));
     }
 
     private static void validateAllowedProjectionRole(LedgerEntryDefinition definition, LedgerEntry entry,

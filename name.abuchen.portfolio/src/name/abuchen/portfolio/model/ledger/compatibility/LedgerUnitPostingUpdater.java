@@ -6,6 +6,8 @@ import name.abuchen.portfolio.model.LedgerDiagnosticCode;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerEntryEditSupport;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
+import name.abuchen.portfolio.model.ledger.LedgerPostingSemanticRole;
+import name.abuchen.portfolio.model.ledger.LedgerPostingUnitRole;
 import name.abuchen.portfolio.model.ledger.ProjectionMembershipRole;
 
 /**
@@ -45,6 +47,7 @@ public final class LedgerUnitPostingUpdater
 
         posting.setType(edit.getPostingType());
         edit.getPostingPatch().applyTo(posting);
+        markUnit(posting);
         entry.addPosting(posting);
         addUnitMemberships(entry, posting);
     }
@@ -87,5 +90,26 @@ public final class LedgerUnitPostingUpdater
             case GROSS_VALUE -> ProjectionMembershipRole.GROSS_VALUE_UNIT;
             default -> throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_CONVERT_071.message("Unsupported unit posting type: " + posting.getType())); //$NON-NLS-1$
         };
+    }
+
+    private void markUnit(LedgerPosting posting)
+    {
+        switch (posting.getType())
+        {
+            case FEE -> {
+                posting.setSemanticRole(LedgerPostingSemanticRole.FEE);
+                posting.setUnitRole(LedgerPostingUnitRole.FEE);
+            }
+            case TAX -> {
+                posting.setSemanticRole(LedgerPostingSemanticRole.TAX);
+                posting.setUnitRole(LedgerPostingUnitRole.TAX);
+            }
+            case GROSS_VALUE -> {
+                posting.setSemanticRole(LedgerPostingSemanticRole.GROSS_VALUE);
+                posting.setUnitRole(LedgerPostingUnitRole.GROSS_VALUE);
+            }
+            default -> throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_CONVERT_071
+                            .message("Unsupported unit posting type: " + posting.getType())); //$NON-NLS-1$
+        }
     }
 }

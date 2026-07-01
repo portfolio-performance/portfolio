@@ -61,8 +61,6 @@ public class DerivedProjectionDescriptorServiceTest
         var account = account("Cash");
         var entry = creator(client).createDeposit(metadata(), LedgerAccountCashLeg.of(account, money(100))).getEntry();
 
-        annotateFromProjectionRefs(entry);
-
         var descriptors = descriptors(entry);
 
         assertThat(descriptors.size(), is(1));
@@ -81,9 +79,21 @@ public class DerivedProjectionDescriptorServiceTest
                                         money(100)),
                         LedgerCreationUnits.none()).getEntry();
 
-        annotateFromProjectionRefs(entry);
-
         var descriptors = descriptors(entry);
+
+        assertThat(roles(descriptors), is(Set.of(LedgerProjectionRole.ACCOUNT, LedgerProjectionRole.PORTFOLIO)));
+        assertMatchesProjectionRef(entry, descriptor(descriptors, LedgerProjectionRole.ACCOUNT),
+                        projection(entry, LedgerProjectionRole.ACCOUNT));
+        assertMatchesProjectionRef(entry, descriptor(descriptors, LedgerProjectionRole.PORTFOLIO),
+                        projection(entry, LedgerProjectionRole.PORTFOLIO));
+
+        entry = creator(client).createSell(metadata(), LedgerAccountCashLeg.of(account, money(100)),
+                        LedgerPortfolioSecurityLeg.of(portfolio,
+                                        LedgerSecurityQuantity.of(security("Security"), Values.Share.factorize(5)),
+                                        money(100)),
+                        LedgerCreationUnits.none()).getEntry();
+
+        descriptors = descriptors(entry);
 
         assertThat(roles(descriptors), is(Set.of(LedgerProjectionRole.ACCOUNT, LedgerProjectionRole.PORTFOLIO)));
         assertMatchesProjectionRef(entry, descriptor(descriptors, LedgerProjectionRole.ACCOUNT),
@@ -103,12 +113,22 @@ public class DerivedProjectionDescriptorServiceTest
                                         money(100)))
                         .getEntry();
 
-        annotateFromProjectionRefs(entry);
-
         var descriptors = descriptors(entry);
 
         assertThat(roles(descriptors), is(Set.of(LedgerProjectionRole.DELIVERY_INBOUND)));
         assertMatchesProjectionRef(entry, descriptors.get(0), projection(entry, LedgerProjectionRole.DELIVERY_INBOUND));
+
+        entry = creator(client).createOutboundDelivery(metadata(),
+                        LedgerDeliveryLeg.of(portfolio,
+                                        LedgerSecurityQuantity.of(security("Security"), Values.Share.factorize(5)),
+                                        money(100)))
+                        .getEntry();
+
+        descriptors = descriptors(entry);
+
+        assertThat(roles(descriptors), is(Set.of(LedgerProjectionRole.DELIVERY_OUTBOUND)));
+        assertMatchesProjectionRef(entry, descriptors.get(0),
+                        projection(entry, LedgerProjectionRole.DELIVERY_OUTBOUND));
     }
 
     @Test
@@ -120,7 +140,6 @@ public class DerivedProjectionDescriptorServiceTest
         var entry = creator(client).createAccountTransfer(metadata(), LedgerCashTransferLeg.of(source, money(100)),
                         LedgerCashTransferLeg.of(target, money(100))).getEntry();
 
-        annotateFromProjectionRefs(entry);
         moveFirstPostingToEnd(entry);
 
         var descriptors = descriptors(entry);
@@ -145,7 +164,6 @@ public class DerivedProjectionDescriptorServiceTest
                         LedgerPortfolioTransferLeg.of(source, money(100)),
                         LedgerPortfolioTransferLeg.of(target, money(100))).getEntry();
 
-        annotateFromProjectionRefs(entry);
         moveFirstPostingToEnd(entry);
 
         var descriptors = descriptors(entry);

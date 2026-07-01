@@ -53,6 +53,12 @@ public final class LedgerModelCopy
         copy.setShares(source.getShares());
         copy.setAccount(source.getAccount());
         copy.setPortfolio(source.getPortfolio());
+        copy.setSemanticRole(source.getSemanticRole());
+        copy.setDirection(source.getDirection());
+        copy.setCorporateActionLeg(source.getCorporateActionLeg());
+        copy.setUnitRole(source.getUnitRole());
+        copy.setGroupKey(source.getGroupKey());
+        copy.setLocalKey(source.getLocalKey());
         source.getParameters().stream().map(LedgerModelCopy::copyParameter).forEach(copy::addParameter);
 
         return copy;
