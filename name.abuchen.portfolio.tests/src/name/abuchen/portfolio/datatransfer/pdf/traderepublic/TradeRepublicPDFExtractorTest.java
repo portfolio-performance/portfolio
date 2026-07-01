@@ -928,6 +928,42 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf22()
+    {
+        var extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf22.txt"), errors);
+
+        errors.forEach(Exception::printStackTrace);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0011683594"), hasWkn(null), hasTicker(null), //
+                        hasName("Developed Markets Dividend Leaders EUR (Dist)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-06-24T19:21"), hasShares(4.827186), //
+                        hasSource("Kauf22.txt"), //
+                        hasNote("Order: 6446-f769 | Execution: bd57-fac1"), //
+                        hasAmount("EUR", 251), hasGrossValue("EUR", 250), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.00))));
+    }
+
+    @Test
     public void testIPOBuy01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
