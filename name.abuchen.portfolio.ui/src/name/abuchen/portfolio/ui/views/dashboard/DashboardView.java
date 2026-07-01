@@ -588,6 +588,18 @@ public class DashboardView extends AbstractHistoricView
         manager.add(new SimpleAction(Messages.MenuDuplicateDashboardColumn,
                         a -> duplicateColumn(column, columnControl)));
 
+        int columnIndex = dashboard.getColumns().indexOf(column);
+
+        SimpleAction moveLeft = new SimpleAction(Messages.MenuMoveDashboardColumnLeft,
+                        a -> moveColumn(column, columnControl, SWT.LEFT));
+        moveLeft.setEnabled(columnIndex > 0);
+        manager.add(moveLeft);
+
+        SimpleAction moveRight = new SimpleAction(Messages.MenuMoveDashboardColumnRight,
+                        a -> moveColumn(column, columnControl, SWT.RIGHT));
+        moveRight.setEnabled(columnIndex < dashboard.getColumns().size() - 1);
+        manager.add(moveRight);
+
         MenuManager columnWidth = new MenuManager(Messages.MenuDashboardColumnWidth);
         manager.add(columnWidth);
         columnWidth.add(new SimpleAction(Messages.MenuDashboardColumnWidthIncrease, a -> {
@@ -923,6 +935,32 @@ public class DashboardView extends AbstractHistoricView
         updateScrolledCompositeMinSize();
 
         updateWidgets();
+    }
+
+    private void moveColumn(Dashboard.Column column, Composite columnControl, int direction)
+    {
+        List<Dashboard.Column> columns = dashboard.getColumns();
+        int index = columns.indexOf(column);
+        int newIndex = direction == SWT.LEFT ? index - 1 : index + 1;
+
+        if (newIndex < 0 || newIndex >= columns.size())
+            return;
+
+        // the column controls are kept in the same order as the model, hence
+        // the neighbor to swap with can be looked up by its (old) index
+        Control neighbor = container.getChildren()[newIndex];
+
+        columns.remove(index);
+        columns.add(newIndex, column);
+        markDirty();
+
+        if (direction == SWT.LEFT)
+            columnControl.moveAbove(neighbor);
+        else
+            columnControl.moveBelow(neighbor);
+
+        container.layout(true);
+        updateScrolledCompositeMinSize();
     }
 
     private void deleteColumn(Composite columnControl)
