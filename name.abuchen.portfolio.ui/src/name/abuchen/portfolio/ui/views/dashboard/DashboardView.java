@@ -414,11 +414,19 @@ public class DashboardView extends AbstractHistoricView
                             MessageFormat.format(Messages.ConfigurationDeleteConfirm, board.getName()),
                             a -> deleteDashboard(board)));
 
-            if (index > 0)
-            {
+            long count = getClient().getDashboards().count();
+
+            if (index > 0 || index < count - 1)
                 manager.add(new Separator());
+
+            if (index > 0)
+                manager.add(new SimpleAction(Messages.MenuMoveLeft, a -> moveDashboard(board, -1)));
+
+            if (index < count - 1)
+                manager.add(new SimpleAction(Messages.MenuMoveRight, a -> moveDashboard(board, 1)));
+
+            if (index > 0)
                 manager.add(new SimpleAction(Messages.ChartBringToFront, a -> bringToFrontDashboard(board)));
-            }
         });
 
         toolItem.setDefaultAction(new SimpleAction(Messages.MenuShow, a -> selectDashboard(board)));
@@ -852,6 +860,22 @@ public class DashboardView extends AbstractHistoricView
     {
         getClient().removeDashboard(board);
         getClient().addDashboard(0, board);
+        getClient().touch();
+
+        recreateDashboardToolItems();
+    }
+
+    private void moveDashboard(Dashboard board, int direction)
+    {
+        List<Dashboard> boards = getClient().getDashboards().toList();
+        int index = boards.indexOf(board);
+        int newIndex = index + direction;
+
+        if (newIndex < 0 || newIndex >= boards.size())
+            return;
+
+        getClient().removeDashboard(board);
+        getClient().addDashboard(newIndex, board);
         getClient().touch();
 
         recreateDashboardToolItems();

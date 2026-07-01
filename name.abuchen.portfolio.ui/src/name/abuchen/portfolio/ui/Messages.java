@@ -1050,6 +1050,8 @@ public class Messages extends NLS
     public static String MenuHideSidebar;
     public static String MenuLabelSetAsStartPage;
     public static String MenuMoveDown;
+    public static String MenuMoveLeft;
+    public static String MenuMoveRight;
     public static String MenuMoveUp;
     public static String MenuNewDashboard;
     public static String MenuNewDashboardColumn;
