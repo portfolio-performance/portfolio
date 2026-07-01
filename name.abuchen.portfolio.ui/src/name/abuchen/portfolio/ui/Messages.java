@@ -1049,6 +1049,8 @@ public class Messages extends NLS
     public static String MenuHideInformationPane;
     public static String MenuHideSidebar;
     public static String MenuLabelSetAsStartPage;
+    public static String MenuMoveDashboardColumnLeft;
+    public static String MenuMoveDashboardColumnRight;
     public static String MenuMoveDown;
     public static String MenuMoveUp;
     public static String MenuNewDashboard;
