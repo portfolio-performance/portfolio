@@ -93,6 +93,7 @@ final class LedgerRuntimeProjectionRestorer
     }
 
     private final LedgerProjectionMaterializer materializer;
+    private final LedgerProjectionFactory factory;
     private final Logger logger;
 
     LedgerRuntimeProjectionRestorer()
@@ -108,6 +109,7 @@ final class LedgerRuntimeProjectionRestorer
     LedgerRuntimeProjectionRestorer(LedgerProjectionMaterializer materializer, Logger logger)
     {
         this.materializer = Objects.requireNonNull(materializer);
+        this.factory = new LedgerProjectionFactory();
         this.logger = Objects.requireNonNull(logger);
     }
 
@@ -307,14 +309,15 @@ final class LedgerRuntimeProjectionRestorer
 
         for (var entry : client.getLedger().getEntries())
         {
-            for (var projection : entry.getProjectionRefs())
+            for (var projection : factory.createProjections(entry))
             {
-                if (projection.getAccount() != null)
-                    addProjection(projections,
-                                    new ProjectionKey("account", projection.getAccount(), projection.getUUID())); //$NON-NLS-1$
-                else if (projection.getPortfolio() != null)
-                    addProjection(projections,
-                                    new ProjectionKey("portfolio", projection.getPortfolio(), projection.getUUID())); //$NON-NLS-1$
+                if (projection instanceof LedgerBackedAccountTransaction accountTransaction)
+                    addProjection(projections, new ProjectionKey("account", //$NON-NLS-1$
+                                    accountTransaction.getLedgerProjectionRef().getAccount(), projection.getUUID()));
+                else if (projection instanceof LedgerBackedPortfolioTransaction portfolioTransaction)
+                    addProjection(projections, new ProjectionKey("portfolio", //$NON-NLS-1$
+                                    portfolioTransaction.getLedgerProjectionRef().getPortfolio(),
+                                    projection.getUUID()));
             }
         }
 

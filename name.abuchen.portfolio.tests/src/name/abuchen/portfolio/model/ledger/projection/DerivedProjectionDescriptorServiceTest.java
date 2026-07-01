@@ -238,6 +238,7 @@ public class DerivedProjectionDescriptorServiceTest
         var posting = primaryCash("posting-1", account);
 
         posting.setUnitRole(null);
+        posting.setAccount(null);
         entry.setType(LedgerEntryType.DEPOSIT);
         entry.setDateTime(DATE_TIME);
         entry.addPosting(posting);

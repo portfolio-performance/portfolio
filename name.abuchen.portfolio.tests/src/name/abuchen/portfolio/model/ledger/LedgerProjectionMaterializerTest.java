@@ -9,6 +9,7 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,13 +18,15 @@ import org.junit.Test;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.LedgerDiagnosticCode;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
+import name.abuchen.portfolio.model.ledger.configuration.CashCompensationKind;
+import name.abuchen.portfolio.model.ledger.configuration.CorporateActionKind;
+import name.abuchen.portfolio.model.ledger.configuration.CorporateActionSubtype;
+import name.abuchen.portfolio.model.ledger.configuration.EventStage;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerAccountCashLeg;
@@ -39,6 +42,12 @@ import name.abuchen.portfolio.model.ledger.compatibility.LedgerPortfolioTransfer
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerPortfolioTransferSecurity;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerSecurityQuantity;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerTransactionCreator;
+import name.abuchen.portfolio.model.ledger.nativeentry.LedgerNativeEntryAssembler;
+import name.abuchen.portfolio.model.ledger.nativeentry.NativeCashCompensation;
+import name.abuchen.portfolio.model.ledger.nativeentry.NativeCorporateActionEvent;
+import name.abuchen.portfolio.model.ledger.nativeentry.NativeEntryMetadata;
+import name.abuchen.portfolio.model.ledger.nativeentry.NativeSecurityLeg;
+import name.abuchen.portfolio.model.ledger.nativeentry.Ratio;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedAccountTransaction;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedPortfolioTransaction;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
@@ -80,31 +89,111 @@ public class LedgerProjectionMaterializerTest
         assertThat(projection.getCurrencyCode(), is(CurrencyUnit.EUR));
     }
 
-    /**
-     * Checks the Phase-1 scenario: semantic posting fields do not switch materialization.
-     * Projection refs remain the active compatibility-view source in this phase.
-     */
     @Test
-    public void testProjectionRefMaterializationRemainsActiveWithSemanticPostingVocabulary()
+    public void testMaterializationUsesDerivedDescriptorWhenProjectionRefsAreAbsent()
     {
         var client = new Client();
         var account = account();
         var entry = creator(client).createDeposit(metadata(), cashLeg(account, 100)).getEntry();
-        var posting = entry.getPostings().get(0);
-        var projectionRef = entry.getProjectionRefs().get(0);
 
-        posting.setSemanticRole(LedgerPostingSemanticRole.SECURITY);
-        posting.setDirection(LedgerPostingDirection.OUTBOUND);
-        posting.setCorporateActionLeg(CorporateActionLeg.SOURCE_SECURITY);
-        posting.setUnitRole(LedgerPostingUnitRole.FEE);
-        posting.setGroupKey("ignored-phase-1-group");
-        posting.setLocalKey("ignored-phase-1-local");
+        removeProjectionRefs(entry);
+        LedgerProjectionService.materialize(client);
 
-        var projection = LedgerProjectionService.createProjection(entry, projectionRef);
+        assertTrue(entry.getProjectionRefs().isEmpty());
+        assertThat(account.getTransactions().size(), is(1));
+        assertThat(account.getTransactions().get(0).getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(account.getTransactions().get(0).getAmount(), is(Values.Amount.factorize(100)));
+    }
 
-        assertThat(projection.getUUID(), is(projectionRef.getUUID()));
-        assertThat(((AccountTransaction) projection).getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(projection.getAmount(), is(Values.Amount.factorize(100)));
+    @Test
+    public void testFixedShapeMaterializationUsesDescriptorsWithoutProjectionRefs()
+    {
+        assertDescriptorMaterializesBuySell(PortfolioTransaction.Type.BUY, AccountTransaction.Type.BUY);
+        assertDescriptorMaterializesBuySell(PortfolioTransaction.Type.SELL, AccountTransaction.Type.SELL);
+        assertDescriptorMaterializesDelivery(true);
+        assertDescriptorMaterializesDelivery(false);
+        assertDescriptorMaterializesCashTransfer();
+        assertDescriptorMaterializesSecurityTransfer();
+    }
+
+    @Test
+    public void testSiemensSpinOffMaterializesFromDerivedDescriptorsWithoutProjectionRefs()
+    {
+        var client = new Client();
+        var account = account();
+        var portfolio = portfolio();
+        var siemens = new Security("Siemens AG", CurrencyUnit.EUR);
+        var siemensEnergy = new Security("Siemens Energy AG", CurrencyUnit.EUR);
+
+        siemens.setIsin("DE0007236101");
+        siemensEnergy.setIsin("DE000ENER6Y0");
+        client.addAccount(account);
+        client.addPortfolio(portfolio);
+        client.addSecurity(siemens);
+        client.addSecurity(siemensEnergy);
+
+        var entry = LedgerNativeEntryAssembler.forClient(client).spinOff() //
+                        .metadata(NativeEntryMetadata.of(DATE_TIME).note("Siemens spin-off").source("test")) //
+                        .event(NativeCorporateActionEvent.builder() //
+                                        .kind(CorporateActionKind.SPIN_OFF) //
+                                        .subtype(CorporateActionSubtype.STANDARD) //
+                                        .stage(EventStage.SETTLED) //
+                                        .effectiveDate(LocalDate.of(2020, 9, 28)) //
+                                        .build()) //
+                        .securityLeg(NativeSecurityLeg.source() //
+                                        .portfolio(portfolio) //
+                                        .security(siemens) //
+                                        .shares(Values.Share.factorize(10)) //
+                                        .amount(money(100)) //
+                                        .sourceSecurity(siemens) //
+                                        .targetSecurity(siemensEnergy) //
+                                        .ratio(Ratio.of(BigDecimal.ONE, BigDecimal.valueOf(2))) //
+                                        .build()) //
+                        .securityLeg(NativeSecurityLeg.target() //
+                                        .portfolio(portfolio) //
+                                        .security(siemens) //
+                                        .shares(Values.Share.factorize(10)) //
+                                        .amount(money(100)) //
+                                        .sourceSecurity(siemens) //
+                                        .targetSecurity(siemensEnergy) //
+                                        .ratio(Ratio.of(BigDecimal.ONE, BigDecimal.valueOf(2))) //
+                                        .projectAs(LedgerProjectionRole.DELIVERY_INBOUND) //
+                                        .build()) //
+                        .securityLeg(NativeSecurityLeg.target() //
+                                        .portfolio(portfolio) //
+                                        .security(siemensEnergy) //
+                                        .shares(Values.Share.factorize(5)) //
+                                        .amount(money(50)) //
+                                        .sourceSecurity(siemens) //
+                                        .targetSecurity(siemensEnergy) //
+                                        .ratio(Ratio.of(BigDecimal.ONE, BigDecimal.valueOf(2))) //
+                                        .projectAs(LedgerProjectionRole.NEW_SECURITY_LEG) //
+                                        .build()) //
+                        .cashCompensation(NativeCashCompensation.builder() //
+                                        .account(account) //
+                                        .amount(money(5)) //
+                                        .kind(CashCompensationKind.CASH_IN_LIEU) //
+                                        .build()) //
+                        .buildDetached().getEntry();
+
+        removeProjectionRefs(entry);
+        client.getLedger().addEntry(entry);
+
+        LedgerProjectionService.materialize(client);
+
+        assertTrue(entry.getProjectionRefs().isEmpty());
+        assertThat(portfolio.getTransactions().size(), is(3));
+        assertThat(account.getTransactions().size(), is(1));
+        assertTrue(portfolio.getTransactions().stream()
+                        .anyMatch(transaction -> transaction.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND
+                                        && transaction.getSecurity() == siemens));
+        assertTrue(portfolio.getTransactions().stream()
+                        .anyMatch(transaction -> transaction.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
+                                        && transaction.getSecurity() == siemens));
+        assertTrue(portfolio.getTransactions().stream()
+                        .anyMatch(transaction -> transaction.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
+                                        && transaction.getSecurity() == siemensEnergy));
+        assertThat(account.getTransactions().get(0).getType(), is(AccountTransaction.Type.DEPOSIT));
     }
 
     /**
@@ -414,13 +503,13 @@ public class LedgerProjectionMaterializerTest
     public void testUnsupportedAccountProjectionMessageHasProjectionCode()
     {
         var entry = accountProjectionEntry(LedgerEntryType.DELIVERY_INBOUND);
-        var transaction = (AccountTransaction) LedgerProjectionService.createProjection(entry,
-                        entry.getProjectionRefs().get(0));
 
-        var exception = assertThrows(UnsupportedOperationException.class, transaction::getType);
+        var exception = assertThrows(IllegalArgumentException.class,
+                        () -> LedgerProjectionService.createProjection(entry, entry.getProjectionRefs().get(0)));
 
-        assertThat(exception.getMessage(), is(LedgerDiagnosticCode.LEDGER_PROJ_066
-                        .message("Unsupported account projection for DELIVERY_INBOUND")));
+        assertThat(exception.getMessage(), is(
+                        "[MISSING_SEMANTIC_PRIMARY] entry=" + entry.getUUID() //$NON-NLS-1$
+                                        + " role=DELIVERY_INBOUND Missing semantic primary posting")); //$NON-NLS-1$
     }
 
     /**
@@ -432,13 +521,12 @@ public class LedgerProjectionMaterializerTest
     public void testUnsupportedPortfolioProjectionMessageHasProjectionCode()
     {
         var entry = portfolioProjectionEntry(LedgerEntryType.DEPOSIT);
-        var transaction = (PortfolioTransaction) LedgerProjectionService.createProjection(entry,
-                        entry.getProjectionRefs().get(0));
 
-        var exception = assertThrows(UnsupportedOperationException.class, transaction::getType);
+        var exception = assertThrows(IllegalArgumentException.class,
+                        () -> LedgerProjectionService.createProjection(entry, entry.getProjectionRefs().get(0)));
 
-        assertThat(exception.getMessage(), is(LedgerDiagnosticCode.LEDGER_PROJ_069
-                        .message("Unsupported portfolio projection for DEPOSIT")));
+        assertThat(exception.getMessage(), is("[MISSING_SEMANTIC_PRIMARY] entry=" + entry.getUUID() //$NON-NLS-1$
+                        + " role=ACCOUNT Missing semantic primary posting")); //$NON-NLS-1$
     }
 
     private LedgerTransactionCreator creator(Client client)
@@ -526,5 +614,103 @@ public class LedgerProjectionMaterializerTest
         entry.addProjectionRef(projectionRef);
 
         return entry;
+    }
+
+    private void assertDescriptorMaterializesBuySell(PortfolioTransaction.Type portfolioType,
+                    AccountTransaction.Type accountType)
+    {
+        var client = new Client();
+        var account = account();
+        var portfolio = portfolio();
+        var entry = portfolioType == PortfolioTransaction.Type.BUY
+                        ? creator(client).createBuy(metadata(), cashLeg(account, 100), portfolioLeg(portfolio, 100),
+                                        LedgerCreationUnits.of(LedgerCreationUnit.fee(money(1)))).getEntry()
+                        : creator(client).createSell(metadata(), cashLeg(account, 100), portfolioLeg(portfolio, 100),
+                                        LedgerCreationUnits.of(LedgerCreationUnit.tax(money(2)))).getEntry();
+
+        removeProjectionRefs(entry);
+        LedgerProjectionService.materialize(client);
+
+        assertTrue(entry.getProjectionRefs().isEmpty());
+        assertThat(account.getTransactions().get(0).getType(), is(accountType));
+        assertThat(portfolio.getTransactions().get(0).getType(), is(portfolioType));
+        assertSame(account.getTransactions().get(0).getCrossEntry(), portfolio.getTransactions().get(0).getCrossEntry());
+    }
+
+    private void assertDescriptorMaterializesDelivery(boolean inbound)
+    {
+        var client = new Client();
+        var portfolio = portfolio();
+        var security = security();
+        var entry = inbound
+                        ? creator(client).createInboundDelivery(metadata(), LedgerDeliveryLeg.of(portfolio,
+                                        LedgerSecurityQuantity.of(security, Values.Share.factorize(5)), money(100)))
+                                        .getEntry()
+                        : creator(client).createOutboundDelivery(metadata(), LedgerDeliveryLeg.of(portfolio,
+                                        LedgerSecurityQuantity.of(security, Values.Share.factorize(5)), money(100)))
+                                        .getEntry();
+
+        removeProjectionRefs(entry);
+        LedgerProjectionService.materialize(client);
+
+        assertTrue(entry.getProjectionRefs().isEmpty());
+        assertThat(portfolio.getTransactions().get(0).getType(), is(inbound
+                        ? PortfolioTransaction.Type.DELIVERY_INBOUND
+                        : PortfolioTransaction.Type.DELIVERY_OUTBOUND));
+    }
+
+    private void assertDescriptorMaterializesCashTransfer()
+    {
+        var client = new Client();
+        var source = account();
+        var target = account();
+        var entry = creator(client).createAccountTransfer(metadata(), LedgerCashTransferLeg.of(source, money(100)),
+                        LedgerCashTransferLeg.of(target, money(100))).getEntry();
+
+        removeProjectionRefs(entry);
+        moveFirstPostingToEnd(entry);
+        LedgerProjectionService.materialize(client);
+
+        assertTrue(entry.getProjectionRefs().isEmpty());
+        assertThat(source.getTransactions().get(0).getType(), is(AccountTransaction.Type.TRANSFER_OUT));
+        assertThat(target.getTransactions().get(0).getType(), is(AccountTransaction.Type.TRANSFER_IN));
+        assertSame(target.getTransactions().get(0),
+                        source.getTransactions().get(0).getCrossEntry()
+                                        .getCrossTransaction(source.getTransactions().get(0)));
+    }
+
+    private void assertDescriptorMaterializesSecurityTransfer()
+    {
+        var client = new Client();
+        var source = portfolio();
+        var target = portfolio();
+        var entry = creator(client).createPortfolioTransfer(metadata(),
+                        LedgerPortfolioTransferSecurity.of(security(), Values.Share.factorize(5)),
+                        LedgerPortfolioTransferLeg.of(source, money(100)),
+                        LedgerPortfolioTransferLeg.of(target, money(100))).getEntry();
+
+        removeProjectionRefs(entry);
+        moveFirstPostingToEnd(entry);
+        LedgerProjectionService.materialize(client);
+
+        assertTrue(entry.getProjectionRefs().isEmpty());
+        assertThat(source.getTransactions().get(0).getType(), is(PortfolioTransaction.Type.TRANSFER_OUT));
+        assertThat(target.getTransactions().get(0).getType(), is(PortfolioTransaction.Type.TRANSFER_IN));
+        assertSame(target.getTransactions().get(0),
+                        source.getTransactions().get(0).getCrossEntry()
+                                        .getCrossTransaction(source.getTransactions().get(0)));
+    }
+
+    private void removeProjectionRefs(LedgerEntry entry)
+    {
+        List.copyOf(entry.getProjectionRefs()).forEach(entry::removeProjectionRef);
+    }
+
+    private void moveFirstPostingToEnd(LedgerEntry entry)
+    {
+        var posting = entry.getPostings().get(0);
+
+        entry.removePosting(posting);
+        entry.addPosting(posting);
     }
 }

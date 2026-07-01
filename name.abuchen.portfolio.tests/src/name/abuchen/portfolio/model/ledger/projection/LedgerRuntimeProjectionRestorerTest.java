@@ -26,6 +26,9 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
+import name.abuchen.portfolio.model.ledger.LedgerPostingDirection;
+import name.abuchen.portfolio.model.ledger.LedgerPostingSemanticRole;
+import name.abuchen.portfolio.model.ledger.LedgerPostingUnitRole;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
@@ -40,6 +43,7 @@ import name.abuchen.portfolio.model.ledger.compatibility.LedgerPortfolioTransfer
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerPortfolioTransferSecurity;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerSecurityQuantity;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerTransactionCreator;
+import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -85,9 +89,9 @@ public class LedgerRuntimeProjectionRestorerTest
     }
 
     /**
-     * Checks the projection rebuild scenario: primary projection membership is preferred over scalar fallback.
-     * Account and portfolio lists must be derived from ledger membership targeting when present.
-     * This protects Ledger-V6 from loose scalar projection targeting.
+     * Checks the projection rebuild scenario: semantic primary targeting is preferred over projection membership drift.
+     * Account and portfolio lists must be derived from descriptor targeting when projection refs drift.
+     * This protects Ledger-V6 from stale projection targeting.
      */
     @Test
     public void testPrimaryMembershipMaterializesAccountProjection()
@@ -98,6 +102,7 @@ public class LedgerRuntimeProjectionRestorerTest
         var projectionRef = entry.getProjectionRefs().get(0);
         var alternatePosting = cashPosting("membership-primary-posting", account, 200);
 
+        alternatePosting.setType(LedgerPostingType.FEE);
         entry.addPosting(alternatePosting);
         projectionRef.setPrimaryPostingTargetUUID(null);
         projectionRef.addMembership(alternatePosting.getUUID(), ProjectionMembershipRole.PRIMARY);
@@ -106,7 +111,7 @@ public class LedgerRuntimeProjectionRestorerTest
 
         assertTrue(result.isOK());
         assertThat(account.getTransactions().size(), is(1));
-        assertThat(account.getTransactions().get(0).getAmount(), is(Values.Amount.factorize(200)));
+        assertThat(account.getTransactions().get(0).getAmount(), is(Values.Amount.factorize(100)));
     }
 
     /**
@@ -119,7 +124,14 @@ public class LedgerRuntimeProjectionRestorerTest
     {
         var client = new Client();
         var account = register(client, account());
+        var portfolio = register(client, portfolio());
+        var sourceSecurity = security();
+        var targetSecurity = security();
         var entry = new LedgerEntry("entry-1");
+        var sourceLeg = securityPosting("old-security", portfolio, sourceSecurity, LedgerProjectionRole.OLD_SECURITY_LEG,
+                        CorporateActionLeg.SOURCE_SECURITY);
+        var targetLeg = securityPosting("new-security", portfolio, targetSecurity, LedgerProjectionRole.NEW_SECURITY_LEG,
+                        CorporateActionLeg.TARGET_SECURITY);
         var compensation = cashPosting("cash-compensation", account, 5);
         var fee = unitPosting("fee-posting", LedgerPostingType.FEE, account, 2);
         var tax = unitPosting("tax-posting", LedgerPostingType.TAX, account, 1);
@@ -127,10 +139,26 @@ public class LedgerRuntimeProjectionRestorerTest
 
         entry.setType(LedgerEntryType.SPIN_OFF);
         entry.setDateTime(DATE_TIME);
+        entry.addPosting(sourceLeg);
+        entry.addPosting(targetLeg);
         compensation.setType(LedgerPostingType.CASH_COMPENSATION);
+        compensation.setSemanticRole(LedgerPostingSemanticRole.CASH_COMPENSATION);
+        compensation.setDirection(LedgerPostingDirection.NEUTRAL);
+        compensation.setCorporateActionLeg(CorporateActionLeg.CASH_COMPENSATION);
+        compensation.setUnitRole(LedgerPostingUnitRole.PRIMARY);
+        compensation.setGroupKey(LedgerProjectionRole.CASH_COMPENSATION.name());
+        compensation.setLocalKey(LedgerProjectionRole.CASH_COMPENSATION.name());
+        fee.setSemanticRole(LedgerPostingSemanticRole.FEE);
+        fee.setUnitRole(LedgerPostingUnitRole.FEE);
+        fee.setGroupKey(LedgerProjectionRole.CASH_COMPENSATION.name());
+        tax.setSemanticRole(LedgerPostingSemanticRole.TAX);
+        tax.setUnitRole(LedgerPostingUnitRole.TAX);
+        tax.setGroupKey(LedgerProjectionRole.CASH_COMPENSATION.name());
         entry.addPosting(compensation);
         entry.addPosting(fee);
         entry.addPosting(tax);
+        entry.addProjectionRef(portfolioProjection(LedgerProjectionRole.OLD_SECURITY_LEG, portfolio, sourceLeg));
+        entry.addProjectionRef(portfolioProjection(LedgerProjectionRole.NEW_SECURITY_LEG, portfolio, targetLeg));
         projectionRef.setRole(LedgerProjectionRole.CASH_COMPENSATION);
         projectionRef.setAccount(account);
         projectionRef.addMembership(compensation.getUUID(), ProjectionMembershipRole.PRIMARY);
@@ -622,6 +650,41 @@ public class LedgerRuntimeProjectionRestorerTest
         posting.setType(type);
 
         return posting;
+    }
+
+    private LedgerPosting securityPosting(String uuid, Portfolio portfolio, Security security, LedgerProjectionRole role,
+                    CorporateActionLeg leg)
+    {
+        var posting = new LedgerPosting(uuid);
+
+        posting.setType(LedgerPostingType.SECURITY);
+        posting.setPortfolio(portfolio);
+        posting.setSecurity(security);
+        posting.setShares(Values.Share.factorize(5));
+        posting.setAmount(Values.Amount.factorize(100));
+        posting.setCurrency(CurrencyUnit.EUR);
+        posting.setSemanticRole(LedgerPostingSemanticRole.SECURITY);
+        posting.setDirection(role == LedgerProjectionRole.OLD_SECURITY_LEG
+                        ? LedgerPostingDirection.OUTBOUND
+                        : LedgerPostingDirection.INBOUND);
+        posting.setCorporateActionLeg(leg);
+        posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
+        posting.setGroupKey(role.name());
+        posting.setLocalKey(role.name());
+
+        return posting;
+    }
+
+    private LedgerProjectionRef portfolioProjection(LedgerProjectionRole role, Portfolio portfolio,
+                    LedgerPosting posting)
+    {
+        var projection = new LedgerProjectionRef();
+
+        projection.setRole(role);
+        projection.setPortfolio(portfolio);
+        projection.setPrimaryPosting(posting);
+
+        return projection;
     }
 
     private AccountTransaction legacyDeposit()

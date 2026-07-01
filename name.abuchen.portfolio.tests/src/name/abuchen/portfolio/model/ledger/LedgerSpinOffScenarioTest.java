@@ -276,11 +276,11 @@ public class LedgerSpinOffScenarioTest
         entry.addProjectionRef(projection);
         client.getLedger().addEntry(entry);
 
-        var transaction = LedgerProjectionService.createProjection(entry, projection);
+        var exception = assertThrows(IllegalArgumentException.class,
+                        () -> LedgerProjectionService.createProjection(entry, projection));
 
-        assertThrows(IllegalArgumentException.class,
-                        () -> LedgerShareAdjustmentHelper.plan(client, security, List.of(transaction),
-                                        shares -> shares * 2));
+        assertTrue(exception.getMessage().contains("role=OLD_SECURITY_LEG Missing semantic primary posting"));
+        assertTrue(exception.getMessage().contains("role=NEW_SECURITY_LEG Missing semantic primary posting"));
         assertThat(posting.getShares(), is(Values.Share.factorize(10)));
         assertThat(client.getLedger().getEntries().size(), is(1));
         assertThat(portfolio.getTransactions().size(), is(0));
