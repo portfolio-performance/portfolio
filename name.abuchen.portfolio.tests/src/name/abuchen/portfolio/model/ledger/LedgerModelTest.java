@@ -151,6 +151,12 @@ public class LedgerModelTest
         posting.setShares(500000L);
         posting.setAccount(account);
         posting.setPortfolio(portfolio);
+        posting.setSemanticRole(LedgerPostingSemanticRole.SECURITY);
+        posting.setDirection(LedgerPostingDirection.INBOUND);
+        posting.setCorporateActionLeg(CorporateActionLeg.TARGET_SECURITY);
+        posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
+        posting.setGroupKey("security-leg");
+        posting.setLocalKey("target");
 
         assertThat(posting.getUUID(), is("posting-1"));
         assertThat(posting.getType(), is(LedgerPostingType.SECURITY));
@@ -163,6 +169,46 @@ public class LedgerModelTest
         assertThat(posting.getShares(), is(500000L));
         assertSame(account, posting.getAccount());
         assertSame(portfolio, posting.getPortfolio());
+        assertThat(posting.getSemanticRole(), is(LedgerPostingSemanticRole.SECURITY));
+        assertThat(posting.getDirection(), is(LedgerPostingDirection.INBOUND));
+        assertThat(posting.getCorporateActionLeg(), is(CorporateActionLeg.TARGET_SECURITY));
+        assertThat(posting.getUnitRole(), is(LedgerPostingUnitRole.PRIMARY));
+        assertThat(posting.getGroupKey(), is("security-leg"));
+        assertThat(posting.getLocalKey(), is("target"));
+    }
+
+    /**
+     * Checks the Phase-1 scenario: semantic posting vocabulary is typed and additive.
+     * Projection refs remain the active materialization source in this phase.
+     */
+    @Test
+    public void testLedgerPostingSemanticVocabularyIsTypedAndAdditive()
+    {
+        var posting = new LedgerPosting("posting-1");
+
+        assertThat(posting.getSemanticRole(), is((LedgerPostingSemanticRole) null));
+        assertThat(posting.getDirection(), is((LedgerPostingDirection) null));
+        assertThat(posting.getCorporateActionLeg(), is((CorporateActionLeg) null));
+        assertThat(posting.getUnitRole(), is((LedgerPostingUnitRole) null));
+        assertThat(posting.getGroupKey(), is((String) null));
+        assertThat(posting.getLocalKey(), is((String) null));
+
+        assertThat(EnumSet.allOf(LedgerPostingSemanticRole.class),
+                        is(EnumSet.of(LedgerPostingSemanticRole.CASH, LedgerPostingSemanticRole.SECURITY,
+                                        LedgerPostingSemanticRole.RIGHT, LedgerPostingSemanticRole.BOND,
+                                        LedgerPostingSemanticRole.CASH_COMPENSATION,
+                                        LedgerPostingSemanticRole.ACCRUED_INTEREST,
+                                        LedgerPostingSemanticRole.PRINCIPAL_REDEMPTION,
+                                        LedgerPostingSemanticRole.FEE, LedgerPostingSemanticRole.TAX,
+                                        LedgerPostingSemanticRole.GROSS_VALUE,
+                                        LedgerPostingSemanticRole.FOREX_CONTEXT)));
+        assertThat(EnumSet.allOf(LedgerPostingDirection.class),
+                        is(EnumSet.of(LedgerPostingDirection.INBOUND, LedgerPostingDirection.OUTBOUND,
+                                        LedgerPostingDirection.NEUTRAL)));
+        assertThat(EnumSet.allOf(LedgerPostingUnitRole.class),
+                        is(EnumSet.of(LedgerPostingUnitRole.PRIMARY, LedgerPostingUnitRole.FEE,
+                                        LedgerPostingUnitRole.TAX, LedgerPostingUnitRole.GROSS_VALUE,
+                                        LedgerPostingUnitRole.FOREX_CONTEXT)));
     }
 
     /**

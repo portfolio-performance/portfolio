@@ -23,6 +23,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerAccountCashLeg;
@@ -77,6 +78,33 @@ public class LedgerProjectionMaterializerTest
         assertThat(projection.getSource(), is("source"));
         assertThat(projection.getAmount(), is(Values.Amount.factorize(100)));
         assertThat(projection.getCurrencyCode(), is(CurrencyUnit.EUR));
+    }
+
+    /**
+     * Checks the Phase-1 scenario: semantic posting fields do not switch materialization.
+     * Projection refs remain the active compatibility-view source in this phase.
+     */
+    @Test
+    public void testProjectionRefMaterializationRemainsActiveWithSemanticPostingVocabulary()
+    {
+        var client = new Client();
+        var account = account();
+        var entry = creator(client).createDeposit(metadata(), cashLeg(account, 100)).getEntry();
+        var posting = entry.getPostings().get(0);
+        var projectionRef = entry.getProjectionRefs().get(0);
+
+        posting.setSemanticRole(LedgerPostingSemanticRole.SECURITY);
+        posting.setDirection(LedgerPostingDirection.OUTBOUND);
+        posting.setCorporateActionLeg(CorporateActionLeg.SOURCE_SECURITY);
+        posting.setUnitRole(LedgerPostingUnitRole.FEE);
+        posting.setGroupKey("ignored-phase-1-group");
+        posting.setLocalKey("ignored-phase-1-local");
+
+        var projection = LedgerProjectionService.createProjection(entry, projectionRef);
+
+        assertThat(projection.getUUID(), is(projectionRef.getUUID()));
+        assertThat(((AccountTransaction) projection).getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(projection.getAmount(), is(Values.Amount.factorize(100)));
     }
 
     /**

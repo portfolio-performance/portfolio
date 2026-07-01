@@ -10,6 +10,7 @@ import java.util.UUID;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
 
 /**
@@ -30,6 +31,12 @@ public class LedgerPosting
     private long shares;
     private Account account;
     private Portfolio portfolio;
+    private LedgerPostingSemanticRole semanticRole;
+    private LedgerPostingDirection direction;
+    private CorporateActionLeg corporateActionLeg;
+    private LedgerPostingUnitRole unitRole;
+    private String groupKey;
+    private String localKey;
     private final List<LedgerParameter<?>> parameters = new ArrayList<>();
 
     public LedgerPosting()
@@ -150,6 +157,66 @@ public class LedgerPosting
     public void setPortfolio(Portfolio portfolio)
     {
         this.portfolio = portfolio;
+    }
+
+    public LedgerPostingSemanticRole getSemanticRole()
+    {
+        return semanticRole;
+    }
+
+    public void setSemanticRole(LedgerPostingSemanticRole semanticRole)
+    {
+        this.semanticRole = semanticRole;
+    }
+
+    public LedgerPostingDirection getDirection()
+    {
+        return direction;
+    }
+
+    public void setDirection(LedgerPostingDirection direction)
+    {
+        this.direction = direction;
+    }
+
+    public CorporateActionLeg getCorporateActionLeg()
+    {
+        return corporateActionLeg;
+    }
+
+    public void setCorporateActionLeg(CorporateActionLeg corporateActionLeg)
+    {
+        this.corporateActionLeg = corporateActionLeg;
+    }
+
+    public LedgerPostingUnitRole getUnitRole()
+    {
+        return unitRole;
+    }
+
+    public void setUnitRole(LedgerPostingUnitRole unitRole)
+    {
+        this.unitRole = unitRole;
+    }
+
+    public String getGroupKey()
+    {
+        return groupKey;
+    }
+
+    public void setGroupKey(String groupKey)
+    {
+        this.groupKey = groupKey;
+    }
+
+    public String getLocalKey()
+    {
+        return localKey;
+    }
+
+    public void setLocalKey(String localKey)
+    {
+        this.localKey = localKey;
     }
 
     public List<LedgerParameter<?>> getParameters()
