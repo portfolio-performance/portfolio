@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.model.ledger;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -42,15 +43,33 @@ public final class LedgerSpinOffXmlDefinitionCheckerTest
     public void testSiemensEnergyXmlExampleMatchesStaticLedgerDefinitions() throws IOException
     {
         var report = check(XML_EXAMPLE);
+        var ledgerXml = ledgerSection(Files.readString(resolve(XML_EXAMPLE)));
 
         System.out.println(report.markdown());
 
+        assertFalse(ledgerXml.contains("<uuid>"));
+        assertFalse(ledgerXml.contains("<projectionRefs>"));
+        assertFalse(ledgerXml.contains("<ledger-projection-ref"));
+        assertFalse(ledgerXml.contains("<projection-membership"));
+        assertFalse(ledgerXml.contains("primaryPostingUUID"));
+        assertFalse(ledgerXml.contains("postingGroupUUID"));
         assertTrue(report.structuralValidationOK());
         assertEquals(0, report.summary().unknownParameterCount());
         assertEquals(0, report.summary().valueKindMismatchCount());
         assertEquals(0, report.summary().notAllowedCount());
         assertEquals(0, report.summary().definitionGapCount());
         assertEquals(1, report.spinOffEntryCount());
+    }
+
+    private static String ledgerSection(String xml)
+    {
+        var start = xml.indexOf("<ledger>");
+        var end = xml.indexOf("</ledger>");
+
+        assertTrue(start >= 0);
+        assertTrue(end > start);
+
+        return xml.substring(start, end);
     }
 
     public static Report check(Path xmlFile) throws IOException

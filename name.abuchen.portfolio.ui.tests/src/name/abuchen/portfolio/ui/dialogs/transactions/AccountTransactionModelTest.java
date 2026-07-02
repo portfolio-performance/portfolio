@@ -10,6 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -64,6 +65,7 @@ public class AccountTransactionModelTest
         createModel.applyChanges();
 
         var transaction = account.getTransactions().get(0);
+        var transactionUUID = transaction.getUUID();
         var editModel = new AccountTransactionModel(client, AccountTransaction.Type.DEPOSIT);
         editModel.setSource(account, transaction);
         editModel.setTotal(Values.Amount.factorize(456));
@@ -153,6 +155,7 @@ public class AccountTransactionModelTest
         createModel.applyChanges();
 
         var transaction = account.getTransactions().get(0);
+        var transactionUUID = transaction.getUUID();
         var editModel = new AccountTransactionModel(client, AccountTransaction.Type.DIVIDENDS);
         editModel.setExchangeRateProviderFactory(new ExchangeRateProviderFactory(client));
         editModel.setSource(account, transaction);
@@ -165,12 +168,13 @@ public class AccountTransactionModelTest
 
         assertThat(ledgerEntryCount(client), is(1));
         assertThat(account.getTransactions().size(), is(1));
-        assertThat(account.getTransactions().get(0), is(transaction));
+        transaction = account.getTransactions().get(0);
+        assertThat(transaction.getUUID(), is(transactionUUID));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(451)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(20)));
         assertThat(transaction.getExDate(), is(LocalDateTime.of(2026, 6, 2, 0, 0)));
         assertThat(transaction.getNote(), is("updated"));
-        assertThat(transaction.getUnitSum(Transaction.Unit.Type.TAX).getAmount(), is(Values.Amount.factorize(5)));
+        assertTrue(hasLedgerPosting(transaction, "TAX", Values.Amount.factorize(5)));
         assertThat(client.getAllTransactions().size(), is(1));
 
         var moveModel = new AccountTransactionModel(client, AccountTransaction.Type.DIVIDENDS);
@@ -181,7 +185,7 @@ public class AccountTransactionModelTest
 
         assertTrue(account.getTransactions().isEmpty());
         assertThat(otherAccount.getTransactions().size(), is(1));
-        assertThat(otherAccount.getTransactions().get(0).getUUID(), is(transaction.getUUID()));
+        assertThat(otherAccount.getTransactions().get(0).getUUID(), is(transactionUUID));
         assertThat(otherAccount.getTransactions().get(0).getAmount(), is(Values.Amount.factorize(451)));
         assertThat(client.getAllTransactions().size(), is(1));
     }
@@ -193,6 +197,30 @@ public class AccountTransactionModelTest
             var ledger = Client.class.getMethod("getLedger").invoke(client);
             var entries = ledger.getClass().getMethod("getEntries").invoke(ledger);
             return ((java.util.List<?>) entries).size();
+        }
+        catch (InvocationTargetException e)
+        {
+            throw new AssertionError(e.getCause());
+        }
+    }
+
+    private boolean hasLedgerPosting(Transaction transaction, String type, long amount) throws ReflectiveOperationException
+    {
+        try
+        {
+            var entry = transaction.getClass().getMethod("getLedgerEntry").invoke(transaction);
+            var postings = (List<?>) entry.getClass().getMethod("getPostings").invoke(entry);
+
+            for (var posting : postings)
+            {
+                var postingType = posting.getClass().getMethod("getType").invoke(posting);
+                var postingAmount = (Long) posting.getClass().getMethod("getAmount").invoke(posting);
+
+                if (type.equals(String.valueOf(postingType)) && postingAmount.longValue() == amount)
+                    return true;
+            }
+
+            return false;
         }
         catch (InvocationTargetException e)
         {

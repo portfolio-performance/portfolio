@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -88,7 +89,7 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
     private String planKey;
 
     private List<Transaction> transactions = new ArrayList<>();
-    private List<LedgerExecutionRef> ledgerExecutionRefs = new ArrayList<>();
+    private List<LedgerExecutionRef> ledgerExecutionRefs;
 
     public InvestmentPlan()
     {
@@ -254,6 +255,17 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
     public void setPlanKey(String planKey)
     {
         this.planKey = planKey;
+    }
+
+    boolean hasPlanKey()
+    {
+        return planKey != null && !planKey.isBlank();
+    }
+
+    void assignPlanKeyIfMissing(String planKey)
+    {
+        if (!hasPlanKey())
+            this.planKey = planKey;
     }
 
     public List<Transaction> getTransactions()
@@ -633,6 +645,7 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
         while (!transactionDate.isAfter(now))
         {
             TransactionPair<?> transaction = createTransaction(converter, transactionDate);
+            transaction.getTransaction().setUpdatedAt(planExecutionUpdatedAt(transactionDate));
 
             transactions.add(transaction.getTransaction());
             newlyCreated.add(transaction);
@@ -674,7 +687,9 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
         while (!transactionDate.isAfter(now))
         {
             TransactionPair<?> transaction = createLedgerTransaction(client, converter, transactionDate);
-            markLedgerExecution((LedgerBackedTransaction) transaction.getTransaction(), transactionDate);
+            var ledgerBackedTransaction = (LedgerBackedTransaction) transaction.getTransaction();
+            ledgerBackedTransaction.getLedgerEntry().setUpdatedAt(planExecutionUpdatedAt(transactionDate));
+            markLedgerExecution(ledgerBackedTransaction, transactionDate);
             newlyCreated.add(transaction);
 
             transactionDate = next(transactionDate);
@@ -691,18 +706,29 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
     private void markLedgerExecution(LedgerBackedTransaction transaction, LocalDate executionDate)
     {
         var entry = transaction.getLedgerEntry();
+        var updatedAt = entry.getUpdatedAt();
+
         entry.setGeneratedByPlanKey(getPlanKey());
         entry.setPlanExecutionDate(executionDate);
         entry.setPlanExecutionSequence(null);
         entry.setPreferredViewKind(viewKind(transaction).name());
+        entry.setUpdatedAt(updatedAt);
     }
 
     void markLedgerExecution(LedgerEntry entry, LocalDate executionDate, LedgerExecutionViewKind preferredViewKind)
     {
+        var updatedAt = entry.getUpdatedAt();
+
         entry.setGeneratedByPlanKey(getPlanKey());
         entry.setPlanExecutionDate(executionDate);
         entry.setPlanExecutionSequence(null);
         entry.setPreferredViewKind(preferredViewKind != null ? preferredViewKind.name() : null);
+        entry.setUpdatedAt(updatedAt);
+    }
+
+    private java.time.Instant planExecutionUpdatedAt(LocalDate executionDate)
+    {
+        return executionDate.atStartOfDay().toInstant(ZoneOffset.UTC);
     }
 
     private LedgerExecutionViewKind viewKind(LedgerBackedTransaction transaction)

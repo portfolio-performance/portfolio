@@ -1591,6 +1591,23 @@ public class ClientFactory
             default:
                 break;
         }
+
+        assignMissingInvestmentPlanKeys(client);
+    }
+
+    private static void assignMissingInvestmentPlanKeys(Client client)
+    {
+        var index = 0;
+
+        for (var plan : client.getPlans())
+        {
+            index++;
+
+            if (plan.hasPlanKey())
+                continue;
+
+            plan.assignPlanKeyIfMissing("plan-legacy-" + index); //$NON-NLS-1$
+        }
     }
 
     private static void fixAssetClassTypes(Client client)

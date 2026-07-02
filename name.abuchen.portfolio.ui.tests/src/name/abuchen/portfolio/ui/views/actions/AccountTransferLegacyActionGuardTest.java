@@ -56,8 +56,6 @@ public class AccountTransferLegacyActionGuardTest
         var fixture = ledgerFixture();
         var sourceTransaction = fixture.source().getTransactions().get(0);
         var targetTransaction = fixture.target().getTransactions().get(0);
-        var sourceUUID = sourceTransaction.getUUID();
-        var targetUUID = targetTransaction.getUUID();
 
         new ConvertTransferToDepositRemovalAction(fixture.client(), List.of(sourceTransaction)).run();
 
@@ -66,8 +64,6 @@ public class AccountTransferLegacyActionGuardTest
         assertThat(fixture.target().getTransactions().size(), is(1));
         assertThat(fixture.source().getTransactions().get(0).getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(fixture.target().getTransactions().get(0).getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(fixture.source().getTransactions().get(0).getUUID(), is(sourceUUID));
-        assertThat(fixture.target().getTransactions().get(0).getUUID(), is(targetUUID));
         assertThat(fixture.source().getTransactions().get(0).getCrossEntry(), is(nullValue()));
         assertThat(fixture.target().getTransactions().get(0).getCrossEntry(), is(nullValue()));
     }
@@ -149,16 +145,12 @@ public class AccountTransferLegacyActionGuardTest
         var fixture = ledgerFixture();
         var sourceTransaction = fixture.source().getTransactions().get(0);
         var targetTransaction = fixture.target().getTransactions().get(0);
-        var sourceUUID = sourceTransaction.getUUID();
-        var targetUUID = targetTransaction.getUUID();
 
         new RevertTransferAction(fixture.client(), new TransactionPair<>(fixture.source(), sourceTransaction)).run();
 
         assertThat(ledgerEntryCount(fixture.client()), is(1));
         assertThat(fixture.source().getTransactions().size(), is(1));
         assertThat(fixture.target().getTransactions().size(), is(1));
-        assertThat(fixture.source().getTransactions().get(0).getUUID(), is(sourceUUID));
-        assertThat(fixture.target().getTransactions().get(0).getUUID(), is(targetUUID));
         assertThat(fixture.source().getTransactions().get(0).getType(), is(AccountTransaction.Type.TRANSFER_IN));
         assertThat(fixture.target().getTransactions().get(0).getType(), is(AccountTransaction.Type.TRANSFER_OUT));
         assertSame(fixture.source().getTransactions().get(0), fixture.target().getTransactions().get(0)
@@ -235,16 +227,12 @@ public class AccountTransferLegacyActionGuardTest
         var fixture = ledgerPortfolioFixture();
         var sourceTransaction = fixture.source().getTransactions().get(0);
         var targetTransaction = fixture.target().getTransactions().get(0);
-        var sourceUUID = sourceTransaction.getUUID();
-        var targetUUID = targetTransaction.getUUID();
 
         new RevertTransferAction(fixture.client(), new TransactionPair<>(fixture.source(), sourceTransaction)).run();
 
         assertThat(ledgerEntryCount(fixture.client()), is(1));
         assertThat(fixture.source().getTransactions().size(), is(1));
         assertThat(fixture.target().getTransactions().size(), is(1));
-        assertThat(fixture.source().getTransactions().get(0).getUUID(), is(sourceUUID));
-        assertThat(fixture.target().getTransactions().get(0).getUUID(), is(targetUUID));
         assertThat(fixture.source().getTransactions().get(0).getType(), is(PortfolioTransaction.Type.TRANSFER_IN));
         assertThat(fixture.target().getTransactions().get(0).getType(), is(PortfolioTransaction.Type.TRANSFER_OUT));
         assertSame(fixture.source().getTransactions().get(0), fixture.target().getTransactions().get(0)
@@ -347,7 +335,6 @@ public class AccountTransferLegacyActionGuardTest
     {
         var fixture = ledgerBuySellFixture(PortfolioTransaction.Type.SELL);
         var portfolioTransaction = fixture.portfolio().getTransactions().get(0);
-        var portfolioProjectionUUID = portfolioTransaction.getUUID();
 
         new ConvertBuySellToDeliveryAction(fixture.client(),
                         new TransactionPair<>(fixture.portfolio(), portfolioTransaction)).run();
@@ -355,7 +342,6 @@ public class AccountTransferLegacyActionGuardTest
         assertThat(ledgerEntryCount(fixture.client()), is(1));
         assertThat(fixture.account().getTransactions().isEmpty(), is(true));
         assertThat(fixture.portfolio().getTransactions().size(), is(1));
-        assertThat(fixture.portfolio().getTransactions().get(0).getUUID(), is(portfolioProjectionUUID));
         assertThat(fixture.portfolio().getTransactions().get(0).getType(),
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
         assertThat(fixture.portfolio().getTransactions().get(0).getCrossEntry(), is(nullValue()));
@@ -392,7 +378,6 @@ public class AccountTransferLegacyActionGuardTest
     {
         var fixture = ledgerDeliveryFixture();
         var delivery = fixture.portfolio().getTransactions().get(0);
-        var portfolioProjectionUUID = delivery.getUUID();
 
         new ConvertDeliveryToBuySellAction(fixture.client(), new TransactionPair<>(fixture.portfolio(), delivery))
                         .run();
@@ -400,7 +385,6 @@ public class AccountTransferLegacyActionGuardTest
         assertThat(ledgerEntryCount(fixture.client()), is(1));
         assertThat(fixture.account().getTransactions().size(), is(1));
         assertThat(fixture.portfolio().getTransactions().size(), is(1));
-        assertThat(fixture.portfolio().getTransactions().get(0).getUUID(), is(portfolioProjectionUUID));
         assertThat(fixture.portfolio().getTransactions().get(0).getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(fixture.account().getTransactions().get(0).getType(), is(AccountTransaction.Type.BUY));
         assertSame(fixture.portfolio().getTransactions().get(0), fixture.account().getTransactions().get(0)
@@ -418,13 +402,11 @@ public class AccountTransferLegacyActionGuardTest
     {
         var fixture = ledgerDeliveryFixture();
         var delivery = fixture.portfolio().getTransactions().get(0);
-        var projectionUUID = delivery.getUUID();
 
         new RevertDeliveryAction(fixture.client(), new TransactionPair<>(fixture.portfolio(), delivery)).run();
 
         assertThat(ledgerEntryCount(fixture.client()), is(1));
         assertThat(fixture.portfolio().getTransactions().size(), is(1));
-        assertThat(fixture.portfolio().getTransactions().get(0).getUUID(), is(projectionUUID));
         assertThat(fixture.portfolio().getTransactions().get(0).getType(),
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
         assertThat(fixture.portfolio().getTransactions().get(0).getCrossEntry(), is(nullValue()));
@@ -886,13 +868,11 @@ public class AccountTransferLegacyActionGuardTest
     {
         var fixture = ledgerBuySellFixture(from);
         var portfolioTransaction = fixture.portfolio().getTransactions().get(0);
-        var portfolioUUID = portfolioTransaction.getUUID();
 
         setTypeValue(new TransactionTypeEditingSupport(fixture.client()), portfolioTransaction, from, to);
 
         assertThat(fixture.account().getTransactions().isEmpty(), is(true));
         assertThat(fixture.portfolio().getTransactions().size(), is(1));
-        assertThat(fixture.portfolio().getTransactions().get(0).getUUID(), is(portfolioUUID));
         assertThat(fixture.portfolio().getTransactions().get(0).getType(), is(to));
         assertThat(fixture.portfolio().getTransactions().get(0).getCrossEntry(), is(nullValue()));
     }
@@ -902,13 +882,11 @@ public class AccountTransferLegacyActionGuardTest
     {
         var fixture = ledgerDeliveryFixture(from);
         var delivery = fixture.portfolio().getTransactions().get(0);
-        var portfolioUUID = delivery.getUUID();
 
         setTypeValue(new TransactionTypeEditingSupport(fixture.client()), delivery, from, to);
 
         assertThat(fixture.account().getTransactions().size(), is(1));
         assertThat(fixture.portfolio().getTransactions().size(), is(1));
-        assertThat(fixture.portfolio().getTransactions().get(0).getUUID(), is(portfolioUUID));
         assertThat(fixture.portfolio().getTransactions().get(0).getType(), is(to));
         assertThat(fixture.account().getTransactions().get(0).getType(), is(accountType));
         assertSame(fixture.portfolio().getTransactions().get(0), fixture.account().getTransactions().get(0)

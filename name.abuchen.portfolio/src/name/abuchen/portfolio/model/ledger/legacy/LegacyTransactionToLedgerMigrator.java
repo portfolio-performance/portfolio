@@ -2,6 +2,7 @@ package name.abuchen.portfolio.model.ledger.legacy;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
@@ -548,6 +549,7 @@ public final class LegacyTransactionToLedgerMigrator
                 entry.setPreferredViewKind(transaction instanceof PortfolioTransaction
                                 ? InvestmentPlan.LedgerExecutionViewKind.PORTFOLIO.name()
                                 : InvestmentPlan.LedgerExecutionViewKind.ACCOUNT.name());
+                MigrationGraphBuilder.setUpdatedAt(entry, transaction);
                 investmentPlan.getTransactions().remove(index);
             }
         }
@@ -586,7 +588,7 @@ public final class LegacyTransactionToLedgerMigrator
             entry.setDateTime(transaction.getDateTime());
             entry.setNote(transaction.getNote());
             entry.setSource(transaction.getSource());
-            entry.setUpdatedAt(transaction.getUpdatedAt());
+            entry.setUpdatedAt(migratedUpdatedAt(transaction));
 
             return entry;
         }
@@ -646,7 +648,12 @@ public final class LegacyTransactionToLedgerMigrator
 
         private static void setUpdatedAt(LedgerEntry entry, Transaction transaction)
         {
-            entry.setUpdatedAt(transaction.getUpdatedAt());
+            entry.setUpdatedAt(migratedUpdatedAt(transaction));
+        }
+
+        private static java.time.Instant migratedUpdatedAt(Transaction transaction)
+        {
+            return transaction.getDateTime().toInstant(ZoneOffset.UTC);
         }
 
         private static void addPosting(LedgerEntry entry, LedgerPosting posting)

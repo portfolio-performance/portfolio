@@ -81,6 +81,7 @@ public class SecurityDeliveryModelTest
         applyDeliveryValues(createModel);
         createModel.applyChanges();
         var transaction = fixture.portfolio().getTransactions().get(0);
+        var transactionUUID = transaction.getUUID();
 
         var editModel = model(fixture, PortfolioTransaction.Type.DELIVERY_INBOUND);
         editModel.setSource(new TransactionPair<>(fixture.portfolio(), transaction));
@@ -91,7 +92,9 @@ public class SecurityDeliveryModelTest
         editModel.applyChanges();
 
         assertThat(ledgerEntryCount(fixture.client()), is(1));
-        assertThat(fixture.portfolio().getTransactions(), is(java.util.List.of(transaction)));
+        assertThat(fixture.portfolio().getTransactions().size(), is(1));
+        transaction = fixture.portfolio().getTransactions().get(0);
+        assertThat(transaction.getUUID(), is(transactionUUID));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(330)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(20)));
         assertThat(transaction.getNote(), is("updated"));
@@ -109,7 +112,7 @@ public class SecurityDeliveryModelTest
 
         assertTrue(fixture.portfolio().getTransactions().isEmpty());
         assertThat(otherPortfolio.getTransactions().size(), is(1));
-        assertThat(otherPortfolio.getTransactions().get(0).getUUID(), is(transaction.getUUID()));
+        assertThat(otherPortfolio.getTransactions().get(0).getUUID(), is(transactionUUID));
         assertThat(otherPortfolio.getTransactions().get(0).getShares(), is(Values.Share.factorize(20)));
         assertThat(fixture.client().getAllTransactions().size(), is(1));
     }

@@ -207,6 +207,8 @@ public class BuySellModelTest
                         Values.Share.factorize(5), java.util.List.of(), "note", "source");
         var accountTransaction = entry.getAccountTransaction();
         var portfolioTransaction = entry.getPortfolioTransaction();
+        var accountTransactionUUID = accountTransaction.getUUID();
+        var portfolioTransactionUUID = portfolioTransaction.getUUID();
         var editModel = editModel(fixture, PortfolioTransaction.Type.BUY);
 
         editModel.setSource(entry);
@@ -215,8 +217,12 @@ public class BuySellModelTest
         editModel.setNote("updated");
         editModel.applyChanges();
 
-        assertThat(fixture.account().getTransactions(), is(java.util.List.of(accountTransaction)));
-        assertThat(fixture.portfolio().getTransactions(), is(java.util.List.of(portfolioTransaction)));
+        assertThat(fixture.account().getTransactions().size(), is(1));
+        assertThat(fixture.portfolio().getTransactions().size(), is(1));
+        accountTransaction = fixture.account().getTransactions().get(0);
+        portfolioTransaction = fixture.portfolio().getTransactions().get(0);
+        assertThat(accountTransaction.getUUID(), is(accountTransactionUUID));
+        assertThat(portfolioTransaction.getUUID(), is(portfolioTransactionUUID));
         assertThat(portfolioTransaction.getShares(), is(Values.Share.factorize(7)));
         assertThat(portfolioTransaction.getAmount(), is(Values.Amount.factorize(140)));
         assertThat(portfolioTransaction.getNote(), is("updated"));
@@ -230,10 +236,10 @@ public class BuySellModelTest
         moveModel.applyChanges();
 
         assertThat(fixture.account().getTransactions().size(), is(1));
-        assertThat(fixture.account().getTransactions().get(0).getUUID(), is(accountTransaction.getUUID()));
+        assertThat(fixture.account().getTransactions().get(0).getUUID(), is(accountTransactionUUID));
         assertTrue(fixture.portfolio().getTransactions().isEmpty());
         assertThat(otherPortfolio.getTransactions().size(), is(1));
-        assertThat(otherPortfolio.getTransactions().get(0).getUUID(), is(portfolioTransaction.getUUID()));
+        assertThat(otherPortfolio.getTransactions().get(0).getUUID(), is(portfolioTransactionUUID));
         assertSame(otherPortfolio.getTransactions().get(0),
                         fixture.account().getTransactions().get(0).getCrossEntry()
                                         .getCrossTransaction(fixture.account().getTransactions().get(0)));
