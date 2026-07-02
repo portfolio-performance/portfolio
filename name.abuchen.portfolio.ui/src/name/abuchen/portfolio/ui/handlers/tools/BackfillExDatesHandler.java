@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import jakarta.inject.Named;
 
@@ -38,10 +40,13 @@ import name.abuchen.portfolio.bootstrap.BundleMessages;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.LedgerDiagnosticCode;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityEvent;
 import name.abuchen.portfolio.model.SecurityEvent.DividendEvent;
 import name.abuchen.portfolio.model.TransactionPair;
+import name.abuchen.portfolio.model.ledger.compatibility.LedgerInlineEditingField;
+import name.abuchen.portfolio.model.ledger.compatibility.LedgerInlineEditingPolicy;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.impl.DivvyDiaryDividendFeed;
@@ -104,11 +109,69 @@ public class BackfillExDatesHandler
         if (dialog.open() != IDialogConstants.OK_ID)
             return;
 
-        matches.forEach(match -> match.transaction.getTransaction().setExDate(match.exDate().atStartOfDay()));
-        client.markDirty();
+        applyExDates(client, matches);
 
         MessageDialog.openInformation(shell, Messages.LabelInfo,
                         MessageFormat.format(Messages.MsgBackfillExDatesUpdated, matches.size()));
+    }
+
+    static void applyExDates(Client client, List<MatchedTransaction> matches)
+    {
+        Objects.requireNonNull(client);
+        Objects.requireNonNull(matches);
+
+        var updates = matches.stream().map(match -> prepareExDateUpdate(client, match)).toList();
+        updates.forEach(PreparedExDateUpdate::apply);
+
+        if (!updates.isEmpty())
+            client.markDirty();
+    }
+
+    private static PreparedExDateUpdate prepareExDateUpdate(Client client, MatchedTransaction match)
+    {
+        var pair = match.transaction();
+        var transaction = pair.getTransaction();
+        var exDate = match.exDate().atStartOfDay();
+
+        if (transaction.getType() != AccountTransaction.Type.DIVIDENDS)
+            throw new IllegalArgumentException("Backfill ex-date updates require dividend transactions"); //$NON-NLS-1$
+
+        if (!LedgerInlineEditingPolicy.isLedgerBacked(client, transaction))
+            return () -> transaction.setExDate(exDate);
+
+        if (!LedgerInlineEditingPolicy.isEditable(transaction, LedgerInlineEditingField.EX_DATE)
+                        || !LedgerInlineEditingPolicy.canUpdateDividendExDate(client, transaction))
+        {
+            throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_UI_009
+                            .message(Messages.LedgerExDateEditingSupportNoSafeEditorPolicyBlocked));
+        }
+
+        if (!(pair.getOwner() instanceof Account owner))
+        {
+            throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_UI_010
+                            .message(Messages.LedgerExDateEditingSupportNoSafeEditorLedgerBacked));
+        }
+
+        return new LedgerExDateUpdate(client, owner, transaction, exDate);
+    }
+
+    private interface PreparedExDateUpdate
+    {
+        void apply();
+    }
+
+    private record LedgerExDateUpdate(Client client, Account owner, AccountTransaction transaction,
+                    LocalDateTime exDate) implements PreparedExDateUpdate
+    {
+        @Override
+        public void apply()
+        {
+            if (!LedgerInlineEditingPolicy.updateDividendExDate(client, owner, transaction, exDate))
+            {
+                throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_UI_010
+                                .message(Messages.LedgerExDateEditingSupportNoSafeEditorLedgerBacked));
+            }
+        }
     }
 
     private void collectMatches(Client client, List<MatchedTransaction> matches, IProgressMonitor monitor)
@@ -188,7 +251,7 @@ public class BackfillExDatesHandler
         return answer;
     }
 
-    private record MatchedTransaction(TransactionPair<AccountTransaction> transaction, LocalDate exDate)
+    record MatchedTransaction(TransactionPair<AccountTransaction> transaction, LocalDate exDate)
     {
     }
 
