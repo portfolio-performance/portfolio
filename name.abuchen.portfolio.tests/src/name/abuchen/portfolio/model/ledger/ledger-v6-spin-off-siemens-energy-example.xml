@@ -309,7 +309,7 @@
           </ledger-parameter>
         </parameters>
         <postings>
-          <ledger-posting>
+          <ledger-posting semanticRole="SECURITY" direction="OUTBOUND" corporateActionLeg="SOURCE_SECURITY" unitRole="PRIMARY" groupKey="OLD_SECURITY_LEG" localKey="OLD_SECURITY_LEG">
             <uuid>20000000-0000-0000-0000-000000000002</uuid>
             <type>SECURITY</type>
             <amount>109960</amount>
@@ -360,7 +360,7 @@
               </ledger-parameter>
             </parameters>
           </ledger-posting>
-          <ledger-posting>
+          <ledger-posting semanticRole="SECURITY" direction="INBOUND" corporateActionLeg="TARGET_SECURITY" unitRole="PRIMARY" groupKey="DELIVERY_INBOUND" localKey="DELIVERY_INBOUND">
             <uuid>20000000-0000-0000-0000-000000000007</uuid>
             <type>SECURITY</type>
             <amount>109960</amount>
@@ -401,7 +401,7 @@
               </ledger-parameter>
             </parameters>
           </ledger-posting>
-          <ledger-posting>
+          <ledger-posting semanticRole="SECURITY" direction="INBOUND" corporateActionLeg="TARGET_SECURITY" unitRole="PRIMARY" groupKey="NEW_SECURITY_LEG" localKey="NEW_SECURITY_LEG">
             <uuid>20000000-0000-0000-0000-000000000003</uuid>
             <type>SECURITY</type>
             <amount>10605</amount>
@@ -462,7 +462,7 @@
               </ledger-parameter>
             </parameters>
           </ledger-posting>
-          <ledger-posting>
+          <ledger-posting semanticRole="CASH_COMPENSATION" direction="NEUTRAL" corporateActionLeg="CASH_COMPENSATION" unitRole="PRIMARY" groupKey="CASH_COMPENSATION" localKey="CASH_COMPENSATION">
             <uuid>20000000-0000-0000-0000-000000000004</uuid>
             <type>CASH_COMPENSATION</type>
             <amount>500</amount>
@@ -512,7 +512,7 @@
               </ledger-parameter>
             </parameters>
           </ledger-posting>
-          <ledger-posting>
+          <ledger-posting semanticRole="FEE" direction="NEUTRAL" corporateActionLeg="FEE" unitRole="FEE" groupKey="CASH_COMPENSATION" localKey="FEE">
             <uuid>20000000-0000-0000-0000-000000000005</uuid>
             <type>FEE</type>
             <amount>200</amount>
@@ -537,7 +537,7 @@
               </ledger-parameter>
             </parameters>
           </ledger-posting>
-          <ledger-posting>
+          <ledger-posting semanticRole="TAX" direction="NEUTRAL" corporateActionLeg="TAX" unitRole="TAX" groupKey="CASH_COMPENSATION" localKey="TAX">
             <uuid>20000000-0000-0000-0000-000000000006</uuid>
             <type>TAX</type>
             <amount>100</amount>
@@ -586,7 +586,7 @@
         <updatedAt>2026-06-15T10:41:34.896212600Z</updatedAt>
         <parameters/>
         <postings>
-          <ledger-posting>
+          <ledger-posting semanticRole="CASH" direction="OUTBOUND" unitRole="PRIMARY" groupKey="ACCOUNT" localKey="ACCOUNT">
             <uuid>29ef4ac0-ce62-4bfb-8bed-5dbabf5a8ca4</uuid>
             <type>CASH</type>
             <amount>118640</amount>
@@ -595,7 +595,7 @@
             <account reference="../../../../../../accounts/account"/>
             <parameters/>
           </ledger-posting>
-          <ledger-posting>
+          <ledger-posting semanticRole="SECURITY" direction="INBOUND" unitRole="PRIMARY" groupKey="PORTFOLIO" localKey="PORTFOLIO">
             <uuid>7898a9e0-ff1b-484b-81ff-37ad41d3b611</uuid>
             <type>SECURITY</type>
             <amount>118640</amount>
@@ -614,7 +614,7 @@
         <updatedAt>2026-06-15T10:41:50.210577100Z</updatedAt>
         <parameters/>
         <postings>
-          <ledger-posting>
+          <ledger-posting semanticRole="CASH" direction="NEUTRAL" unitRole="PRIMARY" groupKey="ACCOUNT" localKey="ACCOUNT">
             <uuid>ed4ed7ce-87dc-4c1c-a3cd-32dc41370bf1</uuid>
             <type>CASH</type>
             <amount>1000000</amount>

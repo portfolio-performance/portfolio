@@ -186,13 +186,9 @@ public final class LedgerNativeEntryDefinitionValidator
     private static void validateLegs(LedgerEntry entry, LedgerEntryDefinition definition,
                     List<ValidationIssue> issues)
     {
-        var postingsByUUID = entry.getPostings().stream() //
-                        .collect(Collectors.toMap(LedgerPosting::getUUID, posting -> posting, (left, right) -> left,
-                                        LinkedHashMap::new));
-
         for (var leg : definition.getLegDefinitions())
         {
-            var match = matchLeg(entry, definition, leg, postingsByUUID, issues);
+            var match = matchLeg(entry, definition, leg, issues);
 
             validateCardinality(entry, leg, match.postings(), issues);
             validateLegParameters(entry, leg, match.postings(), issues);
@@ -200,20 +196,19 @@ public final class LedgerNativeEntryDefinitionValidator
     }
 
     private static LegMatch matchLeg(LedgerEntry entry, LedgerEntryDefinition definition, LedgerLegDefinition leg,
-                    Map<String, LedgerPosting> postingsByUUID, List<ValidationIssue> issues)
+                    List<ValidationIssue> issues)
     {
         var projectionRole = leg.getProjectionRole();
 
         if (projectionRole.isPresent())
-            return matchProjectedLeg(entry, definition, leg, projectionRole.get(), postingsByUUID, issues);
+            return matchProjectedLeg(entry, definition, leg, projectionRole.get(), issues);
 
         return new LegMatch(entry.getPostings().stream() //
                         .filter(posting -> postingMatchesLeg(entry.getType(), posting, leg)).toList());
     }
 
     private static LegMatch matchProjectedLeg(LedgerEntry entry, LedgerEntryDefinition definition,
-                    LedgerLegDefinition leg, LedgerProjectionRole projectionRole, Map<String, LedgerPosting> postingsByUUID,
-                    List<ValidationIssue> issues)
+                    LedgerLegDefinition leg, LedgerProjectionRole projectionRole, List<ValidationIssue> issues)
     {
         var descriptors = Collections.<name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor>emptyList();
         try

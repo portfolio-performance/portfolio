@@ -645,7 +645,9 @@ public class LedgerEntryDefinitionTest
         entry.addPosting(posting);
         ledger.addEntry(entry);
 
-        assertTrue(LedgerStructuralValidator.validate(ledger).isOK());
+        assertFalse(LedgerStructuralValidator.validate(ledger).isOK());
+        assertTrue(LedgerStructuralValidator.validate(ledger)
+                        .hasIssue(LedgerStructuralValidator.IssueCode.SEMANTIC_SOURCE_REQUIRED));
     }
 
     private void assertRequiredPosting(name.abuchen.portfolio.model.ledger.configuration.LedgerEntryDefinition definition,

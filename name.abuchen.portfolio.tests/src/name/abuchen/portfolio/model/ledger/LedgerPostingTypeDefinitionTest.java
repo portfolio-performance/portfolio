@@ -168,7 +168,9 @@ public class LedgerPostingTypeDefinitionTest
         entry.addPosting(posting);
         ledger.addEntry(entry);
 
-        assertTrue(LedgerStructuralValidator.validate(ledger).isOK());
+        assertFalse(LedgerStructuralValidator.validate(ledger).isOK());
+        assertTrue(LedgerStructuralValidator.validate(ledger)
+                        .hasIssue(LedgerStructuralValidator.IssueCode.SEMANTIC_SOURCE_REQUIRED));
         assertFalse(LedgerPostingTypeDefinitionRegistry.lookup(LedgerPostingType.CASH).orElseThrow()
                         .supportsParameterType(LedgerParameterType.FEE_REASON));
     }

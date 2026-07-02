@@ -1228,8 +1228,9 @@ public class LegacyTransactionToLedgerMigratorTest
 
     private void assertDiagnostic(LegacyTransactionToLedgerMigrator.MigrationResult result, String... fragments)
     {
-        assertTrue(result.getDiagnostics().stream().anyMatch(diagnostic -> List.of(fragments).stream()
-                        .allMatch(diagnostic::contains)));
+        assertTrue("Missing diagnostic fragments " + List.of(fragments) + " in " + result.getDiagnostics(), //$NON-NLS-1$ //$NON-NLS-2$
+                        result.getDiagnostics().stream().anyMatch(diagnostic -> List.of(fragments).stream()
+                                        .allMatch(diagnostic::contains)));
     }
 
     private LedgerEntry existingAccountProjectionEntry(LedgerEntryType entryType, Account account, String projectionUUID)
@@ -1288,8 +1289,10 @@ public class LegacyTransactionToLedgerMigratorTest
         cashPosting.setAmount(Values.Amount.factorize(100));
         cashPosting.setCurrency(CurrencyUnit.EUR);
         cashPosting.setSemanticRole(LedgerPostingSemanticRole.CASH);
-        cashPosting.setDirection(LedgerPostingDirection.NEUTRAL);
+        cashPosting.setDirection(LedgerPostingDirection.OUTBOUND);
         cashPosting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
+        cashPosting.setGroupKey("ACCOUNT"); //$NON-NLS-1$
+        cashPosting.setLocalKey("ACCOUNT"); //$NON-NLS-1$
         securityPosting.setType(LedgerPostingType.SECURITY);
         securityPosting.setPortfolio(portfolio);
         securityPosting.setAmount(Values.Amount.factorize(100));
@@ -1297,8 +1300,10 @@ public class LegacyTransactionToLedgerMigratorTest
         securityPosting.setSecurity(security());
         securityPosting.setShares(Values.Share.factorize(5));
         securityPosting.setSemanticRole(LedgerPostingSemanticRole.SECURITY);
-        securityPosting.setDirection(LedgerPostingDirection.NEUTRAL);
+        securityPosting.setDirection(LedgerPostingDirection.INBOUND);
         securityPosting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
+        securityPosting.setGroupKey("PORTFOLIO"); //$NON-NLS-1$
+        securityPosting.setLocalKey("PORTFOLIO"); //$NON-NLS-1$
         entry.addPosting(cashPosting);
         entry.addPosting(securityPosting);
 

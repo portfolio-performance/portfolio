@@ -83,11 +83,11 @@ public class OnlyAccountTransactionsWithSecurityCanHaveExDateCheckTest
         entry.setType(LedgerEntryType.DIVIDENDS);
         entry.setDateTime(DATE_TIME);
 
-        posting.setType(LedgerPostingType.CASH);
+        posting.setType(LedgerPostingType.FEE);
         posting.setAccount(account);
         posting.setAmount(Values.Amount.factorize(10));
         posting.setCurrency(CurrencyUnit.EUR);
-        posting.setSemanticRole(LedgerPostingSemanticRole.CASH);
+        posting.setSemanticRole(LedgerPostingSemanticRole.FEE);
         posting.setDirection(LedgerPostingDirection.NEUTRAL);
         posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
         posting.addParameter(LedgerParameter.ofLocalDateTime(LedgerParameterType.EX_DATE, EX_DATE));
@@ -147,11 +147,11 @@ public class OnlyAccountTransactionsWithSecurityCanHaveExDateCheckTest
         entry.setType(LedgerEntryType.FEES);
         entry.setDateTime(DATE_TIME);
 
-        posting.setType(LedgerPostingType.CASH);
+        posting.setType(LedgerPostingType.FEE);
         posting.setAccount(account);
         posting.setAmount(Values.Amount.factorize(10));
         posting.setCurrency(CurrencyUnit.EUR);
-        posting.setSemanticRole(LedgerPostingSemanticRole.CASH);
+        posting.setSemanticRole(LedgerPostingSemanticRole.FEE);
         posting.setDirection(LedgerPostingDirection.NEUTRAL);
         posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
         posting.addParameter(LedgerParameter.ofLocalDateTime(LedgerParameterType.EX_DATE, EX_DATE));

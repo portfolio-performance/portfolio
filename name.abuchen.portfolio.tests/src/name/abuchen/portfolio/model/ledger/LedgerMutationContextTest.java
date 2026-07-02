@@ -203,8 +203,8 @@ public class LedgerMutationContextTest
                         () -> new LedgerMutationContext(client).mutateEntry(entry,
                                         editedEntry -> name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(editedEntry).get(0).getPrimaryPosting().setAccount(null)));
 
-        assertTrue(exception.getMessage(), exception.getMessage().contains("[MISSING_SEMANTIC_PRIMARY] "));
-        assertTrue(exception.getMessage(), exception.getMessage().contains("Semantic account owner is missing"));
+        assertTrue(exception.getMessage(), exception.getMessage().contains("[SEMANTIC_OWNER_REQUIRED] "));
+        assertTrue(exception.getMessage(), exception.getMessage().contains("Semantic primary owner is missing"));
 
         assertSame(originalProjectionAccount, name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0).getAccount());
         assertSame(originalPostingAccount, entry.getPostings().get(0).getAccount());
@@ -374,7 +374,7 @@ public class LedgerMutationContextTest
         posting.setAmount(Values.Amount.factorize(100));
         posting.setCurrency(CurrencyUnit.EUR);
         posting.setSemanticRole(LedgerPostingSemanticRole.CASH);
-        posting.setDirection(LedgerPostingDirection.INBOUND);
+        posting.setDirection(LedgerPostingDirection.NEUTRAL);
         posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
         entry.addPosting(posting);
 

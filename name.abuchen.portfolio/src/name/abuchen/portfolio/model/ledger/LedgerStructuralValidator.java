@@ -14,6 +14,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.LedgerDiagnosticCode;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerParameterType;
 
@@ -60,7 +61,19 @@ public final class LedgerStructuralValidator
         PARAMETER_CODE_NOT_ALLOWED,
         EX_DATE_VALUE_KIND_REQUIRED,
         EX_DATE_SECURITY_REQUIRED,
-        SIGNED_FACT_NOT_ALLOWED
+        SIGNED_FACT_NOT_ALLOWED,
+        SEMANTIC_PRIMARY_REQUIRED,
+        SEMANTIC_PRIMARY_AMBIGUOUS,
+        SEMANTIC_SOURCE_REQUIRED,
+        SEMANTIC_TARGET_REQUIRED,
+        SEMANTIC_SOURCE_AMBIGUOUS,
+        SEMANTIC_TARGET_AMBIGUOUS,
+        SEMANTIC_OWNER_REQUIRED,
+        SEMANTIC_UNIT_GROUP_REQUIRED,
+        SEMANTIC_UNIT_GROUP_AMBIGUOUS,
+        SEMANTIC_LOCAL_KEY_REQUIRED,
+        CORPORATE_ACTION_LEG_REQUIRED,
+        CORPORATE_ACTION_LEG_AMBIGUOUS
     }
 
     private LedgerStructuralValidator()
@@ -86,30 +99,8 @@ public final class LedgerStructuralValidator
 
     private static void validateEntries(Ledger ledger, List<ValidationIssue> issues)
     {
-        var entryUUIDCounts = new LinkedHashMap<String, Integer>();
-        var postingUUIDCounts = new LinkedHashMap<String, Integer>();
         for (var entry : ledger.getEntries())
         {
-            if (isBlank(entry.getUUID()))
-                issues.add(entryIssue(IssueCode.ENTRY_UUID_REQUIRED,
-                                LedgerDiagnosticCode.LEDGER_STRUCT_005
-                                                .message(Messages.LedgerStructuralValidatorEntryUuidRequired),
-                                entry));
-            else
-            {
-                var occurrenceCount = entryUUIDCounts.merge(entry.getUUID(), 1, Integer::sum);
-                if (occurrenceCount > 1)
-                    issues.add(entryIssue(IssueCode.DUPLICATE_ENTRY_UUID,
-                                    LedgerDiagnosticCode.LEDGER_STRUCT_006
-                                                    .message(MessageFormat.format(
-                                                                    Messages.LedgerStructuralValidatorDuplicateEntryUuid,
-                                                                    entry.getUUID())),
-                                    entry)
-                                                    .withDetail("objectType", "LedgerEntry") //$NON-NLS-1$ //$NON-NLS-2$
-                                                    .withDetail("duplicateUUID", entry.getUUID()) //$NON-NLS-1$
-                                                    .withDetail("occurrenceCount", occurrenceCount)); //$NON-NLS-1$
-            }
-
             if (entry.getType() == null)
                 issues.add(entryIssue(IssueCode.ENTRY_TYPE_REQUIRED,
                                 LedgerDiagnosticCode.LEDGER_STRUCT_007
@@ -127,40 +118,14 @@ public final class LedgerStructuralValidator
 
             validateParameters(entry, null, entry.getParameters(), issues);
 
-            validatePostings(entry, postingUUIDCounts, issues);
+            validatePostings(entry, issues);
         }
     }
 
-    private static Set<String> validatePostings(LedgerEntry entry, Map<String, Integer> ledgerPostingUUIDCounts,
-                    List<ValidationIssue> issues)
+    private static void validatePostings(LedgerEntry entry, List<ValidationIssue> issues)
     {
-        var entryPostingUUIDs = new HashSet<String>();
-
         for (var posting : entry.getPostings())
         {
-            if (isBlank(posting.getUUID()))
-                issues.add(postingIssue(IssueCode.POSTING_UUID_REQUIRED,
-                                LedgerDiagnosticCode.LEDGER_STRUCT_009.message(MessageFormat.format(
-                                                Messages.LedgerStructuralValidatorPostingUuidRequired,
-                                                entry.getUUID())),
-                                entry, posting));
-            else
-            {
-                entryPostingUUIDs.add(posting.getUUID());
-
-                var occurrenceCount = ledgerPostingUUIDCounts.merge(posting.getUUID(), 1, Integer::sum);
-                if (occurrenceCount > 1)
-                    issues.add(postingIssue(IssueCode.DUPLICATE_POSTING_UUID,
-                                    LedgerDiagnosticCode.LEDGER_STRUCT_010
-                                                    .message(MessageFormat.format(
-                                                                    Messages.LedgerStructuralValidatorDuplicatePostingUuid,
-                                                                    posting.getUUID())),
-                                    entry, posting)
-                                                    .withDetail("objectType", "LedgerPosting") //$NON-NLS-1$ //$NON-NLS-2$
-                                                    .withDetail("duplicateUUID", posting.getUUID()) //$NON-NLS-1$
-                                                    .withDetail("occurrenceCount", occurrenceCount)); //$NON-NLS-1$
-            }
-
             if (posting.getType() == null)
                 issues.add(postingIssue(IssueCode.POSTING_TYPE_REQUIRED,
                                 LedgerDiagnosticCode.LEDGER_STRUCT_011.message(MessageFormat.format(
@@ -182,8 +147,7 @@ public final class LedgerStructuralValidator
         }
 
         validateEntryPostingShape(entry, issues);
-
-        return entryPostingUUIDs;
+        validateSemanticShape(entry, issues);
     }
 
     private static void validateEntryPostingShape(LedgerEntry entry, List<ValidationIssue> issues)
@@ -224,6 +188,327 @@ public final class LedgerStructuralValidator
                                             Messages.LedgerStructuralValidatorPostingExchangeRatePositive,
                                             posting.getUUID())),
                             entry, posting));
+    }
+
+    private static void validateSemanticShape(LedgerEntry entry, List<ValidationIssue> issues)
+    {
+        if (entry.getType() == null)
+            return;
+
+        switch (entry.getType())
+        {
+            case DEPOSIT, REMOVAL, INTEREST, INTEREST_CHARGE, DIVIDENDS ->
+                requirePrimary(entry, LedgerProjectionRole.ACCOUNT, LedgerPostingSemanticRole.CASH,
+                                LedgerPostingDirection.NEUTRAL, OwnerKind.ACCOUNT, null, false, issues);
+            case FEES, FEES_REFUND -> requirePrimary(entry, LedgerProjectionRole.ACCOUNT, LedgerPostingSemanticRole.FEE,
+                            LedgerPostingDirection.NEUTRAL, OwnerKind.ACCOUNT, null, false, issues);
+            case TAXES, TAX_REFUND -> requirePrimary(entry, LedgerProjectionRole.ACCOUNT, LedgerPostingSemanticRole.TAX,
+                            LedgerPostingDirection.NEUTRAL, OwnerKind.ACCOUNT, null, false, issues);
+            case BUY -> {
+                requirePrimary(entry, LedgerProjectionRole.ACCOUNT, LedgerPostingSemanticRole.CASH,
+                                LedgerPostingDirection.OUTBOUND, OwnerKind.ACCOUNT, null, false, issues);
+                requirePrimary(entry, LedgerProjectionRole.PORTFOLIO, LedgerPostingSemanticRole.SECURITY,
+                                LedgerPostingDirection.INBOUND, OwnerKind.PORTFOLIO, null, false, issues);
+            }
+            case SELL -> {
+                requirePrimary(entry, LedgerProjectionRole.ACCOUNT, LedgerPostingSemanticRole.CASH,
+                                LedgerPostingDirection.INBOUND, OwnerKind.ACCOUNT, null, false, issues);
+                requirePrimary(entry, LedgerProjectionRole.PORTFOLIO, LedgerPostingSemanticRole.SECURITY,
+                                LedgerPostingDirection.OUTBOUND, OwnerKind.PORTFOLIO, null, false, issues);
+            }
+            case DELIVERY_INBOUND -> requirePrimary(entry, LedgerProjectionRole.DELIVERY_INBOUND,
+                            LedgerPostingSemanticRole.SECURITY, LedgerPostingDirection.INBOUND, OwnerKind.PORTFOLIO,
+                            null, false, issues);
+            case DELIVERY_OUTBOUND -> requirePrimary(entry, LedgerProjectionRole.DELIVERY_OUTBOUND,
+                            LedgerPostingSemanticRole.SECURITY, LedgerPostingDirection.OUTBOUND, OwnerKind.PORTFOLIO,
+                            null, false, issues);
+            case CASH_TRANSFER -> {
+                requirePrimary(entry, LedgerProjectionRole.SOURCE_ACCOUNT, LedgerPostingSemanticRole.CASH,
+                                LedgerPostingDirection.OUTBOUND, OwnerKind.ACCOUNT, null, false, issues);
+                requirePrimary(entry, LedgerProjectionRole.TARGET_ACCOUNT, LedgerPostingSemanticRole.CASH,
+                                LedgerPostingDirection.INBOUND, OwnerKind.ACCOUNT, null, false, issues);
+            }
+            case SECURITY_TRANSFER -> {
+                requirePrimary(entry, LedgerProjectionRole.SOURCE_PORTFOLIO, LedgerPostingSemanticRole.SECURITY,
+                                LedgerPostingDirection.OUTBOUND, OwnerKind.PORTFOLIO, null, false, issues);
+                requirePrimary(entry, LedgerProjectionRole.TARGET_PORTFOLIO, LedgerPostingSemanticRole.SECURITY,
+                                LedgerPostingDirection.INBOUND, OwnerKind.PORTFOLIO, null, false, issues);
+            }
+            case SPIN_OFF -> {
+                requireCorporatePrimary(entry, LedgerProjectionRole.OLD_SECURITY_LEG,
+                                LedgerPostingSemanticRole.SECURITY, CorporateActionLeg.SOURCE_SECURITY,
+                                LedgerPostingDirection.OUTBOUND, false, false, issues);
+                requireCorporatePrimary(entry, LedgerProjectionRole.NEW_SECURITY_LEG,
+                                LedgerPostingSemanticRole.SECURITY, CorporateActionLeg.TARGET_SECURITY,
+                                LedgerPostingDirection.INBOUND, true, false, issues);
+                requireCorporatePrimary(entry, LedgerProjectionRole.CASH_COMPENSATION,
+                                LedgerPostingSemanticRole.CASH_COMPENSATION, CorporateActionLeg.CASH_COMPENSATION,
+                                LedgerPostingDirection.NEUTRAL, false, true, issues);
+            }
+            case STOCK_DIVIDEND, BONUS_ISSUE -> {
+                requireCorporatePrimary(entry, LedgerProjectionRole.DELIVERY_INBOUND,
+                                LedgerPostingSemanticRole.SECURITY, CorporateActionLeg.TARGET_SECURITY,
+                                LedgerPostingDirection.INBOUND, false, false, issues);
+                requireCorporatePrimary(entry, LedgerProjectionRole.CASH_COMPENSATION,
+                                LedgerPostingSemanticRole.CASH_COMPENSATION, CorporateActionLeg.CASH_COMPENSATION,
+                                LedgerPostingDirection.NEUTRAL, false, true, issues);
+            }
+            case RIGHTS_DISTRIBUTION -> {
+                requireOneOfCorporatePrimary(entry, LedgerProjectionRole.NEW_SECURITY_LEG,
+                                LedgerPostingDirection.INBOUND, false, issues, CorporateActionLeg.RIGHT_SECURITY,
+                                CorporateActionLeg.DISTRIBUTED_SECURITY);
+                requireCorporatePrimary(entry, LedgerProjectionRole.OLD_SECURITY_LEG,
+                                LedgerPostingSemanticRole.SECURITY, CorporateActionLeg.SOURCE_SECURITY,
+                                LedgerPostingDirection.OUTBOUND, false, true, issues);
+                requireCorporatePrimary(entry, LedgerProjectionRole.CASH_COMPENSATION,
+                                LedgerPostingSemanticRole.CASH_COMPENSATION, CorporateActionLeg.CASH_COMPENSATION,
+                                LedgerPostingDirection.NEUTRAL, false, true, issues);
+            }
+            case BOND_CONVERSION -> {
+                requireCorporatePrimary(entry, LedgerProjectionRole.OLD_SECURITY_LEG,
+                                CorporateActionLeg.CONVERSION_SOURCE, LedgerPostingDirection.OUTBOUND, false, false,
+                                issues);
+                requireCorporatePrimary(entry, LedgerProjectionRole.NEW_SECURITY_LEG,
+                                CorporateActionLeg.CONVERSION_TARGET, LedgerPostingDirection.INBOUND, false, false,
+                                issues);
+                requireCorporatePrimary(entry, LedgerProjectionRole.CASH_COMPENSATION,
+                                LedgerPostingSemanticRole.CASH_COMPENSATION, CorporateActionLeg.CASH_COMPENSATION,
+                                LedgerPostingDirection.NEUTRAL, false, true, issues);
+            }
+            default -> {
+                // No semantic shape rule.
+            }
+        }
+
+        validateUnitGrouping(entry, issues);
+    }
+
+    private static void requireCorporatePrimary(LedgerEntry entry, LedgerProjectionRole role,
+                    LedgerPostingSemanticRole semanticRole, CorporateActionLeg leg, LedgerPostingDirection direction,
+                    boolean localKeyRequired, boolean optional, List<ValidationIssue> issues)
+    {
+        var matches = entry.getPostings().stream() //
+                        .filter(posting -> matchesPrimary(posting, semanticRole, direction, leg)) //
+                        .filter(posting -> !localKeyRequired || role.name().equals(posting.getLocalKey())) //
+                        .toList();
+
+        validatePrimaryMatches(entry, role, OwnerKind.PORTFOLIO_OR_ACCOUNT, optional, matches, issues);
+
+        if (!localKeyRequired)
+            return;
+
+        entry.getPostings().stream() //
+                        .filter(posting -> matchesPrimary(posting, semanticRole, direction, leg)) //
+                        .filter(posting -> isBlank(posting.getLocalKey())) //
+                        .findFirst()
+                        .ifPresent(posting -> issues.add(postingIssue(IssueCode.SEMANTIC_LOCAL_KEY_REQUIRED,
+                                        LedgerDiagnosticCode.LEDGER_STRUCT_027.message(
+                                                        "Repeated corporate-action leg requires a local key for "
+                                                                        + role),
+                                        entry, posting).withDetail("projectionRole", role))); //$NON-NLS-1$
+    }
+
+    private static void requireCorporatePrimary(LedgerEntry entry, LedgerProjectionRole role, CorporateActionLeg leg,
+                    LedgerPostingDirection direction, boolean localKeyRequired, boolean optional,
+                    List<ValidationIssue> issues)
+    {
+        var matches = entry.getPostings().stream() //
+                        .filter(posting -> posting.getUnitRole() == LedgerPostingUnitRole.PRIMARY) //
+                        .filter(posting -> posting.getDirection() == direction) //
+                        .filter(posting -> posting.getCorporateActionLeg() == leg) //
+                        .filter(posting -> !localKeyRequired || role.name().equals(posting.getLocalKey())) //
+                        .toList();
+
+        validatePrimaryMatches(entry, role, OwnerKind.PORTFOLIO_OR_ACCOUNT, optional, matches, issues);
+
+        if (!localKeyRequired)
+            return;
+
+        entry.getPostings().stream() //
+                        .filter(posting -> posting.getUnitRole() == LedgerPostingUnitRole.PRIMARY) //
+                        .filter(posting -> posting.getDirection() == direction) //
+                        .filter(posting -> posting.getCorporateActionLeg() == leg) //
+                        .filter(posting -> isBlank(posting.getLocalKey())) //
+                        .findFirst()
+                        .ifPresent(posting -> issues.add(postingIssue(IssueCode.SEMANTIC_LOCAL_KEY_REQUIRED,
+                                        LedgerDiagnosticCode.LEDGER_STRUCT_027.message(
+                                                        "Repeated corporate-action leg requires a local key for "
+                                                                        + role),
+                                        entry, posting).withDetail("projectionRole", role))); //$NON-NLS-1$
+    }
+
+    private static void requireOneOfCorporatePrimary(LedgerEntry entry, LedgerProjectionRole role,
+                    LedgerPostingSemanticRole semanticRole, LedgerPostingDirection direction, boolean optional,
+                    List<ValidationIssue> issues, CorporateActionLeg... legs)
+    {
+        var matches = entry.getPostings().stream() //
+                        .filter(posting -> posting.getUnitRole() == LedgerPostingUnitRole.PRIMARY) //
+                        .filter(posting -> posting.getSemanticRole() == semanticRole) //
+                        .filter(posting -> posting.getDirection() == direction) //
+                        .filter(posting -> contains(legs, posting.getCorporateActionLeg())) //
+                        .toList();
+
+        validatePrimaryMatches(entry, role, OwnerKind.PORTFOLIO, optional, matches, issues);
+    }
+
+    private static void requireOneOfCorporatePrimary(LedgerEntry entry, LedgerProjectionRole role,
+                    LedgerPostingDirection direction, boolean optional, List<ValidationIssue> issues,
+                    CorporateActionLeg... legs)
+    {
+        var matches = entry.getPostings().stream() //
+                        .filter(posting -> posting.getUnitRole() == LedgerPostingUnitRole.PRIMARY) //
+                        .filter(posting -> posting.getDirection() == direction) //
+                        .filter(posting -> contains(legs, posting.getCorporateActionLeg())) //
+                        .toList();
+
+        validatePrimaryMatches(entry, role, OwnerKind.PORTFOLIO, optional, matches, issues);
+    }
+
+    private static void requirePrimary(LedgerEntry entry, LedgerProjectionRole role,
+                    LedgerPostingSemanticRole semanticRole, LedgerPostingDirection direction, OwnerKind ownerKind,
+                    CorporateActionLeg leg, boolean optional, List<ValidationIssue> issues)
+    {
+        var matches = entry.getPostings().stream() //
+                        .filter(posting -> matchesPrimary(posting, semanticRole, direction, leg)) //
+                        .toList();
+
+        validatePrimaryMatches(entry, role, ownerKind, optional, matches, issues);
+    }
+
+    private static void validatePrimaryMatches(LedgerEntry entry, LedgerProjectionRole role, OwnerKind ownerKind,
+                    boolean optional, List<LedgerPosting> matches, List<ValidationIssue> issues)
+    {
+        if (matches.isEmpty())
+        {
+            if (!optional)
+                issues.add(entryIssue(missingIssueCode(role),
+                                LedgerDiagnosticCode.LEDGER_STRUCT_016
+                                                .message("Required semantic primary posting is missing for " + role),
+                                entry).withDetail("projectionRole", role)); //$NON-NLS-1$
+            return;
+        }
+
+        if (matches.size() > 1)
+            issues.add(entryIssue(ambiguousIssueCode(role),
+                            LedgerDiagnosticCode.LEDGER_STRUCT_017
+                                            .message("Semantic primary posting is ambiguous for " + role),
+                            entry).withDetail("projectionRole", role) //$NON-NLS-1$
+                                            .withDetail("actualCount", matches.size())); //$NON-NLS-1$
+
+        for (var posting : matches)
+            validateOwner(entry, role, posting, ownerKind, issues);
+    }
+
+    private static IssueCode missingIssueCode(LedgerProjectionRole role)
+    {
+        return switch (role)
+        {
+            case SOURCE_ACCOUNT, SOURCE_PORTFOLIO, OLD_SECURITY_LEG -> IssueCode.SEMANTIC_SOURCE_REQUIRED;
+            case TARGET_ACCOUNT, TARGET_PORTFOLIO, NEW_SECURITY_LEG -> IssueCode.SEMANTIC_TARGET_REQUIRED;
+            default -> IssueCode.SEMANTIC_PRIMARY_REQUIRED;
+        };
+    }
+
+    private static IssueCode ambiguousIssueCode(LedgerProjectionRole role)
+    {
+        return switch (role)
+        {
+            case SOURCE_ACCOUNT, SOURCE_PORTFOLIO, OLD_SECURITY_LEG -> IssueCode.SEMANTIC_SOURCE_AMBIGUOUS;
+            case TARGET_ACCOUNT, TARGET_PORTFOLIO, NEW_SECURITY_LEG -> IssueCode.SEMANTIC_TARGET_AMBIGUOUS;
+            default -> IssueCode.SEMANTIC_PRIMARY_AMBIGUOUS;
+        };
+    }
+
+    private static boolean matchesPrimary(LedgerPosting posting, LedgerPostingSemanticRole semanticRole,
+                    LedgerPostingDirection direction, CorporateActionLeg leg)
+    {
+        return posting.getUnitRole() == LedgerPostingUnitRole.PRIMARY && posting.getSemanticRole() == semanticRole
+                        && posting.getDirection() == direction
+                        && (leg == null || posting.getCorporateActionLeg() == leg);
+    }
+
+    private static void validateOwner(LedgerEntry entry, LedgerProjectionRole role, LedgerPosting posting,
+                    OwnerKind ownerKind, List<ValidationIssue> issues)
+    {
+        var ownerPresent = switch (ownerKind)
+        {
+            case ACCOUNT -> posting.getAccount() != null;
+            case PORTFOLIO -> posting.getPortfolio() != null;
+            case PORTFOLIO_OR_ACCOUNT -> posting.getAccount() != null || posting.getPortfolio() != null;
+        };
+
+        if (!ownerPresent)
+            issues.add(postingIssue(IssueCode.SEMANTIC_OWNER_REQUIRED,
+                            LedgerDiagnosticCode.LEDGER_STRUCT_018
+                                            .message("Semantic primary owner is missing for " + role),
+                            entry, posting).withDetail("projectionRole", role)); //$NON-NLS-1$
+    }
+
+    private static void validateUnitGrouping(LedgerEntry entry, List<ValidationIssue> issues)
+    {
+        var primaryGroupKeys = entry.getPostings().stream() //
+                        .filter(posting -> posting.getUnitRole() == LedgerPostingUnitRole.PRIMARY) //
+                        .map(LedgerPosting::getGroupKey) //
+                        .filter(groupKey -> !isBlank(groupKey)) //
+                        .collect(java.util.stream.Collectors.toSet());
+        var primaryCount = entry.getPostings().stream()
+                        .filter(posting -> posting.getUnitRole() == LedgerPostingUnitRole.PRIMARY).count();
+        var repeatedUnitKeys = new HashSet<String>();
+        var seenUnitKeys = new HashSet<String>();
+
+        for (var posting : entry.getPostings())
+        {
+            if (!isUnit(posting))
+                continue;
+
+            if (primaryCount > 1 && primaryGroupKeys.size() > 1 && isBlank(posting.getGroupKey()))
+                issues.add(postingIssue(IssueCode.SEMANTIC_UNIT_GROUP_REQUIRED,
+                                LedgerDiagnosticCode.LEDGER_STRUCT_019
+                                                .message("Grouped unit posting requires a group key"),
+                                entry, posting));
+
+            if (!primaryGroupKeys.isEmpty() && !isBlank(posting.getGroupKey())
+                            && !primaryGroupKeys.contains(posting.getGroupKey()))
+                issues.add(postingIssue(IssueCode.SEMANTIC_UNIT_GROUP_AMBIGUOUS,
+                                LedgerDiagnosticCode.LEDGER_STRUCT_020
+                                                .message("Unit posting group key has no semantic primary anchor"),
+                                entry, posting).withDetail("groupKey", posting.getGroupKey())); //$NON-NLS-1$
+
+            var key = posting.getUnitRole() + ":" + posting.getGroupKey(); //$NON-NLS-1$
+            if (!seenUnitKeys.add(key))
+                repeatedUnitKeys.add(key);
+        }
+
+        for (var posting : entry.getPostings())
+        {
+            if (!isUnit(posting))
+                continue;
+
+            var key = posting.getUnitRole() + ":" + posting.getGroupKey(); //$NON-NLS-1$
+            if (repeatedUnitKeys.contains(key) && isBlank(posting.getLocalKey()))
+                issues.add(postingIssue(IssueCode.SEMANTIC_LOCAL_KEY_REQUIRED,
+                                LedgerDiagnosticCode.LEDGER_STRUCT_021
+                                                .message("Repeated unit posting requires a local key"),
+                                entry, posting).withDetail("groupKey", posting.getGroupKey()) //$NON-NLS-1$
+                                                .withDetail("unitRole", posting.getUnitRole())); //$NON-NLS-1$
+        }
+    }
+
+    private static boolean isUnit(LedgerPosting posting)
+    {
+        var unitRole = posting.getUnitRole();
+        return unitRole == LedgerPostingUnitRole.FEE || unitRole == LedgerPostingUnitRole.TAX
+                        || unitRole == LedgerPostingUnitRole.GROSS_VALUE
+                        || unitRole == LedgerPostingUnitRole.FOREX_CONTEXT;
+    }
+
+    private static boolean contains(CorporateActionLeg[] legs, CorporateActionLeg value)
+    {
+        for (var leg : legs)
+            if (leg == value)
+                return true;
+
+        return false;
     }
 
     private static void validateParameters(LedgerEntry entry, LedgerPosting posting,
@@ -614,5 +899,12 @@ public final class LedgerStructuralValidator
 
     private record Detail(String label, String key)
     {
+    }
+
+    private enum OwnerKind
+    {
+        ACCOUNT,
+        PORTFOLIO,
+        PORTFOLIO_OR_ACCOUNT
     }
 }

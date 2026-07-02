@@ -178,17 +178,17 @@ public final class LedgerNativeEntryAssembler
             if (compensationPosting != null)
                 addCashCompensationProjection(entry, cashCompensation, compensationPosting);
 
-            var validationResult = validateDetached(entry);
-
-            if (!validationResult.isOK())
-                throw issue(LedgerNativeEntryAssemblyIssue.STRUCTURAL_VALIDATION_FAILED,
-                                validationResult.format());
-
             var definitionValidationResult = LedgerNativeEntryDefinitionValidator.validate(entry);
 
             if (!definitionValidationResult.isOK())
                 throw issue(LedgerNativeEntryAssemblyIssue.NATIVE_DEFINITION_VALIDATION_FAILED,
                                 definitionValidationResult.format());
+
+            var validationResult = validateDetached(entry);
+
+            if (!validationResult.isOK())
+                throw issue(LedgerNativeEntryAssemblyIssue.STRUCTURAL_VALIDATION_FAILED,
+                                validationResult.format());
 
             return new LedgerNativeEntryBuildResult(entry, validationResult);
         }
