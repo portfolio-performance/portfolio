@@ -548,6 +548,10 @@ public class LedgerModelTest
         assertFalse(Arrays.stream(LedgerEntryType.class.getDeclaredFields()).anyMatch(f -> f.getType() == boolean.class));
         assertFalse(Arrays.stream(LedgerEntryType.class.getDeclaredConstructors())
                         .flatMap(c -> Arrays.stream(c.getParameterTypes())).anyMatch(t -> t == boolean.class));
+        assertTrue(Arrays.stream(LedgerEntryType.class.getDeclaredConstructors())
+                        .flatMap(c -> Arrays.stream(c.getParameterTypes())).anyMatch(t -> t == String.class));
+        assertFalse(Arrays.stream(LedgerEntryType.class.getDeclaredMethods())
+                        .anyMatch(method -> method.getName().contains("Protobuf")));
     }
 
     /**
