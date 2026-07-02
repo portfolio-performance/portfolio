@@ -267,7 +267,7 @@ public final class LedgerNativeEntryDefinitionValidator
                         && leg.getCardinality() != LedgerLegCardinality.AT_LEAST_ONE)
             issues.add(issue(IssueCode.AMBIGUOUS_LEG_MATCH,
                             LedgerDiagnosticCode.LEDGER_STRUCT_047
-                                            .message("Native leg maps to multiple projection refs: " + leg.getRole()), //$NON-NLS-1$
+                                            .message("Native leg maps to multiple derived descriptors: " + leg.getRole()), //$NON-NLS-1$
                             entry)
                                             .withDetail("legRole", leg.getRole()) //$NON-NLS-1$
                                             .withDetail("projectionRole", projectionRole)); //$NON-NLS-1$

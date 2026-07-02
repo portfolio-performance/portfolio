@@ -90,7 +90,7 @@ public class LedgerProjectionMaterializerTest
     }
 
     @Test
-    public void testMaterializationUsesDerivedDescriptorWhenProjectionRefsAreAbsent()
+    public void testMaterializationUsesDerivedDescriptorWhenPersistedProjectionLayoutIsAbsent()
     {
         var client = new Client();
         var account = account();
@@ -105,7 +105,7 @@ public class LedgerProjectionMaterializerTest
     }
 
     @Test
-    public void testFixedShapeMaterializationUsesDescriptorsWithoutProjectionRefs()
+    public void testFixedShapeMaterializationUsesDescriptorsWithoutPersistedProjectionLayout()
     {
         assertDescriptorMaterializesBuySell(PortfolioTransaction.Type.BUY, AccountTransaction.Type.BUY);
         assertDescriptorMaterializesBuySell(PortfolioTransaction.Type.SELL, AccountTransaction.Type.SELL);
@@ -116,7 +116,7 @@ public class LedgerProjectionMaterializerTest
     }
 
     @Test
-    public void testSiemensSpinOffMaterializesFromDerivedDescriptorsWithoutProjectionRefs()
+    public void testSiemensSpinOffMaterializesFromDerivedDescriptorsWithoutPersistedProjectionLayout()
     {
         var client = new Client();
         var account = account();

@@ -471,16 +471,16 @@ public class LedgerNativeEntryAssemblerTest
     }
 
     /**
-     * Checks the Ledger-V6 scenario: build and add projection ref uuids are runtime projection uuids.
+     * Checks the Ledger-V6 scenario: build and add descriptor ids are runtime projection ids.
      * The result must keep ledger truth and visible runtime rows consistent.
      * This protects against duplicate truth or partial mutation.
      */
     @Test
-    public void testBuildAndAddProjectionRefUUIDsAreRuntimeProjectionUUIDs()
+    public void testBuildAndAddDescriptorIdsAreRuntimeProjectionIds()
     {
         var fixture = fixture();
         var entry = validSpinOff(fixture).buildAndAdd().getEntry();
-        var projectionUUIDs = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream()
+        var descriptorIds = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream()
                         .map(descriptor -> name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport
                                         .runtimeProjectionId(entry, descriptor.getRole()))
                         .collect(Collectors.toSet());
@@ -493,7 +493,7 @@ public class LedgerNativeEntryAssemblerTest
                                         .map(AccountTransaction::getUUID))
                         .collect(Collectors.toSet());
 
-        assertThat(runtimeUUIDs, is(projectionUUIDs));
+        assertThat(runtimeUUIDs, is(descriptorIds));
         assertThat(runtimeUUIDs.size(), is(3));
     }
 
@@ -593,12 +593,12 @@ public class LedgerNativeEntryAssemblerTest
     }
 
     /**
-     * Checks the Ledger-V6 scenario: generated projection refs target assembler owned postings.
+     * Checks the Ledger-V6 scenario: generated descriptors target assembler owned postings.
      * The result must keep ledger truth and visible runtime rows consistent.
      * This protects against duplicate truth or partial mutation.
      */
     @Test
-    public void testGeneratedProjectionRefsTargetAssemblerOwnedPostings()
+    public void testGeneratedDescriptorsTargetAssemblerOwnedPostings()
     {
         var fixture = fixture();
         var entry = validSpinOff(fixture).buildDetached().getEntry();

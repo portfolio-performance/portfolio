@@ -533,7 +533,7 @@ public class LedgerModelTest
         standardFamilies.forEach(this::assertStandardLegacyShape);
         corporateActionFamilies.forEach(this::assertLedgerNativeTargetedShape);
 
-        assertTrue(LedgerEntryType.SPIN_OFF.requiresTargetedProjectionRefs());
+        assertTrue(LedgerEntryType.SPIN_OFF.requiresTargetedDerivedDescriptors());
         assertTrue(LedgerEntryType.SPIN_OFF.usesSignedTargetedProjectionFacts());
     }
 
@@ -711,7 +711,7 @@ public class LedgerModelTest
     {
         assertTrue(type.isLegacyFixedShape());
         assertFalse(type.isLedgerNativeTargeted());
-        assertFalse(type.requiresTargetedProjectionRefs());
+        assertFalse(type.requiresTargetedDerivedDescriptors());
         assertFalse(type.usesSignedTargetedProjectionFacts());
     }
 
@@ -719,7 +719,7 @@ public class LedgerModelTest
     {
         assertFalse(type.isLegacyFixedShape());
         assertTrue(type.isLedgerNativeTargeted());
-        assertTrue(type.requiresTargetedProjectionRefs());
+        assertTrue(type.requiresTargetedDerivedDescriptors());
         assertTrue(type.usesSignedTargetedProjectionFacts());
     }
 

@@ -73,7 +73,7 @@ public class LedgerTransactionDuplicateCopyParityTest
 
         var duplicate = onlyOther(fixture.account().getTransactions(), original);
 
-        assertAccountProjectionDuplicate(original, duplicate, originalSnapshot, 1, 1);
+        assertAccountProjectionDuplicate(original, duplicate, originalSnapshot, 1);
         assertThat(fixture.account().getTransactions().size(), is(2));
         assertThat(duplicate.getDateTime(), is(DATE_TIME));
         assertThat(duplicate.getNote(), is("note"));
@@ -104,7 +104,7 @@ public class LedgerTransactionDuplicateCopyParityTest
 
         var duplicate = onlyOther(fixture.account().getTransactions(), original);
 
-        assertAccountProjectionDuplicate(original, duplicate, originalSnapshot, 1, 1);
+        assertAccountProjectionDuplicate(original, duplicate, originalSnapshot, 1);
         assertThat(fixture.account().getTransactions().size(), is(2));
         assertThat(duplicate.getDateTime(), is(DATE_TIME));
         assertThat(duplicate.getNote(), is("note"));
@@ -141,7 +141,7 @@ public class LedgerTransactionDuplicateCopyParityTest
         var duplicatePortfolioTransaction = onlyOther(fixture.portfolio().getTransactions(), originalPortfolioTransaction);
 
         assertPortfolioProjectionDuplicate(originalPortfolioTransaction, duplicatePortfolioTransaction, originalSnapshot,
-                        2, 2);
+                        2);
         assertThat(fixture.account().getTransactions().size(), is(2));
         assertThat(fixture.portfolio().getTransactions().size(), is(2));
         assertSame(duplicatePortfolioTransaction,
@@ -182,7 +182,7 @@ public class LedgerTransactionDuplicateCopyParityTest
 
         var duplicate = onlyOther(fixture.portfolio().getTransactions(), original);
 
-        assertPortfolioProjectionDuplicate(original, duplicate, originalSnapshot, 1, 1);
+        assertPortfolioProjectionDuplicate(original, duplicate, originalSnapshot, 1);
         assertThat(fixture.portfolio().getTransactions().size(), is(2));
         assertThat(duplicate.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
         assertThat(duplicate.getDateTime(), is(DATE_TIME));
@@ -218,7 +218,7 @@ public class LedgerTransactionDuplicateCopyParityTest
         var duplicateSourceTransaction = onlyOther(fixture.account().getTransactions(), originalSourceTransaction);
         var duplicateTargetTransaction = onlyOther(fixture.targetAccount().getTransactions(), originalTargetTransaction);
 
-        assertAccountProjectionDuplicate(originalSourceTransaction, duplicateSourceTransaction, originalSnapshot, 2, 2);
+        assertAccountProjectionDuplicate(originalSourceTransaction, duplicateSourceTransaction, originalSnapshot, 2);
         assertThat(fixture.account().getTransactions().size(), is(2));
         assertThat(fixture.targetAccount().getTransactions().size(), is(2));
         assertSame(duplicateTargetTransaction,
@@ -262,7 +262,7 @@ public class LedgerTransactionDuplicateCopyParityTest
         var duplicateTargetTransaction = onlyOther(fixture.targetPortfolio().getTransactions(),
                         originalTargetTransaction);
 
-        assertPortfolioProjectionDuplicate(originalSourceTransaction, duplicateSourceTransaction, originalSnapshot, 2, 2);
+        assertPortfolioProjectionDuplicate(originalSourceTransaction, duplicateSourceTransaction, originalSnapshot, 2);
         assertThat(fixture.portfolio().getTransactions().size(), is(2));
         assertThat(fixture.targetPortfolio().getTransactions().size(), is(2));
         assertSame(duplicateTargetTransaction,
@@ -286,23 +286,23 @@ public class LedgerTransactionDuplicateCopyParityTest
     }
 
     private void assertAccountProjectionDuplicate(AccountTransaction original, AccountTransaction duplicate,
-                    EntrySnapshot originalSnapshot, int expectedPostings, int expectedProjectionRefs)
+                    EntrySnapshot originalSnapshot, int expectedPostings)
     {
         assertThat(duplicate.getClass().getName().contains("LedgerBacked"), is(true));
         assertThat(original.getUUID(), not(duplicate.getUUID()));
-        assertFreshLedgerIdentity(originalSnapshot, entry(duplicate), expectedPostings, expectedProjectionRefs);
+        assertFreshLedgerIdentity(originalSnapshot, entry(duplicate), expectedPostings);
     }
 
     private void assertPortfolioProjectionDuplicate(PortfolioTransaction original, PortfolioTransaction duplicate,
-                    EntrySnapshot originalSnapshot, int expectedPostings, int expectedProjectionRefs)
+                    EntrySnapshot originalSnapshot, int expectedPostings)
     {
         assertThat(duplicate.getClass().getName().contains("LedgerBacked"), is(true));
         assertThat(original.getUUID(), not(duplicate.getUUID()));
-        assertFreshLedgerIdentity(originalSnapshot, entry(duplicate), expectedPostings, expectedProjectionRefs);
+        assertFreshLedgerIdentity(originalSnapshot, entry(duplicate), expectedPostings);
     }
 
     private void assertFreshLedgerIdentity(EntrySnapshot originalSnapshot, Object duplicateEntry,
-                    int expectedPostings, int expectedProjectionRefs)
+                    int expectedPostings)
     {
         assertThat(uuid(duplicateEntry), not(originalSnapshot.entryUUID()));
         assertThat(postings(duplicateEntry).size(), is(expectedPostings));

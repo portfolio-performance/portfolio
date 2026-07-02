@@ -44,7 +44,7 @@ import name.abuchen.portfolio.money.Values;
 
 /**
  * Tests runtime-only projection descriptors derived from posting semantics.
- * Current projection refs remain the active materialization source in this phase.
+ * Descriptor derivation is the active materialization source.
  */
 @SuppressWarnings("nls")
 public class DerivedProjectionDescriptorServiceTest
@@ -52,7 +52,7 @@ public class DerivedProjectionDescriptorServiceTest
     private static final LocalDateTime DATE_TIME = LocalDateTime.of(2026, 1, 2, 0, 0);
 
     @Test
-    public void testAccountOnlyDescriptorMatchesProjectionRef()
+    public void testAccountOnlyDescriptorDerivesRuntimeView()
     {
         var client = new Client();
         var account = account("Cash");
@@ -65,7 +65,7 @@ public class DerivedProjectionDescriptorServiceTest
     }
 
     @Test
-    public void testBuySellDescriptorsMatchAccountAndPortfolioProjectionRefs()
+    public void testBuySellDescriptorsDeriveAccountAndPortfolioRuntimeViews()
     {
         var client = new Client();
         var account = account("Cash");
@@ -98,7 +98,7 @@ public class DerivedProjectionDescriptorServiceTest
     }
 
     @Test
-    public void testDeliveryDescriptorMatchesProjectionRef()
+    public void testDeliveryDescriptorDerivesRuntimeView()
     {
         var client = new Client();
         var portfolio = portfolio("Portfolio");
@@ -171,7 +171,7 @@ public class DerivedProjectionDescriptorServiceTest
     }
 
     @Test
-    public void testSiemensSpinOffDescriptorsMatchTargetedProjectionRefs()
+    public void testSiemensSpinOffDescriptorsDeriveTargetedRuntimeViews()
     {
         var fixture = fixture();
         var entry = spinOffEntry(fixture);

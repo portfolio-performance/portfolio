@@ -263,12 +263,12 @@ public class LedgerTransactionCreatorTest
     }
 
     /**
-     * Checks the ledger-backed editing scenario: create standard families bind projection refs to primary postings.
+     * Checks the ledger-backed editing scenario: create standard families bind descriptors to primary postings.
      * The visible transaction must reflect the ledger entry after the operation.
      * This protects structural facts from being written through legacy setters.
      */
     @Test
-    public void testCreateStandardFamiliesBindProjectionRefsToPrimaryPostings()
+    public void testCreateStandardFamiliesBindDescriptorsToPrimaryPostings()
     {
         assertAccountProjectionTargetsPrimaryPosting(LedgerEntryType.DEPOSIT,
                         creator -> creator.createDeposit(metadata(), cashLeg(account(), 10)).getEntry());
@@ -466,12 +466,12 @@ public class LedgerTransactionCreatorTest
     }
 
     /**
-     * Checks the ledger-backed editing scenario: create buy creates two projection refs with positive magnitudes.
+     * Checks the ledger-backed editing scenario: create buy creates two descriptors with positive magnitudes.
      * The visible transaction must reflect the ledger entry after the operation.
      * This protects structural facts from being written through legacy setters.
      */
     @Test
-    public void testCreateBuyCreatesTwoProjectionRefsWithPositiveMagnitudes()
+    public void testCreateBuyCreatesTwoDescriptorsWithPositiveMagnitudes()
     {
         var client = new Client();
         var account = account();
@@ -492,12 +492,12 @@ public class LedgerTransactionCreatorTest
     }
 
     /**
-     * Checks the ledger-backed editing scenario: create sell creates two projection refs with positive magnitudes.
+     * Checks the ledger-backed editing scenario: create sell creates two descriptors with positive magnitudes.
      * The visible transaction must reflect the ledger entry after the operation.
      * This protects structural facts from being written through legacy setters.
      */
     @Test
-    public void testCreateSellCreatesTwoProjectionRefsWithPositiveMagnitudes()
+    public void testCreateSellCreatesTwoDescriptorsWithPositiveMagnitudes()
     {
         var client = new Client();
         var creator = new LedgerTransactionCreator(client);

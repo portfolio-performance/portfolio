@@ -42,7 +42,7 @@ import name.abuchen.portfolio.money.Money;
  * <p>
  * The assembler input is not persisted as a separate configuration object. It uses the
  * static Ledger configuration model to create persisted Ledger entries, postings,
- * parameters, and projection refs.
+ * parameters, and semantic projection facts.
  * </p>
  */
 public final class LedgerNativeEntryAssembler

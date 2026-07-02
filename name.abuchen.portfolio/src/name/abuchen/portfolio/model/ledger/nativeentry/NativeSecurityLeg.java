@@ -19,7 +19,7 @@ import name.abuchen.portfolio.money.Money;
  *
  * <p>
  * This input object is not persisted directly. The assembler converts it into Ledger
- * security postings, controlled leg codes, and projection refs.
+ * security postings, controlled leg codes, and semantic projection facts.
  * </p>
  */
 public final class NativeSecurityLeg

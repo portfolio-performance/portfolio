@@ -45,24 +45,24 @@ import name.abuchen.portfolio.money.Values;
 /**
  * Tests the read-only model behind the Ledger entry inspector.
  * The tests make sure selected ledger-backed projections can be displayed from Ledger facts
- * and optional Java-only native leg definitions without mutating the entry or legacy projection.
+ * and optional Java-only native leg definitions without mutating the entry or runtime projection.
  */
 public class LedgerNativeComponentInspectorModelTest
 {
     /**
      * Checks that a spin-off entry can be inspected from the selected old-security projection.
      * The inspector model must expose entry parameters, functional legs, postings, posting
-     * parameters, and projection refs from the persisted Ledger entry.
+     * parameters, and derived descriptors from the persisted Ledger entry.
      */
     @Test
     public void testSpinOffInspectionIncludesEntryLegPostingParameterAndProjectionRows()
     {
         var entry = spinOffEntry();
-        var selectedProjectionRef = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0);
+        var selectedDescriptor = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0);
         var updatedAt = entry.getUpdatedAt();
 
         var model = LedgerNativeComponentInspectorModel
-                        .from(entry, selectedProjectionRef, LedgerEntryDefinitionRegistry::lookup).orElseThrow();
+                        .from(entry, selectedDescriptor, LedgerEntryDefinitionRegistry::lookup).orElseThrow();
 
         assertThat(model.getHeaderRows().stream()
                         .anyMatch(row -> row.field() == HeaderField.ENTRY_TYPE && "SPIN_OFF".equals(row.value())),
@@ -72,7 +72,7 @@ public class LedgerNativeComponentInspectorModelTest
                         is(true));
         assertThat(model.getHeaderRows().stream()
                         .anyMatch(row -> row.field() == HeaderField.SELECTED_RUNTIME_PROJECTION_ID
-                                        && selectedProjectionRef.getRuntimeProjectionId().equals(row.value())),
+                                        && selectedDescriptor.getRuntimeProjectionId().equals(row.value())),
                         is(true));
         assertTrue(model.isNativeEntryDefinitionAvailable());
         assertThat(model.getEntryParameters().stream()
@@ -93,7 +93,7 @@ public class LedgerNativeComponentInspectorModelTest
                         is(true));
         assertThat(model.getDescriptors().stream()
                         .anyMatch(row -> "OLD_SECURITY_LEG".equals(row.projectionRole())
-                                        && selectedProjectionRef.getRuntimeProjectionId()
+                                        && selectedDescriptor.getRuntimeProjectionId()
                                                         .equals(row.runtimeProjectionId())
                                         && "posting-source".equals(row.primaryPostingId())),
                         is(true));

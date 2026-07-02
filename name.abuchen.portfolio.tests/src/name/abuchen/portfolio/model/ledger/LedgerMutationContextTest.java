@@ -324,14 +324,7 @@ public class LedgerMutationContextTest
     }
 
     /**
-     * Checks the ledger mutation scenario: projection membership and role changes refresh materialized projections.
-     * Failed or repeated operations must not leave partial changes or duplicate projections.
-     * This protects atomic ledger mutation behavior.
-     */
-
-
-    /**
-     * Checks the ledger mutation scenario: mutation context preserves entry local projection targeting during copy sync.
+     * Checks the ledger mutation scenario: mutation context preserves entry-local descriptor targeting during copy sync.
      * Failed or repeated operations must not leave partial changes or duplicate projections.
      * This protects atomic ledger mutation behavior.
      */

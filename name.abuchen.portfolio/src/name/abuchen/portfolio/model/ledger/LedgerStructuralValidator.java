@@ -20,7 +20,7 @@ import name.abuchen.portfolio.model.ledger.configuration.LedgerParameterType;
 
 /**
  * Validates the structural consistency of Ledger entries.
- * This class checks Ledger facts and projection references. It does not apply business
+ * This class checks Ledger facts and semantic projection descriptors. It does not apply business
  * repairs or guess missing transaction data.
  */
 public final class LedgerStructuralValidator
@@ -30,7 +30,6 @@ public final class LedgerStructuralValidator
         LEDGER_REQUIRED,
         DUPLICATE_ENTRY_UUID,
         DUPLICATE_POSTING_UUID,
-        DUPLICATE_PROJECTION_REF_UUID,
         ENTRY_UUID_REQUIRED,
         ENTRY_TYPE_REQUIRED,
         ENTRY_DATE_TIME_REQUIRED,
@@ -40,20 +39,6 @@ public final class LedgerStructuralValidator
         POSTING_SECURITY_REQUIRED,
         POSTING_EXCHANGE_RATE_POSITIVE,
         DIVIDEND_SECURITY_REQUIRED,
-        PROJECTION_REF_UUID_REQUIRED,
-        PROJECTION_REF_ROLE_REQUIRED,
-        FIXED_SHAPE_PROJECTION_ROLE_REQUIRED,
-        FIXED_SHAPE_PROJECTION_ROLE_NOT_ALLOWED,
-        PROJECTION_REF_ACCOUNT_REQUIRED,
-        PROJECTION_REF_PORTFOLIO_REQUIRED,
-        PROJECTION_REF_ACCOUNT_NOT_ALLOWED,
-        PROJECTION_REF_PORTFOLIO_NOT_ALLOWED,
-        TARGETING_REF_REQUIRED,
-        PRIMARY_POSTING_REF_NOT_FOUND,
-        POSTING_GROUP_REF_NOT_FOUND,
-        PROJECTION_MEMBERSHIP_REF_NOT_FOUND,
-        PROJECTION_PRIMARY_TARGET_CONFLICT,
-        PROJECTION_GROUP_TARGET_CONFLICT,
         PARAMETER_TYPE_REQUIRED,
         PARAMETER_VALUE_KIND_REQUIRED,
         PARAMETER_VALUE_REQUIRED,

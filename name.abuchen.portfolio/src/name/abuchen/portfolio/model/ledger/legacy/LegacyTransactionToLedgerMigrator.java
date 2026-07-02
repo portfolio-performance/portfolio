@@ -147,11 +147,7 @@ public final class LegacyTransactionToLedgerMigrator
         MigrationGraphBuilder.markPrimary(posting, MigrationGraphBuilder.semanticRole(postingType),
                         LedgerPostingDirection.NEUTRAL, LedgerProjectionRole.ACCOUNT);
         MigrationGraphBuilder.addPosting(entry, posting);
-        var unitPostings = MigrationGraphBuilder.addUnitPostings(entry, transaction);
-        var projection = MigrationGraphBuilder.accountProjection(transaction.getUUID(), LedgerProjectionRole.ACCOUNT,
-                        account, posting.getUUID());
-        MigrationGraphBuilder.addUnitMemberships(projection, unitPostings);
-        MigrationGraphBuilder.addProjectionView(entry, projection);
+        MigrationGraphBuilder.addUnitPostings(entry, transaction);
 
         if (plan.handleAlreadyMigratedCompleteGroup("ACCOUNT", entry, transaction)) //$NON-NLS-1$
             return;
@@ -236,15 +232,7 @@ public final class LegacyTransactionToLedgerMigrator
                         LedgerProjectionRole.PORTFOLIO);
         MigrationGraphBuilder.addPosting(entry, cashPosting);
         MigrationGraphBuilder.addPosting(entry, securityPosting);
-        var unitPostings = MigrationGraphBuilder.addUnitPostings(entry, portfolioTransaction);
-        var accountProjection = MigrationGraphBuilder.accountProjection(accountTransaction.getUUID(),
-                        LedgerProjectionRole.ACCOUNT, account, cashPosting.getUUID());
-        var portfolioProjection = MigrationGraphBuilder.portfolioProjection(portfolioTransaction.getUUID(),
-                        LedgerProjectionRole.PORTFOLIO, portfolio, securityPosting.getUUID());
-        MigrationGraphBuilder.addUnitMemberships(accountProjection, unitPostings);
-        MigrationGraphBuilder.addUnitMemberships(portfolioProjection, unitPostings);
-        MigrationGraphBuilder.addProjectionView(entry, accountProjection);
-        MigrationGraphBuilder.addProjectionView(entry, portfolioProjection);
+        MigrationGraphBuilder.addUnitPostings(entry, portfolioTransaction);
 
         if (plan.handleAlreadyMigratedCompleteGroup("BUY_SELL", entry, accountTransaction, portfolioTransaction)) //$NON-NLS-1$
             return;
@@ -330,12 +318,6 @@ public final class LegacyTransactionToLedgerMigrator
                         LedgerPostingDirection.INBOUND, LedgerProjectionRole.TARGET_ACCOUNT);
         MigrationGraphBuilder.addPosting(entry, sourcePosting);
         MigrationGraphBuilder.addPosting(entry, targetPosting);
-        MigrationGraphBuilder.addProjectionView(entry, MigrationGraphBuilder.accountProjection(
-                        sourceTransaction.getUUID(), LedgerProjectionRole.SOURCE_ACCOUNT, sourceAccount,
-                        sourcePosting.getUUID()));
-        MigrationGraphBuilder.addProjectionView(entry, MigrationGraphBuilder.accountProjection(
-                        targetTransaction.getUUID(), LedgerProjectionRole.TARGET_ACCOUNT, targetAccount,
-                        targetPosting.getUUID()));
 
         if (plan.handleAlreadyMigratedCompleteGroup("ACCOUNT_TRANSFER", entry, sourceTransaction, targetTransaction)) //$NON-NLS-1$
             return;
@@ -399,12 +381,6 @@ public final class LegacyTransactionToLedgerMigrator
                         LedgerPostingDirection.INBOUND, LedgerProjectionRole.TARGET_PORTFOLIO);
         MigrationGraphBuilder.addPosting(entry, sourcePosting);
         MigrationGraphBuilder.addPosting(entry, targetPosting);
-        MigrationGraphBuilder.addProjectionView(entry, MigrationGraphBuilder.portfolioProjection(
-                        sourceTransaction.getUUID(), LedgerProjectionRole.SOURCE_PORTFOLIO, sourcePortfolio,
-                        sourcePosting.getUUID()));
-        MigrationGraphBuilder.addProjectionView(entry, MigrationGraphBuilder.portfolioProjection(
-                        targetTransaction.getUUID(), LedgerProjectionRole.TARGET_PORTFOLIO, targetPortfolio,
-                        targetPosting.getUUID()));
 
         if (plan.handleAlreadyMigratedCompleteGroup("PORTFOLIO_TRANSFER", entry, sourceTransaction, targetTransaction)) //$NON-NLS-1$
             return;
@@ -510,11 +486,7 @@ public final class LegacyTransactionToLedgerMigrator
                                         : LedgerPostingDirection.OUTBOUND,
                         role);
         MigrationGraphBuilder.addPosting(entry, posting);
-        var unitPostings = MigrationGraphBuilder.addUnitPostings(entry, transaction);
-        var projection = MigrationGraphBuilder.portfolioProjection(transaction.getUUID(), role, portfolio,
-                        posting.getUUID());
-        MigrationGraphBuilder.addUnitMemberships(projection, unitPostings);
-        MigrationGraphBuilder.addProjectionView(entry, projection);
+        MigrationGraphBuilder.addUnitPostings(entry, transaction);
 
         if (plan.handleAlreadyMigratedCompleteGroup("DELIVERY", entry, transaction)) //$NON-NLS-1$
             return;
@@ -667,24 +639,6 @@ public final class LegacyTransactionToLedgerMigrator
             return List.copyOf(postings);
         }
 
-        private static void addUnitMemberships(MigrationView projection, List<LedgerPosting> unitPostings)
-        {
-            // Unit postings carry semantic unitRole/groupKey data and no longer need
-            // persisted projection memberships.
-        }
-
-        private static MigrationView accountProjection(String uuid, LedgerProjectionRole role, Account account,
-                        String primaryPostingId)
-        {
-            return new MigrationView(uuid, role, account, null, primaryPostingId);
-        }
-
-        private static MigrationView portfolioProjection(String uuid, LedgerProjectionRole role,
-                        Portfolio portfolio, String primaryPostingId)
-        {
-            return new MigrationView(uuid, role, null, portfolio, primaryPostingId);
-        }
-
         private static void addEntry(Ledger ledger, LedgerEntry entry)
         {
             ledger.addEntry(entry);
@@ -698,11 +652,6 @@ public final class LegacyTransactionToLedgerMigrator
         private static void addPosting(LedgerEntry entry, LedgerPosting posting)
         {
             entry.addPosting(posting);
-        }
-
-        private static void addProjectionView(LedgerEntry entry, MigrationView projection)
-        {
-            // Projection views are derived from semantic postings.
         }
 
         private static void addParameter(LedgerPosting posting, LedgerParameter<?> parameter)
@@ -792,11 +741,6 @@ public final class LegacyTransactionToLedgerMigrator
             var key = "ledger-v6:migrated-posting:" + projectionUUID + ":" + type + ":" + discriminator; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             return UUID.nameUUIDFromBytes(key.getBytes(StandardCharsets.UTF_8)).toString();
         }
-    }
-
-    private record MigrationView(String uuid, LedgerProjectionRole role, Account account, Portfolio portfolio,
-                    String primaryPostingId)
-    {
     }
 
     private static final class MigrationPlan

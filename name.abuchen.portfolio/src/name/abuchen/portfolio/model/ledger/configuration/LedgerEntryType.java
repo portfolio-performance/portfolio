@@ -80,7 +80,7 @@ public enum LedgerEntryType
         return shape == Shape.LEDGER_NATIVE_TARGETED;
     }
 
-    public boolean requiresTargetedProjectionRefs()
+    public boolean requiresTargetedDerivedDescriptors()
     {
         return isLedgerNativeTargeted();
     }

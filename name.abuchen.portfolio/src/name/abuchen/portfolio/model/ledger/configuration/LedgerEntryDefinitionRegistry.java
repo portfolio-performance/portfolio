@@ -25,7 +25,7 @@ import name.abuchen.portfolio.model.ledger.configuration.rule.LedgerRequirementG
  *
  * <p>
  * The registry is static Java configuration. It is not persisted in XML or Protobuf; files
- * store the resulting Ledger entries, postings, parameters, and projection refs.
+ * store the resulting Ledger entries, postings, parameters, and semantic projection facts.
  * </p>
  */
 public final class LedgerEntryDefinitionRegistry

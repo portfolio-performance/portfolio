@@ -110,7 +110,7 @@ public class LedgerRuntimeProjectionRestorerTest
     /**
      * Checks the projection rebuild scenario: semantic group keys drive native targeted units.
      * Unit projections must be derived from posting semantics.
-     * This protects Ledger-V6 from relying on projection membership targeting.
+     * This protects Ledger-V6 from relying on persisted projection membership targeting.
      */
     @Test
     public void testSemanticGroupKeyMaterializesNativeTargetedUnits()

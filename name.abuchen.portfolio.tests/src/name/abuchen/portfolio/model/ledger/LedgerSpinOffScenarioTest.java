@@ -87,7 +87,7 @@ public class LedgerSpinOffScenarioTest
     {
         assertFalse(LedgerEntryType.SPIN_OFF.isLegacyFixedShape());
         assertTrue(LedgerEntryType.SPIN_OFF.isLedgerNativeTargeted());
-        assertTrue(LedgerEntryType.SPIN_OFF.requiresTargetedProjectionRefs());
+        assertTrue(LedgerEntryType.SPIN_OFF.requiresTargetedDerivedDescriptors());
         assertTrue(LedgerEntryType.SPIN_OFF.usesSignedTargetedProjectionFacts());
     }
 
