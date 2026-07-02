@@ -10,10 +10,11 @@ import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerMutationContext;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
+import name.abuchen.portfolio.model.ledger.LedgerPostingDirection;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
+import name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedPortfolioTransaction;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
 import name.abuchen.portfolio.model.ledger.projection.LedgerProjectionSupport;
@@ -42,25 +43,26 @@ public final class LedgerDeliveryDirectionConverter
             throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_CONVERT_034.message("Only ledger-backed delivery transactions can be reversed")); //$NON-NLS-1$
 
         var entry = ledgerTransaction.getLedgerEntry();
-        var projectionRef = ledgerTransaction.getLedgerProjectionRef();
-        var portfolio = projectionRef.getPortfolio();
-        var projectionUUID = projectionRef.getUUID();
+        var descriptor = ledgerTransaction.getLedgerProjectionDescriptor();
+        var portfolio = descriptor.getPortfolio();
+        var oldRuntimeProjectionId = descriptor.getRuntimeProjectionId();
 
-        preflight(entry, projectionRef, transaction, portfolio);
+        preflight(entry, descriptor, transaction, portfolio);
         var targetRole = role(entry.getType() == LedgerEntryType.DELIVERY_INBOUND
                         ? LedgerEntryType.DELIVERY_OUTBOUND
                         : LedgerEntryType.DELIVERY_INBOUND);
-        var roleChange = LedgerInvestmentPlanRefSupport.roleChange(projectionUUID, projectionRef.getRole(),
+        var targetRuntimeProjectionId = runtimeProjectionId(entry, targetRole);
+        var roleChange = LedgerInvestmentPlanRefSupport.roleChange(oldRuntimeProjectionId, descriptor.getRole(),
                         targetRole);
         LedgerInvestmentPlanRefSupport.requireRefsFollowRoleChanges(client, entry, roleChange);
 
-        new LedgerMutationContext(client).mutateEntry(entry, editedEntry -> reverse(editedEntry, projectionUUID));
+        new LedgerMutationContext(client).mutateEntry(entry, this::reverse);
         LedgerInvestmentPlanRefSupport.updateProjectionRoles(client, entry, roleChange);
 
-        return find(portfolio, projectionUUID);
+        return find(portfolio, targetRuntimeProjectionId);
     }
 
-    private void preflight(LedgerEntry entry, LedgerProjectionRef projectionRef,
+    private void preflight(LedgerEntry entry, DerivedProjectionDescriptor descriptor,
                     TransactionPair<PortfolioTransaction> transaction, Portfolio portfolio)
     {
         if (entry.getType() != LedgerEntryType.DELIVERY_INBOUND && entry.getType() != LedgerEntryType.DELIVERY_OUTBOUND)
@@ -68,7 +70,7 @@ public final class LedgerDeliveryDirectionConverter
 
         var expectedRole = role(entry.getType());
 
-        if (projectionRef.getRole() != expectedRole)
+        if (descriptor.getRole() != expectedRole)
             throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_PROJ_034.message("Only the delivery projection can be reversed")); //$NON-NLS-1$
 
         if (transaction.getOwner() != portfolio)
@@ -77,10 +79,10 @@ public final class LedgerDeliveryDirectionConverter
         var projection = requireOneProjection(entry, expectedRole);
         var securityPosting = requireOnePosting(entry, LedgerPostingType.SECURITY);
 
-        if (projection != projectionRef)
+        if (!projection.getRuntimeProjectionId().equals(descriptor.getRuntimeProjectionId()))
             throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_PROJ_036.message("Selected projection is not the unique delivery projection")); //$NON-NLS-1$
 
-        if (LedgerProjectionSupport.primaryPosting(entry, projection) != securityPosting)
+        if (projection.getPrimaryPosting() != securityPosting)
             throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_PROJ_037.message("Delivery projection primary posting is ambiguous")); //$NON-NLS-1$
 
         if (securityPosting.getPortfolio() != projection.getPortfolio())
@@ -94,22 +96,19 @@ public final class LedgerDeliveryDirectionConverter
         reversedAmount(entry, entry.getType());
     }
 
-    private void reverse(LedgerEntry entry, String projectionUUID)
+    private void reverse(LedgerEntry entry)
     {
         var currentType = entry.getType();
         var targetType = currentType == LedgerEntryType.DELIVERY_INBOUND ? LedgerEntryType.DELIVERY_OUTBOUND
                         : LedgerEntryType.DELIVERY_INBOUND;
         var amount = reversedAmount(entry, currentType);
         var securityPosting = requireOnePosting(entry, LedgerPostingType.SECURITY);
-        var projection = entry.getProjectionRefs().stream() //
-                        .filter(item -> projectionUUID.equals(item.getUUID())) //
-                        .findFirst()
-                        .orElseThrow(() -> new IllegalArgumentException(
-                                        "Ledger delivery projection not found: " + projectionUUID)); //$NON-NLS-1$
+        var targetRole = role(targetType);
 
         securityPosting.setAmount(amount.getAmount());
         securityPosting.setCurrency(amount.getCurrencyCode());
-        projection.setRole(role(targetType));
+        securityPosting.setDirection(direction(targetRole));
+        securityPosting.setLocalKey(targetRole.name());
         entry.setType(targetType);
     }
 
@@ -155,9 +154,10 @@ public final class LedgerDeliveryDirectionConverter
         return postings.get(0);
     }
 
-    private LedgerProjectionRef requireOneProjection(LedgerEntry entry, LedgerProjectionRole role)
+    private DerivedProjectionDescriptor requireOneProjection(LedgerEntry entry, LedgerProjectionRole role)
     {
-        var projections = entry.getProjectionRefs().stream().filter(projection -> projection.getRole() == role).toList();
+        var projections = LedgerProjectionSupport.descriptors(entry).stream()
+                        .filter(projection -> projection.getRole() == role).toList();
 
         if (projections.size() != 1)
             throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_PROJ_039
@@ -170,6 +170,17 @@ public final class LedgerDeliveryDirectionConverter
     {
         return entryType == LedgerEntryType.DELIVERY_INBOUND ? LedgerProjectionRole.DELIVERY_INBOUND
                         : LedgerProjectionRole.DELIVERY_OUTBOUND;
+    }
+
+    private LedgerPostingDirection direction(LedgerProjectionRole role)
+    {
+        return role == LedgerProjectionRole.DELIVERY_OUTBOUND ? LedgerPostingDirection.OUTBOUND
+                        : LedgerPostingDirection.INBOUND;
+    }
+
+    private String runtimeProjectionId(LedgerEntry entry, LedgerProjectionRole role)
+    {
+        return entry.getUUID() + ":" + role; //$NON-NLS-1$
     }
 
     private PortfolioTransaction find(Portfolio portfolio, String projectionUUID)

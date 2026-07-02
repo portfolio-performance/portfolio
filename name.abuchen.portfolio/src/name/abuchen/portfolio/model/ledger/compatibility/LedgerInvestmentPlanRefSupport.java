@@ -5,7 +5,6 @@ import java.util.Objects;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 
 /**
@@ -19,10 +18,10 @@ final class LedgerInvestmentPlanRefSupport
     {
     }
 
-    static RoleChange roleChange(String projectionUUID, LedgerProjectionRole sourceRole,
+    static RoleChange roleChange(String runtimeProjectionId, LedgerProjectionRole sourceRole,
                     LedgerProjectionRole targetRole)
     {
-        return new RoleChange(Objects.requireNonNull(projectionUUID), Objects.requireNonNull(sourceRole),
+        return new RoleChange(Objects.requireNonNull(runtimeProjectionId), Objects.requireNonNull(sourceRole),
                         Objects.requireNonNull(targetRole));
     }
 
@@ -32,7 +31,7 @@ final class LedgerInvestmentPlanRefSupport
     }
 
     static SplitExecutionRefUpdates prepareAccountTransferSplitExecutionRefUpdates(Client client, LedgerEntry entry,
-                    LedgerProjectionRef sourceProjection, LedgerProjectionRef targetProjection,
+                    LedgerProjectionRole sourceRole, LedgerProjectionRole targetRole,
                     LedgerEntry removalEntry, LedgerEntry depositEntry)
     {
         return new SplitExecutionRefUpdates(List.of());
@@ -48,7 +47,7 @@ final class LedgerInvestmentPlanRefSupport
         // Projection role rewrites are no longer part of InvestmentPlan linkage.
     }
 
-    record RoleChange(String projectionUUID, LedgerProjectionRole sourceRole, LedgerProjectionRole targetRole)
+    record RoleChange(String runtimeProjectionId, LedgerProjectionRole sourceRole, LedgerProjectionRole targetRole)
     {
     }
 

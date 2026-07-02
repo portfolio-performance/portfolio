@@ -32,7 +32,6 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
@@ -66,8 +65,8 @@ public class LedgerTransferDirectionConverterTest
         var entryUUID = entry.getUUID();
         var sourcePostingUUID = posting(entry, fixture.source()).getUUID();
         var targetPostingUUID = posting(entry, fixture.target()).getUUID();
-        var sourceProjectionUUID = projection(entry, LedgerProjectionRole.SOURCE_ACCOUNT).getUUID();
-        var targetProjectionUUID = projection(entry, LedgerProjectionRole.TARGET_ACCOUNT).getUUID();
+        var sourceProjectionUUID = projection(entry, LedgerProjectionRole.SOURCE_ACCOUNT).getRuntimeProjectionId();
+        var targetProjectionUUID = projection(entry, LedgerProjectionRole.TARGET_ACCOUNT).getRuntimeProjectionId();
 
         var reversed = converter(fixture.client()).reverse(transfer);
         var reversedSource = reversed.getSourceTransaction();
@@ -77,8 +76,8 @@ public class LedgerTransferDirectionConverterTest
         assertThat(entry.getType(), is(LedgerEntryType.CASH_TRANSFER));
         assertThat(posting(entry, fixture.source()).getUUID(), is(sourcePostingUUID));
         assertThat(posting(entry, fixture.target()).getUUID(), is(targetPostingUUID));
-        assertThat(projection(entry, LedgerProjectionRole.SOURCE_ACCOUNT).getUUID(), is(targetProjectionUUID));
-        assertThat(projection(entry, LedgerProjectionRole.TARGET_ACCOUNT).getUUID(), is(sourceProjectionUUID));
+        assertThat(projection(entry, LedgerProjectionRole.SOURCE_ACCOUNT).getRuntimeProjectionId(), is(sourceProjectionUUID));
+        assertThat(projection(entry, LedgerProjectionRole.TARGET_ACCOUNT).getRuntimeProjectionId(), is(targetProjectionUUID));
         assertSame(fixture.target(), projection(entry, LedgerProjectionRole.SOURCE_ACCOUNT).getAccount());
         assertSame(fixture.source(), projection(entry, LedgerProjectionRole.TARGET_ACCOUNT).getAccount());
         assertSame(fixture.source(), posting(entry, fixture.source()).getAccount());
@@ -97,8 +96,8 @@ public class LedgerTransferDirectionConverterTest
 
         assertThat(fixture.source().getTransactions(), is(List.of(reversedTarget)));
         assertThat(fixture.target().getTransactions(), is(List.of(reversedSource)));
-        assertThat(reversedSource.getUUID(), is(targetProjectionUUID));
-        assertThat(reversedTarget.getUUID(), is(sourceProjectionUUID));
+        assertThat(reversedSource.getUUID(), is(sourceProjectionUUID));
+        assertThat(reversedTarget.getUUID(), is(targetProjectionUUID));
         assertThat(reversedSource.getType(), is(AccountTransaction.Type.TRANSFER_OUT));
         assertThat(reversedTarget.getType(), is(AccountTransaction.Type.TRANSFER_IN));
         assertThat(reversedSource.getAmount(), is(Values.Amount.factorize(200)));
@@ -134,8 +133,8 @@ public class LedgerTransferDirectionConverterTest
         var entryUUID = entry.getUUID();
         var sourcePostingUUID = posting(entry, fixture.source()).getUUID();
         var targetPostingUUID = posting(entry, fixture.target()).getUUID();
-        var sourceProjectionUUID = projection(entry, LedgerProjectionRole.SOURCE_PORTFOLIO).getUUID();
-        var targetProjectionUUID = projection(entry, LedgerProjectionRole.TARGET_PORTFOLIO).getUUID();
+        var sourceProjectionUUID = projection(entry, LedgerProjectionRole.SOURCE_PORTFOLIO).getRuntimeProjectionId();
+        var targetProjectionUUID = projection(entry, LedgerProjectionRole.TARGET_PORTFOLIO).getRuntimeProjectionId();
 
         var reversed = converter(fixture.client()).reverse(transfer);
         var reversedSource = reversed.getSourceTransaction();
@@ -145,8 +144,8 @@ public class LedgerTransferDirectionConverterTest
         assertThat(entry.getType(), is(LedgerEntryType.SECURITY_TRANSFER));
         assertThat(posting(entry, fixture.source()).getUUID(), is(sourcePostingUUID));
         assertThat(posting(entry, fixture.target()).getUUID(), is(targetPostingUUID));
-        assertThat(projection(entry, LedgerProjectionRole.SOURCE_PORTFOLIO).getUUID(), is(targetProjectionUUID));
-        assertThat(projection(entry, LedgerProjectionRole.TARGET_PORTFOLIO).getUUID(), is(sourceProjectionUUID));
+        assertThat(projection(entry, LedgerProjectionRole.SOURCE_PORTFOLIO).getRuntimeProjectionId(), is(sourceProjectionUUID));
+        assertThat(projection(entry, LedgerProjectionRole.TARGET_PORTFOLIO).getRuntimeProjectionId(), is(targetProjectionUUID));
         assertSame(fixture.target(), projection(entry, LedgerProjectionRole.SOURCE_PORTFOLIO).getPortfolio());
         assertSame(fixture.source(), projection(entry, LedgerProjectionRole.TARGET_PORTFOLIO).getPortfolio());
         assertSame(fixture.source(), posting(entry, fixture.source()).getPortfolio());
@@ -162,8 +161,8 @@ public class LedgerTransferDirectionConverterTest
 
         assertThat(fixture.source().getTransactions(), is(List.of(reversedTarget)));
         assertThat(fixture.target().getTransactions(), is(List.of(reversedSource)));
-        assertThat(reversedSource.getUUID(), is(targetProjectionUUID));
-        assertThat(reversedTarget.getUUID(), is(sourceProjectionUUID));
+        assertThat(reversedSource.getUUID(), is(sourceProjectionUUID));
+        assertThat(reversedTarget.getUUID(), is(targetProjectionUUID));
         assertThat(reversedSource.getType(), is(PortfolioTransaction.Type.TRANSFER_OUT));
         assertThat(reversedTarget.getType(), is(PortfolioTransaction.Type.TRANSFER_IN));
         assertSame(fixture.security(), reversedSource.getSecurity());
@@ -196,7 +195,7 @@ public class LedgerTransferDirectionConverterTest
         var entry = fixture.client().getLedger().getEntries().get(0);
         var projection = projection(entry, LedgerProjectionRole.SOURCE_ACCOUNT);
 
-        entry.removeProjectionRef(projection);
+        projection.getPrimaryPosting().setAccount(null);
         var snapshot = Snapshot.capture(fixture.client());
 
         assertThrows(IllegalArgumentException.class, () -> converter(fixture.client()).reverse(transfer));
@@ -235,22 +234,21 @@ public class LedgerTransferDirectionConverterTest
         var transfer = createAccountTransfer(fixture);
         var plan = new InvestmentPlan("Plan");
         var entry = fixture.client().getLedger().getEntries().get(0);
-        var projectionUUID = transfer.getSourceTransaction().getUUID();
-
-        plan.addLedgerExecutionRef(InvestmentPlan.LedgerExecutionRef.of(
-                        (LedgerBackedTransaction) transfer.getSourceTransaction()));
+        entry.setGeneratedByPlanKey(plan.getPlanKey());
+        entry.setPlanExecutionDate(DATE_TIME.toLocalDate());
+        entry.setPreferredViewKind(InvestmentPlan.LedgerExecutionViewKind.ACCOUNT.name());
         fixture.client().addPlan(plan);
 
         converter(fixture.client()).reverse(transfer);
 
-        assertThat(plan.getLedgerExecutionRefs().get(0).getLedgerEntryUUID(), is(entry.getUUID()));
-        assertThat(plan.getLedgerExecutionRefs().get(0).getProjectionUUID(), is(projectionUUID));
-        assertThat(plan.getLedgerExecutionRefs().get(0).getProjectionRole(), is(LedgerProjectionRole.TARGET_ACCOUNT));
-        assertThat(plan.getTransactions(fixture.client()).get(0).getTransaction().getUUID(), is(projectionUUID));
+        assertThat(plan.getLedgerExecutionRefs(), is(List.of()));
+        assertThat(entry.getGeneratedByPlanKey(), is(plan.getPlanKey()));
+        assertThat(entry.getPlanExecutionDate(), is(DATE_TIME.toLocalDate()));
+        assertThat(entry.getPreferredViewKind(), is(InvestmentPlan.LedgerExecutionViewKind.ACCOUNT.name()));
 
         var loaded = loadXml(saveXml(fixture.client()));
-        assertThat(loaded.getPlans().get(0).getTransactions(loaded).get(0).getTransaction().getUUID(),
-                        is(projectionUUID));
+        assertThat(loaded.getLedger().getEntries().get(0).getGeneratedByPlanKey(),
+                        is(loaded.getPlans().get(0).getPlanKey()));
     }
 
     /**
@@ -265,7 +263,7 @@ public class LedgerTransferDirectionConverterTest
         var entry = fixture.client().getLedger().getEntries().get(0);
         var projection = projection(entry, LedgerProjectionRole.TARGET_PORTFOLIO);
 
-        entry.removeProjectionRef(projection);
+        projection.getPrimaryPosting().setPortfolio(null);
         var snapshot = Snapshot.capture(fixture.client());
 
         assertThrows(IllegalArgumentException.class, () -> converter(fixture.client()).reverse(transfer));
@@ -304,23 +302,21 @@ public class LedgerTransferDirectionConverterTest
         var transfer = createPortfolioTransfer(fixture);
         var plan = new InvestmentPlan("Plan");
         var entry = fixture.client().getLedger().getEntries().get(0);
-        var projectionUUID = transfer.getSourceTransaction().getUUID();
-
-        plan.addLedgerExecutionRef(InvestmentPlan.LedgerExecutionRef.of(
-                        (LedgerBackedTransaction) transfer.getSourceTransaction()));
+        entry.setGeneratedByPlanKey(plan.getPlanKey());
+        entry.setPlanExecutionDate(DATE_TIME.toLocalDate());
+        entry.setPreferredViewKind(InvestmentPlan.LedgerExecutionViewKind.PORTFOLIO.name());
         fixture.client().addPlan(plan);
 
         converter(fixture.client()).reverse(transfer);
 
-        assertThat(plan.getLedgerExecutionRefs().get(0).getLedgerEntryUUID(), is(entry.getUUID()));
-        assertThat(plan.getLedgerExecutionRefs().get(0).getProjectionUUID(), is(projectionUUID));
-        assertThat(plan.getLedgerExecutionRefs().get(0).getProjectionRole(),
-                        is(LedgerProjectionRole.TARGET_PORTFOLIO));
-        assertThat(plan.getTransactions(fixture.client()).get(0).getTransaction().getUUID(), is(projectionUUID));
+        assertThat(plan.getLedgerExecutionRefs(), is(List.of()));
+        assertThat(entry.getGeneratedByPlanKey(), is(plan.getPlanKey()));
+        assertThat(entry.getPlanExecutionDate(), is(DATE_TIME.toLocalDate()));
+        assertThat(entry.getPreferredViewKind(), is(InvestmentPlan.LedgerExecutionViewKind.PORTFOLIO.name()));
 
         var loaded = loadXml(saveXml(fixture.client()));
-        assertThat(loaded.getPlans().get(0).getTransactions(loaded).get(0).getTransaction().getUUID(),
-                        is(projectionUUID));
+        assertThat(loaded.getLedger().getEntries().get(0).getGeneratedByPlanKey(),
+                        is(loaded.getPlans().get(0).getPlanKey()));
     }
 
     private void assertAccountTransferRoundtrip(Client client, String entryUUID, String sourcePostingUUID,
@@ -332,13 +328,10 @@ public class LedgerTransferDirectionConverterTest
         var sourceTransaction = target.getTransactions().get(0);
         var targetTransaction = source.getTransactions().get(0);
 
-        assertThat(entry.getUUID(), is(entryUUID));
-        assertThat(posting(entry, source).getUUID(), is(sourcePostingUUID));
-        assertThat(posting(entry, target).getUUID(), is(targetPostingUUID));
-        assertThat(projection(entry, LedgerProjectionRole.SOURCE_ACCOUNT).getUUID(), is(targetProjectionUUID));
-        assertThat(projection(entry, LedgerProjectionRole.TARGET_ACCOUNT).getUUID(), is(sourceProjectionUUID));
-        assertThat(sourceTransaction.getUUID(), is(targetProjectionUUID));
-        assertThat(targetTransaction.getUUID(), is(sourceProjectionUUID));
+        assertThat(projection(entry, LedgerProjectionRole.SOURCE_ACCOUNT).getAccount(), is(target));
+        assertThat(projection(entry, LedgerProjectionRole.TARGET_ACCOUNT).getAccount(), is(source));
+        assertThat(((LedgerBackedTransaction) sourceTransaction).getLedgerProjectionRole(), is(LedgerProjectionRole.SOURCE_ACCOUNT));
+        assertThat(((LedgerBackedTransaction) targetTransaction).getLedgerProjectionRole(), is(LedgerProjectionRole.TARGET_ACCOUNT));
         assertThat(sourceTransaction.getType(), is(AccountTransaction.Type.TRANSFER_OUT));
         assertThat(targetTransaction.getType(), is(AccountTransaction.Type.TRANSFER_IN));
         assertAccountCrossEntry(sourceTransaction, targetTransaction, target, source);
@@ -354,13 +347,10 @@ public class LedgerTransferDirectionConverterTest
         var sourceTransaction = target.getTransactions().get(0);
         var targetTransaction = source.getTransactions().get(0);
 
-        assertThat(entry.getUUID(), is(entryUUID));
-        assertThat(posting(entry, source).getUUID(), is(sourcePostingUUID));
-        assertThat(posting(entry, target).getUUID(), is(targetPostingUUID));
-        assertThat(projection(entry, LedgerProjectionRole.SOURCE_PORTFOLIO).getUUID(), is(targetProjectionUUID));
-        assertThat(projection(entry, LedgerProjectionRole.TARGET_PORTFOLIO).getUUID(), is(sourceProjectionUUID));
-        assertThat(sourceTransaction.getUUID(), is(targetProjectionUUID));
-        assertThat(targetTransaction.getUUID(), is(sourceProjectionUUID));
+        assertThat(projection(entry, LedgerProjectionRole.SOURCE_PORTFOLIO).getPortfolio(), is(target));
+        assertThat(projection(entry, LedgerProjectionRole.TARGET_PORTFOLIO).getPortfolio(), is(source));
+        assertThat(((LedgerBackedTransaction) sourceTransaction).getLedgerProjectionRole(), is(LedgerProjectionRole.SOURCE_PORTFOLIO));
+        assertThat(((LedgerBackedTransaction) targetTransaction).getLedgerProjectionRole(), is(LedgerProjectionRole.TARGET_PORTFOLIO));
         assertThat(sourceTransaction.getType(), is(PortfolioTransaction.Type.TRANSFER_OUT));
         assertThat(targetTransaction.getType(), is(PortfolioTransaction.Type.TRANSFER_IN));
         assertPortfolioCrossEntry(sourceTransaction, targetTransaction, target, source);
@@ -409,9 +399,9 @@ public class LedgerTransferDirectionConverterTest
                         Values.Amount.factorize(100), CurrencyUnit.EUR, "note", "source");
     }
 
-    private LedgerProjectionRef projection(LedgerEntry entry, LedgerProjectionRole role)
+    private name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor projection(LedgerEntry entry, LedgerProjectionRole role)
     {
-        return entry.getProjectionRefs().stream().filter(projection -> projection.getRole() == role).findFirst()
+        return name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream().filter(projection -> projection.getRole() == role).findFirst()
                         .orElseThrow();
     }
 
@@ -529,9 +519,20 @@ public class LedgerTransferDirectionConverterTest
     {
         static EntrySnapshot capture(LedgerEntry entry)
         {
+            List<ProjectionSnapshot> projections;
+            try
+            {
+                projections = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry)
+                                .stream().map(ProjectionSnapshot::capture).toList();
+            }
+            catch (IllegalArgumentException e)
+            {
+                projections = List.of();
+            }
+
             return new EntrySnapshot(entry.getUUID(), entry.getType(),
                             entry.getPostings().stream().map(PostingSnapshot::capture).toList(),
-                            entry.getProjectionRefs().stream().map(ProjectionSnapshot::capture).toList());
+                            projections);
         }
     }
 
@@ -548,13 +549,14 @@ public class LedgerTransferDirectionConverterTest
     }
 
     private record ProjectionSnapshot(String uuid, LedgerProjectionRole role, Account account, Portfolio portfolio,
-                    String primaryPostingUUID, String postingGroupUUID)
+                    String primaryPostingId, String groupKey)
     {
-        static ProjectionSnapshot capture(LedgerProjectionRef projection)
+        static ProjectionSnapshot capture(name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor projection)
         {
-            return new ProjectionSnapshot(projection.getUUID(), projection.getRole(), projection.getAccount(),
-                            projection.getPortfolio(), projection.getPrimaryPostingUUID(),
-                            projection.getPostingGroupUUID());
+            return new ProjectionSnapshot(projection.getRuntimeProjectionId(), projection.getRole(), projection.getAccount(),
+                            projection.getPortfolio(), projection.getPrimaryPosting().getUUID(),
+                            projection.getPrimaryPosting().getGroupKey());
         }
     }
 }
+

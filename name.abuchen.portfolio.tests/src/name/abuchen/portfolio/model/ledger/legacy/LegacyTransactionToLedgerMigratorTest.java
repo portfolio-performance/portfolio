@@ -10,10 +10,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 import org.junit.Test;
@@ -33,14 +31,14 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerParameter;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
+import name.abuchen.portfolio.model.ledger.LedgerPostingDirection;
+import name.abuchen.portfolio.model.ledger.LedgerPostingSemanticRole;
+import name.abuchen.portfolio.model.ledger.LedgerPostingUnitRole;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator;
-import name.abuchen.portfolio.model.ledger.ProjectionMembershipRole;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerParameterType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
-import name.abuchen.portfolio.model.ledger.projection.LedgerBackedAccountTransaction;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
@@ -90,7 +88,7 @@ public class LegacyTransactionToLedgerMigratorTest
         assertFalse(result.hasDiagnostics());
         assertThat(result.getMigratedTransactionCount(), is(1));
         assertThat(entry.getType(), is(LedgerEntryType.DIVIDENDS));
-        assertThat(migrated.getUUID(), is(dividend.getUUID()));
+        assertLedgerBacked(migrated, entry, LedgerProjectionRole.ACCOUNT);
         assertThat(migrated.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertSame(security, migrated.getSecurity());
         assertThat(migrated.getShares(), is(dividend.getShares()));
@@ -132,9 +130,6 @@ public class LegacyTransactionToLedgerMigratorTest
         transfer.setSource("transfer source");
         transfer.insert();
 
-        var sourceUUID = transfer.getSourceTransaction().getUUID();
-        var targetUUID = transfer.getTargetTransaction().getUUID();
-
         migrate(client);
 
         var entry = onlyLedgerEntry(client);
@@ -142,8 +137,8 @@ public class LegacyTransactionToLedgerMigratorTest
         var targetTransaction = onlyAccountTransaction(target);
 
         assertThat(entry.getType(), is(LedgerEntryType.CASH_TRANSFER));
-        assertThat(sourceTransaction.getUUID(), is(sourceUUID));
-        assertThat(targetTransaction.getUUID(), is(targetUUID));
+        assertLedgerBacked(sourceTransaction, entry, LedgerProjectionRole.SOURCE_ACCOUNT);
+        assertLedgerBacked(targetTransaction, entry, LedgerProjectionRole.TARGET_ACCOUNT);
         assertThat(sourceTransaction.getType(), is(AccountTransaction.Type.TRANSFER_OUT));
         assertThat(targetTransaction.getType(), is(AccountTransaction.Type.TRANSFER_IN));
         assertThat(sourceTransaction.getDateTime(), is(transfer.getSourceTransaction().getDateTime()));
@@ -177,9 +172,6 @@ public class LegacyTransactionToLedgerMigratorTest
         transfer.setSource("portfolio transfer source");
         transfer.insert();
 
-        var sourceUUID = transfer.getSourceTransaction().getUUID();
-        var targetUUID = transfer.getTargetTransaction().getUUID();
-
         migrate(client);
 
         var entry = onlyLedgerEntry(client);
@@ -187,8 +179,8 @@ public class LegacyTransactionToLedgerMigratorTest
         var targetTransaction = onlyPortfolioTransaction(target);
 
         assertThat(entry.getType(), is(LedgerEntryType.SECURITY_TRANSFER));
-        assertThat(sourceTransaction.getUUID(), is(sourceUUID));
-        assertThat(targetTransaction.getUUID(), is(targetUUID));
+        assertLedgerBacked(sourceTransaction, entry, LedgerProjectionRole.SOURCE_PORTFOLIO);
+        assertLedgerBacked(targetTransaction, entry, LedgerProjectionRole.TARGET_PORTFOLIO);
         assertThat(sourceTransaction.getType(), is(PortfolioTransaction.Type.TRANSFER_OUT));
         assertThat(targetTransaction.getType(), is(PortfolioTransaction.Type.TRANSFER_IN));
         assertThat(sourceTransaction.getDateTime(), is(transfer.getSourceTransaction().getDateTime()));
@@ -231,7 +223,8 @@ public class LegacyTransactionToLedgerMigratorTest
         assertThat(second.getMigratedTransactionCount(), is(0));
         assertThat(client.getLedger().getEntries().size(), is(1));
         assertThat(account.getTransactions().size(), is(1));
-        assertThat(account.getTransactions().get(0).getUUID(), is(deposit.getUUID()));
+        assertLedgerBacked(account.getTransactions().get(0), client.getLedger().getEntries().get(0),
+                        LedgerProjectionRole.ACCOUNT);
     }
 
     @Test
@@ -250,8 +243,7 @@ public class LegacyTransactionToLedgerMigratorTest
         assertThat(result.getMigratedTransactionCount(), is(1));
         assertThat(client.getLedger().getEntries().size(), is(1));
         assertTrue(account.getTransactions().stream().anyMatch(transaction -> transaction == unsupported));
-        assertTrue(account.getTransactions().stream().anyMatch(transaction -> transaction instanceof LedgerBackedTransaction
-                        && transaction.getUUID().equals(supported.getUUID())));
+        assertTrue(account.getTransactions().stream().anyMatch(transaction -> transaction instanceof LedgerBackedTransaction));
     }
 
     @Test
@@ -649,67 +641,6 @@ public class LegacyTransactionToLedgerMigratorTest
     }
 
     @Test
-    public void testExistingBuySellDuplicateMustMatchTypeRolesOwnersAndPostingOwners()
-    {
-        assertBuySellDuplicateConflict(existing -> existing.setType(LedgerEntryType.SELL), "ENTRY_TYPE");
-        assertBuySellDuplicateConflict(this::swapBuySellProjectionSides, "PROJECTION_ROLE");
-        assertBuySellDuplicateConflict((existing, account, portfolio, otherAccount, otherPortfolio) -> {
-            var accountProjection = existing.getProjectionRefs().get(0);
-            var cashPosting = postingByUUID(existing, accountProjection.getPrimaryPostingUUID());
-
-            accountProjection.setAccount(otherAccount);
-            cashPosting.setAccount(otherAccount);
-        }, "PROJECTION_OWNER");
-        assertBuySellDuplicateConflict((existing, account, portfolio, otherAccount, otherPortfolio) -> {
-            var portfolioProjection = existing.getProjectionRefs().get(1);
-            var securityPosting = postingByUUID(existing, portfolioProjection.getPrimaryPostingUUID());
-
-            portfolioProjection.setPortfolio(otherPortfolio);
-            securityPosting.setPortfolio(otherPortfolio);
-        }, "PROJECTION_OWNER");
-        assertBuySellDuplicateConflict((existing, account, portfolio, otherAccount, otherPortfolio) -> {
-            var accountProjection = existing.getProjectionRefs().get(0);
-            var cashPosting = postingByUUID(existing, accountProjection.getPrimaryPostingUUID());
-
-            cashPosting.setAccount(otherAccount);
-        }, "POSTING_OWNER");
-    }
-
-    @Test
-    public void testExistingAccountTransferDuplicateMustPreserveSourceTargetShape()
-    {
-        assertAccountTransferDuplicateConflict(existing -> {
-            existing.getProjectionRefs().get(0).setRole(LedgerProjectionRole.TARGET_ACCOUNT);
-            existing.getProjectionRefs().get(1).setRole(LedgerProjectionRole.SOURCE_ACCOUNT);
-        }, "PROJECTION_ROLE");
-        assertAccountTransferDuplicateConflict((existing, source, target, other) -> {
-            var sourceProjection = existing.getProjectionRefs().get(0);
-            postingByUUID(existing, sourceProjection.getPrimaryPostingUUID()).setAccount(other);
-        }, "POSTING_OWNER");
-        assertAccountTransferDuplicateConflict((existing, source, target, other) -> {
-            var targetProjection = existing.getProjectionRefs().get(1);
-            postingByUUID(existing, targetProjection.getPrimaryPostingUUID()).setAccount(other);
-        }, "POSTING_OWNER");
-    }
-
-    @Test
-    public void testExistingPortfolioTransferDuplicateMustPreserveSourceTargetShape()
-    {
-        assertPortfolioTransferDuplicateConflict(existing -> {
-            existing.getProjectionRefs().get(0).setRole(LedgerProjectionRole.TARGET_PORTFOLIO);
-            existing.getProjectionRefs().get(1).setRole(LedgerProjectionRole.SOURCE_PORTFOLIO);
-        }, "PROJECTION_ROLE");
-        assertPortfolioTransferDuplicateConflict((existing, source, target, other) -> {
-            var sourceProjection = existing.getProjectionRefs().get(0);
-            postingByUUID(existing, sourceProjection.getPrimaryPostingUUID()).setPortfolio(other);
-        }, "POSTING_OWNER");
-        assertPortfolioTransferDuplicateConflict((existing, source, target, other) -> {
-            var targetProjection = existing.getProjectionRefs().get(1);
-            postingByUUID(existing, targetProjection.getPrimaryPostingUUID()).setPortfolio(other);
-        }, "POSTING_OWNER");
-    }
-
-    @Test
     public void testExistingDeliveryDuplicateMustMatchDirectionAndOwner()
     {
         assertDeliveryDuplicateConflict(LedgerEntryType.DELIVERY_OUTBOUND, false, "ENTRY_TYPE");
@@ -847,26 +778,6 @@ public class LegacyTransactionToLedgerMigratorTest
     }
 
     @Test
-    public void testUnsupportedUnitPostingMembershipHasImportCode() throws ReflectiveOperationException
-    {
-        var projection = new LedgerProjectionRef();
-        var posting = new LedgerPosting();
-        var builder = Class.forName(
-                        "name.abuchen.portfolio.model.ledger.legacy.LegacyTransactionToLedgerMigrator$MigrationGraphBuilder");
-        var method = builder.getDeclaredMethod("addUnitMemberships", LedgerProjectionRef.class, List.class);
-
-        posting.setType(LedgerPostingType.CASH);
-        method.setAccessible(true);
-
-        var exception = assertThrows(InvocationTargetException.class,
-                        () -> method.invoke(null, projection, List.of(posting)));
-
-        assertThat(exception.getCause(), instanceOf(IllegalArgumentException.class));
-        assertTrue(exception.getCause().getMessage().contains(LedgerDiagnosticCode.LEDGER_IMPORT_021.prefix()));
-        assertTrue(exception.getCause().getMessage().contains("Unsupported unit posting type: CASH"));
-    }
-
-    @Test
     public void testClientAllTransactionsUsesDeduplicatedMigratedShape()
     {
         var client = new Client();
@@ -880,8 +791,8 @@ public class LegacyTransactionToLedgerMigratorTest
 
         assertThat(client.getAllTransactions().size(), is(1));
         assertSame(portfolio, client.getAllTransactions().get(0).getOwner());
-        assertThat(client.getAllTransactions().get(0).getTransaction().getUUID(),
-                        is(entry.getPortfolioTransaction().getUUID()));
+        assertLedgerBacked(client.getAllTransactions().get(0).getTransaction(), onlyLedgerEntry(client),
+                        LedgerProjectionRole.PORTFOLIO);
     }
 
     @Test
@@ -898,9 +809,6 @@ public class LegacyTransactionToLedgerMigratorTest
         plan.getTransactions().add(entry.getPortfolioTransaction());
         client.addPlan(plan);
 
-        var accountUUID = entry.getAccountTransaction().getUUID();
-        var portfolioUUID = entry.getPortfolioTransaction().getUUID();
-
         migrate(client);
 
         var ledgerEntry = onlyLedgerEntry(client);
@@ -910,18 +818,17 @@ public class LegacyTransactionToLedgerMigratorTest
                         .filter(posting -> posting.getType() == LedgerPostingType.SECURITY).findFirst().orElseThrow();
         var feePosting = ledgerEntry.getPostings().stream()
                         .filter(posting -> posting.getType() == LedgerPostingType.FEE).findFirst().orElseThrow();
-        var ref = plan.getLedgerExecutionRefs().get(0);
 
         assertTrue(plan.getTransactions().isEmpty());
-        assertThat(plan.getLedgerExecutionRefs().size(), is(1));
-        assertThat(ref.getLedgerEntryUUID(), is(migratedEntryUUID(LedgerEntryType.BUY, portfolioUUID)));
-        assertThat(ref.getProjectionUUID(), is(portfolioUUID));
-        assertThat(ref.getProjectionRole(), is(LedgerProjectionRole.PORTFOLIO));
-        assertThat(ledgerEntry.getUUID(), is(ref.getLedgerEntryUUID()));
-        assertThat(cashPosting.getUUID(), is(migratedPostingUUID(accountUUID, LedgerPostingType.CASH, "primary")));
-        assertThat(securityPosting.getUUID(),
-                        is(migratedPostingUUID(portfolioUUID, LedgerPostingType.SECURITY, "primary")));
-        assertThat(feePosting.getUUID(), is(migratedPostingUUID(portfolioUUID, LedgerPostingType.FEE, "unit-0")));
+        assertTrue(plan.getLedgerExecutionRefs().isEmpty());
+        assertThat(ledgerEntry.getGeneratedByPlanKey(), is(plan.getPlanKey()));
+        assertThat(ledgerEntry.getPlanExecutionDate(), is(DATE_TIME.toLocalDate()));
+        assertThat(ledgerEntry.getPreferredViewKind(), is(InvestmentPlan.LedgerExecutionViewKind.PORTFOLIO.name()));
+        assertThat(cashPosting.getSemanticRole(), is(LedgerPostingSemanticRole.CASH));
+        assertThat(securityPosting.getSemanticRole(), is(LedgerPostingSemanticRole.SECURITY));
+        assertThat(feePosting.getUnitRole(), is(LedgerPostingUnitRole.FEE));
+        assertThat(plan.getTransactions(client).size(), is(1));
+        assertLedgerBacked(plan.getTransactions(client).get(0).getTransaction(), ledgerEntry, LedgerProjectionRole.PORTFOLIO);
         assertValid(client);
     }
 
@@ -941,18 +848,18 @@ public class LegacyTransactionToLedgerMigratorTest
         var result = migrate(client);
         var migrated = onlyAccountTransaction(account);
         var entry = onlyLedgerEntry(client);
-        var projection = entry.getProjectionRefs().get(0);
+        var projection = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0);
 
         assertFalse(result.hasDiagnostics());
         assertThat(result.getMigratedTransactionCount(), is(1));
         assertThat(client.getLedger().getEntries().size(), is(1));
         assertThat(entry.getType(), is(entryType));
-        assertThat(projection.getPrimaryMembership().orElseThrow().getPostingUUID(),
-                        is(projection.getPrimaryPostingUUID()));
-        assertThat(projection.getMembershipsByRole(ProjectionMembershipRole.FEE_UNIT).size(), is(1));
-        assertThat(projection.getMembershipsByRole(ProjectionMembershipRole.TAX_UNIT).size(), is(1));
-        assertThat(migrated, instanceOf(LedgerBackedAccountTransaction.class));
-        assertThat(migrated.getUUID(), is(transaction.getUUID()));
+        assertThat(projection.getPrimaryPosting().getUnitRole(), is(LedgerPostingUnitRole.PRIMARY));
+        assertThat((int) projection.getUnitPostings().stream()
+                        .filter(posting -> posting.getUnitRole() == LedgerPostingUnitRole.FEE).count(), is(1));
+        assertThat((int) projection.getUnitPostings().stream()
+                        .filter(posting -> posting.getUnitRole() == LedgerPostingUnitRole.TAX).count(), is(1));
+        assertLedgerBacked(migrated, entry, LedgerProjectionRole.ACCOUNT);
         assertThat(migrated.getType(), is(type));
         assertThat(migrated.getDateTime(), is(transaction.getDateTime()));
         assertThat(migrated.getAmount(), is(transaction.getAmount()));
@@ -978,32 +885,27 @@ public class LegacyTransactionToLedgerMigratorTest
                         Money.of(CurrencyUnit.USD, Values.Amount.factorize(300)), BigDecimal.valueOf(0.5)));
         entry.insert();
 
-        var accountUUID = entry.getAccountTransaction().getUUID();
-        var portfolioUUID = entry.getPortfolioTransaction().getUUID();
-
         var result = migrate(client);
         var ledgerEntry = onlyLedgerEntry(client);
         var accountTransaction = onlyAccountTransaction(account);
         var portfolioTransaction = onlyPortfolioTransaction(portfolio);
-        var accountProjection = ledgerEntry.getProjectionRefs().get(0);
-        var portfolioProjection = ledgerEntry.getProjectionRefs().get(1);
+        var accountProjection = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(ledgerEntry).get(0);
+        var portfolioProjection = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(ledgerEntry).get(1);
 
         assertFalse(result.hasDiagnostics());
         assertThat(client.getLedger().getEntries().size(), is(1));
         assertThat(ledgerEntry.getType(), is(entryType));
-        assertThat(ledgerEntry.getProjectionRefs().size(), is(2));
-        assertThat(accountTransaction.getUUID(), is(accountUUID));
-        assertThat(portfolioTransaction.getUUID(), is(portfolioUUID));
-        assertThat(accountProjection.getPrimaryMembership().orElseThrow().getPostingUUID(),
-                        is(accountProjection.getPrimaryPostingUUID()));
-        assertThat(portfolioProjection.getPrimaryMembership().orElseThrow().getPostingUUID(),
-                        is(portfolioProjection.getPrimaryPostingUUID()));
-        assertThat(accountProjection.getMembershipsByRole(ProjectionMembershipRole.FEE_UNIT).size(), is(1));
-        assertThat(accountProjection.getMembershipsByRole(ProjectionMembershipRole.TAX_UNIT).size(), is(1));
-        assertThat(accountProjection.getMembershipsByRole(ProjectionMembershipRole.GROSS_VALUE_UNIT).size(), is(1));
-        assertThat(portfolioProjection.getMembershipsByRole(ProjectionMembershipRole.FEE_UNIT).size(), is(1));
-        assertThat(portfolioProjection.getMembershipsByRole(ProjectionMembershipRole.TAX_UNIT).size(), is(1));
-        assertThat(portfolioProjection.getMembershipsByRole(ProjectionMembershipRole.GROSS_VALUE_UNIT).size(), is(1));
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(ledgerEntry).size(), is(2));
+        assertLedgerBacked(accountTransaction, ledgerEntry, LedgerProjectionRole.ACCOUNT);
+        assertLedgerBacked(portfolioTransaction, ledgerEntry, LedgerProjectionRole.PORTFOLIO);
+        assertThat(accountProjection.getPrimaryPosting().getUnitRole(), is(LedgerPostingUnitRole.PRIMARY));
+        assertThat(portfolioProjection.getPrimaryPosting().getUnitRole(), is(LedgerPostingUnitRole.PRIMARY));
+        assertUnitRoleCount(accountProjection, LedgerPostingUnitRole.FEE, 1);
+        assertUnitRoleCount(accountProjection, LedgerPostingUnitRole.TAX, 1);
+        assertUnitRoleCount(accountProjection, LedgerPostingUnitRole.GROSS_VALUE, 1);
+        assertUnitRoleCount(portfolioProjection, LedgerPostingUnitRole.FEE, 1);
+        assertUnitRoleCount(portfolioProjection, LedgerPostingUnitRole.TAX, 1);
+        assertUnitRoleCount(portfolioProjection, LedgerPostingUnitRole.GROSS_VALUE, 1);
         assertThat(accountTransaction.getType().name(), is(type.name()));
         assertThat(portfolioTransaction.getType(), is(type));
         assertThat(accountTransaction.getDateTime(), is(entry.getAccountTransaction().getDateTime()));
@@ -1028,6 +930,13 @@ public class LegacyTransactionToLedgerMigratorTest
         assertValid(client);
     }
 
+    private void assertUnitRoleCount(name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor projection,
+                    LedgerPostingUnitRole role, int count)
+    {
+        assertThat((int) projection.getUnitPostings().stream().filter(posting -> posting.getUnitRole() == role).count(),
+                        is(count));
+    }
+
     private void assertDeliveryMigration(PortfolioTransaction.Type type, LedgerEntryType entryType)
     {
         var client = new Client();
@@ -1040,10 +949,13 @@ public class LegacyTransactionToLedgerMigratorTest
 
         var result = migrate(client);
         var migrated = onlyPortfolioTransaction(portfolio);
+        var entry = onlyLedgerEntry(client);
 
         assertFalse(result.hasDiagnostics());
-        assertThat(onlyLedgerEntry(client).getType(), is(entryType));
-        assertThat(migrated.getUUID(), is(transaction.getUUID()));
+        assertThat(entry.getType(), is(entryType));
+        assertLedgerBacked(migrated, entry, type == PortfolioTransaction.Type.DELIVERY_OUTBOUND
+                        ? LedgerProjectionRole.DELIVERY_OUTBOUND
+                        : LedgerProjectionRole.DELIVERY_INBOUND);
         assertThat(migrated.getType(), is(type));
         assertSame(security, migrated.getSecurity());
         assertThat(migrated.getShares(), is(transaction.getShares()));
@@ -1324,7 +1236,6 @@ public class LegacyTransactionToLedgerMigratorTest
     {
         var entry = new LedgerEntry();
         var posting = new LedgerPosting();
-        var projection = new LedgerProjectionRef(projectionUUID);
 
         entry.setType(entryType);
         entry.setDateTime(DATE_TIME);
@@ -1332,11 +1243,10 @@ public class LegacyTransactionToLedgerMigratorTest
         posting.setAccount(account);
         posting.setAmount(Values.Amount.factorize(1));
         posting.setCurrency(CurrencyUnit.EUR);
-        projection.setRole(LedgerProjectionRole.ACCOUNT);
-        projection.setAccount(account);
-        projection.setPrimaryPostingUUID(posting.getUUID());
+        posting.setSemanticRole(LedgerPostingSemanticRole.CASH);
+        posting.setDirection(LedgerPostingDirection.NEUTRAL);
+        posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
         entry.addPosting(posting);
-        entry.addProjectionRef(projection);
 
         return entry;
     }
@@ -1346,7 +1256,6 @@ public class LegacyTransactionToLedgerMigratorTest
     {
         var entry = new LedgerEntry();
         var posting = new LedgerPosting();
-        var projection = new LedgerProjectionRef(projectionUUID);
 
         entry.setType(entryType);
         entry.setDateTime(DATE_TIME);
@@ -1356,11 +1265,11 @@ public class LegacyTransactionToLedgerMigratorTest
         posting.setCurrency(CurrencyUnit.EUR);
         posting.setSecurity(security());
         posting.setShares(Values.Share.factorize(1));
-        projection.setRole(role);
-        projection.setPortfolio(portfolio);
-        projection.setPrimaryPostingUUID(posting.getUUID());
+        posting.setSemanticRole(LedgerPostingSemanticRole.SECURITY);
+        posting.setDirection(role == LedgerProjectionRole.DELIVERY_OUTBOUND ? LedgerPostingDirection.OUTBOUND
+                        : LedgerPostingDirection.INBOUND);
+        posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
         entry.addPosting(posting);
-        entry.addProjectionRef(projection);
 
         return entry;
     }
@@ -1371,8 +1280,6 @@ public class LegacyTransactionToLedgerMigratorTest
         var entry = new LedgerEntry();
         var cashPosting = new LedgerPosting();
         var securityPosting = new LedgerPosting();
-        var accountProjection = new LedgerProjectionRef(accountProjectionUUID);
-        var portfolioProjection = new LedgerProjectionRef(portfolioProjectionUUID);
 
         entry.setType(LedgerEntryType.BUY);
         entry.setDateTime(DATE_TIME);
@@ -1380,22 +1287,20 @@ public class LegacyTransactionToLedgerMigratorTest
         cashPosting.setAccount(account);
         cashPosting.setAmount(Values.Amount.factorize(100));
         cashPosting.setCurrency(CurrencyUnit.EUR);
+        cashPosting.setSemanticRole(LedgerPostingSemanticRole.CASH);
+        cashPosting.setDirection(LedgerPostingDirection.NEUTRAL);
+        cashPosting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
         securityPosting.setType(LedgerPostingType.SECURITY);
         securityPosting.setPortfolio(portfolio);
         securityPosting.setAmount(Values.Amount.factorize(100));
         securityPosting.setCurrency(CurrencyUnit.EUR);
         securityPosting.setSecurity(security());
         securityPosting.setShares(Values.Share.factorize(5));
-        accountProjection.setRole(LedgerProjectionRole.ACCOUNT);
-        accountProjection.setAccount(account);
-        accountProjection.setPrimaryPostingUUID(cashPosting.getUUID());
-        portfolioProjection.setRole(LedgerProjectionRole.PORTFOLIO);
-        portfolioProjection.setPortfolio(portfolio);
-        portfolioProjection.setPrimaryPostingUUID(securityPosting.getUUID());
+        securityPosting.setSemanticRole(LedgerPostingSemanticRole.SECURITY);
+        securityPosting.setDirection(LedgerPostingDirection.NEUTRAL);
+        securityPosting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
         entry.addPosting(cashPosting);
         entry.addPosting(securityPosting);
-        entry.addProjectionRef(accountProjection);
-        entry.addProjectionRef(portfolioProjection);
 
         return entry;
     }
@@ -1406,8 +1311,6 @@ public class LegacyTransactionToLedgerMigratorTest
         var entry = new LedgerEntry();
         var sourcePosting = new LedgerPosting();
         var targetPosting = new LedgerPosting();
-        var sourceProjection = new LedgerProjectionRef(sourceProjectionUUID);
-        var targetProjection = new LedgerProjectionRef(targetProjectionUUID);
 
         entry.setType(LedgerEntryType.CASH_TRANSFER);
         entry.setDateTime(DATE_TIME);
@@ -1415,20 +1318,18 @@ public class LegacyTransactionToLedgerMigratorTest
         sourcePosting.setAccount(source);
         sourcePosting.setAmount(Values.Amount.factorize(55));
         sourcePosting.setCurrency(CurrencyUnit.EUR);
+        sourcePosting.setSemanticRole(LedgerPostingSemanticRole.CASH);
+        sourcePosting.setDirection(LedgerPostingDirection.OUTBOUND);
+        sourcePosting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
         targetPosting.setType(LedgerPostingType.CASH);
         targetPosting.setAccount(target);
         targetPosting.setAmount(Values.Amount.factorize(55));
         targetPosting.setCurrency(CurrencyUnit.EUR);
-        sourceProjection.setRole(LedgerProjectionRole.SOURCE_ACCOUNT);
-        sourceProjection.setAccount(source);
-        sourceProjection.setPrimaryPostingUUID(sourcePosting.getUUID());
-        targetProjection.setRole(LedgerProjectionRole.TARGET_ACCOUNT);
-        targetProjection.setAccount(target);
-        targetProjection.setPrimaryPostingUUID(targetPosting.getUUID());
+        targetPosting.setSemanticRole(LedgerPostingSemanticRole.CASH);
+        targetPosting.setDirection(LedgerPostingDirection.INBOUND);
+        targetPosting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
         entry.addPosting(sourcePosting);
         entry.addPosting(targetPosting);
-        entry.addProjectionRef(sourceProjection);
-        entry.addProjectionRef(targetProjection);
 
         return entry;
     }
@@ -1439,8 +1340,6 @@ public class LegacyTransactionToLedgerMigratorTest
         var entry = new LedgerEntry();
         var sourcePosting = new LedgerPosting();
         var targetPosting = new LedgerPosting();
-        var sourceProjection = new LedgerProjectionRef(sourceProjectionUUID);
-        var targetProjection = new LedgerProjectionRef(targetProjectionUUID);
         var security = security();
 
         entry.setType(LedgerEntryType.SECURITY_TRANSFER);
@@ -1451,22 +1350,20 @@ public class LegacyTransactionToLedgerMigratorTest
         sourcePosting.setCurrency(CurrencyUnit.EUR);
         sourcePosting.setSecurity(security);
         sourcePosting.setShares(Values.Share.factorize(7));
+        sourcePosting.setSemanticRole(LedgerPostingSemanticRole.SECURITY);
+        sourcePosting.setDirection(LedgerPostingDirection.OUTBOUND);
+        sourcePosting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
         targetPosting.setType(LedgerPostingType.SECURITY);
         targetPosting.setPortfolio(target);
         targetPosting.setAmount(Values.Amount.factorize(400));
         targetPosting.setCurrency(CurrencyUnit.EUR);
         targetPosting.setSecurity(security);
         targetPosting.setShares(Values.Share.factorize(7));
-        sourceProjection.setRole(LedgerProjectionRole.SOURCE_PORTFOLIO);
-        sourceProjection.setPortfolio(source);
-        sourceProjection.setPrimaryPostingUUID(sourcePosting.getUUID());
-        targetProjection.setRole(LedgerProjectionRole.TARGET_PORTFOLIO);
-        targetProjection.setPortfolio(target);
-        targetProjection.setPrimaryPostingUUID(targetPosting.getUUID());
+        targetPosting.setSemanticRole(LedgerPostingSemanticRole.SECURITY);
+        targetPosting.setDirection(LedgerPostingDirection.INBOUND);
+        targetPosting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
         entry.addPosting(sourcePosting);
         entry.addPosting(targetPosting);
-        entry.addProjectionRef(sourceProjection);
-        entry.addProjectionRef(targetProjection);
 
         return entry;
     }
@@ -1476,7 +1373,6 @@ public class LegacyTransactionToLedgerMigratorTest
     {
         var entry = new LedgerEntry();
         var posting = new LedgerPosting();
-        var projection = new LedgerProjectionRef(projectionUUID);
 
         entry.setType(entryType);
         entry.setDateTime(DATE_TIME);
@@ -1486,38 +1382,13 @@ public class LegacyTransactionToLedgerMigratorTest
         posting.setCurrency(CurrencyUnit.EUR);
         posting.setSecurity(security());
         posting.setShares(Values.Share.factorize(5));
-        projection.setRole(role);
-        projection.setPortfolio(portfolio);
-        projection.setPrimaryPostingUUID(posting.getUUID());
+        posting.setSemanticRole(LedgerPostingSemanticRole.SECURITY);
+        posting.setDirection(role == LedgerProjectionRole.DELIVERY_OUTBOUND ? LedgerPostingDirection.OUTBOUND
+                        : LedgerPostingDirection.INBOUND);
+        posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
         entry.addPosting(posting);
-        entry.addProjectionRef(projection);
 
         return entry;
-    }
-
-    private void swapBuySellProjectionSides(LedgerEntry entry)
-    {
-        var accountProjection = entry.getProjectionRefs().get(0);
-        var portfolioProjection = entry.getProjectionRefs().get(1);
-        var account = accountProjection.getAccount();
-        var portfolio = portfolioProjection.getPortfolio();
-        var cashPostingUUID = accountProjection.getPrimaryPostingUUID();
-        var securityPostingUUID = portfolioProjection.getPrimaryPostingUUID();
-
-        accountProjection.setRole(LedgerProjectionRole.PORTFOLIO);
-        accountProjection.setAccount(null);
-        accountProjection.setPortfolio(portfolio);
-        accountProjection.setPrimaryPostingUUID(securityPostingUUID);
-        portfolioProjection.setRole(LedgerProjectionRole.ACCOUNT);
-        portfolioProjection.setPortfolio(null);
-        portfolioProjection.setAccount(account);
-        portfolioProjection.setPrimaryPostingUUID(cashPostingUUID);
-    }
-
-    private LedgerPosting postingByUUID(LedgerEntry entry, String uuid)
-    {
-        return entry.getPostings().stream().filter(posting -> posting.getUUID().equals(uuid)).findFirst()
-                        .orElseThrow();
     }
 
     private LedgerPosting unitPosting(LedgerEntry entry, LedgerPostingType type)
@@ -1664,6 +1535,17 @@ public class LegacyTransactionToLedgerMigratorTest
         return portfolio.getTransactions().get(0);
     }
 
+    private LedgerBackedTransaction assertLedgerBacked(Object transaction, LedgerEntry entry, LedgerProjectionRole role)
+    {
+        assertThat(transaction, instanceOf(LedgerBackedTransaction.class));
+        var ledgerBacked = (LedgerBackedTransaction) transaction;
+
+        assertSame(entry, ledgerBacked.getLedgerEntry());
+        assertThat(ledgerBacked.getLedgerProjectionRole(), is(role));
+
+        return ledgerBacked;
+    }
+
     private LedgerEntry onlyLedgerEntry(Client client)
     {
         assertThat(client.getLedger().getEntries().size(), is(1));
@@ -1675,15 +1557,5 @@ public class LegacyTransactionToLedgerMigratorTest
         return Money.of(CurrencyUnit.EUR, Values.Amount.factorize(amount));
     }
 
-    private String migratedEntryUUID(LedgerEntryType type, String primaryProjectionUUID)
-    {
-        var key = "ledger-v6:migrated-entry:" + type + ":" + primaryProjectionUUID;
-        return UUID.nameUUIDFromBytes(key.getBytes(StandardCharsets.UTF_8)).toString();
-    }
-
-    private String migratedPostingUUID(String projectionUUID, LedgerPostingType type, String discriminator)
-    {
-        var key = "ledger-v6:migrated-posting:" + projectionUUID + ":" + type + ":" + discriminator;
-        return UUID.nameUUIDFromBytes(key.getBytes(StandardCharsets.UTF_8)).toString();
-    }
 }
+

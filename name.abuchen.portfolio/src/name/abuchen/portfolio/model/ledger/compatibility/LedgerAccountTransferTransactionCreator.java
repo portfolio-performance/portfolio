@@ -91,7 +91,7 @@ public final class LedgerAccountTransferTransactionCreator
 
         var sourceAccount = entry.getSourceAccount();
         var targetAccount = entry.getTargetAccount();
-        var projectionRef = ledgerTransaction.getLedgerProjectionRef();
+        var projectionRef = ledgerTransaction.getLedgerProjectionDescriptor();
         var postings = ledgerTransaction.getLedgerEntry().getPostings().stream()
                         .filter(posting -> posting.getAccount() == projectionRef.getAccount()).toList();
 
@@ -140,8 +140,8 @@ public final class LedgerAccountTransferTransactionCreator
         var targetTransaction = (LedgerBackedAccountTransaction) entry.getTargetTransaction();
 
         var ledgerEntry = sourceTransaction.getLedgerEntry();
-        var sourceProjectionUUID = sourceTransaction.getLedgerProjectionRef().getUUID();
-        var targetProjectionUUID = targetTransaction.getLedgerProjectionRef().getUUID();
+        var sourceProjectionUUID = sourceTransaction.getUUID();
+        var targetProjectionUUID = targetTransaction.getUUID();
         var ownerPatchHelper = new LedgerOwnerPatchHelper(client);
 
         var editBuilder = LedgerAccountTransferEdit.builder()
@@ -159,14 +159,14 @@ public final class LedgerAccountTransferTransactionCreator
         var edit = editBuilder.build();
         var editor = new LedgerAccountTransferEditor();
 
-        if (sourceTransaction.getLedgerProjectionRef().getAccount() != sourceAccount
-                        || targetTransaction.getLedgerProjectionRef().getAccount() != targetAccount)
+        if (sourceTransaction.getLedgerProjectionDescriptor().getAccount() != sourceAccount
+                        || targetTransaction.getLedgerProjectionDescriptor().getAccount() != targetAccount)
             editor.validate(ledgerEntry, edit);
 
-        if (sourceTransaction.getLedgerProjectionRef().getAccount() != sourceAccount)
+        if (sourceTransaction.getLedgerProjectionDescriptor().getAccount() != sourceAccount)
             ownerPatchHelper.moveAccountTransferSource(ledgerEntry, sourceAccount);
 
-        if (targetTransaction.getLedgerProjectionRef().getAccount() != targetAccount)
+        if (targetTransaction.getLedgerProjectionDescriptor().getAccount() != targetAccount)
             ownerPatchHelper.moveAccountTransferTarget(ledgerEntry, targetAccount);
 
         sourceTransaction = (LedgerBackedAccountTransaction) find(sourceAccount, sourceProjectionUUID);
@@ -213,12 +213,8 @@ public final class LedgerAccountTransferTransactionCreator
     private AccountTransferEntry materializeAndWrap(Account sourceAccount, Account targetAccount,
                     LedgerTransactionCreator.CreatedTransaction created)
     {
-        var sourceProjectionUUID = created.getProjectionRefs().stream()
-                        .filter(projection -> projection.getRole() == LedgerProjectionRole.SOURCE_ACCOUNT)
-                        .findFirst().orElseThrow().getUUID();
-        var targetProjectionUUID = created.getProjectionRefs().stream()
-                        .filter(projection -> projection.getRole() == LedgerProjectionRole.TARGET_ACCOUNT)
-                        .findFirst().orElseThrow().getUUID();
+        var sourceProjectionUUID = created.getRuntimeProjectionId(LedgerProjectionRole.SOURCE_ACCOUNT);
+        var targetProjectionUUID = created.getRuntimeProjectionId(LedgerProjectionRole.TARGET_ACCOUNT);
 
         LedgerProjectionService.materialize(client);
 

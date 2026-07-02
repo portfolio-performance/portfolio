@@ -1,10 +1,8 @@
 package name.abuchen.portfolio.model.ledger.nativeentry;
 
-import java.util.List;
 import java.util.Objects;
 
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator;
 
 /**
@@ -13,8 +11,8 @@ import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator;
  * workflows before treating native entries as user-facing transactions.
  *
  * <p>
- * The result object is not persisted. Only the assembled {@link LedgerEntry} and its
- * projection refs become part of the Ledger model.
+ * The result object is not persisted. Only the assembled {@link LedgerEntry} becomes
+ * part of the Ledger model.
  * </p>
  */
 public final class LedgerNativeEntryBuildResult
@@ -31,11 +29,6 @@ public final class LedgerNativeEntryBuildResult
     public LedgerEntry getEntry()
     {
         return entry;
-    }
-
-    public List<LedgerProjectionRef> getProjectionRefs()
-    {
-        return entry.getProjectionRefs();
     }
 
     public LedgerStructuralValidator.ValidationResult getValidationResult()

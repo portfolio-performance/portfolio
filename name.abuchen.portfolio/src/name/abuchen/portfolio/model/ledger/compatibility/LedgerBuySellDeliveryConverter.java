@@ -3,7 +3,6 @@ package name.abuchen.portfolio.model.ledger.compatibility;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -16,12 +15,15 @@ import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerMutationContext;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
+import name.abuchen.portfolio.model.ledger.LedgerPostingDirection;
+import name.abuchen.portfolio.model.ledger.LedgerPostingSemanticRole;
+import name.abuchen.portfolio.model.ledger.LedgerPostingUnitRole;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedPortfolioTransaction;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
+import name.abuchen.portfolio.model.ledger.projection.LedgerProjectionSupport;
 import name.abuchen.portfolio.money.ExchangeRate;
 
 /**
@@ -48,21 +50,22 @@ public final class LedgerBuySellDeliveryConverter
             throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_CONVERT_020.message("Only ledger-backed buy/sell transactions can be converted")); //$NON-NLS-1$
 
         var entry = ledgerTransaction.getLedgerEntry();
-        var projectionRef = ledgerTransaction.getLedgerProjectionRef();
-        var portfolio = projectionRef.getPortfolio();
-        var projectionUUID = projectionRef.getUUID();
+        var descriptor = ledgerTransaction.getLedgerProjectionDescriptor();
+        var portfolio = descriptor.getPortfolio();
+        var oldRuntimeProjectionId = ledgerTransaction.getRuntimeProjectionId();
 
-        preflightBuySell(entry, projectionRef, transaction, portfolio);
+        preflightBuySell(entry, ledgerTransaction.getLedgerProjectionRole(), transaction, portfolio);
         var targetRole = entry.getType() == LedgerEntryType.BUY ? LedgerProjectionRole.DELIVERY_INBOUND
                         : LedgerProjectionRole.DELIVERY_OUTBOUND;
-        var roleChange = LedgerInvestmentPlanRefSupport.roleChange(projectionUUID, LedgerProjectionRole.PORTFOLIO,
-                        targetRole);
+        var targetRuntimeProjectionId = runtimeProjectionId(entry, targetRole);
+        var roleChange = LedgerInvestmentPlanRefSupport.roleChange(oldRuntimeProjectionId,
+                        LedgerProjectionRole.PORTFOLIO, targetRole);
         LedgerInvestmentPlanRefSupport.requireRefsFollowRoleChanges(client, entry, roleChange);
 
-        new LedgerMutationContext(client).mutateEntry(entry, editedEntry -> convert(editedEntry, projectionUUID));
+        new LedgerMutationContext(client).mutateEntry(entry, this::convert);
         LedgerInvestmentPlanRefSupport.updateProjectionRoles(client, entry, roleChange);
 
-        return find(portfolio, projectionUUID);
+        return find(portfolio, targetRuntimeProjectionId);
     }
 
     public BuySellEntry convertDeliveryToBuySell(TransactionPair<PortfolioTransaction> transaction)
@@ -73,35 +76,35 @@ public final class LedgerBuySellDeliveryConverter
             throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_CONVERT_021.message("Only ledger-backed deliveries can be converted")); //$NON-NLS-1$
 
         var entry = ledgerTransaction.getLedgerEntry();
-        var projectionRef = ledgerTransaction.getLedgerProjectionRef();
-        var portfolio = projectionRef.getPortfolio();
+        var descriptor = ledgerTransaction.getLedgerProjectionDescriptor();
+        var portfolio = descriptor.getPortfolio();
         var account = requireReferenceAccount(portfolio);
-        var portfolioProjectionUUID = projectionRef.getUUID();
-        var accountProjectionUUID = UUID.randomUUID().toString();
-        var cashPostingUUID = UUID.randomUUID().toString();
+        var oldRuntimeProjectionId = ledgerTransaction.getRuntimeProjectionId();
+        var portfolioRuntimeProjectionId = runtimeProjectionId(entry, LedgerProjectionRole.PORTFOLIO);
+        var accountRuntimeProjectionId = runtimeProjectionId(entry, LedgerProjectionRole.ACCOUNT);
 
-        preflightDelivery(entry, projectionRef, transaction, portfolio, account);
-        var roleChange = LedgerInvestmentPlanRefSupport.roleChange(portfolioProjectionUUID, projectionRef.getRole(),
-                        LedgerProjectionRole.PORTFOLIO);
+        preflightDelivery(entry, ledgerTransaction.getLedgerProjectionRole(), transaction, portfolio, account);
+        var roleChange = LedgerInvestmentPlanRefSupport.roleChange(oldRuntimeProjectionId,
+                        ledgerTransaction.getLedgerProjectionRole(), LedgerProjectionRole.PORTFOLIO);
         LedgerInvestmentPlanRefSupport.requireRefsFollowRoleChanges(client, entry, roleChange);
 
         new LedgerMutationContext(client).mutateEntry(entry, editedEntry -> convertDeliveryToBuySell(editedEntry,
-                        portfolioProjectionUUID, account, accountProjectionUUID, cashPostingUUID));
+                        account));
         LedgerInvestmentPlanRefSupport.updateProjectionRoles(client, entry, roleChange);
 
-        var portfolioTransaction = find(portfolio, portfolioProjectionUUID);
-        var accountTransaction = find(account, accountProjectionUUID);
+        var portfolioTransaction = find(portfolio, portfolioRuntimeProjectionId);
+        var accountTransaction = find(account, accountRuntimeProjectionId);
 
         return BuySellEntry.readOnly(portfolio, portfolioTransaction, account, accountTransaction);
     }
 
-    private void preflightBuySell(LedgerEntry entry, LedgerProjectionRef projectionRef,
+    private void preflightBuySell(LedgerEntry entry, LedgerProjectionRole role,
                     TransactionPair<PortfolioTransaction> transaction, Portfolio portfolio)
     {
         if (entry.getType() != LedgerEntryType.BUY && entry.getType() != LedgerEntryType.SELL)
             throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_PROJ_019.message("Only ledger-backed buy/sell entries can be converted")); //$NON-NLS-1$
 
-        if (projectionRef.getRole() != LedgerProjectionRole.PORTFOLIO)
+        if (role != LedgerProjectionRole.PORTFOLIO)
             throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_PROJ_020.message("Only the portfolio side of a buy/sell entry can be converted")); //$NON-NLS-1$
 
         if (transaction.getOwner() != portfolio)
@@ -113,7 +116,7 @@ public final class LedgerBuySellDeliveryConverter
         requireOneProjection(entry, LedgerProjectionRole.PORTFOLIO);
     }
 
-    private void preflightDelivery(LedgerEntry entry, LedgerProjectionRef projectionRef,
+    private void preflightDelivery(LedgerEntry entry, LedgerProjectionRole role,
                     TransactionPair<PortfolioTransaction> transaction, Portfolio portfolio, Account account)
     {
         if (entry.getType() != LedgerEntryType.DELIVERY_INBOUND && entry.getType() != LedgerEntryType.DELIVERY_OUTBOUND)
@@ -122,7 +125,7 @@ public final class LedgerBuySellDeliveryConverter
         var expectedRole = entry.getType() == LedgerEntryType.DELIVERY_INBOUND ? LedgerProjectionRole.DELIVERY_INBOUND
                         : LedgerProjectionRole.DELIVERY_OUTBOUND;
 
-        if (projectionRef.getRole() != expectedRole)
+        if (role != expectedRole)
             throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_PROJ_023.message("Only the delivery projection can be converted")); //$NON-NLS-1$
 
         if (transaction.getOwner() != portfolio)
@@ -131,7 +134,7 @@ public final class LedgerBuySellDeliveryConverter
         if (entry.getPostings().stream().anyMatch(posting -> posting.getType() == LedgerPostingType.CASH))
             throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_CONVERT_022.message("Ledger delivery entry must not already have a cash posting")); //$NON-NLS-1$
 
-        if (entry.getProjectionRefs().stream().anyMatch(projection -> projection.getRole() == LedgerProjectionRole.ACCOUNT))
+        if (hasProjection(entry, LedgerProjectionRole.ACCOUNT))
             throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_PROJ_025.message("Ledger delivery entry must not already have an account projection")); //$NON-NLS-1$
 
         requireOnePosting(entry, LedgerPostingType.SECURITY);
@@ -148,7 +151,7 @@ public final class LedgerBuySellDeliveryConverter
         return account;
     }
 
-    private void convert(LedgerEntry entry, String projectionUUID)
+    private void convert(LedgerEntry entry)
     {
         var targetType = entry.getType() == LedgerEntryType.BUY ? LedgerEntryType.DELIVERY_INBOUND
                         : LedgerEntryType.DELIVERY_OUTBOUND;
@@ -159,33 +162,18 @@ public final class LedgerBuySellDeliveryConverter
                         .filter(posting -> posting.getType() == LedgerPostingType.CASH) //
                         .forEach(entry::removePosting);
 
-        List.copyOf(entry.getProjectionRefs()).stream() //
-                        .filter(projection -> projection.getRole() == LedgerProjectionRole.ACCOUNT) //
-                        .forEach(entry::removeProjectionRef);
-
-        var portfolioProjection = entry.getProjectionRefs().stream() //
-                        .filter(projection -> projectionUUID.equals(projection.getUUID())) //
-                        .findFirst()
-                        .orElseThrow(() -> new IllegalArgumentException(
-                                        "Ledger portfolio projection not found: " + projectionUUID)); //$NON-NLS-1$
+        var securityPosting = requireOnePosting(entry, LedgerPostingType.SECURITY);
 
         entry.setType(targetType);
-        portfolioProjection.setRole(targetRole);
+        markPrimary(securityPosting, LedgerPostingSemanticRole.SECURITY, direction(targetRole), targetRole);
     }
 
-    private void convertDeliveryToBuySell(LedgerEntry entry, String portfolioProjectionUUID, Account account,
-                    String accountProjectionUUID, String cashPostingUUID)
+    private void convertDeliveryToBuySell(LedgerEntry entry, Account account)
     {
         var targetType = entry.getType() == LedgerEntryType.DELIVERY_INBOUND ? LedgerEntryType.BUY
                         : LedgerEntryType.SELL;
         var securityPosting = requireOnePosting(entry, LedgerPostingType.SECURITY);
-        var cashPosting = new LedgerPosting(cashPostingUUID);
-        var accountProjection = new LedgerProjectionRef(accountProjectionUUID);
-        var portfolioProjection = entry.getProjectionRefs().stream() //
-                        .filter(projection -> portfolioProjectionUUID.equals(projection.getUUID())) //
-                        .findFirst()
-                        .orElseThrow(() -> new IllegalArgumentException(
-                                        "Ledger delivery projection not found: " + portfolioProjectionUUID)); //$NON-NLS-1$
+        var cashPosting = new LedgerPosting();
         var unitPostings = entry.getPostings().stream() //
                         .filter(posting -> posting != securityPosting) //
                         .toList();
@@ -194,20 +182,15 @@ public final class LedgerBuySellDeliveryConverter
         cashPosting.setAccount(account);
         applyDeliveryCashPosting(securityPosting, cashPosting, account);
 
-        accountProjection.setRole(LedgerProjectionRole.ACCOUNT);
-        accountProjection.setAccount(account);
-        accountProjection.setPrimaryPosting(cashPosting);
-
-        portfolioProjection.setRole(LedgerProjectionRole.PORTFOLIO);
+        markPrimary(cashPosting, LedgerPostingSemanticRole.CASH, cashDirection(targetType),
+                        LedgerProjectionRole.ACCOUNT);
+        markPrimary(securityPosting, LedgerPostingSemanticRole.SECURITY, securityDirection(targetType),
+                        LedgerProjectionRole.PORTFOLIO);
 
         List.copyOf(entry.getPostings()).forEach(entry::removePosting);
         entry.addPosting(cashPosting);
         entry.addPosting(securityPosting);
         unitPostings.forEach(entry::addPosting);
-
-        List.copyOf(entry.getProjectionRefs()).forEach(entry::removeProjectionRef);
-        entry.addProjectionRef(accountProjection);
-        entry.addProjectionRef(portfolioProjection);
 
         entry.setType(targetType);
     }
@@ -262,11 +245,61 @@ public final class LedgerBuySellDeliveryConverter
 
     private void requireOneProjection(LedgerEntry entry, LedgerProjectionRole role)
     {
-        var count = entry.getProjectionRefs().stream().filter(projection -> projection.getRole() == role).count();
+        var count = LedgerProjectionSupport.descriptors(entry).stream().filter(projection -> projection.getRole() == role)
+                        .count();
 
         if (count != 1)
             throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_PROJ_026
                             .message("Ledger buy/sell entry must have exactly one " + role + " projection")); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    private boolean hasProjection(LedgerEntry entry, LedgerProjectionRole role)
+    {
+        return LedgerProjectionSupport.descriptors(entry).stream().anyMatch(projection -> projection.getRole() == role);
+    }
+
+    private void markPrimary(LedgerPosting posting, LedgerPostingSemanticRole semanticRole,
+                    LedgerPostingDirection direction, LedgerProjectionRole role)
+    {
+        posting.setSemanticRole(semanticRole);
+        posting.setDirection(direction);
+        posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
+        posting.setLocalKey(role.name());
+    }
+
+    private LedgerPostingDirection cashDirection(LedgerEntryType entryType)
+    {
+        return switch (entryType)
+        {
+            case BUY -> LedgerPostingDirection.OUTBOUND;
+            case SELL -> LedgerPostingDirection.INBOUND;
+            default -> LedgerPostingDirection.NEUTRAL;
+        };
+    }
+
+    private LedgerPostingDirection securityDirection(LedgerEntryType entryType)
+    {
+        return switch (entryType)
+        {
+            case BUY -> LedgerPostingDirection.INBOUND;
+            case SELL -> LedgerPostingDirection.OUTBOUND;
+            default -> LedgerPostingDirection.NEUTRAL;
+        };
+    }
+
+    private LedgerPostingDirection direction(LedgerProjectionRole role)
+    {
+        return switch (role)
+        {
+            case DELIVERY_OUTBOUND -> LedgerPostingDirection.OUTBOUND;
+            case DELIVERY_INBOUND -> LedgerPostingDirection.INBOUND;
+            default -> LedgerPostingDirection.NEUTRAL;
+        };
+    }
+
+    private String runtimeProjectionId(LedgerEntry entry, LedgerProjectionRole role)
+    {
+        return entry.getUUID() + ":" + role; //$NON-NLS-1$
     }
 
     private PortfolioTransaction find(Portfolio portfolio, String projectionUUID)

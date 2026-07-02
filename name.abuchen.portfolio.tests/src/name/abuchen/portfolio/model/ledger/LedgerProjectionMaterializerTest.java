@@ -76,11 +76,11 @@ public class LedgerProjectionMaterializerTest
         var client = new Client();
         var account = account();
         var entry = creator(client).createDeposit(metadata(), cashLeg(account, 100)).getEntry();
-        var projectionRef = entry.getProjectionRefs().get(0);
-        var projection = LedgerProjectionService.createProjection(entry, projectionRef);
+        var descriptor = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0);
+        var projection = LedgerProjectionService.createProjection(entry, descriptor.getRole());
 
         assertThat(projection, instanceOf(LedgerBackedAccountTransaction.class));
-        assertThat(projection.getUUID(), is(projectionRef.getUUID()));
+        assertThat(projection.getUUID(), is(descriptor.getRuntimeProjectionId()));
         assertThat(((AccountTransaction) projection).getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(projection.getDateTime(), is(DATE_TIME));
         assertThat(projection.getNote(), is("note"));
@@ -96,10 +96,9 @@ public class LedgerProjectionMaterializerTest
         var account = account();
         var entry = creator(client).createDeposit(metadata(), cashLeg(account, 100)).getEntry();
 
-        removeProjectionRefs(entry);
         LedgerProjectionService.materialize(client);
 
-        assertTrue(entry.getProjectionRefs().isEmpty());
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).size(), is(1));
         assertThat(account.getTransactions().size(), is(1));
         assertThat(account.getTransactions().get(0).getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(account.getTransactions().get(0).getAmount(), is(Values.Amount.factorize(100)));
@@ -176,12 +175,11 @@ public class LedgerProjectionMaterializerTest
                                         .build()) //
                         .buildDetached().getEntry();
 
-        removeProjectionRefs(entry);
         client.getLedger().addEntry(entry);
 
         LedgerProjectionService.materialize(client);
 
-        assertTrue(entry.getProjectionRefs().isEmpty());
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).size(), is(4));
         assertThat(portfolio.getTransactions().size(), is(3));
         assertThat(account.getTransactions().size(), is(1));
         assertTrue(portfolio.getTransactions().stream()
@@ -505,7 +503,9 @@ public class LedgerProjectionMaterializerTest
         var entry = accountProjectionEntry(LedgerEntryType.DELIVERY_INBOUND);
 
         var exception = assertThrows(IllegalArgumentException.class,
-                        () -> LedgerProjectionService.createProjection(entry, entry.getProjectionRefs().get(0)));
+                        () -> LedgerProjectionService.createProjection(entry,
+                                        name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport
+                                                        .descriptors(entry).get(0).getRole()));
 
         assertThat(exception.getMessage(), is(
                         "[MISSING_SEMANTIC_PRIMARY] entry=" + entry.getUUID() //$NON-NLS-1$
@@ -523,10 +523,12 @@ public class LedgerProjectionMaterializerTest
         var entry = portfolioProjectionEntry(LedgerEntryType.DEPOSIT);
 
         var exception = assertThrows(IllegalArgumentException.class,
-                        () -> LedgerProjectionService.createProjection(entry, entry.getProjectionRefs().get(0)));
+                        () -> LedgerProjectionService.createProjection(entry,
+                                        name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport
+                                                        .descriptors(entry).get(0).getRole()));
 
         assertThat(exception.getMessage(), is("[MISSING_SEMANTIC_PRIMARY] entry=" + entry.getUUID() //$NON-NLS-1$
-                        + " role=ACCOUNT Missing semantic primary posting")); //$NON-NLS-1$
+                        + " role=ACCOUNT Semantic account owner is missing")); //$NON-NLS-1$
     }
 
     private LedgerTransactionCreator creator(Client client)
@@ -575,19 +577,16 @@ public class LedgerProjectionMaterializerTest
         var account = account();
         var entry = new LedgerEntry();
         var posting = new LedgerPosting("posting-1");
-        var projectionRef = new LedgerProjectionRef("projection-1");
 
         entry.setType(type);
         posting.setType(LedgerPostingType.CASH);
         posting.setAmount(Values.Amount.factorize(100));
         posting.setCurrency(CurrencyUnit.EUR);
         posting.setAccount(account);
+        posting.setSemanticRole(LedgerPostingSemanticRole.CASH);
+        posting.setDirection(LedgerPostingDirection.NEUTRAL);
+        posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
         entry.addPosting(posting);
-
-        projectionRef.setRole(LedgerProjectionRole.ACCOUNT);
-        projectionRef.setAccount(account);
-        projectionRef.addMembership(posting.getUUID(), ProjectionMembershipRole.PRIMARY);
-        entry.addProjectionRef(projectionRef);
 
         return entry;
     }
@@ -597,7 +596,6 @@ public class LedgerProjectionMaterializerTest
         var portfolio = portfolio();
         var entry = new LedgerEntry();
         var posting = new LedgerPosting("posting-1");
-        var projectionRef = new LedgerProjectionRef("projection-1");
 
         entry.setType(type);
         posting.setType(LedgerPostingType.SECURITY);
@@ -606,12 +604,10 @@ public class LedgerProjectionMaterializerTest
         posting.setSecurity(security());
         posting.setShares(Values.Share.factorize(5));
         posting.setPortfolio(portfolio);
+        posting.setSemanticRole(LedgerPostingSemanticRole.SECURITY);
+        posting.setDirection(LedgerPostingDirection.NEUTRAL);
+        posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
         entry.addPosting(posting);
-
-        projectionRef.setRole(LedgerProjectionRole.PORTFOLIO);
-        projectionRef.setPortfolio(portfolio);
-        projectionRef.addMembership(posting.getUUID(), ProjectionMembershipRole.PRIMARY);
-        entry.addProjectionRef(projectionRef);
 
         return entry;
     }
@@ -628,10 +624,9 @@ public class LedgerProjectionMaterializerTest
                         : creator(client).createSell(metadata(), cashLeg(account, 100), portfolioLeg(portfolio, 100),
                                         LedgerCreationUnits.of(LedgerCreationUnit.tax(money(2)))).getEntry();
 
-        removeProjectionRefs(entry);
         LedgerProjectionService.materialize(client);
 
-        assertTrue(entry.getProjectionRefs().isEmpty());
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).size(), is(2));
         assertThat(account.getTransactions().get(0).getType(), is(accountType));
         assertThat(portfolio.getTransactions().get(0).getType(), is(portfolioType));
         assertSame(account.getTransactions().get(0).getCrossEntry(), portfolio.getTransactions().get(0).getCrossEntry());
@@ -650,10 +645,9 @@ public class LedgerProjectionMaterializerTest
                                         LedgerSecurityQuantity.of(security, Values.Share.factorize(5)), money(100)))
                                         .getEntry();
 
-        removeProjectionRefs(entry);
         LedgerProjectionService.materialize(client);
 
-        assertTrue(entry.getProjectionRefs().isEmpty());
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).size(), is(1));
         assertThat(portfolio.getTransactions().get(0).getType(), is(inbound
                         ? PortfolioTransaction.Type.DELIVERY_INBOUND
                         : PortfolioTransaction.Type.DELIVERY_OUTBOUND));
@@ -667,11 +661,10 @@ public class LedgerProjectionMaterializerTest
         var entry = creator(client).createAccountTransfer(metadata(), LedgerCashTransferLeg.of(source, money(100)),
                         LedgerCashTransferLeg.of(target, money(100))).getEntry();
 
-        removeProjectionRefs(entry);
         moveFirstPostingToEnd(entry);
         LedgerProjectionService.materialize(client);
 
-        assertTrue(entry.getProjectionRefs().isEmpty());
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).size(), is(2));
         assertThat(source.getTransactions().get(0).getType(), is(AccountTransaction.Type.TRANSFER_OUT));
         assertThat(target.getTransactions().get(0).getType(), is(AccountTransaction.Type.TRANSFER_IN));
         assertSame(target.getTransactions().get(0),
@@ -689,21 +682,15 @@ public class LedgerProjectionMaterializerTest
                         LedgerPortfolioTransferLeg.of(source, money(100)),
                         LedgerPortfolioTransferLeg.of(target, money(100))).getEntry();
 
-        removeProjectionRefs(entry);
         moveFirstPostingToEnd(entry);
         LedgerProjectionService.materialize(client);
 
-        assertTrue(entry.getProjectionRefs().isEmpty());
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).size(), is(2));
         assertThat(source.getTransactions().get(0).getType(), is(PortfolioTransaction.Type.TRANSFER_OUT));
         assertThat(target.getTransactions().get(0).getType(), is(PortfolioTransaction.Type.TRANSFER_IN));
         assertSame(target.getTransactions().get(0),
                         source.getTransactions().get(0).getCrossEntry()
                                         .getCrossTransaction(source.getTransactions().get(0)));
-    }
-
-    private void removeProjectionRefs(LedgerEntry entry)
-    {
-        List.copyOf(entry.getProjectionRefs()).forEach(entry::removeProjectionRef);
     }
 
     private void moveFirstPostingToEnd(LedgerEntry entry)

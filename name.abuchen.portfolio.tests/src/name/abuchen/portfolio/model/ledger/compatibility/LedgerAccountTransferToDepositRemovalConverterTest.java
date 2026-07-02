@@ -25,13 +25,11 @@ import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.InvestmentPlan;
-import name.abuchen.portfolio.model.LedgerDiagnosticCode;
 import name.abuchen.portfolio.model.ProtobufTestUtilities;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
@@ -66,16 +64,16 @@ public class LedgerAccountTransferToDepositRemovalConverterTest
         var transferEntryUUID = entry.getUUID();
         var sourcePostingUUID = posting(entry, fixture.source()).getUUID();
         var targetPostingUUID = posting(entry, fixture.target()).getUUID();
-        var sourceProjectionUUID = projection(entry, LedgerProjectionRole.SOURCE_ACCOUNT).getUUID();
-        var targetProjectionUUID = projection(entry, LedgerProjectionRole.TARGET_ACCOUNT).getUUID();
+        var sourceProjectionUUID = projection(entry, LedgerProjectionRole.SOURCE_ACCOUNT).getRuntimeProjectionId();
+        var targetProjectionUUID = projection(entry, LedgerProjectionRole.TARGET_ACCOUNT).getRuntimeProjectionId();
 
         var result = converter(fixture).split(transfer);
 
         assertSplit(fixture, transferEntryUUID, sourcePostingUUID, targetPostingUUID, sourceProjectionUUID,
                         targetProjectionUUID, Values.Amount.factorize(123), CurrencyUnit.EUR,
                         Values.Amount.factorize(123), CurrencyUnit.EUR);
-        assertThat(result.removal().getUUID(), is(sourceProjectionUUID));
-        assertThat(result.deposit().getUUID(), is(targetProjectionUUID));
+        assertThat(((LedgerBackedTransaction) result.removal()).getLedgerProjectionRole(), is(LedgerProjectionRole.ACCOUNT));
+        assertThat(((LedgerBackedTransaction) result.deposit()).getLedgerProjectionRole(), is(LedgerProjectionRole.ACCOUNT));
         assertThat(posting(removalEntry(fixture.client()), fixture.source()).getExchangeRate(), is(nullValue()));
         assertThat(posting(depositEntry(fixture.client()), fixture.target()).getExchangeRate(), is(nullValue()));
 
@@ -100,8 +98,8 @@ public class LedgerAccountTransferToDepositRemovalConverterTest
         var transferEntryUUID = entry.getUUID();
         var sourcePostingUUID = posting(entry, fixture.source()).getUUID();
         var targetPostingUUID = posting(entry, fixture.target()).getUUID();
-        var sourceProjectionUUID = projection(entry, LedgerProjectionRole.SOURCE_ACCOUNT).getUUID();
-        var targetProjectionUUID = projection(entry, LedgerProjectionRole.TARGET_ACCOUNT).getUUID();
+        var sourceProjectionUUID = projection(entry, LedgerProjectionRole.SOURCE_ACCOUNT).getRuntimeProjectionId();
+        var targetProjectionUUID = projection(entry, LedgerProjectionRole.TARGET_ACCOUNT).getRuntimeProjectionId();
 
         converter(fixture).split(transfer);
 
@@ -200,7 +198,7 @@ public class LedgerAccountTransferToDepositRemovalConverterTest
                         Values.Amount.factorize(123), CurrencyUnit.EUR, null, null);
         var entry = fixture.client().getLedger().getEntries().get(0);
 
-        entry.removeProjectionRef(projection(entry, LedgerProjectionRole.TARGET_ACCOUNT));
+        projection(entry, LedgerProjectionRole.TARGET_ACCOUNT).getPrimaryPosting().setAccount(null);
 
         assertRejectsWithoutMutation(fixture, () -> converter(fixture).split(transfer), IllegalArgumentException.class);
     }
@@ -216,25 +214,25 @@ public class LedgerAccountTransferToDepositRemovalConverterTest
         var transfer = createTransfer(fixture, Values.Amount.factorize(123), CurrencyUnit.EUR,
                         Values.Amount.factorize(123), CurrencyUnit.EUR, null, null);
         var entry = fixture.client().getLedger().getEntries().get(0);
-        var sourceProjectionUUID = projection(entry, LedgerProjectionRole.SOURCE_ACCOUNT).getUUID();
-        var targetProjectionUUID = projection(entry, LedgerProjectionRole.TARGET_ACCOUNT).getUUID();
-        var plan = planWithExecutionRef(fixture.client(), (LedgerBackedTransaction) transfer.getSourceTransaction());
+        var plan = newPlan();
+
+        entry.setGeneratedByPlanKey(plan.getPlanKey());
+        entry.setPlanExecutionDate(DATE_TIME.toLocalDate());
+        entry.setPreferredViewKind(InvestmentPlan.LedgerExecutionViewKind.ACCOUNT.name());
+        fixture.client().addPlan(plan);
 
         converter(fixture).split(transfer);
 
         var removalEntry = removalEntry(fixture.client());
 
-        assertExecutionRef(plan, 0, removalEntry.getUUID(), sourceProjectionUUID, LedgerProjectionRole.ACCOUNT);
-        assertResolvedPlanTransaction(fixture.client(), plan, 0, AccountTransaction.Type.REMOVAL,
-                        sourceProjectionUUID);
-        assertNoExecutionRefTargetsCashTransfer(fixture.client(), plan);
+        assertThat(plan.getLedgerExecutionRefs(), is(List.of()));
+        assertThat(removalEntry.getGeneratedByPlanKey(), is(plan.getPlanKey()));
+        assertResolvedPlanTransaction(fixture.client(), plan, 0, AccountTransaction.Type.REMOVAL);
 
-        assertExecutionRefResolvesAfterRoundtrip(loadXml(saveXml(fixture.client())), 0, removalEntry.getUUID(),
-                        sourceProjectionUUID, AccountTransaction.Type.REMOVAL);
+        assertExecutionRefResolvesAfterRoundtrip(loadXml(saveXml(fixture.client())), 0,
+                        AccountTransaction.Type.REMOVAL);
         assertExecutionRefResolvesAfterRoundtrip(loadProtobuf(saveProtobuf(fixture.client())), 0,
-                        removalEntry.getUUID(), sourceProjectionUUID, AccountTransaction.Type.REMOVAL);
-        assertThat(projection(depositEntry(fixture.client()), LedgerProjectionRole.ACCOUNT).getUUID(),
-                        is(targetProjectionUUID));
+                        AccountTransaction.Type.REMOVAL);
     }
 
     /**
@@ -248,22 +246,25 @@ public class LedgerAccountTransferToDepositRemovalConverterTest
         var transfer = createTransfer(fixture, Values.Amount.factorize(123), CurrencyUnit.EUR,
                         Values.Amount.factorize(123), CurrencyUnit.EUR, null, null);
         var entry = fixture.client().getLedger().getEntries().get(0);
-        var targetProjectionUUID = projection(entry, LedgerProjectionRole.TARGET_ACCOUNT).getUUID();
-        var plan = planWithExecutionRef(fixture.client(), (LedgerBackedTransaction) transfer.getTargetTransaction());
+        var plan = newPlan();
+
+        entry.setGeneratedByPlanKey(plan.getPlanKey());
+        entry.setPlanExecutionDate(DATE_TIME.toLocalDate());
+        entry.setPreferredViewKind(InvestmentPlan.LedgerExecutionViewKind.ACCOUNT.name());
+        fixture.client().addPlan(plan);
 
         converter(fixture).split(transfer);
 
-        var depositEntry = depositEntry(fixture.client());
+        var removalEntry = removalEntry(fixture.client());
 
-        assertExecutionRef(plan, 0, depositEntry.getUUID(), targetProjectionUUID, LedgerProjectionRole.ACCOUNT);
-        assertResolvedPlanTransaction(fixture.client(), plan, 0, AccountTransaction.Type.DEPOSIT,
-                        targetProjectionUUID);
-        assertNoExecutionRefTargetsCashTransfer(fixture.client(), plan);
+        assertThat(plan.getLedgerExecutionRefs(), is(List.of()));
+        assertThat(removalEntry.getGeneratedByPlanKey(), is(plan.getPlanKey()));
+        assertResolvedPlanTransaction(fixture.client(), plan, 0, AccountTransaction.Type.REMOVAL);
 
-        assertExecutionRefResolvesAfterRoundtrip(loadXml(saveXml(fixture.client())), 0, depositEntry.getUUID(),
-                        targetProjectionUUID, AccountTransaction.Type.DEPOSIT);
+        assertExecutionRefResolvesAfterRoundtrip(loadXml(saveXml(fixture.client())), 0,
+                        AccountTransaction.Type.REMOVAL);
         assertExecutionRefResolvesAfterRoundtrip(loadProtobuf(saveProtobuf(fixture.client())), 0,
-                        depositEntry.getUUID(), targetProjectionUUID, AccountTransaction.Type.DEPOSIT);
+                        AccountTransaction.Type.REMOVAL);
     }
 
     /**
@@ -276,15 +277,12 @@ public class LedgerAccountTransferToDepositRemovalConverterTest
         var fixture = fixture(CurrencyUnit.EUR, CurrencyUnit.EUR);
         var transfer = createTransfer(fixture, Values.Amount.factorize(123), CurrencyUnit.EUR,
                         Values.Amount.factorize(123), CurrencyUnit.EUR, null, null);
-        var entry = fixture.client().getLedger().getEntries().get(0);
-        var sourceProjectionUUID = projection(entry, LedgerProjectionRole.SOURCE_ACCOUNT).getUUID();
-        var targetProjectionUUID = projection(entry, LedgerProjectionRole.TARGET_ACCOUNT).getUUID();
         var plan = newPlan();
+        var entry = fixture.client().getLedger().getEntries().get(0);
 
-        plan.addLedgerExecutionRef(InvestmentPlan.LedgerExecutionRef.of(
-                        (LedgerBackedTransaction) transfer.getSourceTransaction()));
-        plan.addLedgerExecutionRef(InvestmentPlan.LedgerExecutionRef.of(
-                        (LedgerBackedTransaction) transfer.getTargetTransaction()));
+        entry.setGeneratedByPlanKey(plan.getPlanKey());
+        entry.setPlanExecutionDate(DATE_TIME.toLocalDate());
+        entry.setPreferredViewKind(InvestmentPlan.LedgerExecutionViewKind.ACCOUNT.name());
         fixture.client().addPlan(plan);
 
         converter(fixture).split(transfer);
@@ -292,25 +290,16 @@ public class LedgerAccountTransferToDepositRemovalConverterTest
         var removalEntry = removalEntry(fixture.client());
         var depositEntry = depositEntry(fixture.client());
 
-        assertExecutionRef(plan, 0, removalEntry.getUUID(), sourceProjectionUUID, LedgerProjectionRole.ACCOUNT);
-        assertExecutionRef(plan, 1, depositEntry.getUUID(), targetProjectionUUID, LedgerProjectionRole.ACCOUNT);
-        assertResolvedPlanTransaction(fixture.client(), plan, 0, AccountTransaction.Type.REMOVAL,
-                        sourceProjectionUUID);
-        assertResolvedPlanTransaction(fixture.client(), plan, 1, AccountTransaction.Type.DEPOSIT,
-                        targetProjectionUUID);
-        assertNoExecutionRefTargetsCashTransfer(fixture.client(), plan);
+        assertThat(plan.getLedgerExecutionRefs(), is(List.of()));
+        assertThat(removalEntry.getGeneratedByPlanKey(), is(plan.getPlanKey()));
+        assertThat(depositEntry.getGeneratedByPlanKey(), is(nullValue()));
+        assertResolvedPlanTransaction(fixture.client(), plan, 0, AccountTransaction.Type.REMOVAL);
 
         var xmlClient = loadXml(saveXml(fixture.client()));
-        assertExecutionRefResolvesAfterRoundtrip(xmlClient, 0, removalEntry.getUUID(), sourceProjectionUUID,
-                        AccountTransaction.Type.REMOVAL);
-        assertExecutionRefResolvesAfterRoundtrip(xmlClient, 1, depositEntry.getUUID(), targetProjectionUUID,
-                        AccountTransaction.Type.DEPOSIT);
+        assertExecutionRefResolvesAfterRoundtrip(xmlClient, 0, AccountTransaction.Type.REMOVAL);
 
         var protobufClient = loadProtobuf(saveProtobuf(fixture.client()));
-        assertExecutionRefResolvesAfterRoundtrip(protobufClient, 0, removalEntry.getUUID(), sourceProjectionUUID,
-                        AccountTransaction.Type.REMOVAL);
-        assertExecutionRefResolvesAfterRoundtrip(protobufClient, 1, depositEntry.getUUID(), targetProjectionUUID,
-                        AccountTransaction.Type.DEPOSIT);
+        assertExecutionRefResolvesAfterRoundtrip(protobufClient, 0, AccountTransaction.Type.REMOVAL);
     }
 
     /**
@@ -326,16 +315,14 @@ public class LedgerAccountTransferToDepositRemovalConverterTest
         var entry = fixture.client().getLedger().getEntries().get(0);
         var plan = newPlan();
 
-        plan.addLedgerExecutionRef(new InvestmentPlan.LedgerExecutionRef(entry.getUUID(), null, null));
+        entry.setGeneratedByPlanKey(plan.getPlanKey());
+        entry.setPlanExecutionDate(DATE_TIME.toLocalDate());
+        entry.setPreferredViewKind(InvestmentPlan.LedgerExecutionViewKind.ACCOUNT.name());
         fixture.client().addPlan(plan);
 
-        var exception = assertRejectsWithoutMutation(fixture, () -> converter(fixture).split(transfer),
-                        UnsupportedOperationException.class);
-        assertThat(exception.getMessage(), is(LedgerDiagnosticCode.LEDGER_CONVERT_045
-                        .message("Ledger plan reference cannot be mapped to a split transfer side")));
-        assertThat(plan.getLedgerExecutionRefs().get(0).getLedgerEntryUUID(), is(entry.getUUID()));
-        assertThat(plan.getLedgerExecutionRefs().get(0).getProjectionUUID(), is(nullValue()));
-        assertThat(plan.getLedgerExecutionRefs().get(0).getProjectionRole(), is(nullValue()));
+        converter(fixture).split(transfer);
+
+        assertThat(plan.getLedgerExecutionRefs(), is(List.of()));
     }
 
     /**
@@ -348,31 +335,17 @@ public class LedgerAccountTransferToDepositRemovalConverterTest
         var fixture = fixture(CurrencyUnit.EUR, CurrencyUnit.EUR);
         var transfer = createTransfer(fixture, Values.Amount.factorize(123), CurrencyUnit.EUR,
                         Values.Amount.factorize(123), CurrencyUnit.EUR, null, null);
-        var entry = fixture.client().getLedger().getEntries().get(0);
-        var sourceProjectionUUID = projection(entry, LedgerProjectionRole.SOURCE_ACCOUNT).getUUID();
         var plan = newPlan();
+        var entry = fixture.client().getLedger().getEntries().get(0);
 
-        plan.addLedgerExecutionRef(new InvestmentPlan.LedgerExecutionRef(entry.getUUID(), sourceProjectionUUID,
-                        LedgerProjectionRole.TARGET_ACCOUNT));
+        entry.setGeneratedByPlanKey(plan.getPlanKey());
+        entry.setPlanExecutionDate(DATE_TIME.toLocalDate());
+        entry.setPreferredViewKind(InvestmentPlan.LedgerExecutionViewKind.ACCOUNT.name());
         fixture.client().addPlan(plan);
 
-        var exception = assertRejectsWithoutMutation(fixture, () -> converter(fixture).split(transfer),
-                        UnsupportedOperationException.class);
-        assertThat(exception.getMessage(), is(LedgerDiagnosticCode.LEDGER_CONVERT_045
-                        .message("Ledger plan reference cannot be mapped to a split transfer side")));
-        assertThat(plan.getLedgerExecutionRefs().get(0).getLedgerEntryUUID(), is(entry.getUUID()));
-        assertThat(plan.getLedgerExecutionRefs().get(0).getProjectionUUID(), is(sourceProjectionUUID));
-        assertThat(plan.getLedgerExecutionRefs().get(0).getProjectionRole(), is(LedgerProjectionRole.TARGET_ACCOUNT));
-    }
+        converter(fixture).split(transfer);
 
-    private InvestmentPlan planWithExecutionRef(Client client, LedgerBackedTransaction transaction)
-    {
-        var plan = newPlan();
-
-        plan.addLedgerExecutionRef(InvestmentPlan.LedgerExecutionRef.of(transaction));
-        client.addPlan(plan);
-
-        return plan;
+        assertThat(plan.getLedgerExecutionRefs(), is(List.of()));
     }
 
     private InvestmentPlan newPlan()
@@ -396,15 +369,15 @@ public class LedgerAccountTransferToDepositRemovalConverterTest
     }
 
     private void assertResolvedPlanTransaction(Client client, InvestmentPlan plan, int index,
-                    AccountTransaction.Type type, String transactionUUID)
+                    AccountTransaction.Type type)
     {
         var transactions = plan.getTransactions(client);
         var transaction = transactions.get(index).getTransaction();
 
-        assertThat(transactions.size(), is(plan.getLedgerExecutionRefs().size()));
+        assertThat(transactions.size(), is((int) client.getLedger().getEntries().stream()
+                        .filter(entry -> plan.getPlanKey().equals(entry.getGeneratedByPlanKey())).count()));
         assertThat(transaction, instanceOf(AccountTransaction.class));
         assertThat(((AccountTransaction) transaction).getType(), is(type));
-        assertThat(transaction.getUUID(), is(transactionUUID));
     }
 
     private void assertNoExecutionRefTargetsCashTransfer(Client client, InvestmentPlan plan)
@@ -420,13 +393,12 @@ public class LedgerAccountTransferToDepositRemovalConverterTest
         }
     }
 
-    private void assertExecutionRefResolvesAfterRoundtrip(Client client, int index, String entryUUID,
-                    String projectionUUID, AccountTransaction.Type type)
+    private void assertExecutionRefResolvesAfterRoundtrip(Client client, int index, AccountTransaction.Type type)
     {
         var plan = client.getPlans().get(0);
 
-        assertExecutionRef(plan, index, entryUUID, projectionUUID, LedgerProjectionRole.ACCOUNT);
-        assertResolvedPlanTransaction(client, plan, index, type, projectionUUID);
+        assertThat(plan.getLedgerExecutionRefs(), is(List.of()));
+        assertResolvedPlanTransaction(client, plan, index, type);
         assertNoExecutionRefTargetsCashTransfer(client, plan);
         assertValid(client);
     }
@@ -452,10 +424,10 @@ public class LedgerAccountTransferToDepositRemovalConverterTest
         assertThat(depositEntry.getUUID().equals(transferEntryUUID), is(false));
         assertThat(sourcePosting.getUUID(), is(sourcePostingUUID));
         assertThat(targetPosting.getUUID(), is(targetPostingUUID));
-        assertThat(sourceProjection.getUUID(), is(sourceProjectionUUID));
-        assertThat(targetProjection.getUUID(), is(targetProjectionUUID));
-        assertThat(sourceProjection.getPrimaryPostingUUID(), is(sourcePostingUUID));
-        assertThat(targetProjection.getPrimaryPostingUUID(), is(targetPostingUUID));
+        assertThat(sourceProjection.getRole(), is(LedgerProjectionRole.ACCOUNT));
+        assertThat(targetProjection.getRole(), is(LedgerProjectionRole.ACCOUNT));
+        assertThat(sourceProjection.getPrimaryPosting().getUUID(), is(sourcePostingUUID));
+        assertThat(targetProjection.getPrimaryPosting().getUUID(), is(targetPostingUUID));
         assertSame(fixture.source(), sourceProjection.getAccount());
         assertSame(fixture.target(), targetProjection.getAccount());
         assertSame(fixture.source(), sourcePosting.getAccount());
@@ -469,8 +441,8 @@ public class LedgerAccountTransferToDepositRemovalConverterTest
         assertThat(fixture.target().getTransactions(), is(List.of(deposit)));
         assertThat(removal, instanceOf(LedgerBackedTransaction.class));
         assertThat(deposit, instanceOf(LedgerBackedTransaction.class));
-        assertThat(removal.getUUID(), is(sourceProjectionUUID));
-        assertThat(deposit.getUUID(), is(targetProjectionUUID));
+        assertThat(((LedgerBackedTransaction) removal).getLedgerProjectionRole(), is(LedgerProjectionRole.ACCOUNT));
+        assertThat(((LedgerBackedTransaction) deposit).getLedgerProjectionRole(), is(LedgerProjectionRole.ACCOUNT));
         assertThat(removal.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(deposit.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(removal.getCrossEntry(), is(nullValue()));
@@ -503,11 +475,8 @@ public class LedgerAccountTransferToDepositRemovalConverterTest
         assertThat(client.getLedger().getEntries().size(), is(2));
         assertThat(source.getTransactions().size(), is(1));
         assertThat(target.getTransactions().size(), is(1));
-        assertThat(removalEntry.getUUID(), is(transferEntryUUID));
-        assertThat(sourcePosting.getUUID(), is(sourcePostingUUID));
-        assertThat(targetPosting.getUUID(), is(targetPostingUUID));
-        assertThat(projection(removalEntry, LedgerProjectionRole.ACCOUNT).getUUID(), is(sourceProjectionUUID));
-        assertThat(projection(depositEntry, LedgerProjectionRole.ACCOUNT).getUUID(), is(targetProjectionUUID));
+        assertThat(projection(removalEntry, LedgerProjectionRole.ACCOUNT).getRole(), is(LedgerProjectionRole.ACCOUNT));
+        assertThat(projection(depositEntry, LedgerProjectionRole.ACCOUNT).getRole(), is(LedgerProjectionRole.ACCOUNT));
         assertThat(source.getTransactions().get(0).getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(target.getTransactions().get(0).getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(sourcePosting.getCurrency(), is(sourceCurrency));
@@ -551,9 +520,10 @@ public class LedgerAccountTransferToDepositRemovalConverterTest
                         .findFirst().orElseThrow();
     }
 
-    private LedgerProjectionRef projection(LedgerEntry entry, LedgerProjectionRole role)
+    private name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor projection(LedgerEntry entry,
+                    LedgerProjectionRole role)
     {
-        return entry.getProjectionRefs().stream().filter(projection -> projection.getRole() == role).findFirst()
+        return name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream().filter(projection -> projection.getRole() == role).findFirst()
                         .orElseThrow();
     }
 
@@ -649,9 +619,20 @@ public class LedgerAccountTransferToDepositRemovalConverterTest
     {
         static EntrySnapshot capture(LedgerEntry entry)
         {
+            List<ProjectionSnapshot> projections;
+            try
+            {
+                projections = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry)
+                                .stream().map(ProjectionSnapshot::capture).toList();
+            }
+            catch (IllegalArgumentException e)
+            {
+                projections = List.of();
+            }
+
             return new EntrySnapshot(entry.getUUID(), entry.getType(),
                             entry.getPostings().stream().map(PostingSnapshot::capture).toList(),
-                            entry.getProjectionRefs().stream().map(ProjectionSnapshot::capture).toList());
+                            projections);
         }
     }
 
@@ -666,13 +647,15 @@ public class LedgerAccountTransferToDepositRemovalConverterTest
         }
     }
 
-    private record ProjectionSnapshot(String uuid, LedgerProjectionRole role, Account account,
-                    String primaryPostingUUID, String postingGroupUUID)
+    private record ProjectionSnapshot(String runtimeId, LedgerProjectionRole role, Account account,
+                    String primaryPostingId, String groupKey)
     {
-        static ProjectionSnapshot capture(LedgerProjectionRef projection)
+        static ProjectionSnapshot capture(
+                        name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor projection)
         {
-            return new ProjectionSnapshot(projection.getUUID(), projection.getRole(), projection.getAccount(),
-                            projection.getPrimaryPostingUUID(), projection.getPostingGroupUUID());
+            return new ProjectionSnapshot(projection.getRuntimeProjectionId(), projection.getRole(),
+                            projection.getAccount(), projection.getPrimaryPosting().getUUID(),
+                            projection.getPrimaryPosting().getGroupKey());
         }
     }
 }

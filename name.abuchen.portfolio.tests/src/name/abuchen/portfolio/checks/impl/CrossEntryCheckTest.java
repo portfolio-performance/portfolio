@@ -36,7 +36,6 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerAccountOnlyTransactionCreator;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerAccountTransferTransactionCreator;
@@ -257,7 +256,7 @@ public class CrossEntryCheckTest
                         .count(), is(1L));
         assertThat(plan.getLedgerExecutionRefs(), is(List.of()));
         assertThat(plan.getTransactions(client), is(List.of()));
-        assertThat(unrelatedPlan.getLedgerExecutionRefs().size(), is(1));
+        assertThat(unrelatedPlan.getLedgerExecutionRefs(), is(List.of()));
         assertThat(unrelatedPlan.getTransactions(client).size(), is(1));
         assertThat(account.getTransactions(), hasItem(legacyTransaction));
         assertFalse(account.getTransactions().contains(accountProjection));
@@ -356,19 +355,21 @@ public class CrossEntryCheckTest
         LedgerEntry entry = ledgerEntry(buy.getAccountTransaction());
         String entryUUID = entry.getUUID();
 
-        entry.removeProjectionRef(projection(entry, LedgerProjectionRole.PORTFOLIO));
-        rematerializeLedgerProjections();
+        portfolio.getTransactions().clear();
 
         List<Issue> issues = new CrossEntryCheck().execute(client);
 
-        assertThat(issues.size(), is(1));
-        assertThat(issues.get(0), is(instanceOf(MissingBuySellPortfolioIssue.class)));
-        assertOnlyDeleteFix(issues.get(0)).execute();
-
-        assertEntryDeleted(entryUUID);
-        assertThat(account.getTransactions().size(), is(0));
+        assertThat(issues.size(), is(0));
+        assertThat(account.getTransactions().size(), is(1));
         assertThat(portfolio.getTransactions().size(), is(0));
-        assertThat(reloadXml(client).getLedger().getEntries().size(), is(0));
+
+        LedgerProjectionService.restoreIfValid(client);
+
+        assertThat(client.getLedger().getEntries().stream().filter(item -> item.getUUID().equals(entryUUID)).count(),
+                        is(1L));
+        assertThat(account.getTransactions().size(), is(1));
+        assertThat(portfolio.getTransactions().size(), is(1));
+        assertThat(((LedgerBackedTransaction) portfolio.getTransactions().get(0)).getLedgerEntry(), is(entry));
     }
 
     /**
@@ -387,18 +388,20 @@ public class CrossEntryCheckTest
                         null, null, "account transfer note", "account transfer source");
         LedgerEntry accountEntry = ledgerEntry(accountTransfer.getSourceTransaction());
 
-        accountEntry.removeProjectionRef(projection(accountEntry, LedgerProjectionRole.TARGET_ACCOUNT));
-        rematerializeLedgerProjections();
+        targetAccount.getTransactions().clear();
 
         List<Issue> issues = new CrossEntryCheck().execute(client);
 
-        assertThat(issues.size(), is(1));
-        assertThat(issues.get(0), is(instanceOf(MissingAccountTransferIssue.class)));
-        assertOnlyDeleteFix(issues.get(0)).execute();
-
-        assertEntryDeleted(accountEntry.getUUID());
-        assertThat(account.getTransactions().size(), is(0));
+        assertThat(issues.size(), is(0));
+        assertThat(account.getTransactions().size(), is(1));
         assertThat(targetAccount.getTransactions().size(), is(0));
+
+        LedgerProjectionService.restoreIfValid(client);
+
+        assertThat(client.getLedger().getEntries().stream()
+                        .filter(item -> item.getUUID().equals(accountEntry.getUUID())).count(), is(1L));
+        assertThat(account.getTransactions().size(), is(1));
+        assertThat(targetAccount.getTransactions().size(), is(1));
 
         Portfolio targetPortfolio = new Portfolio();
         client.addPortfolio(targetPortfolio);
@@ -408,18 +411,20 @@ public class CrossEntryCheckTest
                         "portfolio transfer source");
         LedgerEntry portfolioEntry = ledgerEntry(portfolioTransfer.getSourceTransaction());
 
-        portfolioEntry.removeProjectionRef(projection(portfolioEntry, LedgerProjectionRole.TARGET_PORTFOLIO));
-        rematerializeLedgerProjections();
+        targetPortfolio.getTransactions().clear();
 
         issues = new CrossEntryCheck().execute(client);
 
-        assertThat(issues.size(), is(1));
-        assertThat(issues.get(0), is(instanceOf(MissingPortfolioTransferIssue.class)));
-        assertOnlyDeleteFix(issues.get(0)).execute();
-
-        assertEntryDeleted(portfolioEntry.getUUID());
-        assertThat(portfolio.getTransactions().size(), is(0));
+        assertThat(issues.size(), is(0));
+        assertThat(portfolio.getTransactions().size(), is(1));
         assertThat(targetPortfolio.getTransactions().size(), is(0));
+
+        LedgerProjectionService.restoreIfValid(client);
+
+        assertThat(client.getLedger().getEntries().stream()
+                        .filter(item -> item.getUUID().equals(portfolioEntry.getUUID())).count(), is(1L));
+        assertThat(portfolio.getTransactions().size(), is(1));
+        assertThat(targetPortfolio.getTransactions().size(), is(1));
     }
 
     /**
@@ -495,29 +500,18 @@ public class CrossEntryCheckTest
     private LedgerPosting primaryPosting(AccountTransaction transaction)
     {
         var ledgerBacked = (LedgerBackedTransaction) transaction;
-        var primaryPostingUUID = ledgerBacked.getLedgerProjectionRef().getPrimaryPostingUUID();
-
-        return ledgerBacked.getLedgerEntry().getPostings().stream()
-                        .filter(posting -> posting.getUUID().equals(primaryPostingUUID)).findFirst().orElseThrow();
+        return ledgerBacked.getLedgerProjectionDescriptor().getPrimaryPosting();
     }
 
     private LedgerPosting primaryPosting(PortfolioTransaction transaction)
     {
         var ledgerBacked = (LedgerBackedTransaction) transaction;
-        var primaryPostingUUID = ledgerBacked.getLedgerProjectionRef().getPrimaryPostingUUID();
-
-        return ledgerBacked.getLedgerEntry().getPostings().stream()
-                        .filter(posting -> posting.getUUID().equals(primaryPostingUUID)).findFirst().orElseThrow();
+        return ledgerBacked.getLedgerProjectionDescriptor().getPrimaryPosting();
     }
 
     private LedgerEntry ledgerEntry(Transaction transaction)
     {
         return ((LedgerBackedTransaction) transaction).getLedgerEntry();
-    }
-
-    private LedgerProjectionRef projection(LedgerEntry entry, LedgerProjectionRole role)
-    {
-        return entry.getProjectionRefs().stream().filter(ref -> ref.getRole() == role).findFirst().orElseThrow();
     }
 
     private void rematerializeLedgerProjections()

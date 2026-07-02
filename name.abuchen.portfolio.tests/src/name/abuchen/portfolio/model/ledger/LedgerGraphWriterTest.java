@@ -82,21 +82,27 @@ public class LedgerGraphWriterTest
         assertThat(target.getPostings().get(0).getUUID(), is("source-entry-cash"));
         assertThat(target.getPostings().get(1).getUUID(), is("source-entry-security"));
 
-        assertThat(target.getProjectionRefs().size(), is(2));
-        assertThat(target.getProjectionRefs().get(0).getUUID(), is("source-entry-account"));
-        assertThat(target.getProjectionRefs().get(0).getPrimaryPostingUUID(), is("source-entry-cash"));
-        assertThat(target.getProjectionRefs().get(0).getPostingGroupUUID(), is("source-entry-security"));
-        assertThat(target.getProjectionRefs().get(1).getUUID(), is("source-entry-portfolio"));
-        assertThat(target.getProjectionRefs().get(1).getPrimaryPostingUUID(), is("source-entry-security"));
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(target).size(), is(2));
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(target).get(0)
+                        .getRuntimeProjectionId(), is("source-entry:ACCOUNT"));
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(target).get(0)
+                        .getPrimaryPosting().getUUID(), is("source-entry-cash"));
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(target).get(0)
+                        .getPrimaryPosting().getGroupKey(), is("source-entry-trade"));
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(target).get(1)
+                        .getRuntimeProjectionId(), is("source-entry:PORTFOLIO"));
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(target).get(1)
+                        .getPrimaryPosting().getUUID(), is("source-entry-security"));
 
         assertNotSame(source.getPostings().get(0), target.getPostings().get(0));
-        assertNotSame(source.getProjectionRefs().get(0), target.getProjectionRefs().get(0));
+        assertNotSame(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(source).get(0), name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(target).get(0));
 
         target.getPostings().get(0).setAmount(Values.Amount.factorize(200));
-        target.getProjectionRefs().get(0).setPrimaryPostingUUID("changed");
+        target.getPostings().get(0).setGroupKey("changed");
 
         assertThat(source.getPostings().get(0).getAmount(), is(Values.Amount.factorize(100)));
-        assertThat(source.getProjectionRefs().get(0).getPrimaryPostingUUID(), is("source-entry-cash"));
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(source).get(0)
+                        .getPrimaryPosting().getUUID(), is("source-entry-cash"));
     }
 
     private LedgerEntry entry(String uuid)
@@ -107,8 +113,6 @@ public class LedgerGraphWriterTest
         var entry = new LedgerEntry(uuid);
         var cash = new LedgerPosting(uuid + "-cash");
         var securityPosting = new LedgerPosting(uuid + "-security");
-        var accountProjection = new LedgerProjectionRef(uuid + "-account");
-        var portfolioProjection = new LedgerProjectionRef(uuid + "-portfolio");
 
         entry.setType(LedgerEntryType.BUY);
         entry.setDateTime(LocalDateTime.of(2026, 1, 2, 0, 0));
@@ -121,25 +125,22 @@ public class LedgerGraphWriterTest
         cash.setAmount(Values.Amount.factorize(100));
         cash.setCurrency(CurrencyUnit.EUR);
         cash.setAccount(account);
+        cash.setSemanticRole(LedgerPostingSemanticRole.CASH);
+        cash.setDirection(LedgerPostingDirection.NEUTRAL);
+        cash.setUnitRole(LedgerPostingUnitRole.PRIMARY);
+        cash.setGroupKey(uuid + "-trade");
 
         securityPosting.setType(LedgerPostingType.SECURITY);
         securityPosting.setSecurity(security);
         securityPosting.setShares(Values.Share.factorize(10));
         securityPosting.setPortfolio(portfolio);
-
-        accountProjection.setRole(LedgerProjectionRole.ACCOUNT);
-        accountProjection.setAccount(account);
-        accountProjection.setPrimaryPosting(cash);
-        accountProjection.setPostingGroup(securityPosting);
-
-        portfolioProjection.setRole(LedgerProjectionRole.PORTFOLIO);
-        portfolioProjection.setPortfolio(portfolio);
-        portfolioProjection.setPrimaryPosting(securityPosting);
+        securityPosting.setSemanticRole(LedgerPostingSemanticRole.SECURITY);
+        securityPosting.setDirection(LedgerPostingDirection.NEUTRAL);
+        securityPosting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
+        securityPosting.setGroupKey(uuid + "-trade");
 
         entry.addPosting(cash);
         entry.addPosting(securityPosting);
-        entry.addProjectionRef(accountProjection);
-        entry.addProjectionRef(portfolioProjection);
         entry.setUpdatedAt(Instant.parse("2026-06-20T12:00:00Z"));
 
         return entry;

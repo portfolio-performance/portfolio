@@ -40,11 +40,10 @@ public final class LedgerAccountTransactionEditor
             throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_CONVERT_007
                             .message("Unsupported account transaction edit for " + entry.getType())); //$NON-NLS-1$
 
-        var projectionUUID = transaction.getLedgerProjectionRef().getUUID();
-        var postingUUID = LedgerProjectionSupport.primaryPosting(entry, transaction.getLedgerProjectionRef()).getUUID();
+        var role = transaction.getLedgerProjectionRole();
+        var postingUUID = transaction.getLedgerProjectionDescriptor().getPrimaryPosting().getUUID();
 
-        LedgerEntryEditSupport.applyValidated(entry, editedEntry -> applyEdit(editedEntry, edit, projectionUUID,
-                        postingUUID));
+        LedgerEntryEditSupport.applyValidated(entry, editedEntry -> applyEdit(editedEntry, edit, role, postingUUID));
     }
 
     public void validate(LedgerBackedAccountTransaction transaction, LedgerAccountTransactionEdit edit)
@@ -58,21 +57,21 @@ public final class LedgerAccountTransactionEditor
             throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_CONVERT_008
                             .message("Unsupported account transaction edit for " + entry.getType())); //$NON-NLS-1$
 
-        var projectionUUID = transaction.getLedgerProjectionRef().getUUID();
-        var postingUUID = LedgerProjectionSupport.primaryPosting(entry, transaction.getLedgerProjectionRef()).getUUID();
+        var role = transaction.getLedgerProjectionRole();
+        var postingUUID = transaction.getLedgerProjectionDescriptor().getPrimaryPosting().getUUID();
 
-        LedgerEntryEditSupport.validatePatch(entry, editedEntry -> applyEdit(editedEntry, edit, projectionUUID,
-                        postingUUID));
+        LedgerEntryEditSupport.validatePatch(entry, editedEntry -> applyEdit(editedEntry, edit, role, postingUUID));
     }
 
-    private void applyEdit(LedgerEntry editedEntry, LedgerAccountTransactionEdit edit, String projectionUUID,
+    private void applyEdit(LedgerEntry editedEntry, LedgerAccountTransactionEdit edit,
+                    name.abuchen.portfolio.model.ledger.LedgerProjectionRole role,
                     String postingUUID)
     {
         LedgerEntryMetadataPatchHelper.apply(editedEntry, edit.getMetadata());
         edit.getPosting().applyTo(LedgerEntryEditSupport.postingByUUID(editedEntry, postingUUID));
         applyExDate(LedgerEntryEditSupport.postingByUUID(editedEntry, postingUUID), edit.getExDate());
         unitPostingUpdater.apply(editedEntry, edit.getUnits());
-        ensureProjectionExists(editedEntry, projectionUUID);
+        ensureDescriptorExists(editedEntry, role);
     }
 
     private void applyExDate(LedgerPosting posting, LedgerFieldEdit<java.time.LocalDateTime> edit)
@@ -89,10 +88,8 @@ public final class LedgerAccountTransactionEditor
                             edit.getValue()));
     }
 
-    private void ensureProjectionExists(LedgerEntry entry, String projectionUUID)
+    private void ensureDescriptorExists(LedgerEntry entry, name.abuchen.portfolio.model.ledger.LedgerProjectionRole role)
     {
-        if (entry.getProjectionRefs().stream().noneMatch(projection -> projection.getUUID().equals(projectionUUID)))
-            throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_PROJ_004
-                            .message("Projection was removed by edit: " + projectionUUID)); //$NON-NLS-1$
+        LedgerProjectionSupport.descriptor(entry, role);
     }
 }

@@ -33,7 +33,6 @@ public final class LedgerModelCopy
 
         source.getParameters().stream().map(LedgerModelCopy::copyParameter).forEach(copy::addParameter);
         source.getPostings().stream().map(LedgerModelCopy::copyPosting).forEach(copy::addPosting);
-        source.getProjectionRefs().stream().map(LedgerModelCopy::copyProjectionRef).forEach(copy::addProjectionRef);
         copy.setUpdatedAt(source.getUpdatedAt());
 
         return copy;
@@ -62,26 +61,6 @@ public final class LedgerModelCopy
         source.getParameters().stream().map(LedgerModelCopy::copyParameter).forEach(copy::addParameter);
 
         return copy;
-    }
-
-    static LedgerProjectionRef copyProjectionRef(LedgerProjectionRef source)
-    {
-        var copy = new LedgerProjectionRef(Objects.requireNonNull(source).getUUID());
-
-        copy.setRole(source.getRole());
-        copy.setAccount(source.getAccount());
-        copy.setPortfolio(source.getPortfolio());
-        copy.setPrimaryPostingUUID(source.getPrimaryPostingUUID());
-        copy.setPostingGroupUUID(source.getPostingGroupUUID());
-        source.getMemberships().stream().map(LedgerModelCopy::copyProjectionMembership).forEach(copy::addMembership);
-
-        return copy;
-    }
-
-    static ProjectionMembership copyProjectionMembership(ProjectionMembership source)
-    {
-        Objects.requireNonNull(source);
-        return new ProjectionMembership(source.getPostingUUID(), source.getRole());
     }
 
     static LedgerParameter<?> copyParameter(LedgerParameter<?> source)

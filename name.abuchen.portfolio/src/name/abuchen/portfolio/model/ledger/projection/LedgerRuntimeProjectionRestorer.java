@@ -313,10 +313,11 @@ final class LedgerRuntimeProjectionRestorer
             {
                 if (projection instanceof LedgerBackedAccountTransaction accountTransaction)
                     addProjection(projections, new ProjectionKey("account", //$NON-NLS-1$
-                                    accountTransaction.getLedgerProjectionRef().getAccount(), projection.getUUID()));
+                                    accountTransaction.getLedgerProjectionDescriptor().getAccount(),
+                                    projection.getUUID()));
                 else if (projection instanceof LedgerBackedPortfolioTransaction portfolioTransaction)
                     addProjection(projections, new ProjectionKey("portfolio", //$NON-NLS-1$
-                                    portfolioTransaction.getLedgerProjectionRef().getPortfolio(),
+                                    portfolioTransaction.getLedgerProjectionDescriptor().getPortfolio(),
                                     projection.getUUID()));
             }
         }
@@ -334,7 +335,7 @@ final class LedgerRuntimeProjectionRestorer
             {
                 if (transaction instanceof LedgerBackedTransaction ledgerBacked)
                     addProjection(projections, new ProjectionKey("account", account, //$NON-NLS-1$
-                                    ledgerBacked.getLedgerProjectionRef().getUUID()));
+                                    ledgerBacked.getLedgerProjectionDescriptor().getRuntimeProjectionId()));
             }
         }
 
@@ -344,7 +345,7 @@ final class LedgerRuntimeProjectionRestorer
             {
                 if (transaction instanceof LedgerBackedTransaction ledgerBacked)
                     addProjection(projections, new ProjectionKey("portfolio", portfolio, //$NON-NLS-1$
-                                    ledgerBacked.getLedgerProjectionRef().getUUID()));
+                                    ledgerBacked.getLedgerProjectionDescriptor().getRuntimeProjectionId()));
             }
         }
 

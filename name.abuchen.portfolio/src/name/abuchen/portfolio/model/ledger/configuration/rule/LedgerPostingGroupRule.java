@@ -25,23 +25,23 @@ public final class LedgerPostingGroupRule
     private final LedgerRequirement requirement;
     private final Set<LedgerPostingType> postingTypes;
     private final Set<LedgerProjectionRole> projectionRoles;
-    private final boolean postingGroupUUIDExpected;
+    private final boolean groupAnchorExpected;
 
     private LedgerPostingGroupRule(String name, LedgerRequirement requirement, Set<LedgerPostingType> postingTypes,
-                    Set<LedgerProjectionRole> projectionRoles, boolean postingGroupUUIDExpected)
+                    Set<LedgerProjectionRole> projectionRoles, boolean groupAnchorExpected)
     {
         this.name = requireName(name);
         this.requirement = Objects.requireNonNull(requirement);
         this.postingTypes = copyPostingTypes(postingTypes);
         this.projectionRoles = copyProjectionRoles(projectionRoles);
-        this.postingGroupUUIDExpected = postingGroupUUIDExpected;
+        this.groupAnchorExpected = groupAnchorExpected;
     }
 
     public static LedgerPostingGroupRule of(String name, LedgerRequirement requirement,
                     Set<LedgerPostingType> postingTypes, Set<LedgerProjectionRole> projectionRoles,
-                    boolean postingGroupUUIDExpected)
+                    boolean groupAnchorExpected)
     {
-        return new LedgerPostingGroupRule(name, requirement, postingTypes, projectionRoles, postingGroupUUIDExpected);
+        return new LedgerPostingGroupRule(name, requirement, postingTypes, projectionRoles, groupAnchorExpected);
     }
 
     public String getName()
@@ -74,9 +74,9 @@ public final class LedgerPostingGroupRule
         return projectionRoles;
     }
 
-    public boolean isPostingGroupUUIDExpected()
+    public boolean isGroupAnchorExpected()
     {
-        return postingGroupUUIDExpected;
+        return groupAnchorExpected;
     }
 
     private static String requireName(String name)

@@ -13,12 +13,13 @@ import name.abuchen.portfolio.model.LedgerAccountTransferToDepositRemovalConvert
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerMutationContext;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
+import name.abuchen.portfolio.model.ledger.LedgerPostingDirection;
+import name.abuchen.portfolio.model.ledger.LedgerPostingSemanticRole;
+import name.abuchen.portfolio.model.ledger.LedgerPostingUnitRole;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
-import name.abuchen.portfolio.model.ledger.ProjectionMembership;
-import name.abuchen.portfolio.model.ledger.ProjectionMembershipRole;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
+import name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedAccountTransaction;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
 import name.abuchen.portfolio.model.ledger.projection.LedgerProjectionSupport;
@@ -55,26 +56,25 @@ public final class LedgerAccountTransferToDepositRemovalConverter
                             .message("Account transfer projections do not belong to the same ledger entry")); //$NON-NLS-1$
 
         var entry = sourceEntry;
-        var sourceProjectionUUID = sourceTransaction.getLedgerProjectionRef().getUUID();
-        var targetProjectionUUID = targetTransaction.getLedgerProjectionRef().getUUID();
-        var sourceAccount = sourceTransaction.getLedgerProjectionRef().getAccount();
-        var targetAccount = targetTransaction.getLedgerProjectionRef().getAccount();
+        var sourceAccount = sourceTransaction.getLedgerProjectionDescriptor().getAccount();
+        var targetAccount = targetTransaction.getLedgerProjectionDescriptor().getAccount();
 
         preflight(entry, sourceTransaction, targetTransaction);
 
-        var sourcePosting = LedgerProjectionSupport.primaryPosting(entry, sourceTransaction.getLedgerProjectionRef());
-        var targetPosting = LedgerProjectionSupport.primaryPosting(entry, targetTransaction.getLedgerProjectionRef());
-        var removal = removalEntry(entry, sourceTransaction.getLedgerProjectionRef(), sourcePosting, targetPosting);
-        var deposit = depositEntry(entry, targetTransaction.getLedgerProjectionRef(),
-                        targetPosting);
+        var sourcePosting = sourceTransaction.getLedgerProjectionDescriptor().getPrimaryPosting();
+        var targetPosting = targetTransaction.getLedgerProjectionDescriptor().getPrimaryPosting();
+        var removal = removalEntry(entry, sourceTransaction.getLedgerProjectionDescriptor(), sourcePosting, targetPosting);
+        var deposit = depositEntry(entry, targetTransaction.getLedgerProjectionDescriptor(), targetPosting);
+        var sourceRuntimeProjectionId = runtimeProjectionId(removal, LedgerProjectionRole.ACCOUNT);
+        var targetRuntimeProjectionId = runtimeProjectionId(deposit, LedgerProjectionRole.ACCOUNT);
         var executionRefUpdates = LedgerInvestmentPlanRefSupport.prepareAccountTransferSplitExecutionRefUpdates(client,
-                        entry, sourceTransaction.getLedgerProjectionRef(), targetTransaction.getLedgerProjectionRef(),
-                        removal, deposit);
+                        entry, LedgerProjectionRole.SOURCE_ACCOUNT, LedgerProjectionRole.TARGET_ACCOUNT, removal,
+                        deposit);
 
         new LedgerMutationContext(client).splitEntry(entry, List.of(removal, deposit));
         executionRefUpdates.apply();
 
-        return new SplitResult(find(sourceAccount, sourceProjectionUUID), find(targetAccount, targetProjectionUUID));
+        return new SplitResult(find(sourceAccount, sourceRuntimeProjectionId), find(targetAccount, targetRuntimeProjectionId));
     }
 
     private void preflight(LedgerEntry entry, LedgerBackedAccountTransaction sourceTransaction,
@@ -83,8 +83,8 @@ public final class LedgerAccountTransferToDepositRemovalConverter
         if (entry.getType() != LedgerEntryType.CASH_TRANSFER)
             throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_CONVERT_012.message("Ledger entry is not an account transfer")); //$NON-NLS-1$
 
-        var sourceProjection = sourceTransaction.getLedgerProjectionRef();
-        var targetProjection = targetTransaction.getLedgerProjectionRef();
+        var sourceProjection = sourceTransaction.getLedgerProjectionDescriptor();
+        var targetProjection = targetTransaction.getLedgerProjectionDescriptor();
 
         if (sourceProjection.getRole() != LedgerProjectionRole.SOURCE_ACCOUNT
                         || targetProjection.getRole() != LedgerProjectionRole.TARGET_ACCOUNT)
@@ -94,12 +94,14 @@ public final class LedgerAccountTransferToDepositRemovalConverter
         var sourceProjectionInEntry = uniqueProjection(entry, LedgerProjectionRole.SOURCE_ACCOUNT);
         var targetProjectionInEntry = uniqueProjection(entry, LedgerProjectionRole.TARGET_ACCOUNT);
 
-        if (sourceProjectionInEntry != sourceProjection || targetProjectionInEntry != targetProjection)
+        if (!sourceProjectionInEntry.getRuntimeProjectionId().equals(sourceProjection.getRuntimeProjectionId())
+                        || !targetProjectionInEntry.getRuntimeProjectionId()
+                                        .equals(targetProjection.getRuntimeProjectionId()))
             throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_PROJ_008
                             .message("Selected projections do not match the ledger entry")); //$NON-NLS-1$
 
-        var sourcePosting = LedgerProjectionSupport.primaryPosting(entry, sourceProjection);
-        var targetPosting = LedgerProjectionSupport.primaryPosting(entry, targetProjection);
+        var sourcePosting = sourceProjection.getPrimaryPosting();
+        var targetPosting = targetProjection.getPrimaryPosting();
 
         if (sourcePosting == targetPosting)
             throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_CONVERT_013.message("Account transfer source and target postings are ambiguous")); //$NON-NLS-1$
@@ -133,28 +135,26 @@ public final class LedgerAccountTransferToDepositRemovalConverter
                             LedgerDiagnosticCode.LEDGER_CONVERT_017.message("Ledger account transfers with posting parameters cannot be split")); //$NON-NLS-1$
     }
 
-    private LedgerEntry removalEntry(LedgerEntry source, LedgerProjectionRef sourceProjection,
+    private LedgerEntry removalEntry(LedgerEntry source, DerivedProjectionDescriptor sourceProjection,
                     LedgerPosting sourcePosting, LedgerPosting targetPosting)
     {
         var entry = baseEntry(source, source.getUUID(), LedgerEntryType.REMOVAL);
         var posting = cashPosting(sourcePosting, sourceProjection.getAccount(), targetPosting);
-        var projection = accountProjection(sourceProjection, posting);
 
+        markAccountPrimary(posting);
         entry.addPosting(posting);
-        entry.addProjectionRef(projection);
 
         return entry;
     }
 
-    private LedgerEntry depositEntry(LedgerEntry source, LedgerProjectionRef targetProjection,
+    private LedgerEntry depositEntry(LedgerEntry source, DerivedProjectionDescriptor targetProjection,
                     LedgerPosting targetPosting)
     {
         var entry = baseEntry(source, null, LedgerEntryType.DEPOSIT);
         var posting = cashPosting(targetPosting, targetProjection.getAccount(), null);
-        var projection = accountProjection(targetProjection, posting);
 
+        markAccountPrimary(posting);
         entry.addPosting(posting);
-        entry.addProjectionRef(projection);
 
         return entry;
     }
@@ -204,22 +204,17 @@ public final class LedgerAccountTransferToDepositRemovalConverter
         return posting;
     }
 
-    private LedgerProjectionRef accountProjection(LedgerProjectionRef source, LedgerPosting posting)
+    private void markAccountPrimary(LedgerPosting posting)
     {
-        var projection = new LedgerProjectionRef(source.getUUID());
-
-        projection.setRole(LedgerProjectionRole.ACCOUNT);
-        projection.setAccount(source.getAccount());
-        projection.setPrimaryPosting(posting);
-        projection.setPostingGroupTargetUUID(source.getMembershipsByRole(ProjectionMembershipRole.GROUP_ANCHOR).stream()
-                        .findFirst().map(ProjectionMembership::getPostingUUID).orElse(source.getPostingGroupUUID()));
-
-        return projection;
+        posting.setSemanticRole(LedgerPostingSemanticRole.CASH);
+        posting.setDirection(LedgerPostingDirection.NEUTRAL);
+        posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
+        posting.setLocalKey(LedgerProjectionRole.ACCOUNT.name());
     }
 
-    private LedgerProjectionRef uniqueProjection(LedgerEntry entry, LedgerProjectionRole role)
+    private DerivedProjectionDescriptor uniqueProjection(LedgerEntry entry, LedgerProjectionRole role)
     {
-        var projections = entry.getProjectionRefs().stream().filter(projection -> projection.getRole() == role)
+        var projections = LedgerProjectionSupport.descriptors(entry).stream().filter(projection -> projection.getRole() == role)
                         .toList();
 
         if (projections.size() != 1)
@@ -227,6 +222,11 @@ public final class LedgerAccountTransferToDepositRemovalConverter
                             .message("Ledger account transfer must have exactly one " + role + " projection")); //$NON-NLS-1$ //$NON-NLS-2$
 
         return projections.get(0);
+    }
+
+    private String runtimeProjectionId(LedgerEntry entry, LedgerProjectionRole role)
+    {
+        return entry.getUUID() + ":" + role; //$NON-NLS-1$
     }
 
     private AccountTransaction find(Account account, String projectionUUID)

@@ -157,39 +157,11 @@ public final class LedgerMutationContext
             throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_CORE_010
                             .message("Entry replacement must keep the same LedgerEntryType")); //$NON-NLS-1$
 
-        var currentByRole = projectionsByUniqueRole(currentEntry);
-        var replacementByRole = projectionsByUniqueRole(replacement);
-
-        if (!currentByRole.keySet().equals(replacementByRole.keySet()))
-            throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_PROJ_002
-                            .message("Entry replacement projection roles do not match")); //$NON-NLS-1$
-
         var prepared = LedgerModelCopy.copyEntry(replacement);
 
         prepared.setUUID(currentEntry.getUUID());
 
-        for (var projection : prepared.getProjectionRefs())
-        {
-            var currentProjection = currentByRole.get(projection.getRole());
-
-            projection.setUUID(currentProjection.getUUID());
-        }
-
         return prepared;
-    }
-
-    private java.util.Map<LedgerProjectionRole, LedgerProjectionRef> projectionsByUniqueRole(LedgerEntry entry)
-    {
-        var result = new java.util.EnumMap<LedgerProjectionRole, LedgerProjectionRef>(LedgerProjectionRole.class);
-
-        for (var projection : entry.getProjectionRefs())
-        {
-            if (result.put(projection.getRole(), projection) != null)
-                throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_PROJ_003
-                                .message("Projection role is ambiguous: " + projection.getRole())); //$NON-NLS-1$
-        }
-
-        return result;
     }
 
     private void replaceEntry(Ledger ledger, String currentUUID, LedgerEntry replacement)
@@ -246,8 +218,8 @@ public final class LedgerMutationContext
     {
         return ledger.getEntries().stream() //
                         .filter(entry -> affectedEntryUUIDs.contains(entry.getUUID())) //
-                        .flatMap(entry -> entry.getProjectionRefs().stream()) //
-                        .map(LedgerProjectionRef::getUUID) //
+                        .flatMap(entry -> LedgerProjectionService.createProjections(entry).stream()) //
+                        .map(name.abuchen.portfolio.model.Transaction::getUUID) //
                         .collect(Collectors.toCollection(HashSet::new));
     }
 

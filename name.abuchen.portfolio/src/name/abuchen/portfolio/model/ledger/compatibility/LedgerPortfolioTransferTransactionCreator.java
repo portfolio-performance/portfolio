@@ -108,8 +108,8 @@ public final class LedgerPortfolioTransferTransactionCreator
         var targetTransaction = (LedgerBackedPortfolioTransaction) entry.getTargetTransaction();
 
         var ledgerEntry = sourceTransaction.getLedgerEntry();
-        var sourceProjectionUUID = sourceTransaction.getLedgerProjectionRef().getUUID();
-        var targetProjectionUUID = targetTransaction.getLedgerProjectionRef().getUUID();
+        var sourceProjectionUUID = sourceTransaction.getUUID();
+        var targetProjectionUUID = targetTransaction.getUUID();
         var ownerPatchHelper = new LedgerOwnerPatchHelper(client);
 
         var editBuilder = LedgerPortfolioTransferEdit.builder()
@@ -131,14 +131,14 @@ public final class LedgerPortfolioTransferTransactionCreator
         var edit = editBuilder.build();
         var editor = new LedgerPortfolioTransferEditor();
 
-        if (sourceTransaction.getLedgerProjectionRef().getPortfolio() != sourcePortfolio
-                        || targetTransaction.getLedgerProjectionRef().getPortfolio() != targetPortfolio)
+        if (sourceTransaction.getLedgerProjectionDescriptor().getPortfolio() != sourcePortfolio
+                        || targetTransaction.getLedgerProjectionDescriptor().getPortfolio() != targetPortfolio)
             editor.validate(ledgerEntry, edit);
 
-        if (sourceTransaction.getLedgerProjectionRef().getPortfolio() != sourcePortfolio)
+        if (sourceTransaction.getLedgerProjectionDescriptor().getPortfolio() != sourcePortfolio)
             ownerPatchHelper.movePortfolioTransferSource(ledgerEntry, sourcePortfolio);
 
-        if (targetTransaction.getLedgerProjectionRef().getPortfolio() != targetPortfolio)
+        if (targetTransaction.getLedgerProjectionDescriptor().getPortfolio() != targetPortfolio)
             ownerPatchHelper.movePortfolioTransferTarget(ledgerEntry, targetPortfolio);
 
         sourceTransaction = (LedgerBackedPortfolioTransaction) find(sourcePortfolio, sourceProjectionUUID);
@@ -179,16 +179,8 @@ public final class LedgerPortfolioTransferTransactionCreator
     private PortfolioTransferEntry materializeAndWrap(Portfolio sourcePortfolio, Portfolio targetPortfolio,
                     LedgerTransactionCreator.CreatedTransaction created)
     {
-        var sourceProjectionUUID = created.getProjectionRefs().stream()
-                        .filter(projection -> projection.getRole() == LedgerProjectionRole.SOURCE_PORTFOLIO)
-                        .findFirst()
-                        .orElseThrow()
-                        .getUUID();
-        var targetProjectionUUID = created.getProjectionRefs().stream()
-                        .filter(projection -> projection.getRole() == LedgerProjectionRole.TARGET_PORTFOLIO)
-                        .findFirst()
-                        .orElseThrow()
-                        .getUUID();
+        var sourceProjectionUUID = created.getRuntimeProjectionId(LedgerProjectionRole.SOURCE_PORTFOLIO);
+        var targetProjectionUUID = created.getRuntimeProjectionId(LedgerProjectionRole.TARGET_PORTFOLIO);
 
         LedgerProjectionService.materialize(client);
 

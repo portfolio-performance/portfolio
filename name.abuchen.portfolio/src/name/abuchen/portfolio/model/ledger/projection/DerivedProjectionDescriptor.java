@@ -46,6 +46,11 @@ public final class DerivedProjectionDescriptor
         return entry;
     }
 
+    public String getRuntimeProjectionId()
+    {
+        return entry.getUUID() + ":" + role; //$NON-NLS-1$
+    }
+
     public LedgerProjectionRole getRole()
     {
         return role;

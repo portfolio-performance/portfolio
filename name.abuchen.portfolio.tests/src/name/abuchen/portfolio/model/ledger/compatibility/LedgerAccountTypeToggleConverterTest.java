@@ -31,7 +31,6 @@ import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerParameter;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
@@ -137,7 +136,7 @@ public class LedgerAccountTypeToggleConverterTest
         var transaction = createCash(fixture, AccountTransaction.Type.DEPOSIT);
         var entry = fixture.client().getLedger().getEntries().get(0);
 
-        entry.removeProjectionRef(projection(entry));
+        projection(entry).getPrimaryPosting().setAccount(null);
 
         assertRejectsWithoutMutation(fixture, () -> converter(fixture).toggle(pair(fixture, transaction)),
                         IllegalArgumentException.class);
@@ -171,22 +170,25 @@ public class LedgerAccountTypeToggleConverterTest
         var transaction = createCash(fixture, AccountTransaction.Type.DEPOSIT);
         var entry = fixture.client().getLedger().getEntries().get(0);
         var plan = new InvestmentPlan("Plan");
-        var projectionUUID = transaction.getUUID();
 
-        plan.addLedgerExecutionRef(InvestmentPlan.LedgerExecutionRef.of((LedgerBackedTransaction) transaction));
         fixture.client().addPlan(plan);
+        entry.setGeneratedByPlanKey(plan.getPlanKey());
+        entry.setPlanExecutionDate(DATE_TIME.toLocalDate());
+        entry.setPreferredViewKind(LedgerProjectionRole.ACCOUNT.name());
 
         converter(fixture).toggle(pair(fixture, transaction));
 
-        assertThat(plan.getLedgerExecutionRefs().size(), is(1));
-        assertThat(plan.getLedgerExecutionRefs().get(0).getLedgerEntryUUID(), is(entry.getUUID()));
-        assertThat(plan.getLedgerExecutionRefs().get(0).getProjectionUUID(), is(projectionUUID));
-        assertThat(plan.getLedgerExecutionRefs().get(0).getProjectionRole(), is(LedgerProjectionRole.ACCOUNT));
-        assertThat(plan.getTransactions(fixture.client()).get(0).getTransaction().getUUID(), is(projectionUUID));
+        assertThat(plan.getLedgerExecutionRefs().size(), is(0));
+        assertThat(entry.getGeneratedByPlanKey(), is(plan.getPlanKey()));
+        assertThat(plan.getTransactions(fixture.client()).size(), is(1));
+        assertThat(((AccountTransaction) plan.getTransactions(fixture.client()).get(0).getTransaction()).getType(),
+                        is(AccountTransaction.Type.REMOVAL));
 
         var loaded = loadXml(saveXml(fixture.client()));
-        assertThat(loaded.getPlans().get(0).getTransactions(loaded).get(0).getTransaction().getUUID(),
-                        is(projectionUUID));
+        assertThat(loaded.getPlans().get(0).getLedgerExecutionRefs().size(), is(0));
+        assertThat(loaded.getPlans().get(0).getTransactions(loaded).size(), is(1));
+        assertThat(((AccountTransaction) loaded.getPlans().get(0).getTransactions(loaded).get(0).getTransaction())
+                        .getType(), is(AccountTransaction.Type.REMOVAL));
     }
 
     private void assertTogglesCashType(AccountTransaction.Type sourceType, LedgerEntryType targetEntryType,
@@ -230,14 +232,14 @@ public class LedgerAccountTypeToggleConverterTest
     {
         var entryUUID = entry.getUUID();
         var cashPostingUUID = posting(entry).getUUID();
-        var projectionUUID = projection(entry).getUUID();
+        var projectionUUID = projection(entry).getRuntimeProjectionId();
 
         var toggled = converter(fixture).toggle(pair(fixture, transaction));
 
         assertThat(entry.getUUID(), is(entryUUID));
         assertThat(entry.getType(), is(targetEntryType));
         assertThat(posting(entry).getUUID(), is(cashPostingUUID));
-        assertThat(projection(entry).getUUID(), is(projectionUUID));
+        assertThat(projection(entry).getRuntimeProjectionId(), is(projectionUUID));
         assertSame(fixture.account(), projection(entry).getAccount());
         assertThat(unitSnapshots(entry), is(expectedUnitPostings));
 
@@ -257,15 +259,14 @@ public class LedgerAccountTypeToggleConverterTest
         assertThat(toggled.getExDate(), is(expectedExDate));
         assertValid(fixture.client());
 
-        assertRoundtrip(loadXml(saveXml(fixture.client())), entryUUID, cashPostingUUID, projectionUUID, targetEntryType,
-                        targetTransactionType, security != null, expectedExDate);
-        assertRoundtrip(loadProtobuf(saveProtobuf(fixture.client())), entryUUID, cashPostingUUID, projectionUUID,
-                        targetEntryType, targetTransactionType, security != null, expectedExDate);
+        assertRoundtrip(loadXml(saveXml(fixture.client())), targetEntryType, targetTransactionType,
+                        security != null, expectedExDate);
+        assertRoundtrip(loadProtobuf(saveProtobuf(fixture.client())), targetEntryType, targetTransactionType,
+                        security != null, expectedExDate);
     }
 
-    private void assertRoundtrip(Client client, String entryUUID, String cashPostingUUID, String projectionUUID,
-                    LedgerEntryType entryType, AccountTransaction.Type transactionType, boolean hasSecurity,
-                    LocalDateTime expectedExDate)
+    private void assertRoundtrip(Client client, LedgerEntryType entryType, AccountTransaction.Type transactionType,
+                    boolean hasSecurity, LocalDateTime expectedExDate)
     {
         assertThat(client.getAccounts().get(0).getTransactions().size(), is(1));
         assertThat(client.getAllTransactions().size(), is(1));
@@ -273,11 +274,9 @@ public class LedgerAccountTypeToggleConverterTest
         var entry = client.getLedger().getEntries().get(0);
         var transaction = client.getAccounts().get(0).getTransactions().get(0);
 
-        assertThat(entry.getUUID(), is(entryUUID));
         assertThat(entry.getType(), is(entryType));
-        assertThat(posting(entry).getUUID(), is(cashPostingUUID));
-        assertThat(projection(entry).getUUID(), is(projectionUUID));
-        assertThat(transaction.getUUID(), is(projectionUUID));
+        assertSame(entry, ((LedgerBackedTransaction) transaction).getLedgerEntry());
+        assertThat(projection(entry).getViewKind().name(), is(LedgerProjectionRole.ACCOUNT.name()));
         assertThat(transaction.getType(), is(transactionType));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(123)));
         assertThat(transaction.getSecurity() != null, is(hasSecurity));
@@ -334,15 +333,15 @@ public class LedgerAccountTypeToggleConverterTest
         return new TransactionPair<>(fixture.account(), transaction);
     }
 
-    private LedgerProjectionRef projection(LedgerEntry entry)
+    private name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor projection(LedgerEntry entry)
     {
-        return entry.getProjectionRefs().stream().filter(projection -> projection.getRole() == LedgerProjectionRole.ACCOUNT)
+        return name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream().filter(projection -> projection.getRole() == LedgerProjectionRole.ACCOUNT)
                         .findFirst().orElseThrow();
     }
 
     private LedgerPosting posting(LedgerEntry entry)
     {
-        return LedgerProjectionSupport.primaryPosting(entry, projection(entry));
+        return projection(entry).getPrimaryPosting();
     }
 
     private List<PostingSnapshot> unitSnapshots(LedgerEntry entry)
@@ -434,9 +433,19 @@ public class LedgerAccountTypeToggleConverterTest
     {
         static EntrySnapshot capture(LedgerEntry entry)
         {
+            List<ProjectionSnapshot> projections;
+            try
+            {
+                projections = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream()
+                                .map(ProjectionSnapshot::capture).toList();
+            }
+            catch (IllegalArgumentException e)
+            {
+                projections = List.of();
+            }
+
             return new EntrySnapshot(entry.getUUID(), entry.getType(),
-                            entry.getPostings().stream().map(PostingSnapshot::capture).toList(),
-                            entry.getProjectionRefs().stream().map(ProjectionSnapshot::capture).toList());
+                            entry.getPostings().stream().map(PostingSnapshot::capture).toList(), projections);
         }
     }
 
@@ -463,12 +472,13 @@ public class LedgerAccountTypeToggleConverterTest
     }
 
     private record ProjectionSnapshot(String uuid, LedgerProjectionRole role, Account account,
-                    String primaryPostingUUID, String postingGroupUUID)
+                    String primaryPostingId, String groupKey)
     {
-        static ProjectionSnapshot capture(LedgerProjectionRef projection)
+        static ProjectionSnapshot capture(name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor projection)
         {
-            return new ProjectionSnapshot(projection.getUUID(), projection.getRole(), projection.getAccount(),
-                            projection.getPrimaryPostingUUID(), projection.getPostingGroupUUID());
+            return new ProjectionSnapshot(projection.getRuntimeProjectionId(), projection.getRole(), projection.getAccount(),
+                            projection.getPrimaryPosting().getUUID(), projection.getPrimaryPosting().getGroupKey());
         }
     }
 }
+

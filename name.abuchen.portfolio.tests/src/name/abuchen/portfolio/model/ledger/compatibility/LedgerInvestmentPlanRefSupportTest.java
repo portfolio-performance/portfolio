@@ -9,7 +9,6 @@ import org.junit.Test;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 
@@ -34,7 +33,7 @@ public class LedgerInvestmentPlanRefSupportTest
                                         LedgerProjectionRole.SOURCE_ACCOUNT));
 
         LedgerInvestmentPlanRefSupport.prepareAccountTransferSplitExecutionRefUpdates(fixture.client(),
-                        fixture.transferEntry(), fixture.sourceProjection(), fixture.targetProjection(),
+                        fixture.transferEntry(), LedgerProjectionRole.SOURCE_ACCOUNT, LedgerProjectionRole.TARGET_ACCOUNT,
                         fixture.removalEntry(), fixture.depositEntry()).apply();
 
         assertExecutionRef(plan, fixture.transferEntry().getUUID(), null, LedgerProjectionRole.SOURCE_ACCOUNT);
@@ -51,7 +50,9 @@ public class LedgerInvestmentPlanRefSupportTest
         var plan = planWithRef(fixture.client(),
                         new InvestmentPlan.LedgerExecutionRef(fixture.transferEntry().getUUID(), null, null));
 
-        var roleChange = LedgerInvestmentPlanRefSupport.roleChange(fixture.sourceProjection().getUUID(),
+        var roleChange = LedgerInvestmentPlanRefSupport.roleChange(
+                        name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport
+                                        .runtimeProjectionId(fixture.transferEntry(), LedgerProjectionRole.SOURCE_ACCOUNT),
                         LedgerProjectionRole.SOURCE_ACCOUNT, LedgerProjectionRole.TARGET_ACCOUNT);
 
         LedgerInvestmentPlanRefSupport.requireCurrentRefsResolveUniquely(fixture.client(), fixture.transferEntry());
@@ -88,15 +89,7 @@ public class LedgerInvestmentPlanRefSupportTest
         var transferEntry = entry("transfer-entry", LedgerEntryType.CASH_TRANSFER);
         var removalEntry = entry("removal-entry", LedgerEntryType.REMOVAL);
         var depositEntry = entry("deposit-entry", LedgerEntryType.DEPOSIT);
-        var sourceProjection = projection("source-projection", LedgerProjectionRole.SOURCE_ACCOUNT);
-        var targetProjection = projection("target-projection", LedgerProjectionRole.TARGET_ACCOUNT);
-
-        transferEntry.addProjectionRef(sourceProjection);
-        transferEntry.addProjectionRef(targetProjection);
-        removalEntry.addProjectionRef(projection("removal-projection", LedgerProjectionRole.ACCOUNT));
-        depositEntry.addProjectionRef(projection("deposit-projection", LedgerProjectionRole.ACCOUNT));
-
-        return new Fixture(client, transferEntry, sourceProjection, targetProjection, removalEntry, depositEntry);
+        return new Fixture(client, transferEntry, removalEntry, depositEntry);
     }
 
     private LedgerEntry entry(String uuid, LedgerEntryType type)
@@ -108,17 +101,7 @@ public class LedgerInvestmentPlanRefSupportTest
         return entry;
     }
 
-    private LedgerProjectionRef projection(String uuid, LedgerProjectionRole role)
-    {
-        var projection = new LedgerProjectionRef(uuid);
-
-        projection.setRole(role);
-
-        return projection;
-    }
-
-    private record Fixture(Client client, LedgerEntry transferEntry, LedgerProjectionRef sourceProjection,
-                    LedgerProjectionRef targetProjection, LedgerEntry removalEntry, LedgerEntry depositEntry)
+    private record Fixture(Client client, LedgerEntry transferEntry, LedgerEntry removalEntry, LedgerEntry depositEntry)
     {
     }
 }

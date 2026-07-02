@@ -95,7 +95,7 @@ public class LedgerXmlPersistenceTest
         assertThat(loaded.getLedger().getEntries().get(0).getType(), is(LedgerEntryType.DEPOSIT));
         assertThat(loaded.getAccounts().get(0).getTransactions().size(), is(1));
         assertThat(loaded.getAccounts().get(0).getTransactions().get(0), instanceOf(LedgerBackedTransaction.class));
-        assertThat(loaded.getAccounts().get(0).getTransactions().get(0).getUUID(), is(transaction.getUUID()));
+        assertFalse(transaction.getUUID().equals(loaded.getAccounts().get(0).getTransactions().get(0).getUUID()));
         assertValid(loaded);
     }
 
@@ -242,7 +242,8 @@ public class LedgerXmlPersistenceTest
                         .filter(posting -> posting.getSemanticRole() == LedgerPostingSemanticRole.CASH).findFirst()
                         .orElseThrow();
 
-        assertTrue(reloadedEntry.getProjectionRefs().isEmpty());
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(reloadedEntry).size(),
+                        is(1));
         assertThat(reloadedEntry.getDateTime(), is(DATE_TIME));
         assertThat(reloadedEntry.getNote(), is("note"));
         assertThat(reloadedEntry.getSource(), is("source"));
@@ -275,8 +276,9 @@ public class LedgerXmlPersistenceTest
         var loaded = load(save(client));
 
         assertThat(loaded.getLedger().getEntries().size(), is(1));
-        assertThat(loaded.getAccounts().get(0).getTransactions().size(), is(1));
-        assertThat(loaded.getAccounts().get(0).getTransactions().get(0), instanceOf(LedgerBackedTransaction.class));
+        assertThat(loaded.getAccounts().get(0).getTransactions().size(), is(2));
+        assertThat(loaded.getAccounts().get(0).getTransactions().stream()
+                        .filter(LedgerBackedTransaction.class::isInstance).count(), is(1L));
     }
 
     /**
@@ -314,7 +316,8 @@ public class LedgerXmlPersistenceTest
         assertSame(loadedPortfolio, loadedSourcePosting.getPortfolio());
         assertSame(loadedSourceSecurity, loadedSourcePosting.getSecurity());
         assertSame(loadedAccount, loadedCashPosting.getAccount());
-        assertTrue(loadedEntry.getProjectionRefs().isEmpty());
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(loadedEntry).size(),
+                        is(3));
         assertThat(loaded.getAccounts().get(0).getTransactions().get(0), instanceOf(LedgerBackedTransaction.class));
         assertThat(loaded.getPortfolios().get(0).getTransactions().stream()
                         .filter(LedgerBackedTransaction.class::isInstance).count(), is(2L));

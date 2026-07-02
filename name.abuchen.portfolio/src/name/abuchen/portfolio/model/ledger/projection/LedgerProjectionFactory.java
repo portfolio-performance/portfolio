@@ -12,11 +12,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
-import name.abuchen.portfolio.model.ledger.LedgerPosting;
-import name.abuchen.portfolio.model.ledger.LedgerPostingUnitRole;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
-import name.abuchen.portfolio.model.ledger.ProjectionMembershipRole;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 
 /**
@@ -38,18 +34,17 @@ final class LedgerProjectionFactory
         this.descriptorService = Objects.requireNonNull(descriptorService);
     }
 
-    Transaction createProjection(LedgerEntry entry, LedgerProjectionRef projectionRef)
+    Transaction createProjection(LedgerEntry entry, LedgerProjectionRole role)
     {
         Objects.requireNonNull(entry);
-        Objects.requireNonNull(projectionRef);
+        Objects.requireNonNull(role);
 
         return createDescriptors(entry).stream() //
-                        .filter(descriptor -> descriptor.getRole() == projectionRef.getRole()) //
-                        .map(descriptor -> create(entry, descriptor,
-                                        compatibilityProjectionRef(entry, descriptor, projectionRef.getUUID()))) //
+                        .filter(descriptor -> descriptor.getRole() == role) //
+                        .map(this::create) //
                         .findFirst().orElseThrow(() -> new IllegalArgumentException(
                                         "Projection descriptor does not belong to entry role: " //$NON-NLS-1$
-                                                        + projectionRef.getRole()));
+                                                        + role));
     }
 
     List<Transaction> createProjections(LedgerEntry entry)
@@ -59,7 +54,7 @@ final class LedgerProjectionFactory
         var transactions = new ArrayList<Transaction>();
 
         for (var descriptor : createDescriptors(entry))
-            transactions.add(create(entry, descriptor, compatibilityProjectionRef(entry, descriptor)));
+            transactions.add(create(descriptor));
 
         attachCrossEntry(entry, transactions);
 
@@ -76,91 +71,16 @@ final class LedgerProjectionFactory
         return result.getDescriptors();
     }
 
-    private Transaction create(LedgerEntry entry, DerivedProjectionDescriptor descriptor,
-                    LedgerProjectionRef projectionRef)
+    private Transaction create(DerivedProjectionDescriptor descriptor)
     {
         if (descriptor.getViewKind() == DerivedProjectionViewKind.ACCOUNT)
-            return new LedgerBackedAccountTransaction(entry, projectionRef);
+            return new LedgerBackedAccountTransaction(descriptor);
 
         if (descriptor.getViewKind() == DerivedProjectionViewKind.PORTFOLIO)
-            return new LedgerBackedPortfolioTransaction(entry, projectionRef);
+            return new LedgerBackedPortfolioTransaction(descriptor);
 
         throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_PROJ_071
-                        .message("Unsupported ledger projection role " + projectionRef.getRole())); //$NON-NLS-1$
-    }
-
-    private LedgerProjectionRef compatibilityProjectionRef(LedgerEntry entry, DerivedProjectionDescriptor descriptor)
-    {
-        var uuid = persistedProjectionRef(entry, descriptor.getRole()) //
-                        .map(LedgerProjectionRef::getUUID) //
-                        .orElse(entry.getUUID() + ":" + descriptor.getRole()); //$NON-NLS-1$
-
-        return compatibilityProjectionRef(entry, descriptor, uuid);
-    }
-
-    private LedgerProjectionRef compatibilityProjectionRef(LedgerEntry entry, DerivedProjectionDescriptor descriptor,
-                    String uuid)
-    {
-        var projectionRef = new LedgerProjectionRef(uuid);
-
-        projectionRef.setRole(descriptor.getRole());
-
-        if (descriptor.getAccount() != null)
-            projectionRef.setAccount(descriptor.getAccount());
-
-        if (descriptor.getPortfolio() != null)
-            projectionRef.setPortfolio(descriptor.getPortfolio());
-
-        projectionRef.setPrimaryPosting(descriptor.getPrimaryPosting());
-        projectionRef.setPostingGroup(descriptor.getPrimaryPosting());
-        addUnitMemberships(projectionRef, descriptor.getUnitPostings());
-
-        return projectionRef;
-    }
-
-    private java.util.Optional<LedgerProjectionRef> persistedProjectionRef(LedgerEntry entry, LedgerProjectionRole role)
-    {
-        return entry.getProjectionRefs().stream().filter(ref -> ref.getRole() == role).findFirst();
-    }
-
-    private void addUnitMemberships(LedgerProjectionRef projectionRef, List<LedgerPosting> unitPostings)
-    {
-        for (var posting : unitPostings)
-        {
-            var role = membershipRole(posting);
-
-            if (role == null)
-                continue;
-
-            projectionRef.addMembership(posting.getUUID(), role);
-        }
-    }
-
-    private ProjectionMembershipRole membershipRole(LedgerPosting posting)
-    {
-        if (posting.getUnitRole() != null)
-            return membershipRole(posting.getUnitRole());
-
-        return switch (posting.getType())
-        {
-            case FEE -> ProjectionMembershipRole.FEE_UNIT;
-            case TAX -> ProjectionMembershipRole.TAX_UNIT;
-            case GROSS_VALUE -> ProjectionMembershipRole.GROSS_VALUE_UNIT;
-            case FOREX -> ProjectionMembershipRole.FOREX_CONTEXT;
-            default -> null;
-        };
-    }
-
-    private ProjectionMembershipRole membershipRole(LedgerPostingUnitRole role)
-    {
-        return switch (role)
-        {
-            case FEE -> ProjectionMembershipRole.FEE_UNIT;
-            case TAX -> ProjectionMembershipRole.TAX_UNIT;
-            case GROSS_VALUE -> ProjectionMembershipRole.GROSS_VALUE_UNIT;
-            case FOREX_CONTEXT -> ProjectionMembershipRole.FOREX_CONTEXT;
-            case PRIMARY -> ProjectionMembershipRole.PRIMARY;
-        };
+                        .message("Unsupported ledger projection role " + descriptor.getRole())); //$NON-NLS-1$
     }
 
     private void attachCrossEntry(LedgerEntry entry, List<Transaction> transactions)
@@ -203,8 +123,8 @@ final class LedgerProjectionFactory
                         LedgerProjectionRole.SOURCE_ACCOUNT);
         var targetTransaction = (LedgerBackedAccountTransaction) transaction(entry, transactions,
                         LedgerProjectionRole.TARGET_ACCOUNT);
-        var crossEntry = AccountTransferEntry.readOnly(sourceTransaction.getLedgerProjectionRef().getAccount(),
-                        (AccountTransaction) sourceTransaction, targetTransaction.getLedgerProjectionRef().getAccount(),
+        var crossEntry = AccountTransferEntry.readOnly(sourceTransaction.getLedgerProjectionDescriptor().getAccount(),
+                        (AccountTransaction) sourceTransaction, targetTransaction.getLedgerProjectionDescriptor().getAccount(),
                         (AccountTransaction) targetTransaction);
 
         sourceTransaction.setLedgerCrossEntry(crossEntry);
@@ -217,9 +137,9 @@ final class LedgerProjectionFactory
                         LedgerProjectionRole.SOURCE_PORTFOLIO);
         var targetTransaction = (LedgerBackedPortfolioTransaction) transaction(entry, transactions,
                         LedgerProjectionRole.TARGET_PORTFOLIO);
-        var crossEntry = PortfolioTransferEntry.readOnly(sourceTransaction.getLedgerProjectionRef().getPortfolio(),
+        var crossEntry = PortfolioTransferEntry.readOnly(sourceTransaction.getLedgerProjectionDescriptor().getPortfolio(),
                         (PortfolioTransaction) sourceTransaction,
-                        targetTransaction.getLedgerProjectionRef().getPortfolio(),
+                        targetTransaction.getLedgerProjectionDescriptor().getPortfolio(),
                         (PortfolioTransaction) targetTransaction);
 
         sourceTransaction.setLedgerCrossEntry(crossEntry);
@@ -232,8 +152,8 @@ final class LedgerProjectionFactory
                         LedgerProjectionRole.ACCOUNT);
         var portfolioTransaction = (LedgerBackedPortfolioTransaction) transaction(entry, transactions,
                         LedgerProjectionRole.PORTFOLIO);
-        var crossEntry = BuySellEntry.readOnly(portfolioTransaction.getLedgerProjectionRef().getPortfolio(),
-                        (PortfolioTransaction) portfolioTransaction, accountTransaction.getLedgerProjectionRef()
+        var crossEntry = BuySellEntry.readOnly(portfolioTransaction.getLedgerProjectionDescriptor().getPortfolio(),
+                        (PortfolioTransaction) portfolioTransaction, accountTransaction.getLedgerProjectionDescriptor()
                                         .getAccount(),
                         (AccountTransaction) accountTransaction);
 
@@ -246,7 +166,7 @@ final class LedgerProjectionFactory
         return transactions.stream() //
                         .filter(LedgerBackedTransaction.class::isInstance) //
                         .map(LedgerBackedTransaction.class::cast) //
-                        .filter(transaction -> transaction.getLedgerProjectionRef().getRole() == role) //
+                        .filter(transaction -> transaction.getLedgerProjectionRole() == role) //
                         .map(Transaction.class::cast) //
                         .findFirst().orElseThrow();
     }

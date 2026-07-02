@@ -578,33 +578,6 @@
             </parameters>
           </ledger-posting>
         </postings>
-        <projectionRefs>
-          <ledger-projection-ref>
-            <uuid>30000000-0000-0000-0000-000000000001</uuid>
-            <role>OLD_SECURITY_LEG</role>
-            <portfolio reference="../../../../../../portfolios/portfolio"/>
-            <primaryPostingUUID>20000000-0000-0000-0000-000000000002</primaryPostingUUID>
-          </ledger-projection-ref>
-          <ledger-projection-ref>
-            <uuid>30000000-0000-0000-0000-000000000004</uuid>
-            <role>DELIVERY_INBOUND</role>
-            <portfolio reference="../../../../../../portfolios/portfolio"/>
-            <primaryPostingUUID>20000000-0000-0000-0000-000000000007</primaryPostingUUID>
-          </ledger-projection-ref>
-          <ledger-projection-ref>
-            <uuid>30000000-0000-0000-0000-000000000002</uuid>
-            <role>NEW_SECURITY_LEG</role>
-            <portfolio reference="../../../../../../portfolios/portfolio"/>
-            <primaryPostingUUID>20000000-0000-0000-0000-000000000003</primaryPostingUUID>
-          </ledger-projection-ref>
-          <ledger-projection-ref>
-            <uuid>30000000-0000-0000-0000-000000000003</uuid>
-            <role>CASH_COMPENSATION</role>
-            <account reference="../../../../../../accounts/account"/>
-            <primaryPostingUUID>20000000-0000-0000-0000-000000000004</primaryPostingUUID>
-            <postingGroupUUID>20000000-0000-0000-0000-000000000004</postingGroupUUID>
-          </ledger-projection-ref>
-        </projectionRefs>
       </ledger-entry>
       <ledger-entry>
         <uuid>316212bb-23d1-486f-aaa9-fc2108d44e82</uuid>
@@ -633,18 +606,6 @@
             <parameters/>
           </ledger-posting>
         </postings>
-        <projectionRefs>
-          <ledger-projection-ref>
-            <uuid>e34f70f5-810b-4224-868d-7069b89429e0</uuid>
-            <role>ACCOUNT</role>
-            <account reference="../../../../../../accounts/account"/>
-          </ledger-projection-ref>
-          <ledger-projection-ref>
-            <uuid>24495c80-fea8-491e-9b57-8ecf2991605e</uuid>
-            <role>PORTFOLIO</role>
-            <portfolio reference="../../../../../../portfolios/portfolio"/>
-          </ledger-projection-ref>
-        </projectionRefs>
       </ledger-entry>
       <ledger-entry>
         <uuid>9f3dfe85-9707-40bf-9153-816cf063d290</uuid>
@@ -663,13 +624,6 @@
             <parameters/>
           </ledger-posting>
         </postings>
-        <projectionRefs>
-          <ledger-projection-ref>
-            <uuid>70b3914c-f7a5-4b13-9a4d-4310890a8dae</uuid>
-            <role>ACCOUNT</role>
-            <account reference="../../../../../../accounts/account"/>
-          </ledger-projection-ref>
-        </projectionRefs>
       </ledger-entry>
     </entries>
   </ledger>

@@ -14,8 +14,7 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerParameter;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
-import name.abuchen.portfolio.model.ledger.ProjectionMembershipRole;
+import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerParameterType;
 import name.abuchen.portfolio.money.Money;
 
@@ -39,33 +38,37 @@ public final class LedgerProjectionSupport
     {
     }
 
-    public static LedgerPosting primaryPosting(LedgerEntry entry, LedgerProjectionRef projectionRef)
+    public static LedgerPosting primaryPosting(LedgerEntry entry, LedgerProjectionRole role)
     {
-        Objects.requireNonNull(entry);
-        Objects.requireNonNull(projectionRef);
-
-        var primaryMembership = projectionRef.getPrimaryMembership();
-        if (primaryMembership.isPresent())
-            return requirePostingInEntry(entry, primaryMembership.get().getPostingUUID());
-
-        if (projectionRef.getPrimaryPostingUUID() != null)
-            return requirePostingInEntry(entry, projectionRef.getPrimaryPostingUUID());
-
-        return switch (projectionRef.getRole())
-        {
-            case SOURCE_ACCOUNT -> firstAccountPosting(entry, projectionRef);
-            case TARGET_ACCOUNT -> lastAccountPosting(entry, projectionRef);
-            case SOURCE_PORTFOLIO -> firstPortfolioPosting(entry, projectionRef);
-            case TARGET_PORTFOLIO -> lastPortfolioPosting(entry, projectionRef);
-            case ACCOUNT, CASH_COMPENSATION -> firstAccountPosting(entry, projectionRef);
-            case PORTFOLIO, DELIVERY, DELIVERY_INBOUND, DELIVERY_OUTBOUND, OLD_SECURITY_LEG, NEW_SECURITY_LEG ->
-                firstPortfolioPosting(entry, projectionRef);
-        };
+        return descriptor(entry, role).getPrimaryPosting();
     }
 
-    static Optional<PostingForex> primaryPostingForex(LedgerEntry entry, LedgerProjectionRef projectionRef)
+    public static DerivedProjectionDescriptor descriptor(LedgerEntry entry, LedgerProjectionRole role)
     {
-        return postingForex(primaryPosting(entry, projectionRef));
+        Objects.requireNonNull(entry);
+        Objects.requireNonNull(role);
+
+        return descriptors(entry).stream() //
+                        .filter(descriptor -> descriptor.getRole() == role) //
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalArgumentException("Projection descriptor not found: " + role)); //$NON-NLS-1$
+    }
+
+    public static List<DerivedProjectionDescriptor> descriptors(LedgerEntry entry)
+    {
+        Objects.requireNonNull(entry);
+
+        var result = new DerivedProjectionDescriptorService().derive(entry);
+
+        if (!result.isOK())
+            throw new IllegalArgumentException(result.formatDiagnostics());
+
+        return result.getDescriptors();
+    }
+
+    static Optional<PostingForex> primaryPostingForex(DerivedProjectionDescriptor descriptor)
+    {
+        return postingForex(descriptor.getPrimaryPosting());
     }
 
     private static Optional<PostingForex> postingForex(LedgerPosting posting)
@@ -80,37 +83,31 @@ public final class LedgerProjectionSupport
                         posting.getExchangeRate()));
     }
 
-    static Stream<Unit> units(LedgerEntry entry, LedgerProjectionRef projectionRef, LedgerPosting primaryPosting)
+    static Stream<Unit> units(DerivedProjectionDescriptor descriptor)
     {
-        if (entry.getType().isLedgerNativeTargeted())
-            return targetedUnits(entry, projectionRef, primaryPosting).map(LedgerProjectionSupport::unit);
-
-        return entry.getPostings().stream() //
-                        .filter(posting -> posting != primaryPosting) //
-                        .filter(LedgerProjectionSupport::isUnitPosting) //
-                        .map(LedgerProjectionSupport::unit);
+        return descriptor.getUnitPostings().stream().map(LedgerProjectionSupport::unit);
     }
 
-    static AccountTransaction.Type targetedAccountType(LedgerProjectionRef projectionRef)
+    static AccountTransaction.Type targetedAccountType(LedgerProjectionRole role)
     {
-        return switch (projectionRef.getRole())
+        return switch (role)
         {
             case CASH_COMPENSATION -> AccountTransaction.Type.DEPOSIT;
             default -> throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_PROJ_072
-                            .message("Unsupported targeted account role " + projectionRef.getRole())); //$NON-NLS-1$
+                            .message("Unsupported targeted account role " + role)); //$NON-NLS-1$
         };
     }
 
-    static PortfolioTransaction.Type targetedPortfolioType(LedgerProjectionRef projectionRef)
+    static PortfolioTransaction.Type targetedPortfolioType(LedgerProjectionRole role)
     {
-        return switch (projectionRef.getRole())
+        return switch (role)
         {
             case DELIVERY_OUTBOUND -> PortfolioTransaction.Type.DELIVERY_OUTBOUND;
             case DELIVERY_INBOUND -> PortfolioTransaction.Type.DELIVERY_INBOUND;
             case OLD_SECURITY_LEG -> PortfolioTransaction.Type.DELIVERY_OUTBOUND;
             case NEW_SECURITY_LEG -> PortfolioTransaction.Type.DELIVERY_INBOUND;
             default -> throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_PROJ_073
-                            .message("Unsupported targeted portfolio role " + projectionRef.getRole())); //$NON-NLS-1$
+                            .message("Unsupported targeted portfolio role " + role)); //$NON-NLS-1$
         };
     }
 
@@ -130,78 +127,23 @@ public final class LedgerProjectionSupport
         return new UnsupportedOperationException("Ledger-backed projections are read-only"); //$NON-NLS-1$
     }
 
-    static boolean isAccountProjection(LedgerProjectionRef projectionRef)
+    static boolean isAccountProjection(LedgerProjectionRole role)
     {
-        return switch (projectionRef.getRole())
+        return switch (role)
         {
             case ACCOUNT, SOURCE_ACCOUNT, TARGET_ACCOUNT, CASH_COMPENSATION -> true;
             default -> false;
         };
     }
 
-    static boolean isPortfolioProjection(LedgerProjectionRef projectionRef)
+    static boolean isPortfolioProjection(LedgerProjectionRole role)
     {
-        return switch (projectionRef.getRole())
+        return switch (role)
         {
             case PORTFOLIO, SOURCE_PORTFOLIO, TARGET_PORTFOLIO, DELIVERY, DELIVERY_INBOUND, DELIVERY_OUTBOUND,
                             OLD_SECURITY_LEG, NEW_SECURITY_LEG -> true;
             default -> false;
         };
-    }
-
-    private static LedgerPosting firstAccountPosting(LedgerEntry entry, LedgerProjectionRef projectionRef)
-    {
-        return accountPostings(entry, projectionRef).findFirst().orElseThrow(() -> new IllegalArgumentException(
-                        "No account posting for projection " + projectionRef.getUUID())); //$NON-NLS-1$
-    }
-
-    private static LedgerPosting requirePostingInEntry(LedgerEntry entry, String uuid)
-    {
-        return entry.getPostings().stream() //
-                        .filter(posting -> uuid.equals(posting.getUUID())) //
-                        .findFirst()
-                        .orElseThrow(() -> new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_PROJ_001
-                                        .message("Primary posting does not exist in entry: " + uuid))); //$NON-NLS-1$
-    }
-
-    private static LedgerPosting lastAccountPosting(LedgerEntry entry, LedgerProjectionRef projectionRef)
-    {
-        var postings = accountPostings(entry, projectionRef).toList();
-
-        if (postings.isEmpty())
-            throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_PROJ_074
-                            .message("No account posting for projection " + projectionRef.getUUID())); //$NON-NLS-1$
-
-        return postings.get(postings.size() - 1);
-    }
-
-    private static Stream<LedgerPosting> accountPostings(LedgerEntry entry, LedgerProjectionRef projectionRef)
-    {
-        return entry.getPostings().stream() //
-                        .filter(posting -> posting.getAccount() == projectionRef.getAccount());
-    }
-
-    private static LedgerPosting firstPortfolioPosting(LedgerEntry entry, LedgerProjectionRef projectionRef)
-    {
-        return portfolioPostings(entry, projectionRef).findFirst().orElseThrow(() -> new IllegalArgumentException(
-                        "No portfolio posting for projection " + projectionRef.getUUID())); //$NON-NLS-1$
-    }
-
-    private static LedgerPosting lastPortfolioPosting(LedgerEntry entry, LedgerProjectionRef projectionRef)
-    {
-        List<LedgerPosting> postings = portfolioPostings(entry, projectionRef).toList();
-
-        if (postings.isEmpty())
-            throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_PROJ_075
-                            .message("No portfolio posting for projection " + projectionRef.getUUID())); //$NON-NLS-1$
-
-        return postings.get(postings.size() - 1);
-    }
-
-    private static Stream<LedgerPosting> portfolioPostings(LedgerEntry entry, LedgerProjectionRef projectionRef)
-    {
-        return entry.getPostings().stream() //
-                        .filter(posting -> posting.getPortfolio() == projectionRef.getPortfolio());
     }
 
     private static boolean isUnitPosting(LedgerPosting posting)
@@ -211,53 +153,6 @@ public final class LedgerProjectionSupport
             case FEE, TAX, GROSS_VALUE -> true;
             default -> false;
         };
-    }
-
-    private static Stream<LedgerPosting> targetedUnits(LedgerEntry entry, LedgerProjectionRef projectionRef,
-                    LedgerPosting primaryPosting)
-    {
-        var unitMemberships = projectionRef.getMemberships().stream() //
-                        .filter(membership -> isUnitMembershipRole(membership.getRole())) //
-                        .toList();
-
-        if (!unitMemberships.isEmpty())
-            return unitMemberships.stream() //
-                            .map(membership -> requirePostingInEntry(entry, membership.getPostingUUID())) //
-                            .filter(posting -> posting != primaryPosting) //
-                            .filter(LedgerProjectionSupport::isUnitPosting);
-
-        var groupAnchorUUID = projectionRef.getMembershipsByRole(ProjectionMembershipRole.GROUP_ANCHOR).stream()
-                        .findFirst() //
-                        .map(membership -> membership.getPostingUUID()) //
-                        .orElse(projectionRef.getPostingGroupUUID());
-
-        if (groupAnchorUUID == null || !groupAnchorUUID.equals(primaryPosting.getUUID()))
-            return Stream.empty();
-
-        return entry.getPostings().stream() //
-                        .filter(posting -> posting != primaryPosting) //
-                        .filter(LedgerProjectionSupport::isUnitPosting) //
-                        .filter(posting -> hasSameProjectionOwner(primaryPosting, posting));
-    }
-
-    private static boolean isUnitMembershipRole(ProjectionMembershipRole role)
-    {
-        return switch (role)
-        {
-            case FEE_UNIT, TAX_UNIT, GROSS_VALUE_UNIT -> true;
-            default -> false;
-        };
-    }
-
-    private static boolean hasSameProjectionOwner(LedgerPosting primaryPosting, LedgerPosting posting)
-    {
-        if (primaryPosting.getAccount() != null)
-            return primaryPosting.getAccount() == posting.getAccount();
-
-        if (primaryPosting.getPortfolio() != null)
-            return primaryPosting.getPortfolio() == posting.getPortfolio();
-
-        return false;
     }
 
     private static Unit unit(LedgerPosting posting)

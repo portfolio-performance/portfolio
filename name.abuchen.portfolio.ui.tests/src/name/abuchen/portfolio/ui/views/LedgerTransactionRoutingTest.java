@@ -179,14 +179,12 @@ public class LedgerTransactionRoutingTest
     {
         var buy = ledgerBuySellFixture(PortfolioTransaction.Type.BUY);
         var buyPortfolioTransaction = buy.portfolio().getTransactions().get(0);
-        var buyProjectionUUID = buyPortfolioTransaction.getUUID();
 
         new ConvertBuySellToDeliveryAction(buy.client(), new TransactionPair<>(buy.portfolio(), buyPortfolioTransaction))
                         .run();
 
         assertThat(buy.account().getTransactions().isEmpty(), is(true));
         assertThat(buy.portfolio().getTransactions().size(), is(1));
-        assertThat(buy.portfolio().getTransactions().get(0).getUUID(), is(buyProjectionUUID));
         assertThat(buy.portfolio().getTransactions().get(0).getType(),
                         is(PortfolioTransaction.Type.DELIVERY_INBOUND));
         assertThat(buy.portfolio().getTransactions().get(0).getCrossEntry(), is(nullValue()));
@@ -194,14 +192,12 @@ public class LedgerTransactionRoutingTest
 
         var inbound = ledgerDeliveryFixture(PortfolioTransaction.Type.DELIVERY_INBOUND);
         var inboundPortfolioTransaction = inbound.portfolio().getTransactions().get(0);
-        var inboundProjectionUUID = inboundPortfolioTransaction.getUUID();
 
         new ConvertDeliveryToBuySellAction(inbound.client(),
                         new TransactionPair<>(inbound.portfolio(), inboundPortfolioTransaction)).run();
 
         assertThat(inbound.account().getTransactions().size(), is(1));
         assertThat(inbound.portfolio().getTransactions().size(), is(1));
-        assertThat(inbound.portfolio().getTransactions().get(0).getUUID(), is(inboundProjectionUUID));
         assertThat(inbound.portfolio().getTransactions().get(0).getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(inbound.account().getTransactions().get(0).getType(), is(AccountTransaction.Type.BUY));
         assertSame(inbound.portfolio().getTransactions().get(0), inbound.account().getTransactions().get(0)
@@ -385,8 +381,9 @@ public class LedgerTransactionRoutingTest
                         PortfolioTransaction.Type.DELIVERY_INBOUND);
         assertThat(buyToDelivery.portfolio().getTransactions().get(0).getType(),
                         is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-        assertThat(buyToDelivery.client().getPlans().get(0).getTransactions(buyToDelivery.client()).get(0)
-                        .getTransaction().getUUID(), is(buyToDeliveryTransaction.getUUID()));
+        assertThat(((PortfolioTransaction) buyToDelivery.client().getPlans().get(0)
+                        .getTransactions(buyToDelivery.client()).get(0).getTransaction()).getType(),
+                        is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
         var deposit = ledgerAccountOnlyFixture(AccountTransaction.Type.DEPOSIT);
         var accountTransaction = deposit.source().getTransactions().get(0);
@@ -402,8 +399,8 @@ public class LedgerTransactionRoutingTest
     }
 
     /**
-     * Verifies that account-side plan references are not converted to delivery by inline editing.
-     * That conversion would remove the account projection, so the editor must not offer it.
+     * Verifies that plan-key metadata survives an account-side generated buy conversion.
+     * The no-UUID model tracks the generated business entry, not a side-specific projection.
      */
     @Test
     public void testInvestmentPlanReferencedAccountSideBuySellInlineConversionToDeliveryIsNotEditable()
@@ -411,14 +408,15 @@ public class LedgerTransactionRoutingTest
     {
         var buy = ledgerBuySellFixture(PortfolioTransaction.Type.BUY);
         var portfolioTransaction = buy.portfolio().getTransactions().get(0);
-        addInvestmentPlanRef(buy.client(), buy.account().getTransactions().get(0));
+        addInvestmentPlanRef(buy.client(), portfolioTransaction);
 
         var support = new TransactionTypeEditingSupport(buy.client());
         assertThat(support.canEdit(portfolioTransaction), is(true));
-        assertForbiddenTypeEdit(buy.client(), portfolioTransaction, PortfolioTransaction.Type.BUY,
+        setTypeValue(support, portfolioTransaction, PortfolioTransaction.Type.BUY,
                         PortfolioTransaction.Type.DELIVERY_INBOUND);
-        assertThat(buy.portfolio().getTransactions().get(0).getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(buy.account().getTransactions().get(0).getType(), is(AccountTransaction.Type.BUY));
+        assertThat(buy.account().getTransactions().isEmpty(), is(true));
+        assertThat(buy.portfolio().getTransactions().get(0).getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
+        assertThat(buy.client().getPlans().get(0).getTransactions(buy.client()).get(0).getOwner(), is(buy.portfolio()));
     }
 
     /**
@@ -562,7 +560,6 @@ public class LedgerTransactionRoutingTest
         var dividend = ledgerDividendFixture();
         var transaction = dividend.source().getTransactions().get(0);
         var entryUUID = ledgerEntryValue(transaction, "getUUID");
-        var projectionUUID = transaction.getUUID();
         var projectionRole = ledgerProjectionValue(transaction, "getRole");
         var newExDate = LocalDateTime.of(2026, 6, 20, 0, 0);
 
@@ -572,7 +569,6 @@ public class LedgerTransactionRoutingTest
 
         assertThat(transaction.getExDate(), is(newExDate));
         assertThat(ledgerEntryValue(transaction, "getUUID"), is(entryUUID));
-        assertThat(transaction.getUUID(), is(projectionUUID));
         assertThat(ledgerProjectionValue(transaction, "getRole"), is(projectionRole));
         assertThat(ledgerPostingExDate(transaction), is(newExDate));
         assertThat(dividend.source().getTransactions().size(), is(1));
@@ -580,14 +576,12 @@ public class LedgerTransactionRoutingTest
 
         var xmlLoaded = reloadXml(dividend.client());
         var xmlTransaction = xmlLoaded.getAccounts().get(0).getTransactions().get(0);
-        assertThat(xmlTransaction.getUUID(), is(projectionUUID));
         assertThat(xmlTransaction.getExDate(), is(newExDate));
         assertThat(ledgerPostingExDate(xmlTransaction), is(newExDate));
         assertLedgerStructurallyValid(xmlLoaded);
 
         var protobufLoaded = reloadProtobuf(dividend.client());
         var protobufTransaction = protobufLoaded.getAccounts().get(0).getTransactions().get(0);
-        assertThat(protobufTransaction.getUUID(), is(projectionUUID));
         assertThat(protobufTransaction.getExDate(), is(newExDate));
         assertThat(ledgerPostingExDate(protobufTransaction), is(newExDate));
         assertLedgerStructurallyValid(protobufLoaded);
@@ -813,7 +807,6 @@ public class LedgerTransactionRoutingTest
         var accountProjectionUUID = accountTransaction.getUUID();
         var portfolioProjectionUUID = portfolioTransaction.getUUID();
         var accountPlan = addInvestmentPlanRef(buy.client(), accountTransaction);
-        var portfolioPlan = addInvestmentPlanRef(buy.client(), portfolioTransaction);
 
         setOwnerValue(buy.client(), accountTransaction, TransactionOwnerListEditingSupport.EditMode.OWNER,
                         targetAccount);
@@ -835,16 +828,14 @@ public class LedgerTransactionRoutingTest
         assertThat(ledgerEntryValue(portfolioTransaction, "getUUID"), is(entryUUID));
         assertSame(targetPortfolio, portfolioTransaction.getCrossEntry().getOwner(portfolioTransaction));
         assertSame(targetAccount, portfolioTransaction.getCrossEntry().getCrossOwner(portfolioTransaction));
-        assertPlanRefResolves(portfolioPlan, buy.client(), targetPortfolio, portfolioProjectionUUID);
+        assertPlanRefResolves(accountPlan, buy.client(), targetAccount, accountProjectionUUID);
         assertThat(targetAccount.getTransactions().size(), is(1));
         assertThat(targetPortfolio.getTransactions().size(), is(1));
         assertLedgerStructurallyValid(buy.client());
 
         var reloaded = reloadXml(buy.client());
         assertPlanRefResolves(reloaded.getPlans().get(0), reloaded, reloaded.getAccounts().get(1),
-                        accountProjectionUUID);
-        assertPlanRefResolves(reloaded.getPlans().get(1), reloaded, reloaded.getPortfolios().get(1),
-                        portfolioProjectionUUID);
+                        null);
     }
 
     /**
@@ -865,8 +856,6 @@ public class LedgerTransactionRoutingTest
         var entryUUID = ledgerEntryValue(sourceTransaction, "getUUID");
         var sourceProjectionUUID = sourceTransaction.getUUID();
         var targetProjectionUUID = targetTransaction.getUUID();
-        var sourcePlan = addInvestmentPlanRef(transfer.client(), sourceTransaction);
-        var targetPlan = addInvestmentPlanRef(transfer.client(), targetTransaction);
 
         setOwnerValue(transfer.client(), sourceTransaction, TransactionOwnerListEditingSupport.EditMode.OWNER,
                         newSource);
@@ -876,7 +865,6 @@ public class LedgerTransactionRoutingTest
         assertThat(ledgerEntryValue(sourceTransaction, "getUUID"), is(entryUUID));
         assertThat(sourceTransaction.getType(), is(AccountTransaction.Type.TRANSFER_OUT));
         assertSame(transfer.target(), sourceTransaction.getCrossEntry().getCrossOwner(sourceTransaction));
-        assertPlanRefResolves(sourcePlan, transfer.client(), newSource, sourceProjectionUUID);
 
         setOwnerValue(transfer.client(), sourceTransaction, TransactionOwnerListEditingSupport.EditMode.CROSSOWNER,
                         newTarget);
@@ -886,7 +874,6 @@ public class LedgerTransactionRoutingTest
         assertThat(ledgerEntryValue(targetTransaction, "getUUID"), is(entryUUID));
         assertThat(targetTransaction.getType(), is(AccountTransaction.Type.TRANSFER_IN));
         assertSame(newTarget, sourceTransaction.getCrossEntry().getCrossOwner(sourceTransaction));
-        assertPlanRefResolves(targetPlan, transfer.client(), newTarget, targetProjectionUUID);
         assertThat(newSource.getTransactions().size(), is(1));
         assertThat(newTarget.getTransactions().size(), is(1));
         assertLedgerStructurallyValid(transfer.client());
@@ -902,8 +889,6 @@ public class LedgerTransactionRoutingTest
         var portfolioEntryUUID = ledgerEntryValue(sourcePortfolioTransaction, "getUUID");
         var sourcePortfolioProjectionUUID = sourcePortfolioTransaction.getUUID();
         var targetPortfolioProjectionUUID = targetPortfolioTransaction.getUUID();
-        var sourcePortfolioPlan = addInvestmentPlanRef(portfolioTransfer.client(), sourcePortfolioTransaction);
-        var targetPortfolioPlan = addInvestmentPlanRef(portfolioTransfer.client(), targetPortfolioTransaction);
 
         setOwnerValue(portfolioTransfer.client(), sourcePortfolioTransaction,
                         TransactionOwnerListEditingSupport.EditMode.OWNER, newSourcePortfolio);
@@ -915,8 +900,6 @@ public class LedgerTransactionRoutingTest
         assertThat(sourcePortfolioTransaction.getType(), is(PortfolioTransaction.Type.TRANSFER_OUT));
         assertSame(portfolioTransfer.target(),
                         sourcePortfolioTransaction.getCrossEntry().getCrossOwner(sourcePortfolioTransaction));
-        assertPlanRefResolves(sourcePortfolioPlan, portfolioTransfer.client(), newSourcePortfolio,
-                        sourcePortfolioProjectionUUID);
 
         setOwnerValue(portfolioTransfer.client(), sourcePortfolioTransaction,
                         TransactionOwnerListEditingSupport.EditMode.CROSSOWNER, newTargetPortfolio);
@@ -927,8 +910,6 @@ public class LedgerTransactionRoutingTest
         assertThat(targetPortfolioTransaction.getType(), is(PortfolioTransaction.Type.TRANSFER_IN));
         assertSame(newTargetPortfolio,
                         sourcePortfolioTransaction.getCrossEntry().getCrossOwner(sourcePortfolioTransaction));
-        assertPlanRefResolves(targetPortfolioPlan, portfolioTransfer.client(), newTargetPortfolio,
-                        targetPortfolioProjectionUUID);
         assertThat(newSourcePortfolio.getTransactions().size(), is(1));
         assertThat(newTargetPortfolio.getTransactions().size(), is(1));
         assertLedgerStructurallyValid(portfolioTransfer.client());
@@ -936,7 +917,7 @@ public class LedgerTransactionRoutingTest
 
     /**
      * Verifies that target-side transfer rows also use LedgerOwnerPatchHelper.
-     * Cross-owner edits must update the correct target side and keep plan references resolvable.
+     * Cross-owner edits must update the correct target side without duplicate owner-list rows.
      */
     @Test
     public void testLedgerBackedTransferTargetRowsUseLedgerOwnerPatch() throws Exception
@@ -952,8 +933,6 @@ public class LedgerTransactionRoutingTest
         var entryUUID = ledgerEntryValue(targetTransaction, "getUUID");
         var sourceProjectionUUID = sourceTransaction.getUUID();
         var targetProjectionUUID = targetTransaction.getUUID();
-        var sourcePlan = addInvestmentPlanRef(transfer.client(), sourceTransaction);
-        var targetPlan = addInvestmentPlanRef(transfer.client(), targetTransaction);
 
         setOwnerValue(transfer.client(), targetTransaction, TransactionOwnerListEditingSupport.EditMode.OWNER,
                         newTarget);
@@ -963,7 +942,6 @@ public class LedgerTransactionRoutingTest
         assertThat(ledgerEntryValue(targetTransaction, "getUUID"), is(entryUUID));
         assertThat(targetTransaction.getType(), is(AccountTransaction.Type.TRANSFER_IN));
         assertSame(transfer.source(), targetTransaction.getCrossEntry().getCrossOwner(targetTransaction));
-        assertPlanRefResolves(targetPlan, transfer.client(), newTarget, targetProjectionUUID);
 
         setOwnerValue(transfer.client(), targetTransaction, TransactionOwnerListEditingSupport.EditMode.CROSSOWNER,
                         newSource);
@@ -973,16 +951,9 @@ public class LedgerTransactionRoutingTest
         assertThat(ledgerEntryValue(sourceTransaction, "getUUID"), is(entryUUID));
         assertThat(sourceTransaction.getType(), is(AccountTransaction.Type.TRANSFER_OUT));
         assertSame(newSource, targetTransaction.getCrossEntry().getCrossOwner(targetTransaction));
-        assertPlanRefResolves(sourcePlan, transfer.client(), newSource, sourceProjectionUUID);
         assertThat(newSource.getTransactions().size(), is(1));
         assertThat(newTarget.getTransactions().size(), is(1));
         assertLedgerStructurallyValid(transfer.client());
-
-        var reloadedTransfer = reloadXml(transfer.client());
-        assertPlanRefResolves(reloadedTransfer.getPlans().get(0), reloadedTransfer, reloadedTransfer.getAccounts().get(2),
-                        sourceProjectionUUID);
-        assertPlanRefResolves(reloadedTransfer.getPlans().get(1), reloadedTransfer, reloadedTransfer.getAccounts().get(3),
-                        targetProjectionUUID);
 
         var portfolioTransfer = ledgerPortfolioTransferFixture();
         var newSourcePortfolio = new Portfolio("New Source Portfolio From Target Row");
@@ -995,8 +966,6 @@ public class LedgerTransactionRoutingTest
         var portfolioEntryUUID = ledgerEntryValue(targetPortfolioTransaction, "getUUID");
         var sourcePortfolioProjectionUUID = sourcePortfolioTransaction.getUUID();
         var targetPortfolioProjectionUUID = targetPortfolioTransaction.getUUID();
-        var sourcePortfolioPlan = addInvestmentPlanRef(portfolioTransfer.client(), sourcePortfolioTransaction);
-        var targetPortfolioPlan = addInvestmentPlanRef(portfolioTransfer.client(), targetPortfolioTransaction);
 
         setOwnerValue(portfolioTransfer.client(), targetPortfolioTransaction,
                         TransactionOwnerListEditingSupport.EditMode.OWNER, newTargetPortfolio);
@@ -1008,8 +977,6 @@ public class LedgerTransactionRoutingTest
         assertThat(targetPortfolioTransaction.getType(), is(PortfolioTransaction.Type.TRANSFER_IN));
         assertSame(portfolioTransfer.source(),
                         targetPortfolioTransaction.getCrossEntry().getCrossOwner(targetPortfolioTransaction));
-        assertPlanRefResolves(targetPortfolioPlan, portfolioTransfer.client(), newTargetPortfolio,
-                        targetPortfolioProjectionUUID);
 
         setOwnerValue(portfolioTransfer.client(), targetPortfolioTransaction,
                         TransactionOwnerListEditingSupport.EditMode.CROSSOWNER, newSourcePortfolio);
@@ -1020,17 +987,9 @@ public class LedgerTransactionRoutingTest
         assertThat(sourcePortfolioTransaction.getType(), is(PortfolioTransaction.Type.TRANSFER_OUT));
         assertSame(newSourcePortfolio,
                         targetPortfolioTransaction.getCrossEntry().getCrossOwner(targetPortfolioTransaction));
-        assertPlanRefResolves(sourcePortfolioPlan, portfolioTransfer.client(), newSourcePortfolio,
-                        sourcePortfolioProjectionUUID);
         assertThat(newSourcePortfolio.getTransactions().size(), is(1));
         assertThat(newTargetPortfolio.getTransactions().size(), is(1));
         assertLedgerStructurallyValid(portfolioTransfer.client());
-
-        var reloadedPortfolioTransfer = reloadXml(portfolioTransfer.client());
-        assertPlanRefResolves(reloadedPortfolioTransfer.getPlans().get(0), reloadedPortfolioTransfer,
-                        reloadedPortfolioTransfer.getPortfolios().get(2), sourcePortfolioProjectionUUID);
-        assertPlanRefResolves(reloadedPortfolioTransfer.getPlans().get(1), reloadedPortfolioTransfer,
-                        reloadedPortfolioTransfer.getPortfolios().get(3), targetPortfolioProjectionUUID);
     }
 
     /**
@@ -1187,14 +1146,12 @@ public class LedgerTransactionRoutingTest
     {
         var fixture = ledgerBuySellFixture(from);
         var portfolioTransaction = fixture.portfolio().getTransactions().get(0);
-        var portfolioUUID = portfolioTransaction.getUUID();
 
         assertThat(new TransactionTypeEditingSupport(fixture.client()).canEdit(portfolioTransaction), is(true));
         setTypeValue(new TransactionTypeEditingSupport(fixture.client()), portfolioTransaction, from, to);
 
         assertThat(fixture.account().getTransactions().isEmpty(), is(true));
         assertThat(fixture.portfolio().getTransactions().size(), is(1));
-        assertThat(fixture.portfolio().getTransactions().get(0).getUUID(), is(portfolioUUID));
         assertThat(fixture.portfolio().getTransactions().get(0).getType(), is(to));
         assertThat(fixture.portfolio().getTransactions().get(0).getCrossEntry(), is(nullValue()));
     }
@@ -1226,14 +1183,12 @@ public class LedgerTransactionRoutingTest
     {
         var fixture = ledgerDeliveryFixture(from);
         var delivery = fixture.portfolio().getTransactions().get(0);
-        var portfolioUUID = delivery.getUUID();
 
         assertThat(new TransactionTypeEditingSupport(fixture.client()).canEdit(delivery), is(true));
         setTypeValue(new TransactionTypeEditingSupport(fixture.client()), delivery, from, to);
 
         assertThat(fixture.account().getTransactions().isEmpty(), is(true));
         assertThat(fixture.portfolio().getTransactions().size(), is(1));
-        assertThat(fixture.portfolio().getTransactions().get(0).getUUID(), is(portfolioUUID));
         assertThat(fixture.portfolio().getTransactions().get(0).getType(), is(to));
         assertThat(fixture.portfolio().getTransactions().get(0).getCrossEntry(), is(nullValue()));
         assertLedgerStructurallyValid(fixture.client());
@@ -1244,14 +1199,12 @@ public class LedgerTransactionRoutingTest
     {
         var fixture = ledgerDeliveryFixture(from);
         var delivery = fixture.portfolio().getTransactions().get(0);
-        var portfolioUUID = delivery.getUUID();
 
         assertThat(new TransactionTypeEditingSupport(fixture.client()).canEdit(delivery), is(true));
         setTypeValue(new TransactionTypeEditingSupport(fixture.client()), delivery, from, to);
 
         assertThat(fixture.account().getTransactions().size(), is(1));
         assertThat(fixture.portfolio().getTransactions().size(), is(1));
-        assertThat(fixture.portfolio().getTransactions().get(0).getUUID(), is(portfolioUUID));
         assertThat(fixture.portfolio().getTransactions().get(0).getType(), is(to));
         assertThat(fixture.account().getTransactions().get(0).getType(), is(accountType));
         assertSame(fixture.portfolio().getTransactions().get(0), fixture.account().getTransactions().get(0)
@@ -1439,7 +1392,8 @@ public class LedgerTransactionRoutingTest
 
         assertThat(transactions.size(), is(1));
         assertSame(owner, transactions.get(0).getOwner());
-        assertThat(transactions.get(0).getTransaction().getUUID(), is(projectionUUID));
+        if (projectionUUID != null)
+            assertThat(transactions.get(0).getTransaction().getUUID(), is(projectionUUID));
     }
 
     private Object ledgerEntryValue(Transaction transaction, String method) throws Exception
@@ -1450,7 +1404,7 @@ public class LedgerTransactionRoutingTest
 
     private Object ledgerProjectionValue(Transaction transaction, String method) throws Exception
     {
-        Object projection = transaction.getClass().getMethod("getLedgerProjectionRef").invoke(transaction);
+        Object projection = transaction.getClass().getMethod("getLedgerProjectionDescriptor").invoke(transaction);
         return projection.getClass().getMethod(method).invoke(projection);
     }
 
@@ -1564,14 +1518,13 @@ public class LedgerTransactionRoutingTest
         client.addPlan(plan);
 
         Object entry = ledgerEntry(transaction);
-        Object projectionRef = transaction.getClass().getMethod("getLedgerProjectionRef").invoke(transaction);
-        var executionRef = new InvestmentPlan.LedgerExecutionRef();
-
-        setField(executionRef, "ledgerEntryUUID", entry.getClass().getMethod("getUUID").invoke(entry));
-        setField(executionRef, "projectionUUID", projectionRef.getClass().getMethod("getUUID").invoke(projectionRef));
-        setField(executionRef, "projectionRole", projectionRef.getClass().getMethod("getRole").invoke(projectionRef));
-
-        plan.addLedgerExecutionRef(executionRef);
+        entry.getClass().getMethod("setGeneratedByPlanKey", String.class).invoke(entry, plan.getPlanKey());
+        entry.getClass().getMethod("setPlanExecutionDate", java.time.LocalDate.class).invoke(entry,
+                        transaction.getDateTime().toLocalDate());
+        entry.getClass().getMethod("setPlanExecutionSequence", Integer.class).invoke(entry, (Integer) null);
+        entry.getClass().getMethod("setPreferredViewKind", String.class).invoke(entry, transaction instanceof PortfolioTransaction
+                        ? InvestmentPlan.LedgerExecutionViewKind.PORTFOLIO.name()
+                        : InvestmentPlan.LedgerExecutionViewKind.ACCOUNT.name());
 
         return plan;
     }

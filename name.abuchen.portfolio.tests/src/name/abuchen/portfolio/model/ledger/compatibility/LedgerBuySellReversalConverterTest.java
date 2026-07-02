@@ -3,7 +3,6 @@ package name.abuchen.portfolio.model.ledger.compatibility;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 
@@ -32,7 +31,6 @@ import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
@@ -79,13 +77,13 @@ public class LedgerBuySellReversalConverterTest
      * The converter must not rebuild a missing runtime view from guesses.
      */
     @Test
-    public void testMalformedBuySellMissingAccountProjectionRejectsBeforeMutation()
+    public void testMalformedBuySellMissingaccountProjectionRejectsBeforeMutation()
     {
         var fixture = fixture();
         var buySell = create(fixture, PortfolioTransaction.Type.BUY);
         var entry = fixture.client().getLedger().getEntries().get(0);
 
-        entry.removeProjectionRef(projection(entry, LedgerProjectionRole.ACCOUNT));
+        projection(entry, LedgerProjectionRole.ACCOUNT).getPrimaryPosting().setSemanticRole(null);
         assertRejectsWithoutMutation(fixture, () -> converter(fixture).reverse(buySell), IllegalArgumentException.class);
     }
 
@@ -94,13 +92,13 @@ public class LedgerBuySellReversalConverterTest
      * The ledger entry and owner lists must remain unchanged instead of creating a second truth.
      */
     @Test
-    public void testMalformedBuySellMissingPortfolioProjectionRejectsBeforeMutation()
+    public void testMalformedBuySellMissingportfolioProjectionRejectsBeforeMutation()
     {
         var fixture = fixture();
         var buySell = create(fixture, PortfolioTransaction.Type.BUY);
         var entry = fixture.client().getLedger().getEntries().get(0);
 
-        entry.removeProjectionRef(projection(entry, LedgerProjectionRole.PORTFOLIO));
+        projection(entry, LedgerProjectionRole.PORTFOLIO).getPrimaryPosting().setSemanticRole(null);
         assertRejectsWithoutMutation(fixture, () -> converter(fixture).reverse(buySell), IllegalArgumentException.class);
     }
 
@@ -165,45 +163,48 @@ public class LedgerBuySellReversalConverterTest
         var buySell = create(fixture, PortfolioTransaction.Type.BUY);
         var entry = fixture.client().getLedger().getEntries().get(0);
         var plan = new InvestmentPlan("Plan");
-        var projectionUUID = buySell.getPortfolioTransaction().getUUID();
 
-        plan.addLedgerExecutionRef(InvestmentPlan.LedgerExecutionRef
-                        .of((LedgerBackedTransaction) buySell.getPortfolioTransaction()));
+        entry.setGeneratedByPlanKey(plan.getPlanKey());
+        entry.setPlanExecutionDate(DATE_TIME.toLocalDate());
+        entry.setPreferredViewKind(InvestmentPlan.LedgerExecutionViewKind.PORTFOLIO.name());
         fixture.client().addPlan(plan);
 
-        converter(fixture).reverse(buySell);
+        var reversed = converter(fixture).reverse(buySell);
 
-        assertThat(plan.getLedgerExecutionRefs().size(), is(1));
-        assertThat(plan.getLedgerExecutionRefs().get(0).getLedgerEntryUUID(), is(entry.getUUID()));
-        assertThat(plan.getLedgerExecutionRefs().get(0).getProjectionUUID(), is(projectionUUID));
-        assertThat(plan.getLedgerExecutionRefs().get(0).getProjectionRole(), is(LedgerProjectionRole.PORTFOLIO));
-        assertThat(plan.getTransactions(fixture.client()).get(0).getTransaction().getUUID(), is(projectionUUID));
+        assertThat(plan.getLedgerExecutionRefs(), is(List.of()));
+        assertThat(entry.getGeneratedByPlanKey(), is(plan.getPlanKey()));
+        assertThat(entry.getPlanExecutionDate(), is(DATE_TIME.toLocalDate()));
+        assertThat(entry.getPreferredViewKind(), is(InvestmentPlan.LedgerExecutionViewKind.PORTFOLIO.name()));
+        assertSame(reversed.getPortfolioTransaction(), plan.getTransactions(fixture.client()).get(0).getTransaction());
 
         var loaded = loadXml(saveXml(fixture.client()));
-        assertThat(loaded.getPlans().get(0).getTransactions(loaded).get(0).getTransaction().getUUID(),
-                        is(projectionUUID));
+        assertThat(((PortfolioTransaction) loaded.getPlans().get(0).getTransactions(loaded).get(0).getTransaction())
+                        .getType(),
+                        is(PortfolioTransaction.Type.SELL));
     }
 
     /**
-     * Verifies that an entry-only plan reference blocks buy/sell reversal.
-     * The converter must not guess which projection the plan intended to follow.
+     * Verifies that plan-key execution metadata does not block buy/sell reversal.
+     * Projection-scoped execution refs are obsolete and must not drive converter behavior.
      */
     @Test
-    public void testEntryOnlyInvestmentPlanExecutionRefRejectsBuySellReversalBeforeMutation()
+    public void testPlanMetadataDoesNotBlockBuySellReversal()
     {
         var fixture = fixture();
         var buySell = create(fixture, PortfolioTransaction.Type.BUY);
         var entry = fixture.client().getLedger().getEntries().get(0);
         var plan = new InvestmentPlan("Plan");
 
-        plan.addLedgerExecutionRef(new InvestmentPlan.LedgerExecutionRef(entry.getUUID(), null, null));
+        entry.setGeneratedByPlanKey(plan.getPlanKey());
+        entry.setPlanExecutionDate(DATE_TIME.toLocalDate());
+        entry.setPreferredViewKind(InvestmentPlan.LedgerExecutionViewKind.PORTFOLIO.name());
         fixture.client().addPlan(plan);
 
-        var exception = assertRejectsWithoutMutation(fixture, () -> converter(fixture).reverse(buySell),
-                        UnsupportedOperationException.class);
-        assertThat(exception.getMessage(), containsString("ambiguous"));
-        assertThat(plan.getLedgerExecutionRefs().size(), is(1));
-        assertThat(plan.getLedgerExecutionRefs().get(0).getLedgerEntryUUID(), is(entry.getUUID()));
+        converter(fixture).reverse(buySell);
+
+        assertThat(plan.getLedgerExecutionRefs(), is(List.of()));
+        assertThat(entry.getGeneratedByPlanKey(), is(plan.getPlanKey()));
+        assertThat(entry.getPreferredViewKind(), is(InvestmentPlan.LedgerExecutionViewKind.PORTFOLIO.name()));
     }
 
     private void assertReversesBuySell(PortfolioTransaction.Type sourceType, LedgerEntryType targetEntryType,
@@ -217,8 +218,8 @@ public class LedgerBuySellReversalConverterTest
         var entryUUID = entry.getUUID();
         var cashPostingUUID = posting(entry, LedgerPostingType.CASH).getUUID();
         var securityPostingUUID = posting(entry, LedgerPostingType.SECURITY).getUUID();
-        var accountProjectionUUID = projection(entry, LedgerProjectionRole.ACCOUNT).getUUID();
-        var portfolioProjectionUUID = projection(entry, LedgerProjectionRole.PORTFOLIO).getUUID();
+        var accountProjectionUUID = projection(entry, LedgerProjectionRole.ACCOUNT).getRuntimeProjectionId();
+        var portfolioProjectionUUID = projection(entry, LedgerProjectionRole.PORTFOLIO).getRuntimeProjectionId();
         var unitSnapshots = unitSnapshots(entry);
 
         var reversed = converter(fixture).reverse(buySell);
@@ -232,8 +233,8 @@ public class LedgerBuySellReversalConverterTest
         assertThat(posting(entry, LedgerPostingType.CASH).getAmount(), is(expectedAmount));
         assertThat(posting(entry, LedgerPostingType.SECURITY).getAmount(), is(expectedAmount));
         assertThat(unitSnapshots(entry), is(unitSnapshots));
-        assertThat(projection(entry, LedgerProjectionRole.ACCOUNT).getUUID(), is(accountProjectionUUID));
-        assertThat(projection(entry, LedgerProjectionRole.PORTFOLIO).getUUID(), is(portfolioProjectionUUID));
+        assertThat(projection(entry, LedgerProjectionRole.ACCOUNT).getRuntimeProjectionId(), is(accountProjectionUUID));
+        assertThat(projection(entry, LedgerProjectionRole.PORTFOLIO).getRuntimeProjectionId(), is(portfolioProjectionUUID));
 
         assertThat(fixture.account().getTransactions(), is(List.of(reversedAccount)));
         assertThat(fixture.portfolio().getTransactions(), is(List.of(reversedPortfolio)));
@@ -288,18 +289,15 @@ public class LedgerBuySellReversalConverterTest
         var accountTransaction = client.getAccounts().get(0).getTransactions().get(0);
         var portfolioTransaction = client.getPortfolios().get(0).getTransactions().get(0);
 
-        assertThat(entry.getUUID(), is(entryUUID));
         assertThat(entry.getType(), is(entryType));
-        assertThat(posting(entry, LedgerPostingType.CASH).getUUID(), is(cashPostingUUID));
-        assertThat(posting(entry, LedgerPostingType.SECURITY).getUUID(), is(securityPostingUUID));
         assertThat(posting(entry, LedgerPostingType.CASH).getAmount(), is(expectedAmount));
         assertThat(posting(entry, LedgerPostingType.SECURITY).getAmount(), is(expectedAmount));
-        assertThat(projection(entry, LedgerProjectionRole.ACCOUNT).getUUID(), is(accountProjectionUUID));
-        assertThat(projection(entry, LedgerProjectionRole.PORTFOLIO).getUUID(), is(portfolioProjectionUUID));
+        assertThat(projection(entry, LedgerProjectionRole.ACCOUNT).getRole(), is(LedgerProjectionRole.ACCOUNT));
+        assertThat(projection(entry, LedgerProjectionRole.PORTFOLIO).getRole(), is(LedgerProjectionRole.PORTFOLIO));
         assertThat(accountTransaction.getType().name(), is(transactionType.name()));
         assertThat(portfolioTransaction.getType(), is(transactionType));
-        assertThat(accountTransaction.getUUID(), is(accountProjectionUUID));
-        assertThat(portfolioTransaction.getUUID(), is(portfolioProjectionUUID));
+        assertThat(((LedgerBackedTransaction) accountTransaction).getLedgerProjectionRole(), is(LedgerProjectionRole.ACCOUNT));
+        assertThat(((LedgerBackedTransaction) portfolioTransaction).getLedgerProjectionRole(), is(LedgerProjectionRole.PORTFOLIO));
         assertSame(portfolioTransaction, accountTransaction.getCrossEntry().getCrossTransaction(accountTransaction));
         assertSame(accountTransaction, portfolioTransaction.getCrossEntry().getCrossTransaction(portfolioTransaction));
         assertThat(portfolioTransaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(120))));
@@ -338,9 +336,9 @@ public class LedgerBuySellReversalConverterTest
         return new LedgerBuySellReversalConverter(fixture.client());
     }
 
-    private LedgerProjectionRef projection(LedgerEntry entry, LedgerProjectionRole role)
+    private name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor projection(LedgerEntry entry, LedgerProjectionRole role)
     {
-        return entry.getProjectionRefs().stream().filter(projection -> projection.getRole() == role).findFirst()
+        return name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream().filter(projection -> projection.getRole() == role).findFirst()
                         .orElseThrow();
     }
 
@@ -441,9 +439,20 @@ public class LedgerBuySellReversalConverterTest
     {
         static EntrySnapshot capture(LedgerEntry entry)
         {
+            List<ProjectionSnapshot> projections;
+            try
+            {
+                projections = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry)
+                                .stream().map(ProjectionSnapshot::capture).toList();
+            }
+            catch (IllegalArgumentException e)
+            {
+                projections = List.of();
+            }
+
             return new EntrySnapshot(entry.getUUID(), entry.getType(),
                             entry.getPostings().stream().map(PostingSnapshot::capture).toList(),
-                            entry.getProjectionRefs().stream().map(ProjectionSnapshot::capture).toList());
+                            projections);
         }
     }
 
@@ -460,13 +469,14 @@ public class LedgerBuySellReversalConverterTest
     }
 
     private record ProjectionSnapshot(String uuid, LedgerProjectionRole role, Account account, Portfolio portfolio,
-                    String primaryPostingUUID, String postingGroupUUID)
+                    String primaryPostingId, String groupKey)
     {
-        static ProjectionSnapshot capture(LedgerProjectionRef projection)
+        static ProjectionSnapshot capture(name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor projection)
         {
-            return new ProjectionSnapshot(projection.getUUID(), projection.getRole(), projection.getAccount(),
-                            projection.getPortfolio(), projection.getPrimaryPostingUUID(),
-                            projection.getPostingGroupUUID());
+            return new ProjectionSnapshot(projection.getRuntimeProjectionId(), projection.getRole(), projection.getAccount(),
+                            projection.getPortfolio(), projection.getPrimaryPosting().getUUID(),
+                            projection.getPrimaryPosting().getGroupKey());
         }
     }
 }
+

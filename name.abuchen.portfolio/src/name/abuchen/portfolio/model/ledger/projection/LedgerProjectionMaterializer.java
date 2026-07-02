@@ -54,7 +54,7 @@ final class LedgerProjectionMaterializer
 
     private void addAccountProjection(LedgerBackedAccountTransaction transaction)
     {
-        var account = transaction.getLedgerProjectionRef().getAccount();
+        var account = transaction.getLedgerProjectionDescriptor().getAccount();
 
         if (account.getTransactions().stream().noneMatch(existing -> isSameLedgerProjection(existing, transaction)))
             account.getTransactions().add(transaction);
@@ -62,7 +62,7 @@ final class LedgerProjectionMaterializer
 
     private void addPortfolioProjection(LedgerBackedPortfolioTransaction transaction)
     {
-        var portfolio = transaction.getLedgerProjectionRef().getPortfolio();
+        var portfolio = transaction.getLedgerProjectionDescriptor().getPortfolio();
 
         if (portfolio.getTransactions().stream().noneMatch(existing -> isSameLedgerProjection(existing, transaction)))
             portfolio.getTransactions().add(transaction);
@@ -71,12 +71,12 @@ final class LedgerProjectionMaterializer
     private boolean isSameLedgerProjection(AccountTransaction existing, LedgerBackedTransaction transaction)
     {
         return existing instanceof LedgerBackedTransaction && existing.getUUID().equals(
-                        transaction.getLedgerProjectionRef().getUUID());
+                        transaction.getLedgerProjectionDescriptor().getRuntimeProjectionId());
     }
 
     private boolean isSameLedgerProjection(PortfolioTransaction existing, LedgerBackedTransaction transaction)
     {
         return existing instanceof LedgerBackedTransaction && existing.getUUID().equals(
-                        transaction.getLedgerProjectionRef().getUUID());
+                        transaction.getLedgerProjectionDescriptor().getRuntimeProjectionId());
     }
 }

@@ -28,10 +28,9 @@ import name.abuchen.portfolio.model.ProtobufTestUtilities;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
+import name.abuchen.portfolio.model.ledger.LedgerPostingUnitRole;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator;
-import name.abuchen.portfolio.model.ledger.ProjectionMembershipRole;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
@@ -137,6 +136,7 @@ public class LedgerDeliveryTransactionCreatorTest
         var transaction = createDelivery(fixture.client(), fixture.portfolio(), fixture.security(),
                         PortfolioTransaction.Type.DELIVERY_INBOUND);
         var projectionUUID = transaction.getUUID();
+        var expectedProjectionRoles = projectionRoles(fixture.client());
         var entry = fixture.client().getLedger().getEntries().get(0);
         var entryUUID = entry.getUUID();
         var postingUUID = entry.getPostings().get(0).getUUID();
@@ -174,9 +174,10 @@ public class LedgerDeliveryTransactionCreatorTest
         assertThat(moved.getUUID(), is(projectionUUID));
         assertThat(entry.getUUID(), is(entryUUID));
         assertThat(entry.getPostings().get(0).getUUID(), is(postingUUID));
-        assertThat(entry.getProjectionRefs().get(0).getUUID(), is(projectionUUID));
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0)
+                        .getRuntimeProjectionId(), is(projectionUUID));
         assertSame(otherPortfolio, entry.getPostings().get(0).getPortfolio());
-        assertSame(otherPortfolio, entry.getProjectionRefs().get(0).getPortfolio());
+        assertSame(otherPortfolio, name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0).getPortfolio());
         assertThat(moved.getAmount(), is(Values.Amount.factorize(151)));
         assertThat(moved.getShares(), is(Values.Share.factorize(21)));
         assertThat(moved.getNote(), is("moved note"));
@@ -190,8 +191,8 @@ public class LedgerDeliveryTransactionCreatorTest
                                         DATE_TIME, Values.Amount.factorize(150), CurrencyUnit.EUR, otherSecurity,
                                         Values.Share.factorize(20), null, null, List.of(), "note", "source"));
         assertThat(fixture.client().getAllTransactions().size(), is(1));
-        assertThat(projectionUUIDs(loadXml(saveXml(fixture.client()))), is(List.of(projectionUUID)));
-        assertThat(projectionUUIDs(loadProtobuf(saveProtobuf(fixture.client()))), is(List.of(projectionUUID)));
+        assertThat(projectionRoles(loadXml(saveXml(fixture.client()))), is(expectedProjectionRoles));
+        assertThat(projectionRoles(loadProtobuf(saveProtobuf(fixture.client()))), is(expectedProjectionRoles));
         assertValid(fixture.client());
     }
 
@@ -203,12 +204,12 @@ public class LedgerDeliveryTransactionCreatorTest
     public void testXmlSaveLoadSavePreservesDeliveryProjectionUUIDAndFields() throws Exception
     {
         var client = deliveryClient();
-        var expectedProjectionUUIDs = projectionUUIDs(client);
+        var expectedProjectionRoles = projectionRoles(client);
 
         var loaded = loadXml(saveXml(client));
         var reloaded = loadXml(saveXml(loaded));
 
-        assertThat(projectionUUIDs(reloaded), is(expectedProjectionUUIDs));
+        assertThat(projectionRoles(reloaded), is(expectedProjectionRoles));
         assertThat(reloaded.getLedger().getEntries().size(), is(2));
         assertThat(reloaded.getPortfolios().get(0).getTransactions().size(), is(2));
         assertTrue(reloaded.getPortfolios().get(0).getTransactions().stream()
@@ -227,12 +228,12 @@ public class LedgerDeliveryTransactionCreatorTest
     public void testProtobufSaveLoadSavePreservesDeliveryProjectionUUIDAndFields() throws Exception
     {
         var client = deliveryClient();
-        var expectedProjectionUUIDs = projectionUUIDs(client);
+        var expectedProjectionRoles = projectionRoles(client);
 
         var loaded = loadProtobuf(saveProtobuf(client));
         var reloaded = loadProtobuf(saveProtobuf(loaded));
 
-        assertThat(projectionUUIDs(reloaded), is(expectedProjectionUUIDs));
+        assertThat(projectionRoles(reloaded), is(expectedProjectionRoles));
         assertThat(reloaded.getLedger().getEntries().size(), is(2));
         assertThat(reloaded.getPortfolios().get(0).getTransactions().size(), is(2));
         assertTrue(reloaded.getPortfolios().get(0).getTransactions().stream()
@@ -250,7 +251,7 @@ public class LedgerDeliveryTransactionCreatorTest
         var transaction = createDelivery(fixture.client(), fixture.portfolio(), fixture.security(), type);
         var entry = fixture.client().getLedger().getEntries().get(0);
         var posting = entry.getPostings().get(0);
-        var projection = entry.getProjectionRefs().get(0);
+        var projection = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0);
 
         assertThat(entry.getType(), is(entryType));
         assertThat(entry.getDateTime(), is(DATE_TIME));
@@ -266,15 +267,18 @@ public class LedgerDeliveryTransactionCreatorTest
         assertSame(fixture.security(), posting.getSecurity());
         assertThat(posting.getShares(), is(Values.Share.factorize(12)));
         assertTrue(entry.getPostings().stream().allMatch(p -> p.getAccount() == null));
-        assertThat(entry.getProjectionRefs().size(), is(1));
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).size(), is(1));
         assertThat(projection.getRole(), is(projectionRole));
         assertSame(fixture.portfolio(), projection.getPortfolio());
-        assertThat(projection.getPrimaryPostingUUID(), is(posting.getUUID()));
-        assertThat(projection.getPrimaryMembership().orElseThrow().getPostingUUID(), is(posting.getUUID()));
-        assertThat(projection.getMembershipsByRole(ProjectionMembershipRole.FEE_UNIT).size(), is(1));
-        assertThat(projection.getMembershipsByRole(ProjectionMembershipRole.TAX_UNIT).size(), is(1));
-        assertThat(projection.getMembershipsByRole(ProjectionMembershipRole.GROSS_VALUE_UNIT).size(), is(1));
-        assertThat(transaction.getUUID(), is(projection.getUUID()));
+        assertThat(projection.getPrimaryPosting().getUUID(), is(posting.getUUID()));
+        assertThat(projection.getPrimaryPosting().getUnitRole(), is(LedgerPostingUnitRole.PRIMARY));
+        assertThat((int) projection.getUnitPostings().stream()
+                        .filter(unit -> unit.getUnitRole() == LedgerPostingUnitRole.FEE).count(), is(1));
+        assertThat((int) projection.getUnitPostings().stream()
+                        .filter(unit -> unit.getUnitRole() == LedgerPostingUnitRole.TAX).count(), is(1));
+        assertThat((int) projection.getUnitPostings().stream()
+                        .filter(unit -> unit.getUnitRole() == LedgerPostingUnitRole.GROSS_VALUE).count(), is(1));
+        assertThat(transaction.getUUID(), is(projection.getRuntimeProjectionId()));
         assertThat(transaction, instanceOf(LedgerBackedTransaction.class));
         assertThat(transaction.getType(), is(type));
         assertThat(transaction.getDateTime(), is(DATE_TIME));
@@ -344,8 +348,16 @@ public class LedgerDeliveryTransactionCreatorTest
     private List<String> projectionUUIDs(Client client)
     {
         return client.getLedger().getEntries().stream()
-                        .flatMap(entry -> entry.getProjectionRefs().stream())
-                        .map(LedgerProjectionRef::getUUID)
+                        .flatMap(entry -> name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream())
+                        .map(descriptor -> descriptor.getRuntimeProjectionId())
+                        .toList();
+    }
+
+    private List<LedgerProjectionRole> projectionRoles(Client client)
+    {
+        return client.getLedger().getEntries().stream()
+                        .flatMap(entry -> name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream())
+                        .map(descriptor -> descriptor.getRole())
                         .toList();
     }
 

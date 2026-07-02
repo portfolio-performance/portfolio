@@ -330,7 +330,7 @@ public class InsertActionTest
                         .generateTransactions(client, new TestCurrencyConverter()).get(0).getTransaction();
         var ledgerBacked = (LedgerBackedTransaction) generated;
         String ledgerEntryUUID = ledgerBacked.getLedgerEntry().getUUID();
-        String projectionUUID = ledgerBacked.getLedgerProjectionRef().getUUID();
+        String projectionUUID = ledgerBacked.getLedgerProjectionDescriptor().getRuntimeProjectionId();
         long importedShares = Math.round(generated.getShares() * 1.05d);
 
         BuySellEntry imported = buySell(Type.BUY);
@@ -374,9 +374,6 @@ public class InsertActionTest
         assertThat(updated.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3))));
         assertThat(updated.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4))));
 
-        assertThat(plan.getLedgerExecutionRefs().size(), is(1));
-        assertThat(plan.getLedgerExecutionRefs().get(0).getLedgerEntryUUID(), is(ledgerEntryUUID));
-        assertThat(plan.getLedgerExecutionRefs().get(0).getProjectionUUID(), is(projectionUUID));
         assertThat(plan.getTransactions(client).get(0).getTransaction(), is(updated));
 
         Client xml = loadXml(saveXml(client));
@@ -457,7 +454,8 @@ public class InsertActionTest
         assertThat(account.getTransactions().size(), is(2));
         assertThat(portfolio.getTransactions().size(), is(2));
         assertThat(client.getAllTransactions().size(), is(2));
-        assertThat(plan.getLedgerExecutionRefs().size(), is(1));
+        assertThat(client.getLedger().getEntries().stream()
+                        .filter(entry -> plan.getPlanKey().equals(entry.getGeneratedByPlanKey())).count(), is(1L));
         assertValid(client);
     }
 
@@ -510,8 +508,10 @@ public class InsertActionTest
         assertThat(secondGenerated.getShares(), is(secondShares));
         assertThat(firstGenerated.getNote(), is(firstNote));
         assertThat(secondGenerated.getNote(), is(secondNote));
-        assertThat(firstPlan.getLedgerExecutionRefs().size(), is(1));
-        assertThat(secondPlan.getLedgerExecutionRefs().size(), is(1));
+        assertThat(client.getLedger().getEntries().stream()
+                        .filter(entry -> firstPlan.getPlanKey().equals(entry.getGeneratedByPlanKey())).count(), is(1L));
+        assertThat(client.getLedger().getEntries().stream()
+                        .filter(entry -> secondPlan.getPlanKey().equals(entry.getGeneratedByPlanKey())).count(), is(1L));
         assertValid(client);
     }
 

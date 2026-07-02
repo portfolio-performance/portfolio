@@ -12,7 +12,6 @@ import org.junit.Test;
 
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerAccountOnlyTransactionCreator;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerAccountTransferTransactionCreator;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerBuySellTransactionCreator;
@@ -256,7 +255,7 @@ public class LedgerOwnerChangeFailurePathTest
         {
             return new EntrySnapshot(entry.getUUID(), entry.getType(), entry.getDateTime(), entry.getNote(),
                             entry.getSource(), entry.getPostings().stream().map(PostingSnapshot::capture).toList(),
-                            entry.getProjectionRefs().stream().map(ProjectionSnapshot::capture).toList());
+                            name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream().map(ProjectionSnapshot::capture).toList());
         }
     }
 
@@ -275,14 +274,15 @@ public class LedgerOwnerChangeFailurePathTest
         }
     }
 
-    private record ProjectionSnapshot(String uuid, Object role, Account account, Portfolio portfolio,
-                    String primaryPostingUUID, String postingGroupUUID)
+    private record ProjectionSnapshot(String runtimeId, Object role, Account account, Portfolio portfolio,
+                    String primaryPostingId, String groupKey)
     {
-        static ProjectionSnapshot capture(LedgerProjectionRef projection)
+        static ProjectionSnapshot capture(
+                        name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor projection)
         {
-            return new ProjectionSnapshot(projection.getUUID(), projection.getRole(), projection.getAccount(),
-                            projection.getPortfolio(), projection.getPrimaryPostingUUID(),
-                            projection.getPostingGroupUUID());
+            return new ProjectionSnapshot(projection.getRuntimeProjectionId(), projection.getRole(),
+                            projection.getAccount(), projection.getPortfolio(),
+                            projection.getPrimaryPosting().getUUID(), projection.getPrimaryPosting().getGroupKey());
         }
     }
 }

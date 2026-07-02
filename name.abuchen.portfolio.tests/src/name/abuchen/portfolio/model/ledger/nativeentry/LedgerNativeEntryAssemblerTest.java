@@ -30,7 +30,6 @@ import name.abuchen.portfolio.model.ledger.LedgerPostingSemanticRole;
 import name.abuchen.portfolio.model.ledger.LedgerPostingUnitRole;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator;
-import name.abuchen.portfolio.model.ledger.ProjectionMembershipRole;
 import name.abuchen.portfolio.model.ledger.configuration.CashCompensationKind;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionKind;
@@ -341,17 +340,17 @@ public class LedgerNativeEntryAssemblerTest
 
         assertThat(entry.getType(), is(LedgerEntryType.SPIN_OFF));
         assertThat(entry.getPostings().size(), is(5));
-        assertThat(entry.getProjectionRefs().size(), is(3));
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).size(), is(3));
         assertThat(fixture.client.getLedger().getEntries().size(), is(0));
         assertTrue(result.getValidationResult().isOK());
 
         assertThat(parameter(entry.getParameters(), LedgerParameterType.CORPORATE_ACTION_KIND).getValue(),
                         is(CorporateActionKind.SPIN_OFF.getCode()));
-        assertThat(entry.getProjectionRefs().stream().filter(ref -> ref.getRole() == LedgerProjectionRole.OLD_SECURITY_LEG)
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream().filter(ref -> ref.getRole() == LedgerProjectionRole.OLD_SECURITY_LEG)
                         .count(), is(1L));
-        assertThat(entry.getProjectionRefs().stream().filter(ref -> ref.getRole() == LedgerProjectionRole.NEW_SECURITY_LEG)
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream().filter(ref -> ref.getRole() == LedgerProjectionRole.NEW_SECURITY_LEG)
                         .count(), is(1L));
-        assertThat(entry.getProjectionRefs().stream()
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream()
                         .filter(ref -> ref.getRole() == LedgerProjectionRole.CASH_COMPENSATION).count(), is(1L));
     }
 
@@ -399,7 +398,8 @@ public class LedgerNativeEntryAssemblerTest
                         .buildDetached();
 
         assertThat(result.getEntry().getType(), is(LedgerEntryType.STOCK_DIVIDEND));
-        assertThat(result.getEntry().getProjectionRefs().get(0).getRole(), is(LedgerProjectionRole.DELIVERY_INBOUND));
+        assertThat(descriptor(result.getEntry(), LedgerProjectionRole.DELIVERY_INBOUND).getRole(),
+                        is(LedgerProjectionRole.DELIVERY_INBOUND));
         assertTrue(result.getValidationResult().isOK());
         assertThat(fixture.client.getLedger().getEntries().size(), is(0));
     }
@@ -480,7 +480,10 @@ public class LedgerNativeEntryAssemblerTest
     {
         var fixture = fixture();
         var entry = validSpinOff(fixture).buildAndAdd().getEntry();
-        var projectionUUIDs = entry.getProjectionRefs().stream().map(ref -> ref.getUUID()).collect(Collectors.toSet());
+        var projectionUUIDs = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream()
+                        .map(descriptor -> name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport
+                                        .runtimeProjectionId(entry, descriptor.getRole()))
+                        .collect(Collectors.toSet());
         var runtimeUUIDs = java.util.stream.Stream.concat(
                         fixture.portfolio.getTransactions().stream()
                                         .filter(LedgerBackedTransaction.class::isInstance)
@@ -568,7 +571,7 @@ public class LedgerNativeEntryAssemblerTest
         var exception = assertThrows(LedgerNativeEntryAssemblyException.class,
                         () -> baseSpinOff(fixture).securityLeg(invalidSourceLeg).buildAndAdd());
 
-        assertThat(exception.getIssue(), is(LedgerNativeEntryAssemblyIssue.STRUCTURAL_VALIDATION_FAILED));
+        assertThat(exception.getIssue(), is(LedgerNativeEntryAssemblyIssue.NATIVE_DEFINITION_VALIDATION_FAILED));
         assertClientUnchanged(fixture);
     }
 
@@ -601,17 +604,14 @@ public class LedgerNativeEntryAssemblerTest
         var entry = validSpinOff(fixture).buildDetached().getEntry();
         var postingUUIDs = entry.getPostings().stream().map(LedgerPosting::getUUID).collect(Collectors.toSet());
 
-        for (var ref : entry.getProjectionRefs())
+        for (var ref : name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry))
         {
-            assertTrue(postingUUIDs.contains(ref.getPrimaryPostingUUID()));
-            assertThat(ref.getPrimaryMembership().orElseThrow().getPostingUUID(), is(ref.getPrimaryPostingUUID()));
+            assertTrue(postingUUIDs.contains(ref.getPrimaryPosting().getUUID()));
+            assertThat(ref.getPrimaryPosting().getUnitRole(), is(LedgerPostingUnitRole.PRIMARY));
 
-            if (ref.getPostingGroupUUID() != null)
-            {
-                assertTrue(postingUUIDs.contains(ref.getPostingGroupUUID()));
-                assertThat(ref.getMembershipsByRole(ProjectionMembershipRole.GROUP_ANCHOR).get(0).getPostingUUID(),
-                                is(ref.getPostingGroupUUID()));
-            }
+            if (ref.getPrimaryPosting().getGroupKey() != null)
+                assertTrue(ref.getUnitPostings().stream()
+                                .allMatch(posting -> ref.getPrimaryPosting().getGroupKey().equals(posting.getGroupKey())));
         }
     }
 
@@ -831,7 +831,7 @@ public class LedgerNativeEntryAssemblerTest
         return portfolio.getTransactions().stream() //
                         .filter(LedgerBackedTransaction.class::isInstance) //
                         .map(LedgerBackedTransaction.class::cast) //
-                        .filter(transaction -> transaction.getLedgerProjectionRef().getRole() == role) //
+                        .filter(transaction -> transaction.getLedgerProjectionDescriptor().getRole() == role) //
                         .findFirst().orElseThrow();
     }
 
@@ -840,7 +840,7 @@ public class LedgerNativeEntryAssemblerTest
         return account.getTransactions().stream() //
                         .filter(LedgerBackedTransaction.class::isInstance) //
                         .map(LedgerBackedTransaction.class::cast) //
-                        .filter(transaction -> transaction.getLedgerProjectionRef().getRole() == role) //
+                        .filter(transaction -> transaction.getLedgerProjectionDescriptor().getRole() == role) //
                         .findFirst().orElseThrow();
     }
 

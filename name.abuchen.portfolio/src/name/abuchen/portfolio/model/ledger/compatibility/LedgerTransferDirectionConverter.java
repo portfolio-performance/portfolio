@@ -14,9 +14,10 @@ import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerMutationContext;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
+import name.abuchen.portfolio.model.ledger.LedgerPostingDirection;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
+import name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedAccountTransaction;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedPortfolioTransaction;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
@@ -46,10 +47,10 @@ public final class LedgerTransferDirectionConverter
             throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_CONVERT_063.message("Only ledger-backed account transfers can be reversed")); //$NON-NLS-1$
 
         var entry = sourceTransaction.getLedgerEntry();
-        var sourceProjectionUUID = sourceTransaction.getLedgerProjectionRef().getUUID();
-        var targetProjectionUUID = targetTransaction.getLedgerProjectionRef().getUUID();
-        var sourceAccount = sourceTransaction.getLedgerProjectionRef().getAccount();
-        var targetAccount = targetTransaction.getLedgerProjectionRef().getAccount();
+        var sourceProjectionUUID = sourceTransaction.getRuntimeProjectionId();
+        var targetProjectionUUID = targetTransaction.getRuntimeProjectionId();
+        var sourceAccount = sourceTransaction.getLedgerProjectionDescriptor().getAccount();
+        var targetAccount = targetTransaction.getLedgerProjectionDescriptor().getAccount();
 
         preflightAccountTransfer(entry, sourceTransaction, targetTransaction);
         var sourceRoleChange = LedgerInvestmentPlanRefSupport.roleChange(sourceProjectionUUID,
@@ -61,8 +62,9 @@ public final class LedgerTransferDirectionConverter
         new LedgerMutationContext(client).mutateEntry(entry, this::reverseAccountTransfer);
         LedgerInvestmentPlanRefSupport.updateProjectionRoles(client, entry, sourceRoleChange, targetRoleChange);
 
-        return AccountTransferEntry.readOnly(targetAccount, find(targetAccount, targetProjectionUUID), sourceAccount,
-                        find(sourceAccount, sourceProjectionUUID));
+        return AccountTransferEntry.readOnly(targetAccount,
+                        find(targetAccount, entry, LedgerProjectionRole.SOURCE_ACCOUNT), sourceAccount,
+                        find(sourceAccount, entry, LedgerProjectionRole.TARGET_ACCOUNT));
     }
 
     public PortfolioTransferEntry reverse(PortfolioTransferEntry transfer)
@@ -74,10 +76,10 @@ public final class LedgerTransferDirectionConverter
             throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_CONVERT_064.message("Only ledger-backed portfolio transfers can be reversed")); //$NON-NLS-1$
 
         var entry = sourceTransaction.getLedgerEntry();
-        var sourceProjectionUUID = sourceTransaction.getLedgerProjectionRef().getUUID();
-        var targetProjectionUUID = targetTransaction.getLedgerProjectionRef().getUUID();
-        var sourcePortfolio = sourceTransaction.getLedgerProjectionRef().getPortfolio();
-        var targetPortfolio = targetTransaction.getLedgerProjectionRef().getPortfolio();
+        var sourceProjectionUUID = sourceTransaction.getRuntimeProjectionId();
+        var targetProjectionUUID = targetTransaction.getRuntimeProjectionId();
+        var sourcePortfolio = sourceTransaction.getLedgerProjectionDescriptor().getPortfolio();
+        var targetPortfolio = targetTransaction.getLedgerProjectionDescriptor().getPortfolio();
 
         preflightPortfolioTransfer(entry, sourceTransaction, targetTransaction);
         var sourceRoleChange = LedgerInvestmentPlanRefSupport.roleChange(sourceProjectionUUID,
@@ -89,8 +91,9 @@ public final class LedgerTransferDirectionConverter
         new LedgerMutationContext(client).mutateEntry(entry, this::reversePortfolioTransfer);
         LedgerInvestmentPlanRefSupport.updateProjectionRoles(client, entry, sourceRoleChange, targetRoleChange);
 
-        return PortfolioTransferEntry.readOnly(targetPortfolio, find(targetPortfolio, targetProjectionUUID),
-                        sourcePortfolio, find(sourcePortfolio, sourceProjectionUUID));
+        return PortfolioTransferEntry.readOnly(targetPortfolio,
+                        find(targetPortfolio, entry, LedgerProjectionRole.SOURCE_PORTFOLIO),
+                        sourcePortfolio, find(sourcePortfolio, entry, LedgerProjectionRole.TARGET_PORTFOLIO));
     }
 
     private void preflightAccountTransfer(LedgerEntry entry, LedgerBackedAccountTransaction sourceTransaction,
@@ -102,14 +105,14 @@ public final class LedgerTransferDirectionConverter
         if (sourceTransaction.getLedgerEntry() != targetTransaction.getLedgerEntry())
             throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_PROJ_059.message("Transfer projections do not belong to the same ledger entry")); //$NON-NLS-1$
 
-        if (sourceTransaction.getLedgerProjectionRef().getRole() != LedgerProjectionRole.SOURCE_ACCOUNT
-                        || targetTransaction.getLedgerProjectionRef().getRole() != LedgerProjectionRole.TARGET_ACCOUNT)
+        if (sourceTransaction.getLedgerProjectionRole() != LedgerProjectionRole.SOURCE_ACCOUNT
+                        || targetTransaction.getLedgerProjectionRole() != LedgerProjectionRole.TARGET_ACCOUNT)
             throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_PROJ_060.message("Account transfer projections are not in source/target order")); //$NON-NLS-1$
 
         var sourceProjection = uniqueProjection(entry, LedgerProjectionRole.SOURCE_ACCOUNT);
         var targetProjection = uniqueProjection(entry, LedgerProjectionRole.TARGET_ACCOUNT);
-        var sourcePosting = LedgerProjectionSupport.primaryPosting(entry, sourceProjection);
-        var targetPosting = LedgerProjectionSupport.primaryPosting(entry, targetProjection);
+        var sourcePosting = sourceProjection.getPrimaryPosting();
+        var targetPosting = targetProjection.getPrimaryPosting();
 
         if (sourcePosting == targetPosting)
             throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_CONVERT_066.message("Account transfer source and target postings are ambiguous")); //$NON-NLS-1$
@@ -128,14 +131,14 @@ public final class LedgerTransferDirectionConverter
         if (sourceTransaction.getLedgerEntry() != targetTransaction.getLedgerEntry())
             throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_PROJ_062.message("Transfer projections do not belong to the same ledger entry")); //$NON-NLS-1$
 
-        if (sourceTransaction.getLedgerProjectionRef().getRole() != LedgerProjectionRole.SOURCE_PORTFOLIO
-                        || targetTransaction.getLedgerProjectionRef().getRole() != LedgerProjectionRole.TARGET_PORTFOLIO)
+        if (sourceTransaction.getLedgerProjectionRole() != LedgerProjectionRole.SOURCE_PORTFOLIO
+                        || targetTransaction.getLedgerProjectionRole() != LedgerProjectionRole.TARGET_PORTFOLIO)
             throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_PROJ_063.message("Portfolio transfer projections are not in source/target order")); //$NON-NLS-1$
 
         var sourceProjection = uniqueProjection(entry, LedgerProjectionRole.SOURCE_PORTFOLIO);
         var targetProjection = uniqueProjection(entry, LedgerProjectionRole.TARGET_PORTFOLIO);
-        var sourcePosting = LedgerProjectionSupport.primaryPosting(entry, sourceProjection);
-        var targetPosting = LedgerProjectionSupport.primaryPosting(entry, targetProjection);
+        var sourcePosting = sourceProjection.getPrimaryPosting();
+        var targetPosting = targetProjection.getPrimaryPosting();
 
         if (sourcePosting == targetPosting)
             throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_CONVERT_068.message("Portfolio transfer source and target postings are ambiguous")); //$NON-NLS-1$
@@ -149,13 +152,13 @@ public final class LedgerTransferDirectionConverter
     {
         var sourceProjection = uniqueProjection(entry, LedgerProjectionRole.SOURCE_ACCOUNT);
         var targetProjection = uniqueProjection(entry, LedgerProjectionRole.TARGET_ACCOUNT);
-        var sourcePosting = LedgerProjectionSupport.primaryPosting(entry, sourceProjection);
-        var targetPosting = LedgerProjectionSupport.primaryPosting(entry, targetProjection);
+        var sourcePosting = sourceProjection.getPrimaryPosting();
+        var targetPosting = targetProjection.getPrimaryPosting();
 
         reverseAccountTransferForex(sourcePosting, targetPosting);
 
-        sourceProjection.setRole(LedgerProjectionRole.TARGET_ACCOUNT);
-        targetProjection.setRole(LedgerProjectionRole.SOURCE_ACCOUNT);
+        markPrimary(sourcePosting, LedgerProjectionRole.TARGET_ACCOUNT);
+        markPrimary(targetPosting, LedgerProjectionRole.SOURCE_ACCOUNT);
     }
 
     private void reverseAccountTransferForex(LedgerPosting oldSourcePosting, LedgerPosting oldTargetPosting)
@@ -209,13 +212,30 @@ public final class LedgerTransferDirectionConverter
         var sourceProjection = uniqueProjection(entry, LedgerProjectionRole.SOURCE_PORTFOLIO);
         var targetProjection = uniqueProjection(entry, LedgerProjectionRole.TARGET_PORTFOLIO);
 
-        sourceProjection.setRole(LedgerProjectionRole.TARGET_PORTFOLIO);
-        targetProjection.setRole(LedgerProjectionRole.SOURCE_PORTFOLIO);
+        markPrimary(sourceProjection.getPrimaryPosting(), LedgerProjectionRole.TARGET_PORTFOLIO);
+        markPrimary(targetProjection.getPrimaryPosting(), LedgerProjectionRole.SOURCE_PORTFOLIO);
     }
 
-    private LedgerProjectionRef uniqueProjection(LedgerEntry entry, LedgerProjectionRole role)
+    private void markPrimary(LedgerPosting posting, LedgerProjectionRole role)
     {
-        var projections = entry.getProjectionRefs().stream().filter(projection -> projection.getRole() == role).toList();
+        posting.setDirection(direction(role));
+        posting.setLocalKey(role.name());
+    }
+
+    private LedgerPostingDirection direction(LedgerProjectionRole role)
+    {
+        return switch (role)
+        {
+            case SOURCE_ACCOUNT, SOURCE_PORTFOLIO -> LedgerPostingDirection.OUTBOUND;
+            case TARGET_ACCOUNT, TARGET_PORTFOLIO -> LedgerPostingDirection.INBOUND;
+            default -> LedgerPostingDirection.NEUTRAL;
+        };
+    }
+
+    private DerivedProjectionDescriptor uniqueProjection(LedgerEntry entry, LedgerProjectionRole role)
+    {
+        var projections = LedgerProjectionSupport.descriptors(entry).stream()
+                        .filter(projection -> projection.getRole() == role).toList();
 
         if (projections.size() != 1)
             throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_PROJ_065
@@ -236,6 +256,19 @@ public final class LedgerTransferDirectionConverter
                                                         + projectionUUID));
     }
 
+    private AccountTransaction find(Account account, LedgerEntry entry, LedgerProjectionRole role)
+    {
+        return account.getTransactions().stream() //
+                        .filter(LedgerBackedAccountTransaction.class::isInstance) //
+                        .map(LedgerBackedAccountTransaction.class::cast) //
+                        .filter(transaction -> transaction.getLedgerEntry() == entry) //
+                        .filter(transaction -> transaction.getLedgerProjectionRole() == role) //
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalStateException(
+                                        "Ledger account transfer projection was not materialized: " //$NON-NLS-1$
+                                                        + entry.getUUID() + ":" + role)); //$NON-NLS-1$
+    }
+
     private PortfolioTransaction find(Portfolio portfolio, String projectionUUID)
     {
         return portfolio.getTransactions().stream() //
@@ -245,5 +278,18 @@ public final class LedgerTransferDirectionConverter
                         .orElseThrow(() -> new IllegalStateException(
                                         "Ledger portfolio transfer projection was not materialized: " //$NON-NLS-1$
                                                         + projectionUUID));
+    }
+
+    private PortfolioTransaction find(Portfolio portfolio, LedgerEntry entry, LedgerProjectionRole role)
+    {
+        return portfolio.getTransactions().stream() //
+                        .filter(LedgerBackedPortfolioTransaction.class::isInstance) //
+                        .map(LedgerBackedPortfolioTransaction.class::cast) //
+                        .filter(transaction -> transaction.getLedgerEntry() == entry) //
+                        .filter(transaction -> transaction.getLedgerProjectionRole() == role) //
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalStateException(
+                                        "Ledger portfolio transfer projection was not materialized: " //$NON-NLS-1$
+                                                        + entry.getUUID() + ":" + role)); //$NON-NLS-1$
     }
 }

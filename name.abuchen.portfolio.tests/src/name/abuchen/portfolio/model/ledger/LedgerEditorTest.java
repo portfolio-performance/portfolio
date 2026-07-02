@@ -158,7 +158,7 @@ public class LedgerEditorTest
         var client = new Client();
         var account = account();
         var entry = creator(client).createDeposit(metadata(), cashLeg(account, 100)).getEntry();
-        var projectionUUID = entry.getProjectionRefs().get(0).getUUID();
+        var projectionUUID = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0).getRuntimeProjectionId();
         var postingUUID = entry.getPostings().get(0).getUUID();
 
         LedgerProjectionService.materialize(client);
@@ -169,7 +169,7 @@ public class LedgerEditorTest
                         LedgerAccountTransactionEdit.builder().amount(150).currency(CurrencyUnit.USD).build());
 
         assertThat(entry.getUUID(), is(((LedgerBackedTransaction) transaction).getLedgerEntry().getUUID()));
-        assertThat(entry.getProjectionRefs().get(0).getUUID(), is(projectionUUID));
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0).getRuntimeProjectionId(), is(projectionUUID));
         assertThat(entry.getPostings().get(0).getUUID(), is(postingUUID));
         assertThat(transaction.getAmount(), is(150L));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.USD));
@@ -229,7 +229,7 @@ public class LedgerEditorTest
         var client = new Client();
         var account = account();
         var entry = creator(client).createDeposit(metadata(), cashLeg(account, 100)).getEntry();
-        var projectionCount = entry.getProjectionRefs().size();
+        var projectionCount = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).size();
         var updater = new LedgerUnitPostingUpdater();
 
         updater.apply(entry, LedgerUnitPostingPatch.of(LedgerUnitPostingEdit.add(LedgerPostingType.FEE, money(1))));
@@ -267,7 +267,7 @@ public class LedgerEditorTest
 
         updater.apply(entry, LedgerUnitPostingPatch.of(LedgerUnitPostingEdit.remove(feeUUID)));
 
-        assertThat(entry.getProjectionRefs().size(), is(projectionCount));
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).size(), is(projectionCount));
         assertTrue(entry.getPostings().stream().noneMatch(posting -> posting.getUUID().equals(feeUUID)));
     }
 
@@ -283,7 +283,7 @@ public class LedgerEditorTest
         var portfolio = portfolio();
         var newSecurity = security();
         var entry = creator(client).createInboundDelivery(metadata(), deliveryLeg(portfolio)).getEntry();
-        var projectionUUID = entry.getProjectionRefs().get(0).getUUID();
+        var projectionUUID = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0).getRuntimeProjectionId();
         var postingUUID = entry.getPostings().get(0).getUUID();
 
         LedgerProjectionService.materialize(client);
@@ -294,7 +294,7 @@ public class LedgerEditorTest
                         .security(newSecurity).shares(Values.Share.factorize(7)).amount(77L).build());
 
         assertThat(entry.getType(), is(LedgerEntryType.DELIVERY_INBOUND));
-        assertThat(entry.getProjectionRefs().get(0).getUUID(), is(projectionUUID));
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0).getRuntimeProjectionId(), is(projectionUUID));
         assertThat(entry.getPostings().get(0).getUUID(), is(postingUUID));
         assertSame(newSecurity, transaction.getSecurity());
         assertThat(transaction.getShares(), is(Values.Share.factorize(7)));
@@ -315,8 +315,8 @@ public class LedgerEditorTest
         var newSecurity = security();
         var entry = creator(client).createBuy(metadata(), cashLeg(account, 100), portfolioLeg(portfolio, 100),
                         LedgerCreationUnits.none()).getEntry();
-        var accountProjectionUUID = projection(entry, LedgerProjectionRole.ACCOUNT).getUUID();
-        var portfolioProjectionUUID = projection(entry, LedgerProjectionRole.PORTFOLIO).getUUID();
+        var accountProjectionUUID = projection(entry, LedgerProjectionRole.ACCOUNT).getRuntimeProjectionId();
+        var portfolioProjectionUUID = projection(entry, LedgerProjectionRole.PORTFOLIO).getRuntimeProjectionId();
         var cashPostingUUID = posting(entry, LedgerPostingType.CASH).getUUID();
         var securityPostingUUID = posting(entry, LedgerPostingType.SECURITY).getUUID();
 
@@ -328,8 +328,8 @@ public class LedgerEditorTest
         new LedgerBuySellEditor().apply(accountTransaction, LedgerBuySellEdit.builder().cashAmount(120L)
                         .securityAmount(121L).security(newSecurity).shares(Values.Share.factorize(9)).build());
 
-        assertThat(projection(entry, LedgerProjectionRole.ACCOUNT).getUUID(), is(accountProjectionUUID));
-        assertThat(projection(entry, LedgerProjectionRole.PORTFOLIO).getUUID(), is(portfolioProjectionUUID));
+        assertThat(projection(entry, LedgerProjectionRole.ACCOUNT).getRuntimeProjectionId(), is(accountProjectionUUID));
+        assertThat(projection(entry, LedgerProjectionRole.PORTFOLIO).getRuntimeProjectionId(), is(portfolioProjectionUUID));
         assertThat(posting(entry, LedgerPostingType.CASH).getUUID(), is(cashPostingUUID));
         assertThat(posting(entry, LedgerPostingType.SECURITY).getUUID(), is(securityPostingUUID));
         assertThat(accountTransaction.getAmount(), is(120L));
@@ -418,27 +418,6 @@ public class LedgerEditorTest
                         () -> new LedgerBuySellEditor().validate(entry, edit));
         assertThat(validateFailure.getMessage(), is(LedgerDiagnosticCode.LEDGER_CONVERT_026
                         .message("Unsupported buy/sell edit for DEPOSIT")));
-    }
-
-    /**
-     * Checks the ledger-backed editing scenario: projection-removal guard reports the projection diagnostic code.
-     * The visible transaction must reflect the ledger entry after the operation.
-     * This protects support diagnostics from ambiguous projection edit failures.
-     */
-    @Test
-    public void testProjectionRemovedByEditMessageUsesProjectionCode() throws Exception
-    {
-        var method = LedgerAccountTransactionEditor.class.getDeclaredMethod("ensureProjectionExists", LedgerEntry.class, //$NON-NLS-1$
-                        String.class);
-        var failureUUID = "missing-projection";
-
-        method.setAccessible(true);
-
-        var failure = assertThrows(java.lang.reflect.InvocationTargetException.class,
-                        () -> method.invoke(new LedgerAccountTransactionEditor(), new LedgerEntry(), failureUUID));
-
-        assertThat(failure.getCause().getMessage(), is(LedgerDiagnosticCode.LEDGER_PROJ_004
-                        .message("Projection was removed by edit: " + failureUUID)));
     }
 
     /**
@@ -1130,7 +1109,7 @@ public class LedgerEditorTest
 
     private LedgerPosting primaryPosting(LedgerEntry entry, LedgerProjectionRole role)
     {
-        return LedgerProjectionSupport.primaryPosting(entry, projection(entry, role));
+        return projection(entry, role).getPrimaryPosting();
     }
 
     private void assertPrimaryForex(LedgerEntry entry, LedgerProjectionRole role, String currency, long amount,
@@ -1167,9 +1146,9 @@ public class LedgerEditorTest
                         .findFirst().orElseThrow();
     }
 
-    private LedgerProjectionRef projection(LedgerEntry entry, LedgerProjectionRole role)
+    private name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor projection(LedgerEntry entry, LedgerProjectionRole role)
     {
-        return entry.getProjectionRefs().stream().filter(projection -> projection.getRole() == role).findFirst()
+        return name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream().filter(projection -> projection.getRole() == role).findFirst()
                         .orElseThrow();
     }
 

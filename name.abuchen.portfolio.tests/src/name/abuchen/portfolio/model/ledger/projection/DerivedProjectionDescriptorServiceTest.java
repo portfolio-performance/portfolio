@@ -7,7 +7,6 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDateTime;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -24,10 +23,8 @@ import name.abuchen.portfolio.model.ledger.LedgerPosting;
 import name.abuchen.portfolio.model.ledger.LedgerPostingDirection;
 import name.abuchen.portfolio.model.ledger.LedgerPostingSemanticRole;
 import name.abuchen.portfolio.model.ledger.LedgerPostingUnitRole;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.LedgerTransactionMetadata;
-import name.abuchen.portfolio.model.ledger.ProjectionMembershipRole;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerAccountCashLeg;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerCashTransferLeg;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerCreationUnits;
@@ -64,7 +61,7 @@ public class DerivedProjectionDescriptorServiceTest
         var descriptors = descriptors(entry);
 
         assertThat(descriptors.size(), is(1));
-        assertMatchesProjectionRef(entry, descriptors.get(0), entry.getProjectionRefs().get(0));
+        assertDescriptor(entry, descriptors.get(0), LedgerProjectionRole.ACCOUNT);
     }
 
     @Test
@@ -82,10 +79,9 @@ public class DerivedProjectionDescriptorServiceTest
         var descriptors = descriptors(entry);
 
         assertThat(roles(descriptors), is(Set.of(LedgerProjectionRole.ACCOUNT, LedgerProjectionRole.PORTFOLIO)));
-        assertMatchesProjectionRef(entry, descriptor(descriptors, LedgerProjectionRole.ACCOUNT),
-                        projection(entry, LedgerProjectionRole.ACCOUNT));
-        assertMatchesProjectionRef(entry, descriptor(descriptors, LedgerProjectionRole.PORTFOLIO),
-                        projection(entry, LedgerProjectionRole.PORTFOLIO));
+        assertDescriptor(entry, descriptor(descriptors, LedgerProjectionRole.ACCOUNT), LedgerProjectionRole.ACCOUNT);
+        assertDescriptor(entry, descriptor(descriptors, LedgerProjectionRole.PORTFOLIO),
+                        LedgerProjectionRole.PORTFOLIO);
 
         entry = creator(client).createSell(metadata(), LedgerAccountCashLeg.of(account, money(100)),
                         LedgerPortfolioSecurityLeg.of(portfolio,
@@ -96,10 +92,9 @@ public class DerivedProjectionDescriptorServiceTest
         descriptors = descriptors(entry);
 
         assertThat(roles(descriptors), is(Set.of(LedgerProjectionRole.ACCOUNT, LedgerProjectionRole.PORTFOLIO)));
-        assertMatchesProjectionRef(entry, descriptor(descriptors, LedgerProjectionRole.ACCOUNT),
-                        projection(entry, LedgerProjectionRole.ACCOUNT));
-        assertMatchesProjectionRef(entry, descriptor(descriptors, LedgerProjectionRole.PORTFOLIO),
-                        projection(entry, LedgerProjectionRole.PORTFOLIO));
+        assertDescriptor(entry, descriptor(descriptors, LedgerProjectionRole.ACCOUNT), LedgerProjectionRole.ACCOUNT);
+        assertDescriptor(entry, descriptor(descriptors, LedgerProjectionRole.PORTFOLIO),
+                        LedgerProjectionRole.PORTFOLIO);
     }
 
     @Test
@@ -116,7 +111,7 @@ public class DerivedProjectionDescriptorServiceTest
         var descriptors = descriptors(entry);
 
         assertThat(roles(descriptors), is(Set.of(LedgerProjectionRole.DELIVERY_INBOUND)));
-        assertMatchesProjectionRef(entry, descriptors.get(0), projection(entry, LedgerProjectionRole.DELIVERY_INBOUND));
+        assertDescriptor(entry, descriptors.get(0), LedgerProjectionRole.DELIVERY_INBOUND);
 
         entry = creator(client).createOutboundDelivery(metadata(),
                         LedgerDeliveryLeg.of(portfolio,
@@ -127,8 +122,7 @@ public class DerivedProjectionDescriptorServiceTest
         descriptors = descriptors(entry);
 
         assertThat(roles(descriptors), is(Set.of(LedgerProjectionRole.DELIVERY_OUTBOUND)));
-        assertMatchesProjectionRef(entry, descriptors.get(0),
-                        projection(entry, LedgerProjectionRole.DELIVERY_OUTBOUND));
+        assertDescriptor(entry, descriptors.get(0), LedgerProjectionRole.DELIVERY_OUTBOUND);
     }
 
     @Test
@@ -146,10 +140,10 @@ public class DerivedProjectionDescriptorServiceTest
 
         assertSame(source, descriptor(descriptors, LedgerProjectionRole.SOURCE_ACCOUNT).getAccount());
         assertSame(target, descriptor(descriptors, LedgerProjectionRole.TARGET_ACCOUNT).getAccount());
-        assertMatchesProjectionRef(entry, descriptor(descriptors, LedgerProjectionRole.SOURCE_ACCOUNT),
-                        projection(entry, LedgerProjectionRole.SOURCE_ACCOUNT));
-        assertMatchesProjectionRef(entry, descriptor(descriptors, LedgerProjectionRole.TARGET_ACCOUNT),
-                        projection(entry, LedgerProjectionRole.TARGET_ACCOUNT));
+        assertDescriptor(entry, descriptor(descriptors, LedgerProjectionRole.SOURCE_ACCOUNT),
+                        LedgerProjectionRole.SOURCE_ACCOUNT);
+        assertDescriptor(entry, descriptor(descriptors, LedgerProjectionRole.TARGET_ACCOUNT),
+                        LedgerProjectionRole.TARGET_ACCOUNT);
     }
 
     @Test
@@ -170,10 +164,10 @@ public class DerivedProjectionDescriptorServiceTest
 
         assertSame(source, descriptor(descriptors, LedgerProjectionRole.SOURCE_PORTFOLIO).getPortfolio());
         assertSame(target, descriptor(descriptors, LedgerProjectionRole.TARGET_PORTFOLIO).getPortfolio());
-        assertMatchesProjectionRef(entry, descriptor(descriptors, LedgerProjectionRole.SOURCE_PORTFOLIO),
-                        projection(entry, LedgerProjectionRole.SOURCE_PORTFOLIO));
-        assertMatchesProjectionRef(entry, descriptor(descriptors, LedgerProjectionRole.TARGET_PORTFOLIO),
-                        projection(entry, LedgerProjectionRole.TARGET_PORTFOLIO));
+        assertDescriptor(entry, descriptor(descriptors, LedgerProjectionRole.SOURCE_PORTFOLIO),
+                        LedgerProjectionRole.SOURCE_PORTFOLIO);
+        assertDescriptor(entry, descriptor(descriptors, LedgerProjectionRole.TARGET_PORTFOLIO),
+                        LedgerProjectionRole.TARGET_PORTFOLIO);
     }
 
     @Test
@@ -187,14 +181,14 @@ public class DerivedProjectionDescriptorServiceTest
         assertThat(roles(descriptors), is(Set.of(LedgerProjectionRole.OLD_SECURITY_LEG,
                         LedgerProjectionRole.DELIVERY_INBOUND, LedgerProjectionRole.NEW_SECURITY_LEG,
                         LedgerProjectionRole.CASH_COMPENSATION)));
-        assertMatchesProjectionRef(entry, descriptor(descriptors, LedgerProjectionRole.OLD_SECURITY_LEG),
-                        projection(entry, LedgerProjectionRole.OLD_SECURITY_LEG));
-        assertMatchesProjectionRef(entry, descriptor(descriptors, LedgerProjectionRole.DELIVERY_INBOUND),
-                        projection(entry, LedgerProjectionRole.DELIVERY_INBOUND));
-        assertMatchesProjectionRef(entry, descriptor(descriptors, LedgerProjectionRole.NEW_SECURITY_LEG),
-                        projection(entry, LedgerProjectionRole.NEW_SECURITY_LEG));
-        assertMatchesProjectionRef(entry, descriptor(descriptors, LedgerProjectionRole.CASH_COMPENSATION),
-                        projection(entry, LedgerProjectionRole.CASH_COMPENSATION));
+        assertDescriptor(entry, descriptor(descriptors, LedgerProjectionRole.OLD_SECURITY_LEG),
+                        LedgerProjectionRole.OLD_SECURITY_LEG);
+        assertDescriptor(entry, descriptor(descriptors, LedgerProjectionRole.DELIVERY_INBOUND),
+                        LedgerProjectionRole.DELIVERY_INBOUND);
+        assertDescriptor(entry, descriptor(descriptors, LedgerProjectionRole.NEW_SECURITY_LEG),
+                        LedgerProjectionRole.NEW_SECURITY_LEG);
+        assertDescriptor(entry, descriptor(descriptors, LedgerProjectionRole.CASH_COMPENSATION),
+                        LedgerProjectionRole.CASH_COMPENSATION);
     }
 
     @Test
@@ -260,17 +254,11 @@ public class DerivedProjectionDescriptorServiceTest
         return result.getDescriptors();
     }
 
-    private void assertMatchesProjectionRef(LedgerEntry entry, DerivedProjectionDescriptor descriptor,
-                    LedgerProjectionRef projectionRef)
+    private void assertDescriptor(LedgerEntry entry, DerivedProjectionDescriptor descriptor, LedgerProjectionRole role)
     {
         assertSame(entry, descriptor.getEntry());
-        assertThat(descriptor.getRole(), is(projectionRef.getRole()));
-        assertSame(LedgerProjectionSupport.primaryPosting(entry, projectionRef), descriptor.getPrimaryPosting());
-
-        if (descriptor.getViewKind() == DerivedProjectionViewKind.ACCOUNT)
-            assertSame(projectionRef.getAccount(), descriptor.getAccount());
-        else
-            assertSame(projectionRef.getPortfolio(), descriptor.getPortfolio());
+        assertThat(descriptor.getRole(), is(role));
+        assertSame(LedgerProjectionSupport.primaryPosting(entry, role), descriptor.getPrimaryPosting());
     }
 
     private Set<LedgerProjectionRole> roles(List<DerivedProjectionDescriptor> descriptors)
@@ -284,56 +272,6 @@ public class DerivedProjectionDescriptorServiceTest
         return descriptors.stream().filter(descriptor -> descriptor.getRole() == role).findFirst().orElseThrow();
     }
 
-    private LedgerProjectionRef projection(LedgerEntry entry, LedgerProjectionRole role)
-    {
-        return entry.getProjectionRefs().stream().filter(ref -> ref.getRole() == role).findFirst().orElseThrow();
-    }
-
-    private void annotateFromProjectionRefs(LedgerEntry entry)
-    {
-        for (var ref : entry.getProjectionRefs())
-        {
-            var primary = LedgerProjectionSupport.primaryPosting(entry, ref);
-
-            markPrimary(primary, ref.getRole());
-
-            for (var membership : ref.getMemberships())
-                markUnitPosting(entry, membership.getPostingUUID(), membership.getRole(), primary.getGroupKey());
-        }
-    }
-
-    private void markPrimary(LedgerPosting posting, LedgerProjectionRole role)
-    {
-        posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
-        posting.setLocalKey(role.name());
-
-        if (posting.getAccount() != null)
-            posting.setSemanticRole(LedgerPostingSemanticRole.CASH);
-        else if (posting.getPortfolio() != null)
-            posting.setSemanticRole(LedgerPostingSemanticRole.SECURITY);
-
-        posting.setDirection(direction(role));
-        posting.setCorporateActionLeg(corporateActionLeg(posting));
-    }
-
-    private void markUnitPosting(LedgerEntry entry, String postingUUID, ProjectionMembershipRole role, String groupKey)
-    {
-        var posting = entry.getPostings().stream().filter(candidate -> postingUUID.equals(candidate.getUUID()))
-                        .findFirst().orElseThrow();
-
-        if (posting.getUnitRole() == LedgerPostingUnitRole.PRIMARY)
-            return;
-
-        posting.setGroupKey(groupKey);
-        posting.setUnitRole(switch (role)
-        {
-            case FEE_UNIT -> LedgerPostingUnitRole.FEE;
-            case TAX_UNIT -> LedgerPostingUnitRole.TAX;
-            case GROSS_VALUE_UNIT -> LedgerPostingUnitRole.GROSS_VALUE;
-            default -> posting.getUnitRole();
-        });
-    }
-
     private LedgerPostingDirection direction(LedgerProjectionRole role)
     {
         return switch (role)
@@ -343,26 +281,6 @@ public class DerivedProjectionDescriptorServiceTest
                 LedgerPostingDirection.INBOUND;
             default -> LedgerPostingDirection.NEUTRAL;
         };
-    }
-
-    private CorporateActionLeg corporateActionLeg(LedgerPosting posting)
-    {
-        return posting.getParameters().stream() //
-                        .filter(parameter -> parameter.getType() == LedgerParameterType.CORPORATE_ACTION_LEG) //
-                        .map(LedgerParameter::getValue) //
-                        .filter(String.class::isInstance) //
-                        .map(String.class::cast) //
-                        .map(this::corporateActionLeg) //
-                        .findFirst().orElse(null);
-    }
-
-    private CorporateActionLeg corporateActionLeg(String code)
-    {
-        for (var leg : CorporateActionLeg.values())
-            if (leg.getCode().equals(code))
-                return leg;
-
-        throw new IllegalArgumentException(code);
     }
 
     private void moveFirstPostingToEnd(LedgerEntry entry)
@@ -395,15 +313,6 @@ public class DerivedProjectionDescriptorServiceTest
         entry.addPosting(compensation);
         entry.addPosting(fee);
         entry.addPosting(tax);
-        entry.addProjectionRef(portfolioProjection(LedgerProjectionRole.OLD_SECURITY_LEG, fixture.portfolio, oldLeg));
-        entry.addProjectionRef(portfolioProjection(LedgerProjectionRole.DELIVERY_INBOUND, fixture.portfolio,
-                        retainedLeg));
-        entry.addProjectionRef(portfolioProjection(LedgerProjectionRole.NEW_SECURITY_LEG, fixture.portfolio, newLeg));
-        var cashProjection = accountProjection(LedgerProjectionRole.CASH_COMPENSATION, fixture.account, compensation);
-        cashProjection.setPostingGroup(compensation);
-        cashProjection.addMembership(fee.getUUID(), ProjectionMembershipRole.FEE_UNIT);
-        cashProjection.addMembership(tax.getUUID(), ProjectionMembershipRole.TAX_UNIT);
-        entry.addProjectionRef(cashProjection);
         fee.setGroupKey(compensation.getGroupKey());
         tax.setGroupKey(compensation.getGroupKey());
 
@@ -511,29 +420,6 @@ public class DerivedProjectionDescriptorServiceTest
         posting.setUnitRole(role);
 
         return posting;
-    }
-
-    private LedgerProjectionRef accountProjection(LedgerProjectionRole role, Account account, LedgerPosting posting)
-    {
-        var projection = new LedgerProjectionRef(role.name());
-
-        projection.setRole(role);
-        projection.setAccount(account);
-        projection.setPrimaryPosting(posting);
-
-        return projection;
-    }
-
-    private LedgerProjectionRef portfolioProjection(LedgerProjectionRole role, Portfolio portfolio,
-                    LedgerPosting posting)
-    {
-        var projection = new LedgerProjectionRef(role.name());
-
-        projection.setRole(role);
-        projection.setPortfolio(portfolio);
-        projection.setPrimaryPosting(posting);
-
-        return projection;
     }
 
     private LedgerTransactionCreator creator(Client client)

@@ -20,6 +20,7 @@ import name.abuchen.portfolio.model.ledger.compatibility.LedgerPortfolioSecurity
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerSecurityQuantity;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerTransactionCreator;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
+import name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
@@ -136,9 +137,9 @@ final class LedgerGuardrailTestSupport
         return entry.getPostings().stream().filter(posting -> posting.getType() == type).findFirst().orElseThrow();
     }
 
-    static LedgerProjectionRef projection(LedgerEntry entry, LedgerProjectionRole role)
+    static DerivedProjectionDescriptor projection(LedgerEntry entry, LedgerProjectionRole role)
     {
-        return entry.getProjectionRefs().stream().filter(projection -> projection.getRole() == role).findFirst()
+        return name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream().filter(projection -> projection.getRole() == role).findFirst()
                         .orElseThrow();
     }
 
@@ -150,7 +151,7 @@ final class LedgerGuardrailTestSupport
         {
             return new Snapshot(entry.getDateTime(), entry.getNote(), entry.getSource(),
                             entry.getPostings().stream().map(PostingSnapshot::of).toList(),
-                            entry.getProjectionRefs().stream().map(ProjectionSnapshot::of).toList(),
+                            name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream().map(ProjectionSnapshot::of).toList(),
                             accountOwners(entry).stream().map(OwnerListSnapshot::of).toList(),
                             portfolioOwners(entry).stream().map(OwnerListSnapshot::of).toList());
         }
@@ -161,7 +162,7 @@ final class LedgerGuardrailTestSupport
             assertThat(entry.getNote(), is(note));
             assertThat(entry.getSource(), is(source));
             assertThat(entry.getPostings().stream().map(PostingSnapshot::of).toList(), is(postings));
-            assertThat(entry.getProjectionRefs().stream().map(ProjectionSnapshot::of).toList(), is(projections));
+            assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream().map(ProjectionSnapshot::of).toList(), is(projections));
             assertThat(accountOwners(entry).stream().map(OwnerListSnapshot::of).toList(), is(accountProjectionUUIDs));
             assertThat(portfolioOwners(entry).stream().map(OwnerListSnapshot::of).toList(), is(portfolioProjectionUUIDs));
         }
@@ -172,20 +173,20 @@ final class LedgerGuardrailTestSupport
             assertThat(entry.getNote(), is(newNote));
             assertThat(entry.getSource(), is(newSource));
             assertThat(entry.getPostings().stream().map(PostingSnapshot::of).toList(), is(postings));
-            assertThat(entry.getProjectionRefs().stream().map(ProjectionSnapshot::of).toList(), is(projections));
+            assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream().map(ProjectionSnapshot::of).toList(), is(projections));
             assertThat(accountOwners(entry).stream().map(OwnerListSnapshot::of).toList(), is(accountProjectionUUIDs));
             assertThat(portfolioOwners(entry).stream().map(OwnerListSnapshot::of).toList(), is(portfolioProjectionUUIDs));
         }
 
         private static List<Account> accountOwners(LedgerEntry entry)
         {
-            return entry.getProjectionRefs().stream().map(LedgerProjectionRef::getAccount)
+            return name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream().map(DerivedProjectionDescriptor::getAccount)
                             .filter(account -> account != null).distinct().toList();
         }
 
         private static List<Portfolio> portfolioOwners(LedgerEntry entry)
         {
-            return entry.getProjectionRefs().stream().map(LedgerProjectionRef::getPortfolio)
+            return name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream().map(DerivedProjectionDescriptor::getPortfolio)
                             .filter(portfolio -> portfolio != null).distinct().toList();
         }
     }
@@ -218,14 +219,14 @@ final class LedgerGuardrailTestSupport
         }
     }
 
-    private record ProjectionSnapshot(String uuid, LedgerProjectionRole role, Account account, Portfolio portfolio,
-                    String primaryPostingUUID, String postingGroupUUID)
+    private record ProjectionSnapshot(String runtimeId, LedgerProjectionRole role, Account account, Portfolio portfolio,
+                    String primaryPostingId, String groupKey)
     {
-        static ProjectionSnapshot of(LedgerProjectionRef projection)
+        static ProjectionSnapshot of(DerivedProjectionDescriptor projection)
         {
-            return new ProjectionSnapshot(projection.getUUID(), projection.getRole(), projection.getAccount(),
-                            projection.getPortfolio(), projection.getPrimaryPostingUUID(),
-                            projection.getPostingGroupUUID());
+            return new ProjectionSnapshot(projection.getRuntimeProjectionId(), projection.getRole(),
+                            projection.getAccount(), projection.getPortfolio(),
+                            projection.getPrimaryPosting().getUUID(), projection.getPrimaryPosting().getGroupKey());
         }
     }
 }

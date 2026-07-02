@@ -10,9 +10,6 @@ import name.abuchen.portfolio.model.ledger.Ledger;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerParameter;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
-import name.abuchen.portfolio.model.ledger.ProjectionMembershipRole;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
 
@@ -87,11 +84,6 @@ final class LedgerModelLoadSupport
         Objects.requireNonNull(entry).addPosting(posting);
     }
 
-    static void addProjectionRef(LedgerEntry entry, LedgerProjectionRef projectionRef)
-    {
-        Objects.requireNonNull(entry).addProjectionRef(projectionRef);
-    }
-
     static LedgerPosting newPosting(String uuid, LedgerPostingType type)
     {
         var posting = new LedgerPosting(uuid);
@@ -151,38 +143,4 @@ final class LedgerModelLoadSupport
         Objects.requireNonNull(posting).addParameter(parameter);
     }
 
-    static LedgerProjectionRef newProjectionRef(String uuid, LedgerProjectionRole role)
-    {
-        var projectionRef = new LedgerProjectionRef(uuid);
-
-        projectionRef.setRole(Objects.requireNonNull(role));
-
-        return projectionRef;
-    }
-
-    static void setProjectionRefAccount(LedgerProjectionRef projectionRef, Account account)
-    {
-        Objects.requireNonNull(projectionRef).setAccount(account);
-    }
-
-    static void setProjectionRefPortfolio(LedgerProjectionRef projectionRef, Portfolio portfolio)
-    {
-        Objects.requireNonNull(projectionRef).setPortfolio(portfolio);
-    }
-
-    static void setProjectionRefPrimaryPostingUUID(LedgerProjectionRef projectionRef, String primaryPostingUUID)
-    {
-        Objects.requireNonNull(projectionRef).setPrimaryPostingUUID(primaryPostingUUID);
-    }
-
-    static void setProjectionRefPostingGroupUUID(LedgerProjectionRef projectionRef, String postingGroupUUID)
-    {
-        Objects.requireNonNull(projectionRef).setPostingGroupUUID(postingGroupUUID);
-    }
-
-    static void addProjectionRefMembership(LedgerProjectionRef projectionRef, String postingUUID,
-                    ProjectionMembershipRole role)
-    {
-        Objects.requireNonNull(projectionRef).addMembership(postingUUID, role);
-    }
 }

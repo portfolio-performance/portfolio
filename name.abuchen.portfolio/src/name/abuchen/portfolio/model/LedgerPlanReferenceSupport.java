@@ -3,7 +3,6 @@ package name.abuchen.portfolio.model;
 import java.util.Objects;
 
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 
 /**
@@ -17,10 +16,10 @@ final class LedgerPlanReferenceSupport
     {
     }
 
-    static RoleChange roleChange(String projectionUUID, LedgerProjectionRole sourceRole,
+    static RoleChange roleChange(String runtimeProjectionId, LedgerProjectionRole sourceRole,
                     LedgerProjectionRole targetRole)
     {
-        return new RoleChange(Objects.requireNonNull(projectionUUID), Objects.requireNonNull(sourceRole),
+        return new RoleChange(Objects.requireNonNull(runtimeProjectionId), Objects.requireNonNull(sourceRole),
                         Objects.requireNonNull(targetRole));
     }
 
@@ -34,16 +33,12 @@ final class LedgerPlanReferenceSupport
         return true;
     }
 
-    static String projectionUUID(LedgerEntry entry, LedgerProjectionRole role)
+    static String runtimeProjectionId(LedgerEntry entry, LedgerProjectionRole role)
     {
-        return entry.getProjectionRefs().stream() //
-                        .filter(projection -> projection.getRole() == role) //
-                        .map(LedgerProjectionRef::getUUID) //
-                        .findFirst() //
-                        .orElse(""); //$NON-NLS-1$
+        return entry.getUUID() + ":" + role; //$NON-NLS-1$
     }
 
-    record RoleChange(String projectionUUID, LedgerProjectionRole sourceRole, LedgerProjectionRole targetRole)
+    record RoleChange(String runtimeProjectionId, LedgerProjectionRole sourceRole, LedgerProjectionRole targetRole)
     {
     }
 }

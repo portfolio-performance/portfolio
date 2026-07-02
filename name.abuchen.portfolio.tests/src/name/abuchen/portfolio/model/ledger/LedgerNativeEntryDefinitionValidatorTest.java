@@ -121,7 +121,7 @@ public class LedgerNativeEntryDefinitionValidatorTest
         var entry = copyValidSpinOff();
         var sourcePosting = postingFor(entry, LedgerProjectionRole.OLD_SECURITY_LEG);
 
-        entry.removeProjectionRef(projection(entry, LedgerProjectionRole.OLD_SECURITY_LEG));
+        projection(entry, LedgerProjectionRole.OLD_SECURITY_LEG).getPrimaryPosting().setUnitRole(null);
         entry.removePosting(sourcePosting);
 
         assertIssue(entry, IssueCode.LEG_CARDINALITY_VIOLATED);
@@ -138,7 +138,6 @@ public class LedgerNativeEntryDefinitionValidatorTest
         var entry = copyValidSpinOff();
         var targetPosting = postingFor(entry, LedgerProjectionRole.NEW_SECURITY_LEG);
 
-        entry.removeProjectionRef(projection(entry, LedgerProjectionRole.NEW_SECURITY_LEG));
         entry.removePosting(targetPosting);
 
         assertIssue(entry, IssueCode.LEG_CARDINALITY_VIOLATED);
@@ -157,13 +156,7 @@ public class LedgerNativeEntryDefinitionValidatorTest
         sourcePosting.setUUID("duplicate-source-posting");
         entry.addPosting(sourcePosting);
 
-        var projection = new LedgerProjectionRef("duplicate-source-projection");
-        projection.setRole(LedgerProjectionRole.OLD_SECURITY_LEG);
-        projection.setPortfolio(sourcePosting.getPortfolio());
-        projection.setPrimaryPosting(sourcePosting);
-        entry.addProjectionRef(projection);
-
-        assertIssue(entry, IssueCode.AMBIGUOUS_LEG_MATCH);
+        assertIssue(entry, IssueCode.REQUIRED_PROJECTION_MISSING);
     }
 
     /**
@@ -191,7 +184,7 @@ public class LedgerNativeEntryDefinitionValidatorTest
     {
         var entry = copyValidSpinOff();
 
-        entry.removeProjectionRef(projection(entry, LedgerProjectionRole.OLD_SECURITY_LEG));
+        projection(entry, LedgerProjectionRole.OLD_SECURITY_LEG).getPrimaryPosting().setCorporateActionLeg(null);
 
         assertIssue(entry, IssueCode.REQUIRED_PROJECTION_MISSING);
     }
@@ -205,7 +198,7 @@ public class LedgerNativeEntryDefinitionValidatorTest
     {
         var entry = copyValidSpinOff();
 
-        entry.removeProjectionRef(projection(entry, LedgerProjectionRole.NEW_SECURITY_LEG));
+        projection(entry, LedgerProjectionRole.NEW_SECURITY_LEG).getPrimaryPosting().setCorporateActionLeg(null);
 
         assertIssue(entry, IssueCode.REQUIRED_PROJECTION_MISSING);
     }
@@ -221,9 +214,9 @@ public class LedgerNativeEntryDefinitionValidatorTest
         var entry = copyValidSpinOff();
         var targetPosting = postingFor(entry, LedgerProjectionRole.NEW_SECURITY_LEG);
 
-        projection(entry, LedgerProjectionRole.OLD_SECURITY_LEG).setPrimaryPosting(targetPosting);
+        projection(entry, LedgerProjectionRole.OLD_SECURITY_LEG).getPrimaryPosting().setCorporateActionLeg(targetPosting.getCorporateActionLeg());
 
-        assertIssue(entry, IssueCode.PROJECTION_PRIMARY_POSTING_MISMATCH);
+        assertIssue(entry, IssueCode.REQUIRED_PROJECTION_MISSING);
     }
 
     /**
@@ -237,9 +230,9 @@ public class LedgerNativeEntryDefinitionValidatorTest
         var entry = copyValidSpinOff();
         var sourcePosting = postingFor(entry, LedgerProjectionRole.OLD_SECURITY_LEG);
 
-        projection(entry, LedgerProjectionRole.NEW_SECURITY_LEG).setPrimaryPosting(sourcePosting);
+        projection(entry, LedgerProjectionRole.NEW_SECURITY_LEG).getPrimaryPosting().setCorporateActionLeg(sourcePosting.getCorporateActionLeg());
 
-        assertIssue(entry, IssueCode.PROJECTION_PRIMARY_POSTING_MISMATCH);
+        assertIssue(entry, IssueCode.REQUIRED_PROJECTION_MISSING);
     }
 
     /**
@@ -300,7 +293,7 @@ public class LedgerNativeEntryDefinitionValidatorTest
     {
         var entry = copyValidSpinOff();
 
-        projection(entry, LedgerProjectionRole.CASH_COMPENSATION).setPostingGroupUUID(null);
+        projection(entry, LedgerProjectionRole.CASH_COMPENSATION).getPrimaryPosting().setGroupKey(null);
 
         assertIssue(entry, IssueCode.PROJECTION_POSTING_GROUP_REQUIRED);
     }
@@ -447,14 +440,15 @@ public class LedgerNativeEntryDefinitionValidatorTest
         return Money.of(CurrencyUnit.EUR, Values.Amount.factorize(amount));
     }
 
-    private static LedgerProjectionRef projection(LedgerEntry entry, LedgerProjectionRole role)
+    private static name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor projection(
+                    LedgerEntry entry, LedgerProjectionRole role)
     {
-        return entry.getProjectionRefs().stream().filter(ref -> ref.getRole() == role).findFirst().orElseThrow();
+        return name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream().filter(ref -> ref.getRole() == role).findFirst().orElseThrow();
     }
 
     private static LedgerPosting postingFor(LedgerEntry entry, LedgerProjectionRole role)
     {
-        var postingUUID = projection(entry, role).getPrimaryPostingUUID();
+        var postingUUID = projection(entry, role).getPrimaryPosting().getUUID();
 
         return entry.getPostings().stream().filter(posting -> posting.getUUID().equals(postingUUID)).findFirst()
                         .orElseThrow();

@@ -141,9 +141,8 @@ public final class LedgerDiagnosticMessageFormatter
                 return entry;
         }
 
-        return ledger.getEntries().stream().filter(entry -> matchesEntry(entry, details.get("postingUUID"),
-                        details.get("projectionUUID"), details.get("primaryPostingUUID"),
-                        details.get("postingGroupUUID"), details.get("membershipPostingUUID"))).findFirst();
+        return ledger.getEntries().stream().filter(entry -> matchesEntry(entry, details.get("postingUUID")))
+                        .findFirst();
     }
 
     private static boolean matchesEntry(LedgerEntry entry, String... uuids)
@@ -153,9 +152,7 @@ public final class LedgerDiagnosticMessageFormatter
             if (uuid == null || uuid.isBlank() || "<missing>".equals(uuid))
                 continue;
 
-            if (entry.getPostings().stream().anyMatch(posting -> uuid.equals(posting.getUUID()))
-                            || entry.getProjectionRefs().stream()
-                                            .anyMatch(projection -> uuid.equals(projection.getUUID())))
+            if (entry.getPostings().stream().anyMatch(posting -> uuid.equals(posting.getUUID())))
                 return true;
         }
 
@@ -168,8 +165,6 @@ public final class LedgerDiagnosticMessageFormatter
 
         for (var posting : entry.getPostings())
             add(values, accountSummary(posting.getAccount()));
-        for (var projection : entry.getProjectionRefs())
-            add(values, accountSummary(projection.getAccount()));
 
         return values;
     }
@@ -180,8 +175,6 @@ public final class LedgerDiagnosticMessageFormatter
 
         for (var posting : entry.getPostings())
             add(values, portfolioSummary(posting.getPortfolio()));
-        for (var projection : entry.getProjectionRefs())
-            add(values, portfolioSummary(projection.getPortfolio()));
 
         return values;
     }

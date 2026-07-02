@@ -48,12 +48,8 @@ final class LedgerGraphWriter
         for (var posting : List.copyOf(target.getPostings()))
             target.removePosting(posting);
 
-        for (var projectionRef : List.copyOf(target.getProjectionRefs()))
-            target.removeProjectionRef(projectionRef);
-
         copy.getParameters().forEach(target::addParameter);
         copy.getPostings().forEach(target::addPosting);
-        copy.getProjectionRefs().forEach(target::addProjectionRef);
         target.setUpdatedAt(copy.getUpdatedAt());
     }
 }

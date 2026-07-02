@@ -12,10 +12,11 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerMutationContext;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
+import name.abuchen.portfolio.model.ledger.LedgerPostingDirection;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
+import name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedAccountTransaction;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedPortfolioTransaction;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
@@ -46,10 +47,10 @@ public final class LedgerBuySellReversalConverter
             throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_CONVERT_027.message("Only ledger-backed buy/sell transactions can be reversed")); //$NON-NLS-1$
 
         var ledgerEntry = accountTransaction.getLedgerEntry();
-        var accountProjectionUUID = accountTransaction.getLedgerProjectionRef().getUUID();
-        var portfolioProjectionUUID = portfolioTransaction.getLedgerProjectionRef().getUUID();
-        var account = accountTransaction.getLedgerProjectionRef().getAccount();
-        var portfolio = portfolioTransaction.getLedgerProjectionRef().getPortfolio();
+        var accountProjectionUUID = accountTransaction.getRuntimeProjectionId();
+        var portfolioProjectionUUID = portfolioTransaction.getRuntimeProjectionId();
+        var account = accountTransaction.getLedgerProjectionDescriptor().getAccount();
+        var portfolio = portfolioTransaction.getLedgerProjectionDescriptor().getPortfolio();
 
         preflight(ledgerEntry, accountTransaction, portfolioTransaction);
         LedgerInvestmentPlanRefSupport.requireCurrentRefsResolveUniquely(client, ledgerEntry);
@@ -91,8 +92,8 @@ public final class LedgerBuySellReversalConverter
         if (accountTransaction.getLedgerEntry() != portfolioTransaction.getLedgerEntry())
             throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_PROJ_028.message("Buy/sell projections do not belong to the same ledger entry")); //$NON-NLS-1$
 
-        if (accountTransaction.getLedgerProjectionRef().getRole() != LedgerProjectionRole.ACCOUNT
-                        || portfolioTransaction.getLedgerProjectionRef().getRole() != LedgerProjectionRole.PORTFOLIO)
+        if (accountTransaction.getLedgerProjectionRole() != LedgerProjectionRole.ACCOUNT
+                        || portfolioTransaction.getLedgerProjectionRole() != LedgerProjectionRole.PORTFOLIO)
             throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_PROJ_029.message("Buy/sell projections are not account/portfolio projections")); //$NON-NLS-1$
 
         var accountProjection = uniqueProjection(entry, LedgerProjectionRole.ACCOUNT);
@@ -100,8 +101,8 @@ public final class LedgerBuySellReversalConverter
         var cashPosting = requireOnePosting(entry, LedgerPostingType.CASH);
         var securityPosting = requireOnePosting(entry, LedgerPostingType.SECURITY);
 
-        if (LedgerProjectionSupport.primaryPosting(entry, accountProjection) != cashPosting
-                        || LedgerProjectionSupport.primaryPosting(entry, portfolioProjection) != securityPosting)
+        if (accountProjection.getPrimaryPosting() != cashPosting
+                        || portfolioProjection.getPrimaryPosting() != securityPosting)
             throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_PROJ_030.message("Buy/sell projection primary postings are ambiguous")); //$NON-NLS-1$
 
         if (cashPosting.getAccount() != accountProjection.getAccount()
@@ -124,6 +125,8 @@ public final class LedgerBuySellReversalConverter
         cashPosting.setCurrency(amount.getCurrencyCode());
         securityPosting.setAmount(amount.getAmount());
         securityPosting.setCurrency(amount.getCurrencyCode());
+        cashPosting.setDirection(cashDirection(targetType));
+        securityPosting.setDirection(securityDirection(targetType));
         entry.setType(targetType);
     }
 
@@ -176,9 +179,10 @@ public final class LedgerBuySellReversalConverter
         return postings.get(0);
     }
 
-    private LedgerProjectionRef uniqueProjection(LedgerEntry entry, LedgerProjectionRole role)
+    private DerivedProjectionDescriptor uniqueProjection(LedgerEntry entry, LedgerProjectionRole role)
     {
-        var projections = entry.getProjectionRefs().stream().filter(projection -> projection.getRole() == role).toList();
+        var projections = LedgerProjectionSupport.descriptors(entry).stream()
+                        .filter(projection -> projection.getRole() == role).toList();
 
         if (projections.size() != 1)
             throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_PROJ_032
@@ -186,6 +190,16 @@ public final class LedgerBuySellReversalConverter
                                             + projections.size()));
 
         return projections.get(0);
+    }
+
+    private LedgerPostingDirection cashDirection(LedgerEntryType entryType)
+    {
+        return entryType == LedgerEntryType.BUY ? LedgerPostingDirection.OUTBOUND : LedgerPostingDirection.INBOUND;
+    }
+
+    private LedgerPostingDirection securityDirection(LedgerEntryType entryType)
+    {
+        return entryType == LedgerEntryType.BUY ? LedgerPostingDirection.INBOUND : LedgerPostingDirection.OUTBOUND;
     }
 
     private AccountTransaction find(Account account, String projectionUUID)

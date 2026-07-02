@@ -21,7 +21,6 @@ import name.abuchen.portfolio.model.ledger.LedgerPosting;
 import name.abuchen.portfolio.model.ledger.LedgerPostingDirection;
 import name.abuchen.portfolio.model.ledger.LedgerPostingSemanticRole;
 import name.abuchen.portfolio.model.ledger.LedgerPostingUnitRole;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
@@ -431,21 +430,8 @@ public final class LedgerNativeEntryAssembler
                 throw issue(LedgerNativeEntryAssemblyIssue.PROJECTION_TARGET_MISSING,
                                 "Projection target posting is required for " + intent.role()); //$NON-NLS-1$
 
-            var projection = new LedgerProjectionRef();
-            projection.setRole(intent.role());
-
-            if (intent.account() != null)
-                projection.setAccount(intent.account());
-
-            if (intent.portfolio() != null)
-                projection.setPortfolio(intent.portfolio());
-
-            projection.setPrimaryPosting(intent.primaryPosting());
-
-            if (intent.postingGroup() != null)
-                projection.setPostingGroup(intent.postingGroup());
-
-            entry.addProjectionRef(projection);
+            // Runtime projections are derived from the semantic posting data already
+            // carried by the intent's primary and unit postings.
         }
 
         private void addEntryParameter(LedgerEntry entry, NativeParameterValue parameter)

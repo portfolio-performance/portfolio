@@ -30,11 +30,9 @@ import name.abuchen.portfolio.model.ledger.LedgerPostingDirection;
 import name.abuchen.portfolio.model.ledger.LedgerPostingSemanticRole;
 import name.abuchen.portfolio.model.ledger.LedgerPostingUnitRole;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator;
 import name.abuchen.portfolio.model.ledger.LedgerTransactionMetadata;
-import name.abuchen.portfolio.model.ledger.ProjectionMembershipRole;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerAccountCashLeg;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerCashTransferLeg;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerCreationUnits;
@@ -64,20 +62,18 @@ public class LedgerRuntimeProjectionRestorerTest
     private static final LocalDateTime DATE_TIME = LocalDateTime.of(2026, 6, 17, 0, 0);
 
     /**
-     * Checks the projection rebuild scenario: missing owner list projection is restored with same projection uuid.
+     * Checks the projection rebuild scenario: missing owner list projection is restored with same runtime projection id.
      * Account and portfolio lists must be derived from the ledger entry.
      * This protects Ledger-V6 from stale or duplicated runtime projections.
      */
     @Test
-    public void testMissingOwnerListProjectionIsRestoredWithSameProjectionUUID()
+    public void testMissingOwnerListProjectionIsRestoredWithSameRuntimeProjectionId()
     {
         var client = new Client();
         var account = register(client, account());
         var entry = creator(client).createDeposit(metadata(), cashLeg(account, 100)).getEntry();
-        var projectionUUID = entry.getProjectionRefs().get(0).getUUID();
-
-        assertThat(entry.getProjectionRefs().get(0).getPrimaryMembership().orElseThrow().getPostingUUID(),
-                        is(entry.getProjectionRefs().get(0).getPrimaryPostingUUID()));
+        var projectionId = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0)
+                        .getRuntimeProjectionId();
         assertTrue(account.getTransactions().isEmpty());
 
         var result = new LedgerRuntimeProjectionRestorer().restoreIfValid(client);
@@ -85,27 +81,24 @@ public class LedgerRuntimeProjectionRestorerTest
         assertTrue(result.isOK());
         assertThat(account.getTransactions().size(), is(1));
         assertThat(account.getTransactions().get(0), instanceOf(LedgerBackedTransaction.class));
-        assertThat(account.getTransactions().get(0).getUUID(), is(projectionUUID));
+        assertThat(account.getTransactions().get(0).getUUID(), is(projectionId));
     }
 
     /**
-     * Checks the projection rebuild scenario: semantic primary targeting is preferred over projection membership drift.
-     * Account and portfolio lists must be derived from descriptor targeting when projection refs drift.
-     * This protects Ledger-V6 from stale projection targeting.
+     * Checks the projection rebuild scenario: semantic primary targeting drives descriptor materialization.
+     * Account and portfolio lists must be derived from descriptor targeting.
+     * This protects Ledger-V6 from stale posting-order targeting.
      */
     @Test
-    public void testPrimaryMembershipMaterializesAccountProjection()
+    public void testSemanticPrimaryMaterializesAccountProjection()
     {
         var client = new Client();
         var account = register(client, account());
         var entry = creator(client).createDeposit(metadata(), cashLeg(account, 100)).getEntry();
-        var projectionRef = entry.getProjectionRefs().get(0);
         var alternatePosting = cashPosting("membership-primary-posting", account, 200);
 
         alternatePosting.setType(LedgerPostingType.FEE);
         entry.addPosting(alternatePosting);
-        projectionRef.setPrimaryPostingTargetUUID(null);
-        projectionRef.addMembership(alternatePosting.getUUID(), ProjectionMembershipRole.PRIMARY);
 
         var result = new LedgerRuntimeProjectionRestorer().restoreIfValid(client);
 
@@ -115,12 +108,12 @@ public class LedgerRuntimeProjectionRestorerTest
     }
 
     /**
-     * Checks the projection rebuild scenario: group anchor membership drives native targeted units.
-     * Unit projections must be derived from membership targeting before scalar fallback.
-     * This protects Ledger-V6 from relying on loose postingGroupUUID targeting.
+     * Checks the projection rebuild scenario: semantic group keys drive native targeted units.
+     * Unit projections must be derived from posting semantics.
+     * This protects Ledger-V6 from relying on projection membership targeting.
      */
     @Test
-    public void testGroupAnchorMembershipMaterializesNativeTargetedUnits()
+    public void testSemanticGroupKeyMaterializesNativeTargetedUnits()
     {
         var client = new Client();
         var account = register(client, account());
@@ -135,7 +128,6 @@ public class LedgerRuntimeProjectionRestorerTest
         var compensation = cashPosting("cash-compensation", account, 5);
         var fee = unitPosting("fee-posting", LedgerPostingType.FEE, account, 2);
         var tax = unitPosting("tax-posting", LedgerPostingType.TAX, account, 1);
-        var projectionRef = new LedgerProjectionRef("projection-1");
 
         entry.setType(LedgerEntryType.SPIN_OFF);
         entry.setDateTime(DATE_TIME);
@@ -157,13 +149,6 @@ public class LedgerRuntimeProjectionRestorerTest
         entry.addPosting(compensation);
         entry.addPosting(fee);
         entry.addPosting(tax);
-        entry.addProjectionRef(portfolioProjection(LedgerProjectionRole.OLD_SECURITY_LEG, portfolio, sourceLeg));
-        entry.addProjectionRef(portfolioProjection(LedgerProjectionRole.NEW_SECURITY_LEG, portfolio, targetLeg));
-        projectionRef.setRole(LedgerProjectionRole.CASH_COMPENSATION);
-        projectionRef.setAccount(account);
-        projectionRef.addMembership(compensation.getUUID(), ProjectionMembershipRole.PRIMARY);
-        projectionRef.addMembership(compensation.getUUID(), ProjectionMembershipRole.GROUP_ANCHOR);
-        entry.addProjectionRef(projectionRef);
         client.getLedger().addEntry(entry);
 
         var result = new LedgerRuntimeProjectionRestorer().restoreIfValid(client);
@@ -203,11 +188,11 @@ public class LedgerRuntimeProjectionRestorerTest
         var client = new Client();
         var account = register(client, account());
         var entry = creator(client).createDeposit(metadata(), cashLeg(account, 100)).getEntry();
-        var projectionRef = entry.getProjectionRefs().get(0);
+        var descriptor = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0);
 
         new LedgerProjectionMaterializer().materialize(client);
         account.getTransactions().add((AccountTransaction) new LedgerProjectionFactory().createProjection(entry,
-                        projectionRef));
+                        descriptor.getRole()));
 
         assertThat(account.getTransactions().size(), is(2));
 
@@ -215,7 +200,7 @@ public class LedgerRuntimeProjectionRestorerTest
 
         assertTrue(result.isOK());
         assertThat(account.getTransactions().size(), is(1));
-        assertThat(account.getTransactions().get(0).getUUID(), is(projectionRef.getUUID()));
+        assertThat(account.getTransactions().get(0).getUUID(), is(descriptor.getRuntimeProjectionId()));
     }
 
     /**
@@ -229,27 +214,27 @@ public class LedgerRuntimeProjectionRestorerTest
         var client = new Client();
         var account = register(client, account());
         var entry = creator(client).createDeposit(metadata(), cashLeg(account, 100)).getEntry();
-        var projectionRef = entry.getProjectionRefs().get(0);
+        var descriptor = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0);
 
         new LedgerProjectionMaterializer().materialize(client);
         account.getTransactions().add((AccountTransaction) new LedgerProjectionFactory().createProjection(entry,
-                        projectionRef));
+                        descriptor.getRole()));
 
         var statuses = ledgerLogStatuses(client);
 
         assertThat(statuses.size(), is(1));
         assertThat(statuses.get(0).severity(), is(LedgerRuntimeProjectionRestorer.Severity.INFO));
         assertThat(statuses.get(0).message(), is(LedgerRuntimeProjectionRestorer.restoredLedgerMessage(2, 1, 1,
-                        Set.of(), Set.of(projectionRef.getUUID()), Set.of())));
+                        Set.of(), Set.of(descriptor.getRuntimeProjectionId()), Set.of())));
     }
 
     /**
-     * Checks the projection rebuild scenario: stale ledger backed projection without ledger projection ref is removed.
+     * Checks the projection rebuild scenario: stale ledger backed projection without a backing descriptor is removed.
      * Account and portfolio lists must be derived from the ledger entry.
      * This protects Ledger-V6 from stale or duplicated runtime projections.
      */
     @Test
-    public void testStaleLedgerBackedProjectionWithoutLedgerProjectionRefIsRemoved()
+    public void testStaleLedgerBackedProjectionWithoutBackingDescriptorIsRemoved()
     {
         var client = new Client();
         var account = register(client, account());
@@ -277,7 +262,8 @@ public class LedgerRuntimeProjectionRestorerTest
         var client = new Client();
         var account = register(client, account());
         var entry = creator(client).createDeposit(metadata(), cashLeg(account, 100)).getEntry();
-        var projectionUUID = entry.getProjectionRefs().get(0).getUUID();
+        var projectionId = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0)
+                        .getRuntimeProjectionId();
 
         new LedgerProjectionMaterializer().materialize(client);
         client.getLedger().removeEntry(entry);
@@ -287,7 +273,7 @@ public class LedgerRuntimeProjectionRestorerTest
         assertThat(statuses.size(), is(1));
         assertThat(statuses.get(0).severity(), is(LedgerRuntimeProjectionRestorer.Severity.INFO));
         assertThat(statuses.get(0).message(), is(LedgerRuntimeProjectionRestorer.restoredLedgerMessage(1, 0, 1,
-                        Set.of(), Set.of(), Set.of(projectionUUID))));
+                        Set.of(), Set.of(), Set.of(projectionId))));
     }
 
     /**
@@ -472,7 +458,8 @@ public class LedgerRuntimeProjectionRestorerTest
 
         entry.getPostings().get(0).setCurrency(null);
         var postingUUID = entry.getPostings().get(0).getUUID();
-        var projectionUUID = entry.getProjectionRefs().get(0).getUUID();
+        var projectionId = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0)
+                        .getRuntimeProjectionId();
 
         final LedgerStructuralValidator.ValidationResult[] result = new LedgerStructuralValidator.ValidationResult[1];
         var statuses = ledgerLogStatuses(client, value -> result[0] = value);
@@ -481,7 +468,8 @@ public class LedgerRuntimeProjectionRestorerTest
         assertTrue(account.getTransactions().isEmpty());
         assertThat(entry.getPostings().get(0).getUUID(), is(postingUUID));
         assertThat(entry.getPostings().get(0).getCurrency(), is((String) null));
-        assertThat(entry.getProjectionRefs().get(0).getUUID(), is(projectionUUID));
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0)
+                        .getRuntimeProjectionId(), is(projectionId));
         assertTrue(result[0].hasIssue(LedgerStructuralValidator.IssueCode.POSTING_CURRENCY_REQUIRED));
         assertThat(statuses.size(), is(1));
         assertThat(statuses.get(0).severity(), is(LedgerRuntimeProjectionRestorer.Severity.WARNING));
@@ -498,59 +486,6 @@ public class LedgerRuntimeProjectionRestorerTest
                         containsString(Messages.LedgerDiagnosticMessageFormatterAccount + ": Restored Account"));
         assertThat(statuses.get(0).message(),
                         containsString(Messages.LedgerDiagnosticMessageFormatterSource + ": source"));
-    }
-
-    /**
-     * Checks the projection rebuild scenario: valid entries are restored when a sibling entry is invalid.
-     * Local Ledger defects must not hide otherwise usable runtime projections.
-     */
-    @Test
-    public void testInvalidEntryIsSkippedAndValidEntryIsMaterialized()
-    {
-        var client = new Client();
-        var invalidAccount = register(client, account());
-        var validAccount = register(client, account());
-        var invalidEntry = creator(client).createDeposit(metadata(), cashLeg(invalidAccount, 100)).getEntry();
-        var validEntry = creator(client).createDeposit(metadata(), cashLeg(validAccount, 200)).getEntry();
-        var invalidProjectionUUID = invalidEntry.getProjectionRefs().get(0).getUUID();
-        var validProjectionUUID = validEntry.getProjectionRefs().get(0).getUUID();
-
-        invalidEntry.getProjectionRefs().get(0).setPrimaryPostingUUID("missing-primary-posting");
-
-        var result = new LedgerRuntimeProjectionRestorer().restoreIfValid(client);
-
-        assertFalse(result.isOK());
-        assertTrue(result.hasIssue(LedgerStructuralValidator.IssueCode.PRIMARY_POSTING_REF_NOT_FOUND));
-        assertThat(client.getLedger().getEntries(), is(List.of(invalidEntry, validEntry)));
-        assertTrue(invalidAccount.getTransactions().isEmpty());
-        assertThat(validAccount.getTransactions().size(), is(1));
-        assertThat(validAccount.getTransactions().get(0).getUUID(), is(validProjectionUUID));
-        assertThat(invalidEntry.getProjectionRefs().get(0).getUUID(), is(invalidProjectionUUID));
-        assertThat(invalidEntry.getProjectionRefs().get(0).getPrimaryPostingUUID(), is("missing-primary-posting"));
-    }
-
-    /**
-     * Checks the projection rebuild scenario: a missing primary posting ref is diagnosed and skipped.
-     * The persisted Ledger entry must remain available for later repair/delete workflows.
-     */
-    @Test
-    public void testMissingPrimaryPostingRefIsDiagnosedAndSkipped()
-    {
-        var client = new Client();
-        var account = register(client, account());
-        var entry = creator(client).createDeposit(metadata(), cashLeg(account, 100)).getEntry();
-        var projectionUUID = entry.getProjectionRefs().get(0).getUUID();
-
-        entry.getProjectionRefs().get(0).setPrimaryPostingUUID("missing-primary-posting");
-
-        var result = new LedgerRuntimeProjectionRestorer().restoreIfValid(client);
-
-        assertFalse(result.isOK());
-        assertTrue(result.hasIssue(LedgerStructuralValidator.IssueCode.PRIMARY_POSTING_REF_NOT_FOUND));
-        assertThat(client.getLedger().getEntries(), is(List.of(entry)));
-        assertTrue(account.getTransactions().isEmpty());
-        assertThat(entry.getProjectionRefs().get(0).getUUID(), is(projectionUUID));
-        assertThat(entry.getProjectionRefs().get(0).getPrimaryPostingUUID(), is("missing-primary-posting"));
     }
 
     private List<LogEvent> ledgerLogStatuses(Client client)
@@ -673,18 +608,6 @@ public class LedgerRuntimeProjectionRestorerTest
         posting.setLocalKey(role.name());
 
         return posting;
-    }
-
-    private LedgerProjectionRef portfolioProjection(LedgerProjectionRole role, Portfolio portfolio,
-                    LedgerPosting posting)
-    {
-        var projection = new LedgerProjectionRef();
-
-        projection.setRole(role);
-        projection.setPortfolio(portfolio);
-        projection.setPrimaryPosting(posting);
-
-        return projection;
     }
 
     private AccountTransaction legacyDeposit()

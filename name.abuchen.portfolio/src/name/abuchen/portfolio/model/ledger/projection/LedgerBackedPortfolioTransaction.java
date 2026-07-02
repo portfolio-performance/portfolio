@@ -11,7 +11,6 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerEntryMetadataPatchHelper;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
@@ -25,15 +24,15 @@ import name.abuchen.portfolio.money.Values;
 public final class LedgerBackedPortfolioTransaction extends PortfolioTransaction implements LedgerBackedTransaction
 {
     private final LedgerEntry entry;
-    private final LedgerProjectionRef projectionRef;
+    private final DerivedProjectionDescriptor descriptor;
     private final LedgerPosting primaryPosting;
     private CrossEntry crossEntry;
 
-    LedgerBackedPortfolioTransaction(LedgerEntry entry, LedgerProjectionRef projectionRef)
+    LedgerBackedPortfolioTransaction(DerivedProjectionDescriptor descriptor)
     {
-        this.entry = entry;
-        this.projectionRef = projectionRef;
-        this.primaryPosting = LedgerProjectionSupport.primaryPosting(entry, projectionRef);
+        this.descriptor = descriptor;
+        this.entry = descriptor.getEntry();
+        this.primaryPosting = descriptor.getPrimaryPosting();
     }
 
     @Override
@@ -43,9 +42,9 @@ public final class LedgerBackedPortfolioTransaction extends PortfolioTransaction
     }
 
     @Override
-    public LedgerProjectionRef getLedgerProjectionRef()
+    public DerivedProjectionDescriptor getLedgerProjectionDescriptor()
     {
-        return projectionRef;
+        return descriptor;
     }
 
     void setLedgerCrossEntry(CrossEntry crossEntry)
@@ -56,14 +55,14 @@ public final class LedgerBackedPortfolioTransaction extends PortfolioTransaction
     @Override
     public String getUUID()
     {
-        return projectionRef.getUUID();
+        return descriptor.getRuntimeProjectionId();
     }
 
     @Override
     public Type getType()
     {
         if (entry.getType().isLedgerNativeTargeted())
-            return LedgerProjectionSupport.targetedPortfolioType(projectionRef);
+            return LedgerProjectionSupport.targetedPortfolioType(descriptor.getRole());
 
         return switch (entry.getType())
         {
@@ -140,7 +139,7 @@ public final class LedgerBackedPortfolioTransaction extends PortfolioTransaction
     @Override
     public Stream<Unit> getUnits()
     {
-        return LedgerProjectionSupport.units(entry, projectionRef, primaryPosting);
+        return LedgerProjectionSupport.units(descriptor);
     }
 
     @Override
@@ -274,12 +273,12 @@ public final class LedgerBackedPortfolioTransaction extends PortfolioTransaction
 
     private Type transferType()
     {
-        return switch (projectionRef.getRole())
+        return switch (descriptor.getRole())
         {
             case SOURCE_PORTFOLIO -> Type.TRANSFER_OUT;
             case TARGET_PORTFOLIO -> Type.TRANSFER_IN;
             default -> throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_PROJ_070
-                            .message("Unsupported security transfer role " + projectionRef.getRole())); //$NON-NLS-1$
+                            .message("Unsupported security transfer role " + descriptor.getRole())); //$NON-NLS-1$
         };
     }
 }

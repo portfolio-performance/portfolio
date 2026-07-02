@@ -114,14 +114,14 @@ public class LedgerNativeComponentInspectorDialog extends Dialog
                         row -> new String[] { row.postingUUID(), row.postingType(), row.parameter(), row.code(),
                                         row.valueKind(), row.value(), row.domain() });
 
-        createTable(container, Messages.LedgerNativeComponentInspectorProjectionRefs, model.getProjectionRefs(),
+        createTable(container, Messages.LedgerNativeComponentInspectorProjectionRefs, model.getDescriptors(),
                         new String[] { Messages.LedgerNativeComponentInspectorProjectionRole,
                                         Messages.LedgerNativeComponentInspectorOwner,
                                         Messages.LedgerNativeComponentInspectorProjectionUUID,
                                         Messages.LedgerNativeComponentInspectorPrimaryPostingUUID,
                                         Messages.LedgerNativeComponentInspectorPostingGroupUUID },
-                        row -> new String[] { row.projectionRole(), row.owner(), row.projectionUUID(),
-                                        row.primaryPostingUUID(), row.postingGroupUUID() });
+                        row -> new String[] { row.projectionRole(), row.owner(), row.runtimeProjectionId(),
+                                        row.primaryPostingId(), row.unitPostings() });
 
         scrolled.setContent(container);
         scrolled.setExpandHorizontal(true);
@@ -215,9 +215,8 @@ public class LedgerNativeComponentInspectorDialog extends Dialog
             case SHAPE -> Messages.LedgerNativeComponentInspectorShape;
             case NATIVE_TARGETED -> Messages.LedgerNativeComponentInspectorNativeTargeted;
             case SELECTED_PROJECTION_ROLE -> Messages.LedgerNativeComponentInspectorSelectedProjectionRole;
-            case SELECTED_PROJECTION_UUID -> Messages.LedgerNativeComponentInspectorSelectedProjectionUUID;
+            case SELECTED_RUNTIME_PROJECTION_ID -> Messages.LedgerNativeComponentInspectorSelectedProjectionUUID;
             case SELECTED_PRIMARY_POSTING_UUID -> Messages.LedgerNativeComponentInspectorSelectedPrimaryPostingUUID;
-            case SELECTED_POSTING_GROUP_UUID -> Messages.LedgerNativeComponentInspectorSelectedPostingGroupUUID;
         };
     }
 }

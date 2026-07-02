@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.model.ledger.projection;
 
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
+import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 
 /**
  * Marks a runtime legacy transaction view that is backed by a Ledger entry.
@@ -12,5 +12,15 @@ public interface LedgerBackedTransaction
 {
     LedgerEntry getLedgerEntry();
 
-    LedgerProjectionRef getLedgerProjectionRef();
+    DerivedProjectionDescriptor getLedgerProjectionDescriptor();
+
+    default LedgerProjectionRole getLedgerProjectionRole()
+    {
+        return getLedgerProjectionDescriptor().getRole();
+    }
+
+    default String getRuntimeProjectionId()
+    {
+        return getLedgerProjectionDescriptor().getRuntimeProjectionId();
+    }
 }

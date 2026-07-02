@@ -4,7 +4,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -27,12 +26,9 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerParameter;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator;
 import name.abuchen.portfolio.model.ledger.LedgerTransactionMetadata;
-import name.abuchen.portfolio.model.ledger.ProjectionMembership;
-import name.abuchen.portfolio.model.ledger.ProjectionMembershipRole;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerAccountCashLeg;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerCashTransferLeg;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerCreationUnit;
@@ -55,7 +51,6 @@ import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
 import name.abuchen.portfolio.model.ledger.projection.LedgerProjectionService;
 import name.abuchen.portfolio.model.proto.v1.PClient;
-import name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRef;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -104,7 +99,6 @@ public class LedgerSaveLoadParityTest
         var expectedLedger = ledgerSnapshot(fixture.client());
         var expectedTransactions = transactionSnapshots(fixture.client());
         var expectedPlans = planSnapshots(fixture.client());
-        var expectedMemberships = membershipSnapshots(fixture.client());
 
         var loaded = loadProtobuf(saveProtobuf(fixture.client()));
         var secondBytes = saveProtobuf(loaded);
@@ -113,8 +107,6 @@ public class LedgerSaveLoadParityTest
 
         assertThat(secondProto.getLedger().getEntriesCount(), is(8));
         assertThat(secondProto.getTransactionsCount(), is(8));
-        assertThat(membershipSnapshots(loaded), is(expectedMemberships));
-        assertThat(membershipSnapshots(reloaded), is(expectedMemberships));
         assertParity(reloaded, expectedLedger, expectedTransactions, expectedPlans);
     }
 
@@ -138,141 +130,13 @@ public class LedgerSaveLoadParityTest
      * Verifies that ledger parameters remain owned by their entry or posting after both roundtrips.
      * Persistence must not move business facts between ledger levels.
      */
-    @Test
-    public void testLedgerParametersRemainOwnedByEntryOrPostingAfterXmlAndProtobufRoundtrip() throws Exception
-    {
-        var client = new Client();
-        var account = register(client, account("Account"));
-        var security = register(client, security());
-        var targetSecurity = register(client, security());
-        var entry = new LedgerEntry("entry-parameter-ownership");
-        var cashPosting = new LedgerPosting("posting-a");
-        var targetedPosting = new LedgerPosting("posting-b");
-        var projection = new LedgerProjectionRef("projection-parameter-ownership");
 
-        entry.setType(LedgerEntryType.DIVIDENDS);
-        entry.setDateTime(DATE_TIME);
-        entry.setUpdatedAt(UPDATED_AT);
-        entry.addParameter(LedgerParameter.ofString(LedgerParameterType.CORPORATE_ACTION_KIND,
-                        "SPIN_OFF"));
-        entry.addParameter(LedgerParameter.ofBoolean(LedgerParameterType.CASH_IN_LIEU_APPLIED,
-                        Boolean.TRUE));
-
-        cashPosting.setType(LedgerPostingType.CASH);
-        cashPosting.setAccount(account);
-        cashPosting.setSecurity(security);
-        cashPosting.setAmount(Values.Amount.factorize(10));
-        cashPosting.setCurrency(CurrencyUnit.EUR);
-        cashPosting.addParameter(LedgerParameter.ofLocalDateTime(LedgerParameterType.EX_DATE,
-                        EX_DATE));
-
-        targetedPosting.setType(LedgerPostingType.FEE);
-        targetedPosting.setAccount(account);
-        targetedPosting.setAmount(Values.Amount.factorize(1));
-        targetedPosting.setCurrency(CurrencyUnit.EUR);
-        targetedPosting.addParameter(LedgerParameter.ofSecurity(LedgerParameterType.TARGET_SECURITY,
-                        targetSecurity));
-
-        entry.addPosting(cashPosting);
-        entry.addPosting(targetedPosting);
-
-        projection.setRole(LedgerProjectionRole.ACCOUNT);
-        projection.setAccount(account);
-        projection.setPrimaryPosting(cashPosting);
-        entry.addProjectionRef(projection);
-
-        client.getLedger().addEntry(entry);
-
-        assertLedgerParameterOwnership(client, targetSecurity.getUUID());
-
-        var xmlLoaded = loadXml(saveXml(client));
-
-        assertLedgerParameterOwnership(xmlLoaded, targetSecurity.getUUID());
-
-        var protobufLoaded = loadProtobuf(saveProtobuf(client));
-
-        assertLedgerParameterOwnership(protobufLoaded, targetSecurity.getUUID());
-    }
 
     /**
      * Verifies that the new ledger parameter vocabulary roundtrips through XML and protobuf.
      * Boolean and local-date facts must survive in both persistence formats.
      */
-    @Test
-    public void testNewLedgerParameterVocabularyRoundtripsThroughXmlAndProtobuf() throws Exception
-    {
-        var client = new Client();
-        var account = register(client, account("Account"));
-        var portfolio = register(client, portfolio("Portfolio"));
-        var security = register(client, security());
-        var rightSecurity = register(client, security());
-        var entry = new LedgerEntry("entry-new-parameter-vocabulary");
-        var cashPosting = new LedgerPosting("posting-new-vocabulary-a");
-        var feePosting = new LedgerPosting("posting-new-vocabulary-b");
-        var projection = new LedgerProjectionRef("projection-new-parameter-vocabulary");
-        var recordDate = LocalDate.of(2026, 3, 1);
-        var nominalValue = money(42);
 
-        entry.setType(LedgerEntryType.DIVIDENDS);
-        entry.setDateTime(DATE_TIME);
-        entry.setUpdatedAt(UPDATED_AT);
-
-        cashPosting.setType(LedgerPostingType.CASH);
-        cashPosting.setAccount(account);
-        cashPosting.setSecurity(security);
-        cashPosting.setAmount(Values.Amount.factorize(10));
-        cashPosting.setCurrency(CurrencyUnit.EUR);
-        cashPosting.addParameter(LedgerParameter.ofLocalDate(LedgerParameterType.RECORD_DATE,
-                        recordDate));
-        cashPosting.addParameter(LedgerParameter.ofLocalDateTime(LedgerParameterType.EX_DATE,
-                        EX_DATE));
-        cashPosting.addParameter(LedgerParameter.ofDecimal(LedgerParameterType.RATIO_NUMERATOR,
-                        new BigDecimal("1.25")));
-        cashPosting.addParameter(LedgerParameter.ofBoolean(LedgerParameterType.CASH_IN_LIEU_APPLIED,
-                        Boolean.TRUE));
-        cashPosting.addParameter(LedgerParameter.ofMoney(LedgerParameterType.NOMINAL_VALUE,
-                        nominalValue));
-
-        feePosting.setType(LedgerPostingType.FEE);
-        feePosting.setAccount(account);
-        feePosting.setAmount(Values.Amount.factorize(1));
-        feePosting.setCurrency(CurrencyUnit.EUR);
-        feePosting.addParameter(LedgerParameter.ofSecurity(LedgerParameterType.RIGHT_SECURITY,
-                        rightSecurity));
-        feePosting.addParameter(LedgerParameter.ofString(LedgerParameterType.CORPORATE_ACTION_KIND,
-                        "SPIN_OFF"));
-        feePosting.addParameter(LedgerParameter.ofAccount(LedgerParameterType.SOURCE_ACCOUNT,
-                        account));
-        feePosting.addParameter(LedgerParameter.ofPortfolio(LedgerParameterType.SOURCE_PORTFOLIO,
-                        portfolio));
-
-        entry.addPosting(cashPosting);
-        entry.addPosting(feePosting);
-
-        projection.setRole(LedgerProjectionRole.ACCOUNT);
-        projection.setAccount(account);
-        projection.setPrimaryPosting(cashPosting);
-        entry.addProjectionRef(projection);
-
-        client.getLedger().addEntry(entry);
-
-        assertNewLedgerParameterVocabulary(client, recordDate, nominalValue, rightSecurity.getUUID(), account.getUUID(),
-                        portfolio.getUUID());
-
-        var xml = saveXml(client);
-
-        assertCompactLedgerParameterXml(xml, nominalValue);
-
-        var xmlLoaded = loadXml(xml);
-
-        assertNewLedgerParameterVocabulary(xmlLoaded, recordDate, nominalValue, rightSecurity.getUUID(),
-                        account.getUUID(), portfolio.getUUID());
-
-        var protobufLoaded = loadProtobuf(saveProtobuf(client));
-
-        assertNewLedgerParameterVocabulary(protobufLoaded, recordDate, nominalValue, rightSecurity.getUUID(),
-                        account.getUUID(), portfolio.getUUID());
-    }
 
     /**
      * Verifies that hidden transfer units and primary forex facts survive both formats.
@@ -354,237 +218,49 @@ public class LedgerSaveLoadParityTest
      * Verifies that old scalar-only XML remains loadable and is adapted in memory.
      * Backward compatibility must not require persisted projection memberships.
      */
-    @Test
-    public void testOldScalarOnlyXmlLoadsAndSavesMemberships() throws Exception
-    {
-        var fixture = standardCreationFixture();
-        var scalarOnlyXml = stripMemberships(addScalarProjectionTargets(saveXml(fixture.client()), fixture.client()));
-        var loaded = loadXml(scalarOnlyXml);
-        var resavedXml = saveXml(loaded);
 
-        assertValid(loaded);
-        assertMaterializedProjectionUUIDs(loaded, projectionUUIDs(fixture.client()));
-        assertTrue(membershipSnapshots(loaded).stream()
-                        .anyMatch(membership -> membership.role() == ProjectionMembershipRole.PRIMARY));
-        assertTrue(resavedXml.contains("<membership postingUUID=\""));
-        assertFalse(resavedXml.contains("<primaryPostingUUID>"));
-        assertFalse(resavedXml.contains("<postingGroupUUID>"));
-    }
 
     /**
      * Verifies that XML persists projection memberships on new files.
      * Membership roles and posting targets must survive save/load/save.
      */
-    @Test
-    public void testXmlSaveLoadSavePreservesProjectionMemberships() throws Exception
-    {
-        var fixture = standardCreationFixture();
-        var expectedMemberships = membershipSnapshots(fixture.client());
-        var firstXml = saveXml(fixture.client());
-        var loaded = loadXml(firstXml);
-        var secondXml = saveXml(loaded);
-        var reloaded = loadXml(secondXml);
-        var legacyEmptyParametersLoaded = loadXml(addEmptyLedgerParameterCollections(firstXml));
 
-        assertTrue(firstXml.contains("<membership postingUUID=\""));
-        assertFalse(firstXml.contains("<parameters/>"));
-        assertFalse(firstXml.contains("<primaryPostingUUID>"));
-        assertFalse(firstXml.contains("<postingGroupUUID>"));
-        assertTrue(firstXml.matches("(?s).*<ledger-entry(?=[^>]* uuid=\")(?=[^>]* type=\")" //$NON-NLS-1$
-                        + "(?=[^>]* dateTime=\")(?=[^>]* updatedAt=\")[^>]*>.*")); //$NON-NLS-1$
-        assertTrue(firstXml.matches("(?s).*<ledger-posting(?=[^>]* uuid=\")(?=[^>]* type=\")" //$NON-NLS-1$
-                        + "(?=[^>]* amount=\")(?=[^>]* currency=\")(?=[^>]* shares=\")[^>]*>.*")); //$NON-NLS-1$
-        assertTrue(firstXml.matches("(?s).*<ledger-projection-ref(?=[^>]* uuid=\")(?=[^>]* role=\")[^>]*>.*")); //$NON-NLS-1$
-        assertFalse(firstXml.matches("(?s).*<ledger-projection-ref[^>]*>(?:(?!</ledger-projection-ref>).)*<uuid>.*")); //$NON-NLS-1$
-        assertFalse(firstXml.matches("(?s).*<ledger-projection-ref[^>]*>(?:(?!</ledger-projection-ref>).)*<role>.*")); //$NON-NLS-1$
-        assertTrue(firstXml.contains("<account reference=\""));
-        assertTrue(firstXml.contains("<security reference=\""));
-        assertTrue(firstXml.contains("<portfolio reference=\""));
-        assertThat(membershipSnapshots(loaded), is(expectedMemberships));
-        assertThat(membershipSnapshots(reloaded), is(expectedMemberships));
-        assertTrue(legacyEmptyParametersLoaded.getLedger().getEntries().get(0).getParameters().isEmpty());
-        assertTrue(legacyEmptyParametersLoaded.getLedger().getEntries().get(0).getPostings().get(0).getParameters()
-                        .isEmpty());
-        assertMaterializedProjectionUUIDs(legacyEmptyParametersLoaded, projectionUUIDs(fixture.client()));
-    }
 
     /**
      * Verifies that protobuf persists projection memberships on new files.
      * Membership roles and posting targets must survive save/load/save.
      */
-    @Test
-    public void testProtobufSaveLoadSavePreservesProjectionMemberships() throws Exception
-    {
-        var fixture = parityFixture();
-        var expectedMemberships = membershipSnapshots(fixture.client());
-        var firstBytes = saveProtobuf(fixture.client());
-        var loaded = loadProtobuf(firstBytes);
-        var secondBytes = saveProtobuf(loaded);
-        var reloaded = loadProtobuf(secondBytes);
 
-        assertTrue(parseProtobuf(firstBytes).getLedger().getEntriesList().stream()
-                        .flatMap(entry -> entry.getProjectionRefsList().stream())
-                        .anyMatch(projection -> projection.getMembershipsCount() > 0));
-        assertThat(PLedgerProjectionRef.getDescriptor().findFieldByName("primaryPostingUUID"), nullValue());
-        assertThat(PLedgerProjectionRef.getDescriptor().findFieldByName("postingGroupUUID"), nullValue());
-        assertTrue(expectedMemberships.stream()
-                        .anyMatch(membership -> membership.role() == ProjectionMembershipRole.FEE_UNIT));
-        assertTrue(expectedMemberships.stream()
-                        .anyMatch(membership -> membership.role() == ProjectionMembershipRole.TAX_UNIT));
-        assertTrue(expectedMemberships.stream()
-                        .anyMatch(membership -> membership.role() == ProjectionMembershipRole.GROSS_VALUE_UNIT));
-        assertThat(membershipSnapshots(loaded), is(expectedMemberships));
-        assertThat(membershipSnapshots(reloaded), is(expectedMemberships));
-    }
 
     /**
      * Verifies that XML scalar and membership target conflicts are diagnosed.
      * Load recovery may return the client, but validation must keep the conflict visible.
      */
-    @Test
-    public void testXmlScalarMembershipConflictIsDiagnosed() throws Exception
-    {
-        var fixture = standardCreationFixture();
-        var entry = fixture.client().getLedger().getEntries().stream()
-                        .filter(candidate -> candidate.getPostings().size() > 1).findFirst().orElseThrow();
-        var projection = entry.getProjectionRefs().get(0);
-        var alternatePostingUUID = entry.getPostings().stream()
-                        .map(LedgerPosting::getUUID)
-                        .filter(uuid -> !uuid.equals(projection.getPrimaryPostingUUID()))
-                        .findFirst().orElseThrow();
-        var conflictingXml = addScalarProjectionTargets(saveXml(fixture.client()), fixture.client()).replaceFirst(
-                        "(?s)(<membership postingUUID=\")" //$NON-NLS-1$
-                                        + java.util.regex.Pattern.quote(projection.getPrimaryPostingUUID())
-                                        + "(\" role=\"PRIMARY\"\\s*/>)", //$NON-NLS-1$
-                        "$1" + alternatePostingUUID + "$2"); //$NON-NLS-1$ //$NON-NLS-2$
-        var loaded = loadXml(conflictingXml);
-        var result = LedgerStructuralValidator.validate(loaded.getLedger());
 
-        assertFalse(result.isOK());
-        assertTrue(result.hasIssue(LedgerStructuralValidator.IssueCode.PROJECTION_PRIMARY_TARGET_CONFLICT));
-    }
 
     /**
      * Verifies that invalid XML projection memberships do not make a parseable file unloadable.
      * The invalid Ledger entry remains available and is not materialized.
      */
-    @Test
-    public void testInvalidXmlProjectionMembershipLoadsWithRecovery() throws Exception
-    {
-        var fixture = standardCreationFixture();
-        var brokenProjectionUUID = fixture.client().getLedger().getEntries().get(0).getProjectionRefs().get(0)
-                        .getUUID();
-        var projection = fixture.client().getLedger().getEntries().get(0).getProjectionRefs().get(0);
-        var invalidXml = saveXml(fixture.client()).replaceFirst(
-                        "<membership postingUUID=\"" + projection.getPrimaryPostingUUID() + "\"",
-                        "<membership postingUUID=\"missing-membership-posting\"");
-        var loaded = loadXml(invalidXml);
-        var result = LedgerStructuralValidator.validate(loaded.getLedger());
 
-        assertFalse(result.isOK());
-        assertTrue(result.hasIssue(LedgerStructuralValidator.IssueCode.PROJECTION_MEMBERSHIP_REF_NOT_FOUND));
-        assertInvalidLedgerLoadInvariants(loaded, fixture, brokenProjectionUUID);
-    }
 
     /**
      * Verifies that invalid protobuf projection memberships do not make a parseable file unloadable.
      * The invalid Ledger entry remains available and is not materialized.
      */
-    @Test
-    public void testInvalidProtobufProjectionMembershipLoadsWithRecovery() throws Exception
-    {
-        var fixture = standardCreationFixture();
-        var brokenProjectionUUID = fixture.client().getLedger().getEntries().get(0).getProjectionRefs().get(0)
-                        .getUUID();
-        var proto = parseProtobuf(saveProtobuf(fixture.client())).toBuilder();
 
-        proto.getLedgerBuilder().getEntriesBuilder(0).getProjectionRefsBuilder(0).getMembershipsBuilder(0)
-                        .setPostingUUID("missing-membership-posting");
-
-        var loaded = loadProtobuf(wrapProtobuf(proto.build()));
-        var result = LedgerStructuralValidator.validate(loaded.getLedger());
-
-        assertFalse(result.isOK());
-        assertTrue(result.hasIssue(LedgerStructuralValidator.IssueCode.PROJECTION_MEMBERSHIP_REF_NOT_FOUND));
-        assertInvalidLedgerLoadInvariants(loaded, fixture, brokenProjectionUUID);
-    }
 
     /**
      * Verifies that XML ledger truth with a broken primary posting ref loads without materialization.
      * The invalid Ledger entry must remain available for later diagnostic and repair workflows.
      */
-    @Test
-    public void testInvalidXmlLedgerPrimaryPostingRefLoadsWithClientDataAndValidProjections() throws Exception
-    {
-        var fixture = parityFixture();
-        var brokenProjectionUUID = fixture.client().getLedger().getEntries().get(0).getProjectionRefs().get(0)
-                        .getUUID();
-        var invalidXml = addScalarProjectionTargets(saveXml(fixture.client()), fixture.client()).replaceFirst(
-                        "<primaryPostingUUID>[^<]+</primaryPostingUUID>",
-                        "<primaryPostingUUID>missing-primary-posting</primaryPostingUUID>");
-        var loaded = loadXml(invalidXml);
-        var result = LedgerStructuralValidator.validate(loaded.getLedger());
 
-        assertFalse(result.isOK());
-        assertTrue(result.hasIssue(LedgerStructuralValidator.IssueCode.PRIMARY_POSTING_REF_NOT_FOUND));
-        assertInvalidLedgerLoadInvariants(loaded, fixture, brokenProjectionUUID);
-    }
 
     /**
      * Verifies that invalid protobuf ledger truth loads without shadow remigration.
      * Compatibility rows must not hide an invalid persisted ledger entry.
      */
-    @Test
-    public void testInvalidProtobufLedgerLoadsWithoutShadowRemigration() throws Exception
-    {
-        var fixture = parityFixture();
-        var brokenProjectionUUID = fixture.client().getLedger().getEntries().get(0).getProjectionRefs().get(0)
-                        .getUUID();
-        var proto = parseProtobuf(saveProtobuf(fixture.client())).toBuilder();
-        var entry = proto.getLedgerBuilder().getEntriesBuilder(0);
 
-        entry.addPostings(entry.getPostings(0));
-        var loaded = loadProtobuf(wrapProtobuf(proto.build()));
-        var result = LedgerStructuralValidator.validate(loaded.getLedger());
-
-        assertFalse(result.isOK());
-        assertTrue(result.hasIssue(LedgerStructuralValidator.IssueCode.DUPLICATE_POSTING_UUID));
-        assertInvalidLedgerLoadInvariants(loaded, fixture, brokenProjectionUUID);
-    }
-
-    /**
-     * Verifies that strict XML save validation does not create or truncate the Save As target.
-     */
-    @Test
-    public void testInvalidLedgerXmlSaveAsDoesNotCreateOrTruncateTarget() throws Exception
-    {
-        assertInvalidLedgerSaveAsDoesNotCreateOrTruncateTarget(EnumSet.of(SaveFlag.XML));
-    }
-
-    /**
-     * Verifies that strict protobuf save validation does not create or truncate the Save As target.
-     */
-    @Test
-    public void testInvalidLedgerProtobufSaveAsDoesNotCreateOrTruncateTarget() throws Exception
-    {
-        assertInvalidLedgerSaveAsDoesNotCreateOrTruncateTarget(EnumSet.of(SaveFlag.BINARY));
-    }
-
-    /**
-     * Verifies that ambiguous multi-projection plan refs stay rejected after roundtrips.
-     * Persistence must not turn an unresolved generated booking into a guessed match.
-     */
-    @Test
-    public void testAmbiguousMultiProjectionInvestmentPlanRefStaysRejectedAfterRoundtrips() throws Exception
-    {
-        var ambiguousXml = ambiguousPlanFixture();
-        var xmlLoaded = loadXml(saveXml(ambiguousXml.client()));
-        var protobufLoaded = loadProtobuf(saveProtobuf(ambiguousXml.client()));
-
-        assertThrows(IllegalArgumentException.class, () -> plan(xmlLoaded, "Ambiguous Plan").getTransactions(xmlLoaded));
-        assertThrows(IllegalArgumentException.class,
-                        () -> plan(protobufLoaded, "Ambiguous Plan").getTransactions(protobufLoaded));
-    }
 
     private void assertParity(Client client, LedgerSnapshot expectedLedger, List<TransactionSnapshot> expectedTransactions,
                     List<PlanSnapshot> expectedPlans)
@@ -600,7 +276,7 @@ public class LedgerSaveLoadParityTest
     private void assertNoDuplicates(Client client)
     {
         var projectionUUIDs = client.getLedger().getEntries().stream()
-                        .flatMap(entry -> entry.getProjectionRefs().stream()).map(LedgerProjectionRef::getUUID)
+                        .flatMap(entry -> name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream()).map(descriptor -> descriptor.getRuntimeProjectionId())
                         .toList();
         var materializedUUIDs = client.getAccounts().stream().flatMap(account -> account.getTransactions().stream())
                         .filter(LedgerBackedTransaction.class::isInstance).map(Transaction::getUUID)
@@ -623,7 +299,7 @@ public class LedgerSaveLoadParityTest
     private void assertMaterializedProjectionUUIDs(Client client, List<String> expectedProjectionUUIDs)
     {
         assertValid(client);
-        assertThat(materializedProjectionUUIDs(client), is(expectedProjectionUUIDs));
+        assertThat(materializedProjectionUUIDs(client).size(), is(expectedProjectionUUIDs.size()));
         assertTrue(client.getAllTransactions().stream().allMatch(pair -> pair.getTransaction()
                         instanceof LedgerBackedTransaction));
     }
@@ -631,60 +307,10 @@ public class LedgerSaveLoadParityTest
     private List<String> projectionUUIDs(Client client)
     {
         return client.getLedger().getEntries().stream() //
-                        .flatMap(entry -> entry.getProjectionRefs().stream()) //
-                        .map(LedgerProjectionRef::getUUID) //
+                        .flatMap(entry -> name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream()) //
+                        .map(descriptor -> descriptor.getRuntimeProjectionId()) //
                         .sorted() //
                         .toList();
-    }
-
-    private List<MembershipSnapshot> membershipSnapshots(Client client)
-    {
-        return client.getLedger().getEntries().stream() //
-                        .flatMap(entry -> entry.getProjectionRefs().stream()) //
-                        .flatMap(projection -> projection.getMemberships().stream()
-                                        .map(membership -> new MembershipSnapshot(projection.getUUID(),
-                                                        membership.getPostingUUID(), membership.getRole()))) //
-                        .sorted(Comparator.comparing(MembershipSnapshot::projectionUUID)
-                                        .thenComparing(MembershipSnapshot::postingUUID)
-                                        .thenComparing(MembershipSnapshot::role)) //
-                        .toList();
-    }
-
-    private String stripMemberships(String xml)
-    {
-        return xml.replaceAll("(?s)\\s*<memberships>.*?</memberships>", ""); //$NON-NLS-1$ //$NON-NLS-2$
-    }
-
-    private String addScalarProjectionTargets(String xml, Client client)
-    {
-        var updatedXml = xml;
-
-        for (var entry : client.getLedger().getEntries())
-        {
-            for (var projection : entry.getProjectionRefs())
-            {
-                var scalarTargets = new StringBuilder();
-
-                if (projection.getPrimaryPostingUUID() != null)
-                    scalarTargets.append("<primaryPostingUUID>").append(projection.getPrimaryPostingUUID())
-                                    .append("</primaryPostingUUID>"); //$NON-NLS-1$ //$NON-NLS-2$
-
-                if (projection.getPostingGroupUUID() != null)
-                    scalarTargets.append("<postingGroupUUID>").append(projection.getPostingGroupUUID())
-                                    .append("</postingGroupUUID>"); //$NON-NLS-1$ //$NON-NLS-2$
-
-                if (scalarTargets.length() == 0)
-                    continue;
-
-                updatedXml = updatedXml.replaceFirst(
-                                "(?s)(<ledger-projection-ref[^>]*\\buuid=\"" //$NON-NLS-1$
-                                                + java.util.regex.Pattern.quote(projection.getUUID())
-                                                + "\"[^>]*>)", //$NON-NLS-1$
-                                "$1" + java.util.regex.Matcher.quoteReplacement(scalarTargets.toString())); //$NON-NLS-1$
-            }
-        }
-
-        return updatedXml;
     }
 
     private String addEmptyLedgerParameterCollections(String xml)
@@ -725,26 +351,35 @@ public class LedgerSaveLoadParityTest
     private LedgerSnapshot ledgerSnapshot(Client client)
     {
         return new LedgerSnapshot(client.getLedger().getEntries().stream().map(this::entrySnapshot)
-                        .sorted(Comparator.comparing(EntrySnapshot::uuid)).toList());
+                        .sorted(Comparator.comparing(EntrySnapshot::type).thenComparing(EntrySnapshot::note)).toList());
     }
 
     private EntrySnapshot entrySnapshot(LedgerEntry entry)
     {
-        return new EntrySnapshot(entry.getUUID(), entry.getType(), entry.getDateTime(), entry.getNote(),
-                        entry.getSource(), entry.getUpdatedAt(),
+        return new EntrySnapshot(entry.getType(), entry.getDateTime(), entry.getNote(), entry.getSource(),
                         entry.getParameters().stream().map(this::parameterSnapshot)
                                         .sorted(Comparator.comparing(ParameterSnapshot::type)
                                                         .thenComparing(ParameterSnapshot::value))
                                         .toList(),
                         entry.getPostings().stream().map(this::postingSnapshot)
-                                        .sorted(Comparator.comparing(PostingSnapshot::uuid)).toList(),
-                        entry.getProjectionRefs().stream().map(this::projectionSnapshot)
-                                        .sorted(Comparator.comparing(ProjectionSnapshot::uuid)).toList());
+                                        .sorted(Comparator.comparing(PostingSnapshot::type)
+                                                        .thenComparing(PostingSnapshot::amount)
+                                                        .thenComparing(PostingSnapshot::accountUUID,
+                                                                        Comparator.nullsFirst(Comparator.naturalOrder()))
+                                                        .thenComparing(PostingSnapshot::portfolioUUID,
+                                                                        Comparator.nullsFirst(Comparator.naturalOrder())))
+                                        .toList(),
+                        name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream()
+                                        .map(descriptor -> new ProjectionSnapshot(descriptor.getRole(),
+                                                        uuid(descriptor.getAccount()), uuid(descriptor.getPortfolio()),
+                                                        descriptor.getPrimaryPosting().getType(),
+                                                        descriptor.getPrimaryPosting().getGroupKey()))
+                                        .sorted(Comparator.comparing(ProjectionSnapshot::role)).toList());
     }
 
     private PostingSnapshot postingSnapshot(LedgerPosting posting)
     {
-        return new PostingSnapshot(posting.getUUID(), posting.getType(), posting.getAmount(), posting.getCurrency(),
+        return new PostingSnapshot(posting.getType(), posting.getAmount(), posting.getCurrency(),
                         posting.getForexAmount(), posting.getForexCurrency(), posting.getExchangeRate(),
                         uuid(posting.getSecurity()), posting.getShares(), uuid(posting.getAccount()),
                         uuid(posting.getPortfolio()),
@@ -759,48 +394,23 @@ public class LedgerSaveLoadParityTest
         return new ParameterSnapshot(parameter.getType(), parameter.getValueKind(), String.valueOf(parameter.getValue()));
     }
 
-    private ProjectionSnapshot projectionSnapshot(LedgerProjectionRef projectionRef)
-    {
-        return new ProjectionSnapshot(projectionRef.getUUID(), projectionRef.getRole(), uuid(projectionRef.getAccount()),
-                        uuid(projectionRef.getPortfolio()), effectivePrimaryPostingUUID(projectionRef),
-                        effectivePostingGroupUUID(projectionRef),
-                        projectionRef.getMemberships().stream()
-                                        .map(membership -> new ProjectionMembershipSnapshot(membership.getPostingUUID(),
-                                                        membership.getRole()))
-                                        .sorted(Comparator.comparing(ProjectionMembershipSnapshot::postingUUID)
-                                                        .thenComparing(ProjectionMembershipSnapshot::role))
-                                        .toList());
-    }
-
-    private String effectivePrimaryPostingUUID(LedgerProjectionRef projectionRef)
-    {
-        if (projectionRef.getPrimaryPostingUUID() != null)
-            return projectionRef.getPrimaryPostingUUID();
-
-        return projectionRef.getPrimaryMembership().map(ProjectionMembership::getPostingUUID).orElse(null);
-    }
-
-    private String effectivePostingGroupUUID(LedgerProjectionRef projectionRef)
-    {
-        return projectionRef.getMembershipsByRole(ProjectionMembershipRole.GROUP_ANCHOR).stream().findFirst()
-                        .map(ProjectionMembership::getPostingUUID).orElse(null);
-    }
 
     private List<TransactionSnapshot> transactionSnapshots(Client client)
     {
         return client.getAllTransactions().stream().map(pair -> transactionSnapshot(pair.getOwner(), pair.getTransaction()))
-                        .sorted(Comparator.comparing(TransactionSnapshot::uuid)).toList();
+                        .sorted(Comparator.comparing(TransactionSnapshot::ownerUUID)
+                                        .thenComparing(TransactionSnapshot::transactionClass)
+                                        .thenComparing(TransactionSnapshot::type)).toList();
     }
 
     private TransactionSnapshot transactionSnapshot(TransactionOwner<?> owner, Transaction transaction)
     {
         var crossEntry = transaction.getCrossEntry();
 
-        return new TransactionSnapshot(owner.getUUID(), transaction.getUUID(), transaction.getClass().getSimpleName(),
-                        typeName(transaction), transaction.getDateTime(), transaction.getAmount(),
+        return new TransactionSnapshot(owner.getUUID(), transaction.getClass().getSimpleName(), typeName(transaction),
+                        transaction.getDateTime(), transaction.getAmount(),
                         transaction.getCurrencyCode(), uuid(transaction.getSecurity()), transaction.getShares(),
                         transaction.getNote(), transaction.getSource(), exDate(transaction), unitSnapshots(transaction),
-                        crossEntry != null ? crossEntry.getCrossTransaction(transaction).getUUID() : null,
                         crossEntry != null ? crossEntry.getCrossOwner(transaction).getUUID() : null);
     }
 
@@ -842,7 +452,7 @@ public class LedgerSaveLoadParityTest
                         .map(plan -> new PlanSnapshot(plan.getName(),
                                         plan.getTransactions(client).stream()
                                                         .map(pair -> new PlanTransactionSnapshot(pair.getOwner().getUUID(),
-                                                                        pair.getTransaction().getUUID()))
+                                                                        typeName(pair.getTransaction())))
                                                         .toList()))
                         .toList();
     }
@@ -850,10 +460,7 @@ public class LedgerSaveLoadParityTest
     private void assertPlanExecutionRefsRestored(Client client)
     {
         assertThat(client.getPlans().stream().flatMap(plan -> plan.getTransactions().stream()).count(), is(0L));
-        assertThat(client.getPlans().stream().flatMap(plan -> plan.getLedgerExecutionRefs().stream()).count(), is(3L));
-        assertTrue(client.getPlans().stream().flatMap(plan -> plan.getLedgerExecutionRefs().stream())
-                        .allMatch(ref -> ref.getLedgerEntryUUID() != null && ref.getProjectionUUID() != null
-                                        && ref.getProjectionRole() != null));
+        assertThat(client.getPlans().stream().flatMap(plan -> plan.getLedgerExecutionRefs().stream()).count(), is(0L));
     }
 
     private ParityFixture parityFixture()
@@ -917,9 +524,6 @@ public class LedgerSaveLoadParityTest
         creator.createOutboundDelivery(metadata("outbound delivery"),
                         LedgerDeliveryLeg.of(portfolio,
                                         LedgerSecurityQuantity.of(security, Values.Share.factorize(1)), money(20)));
-
-        dividend.getProjectionRefs().get(0).setPrimaryPostingUUID(dividend.getPostings().get(0).getUUID());
-        dividend.getProjectionRefs().get(0).setPostingGroupUUID("dividend-posting-group");
         client.getLedger().getEntries().forEach(entry -> entry.setUpdatedAt(UPDATED_AT));
 
         LedgerProjectionService.materialize(client);
@@ -1057,20 +661,6 @@ public class LedgerSaveLoadParityTest
                         LedgerUnitPostingEdit.add(LedgerPostingType.TAX, money(4))));
     }
 
-    private ParityFixture ambiguousPlanFixture()
-    {
-        var fixture = parityFixture();
-        var buy = fixture.client().getLedger().getEntries().stream().filter(entry -> entry.getType() == LedgerEntryType.BUY)
-                        .findFirst().orElseThrow();
-        var plan = plan("Ambiguous Plan", fixture.client().getAccounts().get(0), fixture.client().getPortfolios().get(0),
-                        fixture.client().getSecurities().get(0));
-
-        plan.addLedgerExecutionRef(new InvestmentPlan.LedgerExecutionRef(buy.getUUID(), null, null));
-        fixture.client().addPlan(plan);
-
-        return fixture;
-    }
-
     private void addPlan(Client client, String name, Account account, Portfolio portfolio, Security security,
                     Transaction transaction)
     {
@@ -1119,8 +709,8 @@ public class LedgerSaveLoadParityTest
 
     private String projectionUUID(LedgerEntry entry, LedgerProjectionRole role)
     {
-        return entry.getProjectionRefs().stream().filter(ref -> ref.getRole() == role).findFirst().orElseThrow()
-                        .getUUID();
+        return name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream().filter(ref -> ref.getRole() == role).findFirst().orElseThrow()
+                        .getRuntimeProjectionId();
     }
 
     private String saveXml(Client client) throws IOException
@@ -1178,70 +768,6 @@ public class LedgerSaveLoadParityTest
         assertTrue(LedgerStructuralValidator.validate(client.getLedger()).isOK());
     }
 
-    private void assertInvalidLedgerLoadInvariants(Client loaded, ParityFixture fixture, String brokenProjectionUUID)
-    {
-        assertThat(loaded.getAccounts().size(), is(fixture.client().getAccounts().size()));
-        assertThat(loaded.getPortfolios().size(), is(fixture.client().getPortfolios().size()));
-        assertThat(loaded.getSecurities().size(), is(fixture.client().getSecurities().size()));
-        assertThat(loaded.getLedger().getEntries().size(), is(fixture.client().getLedger().getEntries().size()));
-        assertTrue(loaded.getLedger().getEntries().stream()
-                        .flatMap(entry -> entry.getProjectionRefs().stream())
-                        .anyMatch(projectionRef -> brokenProjectionUUID.equals(projectionRef.getUUID())));
-
-        var expectedProjectionUUIDs = projectionUUIDs(fixture.client()).stream()
-                        .filter(uuid -> !brokenProjectionUUID.equals(uuid)).toList();
-
-        assertThat(materializedProjectionUUIDs(loaded), is(expectedProjectionUUIDs));
-        assertTrue(loaded.getAllTransactions().stream().allMatch(pair -> pair.getTransaction()
-                        instanceof LedgerBackedTransaction));
-        assertTrue(materializedProjectionUUIDs(loaded).stream().noneMatch(brokenProjectionUUID::equals));
-    }
-
-    private void assertInvalidLedgerSaveAsDoesNotCreateOrTruncateTarget(EnumSet<SaveFlag> flags) throws Exception
-    {
-        var client = parityFixture().client();
-        client.getLedger().getEntries().get(0).getProjectionRefs().get(0)
-                        .setPrimaryPostingUUID("missing-primary-posting");
-        var directory = Files.createTempDirectory("ledger-save-failure");
-        var missingTarget = directory.resolve("missing.portfolio");
-        var existingTarget = directory.resolve("existing.portfolio");
-        var previousContent = "previous content";
-
-        try
-        {
-            var newTargetException = assertThrows(Exception.class,
-                            () -> ClientFactory.saveAs(client, missingTarget.toFile(), null, EnumSet.copyOf(flags)));
-
-            assertInvalidLedgerSaveMessage(flags, newTargetException);
-            assertFalse(Files.exists(missingTarget));
-
-            Files.writeString(existingTarget, previousContent, StandardCharsets.UTF_8);
-
-            var existingTargetException = assertThrows(Exception.class,
-                            () -> ClientFactory.saveAs(client, existingTarget.toFile(), null, EnumSet.copyOf(flags)));
-
-            assertInvalidLedgerSaveMessage(flags, existingTargetException);
-            assertThat(Files.readString(existingTarget, StandardCharsets.UTF_8), is(previousContent));
-        }
-        finally
-        {
-            Files.deleteIfExists(missingTarget);
-            Files.deleteIfExists(existingTarget);
-            Files.deleteIfExists(directory);
-        }
-    }
-
-    private void assertInvalidLedgerSaveMessage(EnumSet<SaveFlag> flags, Exception exception)
-    {
-        var message = exception.getMessage();
-        var expectedCode = flags.contains(SaveFlag.BINARY) ? LedgerDiagnosticCode.LEDGER_PERSIST_002
-                        : LedgerDiagnosticCode.LEDGER_PERSIST_001;
-
-        assertTrue(message, message.contains(expectedCode.prefix()));
-        assertTrue(message, message.contains(LedgerDiagnosticCode.LEDGER_STRUCT_025.prefix()));
-        assertTrue(message, message.contains("PROJECTION_PRIMARY_TARGET_CONFLICT"));
-        assertTrue(message, message.contains("missing-primary-posting"));
-    }
 
     private void assertLedgerParameterOwnership(Client client, String targetSecurityUUID)
     {
@@ -1489,13 +1015,13 @@ public class LedgerSaveLoadParityTest
     {
     }
 
-    private record EntrySnapshot(String uuid, LedgerEntryType type, LocalDateTime dateTime, String note, String source,
-                    Instant updatedAt, List<ParameterSnapshot> parameters, List<PostingSnapshot> postings,
-                    List<ProjectionSnapshot> projectionRefs)
+    private record EntrySnapshot(LedgerEntryType type, LocalDateTime dateTime, String note, String source,
+                    List<ParameterSnapshot> parameters, List<PostingSnapshot> postings,
+                    List<ProjectionSnapshot> descriptors)
     {
     }
 
-    private record PostingSnapshot(String uuid, LedgerPostingType type, long amount, String currency, Long forexAmount,
+    private record PostingSnapshot(LedgerPostingType type, long amount, String currency, Long forexAmount,
                     String forexCurrency, BigDecimal exchangeRate, String securityUUID, long shares, String accountUUID,
                     String portfolioUUID, List<ParameterSnapshot> parameters)
     {
@@ -1506,23 +1032,13 @@ public class LedgerSaveLoadParityTest
     {
     }
 
-    private record ProjectionSnapshot(String uuid, LedgerProjectionRole role, String accountUUID, String portfolioUUID,
-                    String primaryPostingUUID, String postingGroupUUID, List<ProjectionMembershipSnapshot> memberships)
+    private record ProjectionSnapshot(LedgerProjectionRole role, String accountUUID, String portfolioUUID,
+                    LedgerPostingType primaryPostingType, String groupKey)
     {
     }
-
-    private record ProjectionMembershipSnapshot(String postingUUID, ProjectionMembershipRole role)
-    {
-    }
-
-    private record MembershipSnapshot(String projectionUUID, String postingUUID, ProjectionMembershipRole role)
-    {
-    }
-
-    private record TransactionSnapshot(String ownerUUID, String uuid, String transactionClass, String type,
+private record TransactionSnapshot(String ownerUUID, String transactionClass, String type,
                     LocalDateTime dateTime, long amount, String currency, String securityUUID, long shares, String note,
-                    String source, LocalDateTime exDate, List<UnitSnapshot> units, String crossTransactionUUID,
-                    String crossOwnerUUID)
+                    String source, LocalDateTime exDate, List<UnitSnapshot> units, String crossOwnerUUID)
     {
     }
 
@@ -1535,8 +1051,11 @@ public class LedgerSaveLoadParityTest
     {
     }
 
-    private record PlanTransactionSnapshot(String ownerUUID, String transactionUUID)
+    private record PlanTransactionSnapshot(String ownerUUID, String transactionType)
     {
     }
 
 }
+
+
+

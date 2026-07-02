@@ -21,7 +21,9 @@ import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerParameter;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
+import name.abuchen.portfolio.model.ledger.LedgerPostingDirection;
+import name.abuchen.portfolio.model.ledger.LedgerPostingSemanticRole;
+import name.abuchen.portfolio.model.ledger.LedgerPostingUnitRole;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator;
 import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator.IssueCode;
@@ -75,7 +77,6 @@ public class OnlyAccountTransactionsWithSecurityCanHaveExDateCheckTest
         var account = new Account();
         var entry = new LedgerEntry("entry");
         var posting = new LedgerPosting("posting");
-        var projection = new LedgerProjectionRef("projection");
 
         client.addAccount(account);
 
@@ -86,12 +87,11 @@ public class OnlyAccountTransactionsWithSecurityCanHaveExDateCheckTest
         posting.setAccount(account);
         posting.setAmount(Values.Amount.factorize(10));
         posting.setCurrency(CurrencyUnit.EUR);
+        posting.setSemanticRole(LedgerPostingSemanticRole.CASH);
+        posting.setDirection(LedgerPostingDirection.NEUTRAL);
+        posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
         posting.addParameter(LedgerParameter.ofLocalDateTime(LedgerParameterType.EX_DATE, EX_DATE));
         entry.addPosting(posting);
-
-        projection.setRole(LedgerProjectionRole.ACCOUNT);
-        projection.setAccount(account);
-        entry.addProjectionRef(projection);
 
         client.getLedger().addEntry(entry);
         LedgerProjectionService.materialize(client);
@@ -102,15 +102,17 @@ public class OnlyAccountTransactionsWithSecurityCanHaveExDateCheckTest
         assertThat(transaction.getExDate(), is(EX_DATE));
 
         var entryUUID = entry.getUUID();
-        var projectionUUID = projection.getUUID();
-        var projectionRole = projection.getRole();
+        var projectionUUID = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0)
+                        .getRuntimeProjectionId();
+        var projectionRole = LedgerProjectionRole.ACCOUNT;
 
         new OnlyAccountTransactionsWithSecurityCanHaveExDateCheck().execute(client);
 
         assertThat(client.getLedger().getEntries().size(), is(1));
         assertThat(client.getLedger().getEntries().get(0).getUUID(), is(entryUUID));
-        assertThat(entry.getProjectionRefs().get(0).getUUID(), is(projectionUUID));
-        assertThat(entry.getProjectionRefs().get(0).getRole(), is(projectionRole));
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0)
+                        .getRuntimeProjectionId(), is(projectionUUID));
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0).getRole(), is(projectionRole));
         assertFalse(posting.getParameters().stream()
                         .anyMatch(parameter -> parameter.getType() == LedgerParameterType.EX_DATE));
         assertThat(account.getTransactions().size(), is(1));
@@ -118,7 +120,8 @@ public class OnlyAccountTransactionsWithSecurityCanHaveExDateCheckTest
         var refreshed = account.getTransactions().get(0);
 
         assertTrue(refreshed instanceof LedgerBackedTransaction);
-        assertThat(((LedgerBackedTransaction) refreshed).getLedgerProjectionRef().getUUID(), is(projectionUUID));
+        assertThat(((LedgerBackedTransaction) refreshed).getLedgerProjectionDescriptor().getRuntimeProjectionId(),
+                        is(projectionUUID));
         assertNull(refreshed.getExDate());
 
         var validation = LedgerStructuralValidator.validate(client.getLedger());
@@ -138,7 +141,6 @@ public class OnlyAccountTransactionsWithSecurityCanHaveExDateCheckTest
         var account = new Account();
         var entry = new LedgerEntry("entry");
         var posting = new LedgerPosting("posting");
-        var projection = new LedgerProjectionRef("projection");
 
         client.addAccount(account);
 
@@ -149,12 +151,11 @@ public class OnlyAccountTransactionsWithSecurityCanHaveExDateCheckTest
         posting.setAccount(account);
         posting.setAmount(Values.Amount.factorize(10));
         posting.setCurrency(CurrencyUnit.EUR);
+        posting.setSemanticRole(LedgerPostingSemanticRole.CASH);
+        posting.setDirection(LedgerPostingDirection.NEUTRAL);
+        posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
         posting.addParameter(LedgerParameter.ofLocalDateTime(LedgerParameterType.EX_DATE, EX_DATE));
         entry.addPosting(posting);
-
-        projection.setRole(LedgerProjectionRole.ACCOUNT);
-        projection.setAccount(account);
-        entry.addProjectionRef(projection);
 
         client.getLedger().addEntry(entry);
         LedgerProjectionService.materialize(client);
@@ -167,7 +168,7 @@ public class OnlyAccountTransactionsWithSecurityCanHaveExDateCheckTest
         var loaded = reloadXml(client);
 
         assertThat(loaded.getLedger().getEntries().size(), is(1));
-        assertThat(loaded.getLedger().getEntries().get(0).getUUID(), is(entry.getUUID()));
+        assertThat(loaded.getLedger().getEntries().get(0).getType(), is(LedgerEntryType.FEES));
         assertThat(loaded.getAccounts().get(0).getTransactions().size(), is(1));
         assertNull(loaded.getAccounts().get(0).getTransactions().get(0).getExDate());
     }

@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -31,15 +33,14 @@ import name.abuchen.portfolio.model.ledger.LedgerPosting;
 import name.abuchen.portfolio.model.ledger.LedgerPostingDirection;
 import name.abuchen.portfolio.model.ledger.LedgerPostingSemanticRole;
 import name.abuchen.portfolio.model.ledger.LedgerPostingUnitRole;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator;
-import name.abuchen.portfolio.model.ledger.ProjectionMembershipRole;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerParameterType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
 import name.abuchen.portfolio.model.ledger.projection.LedgerProjectionService;
+import name.abuchen.portfolio.model.ledger.projection.LedgerProjectionSupport;
 
 /**
  * Migrates legacy transaction structures into persisted Ledger entries.
@@ -141,7 +142,7 @@ public final class LegacyTransactionToLedgerMigrator
         var projection = MigrationGraphBuilder.accountProjection(transaction.getUUID(), LedgerProjectionRole.ACCOUNT,
                         account, posting.getUUID());
         MigrationGraphBuilder.addUnitMemberships(projection, unitPostings);
-        MigrationGraphBuilder.addProjectionRef(entry, projection);
+        MigrationGraphBuilder.addProjectionView(entry, projection);
 
         if (plan.handleAlreadyMigratedCompleteGroup("ACCOUNT", entry, transaction)) //$NON-NLS-1$
             return;
@@ -233,8 +234,8 @@ public final class LegacyTransactionToLedgerMigrator
                         LedgerProjectionRole.PORTFOLIO, portfolio, securityPosting.getUUID());
         MigrationGraphBuilder.addUnitMemberships(accountProjection, unitPostings);
         MigrationGraphBuilder.addUnitMemberships(portfolioProjection, unitPostings);
-        MigrationGraphBuilder.addProjectionRef(entry, accountProjection);
-        MigrationGraphBuilder.addProjectionRef(entry, portfolioProjection);
+        MigrationGraphBuilder.addProjectionView(entry, accountProjection);
+        MigrationGraphBuilder.addProjectionView(entry, portfolioProjection);
 
         if (plan.handleAlreadyMigratedCompleteGroup("BUY_SELL", entry, accountTransaction, portfolioTransaction)) //$NON-NLS-1$
             return;
@@ -320,10 +321,10 @@ public final class LegacyTransactionToLedgerMigrator
                         LedgerPostingDirection.INBOUND, LedgerProjectionRole.TARGET_ACCOUNT);
         MigrationGraphBuilder.addPosting(entry, sourcePosting);
         MigrationGraphBuilder.addPosting(entry, targetPosting);
-        MigrationGraphBuilder.addProjectionRef(entry, MigrationGraphBuilder.accountProjection(
+        MigrationGraphBuilder.addProjectionView(entry, MigrationGraphBuilder.accountProjection(
                         sourceTransaction.getUUID(), LedgerProjectionRole.SOURCE_ACCOUNT, sourceAccount,
                         sourcePosting.getUUID()));
-        MigrationGraphBuilder.addProjectionRef(entry, MigrationGraphBuilder.accountProjection(
+        MigrationGraphBuilder.addProjectionView(entry, MigrationGraphBuilder.accountProjection(
                         targetTransaction.getUUID(), LedgerProjectionRole.TARGET_ACCOUNT, targetAccount,
                         targetPosting.getUUID()));
 
@@ -389,10 +390,10 @@ public final class LegacyTransactionToLedgerMigrator
                         LedgerPostingDirection.INBOUND, LedgerProjectionRole.TARGET_PORTFOLIO);
         MigrationGraphBuilder.addPosting(entry, sourcePosting);
         MigrationGraphBuilder.addPosting(entry, targetPosting);
-        MigrationGraphBuilder.addProjectionRef(entry, MigrationGraphBuilder.portfolioProjection(
+        MigrationGraphBuilder.addProjectionView(entry, MigrationGraphBuilder.portfolioProjection(
                         sourceTransaction.getUUID(), LedgerProjectionRole.SOURCE_PORTFOLIO, sourcePortfolio,
                         sourcePosting.getUUID()));
-        MigrationGraphBuilder.addProjectionRef(entry, MigrationGraphBuilder.portfolioProjection(
+        MigrationGraphBuilder.addProjectionView(entry, MigrationGraphBuilder.portfolioProjection(
                         targetTransaction.getUUID(), LedgerProjectionRole.TARGET_PORTFOLIO, targetPortfolio,
                         targetPosting.getUUID()));
 
@@ -504,7 +505,7 @@ public final class LegacyTransactionToLedgerMigrator
         var projection = MigrationGraphBuilder.portfolioProjection(transaction.getUUID(), role, portfolio,
                         posting.getUUID());
         MigrationGraphBuilder.addUnitMemberships(projection, unitPostings);
-        MigrationGraphBuilder.addProjectionRef(entry, projection);
+        MigrationGraphBuilder.addProjectionView(entry, projection);
 
         if (plan.handleAlreadyMigratedCompleteGroup("DELIVERY", entry, transaction)) //$NON-NLS-1$
             return;
@@ -540,7 +541,7 @@ public final class LegacyTransactionToLedgerMigrator
     {
         plan.getEntries().forEach(entry -> MigrationGraphBuilder.addEntry(client.getLedger(), entry));
         convertInvestmentPlanTransactionsToLedgerRefs(client, plan);
-        removeMigratedLegacyTransactions(client, plan.getProjectionUUIDsToRemove(), plan.getLegacyTransactionsToRemove());
+        removeMigratedLegacyTransactions(client, plan.getprojectionIdsToRemove(), plan.getLegacyTransactionsToRemove());
         LedgerProjectionService.materialize(client);
     }
 
@@ -552,43 +553,23 @@ public final class LegacyTransactionToLedgerMigrator
             {
                 var transaction = investmentPlan.getTransactions().get(index);
 
-                if (!shouldRemove(transaction, plan.getProjectionUUIDsToRemove(), plan.getLegacyTransactionsToRemove()))
+                if (!shouldRemove(transaction, plan.getprojectionIdsToRemove(), plan.getLegacyTransactionsToRemove()))
                     continue;
 
-                var ref = ledgerExecutionRef(client, transaction.getUUID());
+                var entry = plan.getMigratedEntry(transaction);
 
-                if (ref == null)
+                if (entry == null)
                     continue;
 
-                if (investmentPlan.getLedgerExecutionRefs().stream()
-                                .noneMatch(existing -> sameExecutionRef(existing, ref)))
-                    investmentPlan.addLedgerExecutionRef(ref);
-
+                entry.setGeneratedByPlanKey(investmentPlan.getPlanKey());
+                entry.setPlanExecutionDate(transaction.getDateTime().toLocalDate());
+                entry.setPlanExecutionSequence(null);
+                entry.setPreferredViewKind(transaction instanceof PortfolioTransaction
+                                ? InvestmentPlan.LedgerExecutionViewKind.PORTFOLIO.name()
+                                : InvestmentPlan.LedgerExecutionViewKind.ACCOUNT.name());
                 investmentPlan.getTransactions().remove(index);
             }
         }
-    }
-
-    private InvestmentPlan.LedgerExecutionRef ledgerExecutionRef(Client client, String projectionUUID)
-    {
-        for (var entry : client.getLedger().getEntries())
-        {
-            for (var projection : entry.getProjectionRefs())
-            {
-                if (projectionUUID.equals(projection.getUUID()))
-                    return new InvestmentPlan.LedgerExecutionRef(entry.getUUID(), projection.getUUID(),
-                                    projection.getRole());
-            }
-        }
-
-        return null;
-    }
-
-    private boolean sameExecutionRef(InvestmentPlan.LedgerExecutionRef left, InvestmentPlan.LedgerExecutionRef right)
-    {
-        return Objects.equals(left.getLedgerEntryUUID(), right.getLedgerEntryUUID())
-                        && Objects.equals(left.getProjectionUUID(), right.getProjectionUUID())
-                        && left.getProjectionRole() == right.getProjectionRole();
     }
 
     private void removeMigratedLegacyTransactions(Client client, Set<String> migratedProjectionUUIDs,
@@ -677,43 +658,22 @@ public final class LegacyTransactionToLedgerMigrator
             return List.copyOf(postings);
         }
 
-        private static void addUnitMemberships(LedgerProjectionRef projection, List<LedgerPosting> unitPostings)
+        private static void addUnitMemberships(MigrationView projection, List<LedgerPosting> unitPostings)
         {
-            for (var posting : unitPostings)
-            {
-                switch (posting.getType())
-                {
-                    case FEE -> projection.addMembership(posting.getUUID(), ProjectionMembershipRole.FEE_UNIT);
-                    case TAX -> projection.addMembership(posting.getUUID(), ProjectionMembershipRole.TAX_UNIT);
-                    case GROSS_VALUE -> projection.addMembership(posting.getUUID(), ProjectionMembershipRole.GROSS_VALUE_UNIT);
-                    default -> throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_IMPORT_021
-                                    .message("Unsupported unit posting type: " + posting.getType())); //$NON-NLS-1$
-                }
-            }
+            // Unit postings carry semantic unitRole/groupKey data and no longer need
+            // persisted projection memberships.
         }
 
-        private static LedgerProjectionRef accountProjection(String uuid, LedgerProjectionRole role, Account account,
-                        String primaryPostingUUID)
+        private static MigrationView accountProjection(String uuid, LedgerProjectionRole role, Account account,
+                        String primaryPostingId)
         {
-            var projection = new LedgerProjectionRef(uuid);
-
-            projection.setRole(role);
-            projection.setAccount(account);
-            projection.setPrimaryPostingTargetUUID(primaryPostingUUID);
-
-            return projection;
+            return new MigrationView(uuid, role, account, null, primaryPostingId);
         }
 
-        private static LedgerProjectionRef portfolioProjection(String uuid, LedgerProjectionRole role,
-                        Portfolio portfolio, String primaryPostingUUID)
+        private static MigrationView portfolioProjection(String uuid, LedgerProjectionRole role,
+                        Portfolio portfolio, String primaryPostingId)
         {
-            var projection = new LedgerProjectionRef(uuid);
-
-            projection.setRole(role);
-            projection.setPortfolio(portfolio);
-            projection.setPrimaryPostingTargetUUID(primaryPostingUUID);
-
-            return projection;
+            return new MigrationView(uuid, role, null, portfolio, primaryPostingId);
         }
 
         private static void addEntry(Ledger ledger, LedgerEntry entry)
@@ -731,9 +691,9 @@ public final class LegacyTransactionToLedgerMigrator
             entry.addPosting(posting);
         }
 
-        private static void addProjectionRef(LedgerEntry entry, LedgerProjectionRef projection)
+        private static void addProjectionView(LedgerEntry entry, MigrationView projection)
         {
-            entry.addProjectionRef(projection);
+            // Projection views are derived from semantic postings.
         }
 
         private static void addParameter(LedgerPosting posting, LedgerParameter<?> parameter)
@@ -825,13 +785,19 @@ public final class LegacyTransactionToLedgerMigrator
         }
     }
 
+    private record MigrationView(String uuid, LedgerProjectionRole role, Account account, Portfolio portfolio,
+                    String primaryPostingId)
+    {
+    }
+
     private static final class MigrationPlan
     {
         private final Client client;
         private final List<LedgerEntry> entries = new ArrayList<>();
         private final List<Transaction> legacyTransactionsToRemove = new ArrayList<>();
-        private final Set<String> projectionUUIDsToRemove = new HashSet<>();
-        private final Set<String> plannedProjectionUUIDs = new HashSet<>();
+        private final Map<Transaction, LedgerEntry> migratedEntriesByTransaction = new IdentityHashMap<>();
+        private final Set<String> projectionIdsToRemove = new HashSet<>();
+        private final Set<String> plannedEntryUUIDs = new HashSet<>();
         private final List<String> diagnostics = new ArrayList<>();
         private int migratedTransactionCount;
         private boolean applied;
@@ -846,10 +812,12 @@ public final class LegacyTransactionToLedgerMigrator
             entries.add(entry);
 
             for (var transaction : transactions)
+            {
                 markMigrated(transaction);
+                migratedEntriesByTransaction.put(transaction, entry);
+            }
 
-            for (var projection : entry.getProjectionRefs())
-                plannedProjectionUUIDs.add(projection.getUUID());
+            plannedEntryUUIDs.add(entry.getUUID());
 
             MigrationGraphBuilder.setUpdatedAt(entry, transactions[0]);
         }
@@ -857,21 +825,18 @@ public final class LegacyTransactionToLedgerMigrator
         private boolean handleAlreadyMigratedCompleteGroup(String family, LedgerEntry expectedEntry,
                         Transaction... transactions)
         {
-            var projectionUUIDs = projectionUUIDs(expectedEntry);
-
-            if (projectionUUIDs.stream().anyMatch(plannedProjectionUUIDs::contains))
+            if (plannedEntryUUIDs.contains(expectedEntry.getUUID()))
             {
-                addDiagnostic(family, "DUPLICATE_CONFLICT", "plannedProjectionConflict", transactions); //$NON-NLS-1$ //$NON-NLS-2$
+                addDiagnostic(family, "DUPLICATE_CONFLICT", "plannedEntryConflict", transactions); //$NON-NLS-1$ //$NON-NLS-2$
                 return true;
             }
 
-            var matchingEntries = existingEntriesContainingAny(projectionUUIDs);
+            var matchingEntries = existingEntriesMatching(expectedEntry);
 
             if (matchingEntries.isEmpty())
                 return false;
 
-            if (matchingEntries.size() == 1 && existingEntryContainsAll(matchingEntries.get(0), projectionUUIDs)
-                            && isStructurallyValidExistingEntry(matchingEntries.get(0)))
+            if (matchingEntries.size() == 1 && isStructurallyValidExistingEntry(matchingEntries.get(0)))
             {
                 var mismatch = semanticMismatch(matchingEntries.get(0), expectedEntry);
 
@@ -890,8 +855,7 @@ public final class LegacyTransactionToLedgerMigrator
             }
 
             addDiagnostic(family, "DUPLICATE_CONFLICT", //$NON-NLS-1$
-                            "existingProjectionConflict mismatch=" + duplicateMismatch(matchingEntries, //$NON-NLS-1$
-                                            projectionUUIDs),
+                            "existingEntryConflict mismatch=" + duplicateMismatch(matchingEntries), //$NON-NLS-1$
                             transactions);
             return true;
         }
@@ -899,37 +863,56 @@ public final class LegacyTransactionToLedgerMigrator
         private void markMigrated(Transaction transaction)
         {
             legacyTransactionsToRemove.add(transaction);
-            projectionUUIDsToRemove.add(transaction.getUUID());
+            projectionIdsToRemove.add(transaction.getUUID());
             migratedTransactionCount++;
         }
 
         private void markAlreadyMigrated(Transaction transaction)
         {
             legacyTransactionsToRemove.add(transaction);
-            projectionUUIDsToRemove.add(transaction.getUUID());
+            projectionIdsToRemove.add(transaction.getUUID());
         }
 
-        private List<LedgerEntry> existingEntriesContainingAny(List<String> projectionUUIDs)
+        private List<LedgerEntry> existingEntriesMatching(LedgerEntry expectedEntry)
         {
             var result = new ArrayList<LedgerEntry>();
+            var expectedDescriptors = LedgerProjectionSupport.descriptors(expectedEntry);
 
             for (var entry : client.getLedger().getEntries())
             {
-                if (entry.getProjectionRefs().stream().anyMatch(ref -> projectionUUIDs.contains(ref.getUUID())))
+                if (entry.getUUID().equals(expectedEntry.getUUID()) || entry.getType() == expectedEntry.getType()
+                                || hasOwnerOverlap(entry, expectedDescriptors))
                     result.add(entry);
             }
 
             return result;
         }
 
-        private boolean existingEntryContainsAll(LedgerEntry entry, List<String> projectionUUIDs)
+        private boolean hasOwnerOverlap(LedgerEntry entry,
+                        List<name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor> expectedDescriptors)
         {
-            var existingProjectionUUIDs = new HashSet<String>();
+            try
+            {
+                for (var existingDescriptor : LedgerProjectionSupport.descriptors(entry))
+                    for (var expectedDescriptor : expectedDescriptors)
+                    {
+                        if (existingDescriptor.getAccount() != null
+                                        && existingDescriptor.getAccount() == expectedDescriptor.getAccount())
+                            return true;
 
-            for (var projection : entry.getProjectionRefs())
-                existingProjectionUUIDs.add(projection.getUUID());
+                        if (existingDescriptor.getPortfolio() != null
+                                        && existingDescriptor.getPortfolio() == expectedDescriptor.getPortfolio())
+                            return true;
+                    }
+            }
+            catch (IllegalArgumentException e)
+            {
+                // Malformed existing ledger entries must be treated as possible
+                // duplicate conflicts so migration does not silently remove legacy rows.
+                return entry.getType() == expectedDescriptors.get(0).getEntry().getType();
+            }
 
-            return existingProjectionUUIDs.containsAll(projectionUUIDs);
+            return false;
         }
 
         private boolean isStructurallyValidExistingEntry(LedgerEntry entry)
@@ -941,12 +924,9 @@ public final class LegacyTransactionToLedgerMigrator
             return LedgerStructuralValidator.validate(ledger).isOK();
         }
 
-        private SemanticMismatch duplicateMismatch(List<LedgerEntry> matchingEntries, List<String> projectionUUIDs)
+        private SemanticMismatch duplicateMismatch(List<LedgerEntry> matchingEntries)
         {
             if (matchingEntries.size() != 1)
-                return SemanticMismatch.PROJECTION_UUID;
-
-            if (!existingEntryContainsAll(matchingEntries.get(0), projectionUUIDs))
                 return SemanticMismatch.PROJECTION_UUID;
 
             if (!isStructurallyValidExistingEntry(matchingEntries.get(0)))
@@ -960,18 +940,28 @@ public final class LegacyTransactionToLedgerMigrator
             if (existingEntry.getType() != expectedEntry.getType())
                 return SemanticMismatch.ENTRY_TYPE;
 
-            if (existingEntry.getProjectionRefs().size() != expectedEntry.getProjectionRefs().size())
-                return SemanticMismatch.PROJECTION_UUID;
-
             if (!postingTypeCounts(existingEntry).equals(postingTypeCounts(expectedEntry)))
                 return SemanticMismatch.POSTING_TYPE_SHAPE;
 
             if (!sameUnitPostingFacts(existingEntry, expectedEntry))
                 return SemanticMismatch.UNIT_POSTINGS;
 
-            for (var expectedProjection : expectedEntry.getProjectionRefs())
+            List<name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor> existingDescriptors;
+
+            try
             {
-                var existingProjection = projectionByUUID(existingEntry, expectedProjection.getUUID());
+                existingDescriptors = LedgerProjectionSupport.descriptors(existingEntry);
+            }
+            catch (IllegalArgumentException e)
+            {
+                return SemanticMismatch.PRIMARY_POSTING;
+            }
+
+            for (var expectedProjection : LedgerProjectionSupport.descriptors(expectedEntry))
+            {
+                var existingProjection = existingDescriptors.stream()
+                                .filter(descriptor -> descriptor.getRole() == expectedProjection.getRole())
+                                .findFirst().orElse(null);
 
                 if (existingProjection == null)
                     return SemanticMismatch.PROJECTION_UUID;
@@ -983,8 +973,8 @@ public final class LegacyTransactionToLedgerMigrator
                                 || existingProjection.getPortfolio() != expectedProjection.getPortfolio())
                     return SemanticMismatch.PROJECTION_OWNER;
 
-                var expectedPosting = postingByUUID(expectedEntry, expectedProjection.getPrimaryPostingUUID());
-                var existingPosting = postingByUUID(existingEntry, existingProjection.getPrimaryPostingUUID());
+                var expectedPosting = expectedProjection.getPrimaryPosting();
+                var existingPosting = existingProjection.getPrimaryPosting();
 
                 if (expectedPosting == null || existingPosting == null)
                     return SemanticMismatch.PRIMARY_POSTING;
@@ -996,16 +986,6 @@ public final class LegacyTransactionToLedgerMigrator
             }
 
             return SemanticMismatch.NONE;
-        }
-
-        private List<String> projectionUUIDs(LedgerEntry entry)
-        {
-            var result = new ArrayList<String>();
-
-            for (var projection : entry.getProjectionRefs())
-                result.add(projection.getUUID());
-
-            return result;
         }
 
         private java.util.Map<LedgerPostingType, Integer> postingTypeCounts(LedgerEntry entry)
@@ -1047,15 +1027,6 @@ public final class LegacyTransactionToLedgerMigrator
         {
             return type == LedgerPostingType.FEE || type == LedgerPostingType.TAX
                             || type == LedgerPostingType.GROSS_VALUE;
-        }
-
-        private LedgerProjectionRef projectionByUUID(LedgerEntry entry, String uuid)
-        {
-            for (var projection : entry.getProjectionRefs())
-                if (Objects.equals(projection.getUUID(), uuid))
-                    return projection;
-
-            return null;
         }
 
         private LedgerPosting postingByUUID(LedgerEntry entry, String uuid)
@@ -1126,9 +1097,14 @@ public final class LegacyTransactionToLedgerMigrator
             return legacyTransactionsToRemove;
         }
 
-        private Set<String> getProjectionUUIDsToRemove()
+        private LedgerEntry getMigratedEntry(Transaction transaction)
         {
-            return projectionUUIDsToRemove;
+            return migratedEntriesByTransaction.get(transaction);
+        }
+
+        private Set<String> getprojectionIdsToRemove()
+        {
+            return projectionIdsToRemove;
         }
 
         private List<String> getDiagnostics()

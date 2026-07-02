@@ -428,8 +428,8 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
         public static LedgerExecutionRef of(LedgerBackedTransaction transaction)
         {
             return new LedgerExecutionRef(transaction.getLedgerEntry().getUUID(),
-                            transaction.getLedgerProjectionRef().getUUID(),
-                            transaction.getLedgerProjectionRef().getRole());
+                            transaction.getRuntimeProjectionId(),
+                            transaction.getLedgerProjectionRole());
         }
 
         public String getLedgerEntryUUID()
@@ -471,11 +471,9 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
 
             return ledgerEntryUUID.equals(ledgerBackedTransaction.getLedgerEntry().getUUID())
                             && (projectionUUID == null
-                                            || projectionUUID.equals(
-                                                            ledgerBackedTransaction.getLedgerProjectionRef().getUUID()))
+                                            || projectionUUID.equals(ledgerBackedTransaction.getRuntimeProjectionId()))
                             && (projectionRole == null
-                                            || projectionRole == ledgerBackedTransaction.getLedgerProjectionRef()
-                                                            .getRole());
+                                            || projectionRole == ledgerBackedTransaction.getLedgerProjectionRole());
         }
     }
 

@@ -52,11 +52,11 @@ public final class LedgerTransferDirectionConverter
         var entry = sourceTransaction.getLedgerEntry();
         return LedgerPlanReferenceSupport.refsFollowRoleChanges(client, entry,
                         LedgerPlanReferenceSupport.roleChange(
-                                        LedgerPlanReferenceSupport.projectionUUID(entry,
+                                        LedgerPlanReferenceSupport.runtimeProjectionId(entry,
                                                         LedgerProjectionRole.SOURCE_ACCOUNT),
                                         LedgerProjectionRole.SOURCE_ACCOUNT, LedgerProjectionRole.TARGET_ACCOUNT),
                         LedgerPlanReferenceSupport.roleChange(
-                                        LedgerPlanReferenceSupport.projectionUUID(entry,
+                                        LedgerPlanReferenceSupport.runtimeProjectionId(entry,
                                                         LedgerProjectionRole.TARGET_ACCOUNT),
                                         LedgerProjectionRole.TARGET_ACCOUNT, LedgerProjectionRole.SOURCE_ACCOUNT));
     }
@@ -73,11 +73,11 @@ public final class LedgerTransferDirectionConverter
         var entry = sourceTransaction.getLedgerEntry();
         return LedgerPlanReferenceSupport.refsFollowRoleChanges(client, entry,
                         LedgerPlanReferenceSupport.roleChange(
-                                        LedgerPlanReferenceSupport.projectionUUID(entry,
+                                        LedgerPlanReferenceSupport.runtimeProjectionId(entry,
                                                         LedgerProjectionRole.SOURCE_PORTFOLIO),
                                         LedgerProjectionRole.SOURCE_PORTFOLIO, LedgerProjectionRole.TARGET_PORTFOLIO),
                         LedgerPlanReferenceSupport.roleChange(
-                                        LedgerPlanReferenceSupport.projectionUUID(entry,
+                                        LedgerPlanReferenceSupport.runtimeProjectionId(entry,
                                                         LedgerProjectionRole.TARGET_PORTFOLIO),
                                         LedgerProjectionRole.TARGET_PORTFOLIO, LedgerProjectionRole.SOURCE_PORTFOLIO));
     }

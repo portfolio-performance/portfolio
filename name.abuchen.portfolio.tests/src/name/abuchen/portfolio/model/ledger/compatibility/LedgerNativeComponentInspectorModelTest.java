@@ -22,7 +22,9 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerParameter;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
+import name.abuchen.portfolio.model.ledger.LedgerPostingDirection;
+import name.abuchen.portfolio.model.ledger.LedgerPostingSemanticRole;
+import name.abuchen.portfolio.model.ledger.LedgerPostingUnitRole;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerNativeComponentInspectorModel.HeaderField;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionKind;
@@ -56,7 +58,7 @@ public class LedgerNativeComponentInspectorModelTest
     public void testSpinOffInspectionIncludesEntryLegPostingParameterAndProjectionRows()
     {
         var entry = spinOffEntry();
-        var selectedProjectionRef = entry.getProjectionRefs().get(0);
+        var selectedProjectionRef = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0);
         var updatedAt = entry.getUpdatedAt();
 
         var model = LedgerNativeComponentInspectorModel
@@ -69,8 +71,8 @@ public class LedgerNativeComponentInspectorModelTest
                         .anyMatch(row -> row.field() == HeaderField.NATIVE_TARGETED && "true".equals(row.value())),
                         is(true));
         assertThat(model.getHeaderRows().stream()
-                        .anyMatch(row -> row.field() == HeaderField.SELECTED_PROJECTION_UUID
-                                        && "projection-old".equals(row.value())),
+                        .anyMatch(row -> row.field() == HeaderField.SELECTED_RUNTIME_PROJECTION_ID
+                                        && selectedProjectionRef.getRuntimeProjectionId().equals(row.value())),
                         is(true));
         assertTrue(model.isNativeEntryDefinitionAvailable());
         assertThat(model.getEntryParameters().stream()
@@ -89,15 +91,16 @@ public class LedgerNativeComponentInspectorModelTest
                                         && "SOURCE_SECURITY".equals(row.parameter())
                                         && "Old Security".equals(row.value())),
                         is(true));
-        assertThat(model.getProjectionRefs().stream()
+        assertThat(model.getDescriptors().stream()
                         .anyMatch(row -> "OLD_SECURITY_LEG".equals(row.projectionRole())
-                                        && "projection-old".equals(row.projectionUUID())
-                                        && "posting-source".equals(row.primaryPostingUUID())),
+                                        && selectedProjectionRef.getRuntimeProjectionId()
+                                                        .equals(row.runtimeProjectionId())
+                                        && "posting-source".equals(row.primaryPostingId())),
                         is(true));
 
         assertThat(entry.getUpdatedAt(), is(updatedAt));
         assertThat(entry.getPostings().size(), is(2));
-        assertThat(entry.getProjectionRefs().size(), is(2));
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).size(), is(2));
     }
 
     /**
@@ -188,7 +191,7 @@ public class LedgerNativeComponentInspectorModelTest
         assertFalse(model.isNativeEntryDefinitionAvailable());
         assertTrue(model.getLegs().isEmpty());
         assertFalse(model.getPostings().isEmpty());
-        assertFalse(model.getProjectionRefs().isEmpty());
+        assertFalse(model.getDescriptors().isEmpty());
     }
 
     /**
@@ -199,16 +202,25 @@ public class LedgerNativeComponentInspectorModelTest
     public void testNativeEntryWithMissingDefinitionShowsLedgerFactsWithoutLegs()
     {
         var entry = new LedgerEntry("entry-spin-off");
-        entry.setType(LedgerEntryType.SPIN_OFF);
+        entry.setType(LedgerEntryType.STOCK_DIVIDEND);
         entry.setDateTime(LocalDateTime.of(2026, 6, 23, 9, 0));
-        entry.addProjectionRef(projection("projection-old", LedgerProjectionRole.OLD_SECURITY_LEG, null));
+        var portfolio = new Portfolio("Portfolio");
+        var security = new Security("Security", CurrencyUnit.EUR);
+        var posting = securityPosting("posting-target", security, CorporateActionLeg.TARGET_SECURITY,
+                        LedgerParameterType.TARGET_SECURITY, security);
+        posting.setPortfolio(portfolio);
+        posting.setSemanticRole(LedgerPostingSemanticRole.SECURITY);
+        posting.setDirection(LedgerPostingDirection.INBOUND);
+        posting.setCorporateActionLeg(CorporateActionLeg.TARGET_SECURITY);
+        posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
+        entry.addPosting(posting);
 
-        var model = LedgerNativeComponentInspectorModel.from(entry, entry.getProjectionRefs().get(0),
+        var model = LedgerNativeComponentInspectorModel.from(entry, name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0),
                         ignored -> Optional.empty()).orElseThrow();
 
         assertFalse(model.isNativeEntryDefinitionAvailable());
         assertTrue(model.getLegs().isEmpty());
-        assertThat(model.getProjectionRefs().size(), is(1));
+        assertThat(model.getDescriptors().size(), is(1));
     }
 
     /**
@@ -229,11 +241,14 @@ public class LedgerNativeComponentInspectorModelTest
         var entry = new LedgerEntry("entry-" + type.name());
         entry.setType(type);
         entry.setDateTime(LocalDateTime.of(2026, 6, 23, 9, 0));
-        var projectionRef = projection("projection-" + type.name(), projectionRole, null);
-        entry.addProjectionRef(projectionRef);
+        addPostingForRole(entry, projectionRole);
+        if (type == LedgerEntryType.BOND_CONVERSION)
+            addPostingForRole(entry, LedgerProjectionRole.NEW_SECURITY_LEG);
 
-        var model = LedgerNativeComponentInspectorModel.from(entry, projectionRef, LedgerEntryDefinitionRegistry::lookup)
-                        .orElseThrow();
+        var model = LedgerNativeComponentInspectorModel.from(entry,
+                        name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptor(entry,
+                                        projectionRole),
+                        LedgerEntryDefinitionRegistry::lookup).orElseThrow();
 
         assertTrue(type + " should expose configured legs", model.getLegs().size() > 0);
     }
@@ -264,16 +279,6 @@ public class LedgerNativeComponentInspectorModelTest
         targetPosting.setPortfolio(portfolio);
         entry.addPosting(targetPosting);
 
-        var oldProjection = projection("projection-old", LedgerProjectionRole.OLD_SECURITY_LEG,
-                        sourcePosting.getUUID());
-        oldProjection.setPortfolio(portfolio);
-        entry.addProjectionRef(oldProjection);
-
-        var newProjection = projection("projection-new", LedgerProjectionRole.NEW_SECURITY_LEG,
-                        targetPosting.getUUID());
-        newProjection.setPortfolio(portfolio);
-        entry.addProjectionRef(newProjection);
-
         return entry;
     }
 
@@ -302,6 +307,13 @@ public class LedgerNativeComponentInspectorModelTest
         posting.setType(LedgerPostingType.SECURITY);
         posting.setSecurity(security);
         posting.setShares(123_00000000L);
+        posting.setSemanticRole(LedgerPostingSemanticRole.SECURITY);
+        posting.setDirection(leg == CorporateActionLeg.SOURCE_SECURITY ? LedgerPostingDirection.OUTBOUND
+                        : LedgerPostingDirection.INBOUND);
+        posting.setCorporateActionLeg(leg);
+        posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
+        posting.setLocalKey(leg == CorporateActionLeg.SOURCE_SECURITY ? LedgerProjectionRole.OLD_SECURITY_LEG.name()
+                        : LedgerProjectionRole.NEW_SECURITY_LEG.name());
         posting.addParameter(LedgerParameter.ofCode(LedgerParameterType.CORPORATE_ACTION_LEG, leg));
         posting.addParameter(LedgerParameter.ofSecurity(securityParameterType, parameterSecurity));
         posting.addParameter(LedgerParameter.ofDecimal(LedgerParameterType.RATIO_NUMERATOR, BigDecimal.ONE));
@@ -309,12 +321,27 @@ public class LedgerNativeComponentInspectorModelTest
         return posting;
     }
 
-    private static LedgerProjectionRef projection(String uuid, LedgerProjectionRole role, String primaryPostingUUID)
+    private static void addPostingForRole(LedgerEntry entry, LedgerProjectionRole role)
     {
-        var projectionRef = new LedgerProjectionRef(uuid);
-        projectionRef.setRole(role);
-        projectionRef.setPrimaryPostingUUID(primaryPostingUUID);
-        return projectionRef;
+        var portfolio = new Portfolio("Portfolio");
+        var security = new Security("Security", CurrencyUnit.EUR);
+        var leg = entry.getType() == LedgerEntryType.BOND_CONVERSION
+                        ? (role == LedgerProjectionRole.OLD_SECURITY_LEG ? CorporateActionLeg.CONVERSION_SOURCE
+                                        : CorporateActionLeg.CONVERSION_TARGET)
+                        : switch (role)
+                        {
+                            case OLD_SECURITY_LEG -> CorporateActionLeg.SOURCE_SECURITY;
+                            case NEW_SECURITY_LEG, DELIVERY_INBOUND -> CorporateActionLeg.TARGET_SECURITY;
+                            default -> CorporateActionLeg.TARGET_SECURITY;
+                        };
+        var posting = securityPosting("posting-" + role.name(), security, leg, LedgerParameterType.TARGET_SECURITY,
+                        security);
+
+        if (entry.getType() == LedgerEntryType.BOND_CONVERSION)
+            posting.setType(LedgerPostingType.BOND);
+        posting.setPortfolio(portfolio);
+        posting.setLocalKey(role.name());
+        entry.addPosting(posting);
     }
 
     private record Fixture(Client client, Account account, Portfolio portfolio, Security security, Security targetSecurity)

@@ -41,13 +41,13 @@ public final class LedgerDeliveryDirectionConverter
                         || !(transaction.getTransaction() instanceof LedgerBackedPortfolioTransaction ledgerTransaction))
             return false;
 
-        var sourceRole = ledgerTransaction.getLedgerProjectionRef().getRole();
+        var sourceRole = ledgerTransaction.getLedgerProjectionRole();
         var targetRole = transaction.getTransaction().getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
                         ? LedgerProjectionRole.DELIVERY_OUTBOUND
                         : LedgerProjectionRole.DELIVERY_INBOUND;
 
         return LedgerPlanReferenceSupport.refsFollowRoleChanges(client, ledgerTransaction.getLedgerEntry(),
-                        LedgerPlanReferenceSupport.roleChange(ledgerTransaction.getLedgerProjectionRef().getUUID(),
+                        LedgerPlanReferenceSupport.roleChange(ledgerTransaction.getRuntimeProjectionId(),
                                         sourceRole, targetRole));
     }
 

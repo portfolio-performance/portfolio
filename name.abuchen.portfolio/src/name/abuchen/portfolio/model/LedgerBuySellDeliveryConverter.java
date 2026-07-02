@@ -56,7 +56,7 @@ public final class LedgerBuySellDeliveryConverter
                         : LedgerProjectionRole.DELIVERY_OUTBOUND;
 
         return LedgerPlanReferenceSupport.refsFollowRoleChanges(client, entry,
-                        LedgerPlanReferenceSupport.roleChange(ledgerTransaction.getLedgerProjectionRef().getUUID(),
+                        LedgerPlanReferenceSupport.roleChange(ledgerTransaction.getRuntimeProjectionId(),
                                         LedgerProjectionRole.PORTFOLIO, targetRole));
     }
 
@@ -69,8 +69,8 @@ public final class LedgerBuySellDeliveryConverter
             return false;
 
         return LedgerPlanReferenceSupport.refsFollowRoleChanges(client, ledgerTransaction.getLedgerEntry(),
-                        LedgerPlanReferenceSupport.roleChange(ledgerTransaction.getLedgerProjectionRef().getUUID(),
-                                        ledgerTransaction.getLedgerProjectionRef().getRole(),
+                        LedgerPlanReferenceSupport.roleChange(ledgerTransaction.getRuntimeProjectionId(),
+                                        ledgerTransaction.getLedgerProjectionRole(),
                                         LedgerProjectionRole.PORTFOLIO));
     }
 

@@ -98,11 +98,8 @@ import name.abuchen.portfolio.model.ledger.LedgerPosting;
 import name.abuchen.portfolio.model.ledger.LedgerPostingDirection;
 import name.abuchen.portfolio.model.ledger.LedgerPostingSemanticRole;
 import name.abuchen.portfolio.model.ledger.LedgerPostingUnitRole;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator;
-import name.abuchen.portfolio.model.ledger.ProjectionMembership;
-import name.abuchen.portfolio.model.ledger.ProjectionMembershipRole;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerParameterType;
@@ -198,104 +195,6 @@ public class ClientFactory
             writeCollection(writer, context, "parameters", "ledger-parameter", parameters); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
-    private static class LedgerProjectionRefConverter implements Converter
-    {
-        @Override
-        public boolean canConvert(@SuppressWarnings("rawtypes") Class type)
-        {
-            return type == LedgerProjectionRef.class;
-        }
-
-        @Override
-        public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context)
-        {
-            var projectionRef = (LedgerProjectionRef) source;
-
-            writeAttribute(writer, "uuid", projectionRef.getUUID()); //$NON-NLS-1$
-            writeAttribute(writer, "role", projectionRef.getRole()); //$NON-NLS-1$
-            writeObject(writer, context, "account", projectionRef.getAccount()); //$NON-NLS-1$
-            writeObject(writer, context, "portfolio", projectionRef.getPortfolio()); //$NON-NLS-1$
-
-            if (!projectionRef.getMemberships().isEmpty())
-            {
-                writer.startNode("memberships"); //$NON-NLS-1$
-                for (ProjectionMembership membership : projectionRef.getMemberships())
-                    writeObject(writer, context, "membership", membership); //$NON-NLS-1$
-                writer.endNode();
-            }
-        }
-
-        @Override
-        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context)
-        {
-            var projectionRef = new LedgerProjectionRef();
-            var uuid = reader.getAttribute("uuid"); //$NON-NLS-1$
-            var role = reader.getAttribute("role"); //$NON-NLS-1$
-
-            if (uuid != null)
-                projectionRef.setUUID(uuid);
-            if (role != null)
-                projectionRef.setRole(LedgerProjectionRole.valueOf(role));
-
-            while (reader.hasMoreChildren())
-            {
-                reader.moveDown();
-
-                switch (reader.getNodeName())
-                {
-                    case "uuid" -> projectionRef.setUUID(reader.getValue()); //$NON-NLS-1$
-                    case "role" -> projectionRef.setRole((LedgerProjectionRole) context.convertAnother(projectionRef, //$NON-NLS-1$
-                                    LedgerProjectionRole.class));
-                    case "account" -> projectionRef.setAccount((Account) context.convertAnother(projectionRef, //$NON-NLS-1$
-                                    Account.class));
-                    case "portfolio" -> projectionRef.setPortfolio((Portfolio) context.convertAnother(projectionRef, //$NON-NLS-1$
-                                    Portfolio.class));
-                    case "primaryPostingUUID" -> projectionRef.setPrimaryPostingUUID(reader.getValue()); //$NON-NLS-1$
-                    case "postingGroupUUID" -> projectionRef.setPostingGroupUUID(reader.getValue()); //$NON-NLS-1$
-                    case "memberships" -> readMemberships(reader, context, projectionRef); //$NON-NLS-1$
-                    default -> {
-                        // Ignore unknown ProjectionRef fields to preserve load recovery behavior.
-                    }
-                }
-
-                reader.moveUp();
-            }
-
-            return projectionRef;
-        }
-
-        private void readMemberships(HierarchicalStreamReader reader, UnmarshallingContext context,
-                        LedgerProjectionRef projectionRef)
-        {
-            while (reader.hasMoreChildren())
-            {
-                reader.moveDown();
-                projectionRef.addMembership((ProjectionMembership) context.convertAnother(projectionRef,
-                                ProjectionMembership.class));
-                reader.moveUp();
-            }
-        }
-
-        private void writeAttribute(HierarchicalStreamWriter writer, String name, Object value)
-        {
-            if (value == null)
-                return;
-
-            writer.addAttribute(name, String.valueOf(value));
-        }
-
-        private void writeObject(HierarchicalStreamWriter writer, MarshallingContext context, String nodeName,
-                        Object value)
-        {
-            if (value == null)
-                return;
-
-            writer.startNode(nodeName);
-            context.convertAnother(value);
-            writer.endNode();
-        }
-    }
-
     private static class LedgerEntryConverter implements Converter
     {
         @Override
@@ -358,7 +257,7 @@ public class ClientFactory
                     case "preferredViewKind" -> entry.setPreferredViewKind(reader.getValue()); //$NON-NLS-1$
                     case "parameters" -> readParameters(reader, context, entry); //$NON-NLS-1$
                     case "postings" -> readPostings(reader, context, entry); //$NON-NLS-1$
-                    case "projectionRefs" -> readProjectionRefs(reader, context, entry); //$NON-NLS-1$
+                    case "projectionRefs" -> skipChildren(reader); //$NON-NLS-1$
                     default -> {
                         // Ignore unknown LedgerEntry fields to preserve load recovery behavior.
                     }
@@ -393,13 +292,12 @@ public class ClientFactory
             }
         }
 
-        private void readProjectionRefs(HierarchicalStreamReader reader, UnmarshallingContext context,
-                        LedgerEntry entry)
+        private void skipChildren(HierarchicalStreamReader reader)
         {
             while (reader.hasMoreChildren())
             {
                 reader.moveDown();
-                entry.addProjectionRef((LedgerProjectionRef) context.convertAnother(entry, LedgerProjectionRef.class));
+                skipChildren(reader);
                 reader.moveUp();
             }
         }
@@ -760,7 +658,6 @@ public class ClientFactory
                 return;
             }
 
-            LedgerProjectionService.adaptLegacyScalarMemberships(client);
             removeLegacyProjectionShadows(client);
             LedgerProjectionService.restoreIfValid(client);
         }
@@ -769,17 +666,13 @@ public class ClientFactory
         {
             validateLedger(client);
 
-            var projectionUUIDs = ledgerProjectionUUIDs(client);
-
             for (var account : client.getAccounts())
             {
-                saveState.removeLegacyProjectionShadows(account.getTransactions(), projectionUUIDs);
                 saveState.removeLedgerBackedTransactions(account.getTransactions());
             }
 
             for (var portfolio : client.getPortfolios())
             {
-                saveState.removeLegacyProjectionShadows(portfolio.getTransactions(), projectionUUIDs);
                 saveState.removeLedgerBackedTransactions(portfolio.getTransactions());
             }
 
@@ -806,57 +699,13 @@ public class ClientFactory
         private void removeLegacyProjectionShadows(Client client)
         {
             convertPlanTransactionsToLedgerRefs(client);
-
-            var projectionUUIDs = ledgerProjectionUUIDs(client);
-
-            for (var account : client.getAccounts())
-                account.getTransactions().removeIf(transaction -> !(transaction instanceof LedgerBackedTransaction)
-                                && projectionUUIDs.contains(transaction.getUUID()));
-
-            for (var portfolio : client.getPortfolios())
-                portfolio.getTransactions().removeIf(transaction -> !(transaction instanceof LedgerBackedTransaction)
-                                && projectionUUIDs.contains(transaction.getUUID()));
         }
 
         private void convertPlanTransactionsToLedgerRefs(Client client)
         {
-            var projectionUUIDs = ledgerProjectionUUIDs(client);
-
-            for (var plan : client.getPlans())
-            {
-                for (var transaction : List.copyOf(plan.getTransactions()))
-                {
-                    if (!projectionUUIDs.contains(transaction.getUUID()))
-                        continue;
-
-                    markPlanExecution(client, plan, transaction);
-                    plan.getTransactions().remove(transaction);
-                }
-            }
-        }
-
-        private Set<String> ledgerProjectionUUIDs(Client client)
-        {
-            return client.getLedger().getEntries().stream() //
-                            .flatMap(entry -> entry.getProjectionRefs().stream()) //
-                            .map(LedgerProjectionRef::getUUID) //
-                            .collect(Collectors.toSet());
-        }
-
-        private void markPlanExecution(Client client, InvestmentPlan plan, Transaction transaction)
-        {
-            for (var entry : client.getLedger().getEntries())
-            {
-                for (var projection : entry.getProjectionRefs())
-                {
-                    if (transaction.getUUID().equals(projection.getUUID()))
-                    {
-                        plan.markLedgerExecution(entry, transaction.getDateTime().toLocalDate(),
-                                        viewKind(projection.getRole()));
-                        return;
-                    }
-                }
-            }
+            // Old unreleased projection-ref shadow rows are no longer matched by
+            // persisted projection UUIDs. Released legacy plan transactions remain
+            // available as normal legacy rows.
         }
 
         private LedgerExecutionViewKind viewKind(LedgerProjectionRole role)
@@ -880,17 +729,6 @@ public class ClientFactory
                 var transaction = transactions.get(index);
 
                 if (transaction instanceof LedgerBackedTransaction)
-                    remove(transactions, index);
-            }
-        }
-
-        private void removeLegacyProjectionShadows(List<? extends Transaction> transactions, Set<String> projectionUUIDs)
-        {
-            for (var index = transactions.size() - 1; index >= 0; index--)
-            {
-                var transaction = transactions.get(index);
-
-                if (!(transaction instanceof LedgerBackedTransaction) && projectionUUIDs.contains(transaction.getUUID()))
                     remove(transactions, index);
             }
         }
@@ -2673,7 +2511,6 @@ public class ClientFactory
                         new PortfolioTransactionConverter(xstream.getMapper(), xstream.getReflectionProvider()));
         xstream.registerConverter(new LedgerEntryConverter());
         xstream.registerConverter(new LedgerPostingConverter());
-        xstream.registerConverter(new LedgerProjectionRefConverter());
         xstream.registerConverter(new LedgerParameterConverter());
 
         xstream.registerConverter(new MapConverter(xstream.getMapper(), TypedMap.class));
@@ -2709,12 +2546,6 @@ public class ClientFactory
         xstream.useAttributeFor(LedgerPosting.class, "shares");
         xstream.alias("ledger-posting-parameter", LedgerParameter.class);
         xstream.alias("ledger-posting-parameter-type", LedgerParameterType.class);
-        xstream.alias("ledger-projection-ref", LedgerProjectionRef.class);
-        xstream.alias("projection-membership", ProjectionMembership.class);
-        xstream.alias("membership", ProjectionMembership.class);
-        xstream.useAttributeFor(ProjectionMembership.class, "postingUUID");
-        xstream.useAttributeFor(ProjectionMembership.class, "role");
-        xstream.alias("projection-membership-role", ProjectionMembershipRole.class);
         xstream.alias("ledger-parameter", LedgerParameter.class);
         xstream.alias("ledger-parameter-type", LedgerParameterType.class);
         xstream.alias("ledger-entry-type", LedgerEntryType.class);

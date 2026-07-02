@@ -5,9 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import name.abuchen.portfolio.model.LedgerDiagnosticCode;
-import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerMutationContext;
 import name.abuchen.portfolio.model.ledger.LedgerParameter;
@@ -15,10 +13,8 @@ import name.abuchen.portfolio.model.ledger.LedgerPosting;
 import name.abuchen.portfolio.model.ledger.LedgerPostingDirection;
 import name.abuchen.portfolio.model.ledger.LedgerPostingSemanticRole;
 import name.abuchen.portfolio.model.ledger.LedgerPostingUnitRole;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.LedgerTransactionMetadata;
-import name.abuchen.portfolio.model.ledger.ProjectionMembershipRole;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerParameterType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
@@ -120,10 +116,7 @@ public final class LedgerTransactionCreator
                                             dividend.getExDate()));
 
         entry.addPosting(cashPosting);
-        var unitPostings = addUnitPostings(entry, dividend.getUnits());
-        var projection = accountProjection(dividend.getCashLeg().getAccount(), cashPosting);
-        addUnitMemberships(projection, unitPostings);
-        entry.addProjectionRef(projection);
+        addUnitPostings(entry, dividend.getUnits());
 
         return add(entry);
     }
@@ -175,10 +168,6 @@ public final class LedgerTransactionCreator
 
         entry.addPosting(sourcePosting);
         entry.addPosting(targetPosting);
-        entry.addProjectionRef(accountProjection(LedgerProjectionRole.SOURCE_ACCOUNT, source.getAccount(),
-                        sourcePosting));
-        entry.addProjectionRef(accountProjection(LedgerProjectionRole.TARGET_ACCOUNT, target.getAccount(),
-                        targetPosting));
 
         return entry;
     }
@@ -209,10 +198,6 @@ public final class LedgerTransactionCreator
 
         entry.addPosting(sourcePosting);
         entry.addPosting(targetPosting);
-        entry.addProjectionRef(portfolioProjection(LedgerProjectionRole.SOURCE_PORTFOLIO, source.getPortfolio(),
-                        sourcePosting));
-        entry.addProjectionRef(portfolioProjection(LedgerProjectionRole.TARGET_PORTFOLIO, target.getPortfolio(),
-                        targetPosting));
 
         return entry;
     }
@@ -232,10 +217,7 @@ public final class LedgerTransactionCreator
         markPrimary(posting, semanticRole(postingType), LedgerPostingDirection.NEUTRAL, LedgerProjectionRole.ACCOUNT);
 
         entry.addPosting(posting);
-        var unitPostings = addUnitPostings(entry, units);
-        var projection = accountProjection(cashLeg.getAccount(), posting);
-        addUnitMemberships(projection, unitPostings);
-        entry.addProjectionRef(projection);
+        addUnitPostings(entry, units);
 
         return entry;
     }
@@ -258,10 +240,7 @@ public final class LedgerTransactionCreator
         markPrimary(posting, LedgerPostingSemanticRole.SECURITY, direction(role), role);
 
         entry.addPosting(posting);
-        var unitPostings = addUnitPostings(entry, deliveryLeg.getUnits());
-        var projection = portfolioProjection(role, deliveryLeg.getPortfolio(), posting);
-        addUnitMemberships(projection, unitPostings);
-        entry.addProjectionRef(projection);
+        addUnitPostings(entry, deliveryLeg.getUnits());
 
         return entry;
     }
@@ -284,14 +263,7 @@ public final class LedgerTransactionCreator
 
         entry.addPosting(cashPosting);
         entry.addPosting(securityPosting);
-        var unitPostings = addUnitPostings(entry, units);
-        var accountProjection = accountProjection(cashLeg.getAccount(), cashPosting);
-        var portfolioProjection = portfolioProjection(LedgerProjectionRole.PORTFOLIO, securityLeg.getPortfolio(),
-                        securityPosting);
-        addUnitMemberships(accountProjection, unitPostings);
-        addUnitMemberships(portfolioProjection, unitPostings);
-        entry.addProjectionRef(accountProjection);
-        entry.addProjectionRef(portfolioProjection);
+        addUnitPostings(entry, units);
 
         return entry;
     }
@@ -376,20 +348,6 @@ public final class LedgerTransactionCreator
         }
 
         return List.copyOf(postings);
-    }
-
-    private void addUnitMemberships(LedgerProjectionRef projection, List<LedgerPosting> unitPostings)
-    {
-        for (var posting : unitPostings)
-        {
-            switch (posting.getType())
-            {
-                case FEE -> projection.addMembership(posting.getUUID(), ProjectionMembershipRole.FEE_UNIT);
-                case TAX -> projection.addMembership(posting.getUUID(), ProjectionMembershipRole.TAX_UNIT);
-                case GROSS_VALUE -> projection.addMembership(posting.getUUID(), ProjectionMembershipRole.GROSS_VALUE_UNIT);
-                default -> throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_CONVERT_062.message("Unsupported unit posting type: " + posting.getType())); //$NON-NLS-1$
-            }
-        }
     }
 
     private void applyMoney(LedgerPosting posting, Money amount, LedgerForexAmount forex)
@@ -488,34 +446,6 @@ public final class LedgerTransactionCreator
         };
     }
 
-    private LedgerProjectionRef accountProjection(Account account, LedgerPosting posting)
-    {
-        return accountProjection(LedgerProjectionRole.ACCOUNT, account, posting);
-    }
-
-    private LedgerProjectionRef accountProjection(LedgerProjectionRole role, Account account, LedgerPosting posting)
-    {
-        var projection = new LedgerProjectionRef();
-
-        projection.setRole(role);
-        projection.setAccount(account);
-        projection.setPrimaryPosting(posting);
-
-        return projection;
-    }
-
-    private LedgerProjectionRef portfolioProjection(LedgerProjectionRole role, Portfolio portfolio,
-                    LedgerPosting posting)
-    {
-        var projection = new LedgerProjectionRef();
-
-        projection.setRole(role);
-        projection.setPortfolio(portfolio);
-        projection.setPrimaryPosting(posting);
-
-        return projection;
-    }
-
     CreatedTransaction add(LedgerEntry entry)
     {
         var liveEntry = new LedgerMutationContext(client).attachEntry(entry);
@@ -537,9 +467,9 @@ public final class LedgerTransactionCreator
             return entry;
         }
 
-        public List<LedgerProjectionRef> getProjectionRefs()
+        public String getRuntimeProjectionId(LedgerProjectionRole role)
         {
-            return entry.getProjectionRefs();
+            return entry.getUUID() + ":" + role; //$NON-NLS-1$
         }
     }
 }

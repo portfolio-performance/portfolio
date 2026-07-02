@@ -127,8 +127,8 @@ public final class LedgerBuySellTransactionCreator
             throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_CONVERT_032.message("Changing buy/sell type is not supported")); //$NON-NLS-1$
 
         var ledgerEntry = accountTransaction.getLedgerEntry();
-        var accountProjectionUUID = accountTransaction.getLedgerProjectionRef().getUUID();
-        var portfolioProjectionUUID = portfolioTransaction.getLedgerProjectionRef().getUUID();
+        var accountProjectionUUID = accountTransaction.getUUID();
+        var portfolioProjectionUUID = portfolioTransaction.getUUID();
         var ownerPatchHelper = new LedgerOwnerPatchHelper(client);
 
         var editBuilder = LedgerBuySellEdit.builder()
@@ -148,14 +148,14 @@ public final class LedgerBuySellTransactionCreator
         var edit = editBuilder.build();
         var editor = new LedgerBuySellEditor();
 
-        if (accountTransaction.getLedgerProjectionRef().getAccount() != account
-                        || portfolioTransaction.getLedgerProjectionRef().getPortfolio() != portfolio)
+        if (accountTransaction.getLedgerProjectionDescriptor().getAccount() != account
+                        || portfolioTransaction.getLedgerProjectionDescriptor().getPortfolio() != portfolio)
             editor.validate(ledgerEntry, edit);
 
-        if (accountTransaction.getLedgerProjectionRef().getAccount() != account)
+        if (accountTransaction.getLedgerProjectionDescriptor().getAccount() != account)
             ownerPatchHelper.moveBuySellAccountSide(ledgerEntry, account);
 
-        if (portfolioTransaction.getLedgerProjectionRef().getPortfolio() != portfolio)
+        if (portfolioTransaction.getLedgerProjectionDescriptor().getPortfolio() != portfolio)
             ownerPatchHelper.moveBuySellPortfolioSide(ledgerEntry, portfolio);
 
         accountTransaction = (LedgerBackedAccountTransaction) find(account, accountProjectionUUID);
@@ -163,8 +163,10 @@ public final class LedgerBuySellTransactionCreator
         entry = (BuySellEntry) accountTransaction.getCrossEntry();
 
         editor.apply(portfolioTransaction, edit);
+        LedgerProjectionService.restoreIfValid(client);
+        accountTransaction = (LedgerBackedAccountTransaction) find(account, accountProjectionUUID);
 
-        return entry;
+        return (BuySellEntry) accountTransaction.getCrossEntry();
     }
 
     private void applyCashForex(LedgerBuySellEdit.Builder builder, LedgerForexAmount forex)
@@ -277,16 +279,8 @@ public final class LedgerBuySellTransactionCreator
     private BuySellEntry materializeAndWrap(Portfolio portfolio, Account account,
                     LedgerTransactionCreator.CreatedTransaction created)
     {
-        var accountProjectionUUID = created.getProjectionRefs().stream()
-                        .filter(projection -> projection.getRole() == LedgerProjectionRole.ACCOUNT)
-                        .findFirst()
-                        .orElseThrow()
-                        .getUUID();
-        var portfolioProjectionUUID = created.getProjectionRefs().stream()
-                        .filter(projection -> projection.getRole() == LedgerProjectionRole.PORTFOLIO)
-                        .findFirst()
-                        .orElseThrow()
-                        .getUUID();
+        var accountProjectionUUID = created.getRuntimeProjectionId(LedgerProjectionRole.ACCOUNT);
+        var portfolioProjectionUUID = created.getRuntimeProjectionId(LedgerProjectionRole.PORTFOLIO);
 
         LedgerProjectionService.materialize(client);
 

@@ -34,7 +34,6 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerParameter;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerDeliveryTransactionCreator;
@@ -62,7 +61,7 @@ public class LedgerImportWriteGuardrailTest
         var generatedProjection = fixture.generatedProjection();
         LedgerEntry generatedEntry = ((LedgerBackedTransaction) generatedProjection).getLedgerEntry();
         var entryUUID = generatedEntry.getUUID();
-        var executionRefs = List.copyOf(fixture.plan().getLedgerExecutionRefs());
+        var generatedPlanKey = generatedEntry.getGeneratedByPlanKey();
         var accountProjection = generatedProjection.getCrossEntry().getCrossTransaction(generatedProjection);
         var accountProjectionUUID = accountProjection.getUUID();
         var portfolioProjectionUUID = generatedProjection.getUUID();
@@ -81,19 +80,23 @@ public class LedgerImportWriteGuardrailTest
         assertThat(fixture.portfolio().getTransactions().size(), is(1));
         assertThat(fixture.otherAccount().getTransactions().isEmpty(), is(true));
         assertThat(fixture.otherPortfolio().getTransactions().isEmpty(), is(true));
-        assertThat(accountProjection.getUUID(), is(accountProjectionUUID));
-        assertThat(generatedProjection.getUUID(), is(portfolioProjectionUUID));
-        assertThat(fixture.plan().getLedgerExecutionRefs(), is(executionRefs));
-        assertThat(generatedProjection.getDateTime(), is(imported.getPortfolioTransaction().getDateTime()));
-        assertThat(generatedProjection.getAmount(), is(imported.getPortfolioTransaction().getAmount()));
-        assertThat(generatedProjection.getCurrencyCode(), is(imported.getPortfolioTransaction().getCurrencyCode()));
-        assertThat(generatedProjection.getSecurity(), is(fixture.security()));
-        assertThat(generatedProjection.getShares(), is(imported.getPortfolioTransaction().getShares()));
-        assertThat(generatedProjection.getNote(), is("imported note"));
-        assertThat(generatedProjection.getSource(), is("imported source"));
-        assertThat(generatedProjection.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2))));
-        assertThat(generatedProjection.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1))));
-        assertRoundtrip(fixture.client(), entryUUID, portfolioProjectionUUID, executionRefs);
+        var updatedAccountProjection = fixture.account().getTransactions().get(0);
+        var updatedPortfolioProjection = fixture.portfolio().getTransactions().get(0);
+        assertThat(updatedAccountProjection.getUUID(), is(accountProjectionUUID));
+        assertThat(updatedPortfolioProjection.getUUID(), is(portfolioProjectionUUID));
+        assertThat(generatedEntry.getGeneratedByPlanKey(), is(generatedPlanKey));
+        assertThat(updatedPortfolioProjection.getDateTime(), is(imported.getPortfolioTransaction().getDateTime()));
+        assertThat(updatedPortfolioProjection.getAmount(), is(imported.getPortfolioTransaction().getAmount()));
+        assertThat(updatedPortfolioProjection.getCurrencyCode(), is(imported.getPortfolioTransaction().getCurrencyCode()));
+        assertThat(updatedPortfolioProjection.getSecurity(), is(fixture.security()));
+        assertThat(updatedPortfolioProjection.getShares(), is(imported.getPortfolioTransaction().getShares()));
+        assertThat(updatedPortfolioProjection.getNote(), is("imported note"));
+        assertThat(updatedPortfolioProjection.getSource(), is("imported source"));
+        assertThat(updatedPortfolioProjection.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2))));
+        assertThat(updatedPortfolioProjection.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1))));
+        assertRoundtrip(fixture.client(), generatedPlanKey);
         assertValid(fixture.client());
     }
 
@@ -108,7 +111,7 @@ public class LedgerImportWriteGuardrailTest
         var generatedProjection = fixture.generatedProjection();
         LedgerEntry generatedEntry = ((LedgerBackedTransaction) generatedProjection).getLedgerEntry();
         var entryUUID = generatedEntry.getUUID();
-        var executionRefs = List.copyOf(fixture.plan().getLedgerExecutionRefs());
+        var generatedPlanKey = generatedEntry.getGeneratedByPlanKey();
         var portfolioProjectionUUID = generatedProjection.getUUID();
         var imported = importedBuy(fixture.security(), generatedProjection.getDateTime().plusDays(1),
                         generatedProjection.getAmount() + Values.Amount.factorize(1),
@@ -124,19 +127,22 @@ public class LedgerImportWriteGuardrailTest
         assertThat(fixture.account().getTransactions().isEmpty(), is(true));
         assertThat(fixture.portfolio().getTransactions().size(), is(1));
         assertThat(fixture.otherPortfolio().getTransactions().isEmpty(), is(true));
-        assertThat(generatedProjection.getUUID(), is(portfolioProjectionUUID));
-        assertThat(generatedProjection.getType(), is(Type.DELIVERY_INBOUND));
-        assertThat(fixture.plan().getLedgerExecutionRefs(), is(executionRefs));
-        assertThat(generatedProjection.getDateTime(), is(imported.getPortfolioTransaction().getDateTime()));
-        assertThat(generatedProjection.getAmount(), is(imported.getPortfolioTransaction().getAmount()));
-        assertThat(generatedProjection.getCurrencyCode(), is(imported.getPortfolioTransaction().getCurrencyCode()));
-        assertThat(generatedProjection.getSecurity(), is(fixture.security()));
-        assertThat(generatedProjection.getShares(), is(imported.getPortfolioTransaction().getShares()));
-        assertThat(generatedProjection.getNote(), is("imported note"));
-        assertThat(generatedProjection.getSource(), is("imported source"));
-        assertThat(generatedProjection.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2))));
-        assertThat(generatedProjection.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1))));
-        assertRoundtrip(fixture.client(), entryUUID, portfolioProjectionUUID, executionRefs);
+        var updatedProjection = fixture.portfolio().getTransactions().get(0);
+        assertThat(updatedProjection.getUUID(), is(portfolioProjectionUUID));
+        assertThat(updatedProjection.getType(), is(Type.DELIVERY_INBOUND));
+        assertThat(generatedEntry.getGeneratedByPlanKey(), is(generatedPlanKey));
+        assertThat(updatedProjection.getDateTime(), is(imported.getPortfolioTransaction().getDateTime()));
+        assertThat(updatedProjection.getAmount(), is(imported.getPortfolioTransaction().getAmount()));
+        assertThat(updatedProjection.getCurrencyCode(), is(imported.getPortfolioTransaction().getCurrencyCode()));
+        assertThat(updatedProjection.getSecurity(), is(fixture.security()));
+        assertThat(updatedProjection.getShares(), is(imported.getPortfolioTransaction().getShares()));
+        assertThat(updatedProjection.getNote(), is("imported note"));
+        assertThat(updatedProjection.getSource(), is("imported source"));
+        assertThat(updatedProjection.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2))));
+        assertThat(updatedProjection.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1))));
+        assertRoundtrip(fixture.client(), generatedPlanKey);
         assertValid(fixture.client());
     }
 
@@ -151,7 +157,7 @@ public class LedgerImportWriteGuardrailTest
         var generatedProjection = fixture.generatedProjection();
         LedgerEntry generatedEntry = ((LedgerBackedTransaction) generatedProjection).getLedgerEntry();
         var snapshot = LedgerEntrySnapshot.of(generatedEntry);
-        var executionRefs = List.copyOf(fixture.plan().getLedgerExecutionRefs());
+        var generatedPlanKey = generatedEntry.getGeneratedByPlanKey();
         var imported = importedBuy(fixture.security(), generatedProjection.getDateTime(), generatedProjection.getAmount(),
                         generatedProjection.getShares());
         imported.setType(Type.SELL);
@@ -162,7 +168,7 @@ public class LedgerImportWriteGuardrailTest
         assertThrows(UnsupportedOperationException.class,
                         () -> action.process(imported, fixture.account(), fixture.portfolio()));
 
-        assertThat(fixture.plan().getLedgerExecutionRefs(), is(executionRefs));
+        assertThat(generatedEntry.getGeneratedByPlanKey(), is(generatedPlanKey));
         snapshot.assertUnchanged(generatedEntry);
         assertValid(fixture.client());
     }
@@ -178,7 +184,7 @@ public class LedgerImportWriteGuardrailTest
         var generatedProjection = fixture.generatedProjection();
         LedgerEntry generatedEntry = ((LedgerBackedTransaction) generatedProjection).getLedgerEntry();
         var snapshot = LedgerEntrySnapshot.of(generatedEntry);
-        var executionRefs = List.copyOf(fixture.plan().getLedgerExecutionRefs());
+        var generatedPlanKey = generatedEntry.getGeneratedByPlanKey();
         var imported = importedBuy(fixture.security(), generatedProjection.getDateTime(), generatedProjection.getAmount(),
                         generatedProjection.getShares());
 
@@ -189,7 +195,7 @@ public class LedgerImportWriteGuardrailTest
                         () -> action.process(imported, fixture.account(), fixture.portfolio()));
 
         assertThat(fixture.client().getLedger().getEntries().size(), is(1));
-        assertThat(fixture.plan().getLedgerExecutionRefs(), is(executionRefs));
+        assertThat(generatedEntry.getGeneratedByPlanKey(), is(generatedPlanKey));
         assertThat(fixture.portfolio().getTransactions(), is(List.of(generatedProjection)));
         assertThat(fixture.account().getTransactions().isEmpty(), is(true));
         snapshot.assertUnchanged(generatedEntry);
@@ -272,7 +278,10 @@ public class LedgerImportWriteGuardrailTest
         var generatedProjection = new LedgerDeliveryTransactionCreator(client).create(portfolio,
                         Type.DELIVERY_OUTBOUND, LocalDateTime.now().minusMonths(1), Values.Amount.factorize(100),
                         CurrencyUnit.EUR, security, Values.Share.factorize(10), null, null, List.of(), null, null);
-        plan.addLedgerExecutionRef(InvestmentPlan.LedgerExecutionRef.of((LedgerBackedTransaction) generatedProjection));
+        var generatedEntry = ((LedgerBackedTransaction) generatedProjection).getLedgerEntry();
+        generatedEntry.setGeneratedByPlanKey(plan.getPlanKey());
+        generatedEntry.setPlanExecutionDate(generatedEntry.getDateTime().toLocalDate());
+        generatedEntry.setPreferredViewKind(InvestmentPlan.LedgerExecutionViewKind.PORTFOLIO.name());
 
         return new InvestmentPlanFixture(client, account, otherAccount, portfolio, otherPortfolio, security, plan,
                         generatedProjection);
@@ -294,27 +303,19 @@ public class LedgerImportWriteGuardrailTest
         return imported;
     }
 
-    private void assertRoundtrip(Client client, String entryUUID, String projectionUUID,
-                    List<InvestmentPlan.LedgerExecutionRef> executionRefs) throws Exception
+    private void assertRoundtrip(Client client, String generatedPlanKey) throws Exception
     {
-        assertLoadedRoundtrip(loadXml(saveXml(client)), entryUUID, projectionUUID, executionRefs);
-        assertLoadedRoundtrip(loadProtobuf(saveProtobuf(client)), entryUUID, projectionUUID, executionRefs);
+        assertLoadedRoundtrip(loadXml(saveXml(client)), generatedPlanKey);
+        assertLoadedRoundtrip(loadProtobuf(saveProtobuf(client)), generatedPlanKey);
     }
 
-    private void assertLoadedRoundtrip(Client client, String entryUUID, String projectionUUID,
-                    List<InvestmentPlan.LedgerExecutionRef> executionRefs)
+    private void assertLoadedRoundtrip(Client client, String generatedPlanKey)
     {
-        assertThat(client.getLedger().getEntries().stream().filter(entry -> entryUUID.equals(entry.getUUID())).count(),
-                        is(1L));
-        assertTrue(client.getAllTransactions().stream()
-                        .anyMatch(pair -> projectionUUID.equals(pair.getTransaction().getUUID())));
-        assertThat(client.getPlans().get(0).getLedgerExecutionRefs().size(), is(executionRefs.size()));
-        assertThat(client.getPlans().get(0).getLedgerExecutionRefs().get(0).getLedgerEntryUUID(),
-                        is(executionRefs.get(0).getLedgerEntryUUID()));
-        assertThat(client.getPlans().get(0).getLedgerExecutionRefs().get(0).getProjectionUUID(),
-                        is(executionRefs.get(0).getProjectionUUID()));
-        assertThat(client.getPlans().get(0).getLedgerExecutionRefs().get(0).getProjectionRole(),
-                        is(executionRefs.get(0).getProjectionRole()));
+        assertThat(client.getLedger().getEntries().size(), is(1));
+        assertThat(client.getLedger().getEntries().get(0).getGeneratedByPlanKey(), is(generatedPlanKey));
+        assertThat(client.getLedger().getEntries().get(0).getPlanExecutionDate() != null, is(true));
+        assertThat(client.getAllTransactions().size(), is(1));
+        assertThat(client.getPlans().get(0).getPlanKey(), is(generatedPlanKey));
         assertValid(client);
     }
 
@@ -378,7 +379,7 @@ public class LedgerImportWriteGuardrailTest
         {
             return new LedgerEntrySnapshot(entry.getDateTime(), entry.getNote(), entry.getSource(),
                             entry.getPostings().stream().map(PostingSnapshot::of).toList(),
-                            entry.getProjectionRefs().stream().map(ProjectionSnapshot::of).toList());
+                            name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream().map(ProjectionSnapshot::of).toList());
         }
 
         void assertUnchanged(LedgerEntry entry)
@@ -387,7 +388,7 @@ public class LedgerImportWriteGuardrailTest
             assertThat(entry.getNote(), is(note));
             assertThat(entry.getSource(), is(source));
             assertThat(entry.getPostings().stream().map(PostingSnapshot::of).toList(), is(postings));
-            assertThat(entry.getProjectionRefs().stream().map(ProjectionSnapshot::of).toList(), is(projections));
+            assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream().map(ProjectionSnapshot::of).toList(), is(projections));
         }
     }
 
@@ -404,14 +405,15 @@ public class LedgerImportWriteGuardrailTest
         }
     }
 
-    private record ProjectionSnapshot(String uuid, LedgerProjectionRole role, Account account, Portfolio portfolio,
-                    String primaryPostingUUID, String postingGroupUUID)
+    private record ProjectionSnapshot(String runtimeId, LedgerProjectionRole role, Account account, Portfolio portfolio,
+                    String primaryPostingId, String groupKey)
     {
-        static ProjectionSnapshot of(LedgerProjectionRef projection)
+        static ProjectionSnapshot of(
+                        name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor projection)
         {
-            return new ProjectionSnapshot(projection.getUUID(), projection.getRole(), projection.getAccount(),
-                            projection.getPortfolio(), projection.getPrimaryPostingUUID(),
-                            projection.getPostingGroupUUID());
+            return new ProjectionSnapshot(projection.getRuntimeProjectionId(), projection.getRole(),
+                            projection.getAccount(), projection.getPortfolio(),
+                            projection.getPrimaryPosting().getUUID(), projection.getPrimaryPosting().getGroupKey());
         }
     }
 

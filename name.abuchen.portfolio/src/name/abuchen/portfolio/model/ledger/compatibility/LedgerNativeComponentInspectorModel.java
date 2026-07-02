@@ -15,13 +15,14 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerParameter;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryDefinition;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryDefinitionRegistry;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerLegDefinition;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerParameterType;
+import name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
+import name.abuchen.portfolio.model.ledger.projection.LedgerProjectionSupport;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -43,9 +44,8 @@ public final class LedgerNativeComponentInspectorModel
         SHAPE,
         NATIVE_TARGETED,
         SELECTED_PROJECTION_ROLE,
-        SELECTED_PROJECTION_UUID,
-        SELECTED_PRIMARY_POSTING_UUID,
-        SELECTED_POSTING_GROUP_UUID
+        SELECTED_RUNTIME_PROJECTION_ID,
+        SELECTED_PRIMARY_POSTING_UUID
     }
 
     public record HeaderRow(HeaderField field, String value)
@@ -71,8 +71,8 @@ public final class LedgerNativeComponentInspectorModel
     {
     }
 
-    public record ProjectionRefRow(String projectionRole, String owner, String projectionUUID,
-                    String primaryPostingUUID, String postingGroupUUID)
+    public record DescriptorRow(String projectionRole, String owner, String runtimeProjectionId,
+                    String primaryPostingId, String unitPostings)
     {
     }
 
@@ -81,19 +81,19 @@ public final class LedgerNativeComponentInspectorModel
     private final List<LegRow> legs;
     private final List<PostingRow> postings;
     private final List<PostingParameterRow> postingParameters;
-    private final List<ProjectionRefRow> projectionRefs;
+    private final List<DescriptorRow> descriptors;
     private final boolean nativeEntryDefinitionAvailable;
 
     private LedgerNativeComponentInspectorModel(List<HeaderRow> headerRows, List<ParameterRow> entryParameters,
                     List<LegRow> legs, List<PostingRow> postings, List<PostingParameterRow> postingParameters,
-                    List<ProjectionRefRow> projectionRefs, boolean nativeEntryDefinitionAvailable)
+                    List<DescriptorRow> descriptors, boolean nativeEntryDefinitionAvailable)
     {
         this.headerRows = List.copyOf(headerRows);
         this.entryParameters = List.copyOf(entryParameters);
         this.legs = List.copyOf(legs);
         this.postings = List.copyOf(postings);
         this.postingParameters = List.copyOf(postingParameters);
-        this.projectionRefs = List.copyOf(projectionRefs);
+        this.descriptors = List.copyOf(descriptors);
         this.nativeEntryDefinitionAvailable = nativeEntryDefinitionAvailable;
     }
 
@@ -120,10 +120,10 @@ public final class LedgerNativeComponentInspectorModel
     static Optional<LedgerNativeComponentInspectorModel> from(LedgerBackedTransaction transaction)
     {
         Objects.requireNonNull(transaction);
-        return from(transaction.getLedgerEntry(), transaction.getLedgerProjectionRef(), LedgerEntryDefinitionRegistry::lookup);
+        return from(transaction.getLedgerEntry(), transaction.getLedgerProjectionDescriptor(), LedgerEntryDefinitionRegistry::lookup);
     }
 
-    static Optional<LedgerNativeComponentInspectorModel> from(LedgerEntry entry, LedgerProjectionRef selectedProjectionRef,
+    static Optional<LedgerNativeComponentInspectorModel> from(LedgerEntry entry, DerivedProjectionDescriptor selectedDescriptor,
                     Function<LedgerEntryType, Optional<LedgerEntryDefinition>> definitionLookup)
     {
         Objects.requireNonNull(entry);
@@ -136,11 +136,11 @@ public final class LedgerNativeComponentInspectorModel
                         : Optional.<LedgerEntryDefinition>empty();
         var nativeEntryDefinitionAvailable = definition.isPresent();
 
-        return Optional.of(new LedgerNativeComponentInspectorModel(headerRows(entry, selectedProjectionRef),
+        return Optional.of(new LedgerNativeComponentInspectorModel(headerRows(entry, selectedDescriptor),
                         parameterRows(entry.getParameters()),
                         definition.map(d -> legRows(d.getLegDefinitions())).orElseGet(List::of),
                         postingRows(entry.getPostings()), postingParameterRows(entry.getPostings()),
-                        projectionRefRows(entry.getProjectionRefs()), nativeEntryDefinitionAvailable));
+                        descriptorRows(entry), nativeEntryDefinitionAvailable));
     }
 
     public List<HeaderRow> getHeaderRows()
@@ -168,9 +168,9 @@ public final class LedgerNativeComponentInspectorModel
         return postingParameters;
     }
 
-    public List<ProjectionRefRow> getProjectionRefs()
+    public List<DescriptorRow> getDescriptors()
     {
-        return projectionRefs;
+        return descriptors;
     }
 
     public boolean isNativeEntryDefinitionAvailable()
@@ -178,7 +178,7 @@ public final class LedgerNativeComponentInspectorModel
         return nativeEntryDefinitionAvailable;
     }
 
-    private static List<HeaderRow> headerRows(LedgerEntry entry, LedgerProjectionRef selectedProjectionRef)
+    private static List<HeaderRow> headerRows(LedgerEntry entry, DerivedProjectionDescriptor selectedDescriptor)
     {
         return List.of(new HeaderRow(HeaderField.ENTRY_TYPE, format(entry.getType())),
                         new HeaderRow(HeaderField.ENTRY_UUID, format(entry.getUUID())),
@@ -191,16 +191,12 @@ public final class LedgerNativeComponentInspectorModel
                         new HeaderRow(HeaderField.NATIVE_TARGETED,
                                         Boolean.toString(entry.getType().isLedgerNativeTargeted())),
                         new HeaderRow(HeaderField.SELECTED_PROJECTION_ROLE,
-                                        selectedProjectionRef != null ? format(selectedProjectionRef.getRole()) : ""), //$NON-NLS-1$
-                        new HeaderRow(HeaderField.SELECTED_PROJECTION_UUID,
-                                        selectedProjectionRef != null ? format(selectedProjectionRef.getUUID()) : ""), //$NON-NLS-1$
+                                        selectedDescriptor != null ? format(selectedDescriptor.getRole()) : ""), //$NON-NLS-1$
+                        new HeaderRow(HeaderField.SELECTED_RUNTIME_PROJECTION_ID,
+                                        selectedDescriptor != null ? format(selectedDescriptor.getRuntimeProjectionId()) : ""), //$NON-NLS-1$
                         new HeaderRow(HeaderField.SELECTED_PRIMARY_POSTING_UUID,
-                                        selectedProjectionRef != null
-                                                        ? format(selectedProjectionRef.getPrimaryPostingUUID())
-                                                        : ""), //$NON-NLS-1$
-                        new HeaderRow(HeaderField.SELECTED_POSTING_GROUP_UUID,
-                                        selectedProjectionRef != null
-                                                        ? format(selectedProjectionRef.getPostingGroupUUID())
+                                        selectedDescriptor != null
+                                                        ? format(selectedDescriptor.getPrimaryPosting().getUUID())
                                                         : "")); //$NON-NLS-1$
     }
 
@@ -245,22 +241,23 @@ public final class LedgerNativeComponentInspectorModel
                         .toList();
     }
 
-    private static List<ProjectionRefRow> projectionRefRows(List<LedgerProjectionRef> projectionRefs)
+    private static List<DescriptorRow> descriptorRows(LedgerEntry entry)
     {
-        return projectionRefs.stream()
-                        .map(projectionRef -> new ProjectionRefRow(format(projectionRef.getRole()),
-                                        owner(projectionRef), format(projectionRef.getUUID()),
-                                        format(projectionRef.getPrimaryPostingUUID()),
-                                        format(projectionRef.getPostingGroupUUID())))
+        return LedgerProjectionSupport.descriptors(entry).stream()
+                        .map(descriptor -> new DescriptorRow(format(descriptor.getRole()), owner(descriptor),
+                                        format(descriptor.getRuntimeProjectionId()),
+                                        format(descriptor.getPrimaryPosting().getUUID()),
+                                        descriptor.getUnitPostings().stream().map(LedgerPosting::getUUID)
+                                                        .sorted().toList().toString()))
                         .toList();
     }
 
-    private static String owner(LedgerProjectionRef projectionRef)
+    private static String owner(DerivedProjectionDescriptor descriptor)
     {
-        if (projectionRef.getAccount() != null)
-            return format(projectionRef.getAccount());
+        if (descriptor.getAccount() != null)
+            return format(descriptor.getAccount());
 
-        return format(projectionRef.getPortfolio());
+        return format(descriptor.getPortfolio());
     }
 
     private static String code(LedgerParameterType type)

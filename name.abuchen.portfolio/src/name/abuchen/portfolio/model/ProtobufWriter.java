@@ -46,7 +46,6 @@ import name.abuchen.portfolio.model.ledger.LedgerPosting;
 import name.abuchen.portfolio.model.ledger.LedgerPostingDirection;
 import name.abuchen.portfolio.model.ledger.LedgerPostingSemanticRole;
 import name.abuchen.portfolio.model.ledger.LedgerPostingUnitRole;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
@@ -184,7 +183,6 @@ import name.abuchen.portfolio.money.Money;
 
         if (hasLedgerTruth)
         {
-            LedgerProjectionService.adaptLegacyScalarMemberships(client);
             LedgerProjectionService.restoreIfValid(client);
         }
         else
@@ -685,10 +683,7 @@ import name.abuchen.portfolio.money.Money;
 
     private Set<String> ledgerProjectionUUIDs(Ledger ledger)
     {
-        return ledger.getEntries().stream() //
-                        .flatMap(entry -> entry.getProjectionRefs().stream()) //
-                        .map(LedgerProjectionRef::getUUID) //
-                        .collect(Collectors.toCollection(HashSet::new));
+        return new HashSet<>();
     }
 
     private void loadLedger(PLedger newLedger, Client client, Lookup lookup)
@@ -1060,18 +1055,6 @@ import name.abuchen.portfolio.money.Money;
 
     private boolean markPlanExecutionForProjectionUUID(Client client, InvestmentPlan plan, String projectionUUID)
     {
-        for (LedgerEntry entry : client.getLedger().getEntries())
-        {
-            for (LedgerProjectionRef projectionRef : entry.getProjectionRefs())
-            {
-                if (projectionRef.getUUID().equals(projectionUUID))
-                {
-                    plan.markLedgerExecution(entry, entry.getDateTime().toLocalDate(), viewKind(projectionRef.getRole()));
-                    return true;
-                }
-            }
-        }
-
         return false;
     }
 
@@ -1482,12 +1465,13 @@ import name.abuchen.portfolio.money.Money;
                     continue;
 
                 LedgerBackedTransaction ledgerBackedTransaction = (LedgerBackedTransaction) transaction;
-                LedgerProjectionRef projectionRef = ledgerBackedTransaction.getLedgerProjectionRef();
 
                 if (transaction instanceof AccountTransaction accountTransaction)
-                    addTransaction(newClient, projectionRef.getAccount(), accountTransaction);
+                    addTransaction(newClient, ledgerBackedTransaction.getLedgerProjectionDescriptor().getAccount(),
+                                    accountTransaction);
                 else if (transaction instanceof PortfolioTransaction portfolioTransaction)
-                    addTransaction(newClient, projectionRef.getPortfolio(), portfolioTransaction);
+                    addTransaction(newClient, ledgerBackedTransaction.getLedgerProjectionDescriptor().getPortfolio(),
+                                    portfolioTransaction);
                 else
                     throw new UnsupportedOperationException(transaction.getClass().getName());
             }
@@ -1518,10 +1502,8 @@ import name.abuchen.portfolio.money.Money;
     {
         if (transaction instanceof LedgerBackedTransaction ledgerBackedTransaction)
         {
-            var projectionRef = ledgerBackedTransaction.getLedgerProjectionRef();
-
             return LEDGER_COMPATIBILITY_SHADOW_PREFIX + ledgerBackedTransaction.getLedgerEntry().getUUID()
-                            + ":" + projectionRef.getRole(); //$NON-NLS-1$
+                            + ":" + ledgerBackedTransaction.getLedgerProjectionRole(); //$NON-NLS-1$
         }
 
         return transaction.getUUID();

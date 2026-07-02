@@ -30,12 +30,12 @@ import name.abuchen.portfolio.model.ProtobufTestUtilities;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
+import name.abuchen.portfolio.model.ledger.LedgerPostingUnitRole;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator;
-import name.abuchen.portfolio.model.ledger.ProjectionMembershipRole;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
+import name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
@@ -132,10 +132,13 @@ public class LedgerBuySellTransactionCreatorTest
         var securityPostingUUID = fixture.client().getLedger().getEntries().get(0).getPostings().get(1).getUUID();
         var entryUUID = fixture.client().getLedger().getEntries().get(0).getUUID();
         var expectedProjectionUUIDs = projectionUUIDs(fixture.client());
+        var expectedProjectionRoles = projectionRoles(fixture.client());
 
-        creator.update(entry, fixture.portfolio(), fixture.account(), PortfolioTransaction.Type.BUY,
+        var updated = creator.update(entry, fixture.portfolio(), fixture.account(), PortfolioTransaction.Type.BUY,
                         DATE_TIME.plusDays(1), Values.Amount.factorize(150), CurrencyUnit.EUR, otherSecurity,
                         Values.Share.factorize(7), List.of(unit(Unit.Type.FEE, 5)), "updated", "updated source");
+        var updatedAccountTransaction = updated.getAccountTransaction();
+        var updatedPortfolioTransaction = updated.getPortfolioTransaction();
 
         var ledgerEntry = fixture.client().getLedger().getEntries().get(0);
 
@@ -147,11 +150,11 @@ public class LedgerBuySellTransactionCreatorTest
         assertThat(ledgerEntry.getPostings().get(1).getUUID(), is(securityPostingUUID));
         assertSame(otherSecurity, ledgerEntry.getPostings().get(1).getSecurity());
         assertThat(ledgerEntry.getPostings().get(1).getShares(), is(Values.Share.factorize(7)));
-        assertThat(portfolioTransaction.getUnits().count(), is(1L));
-        assertThat(accountTransaction.getAmount(), is(Values.Amount.factorize(150)));
-        assertThat(portfolioTransaction.getAmount(), is(Values.Amount.factorize(150)));
+        assertThat(updatedPortfolioTransaction.getUnits().count(), is(1L));
+        assertThat(updatedAccountTransaction.getAmount(), is(Values.Amount.factorize(150)));
+        assertThat(updatedPortfolioTransaction.getAmount(), is(Values.Amount.factorize(150)));
 
-        var moved = creator.update(entry, otherPortfolio, otherAccount, PortfolioTransaction.Type.BUY,
+        var moved = creator.update(updated, otherPortfolio, otherAccount, PortfolioTransaction.Type.BUY,
                         DATE_TIME.plusDays(2), Values.Amount.factorize(175), CurrencyUnit.EUR, otherSecurity,
                         Values.Share.factorize(8), List.of(), "moved note", "moved source");
         var movedAccountTransaction = moved.getAccountTransaction();
@@ -186,8 +189,8 @@ public class LedgerBuySellTransactionCreatorTest
                         () -> accountTransaction.getCrossEntry().setOwner(accountTransaction, otherAccount));
         assertThrows(UnsupportedOperationException.class, () -> accountTransaction.getCrossEntry().insert());
         assertThat(fixture.client().getAllTransactions().size(), is(1));
-        assertThat(projectionUUIDs(loadXml(saveXml(fixture.client()))), is(expectedProjectionUUIDs));
-        assertThat(projectionUUIDs(loadProtobuf(saveProtobuf(fixture.client()))), is(expectedProjectionUUIDs));
+        assertThat(projectionRoles(loadXml(saveXml(fixture.client()))), is(expectedProjectionRoles));
+        assertThat(projectionRoles(loadProtobuf(saveProtobuf(fixture.client()))), is(expectedProjectionRoles));
         assertValid(fixture.client());
     }
 
@@ -260,12 +263,12 @@ public class LedgerBuySellTransactionCreatorTest
     public void testXmlSaveLoadSavePreservesBuySellProjectionUUIDsAndFields() throws Exception
     {
         var client = buySellClient();
-        var expectedProjectionUUIDs = projectionUUIDs(client);
+        var expectedProjectionRoles = projectionRoles(client);
 
         var loaded = loadXml(saveXml(client));
         var reloaded = loadXml(saveXml(loaded));
 
-        assertThat(projectionUUIDs(reloaded), is(expectedProjectionUUIDs));
+        assertThat(projectionRoles(reloaded), is(expectedProjectionRoles));
         assertThat(reloaded.getLedger().getEntries().size(), is(2));
         assertThat(reloaded.getAccounts().get(0).getTransactions().size(), is(2));
         assertThat(reloaded.getPortfolios().get(0).getTransactions().size(), is(2));
@@ -281,12 +284,12 @@ public class LedgerBuySellTransactionCreatorTest
     public void testProtobufSaveLoadSavePreservesBuySellProjectionUUIDsAndFields() throws Exception
     {
         var client = buySellClient();
-        var expectedProjectionUUIDs = projectionUUIDs(client);
+        var expectedProjectionRoles = projectionRoles(client);
 
         var loaded = loadProtobuf(saveProtobuf(client));
         var reloaded = loadProtobuf(saveProtobuf(loaded));
 
-        assertThat(projectionUUIDs(reloaded), is(expectedProjectionUUIDs));
+        assertThat(projectionRoles(reloaded), is(expectedProjectionRoles));
         assertThat(reloaded.getLedger().getEntries().size(), is(2));
         assertThat(reloaded.getAccounts().get(0).getTransactions().size(), is(2));
         assertThat(reloaded.getPortfolios().get(0).getTransactions().size(), is(2));
@@ -334,14 +337,14 @@ public class LedgerBuySellTransactionCreatorTest
 
         assertThat(accountProjection.getRole(), is(LedgerProjectionRole.ACCOUNT));
         assertSame(fixture.account(), accountProjection.getAccount());
-        assertPrimaryMembership(accountProjection, cashPosting.getUUID());
+        assertPrimaryDescriptor(accountProjection, cashPosting.getUUID());
         assertThat(portfolioProjection.getRole(), is(LedgerProjectionRole.PORTFOLIO));
         assertSame(fixture.portfolio(), portfolioProjection.getPortfolio());
-        assertPrimaryMembership(portfolioProjection, securityPosting.getUUID());
-        assertUnitMemberships(accountProjection);
-        assertUnitMemberships(portfolioProjection);
-        assertThat(accountTransaction.getUUID(), is(accountProjection.getUUID()));
-        assertThat(portfolioTransaction.getUUID(), is(portfolioProjection.getUUID()));
+        assertPrimaryDescriptor(portfolioProjection, securityPosting.getUUID());
+        assertUnitPostings(accountProjection);
+        assertUnitPostings(portfolioProjection);
+        assertThat(accountTransaction.getUUID(), is(accountProjection.getRuntimeProjectionId()));
+        assertThat(portfolioTransaction.getUUID(), is(portfolioProjection.getRuntimeProjectionId()));
         assertThat(accountTransaction, instanceOf(LedgerBackedTransaction.class));
         assertThat(portfolioTransaction, instanceOf(LedgerBackedTransaction.class));
         assertThat(accountTransaction.getType(), is(accountType));
@@ -370,17 +373,20 @@ public class LedgerBuySellTransactionCreatorTest
         assertSame(account, portfolioTransaction.getCrossEntry().getCrossOwner(portfolioTransaction));
     }
 
-    private void assertPrimaryMembership(LedgerProjectionRef projection, String postingUUID)
+    private void assertPrimaryDescriptor(DerivedProjectionDescriptor projection, String postingUUID)
     {
-        assertThat(projection.getPrimaryPostingUUID(), is(postingUUID));
-        assertThat(projection.getPrimaryMembership().orElseThrow().getPostingUUID(), is(postingUUID));
+        assertThat(projection.getPrimaryPosting().getUUID(), is(postingUUID));
+        assertThat(projection.getPrimaryPosting().getUnitRole(), is(LedgerPostingUnitRole.PRIMARY));
     }
 
-    private void assertUnitMemberships(LedgerProjectionRef projection)
+    private void assertUnitPostings(DerivedProjectionDescriptor projection)
     {
-        assertThat(projection.getMembershipsByRole(ProjectionMembershipRole.FEE_UNIT).size(), is(1));
-        assertThat(projection.getMembershipsByRole(ProjectionMembershipRole.TAX_UNIT).size(), is(1));
-        assertThat(projection.getMembershipsByRole(ProjectionMembershipRole.GROSS_VALUE_UNIT).size(), is(1));
+        assertThat((int) projection.getUnitPostings().stream()
+                        .filter(posting -> posting.getUnitRole() == LedgerPostingUnitRole.FEE).count(), is(1));
+        assertThat((int) projection.getUnitPostings().stream()
+                        .filter(posting -> posting.getUnitRole() == LedgerPostingUnitRole.TAX).count(), is(1));
+        assertThat((int) projection.getUnitPostings().stream()
+                        .filter(posting -> posting.getUnitRole() == LedgerPostingUnitRole.GROSS_VALUE).count(), is(1));
     }
 
     private BuySellEntry createBuy(Fixture fixture)
@@ -427,10 +433,10 @@ public class LedgerBuySellTransactionCreatorTest
         return fixture.client();
     }
 
-    private LedgerProjectionRef projection(name.abuchen.portfolio.model.ledger.LedgerEntry entry,
+    private DerivedProjectionDescriptor projection(name.abuchen.portfolio.model.ledger.LedgerEntry entry,
                     LedgerProjectionRole role)
     {
-        return entry.getProjectionRefs().stream().filter(projection -> projection.getRole() == role).findFirst()
+        return name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream().filter(projection -> projection.getRole() == role).findFirst()
                         .orElseThrow();
     }
 
@@ -442,8 +448,16 @@ public class LedgerBuySellTransactionCreatorTest
     private List<String> projectionUUIDs(Client client)
     {
         return client.getLedger().getEntries().stream()
-                        .flatMap(entry -> entry.getProjectionRefs().stream())
-                        .map(LedgerProjectionRef::getUUID)
+                        .flatMap(entry -> name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream())
+                        .map(descriptor -> descriptor.getRuntimeProjectionId())
+                        .toList();
+    }
+
+    private List<LedgerProjectionRole> projectionRoles(Client client)
+    {
+        return client.getLedger().getEntries().stream()
+                        .flatMap(entry -> name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream())
+                        .map(descriptor -> descriptor.getRole())
                         .toList();
     }
 

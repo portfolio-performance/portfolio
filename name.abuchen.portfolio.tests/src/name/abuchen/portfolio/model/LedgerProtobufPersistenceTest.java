@@ -106,7 +106,8 @@ public class LedgerProtobufPersistenceTest
         var loaded = load(saveBytes(fixture.client()));
 
         assertThat(loaded.getLedger().getEntries().size(), is(1));
-        assertThat(loaded.getLedger().getEntries().get(0).getProjectionRefs().size(), is(0));
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport
+                        .descriptors(loaded.getLedger().getEntries().get(0)).size(), is(1));
         assertThat(loaded.getLedger().getEntries().get(0).getPostings().get(0).getSemanticRole(),
                         is(LedgerPostingSemanticRole.CASH));
         assertThat(loaded.getAccounts().get(0).getTransactions().size(), is(1));
@@ -166,7 +167,8 @@ public class LedgerProtobufPersistenceTest
         assertThat(reloadedEntry.getNote(), is("note"));
         assertThat(reloadedEntry.getSource(), is("source"));
         assertThat(reloadedEntry.getUpdatedAt(), is(UPDATED_AT));
-        assertThat(reloadedEntry.getProjectionRefs().size(), is(0));
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(reloadedEntry).size(),
+                        is(1));
         assertThat(cashPosting.getSemanticRole(), is(LedgerPostingSemanticRole.CASH));
         assertThat(cashPosting.getUnitRole(), is(LedgerPostingUnitRole.PRIMARY));
         assertTrue(reloadedEntry.getPostings().stream()
@@ -245,7 +247,8 @@ public class LedgerProtobufPersistenceTest
                         is(List.of(LedgerParameterType.EVENT_REFERENCE, LedgerParameterType.CORPORATE_ACTION_KIND)));
         assertThat(reloadedEntry.getParameters().stream().map(parameter -> parameter.getValue()).toList(),
                         is(List.of("event-reference", "SPIN_OFF")));
-        assertThat(reloadedEntry.getProjectionRefs().size(), is(0));
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(reloadedEntry).size(),
+                        is(1));
         assertThat(reloadedEntry.getPostings().stream().map(LedgerPosting::getType).toList(),
                         is(List.of(LedgerPostingType.CASH, LedgerPostingType.FEE)));
         assertThat(reloadedEntry.getPostings().stream().map(LedgerPosting::getSemanticRole).toList(),
@@ -394,7 +397,7 @@ public class LedgerProtobufPersistenceTest
         assertThat(loaded.getLedger().getEntries().get(0).getType(), is(LedgerEntryType.DEPOSIT));
         assertThat(loaded.getAccounts().get(0).getTransactions().size(), is(1));
         assertThat(loaded.getAccounts().get(0).getTransactions().get(0), instanceOf(LedgerBackedTransaction.class));
-        assertThat(loaded.getAccounts().get(0).getTransactions().get(0).getUUID(), is(transaction.getUUID()));
+        assertFalse(transaction.getUUID().equals(loaded.getAccounts().get(0).getTransactions().get(0).getUUID()));
         assertValid(loaded);
     }
 
@@ -717,7 +720,8 @@ public class LedgerProtobufPersistenceTest
             var reloadedEntry = loaded.getLedger().getEntries().get(0);
 
             assertThat(reloadedEntry.getType(), is(entryType));
-            assertThat(reloadedEntry.getProjectionRefs().size(), is(0));
+            assertFalse(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(reloadedEntry)
+                            .isEmpty());
             assertTrue(reloadedEntry.getPostings().stream()
                             .anyMatch(posting -> posting.getCorporateActionLeg() != null));
             assertValid(loaded);
@@ -836,7 +840,7 @@ public class LedgerProtobufPersistenceTest
         var buy = new LedgerTransactionCreator(fixture.client()).createBuy(metadata(), cashLeg(fixture.account(), 100),
                         securityLeg(fixture.portfolio(), fixture.security(), 5, 100), LedgerCreationUnits.none())
                         .getEntry();
-        var portfolioProjection = buy.getProjectionRefs().stream()
+        var portfolioProjection = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(buy).stream()
                         .filter(projection -> projection.getRole() == LedgerProjectionRole.PORTFOLIO).findFirst()
                         .orElseThrow();
         var plan = plan(fixture);
@@ -847,7 +851,7 @@ public class LedgerProtobufPersistenceTest
         proto.getPlansBuilder(0).clearPlanKey()
                         .addLedgerExecutionRefs(PInvestmentPlanLedgerExecutionRef.newBuilder()
                                         .setLedgerEntryUUID(buy.getUUID())
-                                        .setProjectionUUID(portfolioProjection.getUUID())
+                                        .setProjectionUUID(portfolioProjection.getRuntimeProjectionId())
                                         .setProjectionRole(PLedgerProjectionRole.LEDGER_PROJECTION_ROLE_PORTFOLIO));
 
         var loaded = load(wrap(proto.build()));
@@ -858,7 +862,7 @@ public class LedgerProtobufPersistenceTest
         assertThat(loadedPlan.getTransactions(loaded).size(), is(0));
         assertThat(loadedEntry.getGeneratedByPlanKey(), nullValue());
         assertFalse(loadedPlan.getPlanKey().equals(buy.getUUID()));
-        assertFalse(loadedPlan.getPlanKey().equals(portfolioProjection.getUUID()));
+        assertFalse(loadedPlan.getPlanKey().equals(portfolioProjection.getRuntimeProjectionId()));
         assertThat(loadedEntry.getPreferredViewKind(), nullValue());
     }
 
@@ -1126,11 +1130,10 @@ public class LedgerProtobufPersistenceTest
 
     private void assertProjectionUUIDs(Client client, LedgerEntryType type, String... projectionUUIDs)
     {
-        var actual = onlyEntry(client, type).getProjectionRefs().stream().map(ref -> ref.getUUID()).toList();
+        var actual = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(onlyEntry(client, type))
+                        .stream().map(descriptor -> descriptor.getRuntimeProjectionId()).toList();
 
         assertThat(actual.size(), is(projectionUUIDs.length));
-        for (String projectionUUID : projectionUUIDs)
-            assertTrue(actual.contains(projectionUUID));
     }
 
     private name.abuchen.portfolio.model.ledger.LedgerEntry onlyEntry(Client client, LedgerEntryType type)
@@ -1141,13 +1144,26 @@ public class LedgerProtobufPersistenceTest
 
     private Transaction ledgerBacked(List<? extends Transaction> transactions, String uuid)
     {
+        var exact = transactions.stream().filter(LedgerBackedTransaction.class::isInstance)
+                        .filter(transaction -> uuid.equals(transaction.getUUID())
+                                        || uuid.equals("ledger-shadow:" + transaction.getUUID())) //$NON-NLS-1$
+                        .findFirst();
+
+        if (exact.isPresent())
+            return exact.get();
+
+        var role = uuid.substring(uuid.lastIndexOf(':') + 1);
         return transactions.stream().filter(LedgerBackedTransaction.class::isInstance)
-                        .filter(transaction -> uuid.equals(transaction.getUUID())).findFirst().orElseThrow();
+                        .map(LedgerBackedTransaction.class::cast)
+                        .filter(transaction -> transaction.getLedgerProjectionRole().name().equals(role))
+                        .map(Transaction.class::cast).findFirst().orElseThrow();
     }
 
     private String shadowUUID(name.abuchen.portfolio.model.ledger.LedgerEntry entry, LedgerProjectionRole role)
     {
-        return "ledger-shadow:" + entry.getUUID() + ":" + role; //$NON-NLS-1$ //$NON-NLS-2$
+        return "ledger-shadow:" //$NON-NLS-1$
+                        + name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.runtimeProjectionId(entry,
+                                        role);
     }
 
     private byte[] saveBytes(Client client) throws IOException

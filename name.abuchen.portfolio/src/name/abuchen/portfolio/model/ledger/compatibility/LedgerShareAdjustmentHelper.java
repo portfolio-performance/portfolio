@@ -4,9 +4,7 @@ import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.LongUnaryOperator;
-import java.util.stream.Stream;
 
 import name.abuchen.portfolio.model.LedgerDiagnosticCode;
 import name.abuchen.portfolio.model.Client;
@@ -17,7 +15,6 @@ import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerModelCopy;
 import name.abuchen.portfolio.model.ledger.LedgerMutationContext;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
 
@@ -68,45 +65,7 @@ public final class LedgerShareAdjustmentHelper
 
     private static LedgerPosting primaryPosting(LedgerBackedTransaction transaction)
     {
-        var entry = transaction.getLedgerEntry();
-        var projectionRef = transaction.getLedgerProjectionRef();
-
-        if (projectionRef.getPrimaryPostingUUID() != null)
-            return requirePostingInEntry(entry, projectionRef.getPrimaryPostingUUID());
-
-        if (entry.getType().requiresTargetedProjectionRefs())
-            throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_PROJ_058
-                            .message("Targeted Ledger projection has no primary posting: " + projectionRef.getUUID())); //$NON-NLS-1$
-
-        Optional<LedgerPosting> posting = switch (projectionRef.getRole())
-        {
-            case SOURCE_ACCOUNT -> accountPostings(entry, projectionRef).findFirst();
-            case TARGET_ACCOUNT -> last(accountPostings(entry, projectionRef));
-            case SOURCE_PORTFOLIO -> portfolioPostings(entry, projectionRef).findFirst();
-            case TARGET_PORTFOLIO -> last(portfolioPostings(entry, projectionRef));
-            case ACCOUNT, CASH_COMPENSATION -> accountPostings(entry, projectionRef).findFirst();
-            case PORTFOLIO, DELIVERY, DELIVERY_INBOUND, DELIVERY_OUTBOUND, OLD_SECURITY_LEG, NEW_SECURITY_LEG ->
-                portfolioPostings(entry, projectionRef).findFirst();
-        };
-
-        return posting.orElseThrow(() -> new IllegalArgumentException(
-                        "No primary Ledger posting for projection " + projectionRef.getUUID())); //$NON-NLS-1$
-    }
-
-    private static Stream<LedgerPosting> accountPostings(LedgerEntry entry, LedgerProjectionRef projectionRef)
-    {
-        return entry.getPostings().stream().filter(posting -> posting.getAccount() == projectionRef.getAccount());
-    }
-
-    private static Stream<LedgerPosting> portfolioPostings(LedgerEntry entry, LedgerProjectionRef projectionRef)
-    {
-        return entry.getPostings().stream().filter(posting -> posting.getPortfolio() == projectionRef.getPortfolio());
-    }
-
-    private static Optional<LedgerPosting> last(Stream<LedgerPosting> stream)
-    {
-        var postings = stream.toList();
-        return postings.isEmpty() ? Optional.empty() : Optional.of(postings.get(postings.size() - 1));
+        return transaction.getLedgerProjectionDescriptor().getPrimaryPosting();
     }
 
     private static LedgerEntry requireEntryInLedger(Ledger ledger, String uuid)

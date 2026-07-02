@@ -29,7 +29,6 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.LedgerTransactionMetadata;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerAccountCashLeg;
@@ -50,6 +49,7 @@ import name.abuchen.portfolio.model.ledger.nativeentry.NativeFee;
 import name.abuchen.portfolio.model.ledger.nativeentry.NativeSecurityLeg;
 import name.abuchen.portfolio.model.ledger.nativeentry.NativeTax;
 import name.abuchen.portfolio.model.ledger.nativeentry.Ratio;
+import name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
 import name.abuchen.portfolio.model.ledger.projection.LedgerProjectionService;
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -905,7 +905,6 @@ public class ClientPerformanceSnapshotTest
                     implements LedgerBackedTransaction
     {
         private final LedgerEntry entry;
-        private final LedgerProjectionRef projectionRef = new LedgerProjectionRef();
 
         private LedgerBackedAccountTransactionStub(LedgerEntry entry)
         {
@@ -919,9 +918,9 @@ public class ClientPerformanceSnapshotTest
         }
 
         @Override
-        public LedgerProjectionRef getLedgerProjectionRef()
+        public DerivedProjectionDescriptor getLedgerProjectionDescriptor()
         {
-            return projectionRef;
+            return null;
         }
     }
 }

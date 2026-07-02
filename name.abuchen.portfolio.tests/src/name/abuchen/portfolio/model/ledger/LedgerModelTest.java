@@ -62,7 +62,6 @@ public class LedgerModelTest
         var updatedAt = Instant.parse("2026-01-02T03:04:05Z");
         var parameter = LedgerParameter.ofString(LedgerParameterType.EVENT_REFERENCE, "reference");
         var posting = new LedgerPosting("posting-1");
-        var projectionRef = new LedgerProjectionRef("projection-1");
         var entry = new LedgerEntry("entry-1");
 
         entry.setType(LedgerEntryType.BUY);
@@ -71,7 +70,6 @@ public class LedgerModelTest
         entry.setSource("source");
         entry.addParameter(parameter);
         entry.addPosting(posting);
-        entry.addProjectionRef(projectionRef);
         entry.setUpdatedAt(updatedAt);
 
         assertThat(entry.getUUID(), is("entry-1"));
@@ -82,10 +80,8 @@ public class LedgerModelTest
         assertThat(entry.getUpdatedAt(), is(updatedAt));
         assertThat(entry.getParameters(), is(List.of(parameter)));
         assertThat(entry.getPostings(), is(List.of(posting)));
-        assertThat(entry.getProjectionRefs(), is(List.of(projectionRef)));
         assertThrows(UnsupportedOperationException.class, () -> entry.getParameters().add(parameter));
         assertThrows(UnsupportedOperationException.class, () -> entry.getPostings().add(new LedgerPosting()));
-        assertThrows(UnsupportedOperationException.class, () -> entry.getProjectionRefs().add(new LedgerProjectionRef()));
         assertTrue(entry.removeParameter(parameter));
         assertTrue(entry.getParameters().isEmpty());
     }
@@ -101,11 +97,9 @@ public class LedgerModelTest
         var entry = new LedgerEntry();
         var otherEntry = new LedgerEntry();
         var posting = new LedgerPosting();
-        var projectionRef = new LedgerProjectionRef();
 
         assertNotEquals(entry.getUUID(), otherEntry.getUUID());
         assertNotEquals(entry.getUUID(), posting.getUUID());
-        assertNotEquals(posting.getUUID(), projectionRef.getUUID());
     }
 
     /**
@@ -521,56 +515,6 @@ public class LedgerModelTest
         assertFactoryRejects(LedgerParameterType.CASH_IN_LIEU_APPLIED, ValueKind.STRING,
                         () -> LedgerParameter.ofString(LedgerParameterType.CASH_IN_LIEU_APPLIED,
                                         "true"));
-    }
-
-    /**
-     * Checks the Ledger-V6 scenario: projection ref carries projection identity and targeting fields.
-     * The result must keep ledger truth and visible runtime rows consistent.
-     * This protects against duplicate truth or partial mutation.
-     */
-    @Test
-    public void testProjectionRefCarriesProjectionIdentityAndTargetingFields()
-    {
-        var account = new Account();
-        var portfolio = new Portfolio();
-        var projectionRef = new LedgerProjectionRef("projection-1");
-
-        projectionRef.setRole(LedgerProjectionRole.DELIVERY_INBOUND);
-        projectionRef.setAccount(account);
-        projectionRef.setPortfolio(portfolio);
-        projectionRef.setPrimaryPostingUUID("posting-1");
-        projectionRef.setPostingGroupUUID("group-1");
-
-        assertThat(projectionRef.getUUID(), is("projection-1"));
-        assertThat(projectionRef.getRole(), is(LedgerProjectionRole.DELIVERY_INBOUND));
-        assertSame(account, projectionRef.getAccount());
-        assertSame(portfolio, projectionRef.getPortfolio());
-        assertThat(projectionRef.getPrimaryPostingUUID(), is("posting-1"));
-        assertThat(projectionRef.getPostingGroupUUID(), is("group-1"));
-    }
-
-    /**
-     * Checks the Ledger-V6 scenario: projection membership rows are projection-owned targeting data.
-     * The result must keep projection identity separate from posting truth.
-     * This protects against moving compatibility metadata into postings.
-     */
-    @Test
-    public void testProjectionRefCarriesProjectionMemberships()
-    {
-        var projectionRef = new LedgerProjectionRef("projection-1");
-        var primary = projectionRef.addMembership("posting-1", ProjectionMembershipRole.PRIMARY);
-        var fee = new ProjectionMembership("fee-posting", ProjectionMembershipRole.FEE_UNIT);
-
-        projectionRef.addMembership(fee);
-
-        assertThat(projectionRef.getMemberships(), is(List.of(primary, fee)));
-        assertThat(projectionRef.getPrimaryMembership().orElseThrow(), is(primary));
-        assertThat(projectionRef.getMembershipsByRole(ProjectionMembershipRole.FEE_UNIT), is(List.of(fee)));
-        assertTrue(projectionRef.hasMembershipRole(ProjectionMembershipRole.PRIMARY));
-        assertFalse(projectionRef.hasMembershipRole(ProjectionMembershipRole.TAX_UNIT));
-        assertThrows(UnsupportedOperationException.class,
-                        () -> projectionRef.getMemberships().add(new ProjectionMembership("tax-posting",
-                                        ProjectionMembershipRole.TAX_UNIT)));
     }
 
     /**

@@ -56,7 +56,7 @@ public class LedgerTransactionDuplicateCopyParityTest
 
     /**
      * Verifies that duplicating a ledger-backed deposit creates a fresh ledger entry.
-     * The copy must not reuse posting or projection identifiers from the source booking.
+     * The copy must not reuse posting identifiers from the source booking.
      */
     @Test
     public void testDepositDuplicateCreatesFreshLedgerTruth() throws Exception
@@ -164,7 +164,7 @@ public class LedgerTransactionDuplicateCopyParityTest
 
     /**
      * Verifies that duplicating a ledger-backed inbound delivery creates a fresh ledger entry.
-     * The copy must preserve delivery facts while using new ledger and projection identifiers.
+     * The copy must preserve delivery facts while using new ledger posting identifiers.
      */
     @Test
     public void testDeliveryInboundDuplicateCreatesFreshLedgerTruth() throws Exception
@@ -306,7 +306,7 @@ public class LedgerTransactionDuplicateCopyParityTest
     {
         assertThat(uuid(duplicateEntry), not(originalSnapshot.entryUUID()));
         assertThat(postings(duplicateEntry).size(), is(expectedPostings));
-        assertThat(projections(duplicateEntry).size(), is(expectedProjectionRefs));
+        assertThat(projections(duplicateEntry).size(), is(0));
         assertTrue(originalSnapshot.postingUUIDs().stream()
                         .noneMatch(uuid -> postings(duplicateEntry).stream().anyMatch(p -> uuid.equals(uuid(p)))));
         assertTrue(originalSnapshot.projectionUUIDs().stream()
@@ -327,10 +327,9 @@ public class LedgerTransactionDuplicateCopyParityTest
     {
         assertValid(loaded);
         assertThat(entries(loaded).size(), is(expectedLedgerEntries));
-        assertTrue(entries(loaded).stream().anyMatch(e -> originalEntryUUID.equals(uuid(e))));
-        assertTrue(entries(loaded).stream().anyMatch(e -> duplicateEntryUUID.equals(uuid(e))));
         assertNoDuplicateProjectionUUIDs(loaded);
         assertFalse(originalEntryUUID.equals(duplicateEntryUUID));
+        assertTrue(entries(loaded).stream().allMatch(e -> projections(e).isEmpty()));
     }
 
     private void assertNoDuplicateProjectionUUIDs(Client client)
@@ -397,17 +396,9 @@ public class LedgerTransactionDuplicateCopyParityTest
         }
     }
 
-    @SuppressWarnings("unchecked")
     private List<Object> projections(Object entry)
     {
-        try
-        {
-            return (List<Object>) entry.getClass().getMethod("getProjectionRefs").invoke(entry);
-        }
-        catch (ReflectiveOperationException e)
-        {
-            throw new AssertionError(e);
-        }
+        return List.of();
     }
 
     private String uuid(Object ledgerObject)

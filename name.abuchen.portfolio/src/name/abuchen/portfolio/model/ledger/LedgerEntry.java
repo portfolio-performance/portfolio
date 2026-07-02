@@ -30,7 +30,6 @@ public class LedgerEntry
     private String preferredViewKind;
     private List<LedgerParameter<?>> parameters = new ArrayList<>();
     private final List<LedgerPosting> postings = new ArrayList<>();
-    private final List<LedgerProjectionRef> projectionRefs = new ArrayList<>();
 
     public LedgerEntry()
     {
@@ -195,27 +194,6 @@ public class LedgerEntry
     public boolean removePosting(LedgerPosting posting)
     {
         var removed = postings.remove(posting);
-
-        if (removed)
-            touch();
-
-        return removed;
-    }
-
-    public List<LedgerProjectionRef> getProjectionRefs()
-    {
-        return Collections.unmodifiableList(projectionRefs);
-    }
-
-    public void addProjectionRef(LedgerProjectionRef projectionRef)
-    {
-        projectionRefs.add(Objects.requireNonNull(projectionRef));
-        touch();
-    }
-
-    public boolean removeProjectionRef(LedgerProjectionRef projectionRef)
-    {
-        var removed = projectionRefs.remove(projectionRef);
 
         if (removed)
             touch();

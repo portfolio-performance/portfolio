@@ -110,9 +110,9 @@ public final class LedgerDeliveryTransactionCreator
         var edit = editBuilder.build();
         var editor = new LedgerDeliveryTransactionEditor();
 
-        if (ledgerTransaction.getLedgerProjectionRef().getPortfolio() != portfolio)
+        if (ledgerTransaction.getLedgerProjectionDescriptor().getPortfolio() != portfolio)
         {
-            var projectionUUID = ledgerTransaction.getLedgerProjectionRef().getUUID();
+            var projectionUUID = ledgerTransaction.getUUID();
 
             editor.validate(ledgerTransaction, edit);
             new LedgerOwnerPatchHelper(client).moveDelivery(ledgerTransaction, portfolio);
@@ -120,8 +120,9 @@ public final class LedgerDeliveryTransactionCreator
         }
 
         editor.apply(ledgerTransaction, edit);
+        LedgerProjectionService.restoreIfValid(client);
 
-        return ledgerTransaction;
+        return (PortfolioTransaction) find(portfolio, ledgerTransaction.getUUID());
     }
 
     private void applyForex(LedgerDeliveryTransactionEdit.Builder builder, LedgerForexAmount forex)
@@ -230,7 +231,10 @@ public final class LedgerDeliveryTransactionCreator
     private PortfolioTransaction materializeAndFind(Portfolio portfolio,
                     LedgerTransactionCreator.CreatedTransaction created)
     {
-        var projectionUUID = created.getProjectionRefs().get(0).getUUID();
+        var projectionUUID = created.getRuntimeProjectionId(
+                        created.getEntry().getType() == name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType.DELIVERY_INBOUND
+                                        ? name.abuchen.portfolio.model.ledger.LedgerProjectionRole.DELIVERY_INBOUND
+                                        : name.abuchen.portfolio.model.ledger.LedgerProjectionRole.DELIVERY_OUTBOUND);
 
         LedgerProjectionService.materialize(client);
 

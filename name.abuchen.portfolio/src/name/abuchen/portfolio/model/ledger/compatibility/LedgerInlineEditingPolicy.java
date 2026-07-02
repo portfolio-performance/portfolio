@@ -31,7 +31,7 @@ public final class LedgerInlineEditingPolicy
             return true;
 
         return isEditable(ledgerBackedTransaction.getLedgerEntry().getType(),
-                        ledgerBackedTransaction.getLedgerProjectionRef().getRole(), field);
+                        ledgerBackedTransaction.getLedgerProjectionRole(), field);
     }
 
     public static boolean isEditable(LedgerEntryType type, LedgerProjectionRole role, LedgerInlineEditingField field)

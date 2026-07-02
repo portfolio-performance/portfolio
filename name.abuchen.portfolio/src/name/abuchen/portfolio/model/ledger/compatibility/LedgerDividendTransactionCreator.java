@@ -115,9 +115,9 @@ public final class LedgerDividendTransactionCreator
         var edit = editBuilder.build();
         var editor = new LedgerAccountTransactionEditor();
 
-        if (ledgerTransaction.getLedgerProjectionRef().getAccount() != account)
+        if (ledgerTransaction.getLedgerProjectionDescriptor().getAccount() != account)
         {
-            var projectionUUID = ledgerTransaction.getLedgerProjectionRef().getUUID();
+            var projectionUUID = ledgerTransaction.getRuntimeProjectionId();
 
             editor.validate(ledgerTransaction, edit);
             new LedgerOwnerPatchHelper(client).moveAccountOnly(ledgerTransaction, account);
@@ -219,7 +219,7 @@ public final class LedgerDividendTransactionCreator
 
     private AccountTransaction materializeAndFind(Account account, LedgerTransactionCreator.CreatedTransaction created)
     {
-        var projectionUUID = created.getProjectionRefs().get(0).getUUID();
+        var projectionUUID = created.getRuntimeProjectionId(name.abuchen.portfolio.model.ledger.LedgerProjectionRole.ACCOUNT);
 
         LedgerProjectionService.materialize(client);
 

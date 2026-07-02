@@ -58,7 +58,6 @@ import name.abuchen.portfolio.model.ledger.nativeentry.Ratio;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedPortfolioTransaction;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
 import name.abuchen.portfolio.model.ledger.projection.LedgerProjectionService;
-import name.abuchen.portfolio.model.ledger.projection.LedgerProjectionSupport;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -93,28 +92,6 @@ public class LedgerSpinOffScenarioTest
     }
 
     /**
-     * Checks the Ledger-V6 scenario: targeted projection ref can use posting objects.
-     * The result must keep ledger truth and visible runtime rows consistent.
-     * This protects against duplicate truth or partial mutation.
-     */
-    @Test
-    public void testTargetedProjectionRefCanUsePostingObjects()
-    {
-        var primaryPosting = new LedgerPosting();
-        var groupPosting = new LedgerPosting();
-        var projection = new LedgerProjectionRef();
-
-        projection.setPrimaryPosting(primaryPosting);
-        projection.setPostingGroup(groupPosting);
-
-        assertThat(projection.getPrimaryPostingUUID(), is(primaryPosting.getUUID()));
-        assertThat(projection.getPostingGroupUUID(), is(groupPosting.getUUID()));
-
-        assertThrows(NullPointerException.class, () -> projection.setPrimaryPosting(null));
-        assertThrows(NullPointerException.class, () -> projection.setPostingGroup(null));
-    }
-
-    /**
      * Checks the Ledger-V6 scenario: creates targeted spin off shape.
      * The result must keep ledger truth and visible runtime rows consistent.
      * This protects against duplicate truth or partial mutation.
@@ -127,7 +104,7 @@ public class LedgerSpinOffScenarioTest
         var entry = spinOffEntry(client);
 
         assertThat(entry.getPostings().size(), is(6));
-        assertThat(entry.getProjectionRefs().size(), is(4));
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).size(), is(4));
         var oldSiemensOut = securityPosting(entry, fixture.siemens(),
                         CorporateActionLeg.SOURCE_SECURITY.getCode(), fixture.siemensEnergy());
         var siemensBackIn = securityPosting(entry, fixture.siemens(),
@@ -212,7 +189,7 @@ public class LedgerSpinOffScenarioTest
         var entry = spinOffEntry(client);
         var entryUUID = entry.getUUID();
         var postingUUIDs = entry.getPostings().stream().map(LedgerPosting::getUUID).toList();
-        var projectionUUIDs = entry.getProjectionRefs().stream().map(LedgerProjectionRef::getUUID).toList();
+        var projectionUUIDs = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream().map(descriptor -> descriptor.getRuntimeProjectionId()).toList();
         var selected = fixture.siemens().getTransactions(client).stream()
                         .map(pair -> (Transaction) pair.getTransaction())
                         .filter(transaction -> transaction.getDateTime().isBefore(SPIN_OFF_DATE.plusDays(1))).toList();
@@ -223,7 +200,7 @@ public class LedgerSpinOffScenarioTest
         var editedEntry = spinOffEntry(client);
         assertThat(editedEntry.getUUID(), is(entryUUID));
         assertThat(editedEntry.getPostings().stream().map(LedgerPosting::getUUID).toList(), is(postingUUIDs));
-        assertThat(editedEntry.getProjectionRefs().stream().map(LedgerProjectionRef::getUUID).toList(),
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(editedEntry).stream().map(descriptor -> descriptor.getRuntimeProjectionId()).toList(),
                         is(projectionUUIDs));
         assertThat(buyProjection(client, fixture.siemens()).getShares(), is(Values.Share.factorize(20)));
 
@@ -269,15 +246,11 @@ public class LedgerSpinOffScenarioTest
         var posting = invalidTargetSecurityPosting(portfolio, security, Values.Share.factorize(10),
                         Values.Amount.factorize(100), CorporateActionLeg.TARGET_SECURITY.getCode(), security,
                         security);
-        var projection = new LedgerProjectionRef();
-        projection.setRole(LedgerProjectionRole.NEW_SECURITY_LEG);
-        projection.setPortfolio(portfolio);
         entry.addPosting(posting);
-        entry.addProjectionRef(projection);
         client.getLedger().addEntry(entry);
 
         var exception = assertThrows(IllegalArgumentException.class,
-                        () -> LedgerProjectionService.createProjection(entry, projection));
+                        () -> LedgerProjectionService.createProjection(entry, LedgerProjectionRole.NEW_SECURITY_LEG));
 
         assertTrue(exception.getMessage().contains("role=OLD_SECURITY_LEG Missing semantic primary posting"));
         assertTrue(exception.getMessage().contains("role=NEW_SECURITY_LEG Missing semantic primary posting"));
@@ -350,7 +323,7 @@ public class LedgerSpinOffScenarioTest
         var buy = buyProjection(client, siemens);
         var buyEntry = ((LedgerBackedTransaction) buy).getLedgerEntry();
         var entryUUID = buyEntry.getUUID();
-        var projectionUUIDs = buyEntry.getProjectionRefs().stream().map(LedgerProjectionRef::getUUID).toList();
+        var projectionUUIDs = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(buyEntry).stream().map(descriptor -> descriptor.getRuntimeProjectionId()).toList();
 
         assertThat(buy.getShares(), is(Values.Share.factorize(10)));
 
@@ -362,7 +335,7 @@ public class LedgerSpinOffScenarioTest
         var editedEntry = ((LedgerBackedTransaction) editedBuy).getLedgerEntry();
 
         assertThat(editedEntry.getUUID(), is(entryUUID));
-        assertThat(editedEntry.getProjectionRefs().stream().map(LedgerProjectionRef::getUUID).toList(),
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(editedEntry).stream().map(descriptor -> descriptor.getRuntimeProjectionId()).toList(),
                         is(projectionUUIDs));
         assertSame(siemens, editedBuy.getSecurity());
         assertThat(editedBuy.getShares(), is(Values.Share.factorize(100)));
@@ -390,7 +363,7 @@ public class LedgerSpinOffScenarioTest
         var compensation = primaryPosting(entry, LedgerProjectionRole.CASH_COMPENSATION);
         var entryUUID = entry.getUUID();
         var postingUUIDs = entry.getPostings().stream().map(LedgerPosting::getUUID).toList();
-        var projectionUUIDs = entry.getProjectionRefs().stream().map(LedgerProjectionRef::getUUID).toList();
+        var projectionUUIDs = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream().map(descriptor -> descriptor.getRuntimeProjectionId()).toList();
 
         assertThat(compensation.getAmount(), is(Values.Amount.factorize(5)));
 
@@ -403,7 +376,7 @@ public class LedgerSpinOffScenarioTest
 
         assertThat(edited.getUUID(), is(entryUUID));
         assertThat(edited.getPostings().stream().map(LedgerPosting::getUUID).toList(), is(postingUUIDs));
-        assertThat(edited.getProjectionRefs().stream().map(LedgerProjectionRef::getUUID).toList(),
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(edited).stream().map(descriptor -> descriptor.getRuntimeProjectionId()).toList(),
                         is(projectionUUIDs));
         assertSecurityPostingUnchanged(edited, oldSiemensOut);
         assertSecurityPostingUnchanged(edited, siemensBackIn);
@@ -587,7 +560,7 @@ public class LedgerSpinOffScenarioTest
         var newSecurityLeg = securityPosting(entry, siemensEnergy(client), CorporateActionLeg.TARGET_SECURITY.getCode(),
                         siemensEnergy(client));
 
-        if (entry.getProjectionRefs().isEmpty())
+        if (name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).isEmpty())
         {
             var compensationLeg = cashCompensationPosting(entry);
 
@@ -602,7 +575,7 @@ public class LedgerSpinOffScenarioTest
         {
             var compensationLeg = primaryPosting(entry, LedgerProjectionRole.CASH_COMPENSATION);
 
-            assertThat(entry.getProjectionRefs().size(), is(4));
+            assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).size(), is(4));
             assertProjectionTargets(entry, LedgerProjectionRole.OLD_SECURITY_LEG, oldSecurityLeg, null);
             assertProjectionTargets(entry, LedgerProjectionRole.DELIVERY_INBOUND, retainedSecurityLeg, null);
             assertProjectionTargets(entry, LedgerProjectionRole.NEW_SECURITY_LEG, newSecurityLeg, null);
@@ -684,26 +657,16 @@ public class LedgerSpinOffScenarioTest
     {
         var projection = projection(entry, role);
         assertThat(projection.getRole(), is(role));
-        assertThat(primaryPostingUUID(projection), is(primaryPosting.getUUID()));
-        assertThat(postingGroupUUID(projection), is(postingGroup != null ? postingGroup.getUUID() : null));
-    }
-
-    private String primaryPostingUUID(LedgerProjectionRef projection)
-    {
-        return projection.getPrimaryMembership().map(ProjectionMembership::getPostingUUID)
-                        .orElse(projection.getPrimaryPostingUUID());
-    }
-
-    private String postingGroupUUID(LedgerProjectionRef projection)
-    {
-        return projection.getMembershipsByRole(ProjectionMembershipRole.GROUP_ANCHOR).stream().findFirst()
-                        .map(ProjectionMembership::getPostingUUID).orElse(projection.getPostingGroupUUID());
+        assertThat(projection.getPrimaryPosting().getUUID(), is(primaryPosting.getUUID()));
+        assertThat(projection.getPrimaryPosting().getGroupKey(), is(postingGroup != null
+                        ? primaryPosting.getGroupKey()
+                        : projection.getPrimaryPosting().getGroupKey()));
     }
 
     private PortfolioTransaction portfolioProjection(Portfolio portfolio, LedgerProjectionRole role)
     {
         return portfolio.getTransactions().stream().filter(LedgerBackedTransaction.class::isInstance)
-                        .filter(transaction -> ((LedgerBackedTransaction) transaction).getLedgerProjectionRef()
+                        .filter(transaction -> ((LedgerBackedTransaction) transaction).getLedgerProjectionDescriptor()
                                         .getRole() == role)
                         .findFirst().orElseThrow();
     }
@@ -711,7 +674,7 @@ public class LedgerSpinOffScenarioTest
     private PortfolioTransaction portfolioProjection(Portfolio portfolio, LedgerProjectionRole role, Security security)
     {
         return portfolio.getTransactions().stream().filter(LedgerBackedTransaction.class::isInstance)
-                        .filter(transaction -> ((LedgerBackedTransaction) transaction).getLedgerProjectionRef()
+                        .filter(transaction -> ((LedgerBackedTransaction) transaction).getLedgerProjectionDescriptor()
                                         .getRole() == role)
                         .filter(transaction -> transaction.getSecurity() == security).findFirst().orElseThrow();
     }
@@ -719,7 +682,7 @@ public class LedgerSpinOffScenarioTest
     private AccountTransaction accountProjection(Account account, LedgerProjectionRole role)
     {
         return account.getTransactions().stream().filter(LedgerBackedTransaction.class::isInstance)
-                        .filter(transaction -> ((LedgerBackedTransaction) transaction).getLedgerProjectionRef()
+                        .filter(transaction -> ((LedgerBackedTransaction) transaction).getLedgerProjectionDescriptor()
                                         .getRole() == role)
                         .findFirst().orElseThrow();
     }
@@ -730,7 +693,7 @@ public class LedgerSpinOffScenarioTest
 
         return accountProjection.getAccount().getTransactions().stream().filter(LedgerBackedTransaction.class::isInstance)
                         .filter(transaction -> ((LedgerBackedTransaction) transaction).getLedgerEntry() == entry)
-                        .filter(transaction -> ((LedgerBackedTransaction) transaction).getLedgerProjectionRef()
+                        .filter(transaction -> ((LedgerBackedTransaction) transaction).getLedgerProjectionDescriptor()
                                         .getRole() == LedgerProjectionRole.ACCOUNT)
                         .findFirst().orElseThrow();
     }
@@ -746,14 +709,14 @@ public class LedgerSpinOffScenarioTest
                         .filter(transaction -> transaction.getSecurity() == siemens).findFirst().orElseThrow();
     }
 
-    private LedgerProjectionRef projection(LedgerEntry entry, LedgerProjectionRole role)
+    private name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor projection(LedgerEntry entry, LedgerProjectionRole role)
     {
-        return entry.getProjectionRefs().stream().filter(ref -> ref.getRole() == role).findFirst().orElseThrow();
+        return name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream().filter(ref -> ref.getRole() == role).findFirst().orElseThrow();
     }
 
     private LedgerPosting primaryPosting(LedgerEntry entry, LedgerProjectionRole role)
     {
-        return LedgerProjectionSupport.primaryPosting(entry, projection(entry, role));
+        return projection(entry, role).getPrimaryPosting();
     }
 
     private boolean hasCorporateActionLeg(LedgerPosting posting, String leg)

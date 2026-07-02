@@ -3,8 +3,6 @@ package name.abuchen.portfolio.model.ledger;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumMap;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -90,8 +88,6 @@ public final class LedgerStructuralValidator
     {
         var entryUUIDCounts = new LinkedHashMap<String, Integer>();
         var postingUUIDCounts = new LinkedHashMap<String, Integer>();
-        var projectionRefUUIDCounts = new LinkedHashMap<String, Integer>();
-
         for (var entry : ledger.getEntries())
         {
             if (isBlank(entry.getUUID()))
@@ -131,8 +127,7 @@ public final class LedgerStructuralValidator
 
             validateParameters(entry, null, entry.getParameters(), issues);
 
-            var entryPostingUUIDs = validatePostings(entry, postingUUIDCounts, issues);
-            validateProjectionRefs(entry, entryPostingUUIDs, projectionRefUUIDCounts, issues);
+            validatePostings(entry, postingUUIDCounts, issues);
         }
     }
 
@@ -229,248 +224,6 @@ public final class LedgerStructuralValidator
                                             Messages.LedgerStructuralValidatorPostingExchangeRatePositive,
                                             posting.getUUID())),
                             entry, posting));
-    }
-
-    private static void validateProjectionRefs(LedgerEntry entry, Set<String> entryPostingUUIDs,
-                    Map<String, Integer> ledgerProjectionRefUUIDCounts, List<ValidationIssue> issues)
-    {
-        for (var projectionRef : entry.getProjectionRefs())
-        {
-            if (isBlank(projectionRef.getUUID()))
-                issues.add(projectionIssue(IssueCode.PROJECTION_REF_UUID_REQUIRED,
-                                LedgerDiagnosticCode.LEDGER_STRUCT_016.message(MessageFormat.format(
-                                                Messages.LedgerStructuralValidatorProjectionUuidRequired,
-                                                entry.getUUID())),
-                                entry,
-                                projectionRef));
-            else
-            {
-                var occurrenceCount = ledgerProjectionRefUUIDCounts.merge(projectionRef.getUUID(), 1, Integer::sum);
-                if (occurrenceCount > 1)
-                    issues.add(projectionIssue(IssueCode.DUPLICATE_PROJECTION_REF_UUID,
-                                    LedgerDiagnosticCode.LEDGER_STRUCT_017.message(MessageFormat.format(
-                                                    Messages.LedgerStructuralValidatorDuplicateProjectionUuid,
-                                                    projectionRef.getUUID())),
-                                    entry,
-                                    projectionRef).withDetail("objectType", "LedgerProjectionRef") //$NON-NLS-1$ //$NON-NLS-2$
-                                                    .withDetail("duplicateUUID", projectionRef.getUUID()) //$NON-NLS-1$
-                                                    .withDetail("occurrenceCount", occurrenceCount)); //$NON-NLS-1$
-            }
-
-            if (projectionRef.getRole() == null)
-            {
-                issues.add(projectionIssue(IssueCode.PROJECTION_REF_ROLE_REQUIRED,
-                                LedgerDiagnosticCode.LEDGER_STRUCT_018.message(MessageFormat.format(
-                                                Messages.LedgerStructuralValidatorProjectionRoleRequired,
-                                                projectionRef.getUUID())),
-                                entry,
-                                projectionRef));
-                continue;
-            }
-
-            validateProjectionOwner(entry, projectionRef, issues);
-            validateProjectionMemberships(entry, projectionRef, entryPostingUUIDs, issues);
-            validatePrimaryPostingRef(entry, projectionRef, entryPostingUUIDs, issues);
-            validateTargeting(entry, projectionRef, entryPostingUUIDs, issues);
-        }
-
-        validateFixedShapeProjectionRoles(entry, issues);
-    }
-
-    private static void validateFixedShapeProjectionRoles(LedgerEntry entry, List<ValidationIssue> issues)
-    {
-        if (entry.getType() == null || !entry.getType().isLegacyFixedShape())
-            return;
-
-        if (entry.getProjectionRefs().isEmpty())
-            return;
-
-        var expectedRoles = expectedProjectionRoles(entry.getType());
-        var roleCounts = new EnumMap<LedgerProjectionRole, Integer>(LedgerProjectionRole.class);
-
-        for (var projectionRef : entry.getProjectionRefs())
-        {
-            var role = projectionRef.getRole();
-
-            if (role == null)
-                continue;
-
-            roleCounts.merge(role, 1, Integer::sum);
-            if (!expectedRoles.contains(role))
-                issues.add(projectionIssue(IssueCode.FIXED_SHAPE_PROJECTION_ROLE_NOT_ALLOWED,
-                                LedgerDiagnosticCode.LEDGER_STRUCT_019.message(MessageFormat.format(
-                                                Messages.LedgerStructuralValidatorProjectionRoleNotAllowed,
-                                                role, entry.getType())),
-                                entry,
-                                projectionRef));
-        }
-
-        for (var expectedRole : expectedRoles)
-        {
-            if (roleCounts.getOrDefault(expectedRole, 0) != 1)
-                issues.add(entryIssue(IssueCode.FIXED_SHAPE_PROJECTION_ROLE_REQUIRED,
-                                LedgerDiagnosticCode.LEDGER_STRUCT_020.message(MessageFormat.format(
-                                                Messages.LedgerStructuralValidatorProjectionRoleRequiredForType,
-                                                entry.getType(), expectedRole)),
-                                entry).withDetail("expectedProjectionRole", expectedRole)); //$NON-NLS-1$
-        }
-    }
-
-    private static Set<LedgerProjectionRole> expectedProjectionRoles(LedgerEntryType entryType)
-    {
-        return switch (entryType)
-        {
-            case DEPOSIT, REMOVAL, INTEREST, INTEREST_CHARGE, FEES, FEES_REFUND, TAXES, TAX_REFUND, DIVIDENDS ->
-                EnumSet.of(LedgerProjectionRole.ACCOUNT);
-            case BUY, SELL -> EnumSet.of(LedgerProjectionRole.ACCOUNT, LedgerProjectionRole.PORTFOLIO);
-            case CASH_TRANSFER -> EnumSet.of(LedgerProjectionRole.SOURCE_ACCOUNT, LedgerProjectionRole.TARGET_ACCOUNT);
-            case SECURITY_TRANSFER ->
-                EnumSet.of(LedgerProjectionRole.SOURCE_PORTFOLIO, LedgerProjectionRole.TARGET_PORTFOLIO);
-            case DELIVERY_INBOUND -> EnumSet.of(LedgerProjectionRole.DELIVERY_INBOUND);
-            case DELIVERY_OUTBOUND -> EnumSet.of(LedgerProjectionRole.DELIVERY_OUTBOUND);
-            default -> EnumSet.noneOf(LedgerProjectionRole.class);
-        };
-    }
-
-    private static void validateProjectionOwner(LedgerEntry entry, LedgerProjectionRef projectionRef,
-                    List<ValidationIssue> issues)
-    {
-        if (requiresAccount(projectionRef.getRole()))
-        {
-            if (projectionRef.getAccount() == null)
-                issues.add(projectionIssue(IssueCode.PROJECTION_REF_ACCOUNT_REQUIRED,
-                                LedgerDiagnosticCode.LEDGER_STRUCT_021
-                                                .message(MessageFormat.format(
-                                                                Messages.LedgerStructuralValidatorProjectionAccountRequired,
-                                                                projectionRef.getRole())),
-                                entry,
-                                projectionRef));
-
-            if (projectionRef.getPortfolio() != null)
-                issues.add(projectionIssue(IssueCode.PROJECTION_REF_PORTFOLIO_NOT_ALLOWED,
-                                LedgerDiagnosticCode.LEDGER_STRUCT_022.message(MessageFormat.format(
-                                                Messages.LedgerStructuralValidatorAccountProjectionPortfolioNotAllowed,
-                                                projectionRef.getRole())),
-                                entry, projectionRef));
-        }
-
-        if (requiresPortfolio(projectionRef.getRole()))
-        {
-            if (projectionRef.getPortfolio() == null)
-                issues.add(projectionIssue(IssueCode.PROJECTION_REF_PORTFOLIO_REQUIRED,
-                                LedgerDiagnosticCode.LEDGER_STRUCT_023
-                                                .message(MessageFormat.format(
-                                                                Messages.LedgerStructuralValidatorProjectionPortfolioRequired,
-                                                                projectionRef.getRole())),
-                                entry,
-                                projectionRef));
-
-            if (projectionRef.getAccount() != null)
-                issues.add(projectionIssue(IssueCode.PROJECTION_REF_ACCOUNT_NOT_ALLOWED,
-                                LedgerDiagnosticCode.LEDGER_STRUCT_024.message(MessageFormat.format(
-                                                Messages.LedgerStructuralValidatorPortfolioProjectionAccountNotAllowed,
-                                                projectionRef.getRole())),
-                                entry, projectionRef));
-        }
-    }
-
-    private static void validatePrimaryPostingRef(LedgerEntry entry, LedgerProjectionRef projectionRef,
-                    Set<String> entryPostingUUIDs, List<ValidationIssue> issues)
-    {
-        if (!isBlank(projectionRef.getPrimaryPostingUUID())
-                        && !entryPostingUUIDs.contains(projectionRef.getPrimaryPostingUUID()))
-            issues.add(projectionIssue(IssueCode.PRIMARY_POSTING_REF_NOT_FOUND,
-                            LedgerDiagnosticCode.LEDGER_STRUCT_002
-                                            .message(MessageFormat.format(
-                                                            Messages.LedgerStructuralValidatorPrimaryPostingRefNotFound,
-                                                            projectionRef.getPrimaryPostingUUID())),
-                            entry, projectionRef));
-    }
-
-    private static void validateProjectionMemberships(LedgerEntry entry, LedgerProjectionRef projectionRef,
-                    Set<String> entryPostingUUIDs, List<ValidationIssue> issues)
-    {
-        for (var membership : projectionRef.getMemberships())
-        {
-            var postingUUID = membership.getPostingUUID();
-
-            if (!entryPostingUUIDs.contains(postingUUID))
-                issues.add(projectionIssue(IssueCode.PROJECTION_MEMBERSHIP_REF_NOT_FOUND,
-                                LedgerDiagnosticCode.LEDGER_STRUCT_003
-                                                .message(MessageFormat.format(
-                                                                Messages.LedgerStructuralValidatorProjectionMembershipRefNotFound,
-                                                                postingUUID)),
-                                entry, projectionRef).withDetail("membershipRole", membership.getRole()) //$NON-NLS-1$
-                                                .withDetail("membershipPostingUUID", postingUUID)); //$NON-NLS-1$
-        }
-
-        projectionRef.getPrimaryMembership().ifPresent(membership -> {
-            var primaryPostingUUID = projectionRef.getPrimaryPostingUUID();
-
-            if (!isBlank(primaryPostingUUID) && !primaryPostingUUID.equals(membership.getPostingUUID()))
-                issues.add(projectionIssue(IssueCode.PROJECTION_PRIMARY_TARGET_CONFLICT,
-                                LedgerDiagnosticCode.LEDGER_STRUCT_025.message(
-                                                Messages.LedgerStructuralValidatorProjectionPrimaryTargetConflict),
-                                entry, projectionRef).withDetail("membershipRole", membership.getRole()) //$NON-NLS-1$
-                                                .withDetail("membershipPostingUUID", membership.getPostingUUID())); //$NON-NLS-1$
-        });
-
-        projectionRef.getMembershipsByRole(ProjectionMembershipRole.GROUP_ANCHOR).stream().findFirst()
-                        .ifPresent(membership -> {
-                            var postingGroupUUID = projectionRef.getPostingGroupUUID();
-
-                            if (!isBlank(postingGroupUUID) && !postingGroupUUID.equals(membership.getPostingUUID()))
-                                issues.add(projectionIssue(IssueCode.PROJECTION_GROUP_TARGET_CONFLICT,
-                                                LedgerDiagnosticCode.LEDGER_STRUCT_026.message(
-                                                                Messages.LedgerStructuralValidatorProjectionGroupTargetConflict),
-                                                entry, projectionRef).withDetail("membershipRole", membership.getRole()) //$NON-NLS-1$
-                                                                .withDetail("membershipPostingUUID", //$NON-NLS-1$
-                                                                                membership.getPostingUUID()));
-                        });
-    }
-
-    private static boolean requiresAccount(LedgerProjectionRole role)
-    {
-        return switch (role)
-        {
-            case ACCOUNT, SOURCE_ACCOUNT, TARGET_ACCOUNT, CASH_COMPENSATION -> true;
-            default -> false;
-        };
-    }
-
-    private static boolean requiresPortfolio(LedgerProjectionRole role)
-    {
-        return switch (role)
-        {
-            case PORTFOLIO, SOURCE_PORTFOLIO, TARGET_PORTFOLIO, DELIVERY, DELIVERY_INBOUND, DELIVERY_OUTBOUND,
-                            OLD_SECURITY_LEG, NEW_SECURITY_LEG -> true;
-            default -> false;
-        };
-    }
-
-    private static void validateTargeting(LedgerEntry entry, LedgerProjectionRef projectionRef,
-                    Set<String> entryPostingUUIDs, List<ValidationIssue> issues)
-    {
-        if (entry.getType() == null || !entry.getType().requiresTargetedProjectionRefs())
-            return;
-
-        if (projectionRef.getPrimaryMembership().isEmpty() && isBlank(projectionRef.getPrimaryPostingUUID()))
-        {
-            issues.add(projectionIssue(IssueCode.TARGETING_REF_REQUIRED,
-                            LedgerDiagnosticCode.LEDGER_STRUCT_027
-                                            .message(Messages.LedgerStructuralValidatorTargetingRefRequired),
-                            entry, projectionRef));
-            return;
-        }
-
-        if (!isBlank(projectionRef.getPostingGroupUUID())
-                        && !entryPostingUUIDs.contains(projectionRef.getPostingGroupUUID()))
-            issues.add(projectionIssue(IssueCode.POSTING_GROUP_REF_NOT_FOUND,
-                            LedgerDiagnosticCode.LEDGER_STRUCT_004
-                                            .message(MessageFormat.format(
-                                                            Messages.LedgerStructuralValidatorPostingGroupRefNotFound,
-                                                            projectionRef.getPostingGroupUUID())),
-                            entry, projectionRef));
     }
 
     private static void validateParameters(LedgerEntry entry, LedgerPosting posting,
@@ -575,12 +328,6 @@ public final class LedgerStructuralValidator
                     LedgerPosting posting)
     {
         return entryIssue(code, message, entry).withPosting(posting);
-    }
-
-    private static ValidationIssue projectionIssue(IssueCode code, String message, LedgerEntry entry,
-                    LedgerProjectionRef projectionRef)
-    {
-        return entryIssue(code, message, entry).withProjection(projectionRef);
     }
 
     private static ValidationIssue parameterIssue(IssueCode code, String message, LedgerEntry entry,
@@ -755,16 +502,6 @@ public final class LedgerStructuralValidator
                             detail("Security", "security"), //$NON-NLS-1$ //$NON-NLS-2$
                             detail("Account", "postingAccount"), //$NON-NLS-1$ //$NON-NLS-2$
                             detail("Portfolio", "postingPortfolio")); //$NON-NLS-1$ //$NON-NLS-2$
-            appendGroup(builder, "Projection", //$NON-NLS-1$
-                            detail("UUID", "projectionUUID"), //$NON-NLS-1$ //$NON-NLS-2$
-                            detail("Role", "projectionRole"), //$NON-NLS-1$ //$NON-NLS-2$
-                            detail("ExpectedRole", "expectedProjectionRole"), //$NON-NLS-1$ //$NON-NLS-2$
-                            detail("Account", "projectionAccount"), //$NON-NLS-1$ //$NON-NLS-2$
-                            detail("Portfolio", "projectionPortfolio"), //$NON-NLS-1$ //$NON-NLS-2$
-                            detail("PrimaryPostingUUID", "primaryPostingUUID"), //$NON-NLS-1$ //$NON-NLS-2$
-                            detail("PostingGroupUUID", "postingGroupUUID"), //$NON-NLS-1$ //$NON-NLS-2$
-                            detail("MembershipRole", "membershipRole"), //$NON-NLS-1$ //$NON-NLS-2$
-                            detail("MembershipPostingUUID", "membershipPostingUUID")); //$NON-NLS-1$ //$NON-NLS-2$
             appendGroup(builder, "Parameter", //$NON-NLS-1$
                             detail("Type", "parameterType"), //$NON-NLS-1$ //$NON-NLS-2$
                             detail("ExpectedValueKind", "expectedValueKind"), //$NON-NLS-1$ //$NON-NLS-2$
@@ -811,19 +548,6 @@ public final class LedgerStructuralValidator
                             .withDetail("security", securitySummary(posting.getSecurity())) //$NON-NLS-1$
                             .withDetail("postingAccount", ownerSummary(posting.getAccount())) //$NON-NLS-1$
                             .withDetail("postingPortfolio", ownerSummary(posting.getPortfolio())); //$NON-NLS-1$
-        }
-
-        private ValidationIssue withProjection(LedgerProjectionRef projectionRef)
-        {
-            if (projectionRef == null)
-                return this;
-
-            return withDetail("projectionUUID", projectionRef.getUUID()) //$NON-NLS-1$
-                            .withDetail("projectionRole", projectionRef.getRole()) //$NON-NLS-1$
-                            .withDetail("projectionAccount", ownerSummary(projectionRef.getAccount())) //$NON-NLS-1$
-                            .withDetail("projectionPortfolio", ownerSummary(projectionRef.getPortfolio())) //$NON-NLS-1$
-                            .withDetail("primaryPostingUUID", projectionRef.getPrimaryPostingUUID()) //$NON-NLS-1$
-                            .withDetail("postingGroupUUID", projectionRef.getPostingGroupUUID()); //$NON-NLS-1$
         }
 
         private ValidationIssue withParameter(LedgerParameter<?> parameter)

@@ -10,7 +10,6 @@ import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerMutationContext;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
@@ -40,11 +39,10 @@ public final class LedgerAccountTypeToggleConverter
             throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_CONVERT_019.message("Only ledger-backed account transactions can be toggled")); //$NON-NLS-1$
 
         var entry = ledgerTransaction.getLedgerEntry();
-        var projectionRef = ledgerTransaction.getLedgerProjectionRef();
-        var account = projectionRef.getAccount();
-        var projectionUUID = projectionRef.getUUID();
+        var account = ledgerTransaction.getLedgerProjectionDescriptor().getAccount();
+        var projectionUUID = ledgerTransaction.getRuntimeProjectionId();
 
-        preflight(entry, projectionRef, transaction, account);
+        preflight(entry, transaction, account);
         LedgerInvestmentPlanRefSupport.requireCurrentRefsResolveUniquely(client, entry);
 
         new LedgerMutationContext(client).mutateEntry(entry, this::toggle);
@@ -52,25 +50,17 @@ public final class LedgerAccountTypeToggleConverter
         return find(account, projectionUUID);
     }
 
-    private void preflight(LedgerEntry entry, LedgerProjectionRef projectionRef,
-                    TransactionPair<AccountTransaction> transaction, Account account)
+    private void preflight(LedgerEntry entry, TransactionPair<AccountTransaction> transaction, Account account)
     {
         if (targetType(entry.getType()) == null)
             throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_PROJ_011.message("Only ledger-backed deposit/removal and interest entries can be toggled")); //$NON-NLS-1$
 
-        if (projectionRef.getRole() != LedgerProjectionRole.ACCOUNT)
-            throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_PROJ_012.message("Only account projections can be toggled")); //$NON-NLS-1$
-
         if (transaction.getOwner() != account)
             throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_PROJ_013.message("Selected account does not own the ledger projection")); //$NON-NLS-1$
 
-        var projection = requireOneProjection(entry);
-        var primaryPosting = requirePrimaryPosting(entry, projection);
+        var primaryPosting = requirePrimaryPosting(entry);
 
-        if (projection != projectionRef)
-            throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_PROJ_014.message("Selected projection is not the unique account projection")); //$NON-NLS-1$
-
-        if (primaryPosting.getAccount() != projection.getAccount())
+        if (primaryPosting.getAccount() != account)
             throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_PROJ_015.message("Account projection and posting account do not match")); //$NON-NLS-1$
     }
 
@@ -98,9 +88,9 @@ public final class LedgerAccountTypeToggleConverter
         };
     }
 
-    private LedgerPosting requirePrimaryPosting(LedgerEntry entry, LedgerProjectionRef projection)
+    private LedgerPosting requirePrimaryPosting(LedgerEntry entry)
     {
-        var primaryPosting = LedgerProjectionSupport.primaryPosting(entry, projection);
+        var primaryPosting = LedgerProjectionSupport.descriptor(entry, LedgerProjectionRole.ACCOUNT).getPrimaryPosting();
 
         if (primaryPosting == null)
             throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_PROJ_016.message("Account projection primary posting is ambiguous")); //$NON-NLS-1$
@@ -122,17 +112,6 @@ public final class LedgerAccountTypeToggleConverter
             case TAXES, TAX_REFUND -> LedgerPostingType.TAX;
             default -> null;
         };
-    }
-
-    private LedgerProjectionRef requireOneProjection(LedgerEntry entry)
-    {
-        var projections = entry.getProjectionRefs().stream()
-                        .filter(projection -> projection.getRole() == LedgerProjectionRole.ACCOUNT).toList();
-
-        if (projections.size() != 1)
-            throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_PROJ_018.message("Ledger account-only entry must have exactly one account projection")); //$NON-NLS-1$
-
-        return projections.get(0);
     }
 
     private AccountTransaction find(Account account, String projectionUUID)

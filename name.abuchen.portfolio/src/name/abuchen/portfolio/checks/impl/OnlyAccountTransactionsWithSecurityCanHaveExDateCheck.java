@@ -13,7 +13,6 @@ import name.abuchen.portfolio.model.ledger.configuration.LedgerParameterType;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedAccountTransaction;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
 import name.abuchen.portfolio.model.ledger.projection.LedgerProjectionService;
-import name.abuchen.portfolio.model.ledger.projection.LedgerProjectionSupport;
 
 public class OnlyAccountTransactionsWithSecurityCanHaveExDateCheck implements Check
 {
@@ -42,8 +41,7 @@ public class OnlyAccountTransactionsWithSecurityCanHaveExDateCheck implements Ch
 
     private void clearLedgerBackedExDate(Client client, LedgerBackedAccountTransaction transaction)
     {
-        var posting = LedgerProjectionSupport.primaryPosting(transaction.getLedgerEntry(),
-                        transaction.getLedgerProjectionRef());
+        var posting = transaction.getLedgerProjectionDescriptor().getPrimaryPosting();
 
         if (posting.getSecurity() != null || !removeExDateParameters(posting))
             return;

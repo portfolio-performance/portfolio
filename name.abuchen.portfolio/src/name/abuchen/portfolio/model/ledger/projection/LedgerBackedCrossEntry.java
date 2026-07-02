@@ -85,13 +85,12 @@ final class LedgerBackedCrossEntry implements CrossEntry
             if (candidate == transaction || candidate.getUUID().equals(transaction.getUUID()))
             {
                 var ledgerBacked = (LedgerBackedTransaction) candidate;
-                var projectionRef = ledgerBacked.getLedgerProjectionRef();
 
                 if (candidate instanceof LedgerBackedAccountTransaction)
-                    return new Projection(candidate, projectionRef.getAccount());
+                    return new Projection(candidate, ledgerBacked.getLedgerProjectionDescriptor().getAccount());
 
                 if (candidate instanceof LedgerBackedPortfolioTransaction)
-                    return new Projection(candidate, projectionRef.getPortfolio());
+                    return new Projection(candidate, ledgerBacked.getLedgerProjectionDescriptor().getPortfolio());
             }
         }
 

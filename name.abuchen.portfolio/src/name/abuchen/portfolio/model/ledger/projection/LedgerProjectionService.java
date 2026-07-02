@@ -8,10 +8,8 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.ledger.Ledger;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
-import name.abuchen.portfolio.model.ledger.LedgerPosting;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator;
-import name.abuchen.portfolio.model.ledger.ProjectionMembershipRole;
+import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 
 /**
  * Coordinates materialization and refresh of runtime projections for Ledger entries.
@@ -29,9 +27,9 @@ public final class LedgerProjectionService
         new LedgerProjectionMaterializer().materialize(client);
     }
 
-    public static Transaction createProjection(LedgerEntry entry, LedgerProjectionRef projectionRef)
+    public static Transaction createProjection(LedgerEntry entry, LedgerProjectionRole role)
     {
-        return new LedgerProjectionFactory().createProjection(entry, projectionRef);
+        return new LedgerProjectionFactory().createProjection(entry, role);
     }
 
     public static List<Transaction> createProjections(LedgerEntry entry)
@@ -42,28 +40,6 @@ public final class LedgerProjectionService
     public static LedgerStructuralValidator.ValidationResult restoreIfValid(Client client)
     {
         return new LedgerRuntimeProjectionRestorer().restoreIfValid(client);
-    }
-
-    public static void adaptLegacyScalarMemberships(Client client)
-    {
-        for (var entry : client.getLedger().getEntries())
-        {
-            var postingUUIDs = entry.getPostings().stream().map(LedgerPosting::getUUID).collect(Collectors.toSet());
-
-            for (var projectionRef : entry.getProjectionRefs())
-                adaptLegacyScalarMemberships(projectionRef, postingUUIDs);
-        }
-    }
-
-    private static void adaptLegacyScalarMemberships(LedgerProjectionRef projectionRef, Set<String> postingUUIDs)
-    {
-        if (projectionRef.getPrimaryMembership().isEmpty()
-                        && postingUUIDs.contains(projectionRef.getPrimaryPostingUUID()))
-            projectionRef.addMembership(projectionRef.getPrimaryPostingUUID(), ProjectionMembershipRole.PRIMARY);
-
-        if (projectionRef.getMembershipsByRole(ProjectionMembershipRole.GROUP_ANCHOR).isEmpty()
-                        && postingUUIDs.contains(projectionRef.getPostingGroupUUID()))
-            projectionRef.addMembership(projectionRef.getPostingGroupUUID(), ProjectionMembershipRole.GROUP_ANCHOR);
     }
 
     public static void logSkipped(LedgerStructuralValidator.ValidationResult result)

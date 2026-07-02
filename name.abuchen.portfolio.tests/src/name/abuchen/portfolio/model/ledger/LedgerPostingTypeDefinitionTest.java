@@ -155,19 +155,17 @@ public class LedgerPostingTypeDefinitionTest
         var ledger = new Ledger();
         var entry = new LedgerEntry("entry-1");
         var posting = new LedgerPosting("posting-1");
-        var projection = new LedgerProjectionRef("projection-1");
 
         entry.setType(LedgerEntryType.SPIN_OFF);
         entry.setDateTime(LocalDateTime.of(2026, 1, 2, 0, 0));
         posting.setType(LedgerPostingType.CASH);
         posting.setCurrency(CurrencyUnit.EUR);
+        posting.setSemanticRole(LedgerPostingSemanticRole.CASH);
+        posting.setDirection(LedgerPostingDirection.NEUTRAL);
+        posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
         posting.addParameter(LedgerParameter.ofString(LedgerParameterType.FEE_REASON,
                         FeeReason.BROKER_FEE.getCode()));
-        projection.setRole(LedgerProjectionRole.DELIVERY_INBOUND);
-        projection.setPortfolio(new Portfolio());
-        projection.setPrimaryPosting(posting);
         entry.addPosting(posting);
-        entry.addProjectionRef(projection);
         ledger.addEntry(entry);
 
         assertTrue(LedgerStructuralValidator.validate(ledger).isOK());

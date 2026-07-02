@@ -12,7 +12,6 @@ import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerMutationContext;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedAccountTransaction;
@@ -62,7 +61,7 @@ public final class LedgerOwnerPatchHelper
         if (entry.getType() != LedgerEntryType.DELIVERY_INBOUND && entry.getType() != LedgerEntryType.DELIVERY_OUTBOUND)
             throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_CONVERT_047.message("Unsupported delivery owner patch for " + entry.getType())); //$NON-NLS-1$
 
-        movePortfolioProjection(entry, transaction.getLedgerProjectionRef().getRole(), newPortfolio);
+        movePortfolioProjection(entry, transaction.getLedgerProjectionRole(), newPortfolio);
     }
 
     public void moveBuySellAccountSide(LedgerEntry entry, Account newAccount)
@@ -164,11 +163,7 @@ public final class LedgerOwnerPatchHelper
     private void moveAccountProjection(LedgerEntry entry, LedgerProjectionRole role, Account newAccount)
     {
         mutationContext.mutateEntry(entry, editedEntry -> {
-            var projection = uniqueProjection(editedEntry, role);
-            var posting = LedgerProjectionSupport.primaryPosting(editedEntry, projection);
-
-            projection.setAccount(newAccount);
-            projection.setPortfolio(null);
+            var posting = LedgerProjectionSupport.descriptor(editedEntry, role).getPrimaryPosting();
             posting.setAccount(newAccount);
         });
     }
@@ -176,25 +171,9 @@ public final class LedgerOwnerPatchHelper
     private void movePortfolioProjection(LedgerEntry entry, LedgerProjectionRole role, Portfolio newPortfolio)
     {
         mutationContext.mutateEntry(entry, editedEntry -> {
-            var projection = uniqueProjection(editedEntry, role);
-            var posting = LedgerProjectionSupport.primaryPosting(editedEntry, projection);
-
-            projection.setPortfolio(newPortfolio);
-            projection.setAccount(null);
+            var posting = LedgerProjectionSupport.descriptor(editedEntry, role).getPrimaryPosting();
             posting.setPortfolio(newPortfolio);
         });
-    }
-
-    private LedgerProjectionRef uniqueProjection(LedgerEntry entry, LedgerProjectionRole role)
-    {
-        var projections = entry.getProjectionRefs().stream().filter(projection -> projection.getRole() == role).toList();
-
-        if (projections.size() != 1)
-            throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_PROJ_042
-                            .message("Expected one projection for role " + role + " but found " //$NON-NLS-1$ //$NON-NLS-2$
-                                            + projections.size()));
-
-        return projections.get(0);
     }
 
     private boolean isAccountOnly(LedgerEntryType type)

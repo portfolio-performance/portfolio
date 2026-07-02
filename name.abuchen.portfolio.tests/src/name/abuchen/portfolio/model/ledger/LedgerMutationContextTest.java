@@ -66,7 +66,7 @@ public class LedgerMutationContextTest
         var target = register(client, account());
         var entry = creator(client).createDeposit(metadata(), cashLeg(source, 100)).getEntry();
         var entryUUID = entry.getUUID();
-        var projectionUUID = entry.getProjectionRefs().get(0).getUUID();
+        var projectionUUID = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0).getRuntimeProjectionId();
         var postingUUID = entry.getPostings().get(0).getUUID();
 
         LedgerProjectionService.materialize(client);
@@ -82,7 +82,7 @@ public class LedgerMutationContextTest
         assertThat(((LedgerBackedTransaction) target.getTransactions().get(0)).getLedgerEntry().getUUID(), is(entryUUID));
         assertThat(entry.getPostings().get(0).getUUID(), is(postingUUID));
         assertSame(target, entry.getPostings().get(0).getAccount());
-        assertSame(target, entry.getProjectionRefs().get(0).getAccount());
+        assertSame(target, name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0).getAccount());
     }
 
     /**
@@ -119,7 +119,7 @@ public class LedgerMutationContextTest
         var entry = targetedAccountEntry(account);
         var context = new LedgerMutationContext(client);
         var entryUUID = entry.getUUID();
-        var projectionUUID = entry.getProjectionRefs().get(0).getUUID();
+        var projectionUUID = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0).getRuntimeProjectionId();
         var postingUUID = entry.getPostings().get(0).getUUID();
 
         var liveEntry = context.attachEntry(entry);
@@ -128,8 +128,8 @@ public class LedgerMutationContextTest
         assertNotSame(entry, liveEntry);
         assertThat(liveEntry.getUUID(), is(entryUUID));
         assertThat(liveEntry.getPostings().get(0).getUUID(), is(postingUUID));
-        assertThat(liveEntry.getProjectionRefs().get(0).getUUID(), is(projectionUUID));
-        assertThat(liveEntry.getProjectionRefs().get(0).getPrimaryPostingUUID(), is(postingUUID));
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(liveEntry).get(0).getRuntimeProjectionId(), is(projectionUUID));
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(liveEntry).get(0).getPrimaryPosting().getUUID(), is(postingUUID));
         assertTrue(account.getTransactions().isEmpty());
 
         context.refresh();
@@ -168,7 +168,7 @@ public class LedgerMutationContextTest
         var client = new Client();
         var account = register(client, account());
         var entry = creator(client).createDeposit(metadata(), cashLeg(account, 100)).getEntry();
-        var projectionUUID = entry.getProjectionRefs().get(0).getUUID();
+        var projectionUUID = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0).getRuntimeProjectionId();
         var unknown = creator(new Client()).createDeposit(metadata(), cashLeg(account, 200)).getEntry();
 
         LedgerProjectionService.materialize(client);
@@ -192,25 +192,25 @@ public class LedgerMutationContextTest
         var account = register(client, account());
         var target = register(client, account());
         var entry = creator(client).createDeposit(metadata(), cashLeg(account, 100)).getEntry();
-        var projectionUUID = entry.getProjectionRefs().get(0).getUUID();
+        var projectionUUID = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0).getRuntimeProjectionId();
 
         LedgerProjectionService.materialize(client);
 
-        var originalProjectionAccount = entry.getProjectionRefs().get(0).getAccount();
+        var originalProjectionAccount = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0).getAccount();
         var originalPostingAccount = entry.getPostings().get(0).getAccount();
 
         var exception = assertThrows(IllegalArgumentException.class,
                         () -> new LedgerMutationContext(client).mutateEntry(entry,
-                                        editedEntry -> editedEntry.getProjectionRefs().get(0).setAccount(null)));
+                                        editedEntry -> name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(editedEntry).get(0).getPrimaryPosting().setAccount(null)));
 
-        assertTrue(exception.getMessage(), exception.getMessage().contains("[PROJECTION_REF_ACCOUNT_REQUIRED] "));
-        assertTrue(exception.getMessage(), exception.getMessage().contains("\n  Projection:\n"));
+        assertTrue(exception.getMessage(), exception.getMessage().contains("[MISSING_SEMANTIC_PRIMARY] "));
+        assertTrue(exception.getMessage(), exception.getMessage().contains("Semantic account owner is missing"));
 
-        assertSame(originalProjectionAccount, entry.getProjectionRefs().get(0).getAccount());
+        assertSame(originalProjectionAccount, name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0).getAccount());
         assertSame(originalPostingAccount, entry.getPostings().get(0).getAccount());
         assertThat(account.getTransactions().size(), is(1));
         assertThat(account.getTransactions().get(0).getUUID(), is(projectionUUID));
-        assertThat(entry.getProjectionRefs().size(), is(1));
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).size(), is(1));
         assertTrue(target.getTransactions().isEmpty());
     }
 
@@ -234,7 +234,7 @@ public class LedgerMutationContextTest
                             editedEntry.addParameter(LedgerParameter.ofString(
                                             LedgerParameterType.CORPORATE_ACTION_KIND,
                                             CorporateActionKind.SPIN_OFF.getCode()));
-                            editedEntry.getProjectionRefs().get(0).setAccount(null);
+                            name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(editedEntry).get(0).getPrimaryPosting().setAccount(null);
                         }));
 
         assertThat(entry.getParameters().size(), is(1));
@@ -302,7 +302,7 @@ public class LedgerMutationContextTest
         var source = register(client, account());
         var target = register(client, account());
         var entry = creator(client).createDeposit(metadata(), cashLeg(source, 100)).getEntry();
-        var projectionUUID = entry.getProjectionRefs().get(0).getUUID();
+        var projectionUUID = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0).getRuntimeProjectionId();
         var applications = new AtomicInteger();
 
         LedgerProjectionService.materialize(client);
@@ -311,7 +311,7 @@ public class LedgerMutationContextTest
             if (applications.incrementAndGet() > 1)
                 throw new AssertionError("Mutation lambda must not be applied to the live ledger");
 
-            editedEntry.getProjectionRefs().get(0).setAccount(target);
+            name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(editedEntry).get(0).getPrimaryPosting().setAccount(target);
             editedEntry.getPostings().get(0).setAccount(target);
         });
 
@@ -319,7 +319,7 @@ public class LedgerMutationContextTest
         assertTrue(source.getTransactions().isEmpty());
         assertThat(target.getTransactions().size(), is(1));
         assertThat(target.getTransactions().get(0).getUUID(), is(projectionUUID));
-        assertSame(target, entry.getProjectionRefs().get(0).getAccount());
+        assertSame(target, name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0).getAccount());
         assertSame(target, entry.getPostings().get(0).getAccount());
     }
 
@@ -328,29 +328,7 @@ public class LedgerMutationContextTest
      * Failed or repeated operations must not leave partial changes or duplicate projections.
      * This protects atomic ledger mutation behavior.
      */
-    @Test
-    public void testProjectionMembershipAndRoleChangesRefreshMaterializedProjections()
-    {
-        var client = new Client();
-        var account = register(client, account());
-        var entry = targetedAccountEntry(account);
-        var projectionUUID = entry.getProjectionRefs().get(0).getUUID();
-        var context = new LedgerMutationContext(client);
 
-        client.getLedger().addEntry(entry);
-        context.refresh();
-        context.mutateEntry(entry,
-                        editedEntry -> editedEntry.getProjectionRefs().get(0).setRole(LedgerProjectionRole.CASH_COMPENSATION));
-
-        assertThat(account.getTransactions().size(), is(1));
-        assertThat(account.getTransactions().get(0).getUUID(), is(projectionUUID));
-        assertThat(entry.getProjectionRefs().get(0).getRole(), is(LedgerProjectionRole.CASH_COMPENSATION));
-
-        context.mutateEntry(entry, editedEntry -> editedEntry.removeProjectionRef(editedEntry.getProjectionRefs().get(0)));
-
-        assertTrue(entry.getProjectionRefs().isEmpty());
-        assertTrue(account.getTransactions().isEmpty());
-    }
 
     /**
      * Checks the ledger mutation scenario: mutation context preserves entry local projection targeting during copy sync.
@@ -363,9 +341,9 @@ public class LedgerMutationContextTest
         var client = new Client();
         var account = register(client, account());
         var entry = targetedAccountEntry(account);
-        var projection = entry.getProjectionRefs().get(0);
+        var projection = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0);
         var posting = entry.getPostings().get(0);
-        var projectionUUID = projection.getUUID();
+        var projectionUUID = projection.getRuntimeProjectionId();
         var postingUUID = posting.getUUID();
         var context = new LedgerMutationContext(client);
 
@@ -375,10 +353,11 @@ public class LedgerMutationContextTest
         context.mutateEntry(entry,
                         editedEntry -> editedEntry.getPostings().get(0).setAmount(Values.Amount.factorize(200)));
 
-        assertThat(entry.getProjectionRefs().get(0).getUUID(), is(projectionUUID));
-        assertThat(entry.getProjectionRefs().get(0).getPrimaryPostingUUID(), is(postingUUID));
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0).getRuntimeProjectionId(), is(projectionUUID));
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0).getPrimaryPosting().getUUID(), is(postingUUID));
         assertSame(entry.getPostings().get(0),
-                        LedgerProjectionSupport.primaryPosting(entry, entry.getProjectionRefs().get(0)));
+                        name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0)
+                                        .getPrimaryPosting());
         assertThat(account.getTransactions().size(), is(1));
         assertThat(account.getTransactions().get(0).getUUID(), is(projectionUUID));
     }
@@ -387,19 +366,17 @@ public class LedgerMutationContextTest
     {
         var entry = new LedgerEntry();
         var posting = new LedgerPosting();
-        var projection = new LedgerProjectionRef();
 
-        entry.setType(LedgerEntryType.SPIN_OFF);
+        entry.setType(LedgerEntryType.DEPOSIT);
         entry.setDateTime(DATE_TIME);
-        posting.setType(LedgerPostingType.CASH_COMPENSATION);
+        posting.setType(LedgerPostingType.CASH);
         posting.setAccount(account);
         posting.setAmount(Values.Amount.factorize(100));
         posting.setCurrency(CurrencyUnit.EUR);
-        projection.setRole(LedgerProjectionRole.ACCOUNT);
-        projection.setAccount(account);
-        projection.setPrimaryPosting(posting);
+        posting.setSemanticRole(LedgerPostingSemanticRole.CASH);
+        posting.setDirection(LedgerPostingDirection.INBOUND);
+        posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
         entry.addPosting(posting);
-        entry.addProjectionRef(projection);
 
         return entry;
     }
@@ -421,7 +398,7 @@ public class LedgerMutationContextTest
         unrelated.getTransactions().add(legacy);
         creator(client).createDeposit(metadata(), cashLeg(movedSource, 100));
         var unrelatedEntry = creator(client).createDeposit(metadata(), cashLeg(unrelated, 200)).getEntry();
-        var unrelatedProjectionUUID = unrelatedEntry.getProjectionRefs().get(0).getUUID();
+        var unrelatedProjectionUUID = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(unrelatedEntry).get(0).getRuntimeProjectionId();
 
         LedgerProjectionService.materialize(client);
 
@@ -516,13 +493,13 @@ public class LedgerMutationContextTest
         var deletedEntry = creator(client).createDeposit(metadata(), cashLeg(account, 100)).getEntry();
         var survivingEntry = creator(client).createDeposit(metadata(), cashLeg(account, 200)).getEntry();
         var survivingEntryUUID = survivingEntry.getUUID();
-        var survivingProjectionUUID = survivingEntry.getProjectionRefs().get(0).getUUID();
+        var survivingProjectionUUID = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(survivingEntry).get(0).getRuntimeProjectionId();
 
         LedgerProjectionService.materialize(client);
 
         var deletedTransaction = account.getTransactions().stream() //
                         .filter(transaction -> transaction instanceof LedgerBackedTransaction
-                                        && transaction.getUUID().equals(deletedEntry.getProjectionRefs().get(0).getUUID()))
+                                        && transaction.getUUID().equals(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(deletedEntry).get(0).getRuntimeProjectionId()))
                         .map(LedgerBackedTransaction.class::cast) //
                         .findFirst().orElseThrow();
 
@@ -550,7 +527,7 @@ public class LedgerMutationContextTest
         var target = register(client, portfolio());
         var entry = creator(client).createInboundDelivery(metadata(), LedgerDeliveryLeg.of(source,
                         LedgerSecurityQuantity.of(security(), Values.Share.factorize(5)), money(100))).getEntry();
-        var projectionUUID = entry.getProjectionRefs().get(0).getUUID();
+        var projectionUUID = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0).getRuntimeProjectionId();
         var postingUUID = entry.getPostings().get(0).getUUID();
 
         LedgerProjectionService.materialize(client);
@@ -562,7 +539,7 @@ public class LedgerMutationContextTest
         assertThat(target.getTransactions().get(0).getUUID(), is(projectionUUID));
         assertThat(entry.getPostings().get(0).getUUID(), is(postingUUID));
         assertSame(target, entry.getPostings().get(0).getPortfolio());
-        assertSame(target, entry.getProjectionRefs().get(0).getPortfolio());
+        assertSame(target, name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0).getPortfolio());
     }
 
     /**
@@ -582,10 +559,10 @@ public class LedgerMutationContextTest
                         LedgerCreationUnits.none()).getEntry();
         var accountProjection = projection(entry, LedgerProjectionRole.ACCOUNT);
         var portfolioProjection = projection(entry, LedgerProjectionRole.PORTFOLIO);
-        var accountProjectionUUID = accountProjection.getUUID();
-        var portfolioProjectionUUID = portfolioProjection.getUUID();
-        var cashPostingUUID = LedgerProjectionSupport.primaryPosting(entry, accountProjection).getUUID();
-        var securityPostingUUID = LedgerProjectionSupport.primaryPosting(entry, portfolioProjection).getUUID();
+        var accountProjectionUUID = accountProjection.getRuntimeProjectionId();
+        var portfolioProjectionUUID = portfolioProjection.getRuntimeProjectionId();
+        var cashPostingUUID = accountProjection.getPrimaryPosting().getUUID();
+        var securityPostingUUID = portfolioProjection.getPrimaryPosting().getUUID();
 
         LedgerProjectionService.materialize(client);
 
@@ -630,8 +607,8 @@ public class LedgerMutationContextTest
                         LedgerCashTransferLeg.of(target, money(100))).getEntry();
         var sourceProjection = projection(entry, LedgerProjectionRole.SOURCE_ACCOUNT);
         var targetProjection = projection(entry, LedgerProjectionRole.TARGET_ACCOUNT);
-        var sourcePostingUUID = LedgerProjectionSupport.primaryPosting(entry, sourceProjection).getUUID();
-        var targetPostingUUID = LedgerProjectionSupport.primaryPosting(entry, targetProjection).getUUID();
+        var sourcePostingUUID = sourceProjection.getPrimaryPosting().getUUID();
+        var targetPostingUUID = targetProjection.getPrimaryPosting().getUUID();
 
         LedgerProjectionService.materialize(client);
 
@@ -667,8 +644,8 @@ public class LedgerMutationContextTest
                         LedgerPortfolioTransferLeg.of(target, money(100))).getEntry();
         var sourceProjection = projection(entry, LedgerProjectionRole.SOURCE_PORTFOLIO);
         var targetProjection = projection(entry, LedgerProjectionRole.TARGET_PORTFOLIO);
-        var sourcePostingUUID = LedgerProjectionSupport.primaryPosting(entry, sourceProjection).getUUID();
-        var targetPostingUUID = LedgerProjectionSupport.primaryPosting(entry, targetProjection).getUUID();
+        var sourcePostingUUID = sourceProjection.getPrimaryPosting().getUUID();
+        var targetPostingUUID = targetProjection.getPrimaryPosting().getUUID();
 
         LedgerProjectionService.materialize(client);
 
@@ -690,28 +667,7 @@ public class LedgerMutationContextTest
      * Failed or repeated operations must not leave partial changes or duplicate projections.
      * This protects atomic ledger mutation behavior.
      */
-    @Test
-    public void testUnsupportedOwnerPatchFailsWithoutPartialMutation()
-    {
-        var client = new Client();
-        var account = register(client, account());
-        var portfolio = register(client, portfolio());
-        var entry = creator(client).createBuy(metadata(), cashLeg(account, 100), portfolioLeg(portfolio, 100),
-                        LedgerCreationUnits.none()).getEntry();
-        var duplicate = new LedgerProjectionRef();
 
-        duplicate.setRole(LedgerProjectionRole.ACCOUNT);
-        duplicate.setAccount(account);
-        entry.addProjectionRef(duplicate);
-
-        var exception = assertThrows(IllegalArgumentException.class,
-                        () -> new LedgerOwnerPatchHelper(client).moveBuySellAccountSide(entry, register(client, account())));
-        assertThat(exception.getMessage(), is(LedgerDiagnosticCode.LEDGER_PROJ_042
-                        .message("Expected one projection for role ACCOUNT but found 2")));
-
-        assertSame(account, projection(entry, LedgerProjectionRole.ACCOUNT).getAccount());
-        assertSame(account, entry.getPostings().get(0).getAccount());
-    }
 
     /**
      * Checks the ledger mutation scenario: same shape replacement preserves entry and projection uuids.
@@ -725,7 +681,7 @@ public class LedgerMutationContextTest
         var account = register(client, account());
         var entry = creator(client).createDeposit(metadata(), cashLeg(account, 100)).getEntry();
         var entryUUID = entry.getUUID();
-        var projectionUUID = entry.getProjectionRefs().get(0).getUUID();
+        var projectionUUID = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0).getRuntimeProjectionId();
         var originalPostingUUID = entry.getPostings().get(0).getUUID();
         var replacement = creator(new Client()).createDeposit(metadata(), cashLeg(account, 200)).getEntry();
         var replacementPostingUUID = replacement.getPostings().get(0).getUUID();
@@ -739,7 +695,7 @@ public class LedgerMutationContextTest
         var replacedEntry = client.getLedger().getEntries().get(0);
 
         assertThat(replacedEntry.getUUID(), is(entryUUID));
-        assertThat(replacedEntry.getProjectionRefs().get(0).getUUID(), is(projectionUUID));
+        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(replacedEntry).get(0).getRuntimeProjectionId(), is(projectionUUID));
         assertThat(replacedEntry.getPostings().get(0).getUUID(), is(replacementPostingUUID));
         assertThat(account.getTransactions().size(), is(1));
         assertThat(account.getTransactions().get(0).getAmount(), is(Values.Amount.factorize(200)));
@@ -750,26 +706,7 @@ public class LedgerMutationContextTest
      * Failed or repeated operations must not leave partial changes or duplicate projections.
      * This protects atomic ledger mutation behavior.
      */
-    @Test
-    public void testEntryReplacementFailsWhenProjectionIdentityIsAmbiguous()
-    {
-        var client = new Client();
-        var account = register(client, account());
-        var entry = creator(client).createDeposit(metadata(), cashLeg(account, 100)).getEntry();
-        var replacement = creator(new Client()).createDeposit(metadata(), cashLeg(account, 200)).getEntry();
-        var duplicate = new LedgerProjectionRef();
 
-        duplicate.setRole(LedgerProjectionRole.ACCOUNT);
-        duplicate.setAccount(account);
-        replacement.addProjectionRef(duplicate);
-
-        var exception = assertThrows(IllegalArgumentException.class,
-                        () -> new LedgerMutationContext(client).replaceSameShapeEntry(entry, replacement));
-
-        assertTrue(exception.getMessage(), exception.getMessage().contains(LedgerDiagnosticCode.LEDGER_PROJ_003.prefix()));
-        assertSame(entry, client.getLedger().getEntries().get(0));
-        assertThat(entry.getPostings().get(0).getAmount(), is(Values.Amount.factorize(100)));
-    }
 
     /**
      * Checks the ledger mutation scenario: entry split requires replacement entries.
@@ -782,7 +719,7 @@ public class LedgerMutationContextTest
         var client = new Client();
         var account = register(client, account());
         var entry = creator(client).createDeposit(metadata(), cashLeg(account, 100)).getEntry();
-        var projectionUUID = entry.getProjectionRefs().get(0).getUUID();
+        var projectionUUID = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0).getRuntimeProjectionId();
 
         LedgerProjectionService.materialize(client);
 
@@ -968,9 +905,9 @@ public class LedgerMutationContextTest
         return transaction;
     }
 
-    private LedgerProjectionRef projection(LedgerEntry entry, LedgerProjectionRole role)
+    private name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor projection(LedgerEntry entry, LedgerProjectionRole role)
     {
-        return entry.getProjectionRefs().stream().filter(projection -> projection.getRole() == role).findFirst()
+        return name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream().filter(projection -> projection.getRole() == role).findFirst()
                         .orElseThrow();
     }
 
@@ -980,3 +917,6 @@ public class LedgerMutationContextTest
                         .orElseThrow();
     }
 }
+
+
+

@@ -15,10 +15,10 @@ import name.abuchen.portfolio.model.LedgerDiagnosticCode;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerParameter;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRef;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.configuration.rule.LedgerRequirement;
 import name.abuchen.portfolio.model.ledger.configuration.rule.LedgerRequirementGroup;
+import name.abuchen.portfolio.model.ledger.projection.LedgerProjectionSupport;
 
 /**
  * Validates native Ledger entries against Java-owned entry and leg definitions.
@@ -215,7 +215,17 @@ public final class LedgerNativeEntryDefinitionValidator
                     LedgerLegDefinition leg, LedgerProjectionRole projectionRole, Map<String, LedgerPosting> postingsByUUID,
                     List<ValidationIssue> issues)
     {
-        var refs = entry.getProjectionRefs().stream().filter(ref -> ref.getRole() == projectionRole).toList();
+        var descriptors = Collections.<name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor>emptyList();
+        try
+        {
+            descriptors = LedgerProjectionSupport.descriptors(entry);
+        }
+        catch (IllegalArgumentException ignore)
+        {
+            // Malformed semantic descriptors are reported below as native validation issues.
+        }
+
+        var refs = descriptors.stream().filter(ref -> ref.getRole() == projectionRole).toList();
         var matchingLegPostings = entry.getPostings().stream()
                         .filter(posting -> postingMatchesLeg(entry.getType(), posting, leg)).toList();
         var matchingPostings = new ArrayList<LedgerPosting>();
@@ -230,18 +240,7 @@ public final class LedgerNativeEntryDefinitionValidator
 
         for (var ref : refs)
         {
-            if (leg.isPrimaryPostingExpected() && isBlank(ref.getPrimaryPostingUUID()))
-            {
-                issues.add(issue(IssueCode.PROJECTION_PRIMARY_POSTING_REQUIRED,
-                                LedgerDiagnosticCode.LEDGER_STRUCT_043.message(
-                                                "Native leg projection requires a primary posting: " + projectionRole), //$NON-NLS-1$
-                                entry)
-                                                .withProjection(ref)
-                                                .withDetail("legRole", leg.getRole())); //$NON-NLS-1$
-                continue;
-            }
-
-            var posting = postingsByUUID.get(ref.getPrimaryPostingUUID());
+            var posting = ref.getPrimaryPosting();
             if (posting != null)
             {
                 if (postingMatchesLeg(entry.getType(), posting, leg))
@@ -253,24 +252,19 @@ public final class LedgerNativeEntryDefinitionValidator
                                                     "Projection primary posting does not match native leg " //$NON-NLS-1$
                                                                     + leg.getRole()),
                                     entry)
-                                                    .withProjection(ref).withPosting(posting)
+                                                    .withPosting(posting)
                                                     .withDetail("legRole", leg.getRole())); //$NON-NLS-1$
             }
 
             if (leg.isPostingGroupExpected())
             {
-                if (isBlank(ref.getPostingGroupUUID()))
+                if (ref.getPrimaryPosting() == null || ref.getPrimaryPosting().getGroupKey() == null
+                                || ref.getPrimaryPosting().getGroupKey().isBlank())
                     issues.add(issue(IssueCode.PROJECTION_POSTING_GROUP_REQUIRED,
                                     LedgerDiagnosticCode.LEDGER_STRUCT_045.message(
                                                     "Native leg projection requires a posting group anchor: " //$NON-NLS-1$
                                                                     + projectionRole),
-                                    entry).withProjection(ref).withDetail("legRole", leg.getRole())); //$NON-NLS-1$
-                else if (!postingsByUUID.containsKey(ref.getPostingGroupUUID()))
-                    issues.add(issue(IssueCode.PROJECTION_POSTING_GROUP_NOT_FOUND,
-                                    LedgerDiagnosticCode.LEDGER_STRUCT_046.message(
-                                                    "Native leg projection posting group anchor does not exist: " //$NON-NLS-1$
-                                                                    + ref.getPostingGroupUUID()),
-                                    entry).withProjection(ref).withDetail("legRole", leg.getRole())); //$NON-NLS-1$
+                                    entry).withDetail("legRole", leg.getRole())); //$NON-NLS-1$
             }
         }
 
@@ -618,17 +612,6 @@ public final class LedgerNativeEntryDefinitionValidator
 
             return withDetail("postingUUID", posting.getUUID()) //$NON-NLS-1$
                             .withDetail("postingType", posting.getType()); //$NON-NLS-1$
-        }
-
-        private ValidationIssue withProjection(LedgerProjectionRef projectionRef)
-        {
-            if (projectionRef == null)
-                return this;
-
-            return withDetail("projectionUUID", projectionRef.getUUID()) //$NON-NLS-1$
-                            .withDetail("projectionRole", projectionRef.getRole()) //$NON-NLS-1$
-                            .withDetail("primaryPostingUUID", projectionRef.getPrimaryPostingUUID()) //$NON-NLS-1$
-                            .withDetail("postingGroupUUID", projectionRef.getPostingGroupUUID()); //$NON-NLS-1$
         }
 
         private ValidationIssue withParameter(LedgerParameter<?> parameter)
