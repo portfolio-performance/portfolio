@@ -113,9 +113,6 @@ final class LedgerProtobufPersistenceSupport
     {
         for (LedgerEntry entry : client.getLedger().getEntries())
         {
-            if (!entry.getType().isLegacyFixedShape())
-                continue;
-
             for (Transaction transaction : LedgerProjectionService.createProjections(entry))
             {
                 if (!shouldSaveLedgerCompatibilityShadow(transaction))

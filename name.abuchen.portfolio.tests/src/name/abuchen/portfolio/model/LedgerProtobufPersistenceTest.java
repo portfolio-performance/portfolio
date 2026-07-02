@@ -698,8 +698,8 @@ public class LedgerProtobufPersistenceTest
     }
 
     /**
-     * Verifies that native Corporate Actions persist as semantic Ledger protobuf truth.
-     * They must not require legacy transaction types or persisted projection refs.
+     * Verifies that native Corporate Actions persist as semantic Ledger protobuf truth
+     * while writing boundary-only legacy-shaped compatibility shadows.
      */
     @Test
     public void testNativeCorporateActionsRoundtripAsSemanticLedgerTruth() throws IOException
@@ -714,8 +714,11 @@ public class LedgerProtobufPersistenceTest
             var proto = saveProto(fixture.client());
 
             assertNoLedgerUuidTruth(proto);
-            assertThat(proto.getTransactionsCount(), is(0));
             assertThat(proto.getLedger().getEntries(0).getTypeCode(), is(entryType.getCode()));
+            assertThat(proto.getTransactionsList().stream().map(PTransaction::getType).toList(),
+                            is(nativeCorporateActionShadowTypes(entryType)));
+            assertTrue(proto.getTransactionsList().stream()
+                            .allMatch(transaction -> transaction.getUuid().startsWith("ledger-shadow:")));
             assertTrue(proto.getLedger().getEntries(0).getPostingsList().stream()
                             .anyMatch(posting -> posting.hasCorporateActionLeg()));
 
@@ -725,6 +728,8 @@ public class LedgerProtobufPersistenceTest
             assertThat(reloadedEntry.getType(), is(entryType));
             assertFalse(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(reloadedEntry)
                             .isEmpty());
+            assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(reloadedEntry)
+                            .size(), is(proto.getTransactionsCount()));
             assertTrue(reloadedEntry.getPostings().stream()
                             .anyMatch(posting -> posting.getCorporateActionLeg() != null));
             assertValid(loaded);
@@ -1119,6 +1124,17 @@ public class LedgerProtobufPersistenceTest
         }
 
         fixture.client().getLedger().addEntry(entry);
+    }
+
+    private List<PTransaction.Type> nativeCorporateActionShadowTypes(LedgerEntryType entryType)
+    {
+        return switch (entryType)
+        {
+            case SPIN_OFF -> List.of(PTransaction.Type.OUTBOUND_DELIVERY, PTransaction.Type.INBOUND_DELIVERY);
+            case STOCK_DIVIDEND, BONUS_ISSUE, RIGHTS_DISTRIBUTION -> List.of(PTransaction.Type.INBOUND_DELIVERY);
+            case BOND_CONVERSION -> List.of(PTransaction.Type.OUTBOUND_DELIVERY, PTransaction.Type.INBOUND_DELIVERY);
+            default -> throw new IllegalArgumentException(entryType.name());
+        };
     }
 
     private LedgerPosting nativeSecurityPosting(ClientFixture fixture, LedgerPostingType postingType,
