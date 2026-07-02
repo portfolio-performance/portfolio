@@ -19,8 +19,6 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.model.ledger.compatibility.LedgerAccountOnlyTransactionCreator;
-import name.abuchen.portfolio.model.ledger.compatibility.LedgerDividendTransactionCreator;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRate;
@@ -114,44 +112,13 @@ public class AccountTransactionModel extends AbstractModel
         if (exDate != null && (security == null || EMPTY_SECURITY.equals(security)))
             throw new UnsupportedOperationException(Messages.MsgExDateNotAllowed);
 
-        var ledgerAccountOnlyCreator = new LedgerAccountOnlyTransactionCreator(client);
-        var ledgerDividendCreator = new LedgerDividendTransactionCreator(client);
-
-        if (exDate != null && isLedgerAccountOnlyType()
-                        && (sourceTransaction == null || ledgerAccountOnlyCreator.canUpdate(sourceTransaction)))
-            throw new UnsupportedOperationException(Messages.MsgExDateNotAllowed);
-
-        if (sourceTransaction != null && ledgerDividendCreator.canUpdate(sourceTransaction))
-        {
-            ledgerDividendCreator.update(sourceTransaction, account, type, LocalDateTime.of(date, time), total,
-                            getAccountCurrencyCode(), security, shares, exDate, getDividendCashForex(),
-                            getDividendCashForex() != null ? exchangeRate : null, buildUnits(), note,
-                            sourceTransaction.getSource());
+        var dateTime = LocalDateTime.of(date, time);
+        var units = buildUnits();
+        var ledgerCommit = new LedgerDialogCommitSupport(client);
+        if (ledgerCommit.commitAccountTransaction(sourceTransaction, account, type, dateTime, total,
+                        getAccountCurrencyCode(), !EMPTY_SECURITY.equals(security) ? security : null, shares, exDate,
+                        getDividendCashForex(), exchangeRate, units, note))
             return;
-        }
-
-        if (sourceTransaction != null && ledgerAccountOnlyCreator.canUpdate(sourceTransaction))
-        {
-            ledgerAccountOnlyCreator.update(sourceTransaction, account, type, LocalDateTime.of(date, time), total,
-                            getAccountCurrencyCode(), !EMPTY_SECURITY.equals(security) ? security : null, buildUnits(),
-                            note, sourceTransaction.getSource());
-            return;
-        }
-
-        if (sourceTransaction == null && isLedgerAccountOnlyType())
-        {
-            ledgerAccountOnlyCreator.create(account, type, LocalDateTime.of(date, time), total, getAccountCurrencyCode(),
-                            !EMPTY_SECURITY.equals(security) ? security : null, buildUnits(), note, null);
-            return;
-        }
-
-        if (sourceTransaction == null && type == AccountTransaction.Type.DIVIDENDS)
-        {
-            ledgerDividendCreator.create(account, LocalDateTime.of(date, time), total, getAccountCurrencyCode(),
-                            security, shares, exDate, getDividendCashForex(),
-                            getDividendCashForex() != null ? exchangeRate : null, buildUnits(), note, null);
-            return;
-        }
 
         AccountTransaction t;
 
@@ -178,7 +145,7 @@ public class AccountTransactionModel extends AbstractModel
             }
         }
 
-        t.setDateTime(LocalDateTime.of(date, time));
+        t.setDateTime(dateTime);
         t.setExDate(exDate);
         t.setSecurity(!EMPTY_SECURITY.equals(security) ? security : null);
         t.setShares(supportsShares() ? shares : 0);
@@ -188,7 +155,7 @@ public class AccountTransactionModel extends AbstractModel
 
         t.clearUnits();
 
-        buildUnits().forEach(t::addUnit);
+        units.forEach(t::addUnit);
     }
 
     private List<Transaction.Unit> buildUnits()
@@ -224,15 +191,6 @@ public class AccountTransactionModel extends AbstractModel
         }
 
         return units;
-    }
-
-    private boolean isLedgerAccountOnlyType()
-    {
-        return switch (type)
-        {
-            case DEPOSIT, REMOVAL, INTEREST, INTEREST_CHARGE, FEES, FEES_REFUND, TAXES, TAX_REFUND -> true;
-            case BUY, SELL, TRANSFER_IN, TRANSFER_OUT, DIVIDENDS -> false;
-        };
     }
 
     private Money getDividendCashForex()

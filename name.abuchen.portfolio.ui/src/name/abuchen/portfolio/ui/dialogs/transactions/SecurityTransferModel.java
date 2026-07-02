@@ -15,7 +15,6 @@ import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionOwner;
-import name.abuchen.portfolio.model.ledger.compatibility.LedgerPortfolioTransferTransactionCreator;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.Values;
@@ -69,23 +68,11 @@ public class SecurityTransferModel extends AbstractModel
         if (targetPortfolio == null)
             throw new UnsupportedOperationException(Messages.MsgPortfolioToMissing);
 
-        var ledgerCreator = new LedgerPortfolioTransferTransactionCreator(client);
         var dateTime = LocalDateTime.of(date, time);
-        var sourceText = source != null ? source.getSource() : null;
 
-        if (source != null && ledgerCreator.isLedgerBacked(source))
-        {
-            ledgerCreator.update(source, sourcePortfolio, targetPortfolio, security, dateTime, shares, amount,
-                            security.getCurrencyCode(), note, sourceText);
+        if (new LedgerDialogCommitSupport(client).commitSecurityTransfer(source, sourcePortfolio, targetPortfolio,
+                        security, dateTime, shares, amount, note))
             return;
-        }
-
-        if (source == null)
-        {
-            ledgerCreator.create(sourcePortfolio, targetPortfolio, security, dateTime, shares, amount,
-                            security.getCurrencyCode(), note, null);
-            return;
-        }
 
         PortfolioTransferEntry t;
 

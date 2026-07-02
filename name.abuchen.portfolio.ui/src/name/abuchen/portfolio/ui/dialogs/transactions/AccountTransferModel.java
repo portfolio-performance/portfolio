@@ -67,28 +67,15 @@ public class AccountTransferModel extends AbstractModel
         if (targetAccount == null)
             throw new UnsupportedOperationException(Messages.MsgAccountToMissing);
 
-        var ledgerTransferCreator = new LedgerAccountTransferTransactionCreator(client);
         var dateTime = LocalDateTime.of(date, time);
         var sourceAmount = sourceAccount.getCurrencyCode().equals(targetAccount.getCurrencyCode()) ? amount : fxAmount;
         var sourceForex = sourceAccount.getCurrencyCode().equals(targetAccount.getCurrencyCode()) ? null
                         : Money.of(targetAccount.getCurrencyCode(), amount);
         var sourceExchangeRate = sourceForex != null ? getInverseExchangeRate() : null;
 
-        if (source != null && ledgerTransferCreator.isLedgerBacked(source))
-        {
-            ledgerTransferCreator.update(source, sourceAccount, targetAccount, dateTime, sourceAmount,
-                            sourceAccount.getCurrencyCode(), amount, targetAccount.getCurrencyCode(), sourceForex,
-                            sourceExchangeRate, note, source.getSource());
+        if (new LedgerDialogCommitSupport(client).commitAccountTransfer(source, sourceAccount, targetAccount, dateTime,
+                        sourceAmount, amount, sourceForex, sourceExchangeRate, note))
             return;
-        }
-
-        if (source == null)
-        {
-            ledgerTransferCreator.create(sourceAccount, targetAccount, dateTime, sourceAmount,
-                            sourceAccount.getCurrencyCode(), amount, targetAccount.getCurrencyCode(), sourceForex,
-                            sourceExchangeRate, note, null);
-            return;
-        }
 
         AccountTransferEntry t;
 

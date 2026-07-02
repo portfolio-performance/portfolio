@@ -129,23 +129,11 @@ import name.abuchen.portfolio.ui.Messages;
         if (account == null)
             throw new UnsupportedOperationException(Messages.MsgMissingReferenceAccount);
 
-        var ledgerCreator = new LedgerBuySellTransactionCreator(client);
         var dateTime = LocalDateTime.of(date, time);
         var units = buildUnits();
-
-        if (source != null && ledgerCreator.isLedgerBacked(source))
-        {
-            ledgerCreator.update(source, portfolio, account, type, dateTime, total, account.getCurrencyCode(), security,
-                            shares, units, note, source.getSource());
+        if (new LedgerDialogCommitSupport(client).commitBuySell(source, portfolio, account, type, dateTime, total,
+                        security, shares, units, note))
             return;
-        }
-
-        if (source == null)
-        {
-            ledgerCreator.create(portfolio, account, type, dateTime, total, account.getCurrencyCode(), security, shares,
-                            units, note, null);
-            return;
-        }
 
         BuySellEntry entry;
 
