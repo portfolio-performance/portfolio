@@ -65,7 +65,12 @@ public final class LegacyTransactionToLedgerMigrator
             plan.markApplied();
         }
 
-        return new MigrationResult(plan.getMigratedTransactionCount(), plan.getDiagnostics());
+        var result = new MigrationResult(plan.getInspectedTransactionCount(), plan.getMigratedTransactionCount(),
+                        LedgerMigrationDiagnostics.countLegacySourceRows(client),
+                        LedgerMigrationDiagnostics.failureCount(plan.getDiagnostics()), 0, plan.getDiagnostics());
+        LedgerMigrationDiagnostics.logMigrationAttempt(result);
+
+        return result;
     }
 
     private void migrateAccounts(Client client, MigrationPlan plan, Set<CrossEntry> processedCrossEntries)
@@ -76,6 +81,8 @@ public final class LegacyTransactionToLedgerMigrator
             {
                 if (transaction instanceof LedgerBackedTransaction)
                     continue;
+
+                plan.markInspected();
 
                 if (transaction.getCrossEntry() != null)
                 {
@@ -97,6 +104,8 @@ public final class LegacyTransactionToLedgerMigrator
             {
                 if (transaction instanceof LedgerBackedTransaction)
                     continue;
+
+                plan.markInspected();
 
                 if (transaction.getCrossEntry() != null)
                 {
@@ -799,12 +808,18 @@ public final class LegacyTransactionToLedgerMigrator
         private final Set<String> projectionIdsToRemove = new HashSet<>();
         private final Set<String> plannedEntryUUIDs = new HashSet<>();
         private final List<String> diagnostics = new ArrayList<>();
+        private int inspectedTransactionCount;
         private int migratedTransactionCount;
         private boolean applied;
 
         private MigrationPlan(Client client)
         {
             this.client = client;
+        }
+
+        private void markInspected()
+        {
+            inspectedTransactionCount++;
         }
 
         private void addEntry(LedgerEntry entry, Transaction... transactions)
@@ -1117,6 +1132,11 @@ public final class LegacyTransactionToLedgerMigrator
             return applied ? migratedTransactionCount : 0;
         }
 
+        private int getInspectedTransactionCount()
+        {
+            return inspectedTransactionCount;
+        }
+
         private boolean hasChanges()
         {
             return !entries.isEmpty() || !legacyTransactionsToRemove.isEmpty();
@@ -1151,17 +1171,47 @@ public final class LegacyTransactionToLedgerMigrator
     public static final class MigrationResult
     {
         private final int migratedTransactionCount;
+        private final int inspectedLegacyTransactionCount;
+        private final int preservedLegacyTransactionCount;
+        private final int failedCount;
+        private final int mixedStateCount;
         private final List<String> diagnostics;
 
-        private MigrationResult(int migratedTransactionCount, List<String> diagnostics)
+        private MigrationResult(int inspectedLegacyTransactionCount, int migratedTransactionCount,
+                        int preservedLegacyTransactionCount, int failedCount, int mixedStateCount,
+                        List<String> diagnostics)
         {
+            this.inspectedLegacyTransactionCount = inspectedLegacyTransactionCount;
             this.migratedTransactionCount = migratedTransactionCount;
+            this.preservedLegacyTransactionCount = preservedLegacyTransactionCount;
+            this.failedCount = failedCount;
+            this.mixedStateCount = mixedStateCount;
             this.diagnostics = List.copyOf(diagnostics);
+        }
+
+        public int getInspectedLegacyTransactionCount()
+        {
+            return inspectedLegacyTransactionCount;
         }
 
         public int getMigratedTransactionCount()
         {
             return migratedTransactionCount;
+        }
+
+        public int getPreservedLegacyTransactionCount()
+        {
+            return preservedLegacyTransactionCount;
+        }
+
+        public int getFailedCount()
+        {
+            return failedCount;
+        }
+
+        public int getMixedStateCount()
+        {
+            return mixedStateCount;
         }
 
         public List<String> getDiagnostics()

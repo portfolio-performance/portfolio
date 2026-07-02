@@ -1,6 +1,8 @@
 package name.abuchen.portfolio;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
@@ -14,6 +16,8 @@ public class PortfolioLog
      * Plugin ID for logging.
      */
     private static final String PLUGIN_ID = "name.abuchen.portfolio"; //$NON-NLS-1$
+
+    private static Consumer<IStatus> testSink;
 
     private PortfolioLog()
     {
@@ -31,6 +35,17 @@ public class PortfolioLog
             // available
             System.err.println(status); // NOSONAR
         }
+
+        if (testSink != null)
+            testSink.accept(status);
+    }
+
+    public static AutoCloseable withTestSink(Consumer<IStatus> sink)
+    {
+        var previous = testSink;
+        testSink = Objects.requireNonNull(sink);
+
+        return () -> testSink = previous;
     }
 
     /**

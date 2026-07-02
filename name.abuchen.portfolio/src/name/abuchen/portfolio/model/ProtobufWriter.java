@@ -52,6 +52,7 @@ import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerParameterType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
+import name.abuchen.portfolio.model.ledger.legacy.LedgerMigrationDiagnostics;
 import name.abuchen.portfolio.model.ledger.legacy.LegacyTransactionToLedgerMigrator;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
 import name.abuchen.portfolio.model.ledger.projection.LedgerProjectionService;
@@ -184,6 +185,7 @@ import name.abuchen.portfolio.money.Money;
         if (hasLedgerTruth)
         {
             LedgerProjectionService.restoreIfValid(client);
+            LedgerMigrationDiagnostics.logMixedState(client, "protobuf-mixed-state"); //$NON-NLS-1$
         }
         else
         {

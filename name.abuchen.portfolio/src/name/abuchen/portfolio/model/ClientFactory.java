@@ -104,6 +104,7 @@ import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerParameterType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
+import name.abuchen.portfolio.model.ledger.legacy.LedgerMigrationDiagnostics;
 import name.abuchen.portfolio.model.ledger.legacy.LegacyTransactionToLedgerMigrator;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
 import name.abuchen.portfolio.model.ledger.projection.LedgerProjectionService;
@@ -660,6 +661,7 @@ public class ClientFactory
 
             removeLegacyProjectionShadows(client);
             LedgerProjectionService.restoreIfValid(client);
+            LedgerMigrationDiagnostics.logMixedState(client, "xml-mixed-state"); //$NON-NLS-1$
         }
 
         private void prepareLedgerXmlSave(Client client, LedgerXmlSaveState saveState) throws IOException

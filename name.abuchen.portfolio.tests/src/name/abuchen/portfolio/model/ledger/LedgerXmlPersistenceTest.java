@@ -18,11 +18,14 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.IStatus;
 import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
@@ -279,6 +282,34 @@ public class LedgerXmlPersistenceTest
         assertThat(loaded.getAccounts().get(0).getTransactions().size(), is(2));
         assertThat(loaded.getAccounts().get(0).getTransactions().stream()
                         .filter(LedgerBackedTransaction.class::isInstance).count(), is(1L));
+    }
+
+    /**
+     * Verifies that XML loads with Ledger truth and real legacy rows report a mixed state.
+     * The preserved rows must stay present and no automatic remigration loop should run.
+     */
+    @Test
+    public void testMixedStateXmlLoadLogsWarningWhenLedgerTruthAndLegacyRowsRemain() throws Exception
+    {
+        var client = new Client();
+        var account = register(client, account());
+        var statuses = new ArrayList<IStatus>();
+
+        new LedgerTransactionCreator(client).createDeposit(LedgerTransactionMetadata.of(DATE_TIME),
+                        LedgerAccountCashLeg.of(account, money(100)));
+        account.addTransaction(accountTransaction(AccountTransaction.Type.FEES, 7));
+
+        try (var ignored = PortfolioLog.withTestSink(statuses::add))
+        {
+            load(save(client));
+        }
+
+        var status = onlyMigrationStatus(statuses);
+
+        assertThat(status.getSeverity(), is(IStatus.WARNING));
+        assertLogContains(status, "source=xml-mixed-state", "inspected=0", "migrated=0", "preserved=1", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                        "failed=0", "mixedState=1", "MIXED_STATE", "preserved legacy rows were not deleted", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                        "No silent remigration loop will run after Ledger truth exists"); //$NON-NLS-1$
     }
 
     /**
@@ -565,6 +596,22 @@ public class LedgerXmlPersistenceTest
     private Client load(String xml) throws Exception
     {
         return ClientFactory.load(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
+    }
+
+    private IStatus onlyMigrationStatus(List<IStatus> statuses)
+    {
+        var matches = statuses.stream()
+                        .filter(status -> status.getMessage().contains("Ledger migration diagnostics")) //$NON-NLS-1$
+                        .toList();
+
+        assertThat(matches.size(), is(1));
+        return matches.get(0);
+    }
+
+    private void assertLogContains(IStatus status, String... fragments)
+    {
+        for (var fragment : fragments)
+            assertTrue(status.getMessage(), status.getMessage().contains(fragment));
     }
 
     private void assertLedgerParameterXmlFailure(String xml, LedgerDiagnosticCode code)

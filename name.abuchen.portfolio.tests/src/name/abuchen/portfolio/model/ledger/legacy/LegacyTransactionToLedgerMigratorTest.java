@@ -11,12 +11,15 @@ import static org.junit.Assert.assertTrue;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.eclipse.core.runtime.IStatus;
 import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
@@ -49,6 +52,98 @@ public class LegacyTransactionToLedgerMigratorTest
 {
     private static final LocalDateTime DATE_TIME = LocalDateTime.of(2026, 1, 2, 0, 0);
     private static final LocalDateTime EX_DATE = LocalDateTime.of(2025, 12, 28, 0, 0);
+
+    @Test
+    public void testCompleteMigrationLogsInfoWithCounts() throws Exception
+    {
+        var client = new Client();
+        var account = register(client, account());
+        var transaction = accountTransaction(AccountTransaction.Type.DEPOSIT, 100);
+        var statuses = new ArrayList<IStatus>();
+
+        account.addTransaction(transaction);
+
+        try (var ignored = PortfolioLog.withTestSink(statuses::add))
+        {
+            migrate(client);
+        }
+
+        var status = onlyStatus(statuses);
+
+        assertThat(status.getSeverity(), is(IStatus.INFO));
+        assertLogContains(status, "inspected=1", "migrated=1", "preserved=0", "failed=0", "mixedState=0", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+                        "preserved legacy count is zero"); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testPartialMigrationLogsWarningWithCountsReasonsAndNotes() throws Exception
+    {
+        var client = new Client();
+        var account = register(client, account());
+        var supported = accountTransaction(AccountTransaction.Type.DEPOSIT, 100);
+        var unsupported = accountTransaction(AccountTransaction.Type.BUY, 200);
+        var statuses = new ArrayList<IStatus>();
+
+        account.addTransaction(supported);
+        account.addTransaction(unsupported);
+
+        try (var ignored = PortfolioLog.withTestSink(statuses::add))
+        {
+            migrate(client);
+        }
+
+        var status = onlyStatus(statuses);
+
+        assertThat(status.getSeverity(), is(IStatus.WARNING));
+        assertLogContains(status, "inspected=2", "migrated=1", "preserved=1", "failed=1", "mixedState=0", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+                        "UNSUPPORTED_TYPE", "examples=", "preserved legacy rows were not deleted", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                        "No silent remigration loop will run after Ledger truth exists"); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testFailedMigrationLogsWarningAndPreservesRows() throws Exception
+    {
+        var client = new Client();
+        var account = register(client, account());
+        var invalid = accountTransaction(AccountTransaction.Type.REMOVAL, -10);
+        var statuses = new ArrayList<IStatus>();
+
+        account.addTransaction(invalid);
+
+        try (var ignored = PortfolioLog.withTestSink(statuses::add))
+        {
+            migrate(client);
+        }
+
+        var status = onlyStatus(statuses);
+
+        assertThat(status.getSeverity(), is(IStatus.WARNING));
+        assertThat(account.getTransactions().size(), is(1));
+        assertLogContains(status, "inspected=1", "migrated=0", "preserved=1", "failed=1", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                        "FAILED_VALIDATION", "preserved legacy rows were not deleted"); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    @Test
+    public void testMigrationDiagnosticsCapsExamples() throws Exception
+    {
+        var client = new Client();
+        var account = register(client, account());
+        var statuses = new ArrayList<IStatus>();
+
+        for (var index = 0; index < 12; index++)
+            account.addTransaction(accountTransaction(AccountTransaction.Type.BUY, 100 + index));
+
+        try (var ignored = PortfolioLog.withTestSink(statuses::add))
+        {
+            migrate(client);
+        }
+
+        var status = onlyStatus(statuses);
+
+        assertThat(status.getSeverity(), is(IStatus.WARNING));
+        assertLogContains(status, "inspected=12", "migrated=0", "preserved=12", "failed=12", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                        "omittedExamples=2"); //$NON-NLS-1$
+    }
 
     @Test
     public void testAccountOnlyFamiliesMigrateWithProjectionUUIDAndApiParity()
@@ -1231,6 +1326,18 @@ public class LegacyTransactionToLedgerMigratorTest
         assertTrue("Missing diagnostic fragments " + List.of(fragments) + " in " + result.getDiagnostics(), //$NON-NLS-1$ //$NON-NLS-2$
                         result.getDiagnostics().stream().anyMatch(diagnostic -> List.of(fragments).stream()
                                         .allMatch(diagnostic::contains)));
+    }
+
+    private IStatus onlyStatus(List<IStatus> statuses)
+    {
+        assertThat(statuses.size(), is(1));
+        return statuses.get(0);
+    }
+
+    private void assertLogContains(IStatus status, String... fragments)
+    {
+        for (var fragment : fragments)
+            assertTrue(status.getMessage(), status.getMessage().contains(fragment));
     }
 
     private LedgerEntry existingAccountProjectionEntry(LedgerEntryType entryType, Account account, String projectionUUID)

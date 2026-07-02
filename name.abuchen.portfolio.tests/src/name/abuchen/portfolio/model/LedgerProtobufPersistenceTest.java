@@ -16,11 +16,14 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.IStatus;
 import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerParameter;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
@@ -941,6 +944,58 @@ public class LedgerProtobufPersistenceTest
                         .filter(t -> legacyTransaction.getUUID().equals(t.getUUID())).count(), is(1L));
     }
 
+    /**
+     * Verifies that protobuf loads with Ledger truth and real legacy rows report a mixed state.
+     * Preserved legacy rows remain data, and loading must not start a silent remigration loop.
+     */
+    @Test
+    public void testMixedStateProtobufLoadLogsWarningWhenLedgerTruthAndLegacyRowsRemain() throws Exception
+    {
+        var fixture = fixture();
+        var statuses = new ArrayList<IStatus>();
+        new LedgerTransactionCreator(fixture.client()).createDeposit(metadata(), cashLeg(fixture.account(), 100));
+
+        var legacyTransaction = new AccountTransaction(AccountTransaction.Type.FEES);
+        legacyTransaction.setDateTime(DATE_TIME);
+        legacyTransaction.setCurrencyCode(CurrencyUnit.EUR);
+        legacyTransaction.setAmount(Values.Amount.factorize(7));
+        legacyTransaction.setUpdatedAt(UPDATED_AT);
+        fixture.account().addTransaction(legacyTransaction);
+
+        try (var ignored = PortfolioLog.withTestSink(statuses::add))
+        {
+            load(saveBytes(fixture.client()));
+        }
+
+        var status = onlyStatus(statuses);
+
+        assertThat(status.getSeverity(), is(IStatus.WARNING));
+        assertLogContains(status, "source=protobuf-mixed-state", "inspected=0", "migrated=0", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                        "preserved=1", "failed=0", "mixedState=1", "MIXED_STATE", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                        "preserved legacy rows were not deleted", //$NON-NLS-1$
+                        "No silent remigration loop will run after Ledger truth exists"); //$NON-NLS-1$
+    }
+
+    /**
+     * Verifies generated protobuf compatibility shadows are not counted as stranded legacy source rows.
+     * The Ledger truth should reload quietly when no real legacy row remains.
+     */
+    @Test
+    public void testProtobufCompatibilityShadowsAreNotCountedAsMixedState() throws Exception
+    {
+        var fixture = fixture();
+        var statuses = new ArrayList<IStatus>();
+        new LedgerTransactionCreator(fixture.client()).createDeposit(metadata(), cashLeg(fixture.account(), 100));
+
+        try (var ignored = PortfolioLog.withTestSink(statuses::add))
+        {
+            load(saveBytes(fixture.client()));
+        }
+
+        assertFalse(statuses.stream().anyMatch(status -> status.getSeverity() == IStatus.WARNING
+                        && status.getMessage().contains("source=protobuf-mixed-state")));
+    }
+
     private ClientFixture fixture()
     {
         var client = new Client();
@@ -1198,6 +1253,18 @@ public class LedgerProtobufPersistenceTest
     private Client load(byte[] bytes) throws IOException
     {
         return new ProtobufWriter().load(new ByteArrayInputStream(bytes));
+    }
+
+    private IStatus onlyStatus(List<IStatus> statuses)
+    {
+        assertThat(statuses.size(), is(1));
+        return statuses.get(0);
+    }
+
+    private void assertLogContains(IStatus status, String... fragments)
+    {
+        for (var fragment : fragments)
+            assertTrue(status.getMessage(), status.getMessage().contains(fragment));
     }
 
     private void assertUnknownTypeIdFailure(PClient client, String typeName, int id) throws IOException
