@@ -5,7 +5,6 @@ import org.eclipse.jface.action.Action;
 
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.LedgerAccountTypeToggleConverter;
 import name.abuchen.portfolio.model.TransactionPair;
 
 public class RevertDepositRemovalAction extends Action
@@ -27,14 +26,9 @@ public class RevertDepositRemovalAction extends Action
     public void run()
     {
         AccountTransaction accountTransaction = transaction.getTransaction();
-        var converter = new LedgerAccountTypeToggleConverter(client);
 
-        if (converter.canToggle(transaction))
-        {
-            converter.toggle(transaction);
-            client.markDirty();
+        if (LedgerConversionSupport.toggleAccountType(client, transaction))
             return;
-        }
 
         if (AccountTransaction.Type.DEPOSIT.equals(accountTransaction.getType()))
             accountTransaction.setType(AccountTransaction.Type.REMOVAL);

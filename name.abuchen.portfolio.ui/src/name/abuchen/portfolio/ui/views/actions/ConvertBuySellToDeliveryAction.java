@@ -6,7 +6,6 @@ import java.util.Collection;
 import org.eclipse.jface.action.Action;
 
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.LedgerBuySellDeliveryConverter;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.TransactionPair;
@@ -54,15 +53,10 @@ public class ConvertBuySellToDeliveryAction extends Action
     @Override
     public void run()
     {
-        var converter = new LedgerBuySellDeliveryConverter(client);
-
         for (TransactionPair<PortfolioTransaction> transaction : transactionList)
         {
-            if (converter.canConvert(transaction))
-            {
-                converter.convertBuySellToDelivery(transaction);
+            if (LedgerConversionSupport.convertBuySellToDelivery(client, transaction))
                 continue;
-            }
 
             // delete existing transaction
             PortfolioTransaction buySellTransaction = transaction.getTransaction();

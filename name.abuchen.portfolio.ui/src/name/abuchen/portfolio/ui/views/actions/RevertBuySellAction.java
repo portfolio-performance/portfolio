@@ -1,12 +1,10 @@
 package name.abuchen.portfolio.ui.views.actions;
 
-
 import org.eclipse.jface.action.Action;
 
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.LedgerBuySellReversalConverter;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Transaction;
@@ -51,14 +49,9 @@ public class RevertBuySellAction extends Action
     public void run()
     {
         BuySellEntry buysell = (BuySellEntry) transaction.getTransaction().getCrossEntry();
-        var converter = new LedgerBuySellReversalConverter(client);
 
-        if (converter.canReverse(buysell))
-        {
-            converter.reverse(buysell);
-            client.markDirty();
+        if (LedgerConversionSupport.reverseBuySell(client, buysell))
             return;
-        }
 
         PortfolioTransaction tx = buysell.getPortfolioTransaction();
 

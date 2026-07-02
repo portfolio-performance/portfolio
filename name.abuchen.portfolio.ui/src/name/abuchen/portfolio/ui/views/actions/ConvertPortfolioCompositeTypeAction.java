@@ -3,10 +3,8 @@ package name.abuchen.portfolio.ui.views.actions;
 import org.eclipse.jface.action.Action;
 
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.LedgerPortfolioCompositeTypeConverter;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.TransactionPair;
-import name.abuchen.portfolio.ui.Messages;
 
 public class ConvertPortfolioCompositeTypeAction extends Action
 {
@@ -29,18 +27,8 @@ public class ConvertPortfolioCompositeTypeAction extends Action
     @Override
     public void run()
     {
-        var converter = new LedgerPortfolioCompositeTypeConverter(client);
-
-        if (converter.canConvertSafely(transaction))
-        {
-            converter.convert(transaction);
-            client.markDirty();
+        if (LedgerConversionSupport.convertPortfolioCompositeType(client, transaction))
             return;
-        }
-
-        if (converter.isLedgerBacked(transaction))
-            throw new UnsupportedOperationException(
-                            Messages.LedgerConvertPortfolioCompositeTypeActionUnsupportedLedgerBackedTransition);
 
         var type = transaction.getTransaction().getType();
 

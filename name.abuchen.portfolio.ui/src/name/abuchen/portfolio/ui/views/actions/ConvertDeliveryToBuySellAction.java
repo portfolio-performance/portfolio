@@ -9,7 +9,6 @@ import org.eclipse.jface.action.Action;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.LedgerBuySellDeliveryConverter;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
@@ -57,15 +56,10 @@ public class ConvertDeliveryToBuySellAction extends Action
     @Override
     public void run()
     {
-        var converter = new LedgerBuySellDeliveryConverter(client);
-
         for (TransactionPair<PortfolioTransaction> transaction : transactionList)
         {
-            if (converter.canConvertDeliveryToBuySell(transaction))
-            {
-                converter.convertDeliveryToBuySell(transaction);
+            if (LedgerConversionSupport.convertDeliveryToBuySell(client, transaction))
                 continue;
-            }
 
             Portfolio portfolio = (Portfolio) transaction.getOwner();
             Account account = portfolio.getReferenceAccount();
