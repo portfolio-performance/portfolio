@@ -1732,7 +1732,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     private void addAdvanceTaxTransaction()
     {
-        final var type = new DocumentType("Vorabpauschale", "KONTO.BERSICHT");
+        final var type = new DocumentType("Vorabpauschale", "KONTO.BERSICHT|WERTPAPIERABRECHNUNG");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
