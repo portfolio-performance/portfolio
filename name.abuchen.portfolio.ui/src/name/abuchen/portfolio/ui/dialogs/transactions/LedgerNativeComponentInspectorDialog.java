@@ -114,7 +114,7 @@ public class LedgerNativeComponentInspectorDialog extends Dialog
                         row -> new String[] { row.postingUUID(), row.postingType(), row.parameter(), row.code(),
                                         row.valueKind(), row.value(), row.domain() });
 
-        createTable(container, Messages.LedgerNativeComponentInspectorProjectionRefs, model.getDescriptors(),
+        createTable(container, Messages.LedgerNativeComponentInspectorDerivedDescriptors, model.getDescriptors(),
                         new String[] { Messages.LedgerNativeComponentInspectorProjectionRole,
                                         Messages.LedgerNativeComponentInspectorOwner,
                                         Messages.LedgerNativeComponentInspectorProjectionUUID,

@@ -1022,7 +1022,7 @@ public class Messages extends NLS
     public static String LedgerNativeComponentInspectorPostingUUID;
     public static String LedgerNativeComponentInspectorPrimaryExpected;
     public static String LedgerNativeComponentInspectorPrimaryPostingUUID;
-    public static String LedgerNativeComponentInspectorProjectionRefs;
+    public static String LedgerNativeComponentInspectorDerivedDescriptors;
     public static String LedgerNativeComponentInspectorProjectionRole;
     public static String LedgerNativeComponentInspectorProjectionUUID;
     public static String LedgerNativeComponentInspectorSelectedProjectionUUID;

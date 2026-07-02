@@ -28,12 +28,8 @@ public final class LedgerStructuralValidator
     public enum IssueCode
     {
         LEDGER_REQUIRED,
-        DUPLICATE_ENTRY_UUID,
-        DUPLICATE_POSTING_UUID,
-        ENTRY_UUID_REQUIRED,
         ENTRY_TYPE_REQUIRED,
         ENTRY_DATE_TIME_REQUIRED,
-        POSTING_UUID_REQUIRED,
         POSTING_TYPE_REQUIRED,
         POSTING_CURRENCY_REQUIRED,
         POSTING_SECURITY_REQUIRED,

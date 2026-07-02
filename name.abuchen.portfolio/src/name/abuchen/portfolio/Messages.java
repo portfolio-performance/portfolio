@@ -284,7 +284,6 @@ public class Messages extends NLS
     public static String LedgerStructuralValidatorDuplicateProjectionUuid;
     public static String LedgerStructuralValidatorEntryDateTimeRequired;
     public static String LedgerStructuralValidatorEntryTypeRequired;
-    public static String LedgerStructuralValidatorEntryUuidRequired;
     public static String LedgerStructuralValidatorExDateSecurityRequired;
     public static String LedgerStructuralValidatorLedgerRequired;
     public static String LedgerStructuralValidatorParameterCodeNotAllowed;
@@ -299,11 +298,9 @@ public class Messages extends NLS
     public static String LedgerStructuralValidatorPostingGroupRefNotFound;
     public static String LedgerStructuralValidatorPostingSecurityRequired;
     public static String LedgerStructuralValidatorPostingTypeRequired;
-    public static String LedgerStructuralValidatorPostingUuidRequired;
     public static String LedgerStructuralValidatorPrimaryPostingRefNotFound;
     public static String LedgerStructuralValidatorProjectionAccountRequired;
     public static String LedgerStructuralValidatorProjectionGroupTargetConflict;
-    public static String LedgerStructuralValidatorProjectionMembershipRefNotFound;
     public static String LedgerStructuralValidatorProjectionPortfolioRequired;
     public static String LedgerStructuralValidatorProjectionPrimaryTargetConflict;
     public static String LedgerStructuralValidatorProjectionRoleNotAllowed;

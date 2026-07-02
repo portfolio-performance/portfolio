@@ -228,6 +228,7 @@ public class LedgerXmlPersistenceTest
         var xml = save(client);
 
         assertTrue(xml.contains("<ledger>"));
+        assertTrue(xml.contains(account.getUUID()));
         assertFalse(xml.contains("<account-transaction"));
         assertFalse(xml.contains("LedgerBacked"));
         assertNoLedgerUuidTruth(xml);
@@ -672,16 +673,29 @@ public class LedgerXmlPersistenceTest
 
     private void assertNoLedgerUuidTruth(String xml)
     {
-        assertFalse(xml.matches("(?s).*<ledger-entry[^>]*\\buuid=.*"));
-        assertFalse(xml.matches("(?s).*<ledger-posting[^>]*\\buuid=.*"));
-        assertFalse(xml.contains("<projectionRefs>"));
-        assertFalse(xml.contains("<ledger-projection-ref"));
-        assertFalse(xml.contains("<projection-membership"));
-        assertFalse(xml.contains("<membership"));
-        assertFalse(xml.contains("projectionUUID"));
-        assertFalse(xml.contains("postingUUID"));
-        assertFalse(xml.contains("primaryPostingUUID"));
-        assertFalse(xml.contains("postingGroupUUID"));
+        var ledgerXml = ledgerSection(xml);
+
+        assertFalse(ledgerXml.matches("(?s).*<ledger-entry[^>]*\\buuid=.*"));
+        assertFalse(ledgerXml.matches("(?s).*<ledger-posting[^>]*\\buuid=.*"));
+        assertFalse(ledgerXml.contains("<projectionRefs>"));
+        assertFalse(ledgerXml.contains("<ledger-projection-ref"));
+        assertFalse(ledgerXml.contains("<projection-membership"));
+        assertFalse(ledgerXml.contains("<membership"));
+        assertFalse(ledgerXml.contains("projectionUUID"));
+        assertFalse(ledgerXml.contains("postingUUID"));
+        assertFalse(ledgerXml.contains("primaryPostingUUID"));
+        assertFalse(ledgerXml.contains("postingGroupUUID"));
+    }
+
+    private String ledgerSection(String xml)
+    {
+        var start = xml.indexOf("<ledger>");
+        var end = xml.indexOf("</ledger>");
+
+        assertTrue(start >= 0);
+        assertTrue(end > start);
+
+        return xml.substring(start, end);
     }
 
     private Account register(Client client, Account account)
