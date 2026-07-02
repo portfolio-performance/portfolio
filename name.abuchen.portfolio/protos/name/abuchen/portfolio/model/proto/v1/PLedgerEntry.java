@@ -21,6 +21,7 @@ private static final long serialVersionUID = 0L;
     source_ = "";
     postings_ = java.util.Collections.emptyList();
     projectionRefs_ = java.util.Collections.emptyList();
+    typeCode_ = "";
     parameters_ = java.util.Collections.emptyList();
     generatedByPlanKey_ = "";
     preferredViewKind_ = "";
@@ -318,23 +319,51 @@ private static final long serialVersionUID = 0L;
     return projectionRefs_.get(index);
   }
 
-  public static final int TYPEID_FIELD_NUMBER = 9;
-  private int typeId_ = 0;
+  public static final int TYPECODE_FIELD_NUMBER = 9;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object typeCode_ = "";
   /**
-   * <code>optional uint32 typeId = 9;</code>
-   * @return Whether the typeId field is set.
+   * <code>optional string typeCode = 9;</code>
+   * @return Whether the typeCode field is set.
    */
   @java.lang.Override
-  public boolean hasTypeId() {
+  public boolean hasTypeCode() {
     return ((bitField0_ & 0x00000004) != 0);
   }
   /**
-   * <code>optional uint32 typeId = 9;</code>
-   * @return The typeId.
+   * <code>optional string typeCode = 9;</code>
+   * @return The typeCode.
    */
   @java.lang.Override
-  public int getTypeId() {
-    return typeId_;
+  public java.lang.String getTypeCode() {
+    java.lang.Object ref = typeCode_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs =
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      typeCode_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>optional string typeCode = 9;</code>
+   * @return The bytes for typeCode.
+   */
+  @java.lang.Override
+  public com.google.protobuf.ByteString
+      getTypeCodeBytes() {
+    java.lang.Object ref = typeCode_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b =
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      typeCode_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
   }
 
   public static final int PARAMETERS_FIELD_NUMBER = 10;
@@ -546,7 +575,7 @@ private static final long serialVersionUID = 0L;
       output.writeMessage(8, projectionRefs_.get(i));
     }
     if (((bitField0_ & 0x00000004) != 0)) {
-      output.writeUInt32(9, typeId_);
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 9, typeCode_);
     }
     for (int i = 0; i < parameters_.size(); i++) {
       output.writeMessage(10, parameters_.get(i));
@@ -598,8 +627,7 @@ private static final long serialVersionUID = 0L;
         .computeMessageSize(8, projectionRefs_.get(i));
     }
     if (((bitField0_ & 0x00000004) != 0)) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeUInt32Size(9, typeId_);
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(9, typeCode_);
     }
     for (int i = 0; i < parameters_.size(); i++) {
       size += com.google.protobuf.CodedOutputStream
@@ -660,10 +688,10 @@ private static final long serialVersionUID = 0L;
         .equals(other.getPostingsList())) return false;
     if (!getProjectionRefsList()
         .equals(other.getProjectionRefsList())) return false;
-    if (hasTypeId() != other.hasTypeId()) return false;
-    if (hasTypeId()) {
-      if (getTypeId()
-          != other.getTypeId()) return false;
+    if (hasTypeCode() != other.hasTypeCode()) return false;
+    if (hasTypeCode()) {
+      if (!getTypeCode()
+          .equals(other.getTypeCode())) return false;
     }
     if (!getParametersList()
         .equals(other.getParametersList())) return false;
@@ -724,9 +752,9 @@ private static final long serialVersionUID = 0L;
       hash = (37 * hash) + PROJECTIONREFS_FIELD_NUMBER;
       hash = (53 * hash) + getProjectionRefsList().hashCode();
     }
-    if (hasTypeId()) {
-      hash = (37 * hash) + TYPEID_FIELD_NUMBER;
-      hash = (53 * hash) + getTypeId();
+    if (hasTypeCode()) {
+      hash = (37 * hash) + TYPECODE_FIELD_NUMBER;
+      hash = (53 * hash) + getTypeCode().hashCode();
     }
     if (getParametersCount() > 0) {
       hash = (37 * hash) + PARAMETERS_FIELD_NUMBER;
@@ -905,7 +933,7 @@ private static final long serialVersionUID = 0L;
         projectionRefsBuilder_.clear();
       }
       bitField0_ = (bitField0_ & ~0x00000040);
-      typeId_ = 0;
+      typeCode_ = "";
       if (parametersBuilder_ == null) {
         parameters_ = java.util.Collections.emptyList();
       } else {
@@ -1004,7 +1032,7 @@ private static final long serialVersionUID = 0L;
             : updatedAtBuilder_.build();
       }
       if (((from_bitField0_ & 0x00000080) != 0)) {
-        result.typeId_ = typeId_;
+        result.typeCode_ = typeCode_;
         to_bitField0_ |= 0x00000004;
       }
       if (((from_bitField0_ & 0x00000200) != 0)) {
@@ -1111,8 +1139,10 @@ private static final long serialVersionUID = 0L;
           }
         }
       }
-      if (other.hasTypeId()) {
-        setTypeId(other.getTypeId());
+      if (other.hasTypeCode()) {
+        typeCode_ = other.typeCode_;
+        bitField0_ |= 0x00000080;
+        onChanged();
       }
       if (parametersBuilder_ == null) {
         if (!other.parameters_.isEmpty()) {
@@ -1237,11 +1267,11 @@ private static final long serialVersionUID = 0L;
               }
               break;
             } // case 66
-            case 72: {
-              typeId_ = input.readUInt32();
+            case 74: {
+              typeCode_ = input.readStringRequireUtf8();
               bitField0_ |= 0x00000080;
               break;
-            } // case 72
+            } // case 74
             case 82: {
               name.abuchen.portfolio.model.proto.v1.PLedgerParameter m =
                   input.readMessage(
@@ -2250,42 +2280,81 @@ private static final long serialVersionUID = 0L;
       return projectionRefsBuilder_;
     }
 
-    private int typeId_ ;
+    private java.lang.Object typeCode_ = "";
     /**
-     * <code>optional uint32 typeId = 9;</code>
-     * @return Whether the typeId field is set.
+     * <code>optional string typeCode = 9;</code>
+     * @return Whether the typeCode field is set.
      */
-    @java.lang.Override
-    public boolean hasTypeId() {
+    public boolean hasTypeCode() {
       return ((bitField0_ & 0x00000080) != 0);
     }
     /**
-     * <code>optional uint32 typeId = 9;</code>
-     * @return The typeId.
+     * <code>optional string typeCode = 9;</code>
+     * @return The typeCode.
      */
-    @java.lang.Override
-    public int getTypeId() {
-      return typeId_;
+    public java.lang.String getTypeCode() {
+      java.lang.Object ref = typeCode_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        typeCode_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
     }
     /**
-     * <code>optional uint32 typeId = 9;</code>
-     * @param value The typeId to set.
+     * <code>optional string typeCode = 9;</code>
+     * @return The bytes for typeCode.
+     */
+    public com.google.protobuf.ByteString
+        getTypeCodeBytes() {
+      java.lang.Object ref = typeCode_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        typeCode_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>optional string typeCode = 9;</code>
+     * @param value The typeCode to set.
      * @return This builder for chaining.
      */
-    public Builder setTypeId(int value) {
-
-      typeId_ = value;
+    public Builder setTypeCode(
+        java.lang.String value) {
+      if (value == null) { throw new NullPointerException(); }
+      typeCode_ = value;
       bitField0_ |= 0x00000080;
       onChanged();
       return this;
     }
     /**
-     * <code>optional uint32 typeId = 9;</code>
+     * <code>optional string typeCode = 9;</code>
      * @return This builder for chaining.
      */
-    public Builder clearTypeId() {
+    public Builder clearTypeCode() {
+      typeCode_ = getDefaultInstance().getTypeCode();
       bitField0_ = (bitField0_ & ~0x00000080);
-      typeId_ = 0;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string typeCode = 9;</code>
+     * @param value The bytes for typeCode to set.
+     * @return This builder for chaining.
+     */
+    public Builder setTypeCodeBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
+      typeCode_ = value;
+      bitField0_ |= 0x00000080;
       onChanged();
       return this;
     }

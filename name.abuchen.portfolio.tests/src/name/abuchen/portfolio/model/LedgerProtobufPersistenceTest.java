@@ -556,8 +556,8 @@ public class LedgerProtobufPersistenceTest
                         .filter(candidate -> candidate.getTypeCode().equals(LedgerParameterType.EX_DATE.getCode()))
                         .findFirst().orElseThrow();
 
-        assertTrue(entry.hasTypeId());
-        assertThat(entry.getTypeId(), is(LedgerEntryType.DIVIDENDS.getProtobufId()));
+        assertTrue(entry.hasTypeCode());
+        assertThat(entry.getTypeCode(), is(LedgerEntryType.DIVIDENDS.getCode()));
         assertTrue(posting.hasTypeCode());
         assertThat(posting.getTypeCode(), is(LedgerPostingType.CASH.getCode()));
         assertTrue(parameter.hasTypeCode());
@@ -590,18 +590,18 @@ public class LedgerProtobufPersistenceTest
     }
 
     /**
-     * Verifies that an unknown ledger entry type id fails with a clear protobuf load error.
+     * Verifies that an unknown ledger entry type code fails with a clear protobuf load error.
      * Unsupported persisted ledger vocabulary must not be interpreted silently.
      */
     @Test
-    public void testUnknownLedgerEntryTypeIdFailsClearly() throws IOException
+    public void testUnknownLedgerEntryTypeCodeFailsClearly() throws IOException
     {
         var fixture = fixtureWithDividendAndExDate();
         var proto = saveProto(fixture.client()).toBuilder();
 
-        proto.getLedgerBuilder().getEntriesBuilder(0).setTypeId(999999);
+        proto.getLedgerBuilder().getEntriesBuilder(0).setTypeCode("UNKNOWN_ENTRY_TYPE");
 
-        assertUnknownTypeIdFailure(proto.build(), "LedgerEntryType", 999999);
+        assertUnknownTypeCodeFailure(proto.build(), "LedgerEntryType", "UNKNOWN_ENTRY_TYPE");
     }
 
     /**
@@ -715,7 +715,7 @@ public class LedgerProtobufPersistenceTest
 
             assertNoLedgerUuidTruth(proto);
             assertThat(proto.getTransactionsCount(), is(0));
-            assertThat(proto.getLedger().getEntries(0).getTypeId(), is(entryType.getProtobufId()));
+            assertThat(proto.getLedger().getEntries(0).getTypeCode(), is(entryType.getCode()));
             assertTrue(proto.getLedger().getEntries(0).getPostingsList().stream()
                             .anyMatch(posting -> posting.hasCorporateActionLeg()));
 
@@ -1265,14 +1265,6 @@ public class LedgerProtobufPersistenceTest
     {
         for (var fragment : fragments)
             assertTrue(status.getMessage(), status.getMessage().contains(fragment));
-    }
-
-    private void assertUnknownTypeIdFailure(PClient client, String typeName, int id) throws IOException
-    {
-        var exception = assertThrows(IllegalArgumentException.class, () -> load(wrap(client)));
-
-        assertTrue(exception.getMessage(), exception.getMessage().contains(typeName));
-        assertTrue(exception.getMessage(), exception.getMessage().contains(Integer.toString(id)));
     }
 
     private void assertUnknownTypeCodeFailure(PClient client, String typeName, String code) throws IOException

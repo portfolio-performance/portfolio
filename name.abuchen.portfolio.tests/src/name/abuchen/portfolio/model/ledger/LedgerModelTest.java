@@ -644,24 +644,24 @@ public class LedgerModelTest
     }
 
     /**
-     * Checks the Ledger-V6 scenario: configurable ledger entry type protobuf ids are stable.
+     * Checks the Ledger-V6 scenario: configurable ledger entry type codes are stable.
      * The result must keep ledger truth and visible runtime rows consistent.
      * This protects against duplicate truth or partial mutation.
      */
     @Test
-    public void testConfigurableLedgerEntryTypeProtobufIdsAreStable()
+    public void testConfigurableLedgerEntryTypeCodesAreStable()
     {
-        assertStableProtobufIds(Arrays.stream(LedgerEntryType.values()).mapToInt(LedgerEntryType::getProtobufId)
-                        .toArray());
+        assertStableCodes(Arrays.stream(LedgerEntryType.values()).map(LedgerEntryType::getCode)
+                        .toArray(String[]::new));
 
         for (LedgerEntryType type : LedgerEntryType.values())
-            assertThat(LedgerEntryType.fromProtobufId(type.getProtobufId()), is(type));
+            assertThat(LedgerEntryType.fromCode(type.getCode()), is(type));
 
-        var exception = assertThrows(IllegalArgumentException.class, () -> LedgerEntryType.fromProtobufId(0));
+        var exception = assertThrows(IllegalArgumentException.class, () -> LedgerEntryType.fromCode("UNKNOWN_CODE"));
 
         assertTrue(exception.getMessage(), exception.getMessage().contains(LedgerDiagnosticCode.LEDGER_CORE_017.prefix()));
         assertTrue(exception.getMessage(), exception.getMessage().contains("LedgerEntryType"));
-        assertTrue(exception.getMessage(), exception.getMessage().contains("0"));
+        assertTrue(exception.getMessage(), exception.getMessage().contains("UNKNOWN_CODE"));
     }
 
     /**
@@ -729,12 +729,6 @@ public class LedgerModelTest
         assertTrue(valueKind.supportsValue(valueFor(valueKind)));
         assertFalse(valueKind.supportsValue(null));
         assertFalse(valueKind.supportsValue(new Object()));
-    }
-
-    private void assertStableProtobufIds(int[] protobufIds)
-    {
-        assertThat(Arrays.stream(protobufIds).filter(id -> id == 0).count(), is(0L));
-        assertThat(Arrays.stream(protobufIds).distinct().count(), is((long) protobufIds.length));
     }
 
     private void assertStableCodes(String[] codes)

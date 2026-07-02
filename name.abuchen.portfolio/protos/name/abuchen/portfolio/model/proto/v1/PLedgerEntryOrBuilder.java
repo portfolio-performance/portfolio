@@ -136,15 +136,21 @@ public interface PLedgerEntryOrBuilder extends
       int index);
 
   /**
-   * <code>optional uint32 typeId = 9;</code>
-   * @return Whether the typeId field is set.
+   * <code>optional string typeCode = 9;</code>
+   * @return Whether the typeCode field is set.
    */
-  boolean hasTypeId();
+  boolean hasTypeCode();
   /**
-   * <code>optional uint32 typeId = 9;</code>
-   * @return The typeId.
+   * <code>optional string typeCode = 9;</code>
+   * @return The typeCode.
    */
-  int getTypeId();
+  java.lang.String getTypeCode();
+  /**
+   * <code>optional string typeCode = 9;</code>
+   * @return The bytes for typeCode.
+   */
+  com.google.protobuf.ByteString
+      getTypeCodeBytes();
 
   /**
    * <code>repeated .name.abuchen.portfolio.PLedgerParameter parameters = 10;</code>

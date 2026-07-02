@@ -203,7 +203,7 @@ final class LedgerProtobufPersistenceSupport
         for (PLedgerEntry newEntry : newLedger.getEntriesList())
         {
             LedgerEntry entry = LedgerModelLoadSupport.newEntry(UUID.randomUUID().toString(),
-                            LedgerEntryType.fromProtobufId(newEntry.getTypeId()),
+                            LedgerEntryType.fromCode(newEntry.getTypeCode()),
                             fromTimestamp(newEntry.getDateTime()));
 
             if (newEntry.hasNote())
@@ -330,7 +330,7 @@ final class LedgerProtobufPersistenceSupport
     {
         PLedgerEntry.Builder newEntry = PLedgerEntry.newBuilder();
 
-        newEntry.setTypeId(entry.getType().getProtobufId());
+        newEntry.setTypeCode(entry.getType().getCode());
         newEntry.setDateTime(asTimestamp(entry.getDateTime()));
 
         if (entry.getNote() != null)
