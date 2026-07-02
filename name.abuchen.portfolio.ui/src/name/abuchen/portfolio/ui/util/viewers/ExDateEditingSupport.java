@@ -14,18 +14,11 @@ import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.Adaptor;
-import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.LedgerDiagnosticCode;
-import name.abuchen.portfolio.model.ledger.compatibility.LedgerAccountOnlyTransactionCreator;
-import name.abuchen.portfolio.model.ledger.compatibility.LedgerAccountTransferTransactionCreator;
-import name.abuchen.portfolio.model.ledger.compatibility.LedgerBuySellTransactionCreator;
-import name.abuchen.portfolio.model.ledger.compatibility.LedgerDividendTransactionCreator;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerInlineEditingField;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerInlineEditingPolicy;
-import name.abuchen.portfolio.model.ledger.compatibility.LedgerUnitPostingPatch;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 
@@ -54,7 +47,7 @@ public class ExDateEditingSupport extends ColumnEditingSupport
     @Override
     public boolean canEdit(Object element)
     {
-        if (isLedgerNativeTargetedProjection(element))
+        if (LedgerInlineEditingPolicy.isNativeTargetedProjection(element))
             return false;
         if (!LedgerInlineEditingPolicy.isEditable(element, LedgerInlineEditingField.EX_DATE))
             return false;
@@ -63,7 +56,8 @@ public class ExDateEditingSupport extends ColumnEditingSupport
         if (tx == null || tx.getSecurity() == null)
             return false;
 
-        return canUpdateLedgerBackedDividend(tx) || !isLedgerBackedAccountTransaction(tx);
+        return LedgerInlineEditingPolicy.canUpdateDividendExDate(client, tx)
+                        || !LedgerInlineEditingPolicy.isLedgerBackedAccountTransaction(client, tx);
     }
 
     @Override
@@ -128,35 +122,18 @@ public class ExDateEditingSupport extends ColumnEditingSupport
                             LedgerDiagnosticCode.LEDGER_UI_009
                                             .message(Messages.LedgerExDateEditingSupportNoSafeEditorPolicyBlocked));
 
-        if (updateLedgerBackedDividend(transaction, exDate))
+        if (LedgerInlineEditingPolicy.canUpdateDividendExDate(client, transaction))
+        {
+            LedgerInlineEditingPolicy.updateDividendExDate(client, ownerOf(transaction), transaction, exDate);
             return;
+        }
 
-        if (isLedgerBackedAccountTransaction(transaction))
+        if (LedgerInlineEditingPolicy.isLedgerBackedAccountTransaction(client, transaction))
             throw new UnsupportedOperationException(
                             LedgerDiagnosticCode.LEDGER_UI_010
                                             .message(Messages.LedgerExDateEditingSupportNoSafeEditorLedgerBacked));
 
         transaction.setExDate(exDate);
-    }
-
-    private boolean updateLedgerBackedDividend(AccountTransaction transaction, LocalDateTime exDate)
-    {
-        if (client == null)
-            return false;
-
-        if (!canUpdateLedgerBackedDividend(transaction))
-            return false;
-
-        new LedgerDividendTransactionCreator(client).update(transaction, ownerOf(transaction), transaction.getType(),
-                        transaction.getDateTime(), transaction.getAmount(), transaction.getCurrencyCode(),
-                        transaction.getSecurity(), transaction.getShares(), exDate, null,
-                        LedgerUnitPostingPatch.none(), transaction.getNote(), transaction.getSource());
-        return true;
-    }
-
-    private boolean canUpdateLedgerBackedDividend(AccountTransaction transaction)
-    {
-        return client != null && new LedgerDividendTransactionCreator(client).canUpdate(transaction);
     }
 
     private Account ownerOf(AccountTransaction transaction)
@@ -165,22 +142,6 @@ public class ExDateEditingSupport extends ColumnEditingSupport
                         .findFirst()
                         .orElseThrow(() -> new IllegalStateException(
                                         Messages.LedgerExDateEditingSupportDividendOwnerNotFound));
-    }
-
-    private boolean isLedgerBackedAccountTransaction(AccountTransaction transaction)
-    {
-        if (client == null)
-            return false;
-
-        if (new LedgerAccountOnlyTransactionCreator(client).canUpdate(transaction))
-            return true;
-
-        if (transaction.getCrossEntry() instanceof BuySellEntry entry
-                        && new LedgerBuySellTransactionCreator(client).isLedgerBacked(entry))
-            return true;
-
-        return transaction.getCrossEntry() instanceof AccountTransferEntry entry
-                        && new LedgerAccountTransferTransactionCreator(client).isLedgerBacked(entry);
     }
 
     @Override

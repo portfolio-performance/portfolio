@@ -18,9 +18,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
 
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.model.TransactionPair;
-import name.abuchen.portfolio.model.ledger.compatibility.LedgerNativeComponentInspectorModel;
+import name.abuchen.portfolio.model.ledger.compatibility.LedgerInlineEditingPolicy;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.EditorActivationState;
@@ -79,13 +77,7 @@ public abstract class ColumnEditingSupport
 
     protected final boolean isLedgerNativeTargetedProjection(Object element)
     {
-        if (element instanceof TransactionPair<?> pair)
-            return LedgerNativeComponentInspectorModel.isLedgerNativeTargetedProjection(pair.getTransaction());
-
-        if (element instanceof Transaction)
-            return LedgerNativeComponentInspectorModel.isLedgerNativeTargetedProjection(element);
-
-        return false;
+        return LedgerInlineEditingPolicy.isNativeTargetedProjection(element);
     }
 
     /**

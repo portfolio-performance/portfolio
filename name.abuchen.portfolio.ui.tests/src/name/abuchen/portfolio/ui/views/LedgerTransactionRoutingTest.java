@@ -46,6 +46,7 @@ import name.abuchen.portfolio.model.ledger.compatibility.LedgerBuySellTransactio
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerDeliveryTransactionCreator;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerDividendTransactionCreator;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerInlineEditingField;
+import name.abuchen.portfolio.model.ledger.compatibility.LedgerInlineEditingPolicy;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerPortfolioTransferTransactionCreator;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
@@ -507,7 +508,7 @@ public class LedgerTransactionRoutingTest
 
         assertThat(TransactionsViewer.canEditShares(new TransactionPair<>(buy.portfolio(), portfolioTransaction)),
                         is(false));
-        assertThat(TransactionsViewer.updateLedgerBackedShares(buy.client(),
+        assertThat(LedgerInlineEditingPolicy.updateShares(buy.client(),
                         new TransactionPair<>(buy.portfolio(), portfolioTransaction), Values.Share.factorize(6)),
                         is(false));
         assertThat(buy.portfolio().getTransactions().get(0).getShares(), is(Values.Share.factorize(5)));
@@ -519,7 +520,7 @@ public class LedgerTransactionRoutingTest
         var deliveryTransaction = delivery.portfolio().getTransactions().get(0);
         assertThat(TransactionsViewer.canEditShares(new TransactionPair<>(delivery.portfolio(), deliveryTransaction)),
                         is(false));
-        assertThat(TransactionsViewer.updateLedgerBackedShares(delivery.client(),
+        assertThat(LedgerInlineEditingPolicy.updateShares(delivery.client(),
                         new TransactionPair<>(delivery.portfolio(), deliveryTransaction), Values.Share.factorize(7)),
                         is(false));
         assertThat(delivery.portfolio().getTransactions().get(0).getShares(), is(Values.Share.factorize(5)));
@@ -530,7 +531,7 @@ public class LedgerTransactionRoutingTest
         var sourceTransaction = transfer.source().getTransactions().get(0);
         assertThat(TransactionsViewer.canEditShares(new TransactionPair<>(transfer.source(), sourceTransaction)),
                         is(false));
-        assertThat(TransactionsViewer.updateLedgerBackedShares(transfer.client(),
+        assertThat(LedgerInlineEditingPolicy.updateShares(transfer.client(),
                         new TransactionPair<>(transfer.source(), sourceTransaction), Values.Share.factorize(8)),
                         is(false));
         assertThat(transfer.source().getTransactions().get(0).getShares(), is(Values.Share.factorize(5)));
@@ -543,7 +544,7 @@ public class LedgerTransactionRoutingTest
         var dividendTransaction = dividend.source().getTransactions().get(0);
         assertThat(TransactionsViewer.canEditShares(new TransactionPair<>(dividend.source(), dividendTransaction)),
                         is(true));
-        assertThat(TransactionsViewer.updateLedgerBackedShares(dividend.client(),
+        assertThat(LedgerInlineEditingPolicy.updateShares(dividend.client(),
                         new TransactionPair<>(dividend.source(), dividendTransaction), Values.Share.factorize(9)),
                         is(true));
         assertThat(dividend.source().getTransactions().get(0).getShares(), is(Values.Share.factorize(9)));

@@ -29,23 +29,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 
-import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.BuySellEntry;
-import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.LedgerDiagnosticCode;
-import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionPair;
-import name.abuchen.portfolio.model.ledger.compatibility.LedgerBuySellTransactionCreator;
-import name.abuchen.portfolio.model.ledger.compatibility.LedgerDeliveryTransactionCreator;
-import name.abuchen.portfolio.model.ledger.compatibility.LedgerDividendTransactionCreator;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerInlineEditingField;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerInlineEditingPolicy;
-import name.abuchen.portfolio.model.ledger.compatibility.LedgerPortfolioTransferTransactionCreator;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
@@ -103,7 +94,7 @@ public final class TransactionsViewer implements ModificationListener
             if (newValue.equals(oldValue))
                 return;
 
-            if (updateLedgerBackedShares(owner.getClient(), pair, newValue.longValue()))
+            if (LedgerInlineEditingPolicy.updateShares(owner.getClient(), pair, newValue.longValue()))
             {
                 notify(element, newValue, oldValue);
                 return;
@@ -544,75 +535,6 @@ public final class TransactionsViewer implements ModificationListener
         return transaction instanceof PortfolioTransaction
                         || transaction instanceof AccountTransaction accountTransaction
                                         && accountTransaction.getType() == AccountTransaction.Type.DIVIDENDS;
-    }
-
-    static boolean updateLedgerBackedShares(Client client, TransactionPair<?> pair, long shares)
-    {
-        if (!LedgerInlineEditingPolicy.isEditable(pair, LedgerInlineEditingField.SHARES))
-            return false;
-
-        var transaction = pair.getTransaction();
-
-        if (transaction.getCrossEntry() instanceof BuySellEntry buySellEntry)
-        {
-            var creator = new LedgerBuySellTransactionCreator(client);
-            if (!creator.canUpdate(buySellEntry))
-                return false;
-
-            var portfolioTransaction = buySellEntry.getPortfolioTransaction();
-            creator.update(buySellEntry, buySellEntry.getPortfolio(), buySellEntry.getAccount(),
-                            portfolioTransaction.getType(), portfolioTransaction.getDateTime(),
-                            portfolioTransaction.getAmount(), portfolioTransaction.getCurrencyCode(),
-                            portfolioTransaction.getSecurity(), shares, portfolioTransaction.getUnits().toList(),
-                            portfolioTransaction.getNote(), portfolioTransaction.getSource());
-            return true;
-        }
-
-        if (transaction.getCrossEntry() instanceof PortfolioTransferEntry transferEntry)
-        {
-            var creator = new LedgerPortfolioTransferTransactionCreator(client);
-            if (!creator.canUpdate(transferEntry))
-                return false;
-
-            var sourceTransaction = transferEntry.getSourceTransaction();
-            creator.update(transferEntry, transferEntry.getSourcePortfolio(), transferEntry.getTargetPortfolio(),
-                            sourceTransaction.getSecurity(), sourceTransaction.getDateTime(), shares,
-                            sourceTransaction.getAmount(), sourceTransaction.getCurrencyCode(),
-                            sourceTransaction.getNote(), sourceTransaction.getSource());
-            return true;
-        }
-
-        if (transaction instanceof PortfolioTransaction portfolioTransaction)
-        {
-            var creator = new LedgerDeliveryTransactionCreator(client);
-            if (!creator.canUpdate(portfolioTransaction))
-                return false;
-
-            creator.update(portfolioTransaction, (Portfolio) pair.getOwner(),
-                            portfolioTransaction.getType(), portfolioTransaction.getDateTime(),
-                            portfolioTransaction.getAmount(), portfolioTransaction.getCurrencyCode(),
-                            portfolioTransaction.getSecurity(), shares, null, null,
-                            portfolioTransaction.getUnits().toList(), portfolioTransaction.getNote(),
-                            portfolioTransaction.getSource());
-            return true;
-        }
-
-        if (transaction instanceof AccountTransaction accountTransaction)
-        {
-            var creator = new LedgerDividendTransactionCreator(client);
-            if (!creator.canUpdate(accountTransaction))
-                return false;
-
-            creator.update(accountTransaction, (Account) pair.getOwner(),
-                            accountTransaction.getType(), accountTransaction.getDateTime(),
-                            accountTransaction.getAmount(), accountTransaction.getCurrencyCode(),
-                            accountTransaction.getSecurity(), shares, accountTransaction.getExDate(), null, null,
-                            accountTransaction.getUnits().toList(), accountTransaction.getNote(),
-                            accountTransaction.getSource());
-            return true;
-        }
-
-        return false;
     }
 
     private void hookContextMenu(Composite parent)

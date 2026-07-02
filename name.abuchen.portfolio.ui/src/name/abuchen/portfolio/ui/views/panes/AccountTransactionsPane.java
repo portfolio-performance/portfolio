@@ -46,7 +46,6 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.TransactionPair;
-import name.abuchen.portfolio.model.ledger.compatibility.LedgerDividendTransactionCreator;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerInlineEditingField;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerInlineEditingPolicy;
 import name.abuchen.portfolio.money.Money;
@@ -110,7 +109,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
         @Override
         public boolean canEdit(Object element)
         {
-            return !LedgerTransactionUiSupport.isNativeTargetedProjection((AccountTransaction) element)
+            return !LedgerInlineEditingPolicy.isNativeTargetedProjection(element)
                             && LedgerInlineEditingPolicy.isEditable(element, LedgerInlineEditingField.SHARES)
                             && ((AccountTransaction) element).getType() == AccountTransaction.Type.DIVIDENDS;
         }
@@ -129,13 +128,8 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
             if (newValue.equals(oldValue))
                 return;
 
-            var creator = new LedgerDividendTransactionCreator(client);
-            if (creator.canUpdate(transaction))
+            if (LedgerInlineEditingPolicy.updateDividendShares(client, account, transaction, newValue.longValue()))
             {
-                creator.update(transaction, account, transaction.getType(), transaction.getDateTime(),
-                                transaction.getAmount(), transaction.getCurrencyCode(), transaction.getSecurity(),
-                                newValue.longValue(), transaction.getExDate(), null, null,
-                                transaction.getUnits().toList(), transaction.getNote(), transaction.getSource());
                 notify(element, newValue, oldValue);
                 return;
             }
