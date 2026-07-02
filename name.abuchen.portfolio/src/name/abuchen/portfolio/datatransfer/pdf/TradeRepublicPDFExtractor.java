@@ -5033,9 +5033,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Abwicklungskostenpauschale -1,00 EUR
+                        // Abwicklungspauschale -1,00 EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Abwicklungskostenpauschale \\-(?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .match("^Abwicklungs(kosten)?pauschale \\-(?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("negative"))
                                 processFeeEntries(t, v, type);

@@ -1,0 +1,32 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.84.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+Herr Jeh SEITE 1 von 1
+Straße 1 DATUM 30.06.2026
+01234 Ort AUFTRAG 6fd3-cb7f
+AUSFÜHRUNG 640b-fc1a
+DEPOT 0123456789
+WERTPAPIERABRECHNUNG
+ÜBERSICHT
+Market-Order BUY am 30.06.2026 um 22:54 (Europe/Berlin).
+POSITION ANZAHL PREIS BETRAG
+NetScout Systems 13,082155 Stk. 38,25 EUR 500,39 EUR
+ISIN: US64115T1043
+GESAMT 500,39 EUR
+ABRECHNUNG
+POSITION BETRAG
+Abwicklungspauschale -1,00 EUR
+GESAMT -501,39 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+DE12100123450123456789 2026-07-02 -501,39 EUR
+NetScout Systems in Girosammelverwahrung in Deutschland
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Wird keine Umsatzsteuer ausgewiesen, handelt es sich gemäß § 4 Nr. 8 UStG um eine umsatzsteuerfreie Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke

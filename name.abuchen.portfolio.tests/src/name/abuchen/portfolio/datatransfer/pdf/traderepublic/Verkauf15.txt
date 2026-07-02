@@ -1,0 +1,58 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.84.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+Herr Jeh SEITE 1 von 2
+Straße 1 DATUM 30.06.2026
+01234 Ort AUFTRAG 694c-f111
+AUSFÜHRUNG 4308-148b
+DEPOT 0123456789
+WERTPAPIERABRECHNUNG
+ÜBERSICHT
+Market-Order Verkauf am 30.06.2026, um 21:38 Uhr (Europe/Berlin) mit der Lang und Schwarz Exchange, die zugleich Kontrahent der Transaktion ist.
+POSITION ANZAHL PREIS BETRAG
+Aflac 10 Stk. 102,75 EUR 1.027,50 EUR
+ISIN: US0010551028
+GESAMT 1.027,50 EUR
+ABRECHNUNG
+POSITION BETRAG
+Abwicklungspauschale -1,00 EUR
+Kapitalertragsteuer 0,00 EUR
+Solidaritätszuschlag 0,00 EUR
+GESAMT 1.026,50 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+DE12100123450123456789 2026-07-02 1.026,50 EUR
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+Herr Jeh SEITE 2 von 2
+Straße 1 DATUM 30.06.2026
+01234 Ort AUFTRAG 694c-f111
+AUSFÜHRUNG 4308-148b
+DEPOT 0123456789
+STEUERLICHE BEHANDLUNG
+BERECHNUNG DER STEUERBEMESSUNGSGRUNDLAGE BETRAG
+Bruttogewinn 74,30 EUR
+Verlustverrechnungstopf Aktien -74,30 EUR
+STEUERBEMESSUNGSGRUNDLAGE 0,00 EUR
+BERECHNUNG DER STEUERN BETRAG
+Steuerbemessungsgrundlage 0,00 EUR
+Kapitalertragsteuer 0,00 EUR
+Solidaritätszuschlag 0,00 EUR
+GESAMTE STEUERN 0,00 EUR
+VERRECHNUNGSTÖPFE VORHER VERÄNDERUNG NACHHER
+Verlustverrechnungstopf Aktien 430,85 EUR -74,30 EUR 356,55 EUR
+Verlustverrechnungstopf Allgemein 0,00 EUR 0,00 EUR 0,00 EUR
+Freistellungsauftrag 0,00 EUR 0,00 EUR 0,00 EUR
+Quellensteuertopf 0,00 EUR 0,00 EUR 0,00 EUR
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
