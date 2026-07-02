@@ -20,10 +20,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.AtomicMoveNotSupportedException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.security.AlgorithmParameters;
 import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
@@ -1308,73 +1304,46 @@ public class ClientFactory
     {
         PortfolioLog.info(String.format("Saving %s with %s", file.getName(), flags.toString())); //$NON-NLS-1$
 
-        var target = file.toPath();
-        var directory = target.toAbsolutePath().getParent();
-        var tempFile = Files.createTempFile(directory, "portfolio-save-", ".tmp"); //$NON-NLS-1$ //$NON-NLS-2$
-        var moved = false;
-
         // open an output stream for the file using a 64 KB buffer to speed up
         // writing
-        try
+        try (FileOutputStream stream = new FileOutputStream(file);
+                        BufferedOutputStream output = new BufferedOutputStream(stream, 65536))
         {
-            try (FileOutputStream stream = new FileOutputStream(tempFile.toFile());
-                            BufferedOutputStream output = new BufferedOutputStream(stream, 65536))
+            // lock file while writing (apparently network-attache storage is
+            // garbling up the files if it already starts syncing while the file
+            // is still being written)
+            FileChannel channel = stream.getChannel();
+            FileLock lock = null;
+
+            try
             {
-                // lock file while writing (apparently network-attache storage is
-                // garbling up the files if it already starts syncing while the file
-                // is still being written)
-                FileChannel channel = stream.getChannel();
-                FileLock lock = null;
+                // On OS X fcntl does not support locking files on AFP or SMB
+                // https://bugs.openjdk.org/browse/JDK-8167023
+                if (!Platform.getOS().equals(Platform.OS_MACOSX))
+                    lock = channel.tryLock();
+            }
+            catch (IOException e)
+            {
+                // also on some other platforms (for example reported for Linux
+                // Mint, locks are not supported on SMB shares)
 
-                try
-                {
-                    // On OS X fcntl does not support locking files on AFP or SMB
-                    // https://bugs.openjdk.org/browse/JDK-8167023
-                    if (!Platform.OS_MACOSX.equals(Platform.getOS()))
-                        lock = channel.tryLock();
-                }
-                catch (IOException e)
-                {
-                    // also on some other platforms (for example reported for Linux
-                    // Mint, locks are not supported on SMB shares)
-
-                    PortfolioLog.warning(MessageFormat.format("Failed to acquire lock {0} with message {1}", //$NON-NLS-1$
-                                    tempFile.toAbsolutePath(), e.getMessage()));
-                }
-
-                ClientPersister persister = buildPersister(flags, password);
-                persister.save(client, output);
-
-                output.flush();
-
-                if (lock != null && lock.isValid())
-                    lock.release();
+                PortfolioLog.warning(MessageFormat.format("Failed to acquire lock {0} with message {1}", //$NON-NLS-1$
+                                file.getAbsolutePath(), e.getMessage()));
             }
 
-            moveSavedFile(tempFile, target);
-            moved = true;
+            ClientPersister persister = buildPersister(flags, password);
+            persister.save(client, output);
+
+            output.flush();
+
+            if (lock != null && lock.isValid())
+                lock.release();
+
             if (updateFlags)
             {
                 client.getSaveFlags().clear();
                 client.getSaveFlags().addAll(flags);
             }
-        }
-        finally
-        {
-            if (!moved)
-                Files.deleteIfExists(tempFile);
-        }
-    }
-
-    private static void moveSavedFile(Path tempFile, Path target) throws IOException
-    {
-        try
-        {
-            Files.move(tempFile, target, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-        }
-        catch (AtomicMoveNotSupportedException e)
-        {
-            Files.move(tempFile, target, StandardCopyOption.REPLACE_EXISTING);
         }
     }
 
