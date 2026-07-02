@@ -2,10 +2,8 @@ package name.abuchen.portfolio.ui.views;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -18,13 +16,10 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.CrossEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.TransactionPair;
-import name.abuchen.portfolio.model.ledger.compatibility.LedgerNativeComponentInspectorModel;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransferDialog;
@@ -76,50 +71,14 @@ public class TransactionContextMenu
 
             manager.add(new Separator());
 
-            if (!containsLedgerNativeTargetedProjection(selection))
+            if (!LedgerTransactionUiSupport.containsNativeTargetedProjection(selection))
             {
                 manager.add(new SimpleAction(Messages.MenuTransactionDelete, a -> {
-                    deleteTransactions(owner.getClient(), selection.toArray());
+                    LedgerTransactionUiSupport.deleteTransactions(owner.getClient(), selection.toArray());
 
                     owner.markDirty();
                 }));
             }
-        }
-    }
-
-    static void deleteTransactions(Client client, Object[] selectedTransactions)
-    {
-        Set<String> deletedLedgerEntryUUIDs = new HashSet<>();
-        Set<String> deletedTransactionUUIDs = new HashSet<>();
-
-        for (Object item : selectedTransactions)
-        {
-            TransactionPair<?> pair = (TransactionPair<?>) item;
-            var transaction = pair.getTransaction();
-            var ledgerEntryUUID = pair.getLedgerEntryUUID();
-
-            if (ledgerEntryUUID.isPresent())
-            {
-                if (!deletedLedgerEntryUUIDs.add(ledgerEntryUUID.get()))
-                    continue;
-
-                pair.deleteTransaction(client);
-                continue;
-            }
-
-            if (!deletedTransactionUUIDs.add(transaction.getUUID()))
-                continue;
-
-            CrossEntry crossEntry = transaction.getCrossEntry();
-            if (crossEntry != null)
-            {
-                var crossTransaction = crossEntry.getCrossTransaction(transaction);
-
-                if (crossTransaction != null)
-                    deletedTransactionUUIDs.add(crossTransaction.getUUID());
-            }
-
-            pair.deleteTransaction(client);
         }
     }
 
@@ -131,7 +90,7 @@ public class TransactionContextMenu
                 return;
 
             TransactionPair<?> tx = (TransactionPair<?>) selection.getFirstElement();
-            if (isLedgerNativeTargetedProjection(tx))
+            if (LedgerTransactionUiSupport.isNativeTargetedProjection(tx))
                 return;
 
             tx.withAccountTransaction().ifPresent(t -> createEditAccountTransactionAction(t).run());
@@ -143,7 +102,7 @@ public class TransactionContextMenu
                 return;
 
             TransactionPair<?> tx = (TransactionPair<?>) selection.getFirstElement();
-            if (isLedgerNativeTargetedProjection(tx))
+            if (LedgerTransactionUiSupport.isNativeTargetedProjection(tx))
                 return;
 
             tx.withAccountTransaction().ifPresent(t -> createCopyAccountTransactionAction(t).run());
@@ -162,7 +121,7 @@ public class TransactionContextMenu
         if (accountTxPairs.size() != selection.size())
             return;
 
-        if (accountTxPairs.stream().anyMatch(TransactionContextMenu::isLedgerNativeTargetedProjection))
+        if (accountTxPairs.stream().anyMatch(LedgerTransactionUiSupport::isNativeTargetedProjection))
             return;
 
         var transfers = accountTxPairs.stream()
@@ -197,37 +156,18 @@ public class TransactionContextMenu
         if (txCollection.size() != selection.size())
             return;
 
-        if (txCollection.stream().anyMatch(TransactionContextMenu::isLedgerNativeTargetedProjection))
+        if (txCollection.stream().anyMatch(LedgerTransactionUiSupport::isNativeTargetedProjection))
             return;
 
-        if (supportsBuySellToDeliveryAction(txCollection))
+        if (LedgerTransactionUiSupport.supportsBuySellToDeliveryAction(txCollection))
         {
             manager.add(new ConvertBuySellToDeliveryAction(owner.getClient(), txCollection));
         }
 
-        if (supportsDeliveryToBuySellAction(txCollection))
+        if (LedgerTransactionUiSupport.supportsDeliveryToBuySellAction(txCollection))
         {
             manager.add(new ConvertDeliveryToBuySellAction(owner.getClient(), txCollection));
         }
-    }
-
-    static boolean supportsBuySellToDeliveryAction(Collection<TransactionPair<PortfolioTransaction>> txCollection)
-    {
-        return !txCollection.isEmpty() && txCollection.stream().noneMatch(TransactionContextMenu::isLedgerNativeTargetedProjection)
-                        && txCollection.stream().allMatch(tx -> {
-            var type = tx.getTransaction().getType();
-            return type == PortfolioTransaction.Type.BUY || type == PortfolioTransaction.Type.SELL;
-        });
-    }
-
-    static boolean supportsDeliveryToBuySellAction(Collection<TransactionPair<PortfolioTransaction>> txCollection)
-    {
-        return !txCollection.isEmpty() && txCollection.stream().noneMatch(TransactionContextMenu::isLedgerNativeTargetedProjection)
-                        && txCollection.stream().allMatch(tx -> {
-            var type = tx.getTransaction().getType();
-            return type == PortfolioTransaction.Type.DELIVERY_INBOUND
-                            || type == PortfolioTransaction.Type.DELIVERY_OUTBOUND;
-        });
     }
 
     private void fillContextMenuAccountTx(IMenuManager manager, boolean fullContextMenu,
@@ -235,7 +175,7 @@ public class TransactionContextMenu
     {
         LedgerNativeComponentInspectorAction.create(owner, tx.getTransaction()).ifPresent(manager::add);
 
-        if (isLedgerNativeTargetedProjection(tx))
+        if (LedgerTransactionUiSupport.isNativeTargetedProjection(tx))
             return;
 
         Action action = createEditAccountTransactionAction(tx);
@@ -261,7 +201,7 @@ public class TransactionContextMenu
 
         LedgerNativeComponentInspectorAction.create(owner, tx.getTransaction()).ifPresent(manager::add);
 
-        if (isLedgerNativeTargetedProjection(tx))
+        if (LedgerTransactionUiSupport.isNativeTargetedProjection(tx))
             return;
 
         Action editAction = createEditPortfolioTransactionAction(tx);
@@ -369,19 +309,6 @@ public class TransactionContextMenu
                             .type(SecurityTransactionDialog.class, d -> d.presetDeliveryTransaction(tx)) //
                             .parameters(tx.getTransaction().getType());
         }
-    }
-
-    static boolean containsLedgerNativeTargetedProjection(IStructuredSelection selection)
-    {
-        return selection.stream() //
-                        .filter(TransactionPair.class::isInstance) //
-                        .map(TransactionPair.class::cast) //
-                        .anyMatch(TransactionContextMenu::isLedgerNativeTargetedProjection);
-    }
-
-    static boolean isLedgerNativeTargetedProjection(TransactionPair<?> tx)
-    {
-        return LedgerNativeComponentInspectorModel.isLedgerNativeTargetedProjection(tx.getTransaction());
     }
 
 }

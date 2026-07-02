@@ -215,16 +215,18 @@ public class LedgerTransactionRoutingTest
         var transfer = ledgerPortfolioTransferFixture();
         var transferPair = new TransactionPair<>(transfer.source(), transfer.source().getTransactions().get(0));
 
-        assertThat(TransactionContextMenu.supportsBuySellToDeliveryAction(List.of(transferPair)), is(false));
-        assertThat(TransactionContextMenu.supportsDeliveryToBuySellAction(List.of(transferPair)), is(false));
+        assertThat(LedgerTransactionUiSupport.supportsBuySellToDeliveryAction(List.of(transferPair)), is(false));
+        assertThat(LedgerTransactionUiSupport.supportsDeliveryToBuySellAction(List.of(transferPair)), is(false));
 
         var buySell = ledgerBuySellFixture(PortfolioTransaction.Type.BUY);
         var buyPair = new TransactionPair<>(buySell.portfolio(), buySell.portfolio().getTransactions().get(0));
         var delivery = ledgerDeliveryFixture(PortfolioTransaction.Type.DELIVERY_INBOUND);
         var deliveryPair = new TransactionPair<>(delivery.portfolio(), delivery.portfolio().getTransactions().get(0));
 
-        assertThat(TransactionContextMenu.supportsBuySellToDeliveryAction(List.of(buyPair, deliveryPair)), is(false));
-        assertThat(TransactionContextMenu.supportsDeliveryToBuySellAction(List.of(buyPair, deliveryPair)), is(false));
+        assertThat(LedgerTransactionUiSupport.supportsBuySellToDeliveryAction(List.of(buyPair, deliveryPair)),
+                        is(false));
+        assertThat(LedgerTransactionUiSupport.supportsDeliveryToBuySellAction(List.of(buyPair, deliveryPair)),
+                        is(false));
     }
 
     /**
@@ -666,7 +668,7 @@ public class LedgerTransactionRoutingTest
     public void testAllTransactionsViewExpandsTransfersWithoutChangingClientDeduplication() throws Exception
     {
         var legacyAccountTransfer = legacyAccountTransferFixture();
-        var legacyAccountTransactions = AllTransactionsView.getTransactionsForView(legacyAccountTransfer.client());
+        var legacyAccountTransactions = LedgerTransactionUiSupport.transactionsForView(legacyAccountTransfer.client());
 
         assertThat(legacyAccountTransactions.size(), is(2));
         assertSame(legacyAccountTransfer.source(), legacyAccountTransactions.get(0).getOwner());
@@ -678,7 +680,7 @@ public class LedgerTransactionRoutingTest
         assertThat(legacyAccountTransfer.client().getAllTransactions().size(), is(1));
 
         var ledgerAccountTransfer = ledgerAccountTransferFixture();
-        var ledgerAccountTransactions = AllTransactionsView.getTransactionsForView(ledgerAccountTransfer.client());
+        var ledgerAccountTransactions = LedgerTransactionUiSupport.transactionsForView(ledgerAccountTransfer.client());
 
         assertThat(ledgerAccountTransactions.size(), is(2));
         assertSame(ledgerAccountTransfer.source(), ledgerAccountTransactions.get(0).getOwner());
@@ -690,14 +692,15 @@ public class LedgerTransactionRoutingTest
         assertSame(ledgerEntry(ledgerAccountTransactions.get(0).getTransaction()),
                         ledgerEntry(ledgerAccountTransactions.get(1).getTransaction()));
         assertThat(ledgerAccountTransfer.client().getAllTransactions().size(), is(1));
-        assertThat(AllTransactionsView.matchesClientFilter(
+        assertThat(LedgerTransactionUiSupport.matchesClientFilter(
                         new PortfolioClientFilter(List.of(), List.of(ledgerAccountTransfer.source())),
                         ledgerAccountTransactions.get(0)), is(true));
-        assertThat(AllTransactionsView.matchesClientFilter(
+        assertThat(LedgerTransactionUiSupport.matchesClientFilter(
                         new PortfolioClientFilter(List.of(), List.of(ledgerAccountTransfer.source())),
                         ledgerAccountTransactions.get(1)), is(false));
 
-        var reloadedAccountTransfer = AllTransactionsView.getTransactionsForView(reloadXml(ledgerAccountTransfer.client()));
+        var reloadedAccountTransfer = LedgerTransactionUiSupport
+                        .transactionsForView(reloadXml(ledgerAccountTransfer.client()));
         assertThat(reloadedAccountTransfer.size(), is(2));
         assertThat(((AccountTransaction) reloadedAccountTransfer.get(0).getTransaction()).getType(),
                         is(AccountTransaction.Type.TRANSFER_OUT));
@@ -707,7 +710,8 @@ public class LedgerTransactionRoutingTest
                         ledgerEntry(reloadedAccountTransfer.get(1).getTransaction()));
 
         var legacyPortfolioTransfer = legacyPortfolioTransferFixture();
-        var legacyPortfolioTransactions = AllTransactionsView.getTransactionsForView(legacyPortfolioTransfer.client());
+        var legacyPortfolioTransactions = LedgerTransactionUiSupport
+                        .transactionsForView(legacyPortfolioTransfer.client());
 
         assertThat(legacyPortfolioTransactions.size(), is(2));
         assertSame(legacyPortfolioTransfer.source(), legacyPortfolioTransactions.get(0).getOwner());
@@ -719,7 +723,8 @@ public class LedgerTransactionRoutingTest
         assertThat(legacyPortfolioTransfer.client().getAllTransactions().size(), is(1));
 
         var ledgerPortfolioTransfer = ledgerPortfolioTransferFixture();
-        var ledgerPortfolioTransactions = AllTransactionsView.getTransactionsForView(ledgerPortfolioTransfer.client());
+        var ledgerPortfolioTransactions = LedgerTransactionUiSupport
+                        .transactionsForView(ledgerPortfolioTransfer.client());
 
         assertThat(ledgerPortfolioTransactions.size(), is(2));
         assertSame(ledgerPortfolioTransfer.source(), ledgerPortfolioTransactions.get(0).getOwner());
@@ -731,15 +736,15 @@ public class LedgerTransactionRoutingTest
         assertSame(ledgerEntry(ledgerPortfolioTransactions.get(0).getTransaction()),
                         ledgerEntry(ledgerPortfolioTransactions.get(1).getTransaction()));
         assertThat(ledgerPortfolioTransfer.client().getAllTransactions().size(), is(1));
-        assertThat(AllTransactionsView.matchesClientFilter(
+        assertThat(LedgerTransactionUiSupport.matchesClientFilter(
                         new PortfolioClientFilter(List.of(ledgerPortfolioTransfer.source()), List.of()),
                         ledgerPortfolioTransactions.get(0)), is(true));
-        assertThat(AllTransactionsView.matchesClientFilter(
+        assertThat(LedgerTransactionUiSupport.matchesClientFilter(
                         new PortfolioClientFilter(List.of(ledgerPortfolioTransfer.source()), List.of()),
                         ledgerPortfolioTransactions.get(1)), is(false));
 
-        var reloadedPortfolioTransfer = AllTransactionsView
-                        .getTransactionsForView(reloadXml(ledgerPortfolioTransfer.client()));
+        var reloadedPortfolioTransfer = LedgerTransactionUiSupport
+                        .transactionsForView(reloadXml(ledgerPortfolioTransfer.client()));
         assertThat(reloadedPortfolioTransfer.size(), is(2));
         assertThat(((PortfolioTransaction) reloadedPortfolioTransfer.get(0).getTransaction()).getType(),
                         is(PortfolioTransaction.Type.TRANSFER_OUT));
@@ -748,12 +753,13 @@ public class LedgerTransactionRoutingTest
         assertSame(ledgerEntry(reloadedPortfolioTransfer.get(0).getTransaction()),
                         ledgerEntry(reloadedPortfolioTransfer.get(1).getTransaction()));
 
-        assertThat(AllTransactionsView.getTransactionsForView(legacyBuySellFixture(PortfolioTransaction.Type.BUY).client())
+        assertThat(LedgerTransactionUiSupport
+                        .transactionsForView(legacyBuySellFixture(PortfolioTransaction.Type.BUY).client())
                         .size(), is(1));
         var ledgerBuySell = ledgerBuySellFixture(PortfolioTransaction.Type.BUY);
-        var ledgerBuySellTransactions = AllTransactionsView.getTransactionsForView(ledgerBuySell.client());
+        var ledgerBuySellTransactions = LedgerTransactionUiSupport.transactionsForView(ledgerBuySell.client());
         assertThat(ledgerBuySellTransactions.size(), is(1));
-        assertThat(AllTransactionsView.matchesClientFilter(
+        assertThat(LedgerTransactionUiSupport.matchesClientFilter(
                         new PortfolioClientFilter(List.of(), List.of(ledgerBuySell.account())),
                         ledgerBuySellTransactions.get(0)), is(true));
     }
@@ -1073,16 +1079,16 @@ public class LedgerTransactionRoutingTest
     {
         var pair = new TransactionPair<>(owner, transaction);
 
-        assertThat(TransactionContextMenu.supportsBuySellToDeliveryAction(List.of(pair)), is(true));
-        assertThat(TransactionContextMenu.supportsDeliveryToBuySellAction(List.of(pair)), is(false));
+        assertThat(LedgerTransactionUiSupport.supportsBuySellToDeliveryAction(List.of(pair)), is(true));
+        assertThat(LedgerTransactionUiSupport.supportsDeliveryToBuySellAction(List.of(pair)), is(false));
     }
 
     private void assertSupportedDeliveryToBuySellContextMenuRoute(Portfolio owner, PortfolioTransaction transaction)
     {
         var pair = new TransactionPair<>(owner, transaction);
 
-        assertThat(TransactionContextMenu.supportsDeliveryToBuySellAction(List.of(pair)), is(true));
-        assertThat(TransactionContextMenu.supportsBuySellToDeliveryAction(List.of(pair)), is(false));
+        assertThat(LedgerTransactionUiSupport.supportsDeliveryToBuySellAction(List.of(pair)), is(true));
+        assertThat(LedgerTransactionUiSupport.supportsBuySellToDeliveryAction(List.of(pair)), is(false));
     }
 
     private void assertSupportedAccountEditRoute(Client client, Account owner, AccountTransaction transaction,

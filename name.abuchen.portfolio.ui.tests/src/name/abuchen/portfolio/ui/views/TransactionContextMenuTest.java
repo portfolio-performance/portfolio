@@ -58,9 +58,9 @@ public class TransactionContextMenuTest
 
         var transaction = fixture.portfolio().getTransactions().get(0);
 
-        assertThat(TransactionContextMenu.supportsBuySellToDeliveryAction(
+        assertThat(LedgerTransactionUiSupport.supportsBuySellToDeliveryAction(
                         List.of(new TransactionPair<>(fixture.portfolio(), transaction))), is(true));
-        assertThat(TransactionContextMenu.supportsDeliveryToBuySellAction(
+        assertThat(LedgerTransactionUiSupport.supportsDeliveryToBuySellAction(
                         List.of(new TransactionPair<>(fixture.portfolio(), transaction))), is(false));
     }
 
@@ -81,9 +81,9 @@ public class TransactionContextMenuTest
 
         var transaction = fixture.portfolio().getTransactions().get(0);
 
-        assertThat(TransactionContextMenu.supportsDeliveryToBuySellAction(
+        assertThat(LedgerTransactionUiSupport.supportsDeliveryToBuySellAction(
                         List.of(new TransactionPair<>(fixture.portfolio(), transaction))), is(true));
-        assertThat(TransactionContextMenu.supportsBuySellToDeliveryAction(
+        assertThat(LedgerTransactionUiSupport.supportsBuySellToDeliveryAction(
                         List.of(new TransactionPair<>(fixture.portfolio(), transaction))), is(false));
     }
 
@@ -109,8 +109,8 @@ public class TransactionContextMenuTest
                         .map(transaction -> new TransactionPair<>(fixture.portfolio(), transaction)) //
                         .toList();
 
-        assertThat(TransactionContextMenu.supportsBuySellToDeliveryAction(pairs), is(false));
-        assertThat(TransactionContextMenu.supportsDeliveryToBuySellAction(pairs), is(false));
+        assertThat(LedgerTransactionUiSupport.supportsBuySellToDeliveryAction(pairs), is(false));
+        assertThat(LedgerTransactionUiSupport.supportsDeliveryToBuySellAction(pairs), is(false));
     }
 
     /**
@@ -131,7 +131,7 @@ public class TransactionContextMenuTest
         assertThat(portfolioPair.getTransaction().getUUID().equals(accountPair.getTransaction().getUUID()), is(false));
         assertThat(portfolioPair.getLedgerEntryUUID(), is(accountPair.getLedgerEntryUUID()));
 
-        TransactionContextMenu.deleteTransactions(fixture.client(), new Object[] { portfolioPair, accountPair });
+        LedgerTransactionUiSupport.deleteTransactions(fixture.client(), new Object[] { portfolioPair, accountPair });
 
         assertTrue(fixture.account().getTransactions().isEmpty());
         assertTrue(fixture.portfolio().getTransactions().isEmpty());
@@ -156,7 +156,7 @@ public class TransactionContextMenuTest
         assertThat(sourcePair.getTransaction().getUUID().equals(targetPair.getTransaction().getUUID()), is(false));
         assertThat(sourcePair.getLedgerEntryUUID(), is(targetPair.getLedgerEntryUUID()));
 
-        TransactionContextMenu.deleteTransactions(fixture.client(), new Object[] { sourcePair, targetPair });
+        LedgerTransactionUiSupport.deleteTransactions(fixture.client(), new Object[] { sourcePair, targetPair });
 
         assertTrue(fixture.source().getTransactions().isEmpty());
         assertTrue(fixture.target().getTransactions().isEmpty());
@@ -181,7 +181,7 @@ public class TransactionContextMenuTest
         assertThat(sourcePair.getTransaction().getUUID().equals(targetPair.getTransaction().getUUID()), is(false));
         assertThat(sourcePair.getLedgerEntryUUID(), is(targetPair.getLedgerEntryUUID()));
 
-        TransactionContextMenu.deleteTransactions(fixture.client(), new Object[] { sourcePair, targetPair });
+        LedgerTransactionUiSupport.deleteTransactions(fixture.client(), new Object[] { sourcePair, targetPair });
 
         assertTrue(fixture.source().getTransactions().isEmpty());
         assertTrue(fixture.target().getTransactions().isEmpty());
@@ -213,7 +213,7 @@ public class TransactionContextMenuTest
         legacyTransaction.setCurrencyCode(CurrencyUnit.EUR);
         fixture.account().addTransaction(legacyTransaction);
 
-        TransactionContextMenu.deleteTransactions(fixture.client(),
+        LedgerTransactionUiSupport.deleteTransactions(fixture.client(),
                         new Object[] { new TransactionPair<>(fixture.portfolio(),
                                         firstLedgerEntry.getPortfolioTransaction()),
                                         new TransactionPair<>(fixture.account(),
@@ -240,7 +240,7 @@ public class TransactionContextMenuTest
                         AccountTransaction.Type.FEES, DATE_TIME, Values.Amount.factorize(123), CurrencyUnit.EUR, null,
                         List.of(), "note", "source");
 
-        TransactionContextMenu.deleteTransactions(fixture.client(),
+        LedgerTransactionUiSupport.deleteTransactions(fixture.client(),
                         new Object[] { new TransactionPair<>(fixture.account(), transaction) });
 
         assertTrue(fixture.account().getTransactions().isEmpty());
@@ -286,7 +286,7 @@ public class TransactionContextMenuTest
         entry.setCurrencyCode(CurrencyUnit.EUR);
         entry.insert();
 
-        TransactionContextMenu.deleteTransactions(fixture.client(),
+        LedgerTransactionUiSupport.deleteTransactions(fixture.client(),
                         new Object[] { new TransactionPair<>(fixture.portfolio(), entry.getPortfolioTransaction()),
                                         new TransactionPair<>(fixture.account(), entry.getAccountTransaction()) });
 
@@ -310,7 +310,7 @@ public class TransactionContextMenuTest
         transfer.setCurrencyCode(CurrencyUnit.EUR);
         transfer.insert();
 
-        TransactionContextMenu.deleteTransactions(fixture.client(),
+        LedgerTransactionUiSupport.deleteTransactions(fixture.client(),
                         new Object[] { new TransactionPair<>(fixture.source(), transfer.getSourceTransaction()),
                                         new TransactionPair<>(fixture.target(), transfer.getTargetTransaction()) });
 
@@ -336,7 +336,7 @@ public class TransactionContextMenuTest
         transfer.setCurrencyCode(CurrencyUnit.EUR);
         transfer.insert();
 
-        TransactionContextMenu.deleteTransactions(fixture.client(),
+        LedgerTransactionUiSupport.deleteTransactions(fixture.client(),
                         new Object[] { new TransactionPair<>(fixture.source(), transfer.getSourceTransaction()),
                                         new TransactionPair<>(fixture.target(), transfer.getTargetTransaction()) });
 

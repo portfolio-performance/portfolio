@@ -49,7 +49,6 @@ import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerDividendTransactionCreator;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerInlineEditingField;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerInlineEditingPolicy;
-import name.abuchen.portfolio.model.ledger.compatibility.LedgerNativeComponentInspectorModel;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.money.Quote;
@@ -87,6 +86,7 @@ import name.abuchen.portfolio.ui.util.viewers.TransactionTypeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 import name.abuchen.portfolio.ui.views.AccountContextMenu;
 import name.abuchen.portfolio.ui.views.AccountListView;
+import name.abuchen.portfolio.ui.views.LedgerTransactionUiSupport;
 import name.abuchen.portfolio.ui.views.actions.ConvertTransferToDepositRemovalAction;
 import name.abuchen.portfolio.ui.views.actions.CreateRemovalForDividendAction;
 import name.abuchen.portfolio.ui.views.actions.LedgerNativeComponentInspectorAction;
@@ -110,7 +110,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
         @Override
         public boolean canEdit(Object element)
         {
-            return !isLedgerNativeTargetedProjection((AccountTransaction) element)
+            return !LedgerTransactionUiSupport.isNativeTargetedProjection((AccountTransaction) element)
                             && LedgerInlineEditingPolicy.isEditable(element, LedgerInlineEditingField.SHARES)
                             && ((AccountTransaction) element).getType() == AccountTransaction.Type.DIVIDENDS;
         }
@@ -593,7 +593,8 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
                     AccountTransaction transaction = (AccountTransaction) ((IStructuredSelection) transactions
                                     .getSelection()).getFirstElement();
 
-                    if (account != null && transaction != null && !isLedgerNativeTargetedProjection(transaction))
+                    if (account != null && transaction != null
+                                    && !LedgerTransactionUiSupport.isNativeTargetedProjection(transaction))
                         createEditAction(account, transaction).run();
                 }
                 if (e.keyCode == 'd' && e.stateMask == SWT.MOD1)
@@ -601,7 +602,8 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
                     AccountTransaction transaction = (AccountTransaction) ((IStructuredSelection) transactions
                                     .getSelection()).getFirstElement();
 
-                    if (account != null && transaction != null && !isLedgerNativeTargetedProjection(transaction))
+                    if (account != null && transaction != null
+                                    && !LedgerTransactionUiSupport.isNativeTargetedProjection(transaction))
                         createCopyAction(account, transaction).run();
                 }
             }
@@ -620,7 +622,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
         {
             LedgerNativeComponentInspectorAction.create(view, transaction).ifPresent(manager::add);
 
-            if (isLedgerNativeTargetedProjection(transaction))
+            if (LedgerTransactionUiSupport.isNativeTargetedProjection(transaction))
                 return;
 
             Action action = createEditAction(account, transaction);
@@ -642,7 +644,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
             fillCreateRemovalForDividendAction(manager, selection);
         }
 
-        if (transaction != null && !containsLedgerNativeTargetedProjection(selection))
+        if (transaction != null && !LedgerTransactionUiSupport.containsNativeTargetedAccountTransaction(selection))
         {
             manager.add(new Separator());
 
@@ -669,7 +671,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
 
     private void fillConvertTransferToDepositRemovalAction(IMenuManager manager, IStructuredSelection selection)
     {
-        if (containsLedgerNativeTargetedProjection(selection))
+        if (LedgerTransactionUiSupport.containsNativeTargetedAccountTransaction(selection))
             return;
 
         // create collection with all selected transactions
@@ -699,7 +701,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
 
     private void fillCreateRemovalForDividendAction(IMenuManager manager, IStructuredSelection selection)
     {
-        if (containsLedgerNativeTargetedProjection(selection))
+        if (LedgerTransactionUiSupport.containsNativeTargetedAccountTransaction(selection))
             return;
 
         // create collection with all selected transactions
@@ -713,19 +715,6 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
             manager.add(new Separator());
             manager.add(new CreateRemovalForDividendAction(client, dividendTransactionPairs));
         }
-    }
-
-    private static boolean containsLedgerNativeTargetedProjection(IStructuredSelection selection)
-    {
-        return selection.stream() //
-                        .filter(AccountTransaction.class::isInstance) //
-                        .map(AccountTransaction.class::cast) //
-                        .anyMatch(AccountTransactionsPane::isLedgerNativeTargetedProjection);
-    }
-
-    private static boolean isLedgerNativeTargetedProjection(AccountTransaction transaction)
-    {
-        return LedgerNativeComponentInspectorModel.isLedgerNativeTargetedProjection(transaction);
     }
 
     private Action createEditAction(Account account, AccountTransaction transaction)
