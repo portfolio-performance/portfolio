@@ -14,7 +14,6 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.time.Instant;
@@ -408,14 +407,12 @@ public class InsertActionTest
         imported.setDate(generated.getDateTime());
         imported.setSecurity(security);
 
-        InsertAction insert = new InsertAction(client);
-        var update = InsertAction.class.getDeclaredMethod("updateLedgerBackedInvestmentPlanTransaction",
-                        Transaction.class, BuySellEntry.class);
-        update.setAccessible(true);
+        LedgerImportInsertionSupport insert = new LedgerImportInsertionSupport(client);
 
-        var exception = assertThrows(InvocationTargetException.class, () -> update.invoke(insert, generated, imported));
+        var exception = assertThrows(UnsupportedOperationException.class,
+                        () -> insert.updateLedgerBackedInvestmentPlanTransaction(generated, imported));
 
-        assertThat(exception.getCause().getMessage(), is(LedgerDiagnosticCode.LEDGER_UI_006.message(
+        assertThat(exception.getMessage(), is(LedgerDiagnosticCode.LEDGER_UI_006.message(
                         Messages.LedgerInsertActionGeneratedBuyTypeMismatch)));
     }
 
