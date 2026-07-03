@@ -218,12 +218,12 @@ public final class LedgerStructuralValidator
                 requireCorporatePrimary(entry, LedgerProjectionRole.OLD_SECURITY_LEG,
                                 LedgerPostingSemanticRole.SECURITY, CorporateActionLeg.SOURCE_SECURITY,
                                 LedgerPostingDirection.OUTBOUND, false, false, issues);
-                requireCorporatePrimary(entry, LedgerProjectionRole.NEW_SECURITY_LEG,
+                requireRepeatableCorporatePrimary(entry, LedgerProjectionRole.NEW_SECURITY_LEG,
                                 LedgerPostingSemanticRole.SECURITY, CorporateActionLeg.TARGET_SECURITY,
-                                LedgerPostingDirection.INBOUND, true, false, issues);
-                requireCorporatePrimary(entry, LedgerProjectionRole.CASH_COMPENSATION,
+                                LedgerPostingDirection.INBOUND, false, issues, LedgerProjectionRole.DELIVERY_INBOUND);
+                requireRepeatableCorporatePrimary(entry, LedgerProjectionRole.CASH_COMPENSATION,
                                 LedgerPostingSemanticRole.CASH_COMPENSATION, CorporateActionLeg.CASH_COMPENSATION,
-                                LedgerPostingDirection.NEUTRAL, false, true, issues);
+                                LedgerPostingDirection.NEUTRAL, true, issues);
             }
             case STOCK_DIVIDEND, BONUS_ISSUE -> {
                 requireCorporatePrimary(entry, LedgerProjectionRole.DELIVERY_INBOUND,
@@ -330,6 +330,27 @@ public final class LedgerStructuralValidator
         validatePrimaryMatches(entry, role, OwnerKind.PORTFOLIO, optional, matches, issues);
     }
 
+    private static void requireRepeatableCorporatePrimary(LedgerEntry entry, LedgerProjectionRole role,
+                    LedgerPostingSemanticRole semanticRole, CorporateActionLeg leg, LedgerPostingDirection direction,
+                    boolean optional, List<ValidationIssue> issues, LedgerProjectionRole... excludedLocalKeys)
+    {
+        var matches = entry.getPostings().stream() //
+                        .filter(posting -> matchesPrimary(posting, semanticRole, direction, leg)) //
+                        .filter(posting -> !hasExcludedLocalKey(posting, excludedLocalKeys)) //
+                        .toList();
+
+        validateRepeatablePrimaryMatches(entry, role, OwnerKind.PORTFOLIO_OR_ACCOUNT, optional, matches, issues);
+    }
+
+    private static boolean hasExcludedLocalKey(LedgerPosting posting, LedgerProjectionRole... excludedLocalKeys)
+    {
+        for (var role : excludedLocalKeys)
+            if (role.name().equals(posting.getLocalKey()))
+                return true;
+
+        return false;
+    }
+
     private static void requirePrimary(LedgerEntry entry, LedgerProjectionRole role,
                     LedgerPostingSemanticRole semanticRole, LedgerPostingDirection direction, OwnerKind ownerKind,
                     CorporateActionLeg leg, boolean optional, List<ValidationIssue> issues)
@@ -363,6 +384,53 @@ public final class LedgerStructuralValidator
 
         for (var posting : matches)
             validateOwner(entry, role, posting, ownerKind, issues);
+    }
+
+    private static void validateRepeatablePrimaryMatches(LedgerEntry entry, LedgerProjectionRole role,
+                    OwnerKind ownerKind, boolean optional, List<LedgerPosting> matches, List<ValidationIssue> issues)
+    {
+        if (matches.isEmpty())
+        {
+            if (!optional)
+                issues.add(entryIssue(missingIssueCode(role),
+                                LedgerDiagnosticCode.LEDGER_STRUCT_016
+                                                .message("Required semantic primary posting is missing for " + role), //$NON-NLS-1$
+                                entry).withDetail("projectionRole", role)); //$NON-NLS-1$
+            return;
+        }
+
+        if (matches.size() > 1)
+            validateRepeatablePrimaryLocalKeys(entry, role, matches, issues);
+
+        for (var posting : matches)
+            validateOwner(entry, role, posting, ownerKind, issues);
+    }
+
+    private static void validateRepeatablePrimaryLocalKeys(LedgerEntry entry, LedgerProjectionRole role,
+                    List<LedgerPosting> matches, List<ValidationIssue> issues)
+    {
+        var localKeys = new HashSet<String>();
+
+        for (var posting : matches)
+        {
+            if (isBlank(posting.getLocalKey()))
+            {
+                issues.add(postingIssue(IssueCode.SEMANTIC_LOCAL_KEY_REQUIRED,
+                                LedgerDiagnosticCode.LEDGER_STRUCT_027
+                                                .message("Repeated semantic primary posting requires a local key for " //$NON-NLS-1$
+                                                                + role),
+                                entry, posting).withDetail("projectionRole", role)); //$NON-NLS-1$
+            }
+            else if (!localKeys.add(posting.getLocalKey()))
+            {
+                issues.add(entryIssue(ambiguousIssueCode(role),
+                                LedgerDiagnosticCode.LEDGER_STRUCT_017
+                                                .message("Repeated semantic primary posting local key is duplicated for " //$NON-NLS-1$
+                                                                + role),
+                                entry).withDetail("projectionRole", role) //$NON-NLS-1$
+                                                .withDetail("localKey", posting.getLocalKey())); //$NON-NLS-1$
+            }
+        }
     }
 
     private static IssueCode missingIssueCode(LedgerProjectionRole role)

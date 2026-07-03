@@ -173,6 +173,67 @@ public class LedgerStructuralValidatorTest
         assertIssue(entry, IssueCode.SEMANTIC_LOCAL_KEY_REQUIRED);
     }
 
+    @Test
+    public void testSpinOffAcceptsRepeatedTargetLegsWithDistinctLocalKeys()
+    {
+        var entry = nativeEntry(LedgerEntryType.SPIN_OFF);
+        var target = posting(entry, CorporateActionLeg.TARGET_SECURITY);
+        var duplicate = securityPosting("target-2", LedgerPostingDirection.INBOUND, //$NON-NLS-1$
+                        CorporateActionLeg.TARGET_SECURITY);
+
+        target.setLocalKey("target-1"); //$NON-NLS-1$
+        target.setGroupKey("main"); //$NON-NLS-1$
+        duplicate.setGroupKey("main"); //$NON-NLS-1$
+        entry.addPosting(duplicate);
+
+        assertOK(LedgerStructuralValidator.validate(ledger(entry)));
+    }
+
+    @Test
+    public void testSpinOffRejectsRepeatedTargetLegsWithDuplicateLocalKey()
+    {
+        var entry = nativeEntry(LedgerEntryType.SPIN_OFF);
+        var target = posting(entry, CorporateActionLeg.TARGET_SECURITY);
+        var duplicate = securityPosting("target-1", LedgerPostingDirection.INBOUND, //$NON-NLS-1$
+                        CorporateActionLeg.TARGET_SECURITY);
+
+        target.setLocalKey("target-1"); //$NON-NLS-1$
+        entry.addPosting(duplicate);
+
+        assertIssue(entry, IssueCode.SEMANTIC_TARGET_AMBIGUOUS);
+    }
+
+    @Test
+    public void testSpinOffWithoutTargetLegIsRejected()
+    {
+        var entry = nativeEntry(LedgerEntryType.SPIN_OFF);
+        entry.removePosting(posting(entry, CorporateActionLeg.TARGET_SECURITY));
+
+        assertIssue(entry, IssueCode.SEMANTIC_TARGET_REQUIRED);
+    }
+
+    @Test
+    public void testSpinOffAcceptsRepeatedCashCompensationWithDistinctLocalKeys()
+    {
+        var entry = nativeEntry(LedgerEntryType.SPIN_OFF);
+
+        entry.addPosting(cashCompensationPosting("cash-1")); //$NON-NLS-1$
+        entry.addPosting(cashCompensationPosting("cash-2")); //$NON-NLS-1$
+
+        assertOK(LedgerStructuralValidator.validate(ledger(entry)));
+    }
+
+    @Test
+    public void testSpinOffRejectsRepeatedCashCompensationWithDuplicateLocalKey()
+    {
+        var entry = nativeEntry(LedgerEntryType.SPIN_OFF);
+
+        entry.addPosting(cashCompensationPosting("cash-1")); //$NON-NLS-1$
+        entry.addPosting(cashCompensationPosting("cash-1")); //$NON-NLS-1$
+
+        assertIssue(entry, IssueCode.SEMANTIC_PRIMARY_AMBIGUOUS);
+    }
+
     private Ledger createStandardLedger()
     {
         return ledger(entry(LedgerEntryType.DEPOSIT));
@@ -295,6 +356,15 @@ public class LedgerStructuralValidatorTest
     {
         var posting = securityPosting(localKey, direction);
         posting.setCorporateActionLeg(leg);
+        posting.setGroupKey(localKey);
+        return posting;
+    }
+
+    private LedgerPosting cashCompensationPosting(String localKey)
+    {
+        var posting = accountPosting(localKey, LedgerPostingType.CASH_COMPENSATION,
+                        LedgerPostingSemanticRole.CASH_COMPENSATION, LedgerPostingDirection.NEUTRAL);
+        posting.setCorporateActionLeg(CorporateActionLeg.CASH_COMPENSATION);
         posting.setGroupKey(localKey);
         return posting;
     }

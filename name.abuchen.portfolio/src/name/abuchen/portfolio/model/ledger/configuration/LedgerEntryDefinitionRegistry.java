@@ -435,7 +435,7 @@ public final class LedgerEntryDefinitionRegistry
                                         .optionalParameters(spinOffSourceSecurityLegOptionalParameters())
                                         .projection(LedgerProjectionRole.OLD_SECURITY_LEG, true, false).build(),
                         LedgerLegDefinition.of(LedgerLegRole.TARGET_SECURITY_LEG, LedgerPostingType.SECURITY,
-                                        LedgerLegCardinality.EXACTLY_ONE)
+                                        LedgerLegCardinality.AT_LEAST_ONE)
                                         .requiredParameters(SETS.parameterTypes(
                                                         LedgerParameterType.CORPORATE_ACTION_LEG,
                                                         LedgerParameterType.TARGET_SECURITY,
@@ -444,7 +444,7 @@ public final class LedgerEntryDefinitionRegistry
                                         .optionalParameters(spinOffTargetSecurityLegOptionalParameters())
                                         .projection(LedgerProjectionRole.NEW_SECURITY_LEG, true, false).build(),
                         LedgerLegDefinition.of(LedgerLegRole.CASH_COMPENSATION_LEG,
-                                        LedgerPostingType.CASH_COMPENSATION, LedgerLegCardinality.OPTIONAL)
+                                        LedgerPostingType.CASH_COMPENSATION, LedgerLegCardinality.REPEATABLE)
                                         .optionalParameters(cashCompensationOptionalParameters())
                                         .projection(LedgerProjectionRole.CASH_COMPENSATION, true, true)
                                         .group(CASH_COMPENSATION_GROUP).build(),

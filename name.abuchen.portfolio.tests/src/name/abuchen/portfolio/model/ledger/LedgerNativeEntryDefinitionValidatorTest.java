@@ -159,14 +159,8 @@ public class LedgerNativeEntryDefinitionValidatorTest
         assertIssue(entry, IssueCode.REQUIRED_PROJECTION_MISSING);
     }
 
-    /**
-     * Checks that semantic instance keys do not widen the current SPIN_OFF
-     * definition by themselves.
-     * Two target security legs remain invalid until the definition is explicitly
-     * changed from exactly one to a repeatable cardinality in a later slice.
-     */
     @Test
-    public void testCurrentSpinOffDefinitionStillRejectsRepeatedTargetLegs()
+    public void testSpinOffDefinitionAcceptsRepeatedTargetLegsWithDistinctLocalKeys()
     {
         var entry = copyValidSpinOff();
         var targetPosting = postingFor(entry, LedgerProjectionRole.NEW_SECURITY_LEG);
@@ -179,7 +173,41 @@ public class LedgerNativeEntryDefinitionValidatorTest
         duplicateTarget.setGroupKey("main");
         entry.addPosting(duplicateTarget);
 
-        assertIssue(entry, IssueCode.LEG_CARDINALITY_VIOLATED);
+        assertOK(entry);
+    }
+
+    @Test
+    public void testSpinOffDefinitionAcceptsRepeatedCashCompensationWithDistinctLocalKeys()
+    {
+        var entry = copyValidSpinOff();
+        var compensation = postingFor(entry, LedgerProjectionRole.CASH_COMPENSATION);
+        var duplicateCompensation = LedgerModelCopy.copyPosting(compensation);
+
+        compensation.setLocalKey("cash-1");
+        compensation.setGroupKey("cash-1");
+        duplicateCompensation.setUUID("duplicate-cash-compensation");
+        duplicateCompensation.setLocalKey("cash-2");
+        duplicateCompensation.setGroupKey("cash-2");
+        entry.addPosting(duplicateCompensation);
+
+        assertOK(entry);
+    }
+
+    @Test
+    public void testSpinOffDefinitionRejectsDuplicateCashCompensationLocalKey()
+    {
+        var entry = copyValidSpinOff();
+        var compensation = postingFor(entry, LedgerProjectionRole.CASH_COMPENSATION);
+        var duplicateCompensation = LedgerModelCopy.copyPosting(compensation);
+
+        compensation.setLocalKey("cash-1");
+        compensation.setGroupKey("cash-1");
+        duplicateCompensation.setUUID("duplicate-cash-compensation");
+        duplicateCompensation.setLocalKey("cash-1");
+        duplicateCompensation.setGroupKey("cash-2");
+        entry.addPosting(duplicateCompensation);
+
+        assertIssue(entry, IssueCode.REQUIRED_PROJECTION_MISSING);
     }
 
     /**
@@ -376,6 +404,13 @@ public class LedgerNativeEntryDefinitionValidatorTest
 
         assertTrue(result.format(), result.hasIssue(code));
         assertTrue(result.format(), result.format().contains("[LEDGER-STRUCT-"));
+    }
+
+    private static void assertOK(LedgerEntry entry)
+    {
+        var result = LedgerNativeEntryDefinitionValidator.validate(entry);
+
+        assertTrue(result.format(), result.isOK());
     }
 
     private static LedgerEntry copyValidSpinOff()

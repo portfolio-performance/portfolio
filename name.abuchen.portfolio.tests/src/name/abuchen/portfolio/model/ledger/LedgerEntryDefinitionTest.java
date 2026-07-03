@@ -275,7 +275,7 @@ public class LedgerEntryDefinitionTest
         assertFalse(sourceLeg.isPostingGroupExpected());
 
         var targetLeg = assertLeg(definition, LedgerLegRole.TARGET_SECURITY_LEG, LedgerPostingType.SECURITY,
-                        LedgerLegCardinality.EXACTLY_ONE);
+                        LedgerLegCardinality.AT_LEAST_ONE);
         assertTrue(targetLeg.getRequiredParameterTypes().contains(LedgerParameterType.CORPORATE_ACTION_LEG));
         assertTrue(targetLeg.getRequiredParameterTypes().contains(LedgerParameterType.TARGET_SECURITY));
         assertTrue(targetLeg.getRequiredParameterTypes().contains(LedgerParameterType.RATIO_NUMERATOR));
@@ -286,7 +286,7 @@ public class LedgerEntryDefinitionTest
         assertFalse(targetLeg.isPostingGroupExpected());
 
         var cashLeg = assertLeg(definition, LedgerLegRole.CASH_COMPENSATION_LEG,
-                        LedgerPostingType.CASH_COMPENSATION, LedgerLegCardinality.OPTIONAL);
+                        LedgerPostingType.CASH_COMPENSATION, LedgerLegCardinality.REPEATABLE);
         assertThat(cashLeg.getProjectionRole().orElseThrow(), is(LedgerProjectionRole.CASH_COMPENSATION));
         assertTrue(cashLeg.isPrimaryPostingExpected());
         assertTrue(cashLeg.isPostingGroupExpected());

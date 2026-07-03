@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Instant;
@@ -27,16 +28,22 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.ProtobufTestUtilities;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
+import name.abuchen.portfolio.model.ledger.configuration.CorporateActionKind;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
+import name.abuchen.portfolio.model.ledger.configuration.LedgerNativeEntryDefinitionValidator;
+import name.abuchen.portfolio.model.ledger.configuration.LedgerParameterType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
+import name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor;
 import name.abuchen.portfolio.model.proto.v1.PClient;
+import name.abuchen.portfolio.model.proto.v1.PTransaction;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 /**
- * Model/persistence proof only: current SPIN_OFF definition and descriptor acceptance for
- * repeated target legs is intentionally not asserted here. Projection derivation for repeated
- * target/cash movement legs is a later validator/descriptor/assembler feature.
+ * Model/persistence proof for repeated corporate-action movement legs.
+ * SPIN_OFF coverage here is low-level service coverage; assembler/UI support is intentionally
+ * outside this slice.
  */
 @SuppressWarnings("nls")
 public class LedgerCorporateActionMultiMovementPersistenceTest
@@ -63,6 +70,53 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
         assertMultiMovementProof(loadedEntry);
         assertThat(loaded.getAllTransactions().size(), is(0));
         assertValid(loaded);
+    }
+
+    @Test
+    public void testXmlRoundtripPreservesRepeatedSpinOffMovementLegs() throws Exception
+    {
+        var fixture = spinOffFixture();
+
+        assertRepeatedSpinOff(fixture.entry());
+        assertValid(fixture.client());
+        assertNativeDefinitionValid(fixture.entry());
+
+        var xml = saveXml(fixture.client());
+
+        assertNoLedgerUuidTruth(xml);
+
+        var loaded = loadXml(xml);
+        var loadedEntry = onlyLedgerEntry(loaded);
+
+        assertRepeatedSpinOff(loadedEntry);
+        assertValid(loaded);
+        assertNativeDefinitionValid(loadedEntry);
+    }
+
+    @Test
+    public void testProtobufRoundtripPreservesRepeatedSpinOffMovementLegs() throws Exception
+    {
+        var fixture = spinOffFixture();
+
+        assertRepeatedSpinOff(fixture.entry());
+        assertValid(fixture.client());
+        assertNativeDefinitionValid(fixture.entry());
+
+        var bytes = ProtobufTestUtilities.save(fixture.client());
+        var proto = parseProto(bytes);
+        var protoEntry = proto.getLedger().getEntries(0);
+
+        assertThat(proto.getLedger().getEntriesCount(), is(1));
+        assertThat(protoEntry.getTypeCode(), is(LedgerEntryType.SPIN_OFF.getCode()));
+        assertThat(protoEntry.getPostingsCount(), is(7));
+        assertNoCorporateActionSpecificLegacyTransactionType(proto);
+
+        var loaded = ProtobufTestUtilities.load(bytes);
+        var loadedEntry = onlyLedgerEntry(loaded);
+
+        assertRepeatedSpinOff(loadedEntry);
+        assertValid(loaded);
+        assertNativeDefinitionValid(loadedEntry);
     }
 
     @Test
@@ -139,6 +193,61 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
         return new Fixture(client, entry);
     }
 
+    private Fixture spinOffFixture()
+    {
+        var client = new Client();
+        var account = new Account();
+        var portfolio = new Portfolio();
+        var sourceSecurity = new Security("Source AG", CurrencyUnit.EUR);
+        var targetSecurityA = new Security("Target A AG", CurrencyUnit.EUR);
+        var targetSecurityB = new Security("Target B AG", CurrencyUnit.EUR);
+
+        account.setName("Cash Account");
+        account.setCurrencyCode(CurrencyUnit.EUR);
+        portfolio.setName("Portfolio");
+        portfolio.setReferenceAccount(account);
+        account.setUpdatedAt(UPDATED_AT);
+        portfolio.setUpdatedAt(UPDATED_AT);
+        sourceSecurity.setUpdatedAt(UPDATED_AT);
+        targetSecurityA.setUpdatedAt(UPDATED_AT);
+        targetSecurityB.setUpdatedAt(UPDATED_AT);
+
+        client.addAccount(account);
+        client.addPortfolio(portfolio);
+        client.addSecurity(sourceSecurity);
+        client.addSecurity(targetSecurityA);
+        client.addSecurity(targetSecurityB);
+
+        var entry = new LedgerEntry("spin-off-repeated");
+        entry.setType(LedgerEntryType.SPIN_OFF);
+        entry.setDateTime(DATE_TIME);
+        entry.setSource("SPIN_OFF repeated movement proof");
+        entry.setNote("core service proof only");
+        entry.addParameter(LedgerParameter.ofCode(LedgerParameterType.CORPORATE_ACTION_KIND,
+                        CorporateActionKind.SPIN_OFF));
+        entry.addParameter(LedgerParameter.ofLocalDate(LedgerParameterType.EFFECTIVE_DATE, DATE_TIME.toLocalDate()));
+
+        entry.addPosting(spinOffSecurityPosting(portfolio, sourceSecurity, sourceSecurity, targetSecurityA,
+                        LedgerPostingDirection.OUTBOUND, CorporateActionLeg.SOURCE_SECURITY, "source", "source-1",
+                        10, 100));
+        entry.addPosting(spinOffSecurityPosting(portfolio, targetSecurityA, sourceSecurity, targetSecurityA,
+                        LedgerPostingDirection.INBOUND, CorporateActionLeg.TARGET_SECURITY, "main", "target-1", 3,
+                        60));
+        entry.addPosting(spinOffSecurityPosting(portfolio, targetSecurityB, sourceSecurity, targetSecurityB,
+                        LedgerPostingDirection.INBOUND, CorporateActionLeg.TARGET_SECURITY, "main", "target-2", 7,
+                        40));
+        entry.addPosting(spinOffCashPosting(account, "cash-1", "cash-1", 11));
+        entry.addPosting(spinOffCashPosting(account, "cash-2", "cash-2", 22));
+        entry.addPosting(unitPosting(LedgerPostingType.FEE, LedgerPostingSemanticRole.FEE,
+                        LedgerPostingUnitRole.FEE, CorporateActionLeg.FEE, "cash-1", "fee-1", 2));
+        entry.addPosting(unitPosting(LedgerPostingType.TAX, LedgerPostingSemanticRole.TAX,
+                        LedgerPostingUnitRole.TAX, CorporateActionLeg.TAX, "cash-1", "tax-1", 4));
+
+        client.getLedger().addEntry(entry);
+
+        return new Fixture(client, entry);
+    }
+
     private LedgerPosting securityPosting(Portfolio portfolio, Security security, LedgerPostingDirection direction,
                     CorporateActionLeg leg, String groupKey, String localKey, long shares, long amount)
     {
@@ -156,6 +265,33 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
         posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
         posting.setGroupKey(groupKey);
         posting.setLocalKey(localKey);
+
+        return posting;
+    }
+
+    private LedgerPosting spinOffSecurityPosting(Portfolio portfolio, Security security, Security sourceSecurity,
+                    Security targetSecurity, LedgerPostingDirection direction, CorporateActionLeg leg, String groupKey,
+                    String localKey, long shares, long amount)
+    {
+        var posting = securityPosting(portfolio, security, direction, leg, groupKey, localKey, shares, amount);
+
+        posting.addParameter(LedgerParameter.ofString(LedgerParameterType.CORPORATE_ACTION_LEG, leg.getCode()));
+        posting.addParameter(LedgerParameter.ofSecurity(LedgerParameterType.SOURCE_SECURITY, sourceSecurity));
+        posting.addParameter(LedgerParameter.ofSecurity(LedgerParameterType.TARGET_SECURITY, targetSecurity));
+        posting.addParameter(LedgerParameter.ofDecimal(LedgerParameterType.RATIO_NUMERATOR, BigDecimal.ONE));
+        posting.addParameter(LedgerParameter.ofDecimal(LedgerParameterType.RATIO_DENOMINATOR, BigDecimal.TEN));
+
+        return posting;
+    }
+
+    private LedgerPosting spinOffCashPosting(Account account, String groupKey, String localKey, long amount)
+    {
+        var posting = cashPosting(account, LedgerPostingDirection.NEUTRAL, groupKey, localKey, amount);
+
+        posting.addParameter(LedgerParameter.ofString(LedgerParameterType.CORPORATE_ACTION_LEG,
+                        CorporateActionLeg.CASH_COMPENSATION.getCode()));
+        posting.addParameter(LedgerParameter.ofMoney(LedgerParameterType.CASH_IN_LIEU_AMOUNT,
+                        Money.of(CurrencyUnit.EUR, Values.Amount.factorize(amount))));
 
         return posting;
     }
@@ -227,6 +363,38 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
         assertThat(entry.getPostings().stream().map(LedgerPosting::getLocalKey).toList(), hasItem("target-2"));
     }
 
+    private void assertRepeatedSpinOff(LedgerEntry entry)
+    {
+        assertThat(entry.getType(), is(LedgerEntryType.SPIN_OFF));
+        assertThat(entry.getPostings().size(), is(7));
+
+        var targetSecurities = postings(entry, LedgerPostingType.SECURITY, LedgerPostingDirection.INBOUND,
+                        CorporateActionLeg.TARGET_SECURITY);
+        var cashMovements = postings(entry, LedgerPostingType.CASH_COMPENSATION, LedgerPostingDirection.NEUTRAL,
+                        CorporateActionLeg.CASH_COMPENSATION);
+        var descriptors = LedgerDescriptorTestSupport.descriptors(entry);
+        var targetDescriptors = descriptors.stream()
+                        .filter(descriptor -> descriptor.getRole() == LedgerProjectionRole.NEW_SECURITY_LEG)
+                        .toList();
+
+        assertThat(postings(entry, LedgerPostingType.SECURITY, LedgerPostingDirection.OUTBOUND,
+                        CorporateActionLeg.SOURCE_SECURITY).size(), is(1));
+        assertThat(targetSecurities.size(), is(2));
+        assertThat(localKeys(targetSecurities), is(Set.of("target-1", "target-2")));
+        assertThat(cashMovements.size(), is(2));
+        assertThat(localKeys(cashMovements), is(Set.of("cash-1", "cash-2")));
+        assertThat(groupKeys(cashMovements), is(Set.of("cash-1", "cash-2")));
+        assertThat(targetDescriptors.size(), is(2));
+        assertThat(targetDescriptors.stream().map(descriptor -> descriptor.getSemanticInstanceKey().orElseThrow())
+                        .collect(Collectors.toSet()), is(Set.of("target-1", "target-2")));
+        var runtimeProjectionIds = targetDescriptors.stream().map(DerivedProjectionDescriptor::getRuntimeProjectionId)
+                        .collect(Collectors.toSet());
+
+        assertThat(runtimeProjectionIds.size(), is(2));
+        assertTrue(runtimeProjectionIds.stream().anyMatch(id -> id.endsWith(":NEW_SECURITY_LEG:target-1")));
+        assertTrue(runtimeProjectionIds.stream().anyMatch(id -> id.endsWith(":NEW_SECURITY_LEG:target-2")));
+    }
+
     private List<LedgerPosting> postings(LedgerEntry entry, LedgerPostingType type, LedgerPostingDirection direction,
                     CorporateActionLeg leg)
     {
@@ -285,6 +453,13 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
                         LedgerStructuralValidator.validate(client.getLedger()).isOK());
     }
 
+    private void assertNativeDefinitionValid(LedgerEntry entry)
+    {
+        var result = LedgerNativeEntryDefinitionValidator.validate(entry);
+
+        assertTrue(result.format(), result.isOK());
+    }
+
     private void assertNoLedgerUuidTruth(String xml)
     {
         var ledgerXml = ledgerSection(xml);
@@ -317,6 +492,17 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
         assertFalse(Arrays.stream(name.abuchen.portfolio.model.proto.v1.PTransaction.Type.values())
                         .map(Enum::name)
                         .anyMatch(LedgerEntryType.CORPORATE_ACTION_MOVEMENT_CONFIRMATION.getCode()::equals));
+    }
+
+    private void assertNoCorporateActionSpecificLegacyTransactionType(PClient proto)
+    {
+        for (var transaction : proto.getTransactionsList())
+            assertFalse(Set.of("SPIN_OFF", "STOCK_DIVIDEND", "BONUS_ISSUE", "RIGHTS_DISTRIBUTION",
+                            "BOND_CONVERSION").contains(transaction.getType().name()));
+
+        assertFalse(Arrays.stream(PTransaction.Type.values()).map(Enum::name)
+                        .anyMatch(Set.of("SPIN_OFF", "STOCK_DIVIDEND", "BONUS_ISSUE",
+                                        "RIGHTS_DISTRIBUTION", "BOND_CONVERSION")::contains));
     }
 
     private record Fixture(Client client, LedgerEntry entry)

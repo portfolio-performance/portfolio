@@ -258,6 +258,10 @@ public class DerivedProjectionDescriptorServiceTest
         var projection = factory.createProjection(entry, LedgerProjectionRole.NEW_SECURITY_LEG, "target-1");
 
         assertThat(projection.getUUID(), is("spin-off-repeated:NEW_SECURITY_LEG:target-1"));
+
+        projection = factory.createProjection(entry, LedgerProjectionRole.NEW_SECURITY_LEG, "target-2");
+
+        assertThat(projection.getUUID(), is("spin-off-repeated:NEW_SECURITY_LEG:target-2"));
     }
 
     @Test
