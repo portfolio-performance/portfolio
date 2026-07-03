@@ -31,9 +31,10 @@ public final class LedgerDeliveryTransactionEditor
                             .message("Unsupported delivery edit for " + entry.getType())); //$NON-NLS-1$
 
         var role = transaction.getLedgerProjectionRole();
-        var postingUUID = transaction.getLedgerProjectionDescriptor().getPrimaryPosting().getUUID();
+        var postingIndex = LedgerEntryEditSupport.postingIndex(entry,
+                        transaction.getLedgerProjectionDescriptor().getPrimaryPosting());
 
-        LedgerEntryEditSupport.applyValidated(entry, editedEntry -> applyEdit(editedEntry, edit, role, postingUUID));
+        LedgerEntryEditSupport.applyValidated(entry, editedEntry -> applyEdit(editedEntry, edit, role, postingIndex));
     }
 
     public void validate(LedgerBackedPortfolioTransaction transaction, LedgerDeliveryTransactionEdit edit)
@@ -48,17 +49,18 @@ public final class LedgerDeliveryTransactionEditor
                             .message("Unsupported delivery edit for " + entry.getType())); //$NON-NLS-1$
 
         var role = transaction.getLedgerProjectionRole();
-        var postingUUID = transaction.getLedgerProjectionDescriptor().getPrimaryPosting().getUUID();
+        var postingIndex = LedgerEntryEditSupport.postingIndex(entry,
+                        transaction.getLedgerProjectionDescriptor().getPrimaryPosting());
 
-        LedgerEntryEditSupport.validatePatch(entry, editedEntry -> applyEdit(editedEntry, edit, role, postingUUID));
+        LedgerEntryEditSupport.validatePatch(entry, editedEntry -> applyEdit(editedEntry, edit, role, postingIndex));
     }
 
     private void applyEdit(LedgerEntry editedEntry, LedgerDeliveryTransactionEdit edit,
                     name.abuchen.portfolio.model.ledger.LedgerProjectionRole role,
-                    String postingUUID)
+                    int postingIndex)
     {
         LedgerEntryMetadataPatchHelper.apply(editedEntry, edit.getMetadata());
-        edit.getPosting().applyTo(LedgerEntryEditSupport.postingByUUID(editedEntry, postingUUID));
+        edit.getPosting().applyTo(LedgerEntryEditSupport.postingAt(editedEntry, postingIndex));
         unitPostingUpdater.applyDirect(editedEntry, edit.getUnits());
         LedgerProjectionSupport.descriptor(editedEntry, role);
     }

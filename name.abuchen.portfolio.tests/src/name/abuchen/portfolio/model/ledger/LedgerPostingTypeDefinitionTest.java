@@ -10,7 +10,6 @@ import java.util.EnumSet;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.ledger.configuration.FeeReason;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryDefinitionRegistry;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;

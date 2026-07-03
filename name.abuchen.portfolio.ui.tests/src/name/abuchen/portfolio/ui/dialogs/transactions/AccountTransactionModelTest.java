@@ -65,7 +65,6 @@ public class AccountTransactionModelTest
         createModel.applyChanges();
 
         var transaction = account.getTransactions().get(0);
-        var transactionUUID = transaction.getUUID();
         var editModel = new AccountTransactionModel(client, AccountTransaction.Type.DEPOSIT);
         editModel.setSource(account, transaction);
         editModel.setTotal(Values.Amount.factorize(456));

@@ -1,9 +1,7 @@
 package name.abuchen.portfolio.model;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -17,7 +15,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
-import java.util.EnumSet;
 import java.util.List;
 
 import org.junit.Test;
@@ -313,12 +310,6 @@ public class LedgerSaveLoadParityTest
                         .toList();
     }
 
-    private String addEmptyLedgerParameterCollections(String xml)
-    {
-        return xml.replaceFirst("(<ledger-entry[^>]*>)", "$1<parameters/>") //$NON-NLS-1$ //$NON-NLS-2$
-                        .replaceFirst("(<ledger-posting[^>]*>)", "$1<parameters/>"); //$NON-NLS-1$ //$NON-NLS-2$
-    }
-
     private List<String> materializedProjectionUUIDs(Client client)
     {
         return java.util.stream.Stream
@@ -474,7 +465,7 @@ public class LedgerSaveLoadParityTest
         var creator = new LedgerTransactionCreator(client);
 
         var deposit = creator.createDeposit(metadata("deposit"), LedgerAccountCashLeg.of(account, money(11))).getEntry();
-        var dividend = creator.createDividend(metadata("dividend"),
+        creator.createDividend(metadata("dividend"),
                         LedgerDividend.withExDate(
                                         LedgerAccountCashLeg.of(account, money(120),
                                                         LedgerForexAmount.of(
@@ -670,11 +661,6 @@ public class LedgerSaveLoadParityTest
         client.addPlan(plan);
     }
 
-    private InvestmentPlan plan(Client client, String name)
-    {
-        return client.getPlans().stream().filter(plan -> name.equals(plan.getName())).findFirst().orElseThrow();
-    }
-
     private InvestmentPlan plan(String name, Account account, Portfolio portfolio, Security security)
     {
         var plan = new InvestmentPlan(name);
@@ -753,194 +739,9 @@ public class LedgerSaveLoadParityTest
                         bytes.length - PROTOBUF_SIGNATURE.length));
     }
 
-    private byte[] wrapProtobuf(PClient client) throws IOException
-    {
-        var stream = new ByteArrayOutputStream();
-
-        stream.write(PROTOBUF_SIGNATURE);
-        client.writeTo(stream);
-
-        return stream.toByteArray();
-    }
-
     private void assertValid(Client client)
     {
         assertTrue(LedgerStructuralValidator.validate(client.getLedger()).isOK());
-    }
-
-
-    private void assertLedgerParameterOwnership(Client client, String targetSecurityUUID)
-    {
-        assertValid(client);
-
-        var entry = client.getLedger().getEntries().stream()
-                        .filter(candidate -> "entry-parameter-ownership".equals(candidate.getUUID()))
-                        .findFirst().orElseThrow();
-        var cashPosting = posting(entry, "posting-a");
-        var feePosting = posting(entry, "posting-b");
-
-        assertThat(entry.getParameters().size(), is(2));
-        assertEntryParameter(entry, LedgerParameterType.CORPORATE_ACTION_KIND,
-                        LedgerParameter.ValueKind.STRING, "SPIN_OFF");
-        assertEntryParameter(entry, LedgerParameterType.CASH_IN_LIEU_APPLIED,
-                        LedgerParameter.ValueKind.BOOLEAN, Boolean.TRUE);
-        assertThat(entry.getParameters().stream()
-                        .noneMatch(parameter -> parameter.getType() == LedgerParameterType.EX_DATE), is(true));
-        assertThat(entry.getParameters().stream()
-                        .noneMatch(parameter -> parameter.getType() == LedgerParameterType.TARGET_SECURITY),
-                        is(true));
-        assertThat(entry.getPostings().size(), is(2));
-        assertOnlyParameter(cashPosting, LedgerParameterType.EX_DATE,
-                        LedgerParameter.ValueKind.LOCAL_DATE_TIME, EX_DATE);
-        assertOnlySecurityParameter(feePosting, LedgerParameterType.TARGET_SECURITY, targetSecurityUUID);
-        assertThat(cashPosting.getParameters().stream()
-                        .noneMatch(parameter -> parameter.getType() == LedgerParameterType.CORPORATE_ACTION_KIND),
-                        is(true));
-        assertThat(feePosting.getParameters().stream()
-                        .noneMatch(parameter -> parameter.getType() == LedgerParameterType.CASH_IN_LIEU_APPLIED),
-                        is(true));
-    }
-
-    private void assertCompactLedgerParameterXml(String xml, Money nominalValue)
-    {
-        assertTrue(xml.contains("<ledger-parameter type=\"CORPORATE_ACTION_KIND\" valueKind=\"STRING\" "
-                        + "value=\"SPIN_OFF\"/>"));
-        assertTrue(xml.contains("<ledger-parameter type=\"RATIO_NUMERATOR\" valueKind=\"DECIMAL\" "
-                        + "value=\"1.25\"/>"));
-        assertTrue(xml.contains("<ledger-parameter type=\"RECORD_DATE\" valueKind=\"LOCAL_DATE\" "
-                        + "value=\"2026-03-01\"/>"));
-        assertTrue(xml.contains("<ledger-parameter type=\"EX_DATE\" valueKind=\"LOCAL_DATE_TIME\" "
-                        + "value=\"2026-02-27T00:00\"/>"));
-        assertTrue(xml.contains("<ledger-parameter type=\"CASH_IN_LIEU_APPLIED\" valueKind=\"BOOLEAN\" "
-                        + "value=\"true\"/>"));
-        assertTrue(xml.contains("<ledger-parameter type=\"NOMINAL_VALUE\" valueKind=\"MONEY\" amount=\""
-                        + nominalValue.getAmount() + "\" currency=\"EUR\"/>"));
-        assertTrue(xml.matches("(?s).*<ledger-parameter type=\"RIGHT_SECURITY\" valueKind=\"SECURITY\">\\s*" //$NON-NLS-1$
-                        + "<value[^>]*reference=\"[^\"]+\"[^>]*/>\\s*</ledger-parameter>.*")); //$NON-NLS-1$
-        assertTrue(xml.matches("(?s).*<ledger-parameter type=\"SOURCE_ACCOUNT\" valueKind=\"ACCOUNT\">\\s*" //$NON-NLS-1$
-                        + "<value[^>]*reference=\"[^\"]+\"[^>]*/>\\s*</ledger-parameter>.*")); //$NON-NLS-1$
-        assertTrue(xml.matches("(?s).*<ledger-parameter type=\"SOURCE_PORTFOLIO\" valueKind=\"PORTFOLIO\">\\s*" //$NON-NLS-1$
-                        + "<value[^>]*reference=\"[^\"]+\"[^>]*/>\\s*</ledger-parameter>.*")); //$NON-NLS-1$
-        assertFalse(xml.contains("<valueKind>"));
-        assertFalse(xml.contains("<value class=\"string\">"));
-        assertFalse(xml.contains("<value class=\"big-decimal\">"));
-        assertFalse(xml.contains("<value class=\"boolean\">"));
-        assertFalse(xml.contains("<value class=\"local-date\">"));
-        assertFalse(xml.contains("<value class=\"local-date-time\">"));
-    }
-
-    private void assertNewLedgerParameterVocabulary(Client client, LocalDate recordDate, Money nominalValue,
-                    String rightSecurityUUID, String accountUUID, String portfolioUUID)
-    {
-        assertValid(client);
-
-        var entry = client.getLedger().getEntries().stream()
-                        .filter(candidate -> "entry-new-parameter-vocabulary".equals(candidate.getUUID()))
-                        .findFirst().orElseThrow();
-        var cashPosting = posting(entry, "posting-new-vocabulary-a");
-        var feePosting = posting(entry, "posting-new-vocabulary-b");
-
-        assertThat(entry.getParameters().isEmpty(), is(true));
-        assertThat(entry.getPostings().size(), is(2));
-        assertParameter(cashPosting, LedgerParameterType.RECORD_DATE, LedgerParameter.ValueKind.LOCAL_DATE,
-                        recordDate);
-        assertParameter(cashPosting, LedgerParameterType.EX_DATE, LedgerParameter.ValueKind.LOCAL_DATE_TIME,
-                        EX_DATE);
-        assertParameter(cashPosting, LedgerParameterType.RATIO_NUMERATOR, LedgerParameter.ValueKind.DECIMAL,
-                        new BigDecimal("1.25"));
-        assertParameter(cashPosting, LedgerParameterType.CASH_IN_LIEU_APPLIED,
-                        LedgerParameter.ValueKind.BOOLEAN, Boolean.TRUE);
-        assertParameter(cashPosting, LedgerParameterType.NOMINAL_VALUE, LedgerParameter.ValueKind.MONEY,
-                        nominalValue);
-        assertThat(cashPosting.getParameters().size(), is(5));
-
-        assertSecurityParameter(feePosting, LedgerParameterType.RIGHT_SECURITY, rightSecurityUUID);
-        assertParameter(feePosting, LedgerParameterType.CORPORATE_ACTION_KIND,
-                        LedgerParameter.ValueKind.STRING, "SPIN_OFF");
-        assertAccountParameter(feePosting, LedgerParameterType.SOURCE_ACCOUNT, accountUUID);
-        assertPortfolioParameter(feePosting, LedgerParameterType.SOURCE_PORTFOLIO, portfolioUUID);
-        assertThat(feePosting.getParameters().size(), is(4));
-    }
-
-    private LedgerPosting posting(LedgerEntry entry, String uuid)
-    {
-        return entry.getPostings().stream().filter(candidate -> uuid.equals(candidate.getUUID())).findFirst()
-                        .orElseThrow();
-    }
-
-    private void assertOnlyParameter(LedgerPosting posting, LedgerParameterType type,
-                    LedgerParameter.ValueKind valueKind, Object value)
-    {
-        assertThat(posting.getParameters().size(), is(1));
-
-        var parameter = posting.getParameters().get(0);
-
-        assertThat(parameter.getType(), is(type));
-        assertThat(parameter.getValueKind(), is(valueKind));
-        assertThat(parameter.getValue(), is(value));
-    }
-
-    private void assertOnlySecurityParameter(LedgerPosting posting, LedgerParameterType type,
-                    String securityUUID)
-    {
-        assertThat(posting.getParameters().size(), is(1));
-
-        var parameter = posting.getParameters().get(0);
-        var security = (Security) parameter.getValue();
-
-        assertThat(parameter.getType(), is(type));
-        assertThat(parameter.getValueKind(), is(LedgerParameter.ValueKind.SECURITY));
-        assertThat(security.getUUID(), is(securityUUID));
-    }
-
-    private void assertEntryParameter(LedgerEntry entry, LedgerParameterType type,
-                    LedgerParameter.ValueKind valueKind, Object value)
-    {
-        var parameter = entry.getParameters().stream().filter(candidate -> candidate.getType() == type).findFirst()
-                        .orElseThrow();
-
-        assertThat(parameter.getValueKind(), is(valueKind));
-        assertThat(parameter.getValue(), is(value));
-    }
-
-    private void assertParameter(LedgerPosting posting, LedgerParameterType type,
-                    LedgerParameter.ValueKind valueKind, Object value)
-    {
-        var parameter = posting.getParameters().stream().filter(candidate -> candidate.getType() == type).findFirst()
-                        .orElseThrow();
-
-        assertThat(parameter.getValueKind(), is(valueKind));
-        assertThat(parameter.getValue(), is(value));
-    }
-
-    private void assertSecurityParameter(LedgerPosting posting, LedgerParameterType type, String securityUUID)
-    {
-        var parameter = posting.getParameters().stream().filter(candidate -> candidate.getType() == type).findFirst()
-                        .orElseThrow();
-        var security = (Security) parameter.getValue();
-
-        assertThat(parameter.getValueKind(), is(LedgerParameter.ValueKind.SECURITY));
-        assertThat(security.getUUID(), is(securityUUID));
-    }
-
-    private void assertAccountParameter(LedgerPosting posting, LedgerParameterType type, String accountUUID)
-    {
-        var parameter = posting.getParameters().stream().filter(candidate -> candidate.getType() == type).findFirst()
-                        .orElseThrow();
-        var account = (Account) parameter.getValue();
-
-        assertThat(parameter.getValueKind(), is(LedgerParameter.ValueKind.ACCOUNT));
-        assertThat(account.getUUID(), is(accountUUID));
-    }
-
-    private void assertPortfolioParameter(LedgerPosting posting, LedgerParameterType type, String portfolioUUID)
-    {
-        var parameter = posting.getParameters().stream().filter(candidate -> candidate.getType() == type).findFirst()
-                        .orElseThrow();
-        var portfolio = (Portfolio) parameter.getValue();
-
-        assertThat(parameter.getValueKind(), is(LedgerParameter.ValueKind.PORTFOLIO));
-        assertThat(portfolio.getUUID(), is(portfolioUUID));
     }
 
     private String uuid(Object object)
@@ -1036,7 +837,8 @@ public class LedgerSaveLoadParityTest
                     LedgerPostingType primaryPostingType, String groupKey)
     {
     }
-private record TransactionSnapshot(String ownerUUID, String transactionClass, String type,
+
+    private record TransactionSnapshot(String ownerUUID, String transactionClass, String type,
                     LocalDateTime dateTime, long amount, String currency, String securityUUID, long shares, String note,
                     String source, LocalDateTime exDate, List<UnitSnapshot> units, String crossOwnerUUID)
     {

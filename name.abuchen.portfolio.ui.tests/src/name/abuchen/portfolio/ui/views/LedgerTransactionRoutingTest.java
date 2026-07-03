@@ -1536,14 +1536,6 @@ public class LedgerTransactionRoutingTest
         return plan;
     }
 
-    private void setField(Object object, String name, Object value) throws Exception
-    {
-        Field field = object.getClass().getDeclaredField(name);
-        field.setAccessible(true);
-        field.set(object, value);
-    }
-
-
     private void assertLedgerStructurallyValid(Client client) throws Exception
     {
         var ledger = Client.class.getMethod("getLedger").invoke(client);

@@ -57,6 +57,7 @@ import name.abuchen.portfolio.model.proto.v1.PInvestmentPlanLedgerExecutionRef;
 import name.abuchen.portfolio.model.proto.v1.PLedgerEntry;
 import name.abuchen.portfolio.model.proto.v1.PLedgerParameter;
 import name.abuchen.portfolio.model.proto.v1.PLedgerParameterValueKind;
+import name.abuchen.portfolio.model.proto.v1.PLedgerPosting;
 import name.abuchen.portfolio.model.proto.v1.PLedgerProjectionRole;
 import name.abuchen.portfolio.model.proto.v1.PTransaction;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -96,9 +97,7 @@ public class LedgerProtobufPersistenceTest
         assertNoLedgerUuidTruth(proto);
         assertTrue(proto.hasLedger());
         assertThat(proto.getLedger().getEntriesCount(), is(1));
-        assertThat(ledgerEntry.getUuid(), is(""));
-        assertThat(ledgerEntry.getProjectionRefsCount(), is(0));
-        assertThat(posting.getUuid(), is(""));
+        assertNoDeprecatedLedgerIdentity(ledgerEntry);
         assertThat(posting.getSemanticRole(), is(LedgerPostingSemanticRole.CASH.name()));
         assertThat(posting.getDirection(), is(LedgerPostingDirection.NEUTRAL.name()));
         assertThat(posting.getUnitRole(), is(LedgerPostingUnitRole.PRIMARY.name()));
@@ -152,7 +151,7 @@ public class LedgerProtobufPersistenceTest
 
         var proto = saveProto(fixture.client());
         assertNoLedgerUuidTruth(proto);
-        assertThat(proto.getLedger().getEntries(0).getProjectionRefsCount(), is(0));
+        assertNoDeprecatedLedgerProjectionRefs(proto.getLedger().getEntries(0));
         assertTrue(proto.getLedger().getEntries(0).getPostingsList().stream()
                         .anyMatch(posting -> LedgerPostingUnitRole.FEE.name().equals(posting.getUnitRole())));
         assertTrue(proto.getLedger().getEntries(0).getPostingsList().stream()
@@ -806,7 +805,7 @@ public class LedgerProtobufPersistenceTest
     public void testInvestmentPlanExecutionMetadataRoundtrip() throws IOException
     {
         var fixture = fixture();
-        var buy = new LedgerTransactionCreator(fixture.client()).createBuy(metadata(), cashLeg(fixture.account(), 100),
+        new LedgerTransactionCreator(fixture.client()).createBuy(metadata(), cashLeg(fixture.account(), 100),
                         securityLeg(fixture.portfolio(), fixture.security(), 5, 100), LedgerCreationUnits.none())
                         .getEntry();
         LedgerProjectionService.materialize(fixture.client());
@@ -1190,13 +1189,29 @@ public class LedgerProtobufPersistenceTest
     private void assertNoLedgerUuidTruth(PClient client)
     {
         for (var entry : client.getLedger().getEntriesList())
-        {
-            assertThat(entry.getUuid(), is(""));
-            assertThat(entry.getProjectionRefsCount(), is(0));
+            assertNoDeprecatedLedgerIdentity(entry);
+    }
 
-            for (var posting : entry.getPostingsList())
-                assertThat(posting.getUuid(), is(""));
-        }
+    @SuppressWarnings("deprecation")
+    private void assertNoDeprecatedLedgerIdentity(PLedgerEntry entry)
+    {
+        assertThat(entry.getUuid(), is(""));
+        assertThat(entry.getProjectionRefsCount(), is(0));
+
+        for (var posting : entry.getPostingsList())
+            assertNoDeprecatedLedgerPostingIdentity(posting);
+    }
+
+    @SuppressWarnings("deprecation")
+    private void assertNoDeprecatedLedgerProjectionRefs(PLedgerEntry entry)
+    {
+        assertThat(entry.getProjectionRefsCount(), is(0));
+    }
+
+    @SuppressWarnings("deprecation")
+    private void assertNoDeprecatedLedgerPostingIdentity(PLedgerPosting posting)
+    {
+        assertThat(posting.getUuid(), is(""));
     }
 
     private void assertProjectionUUIDs(Client client, LedgerEntryType type, String... projectionUUIDs)

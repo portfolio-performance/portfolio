@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Account;
@@ -284,7 +283,7 @@ public final class LedgerStructuralValidator
                         .findFirst()
                         .ifPresent(posting -> issues.add(postingIssue(IssueCode.SEMANTIC_LOCAL_KEY_REQUIRED,
                                         LedgerDiagnosticCode.LEDGER_STRUCT_027.message(
-                                                        "Repeated corporate-action leg requires a local key for "
+                                                        "Repeated corporate-action leg requires a local key for " //$NON-NLS-1$
                                                                         + role),
                                         entry, posting).withDetail("projectionRole", role))); //$NON-NLS-1$
     }
@@ -313,23 +312,9 @@ public final class LedgerStructuralValidator
                         .findFirst()
                         .ifPresent(posting -> issues.add(postingIssue(IssueCode.SEMANTIC_LOCAL_KEY_REQUIRED,
                                         LedgerDiagnosticCode.LEDGER_STRUCT_027.message(
-                                                        "Repeated corporate-action leg requires a local key for "
+                                                        "Repeated corporate-action leg requires a local key for " //$NON-NLS-1$
                                                                         + role),
                                         entry, posting).withDetail("projectionRole", role))); //$NON-NLS-1$
-    }
-
-    private static void requireOneOfCorporatePrimary(LedgerEntry entry, LedgerProjectionRole role,
-                    LedgerPostingSemanticRole semanticRole, LedgerPostingDirection direction, boolean optional,
-                    List<ValidationIssue> issues, CorporateActionLeg... legs)
-    {
-        var matches = entry.getPostings().stream() //
-                        .filter(posting -> posting.getUnitRole() == LedgerPostingUnitRole.PRIMARY) //
-                        .filter(posting -> posting.getSemanticRole() == semanticRole) //
-                        .filter(posting -> posting.getDirection() == direction) //
-                        .filter(posting -> contains(legs, posting.getCorporateActionLeg())) //
-                        .toList();
-
-        validatePrimaryMatches(entry, role, OwnerKind.PORTFOLIO, optional, matches, issues);
     }
 
     private static void requireOneOfCorporatePrimary(LedgerEntry entry, LedgerProjectionRole role,
@@ -364,7 +349,7 @@ public final class LedgerStructuralValidator
             if (!optional)
                 issues.add(entryIssue(missingIssueCode(role),
                                 LedgerDiagnosticCode.LEDGER_STRUCT_016
-                                                .message("Required semantic primary posting is missing for " + role),
+                                                .message("Required semantic primary posting is missing for " + role), //$NON-NLS-1$
                                 entry).withDetail("projectionRole", role)); //$NON-NLS-1$
             return;
         }
@@ -372,7 +357,7 @@ public final class LedgerStructuralValidator
         if (matches.size() > 1)
             issues.add(entryIssue(ambiguousIssueCode(role),
                             LedgerDiagnosticCode.LEDGER_STRUCT_017
-                                            .message("Semantic primary posting is ambiguous for " + role),
+                                            .message("Semantic primary posting is ambiguous for " + role), //$NON-NLS-1$
                             entry).withDetail("projectionRole", role) //$NON-NLS-1$
                                             .withDetail("actualCount", matches.size())); //$NON-NLS-1$
 
@@ -421,7 +406,7 @@ public final class LedgerStructuralValidator
         if (!ownerPresent)
             issues.add(postingIssue(IssueCode.SEMANTIC_OWNER_REQUIRED,
                             LedgerDiagnosticCode.LEDGER_STRUCT_018
-                                            .message("Semantic primary owner is missing for " + role),
+                                            .message("Semantic primary owner is missing for " + role), //$NON-NLS-1$
                             entry, posting).withDetail("projectionRole", role)); //$NON-NLS-1$
     }
 
@@ -445,14 +430,14 @@ public final class LedgerStructuralValidator
             if (primaryCount > 1 && primaryGroupKeys.size() > 1 && isBlank(posting.getGroupKey()))
                 issues.add(postingIssue(IssueCode.SEMANTIC_UNIT_GROUP_REQUIRED,
                                 LedgerDiagnosticCode.LEDGER_STRUCT_019
-                                                .message("Grouped unit posting requires a group key"),
+                                                .message("Grouped unit posting requires a group key"), //$NON-NLS-1$
                                 entry, posting));
 
             if (!primaryGroupKeys.isEmpty() && !isBlank(posting.getGroupKey())
                             && !primaryGroupKeys.contains(posting.getGroupKey()))
                 issues.add(postingIssue(IssueCode.SEMANTIC_UNIT_GROUP_AMBIGUOUS,
                                 LedgerDiagnosticCode.LEDGER_STRUCT_020
-                                                .message("Unit posting group key has no semantic primary anchor"),
+                                                .message("Unit posting group key has no semantic primary anchor"), //$NON-NLS-1$
                                 entry, posting).withDetail("groupKey", posting.getGroupKey())); //$NON-NLS-1$
 
             var key = posting.getUnitRole() + ":" + posting.getGroupKey(); //$NON-NLS-1$
@@ -469,7 +454,7 @@ public final class LedgerStructuralValidator
             if (repeatedUnitKeys.contains(key) && isBlank(posting.getLocalKey()))
                 issues.add(postingIssue(IssueCode.SEMANTIC_LOCAL_KEY_REQUIRED,
                                 LedgerDiagnosticCode.LEDGER_STRUCT_021
-                                                .message("Repeated unit posting requires a local key"),
+                                                .message("Repeated unit posting requires a local key"), //$NON-NLS-1$
                                 entry, posting).withDetail("groupKey", posting.getGroupKey()) //$NON-NLS-1$
                                                 .withDetail("unitRole", posting.getUnitRole())); //$NON-NLS-1$
         }

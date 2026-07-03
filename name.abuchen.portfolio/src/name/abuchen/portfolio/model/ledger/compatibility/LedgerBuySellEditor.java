@@ -42,12 +42,12 @@ public final class LedgerBuySellEditor
 
         var accountProjection = LedgerProjectionSupport.descriptor(entry, LedgerProjectionRole.ACCOUNT);
         var portfolioProjection = LedgerProjectionSupport.descriptor(entry, LedgerProjectionRole.PORTFOLIO);
-        var cashPostingUUID = accountProjection.getPrimaryPosting().getUUID();
-        var securityPostingUUID = portfolioProjection.getPrimaryPosting().getUUID();
+        var cashPostingIndex = LedgerEntryEditSupport.postingIndex(entry, accountProjection.getPrimaryPosting());
+        var securityPostingIndex = LedgerEntryEditSupport.postingIndex(entry, portfolioProjection.getPrimaryPosting());
 
         LedgerEntryEditSupport.applyValidated(entry, editedEntry -> applyEdit(editedEntry, edit,
-                        LedgerProjectionRole.ACCOUNT, LedgerProjectionRole.PORTFOLIO, cashPostingUUID,
-                        securityPostingUUID));
+                        LedgerProjectionRole.ACCOUNT, LedgerProjectionRole.PORTFOLIO, cashPostingIndex,
+                        securityPostingIndex));
     }
 
     public void validate(LedgerEntry entry, LedgerBuySellEdit edit)
@@ -61,20 +61,20 @@ public final class LedgerBuySellEditor
 
         var accountProjection = LedgerProjectionSupport.descriptor(entry, LedgerProjectionRole.ACCOUNT);
         var portfolioProjection = LedgerProjectionSupport.descriptor(entry, LedgerProjectionRole.PORTFOLIO);
-        var cashPostingUUID = accountProjection.getPrimaryPosting().getUUID();
-        var securityPostingUUID = portfolioProjection.getPrimaryPosting().getUUID();
+        var cashPostingIndex = LedgerEntryEditSupport.postingIndex(entry, accountProjection.getPrimaryPosting());
+        var securityPostingIndex = LedgerEntryEditSupport.postingIndex(entry, portfolioProjection.getPrimaryPosting());
 
         LedgerEntryEditSupport.validatePatch(entry, editedEntry -> applyEdit(editedEntry, edit,
-                        LedgerProjectionRole.ACCOUNT, LedgerProjectionRole.PORTFOLIO, cashPostingUUID,
-                        securityPostingUUID));
+                        LedgerProjectionRole.ACCOUNT, LedgerProjectionRole.PORTFOLIO, cashPostingIndex,
+                        securityPostingIndex));
     }
 
     private void applyEdit(LedgerEntry editedEntry, LedgerBuySellEdit edit, LedgerProjectionRole accountRole,
-                    LedgerProjectionRole portfolioRole, String cashPostingUUID, String securityPostingUUID)
+                    LedgerProjectionRole portfolioRole, int cashPostingIndex, int securityPostingIndex)
     {
         LedgerEntryMetadataPatchHelper.apply(editedEntry, edit.getMetadata());
-        edit.getCashPosting().applyTo(LedgerEntryEditSupport.postingByUUID(editedEntry, cashPostingUUID));
-        edit.getSecurityPosting().applyTo(LedgerEntryEditSupport.postingByUUID(editedEntry, securityPostingUUID));
+        edit.getCashPosting().applyTo(LedgerEntryEditSupport.postingAt(editedEntry, cashPostingIndex));
+        edit.getSecurityPosting().applyTo(LedgerEntryEditSupport.postingAt(editedEntry, securityPostingIndex));
         unitPostingUpdater.applyDirect(editedEntry, edit.getUnits());
         LedgerProjectionSupport.descriptor(editedEntry, accountRole);
         LedgerProjectionSupport.descriptor(editedEntry, portfolioRole);

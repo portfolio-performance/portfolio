@@ -995,15 +995,6 @@ public final class LegacyTransactionToLedgerMigrator
                             || type == LedgerPostingType.GROSS_VALUE;
         }
 
-        private LedgerPosting postingByUUID(LedgerEntry entry, String uuid)
-        {
-            for (var posting : entry.getPostings())
-                if (Objects.equals(posting.getUUID(), uuid))
-                    return posting;
-
-            return null;
-        }
-
         private SemanticMismatch postingOwnerMismatch(LedgerPosting existingPosting, LedgerPosting expectedPosting,
                         LedgerEntryType expectedEntryType)
         {

@@ -715,7 +715,7 @@ public class ClientFactory
             {
                 // On OS X fcntl does not support locking files on AFP or SMB
                 // https://bugs.openjdk.org/browse/JDK-8167023
-                if (!Platform.getOS().equals(Platform.OS_MACOSX))
+                if (!Objects.equals(Platform.getOS(), Platform.OS_MACOSX))
                     lock = channel.tryLock();
             }
             catch (IOException e)

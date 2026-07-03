@@ -25,8 +25,8 @@ import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.ProtobufTestUtilities;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.LedgerPostingUnitRole;
+import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
@@ -347,14 +347,6 @@ public class LedgerAccountOnlyTransactionCreatorTest
             create(client, account, fixture.type());
 
         return client;
-    }
-
-    private List<String> projectionUUIDs(Client client)
-    {
-        return client.getLedger().getEntries().stream()
-                        .flatMap(entry -> name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream())
-                        .map(descriptor -> descriptor.getRuntimeProjectionId())
-                        .toList();
     }
 
     private List<LedgerProjectionRole> projectionRoles(Client client)

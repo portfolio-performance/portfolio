@@ -4,9 +4,9 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
-import name.abuchen.portfolio.model.LedgerDiagnosticCode;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.CrossEntry;
+import name.abuchen.portfolio.model.LedgerDiagnosticCode;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerEntryMetadataPatchHelper;

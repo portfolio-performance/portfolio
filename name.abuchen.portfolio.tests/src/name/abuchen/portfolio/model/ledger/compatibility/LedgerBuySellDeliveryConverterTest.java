@@ -553,7 +553,6 @@ public class LedgerBuySellDeliveryConverterTest
         var cashPostingUUID = posting(entry, LedgerPostingType.CASH).getUUID();
         var securityPostingUUID = posting(entry, LedgerPostingType.SECURITY).getUUID();
         var accountProjectionUUID = projection(entry, LedgerProjectionRole.ACCOUNT).getRuntimeProjectionId();
-        var portfolioProjectionUUID = projection(entry, LedgerProjectionRole.PORTFOLIO).getRuntimeProjectionId();
         var unitPostingUUIDs = unitPostingUUIDs(entry);
 
         var converted = compositeConverter(fixture).convert(pair(fixture, portfolioTransaction));
@@ -589,7 +588,6 @@ public class LedgerBuySellDeliveryConverterTest
         var entry = fixture.client().getLedger().getEntries().get(0);
         var entryUUID = entry.getUUID();
         var securityPostingUUID = posting(entry, LedgerPostingType.SECURITY).getUUID();
-        var portfolioProjectionUUID = projection(entry, sourceProjectionRole).getRuntimeProjectionId();
         var unitPostingUUIDs = unitPostingUUIDs(entry);
 
         var converted = compositeConverter(fixture).convert(pair(fixture, delivery));

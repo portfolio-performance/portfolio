@@ -11,7 +11,6 @@ import java.util.HashSet;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerDownstreamResult;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryDefinitionRegistry;

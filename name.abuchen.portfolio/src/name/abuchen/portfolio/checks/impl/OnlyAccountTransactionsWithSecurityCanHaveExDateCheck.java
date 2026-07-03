@@ -8,6 +8,7 @@ import name.abuchen.portfolio.checks.Check;
 import name.abuchen.portfolio.checks.Issue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerParameterType;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedAccountTransaction;
@@ -47,7 +48,7 @@ public class OnlyAccountTransactionsWithSecurityCanHaveExDateCheck implements Ch
             return;
 
         transaction.getLedgerEntry().setUpdatedAt(Instant.now());
-        refreshLedgerEntryProjections(client, transaction.getLedgerEntry().getUUID());
+        refreshLedgerEntryProjections(client, transaction.getLedgerEntry());
     }
 
     private boolean removeExDateParameters(LedgerPosting posting)
@@ -61,19 +62,19 @@ public class OnlyAccountTransactionsWithSecurityCanHaveExDateCheck implements Ch
         return !parameters.isEmpty();
     }
 
-    private void refreshLedgerEntryProjections(Client client, String entryUUID)
+    private void refreshLedgerEntryProjections(Client client, LedgerEntry entry)
     {
         client.getAccounts().forEach(owner -> owner.getTransactions()
-                        .removeIf(transaction -> isProjectionOfEntry(transaction, entryUUID)));
+                        .removeIf(transaction -> isProjectionOfEntry(transaction, entry)));
         client.getPortfolios().forEach(owner -> owner.getTransactions()
-                        .removeIf(transaction -> isProjectionOfEntry(transaction, entryUUID)));
+                        .removeIf(transaction -> isProjectionOfEntry(transaction, entry)));
 
         LedgerProjectionService.materialize(client);
     }
 
-    private boolean isProjectionOfEntry(Transaction transaction, String entryUUID)
+    private boolean isProjectionOfEntry(Transaction transaction, LedgerEntry entry)
     {
         return transaction instanceof LedgerBackedTransaction ledgerBacked
-                        && ledgerBacked.getLedgerEntry().getUUID().equals(entryUUID);
+                        && ledgerBacked.getLedgerEntry() == entry;
     }
 }

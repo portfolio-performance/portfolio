@@ -55,7 +55,6 @@ public class AccountTransferLegacyActionGuardTest
     {
         var fixture = ledgerFixture();
         var sourceTransaction = fixture.source().getTransactions().get(0);
-        var targetTransaction = fixture.target().getTransactions().get(0);
 
         new ConvertTransferToDepositRemovalAction(fixture.client(), List.of(sourceTransaction)).run();
 
@@ -144,7 +143,6 @@ public class AccountTransferLegacyActionGuardTest
     {
         var fixture = ledgerFixture();
         var sourceTransaction = fixture.source().getTransactions().get(0);
-        var targetTransaction = fixture.target().getTransactions().get(0);
 
         new RevertTransferAction(fixture.client(), new TransactionPair<>(fixture.source(), sourceTransaction)).run();
 
@@ -226,7 +224,6 @@ public class AccountTransferLegacyActionGuardTest
     {
         var fixture = ledgerPortfolioFixture();
         var sourceTransaction = fixture.source().getTransactions().get(0);
-        var targetTransaction = fixture.target().getTransactions().get(0);
 
         new RevertTransferAction(fixture.client(), new TransactionPair<>(fixture.source(), sourceTransaction)).run();
 

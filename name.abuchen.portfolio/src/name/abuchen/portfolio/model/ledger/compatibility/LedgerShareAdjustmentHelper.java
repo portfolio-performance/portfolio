@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.LongUnaryOperator;
 
-import name.abuchen.portfolio.model.LedgerDiagnosticCode;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.LedgerDiagnosticCode;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.ledger.Ledger;

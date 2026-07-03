@@ -262,8 +262,8 @@ public final class LedgerXmlPersistenceSupport
                     case "source" -> entry.setSource(reader.getValue()); //$NON-NLS-1$
                     case "generatedByPlanKey" -> entry.setGeneratedByPlanKey(reader.getValue()); //$NON-NLS-1$
                     case "planExecutionDate" -> entry.setPlanExecutionDate(LocalDate.parse(reader.getValue())); //$NON-NLS-1$
-                    case "planExecutionSequence" -> entry.setPlanExecutionSequence(
-                                    Integer.valueOf(reader.getValue())); //$NON-NLS-1$
+                    case "planExecutionSequence" -> entry.setPlanExecutionSequence( //$NON-NLS-1$
+                                    Integer.valueOf(reader.getValue()));
                     case "preferredViewKind" -> entry.setPreferredViewKind(reader.getValue()); //$NON-NLS-1$
                     case "parameters" -> readParameters(reader, context, entry); //$NON-NLS-1$
                     case "postings" -> readPostings(reader, context, entry); //$NON-NLS-1$

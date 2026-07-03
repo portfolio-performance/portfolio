@@ -499,11 +499,6 @@ public final class LedgerNativeEntryDefinitionValidator
                         .findFirst();
     }
 
-    private static boolean isBlank(String value)
-    {
-        return value == null || value.isBlank();
-    }
-
     private static ValidationIssue issue(IssueCode code, String message, LedgerEntry entry)
     {
         return new ValidationIssue(code, message).withEntry(entry);

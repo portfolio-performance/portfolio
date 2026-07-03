@@ -3,7 +3,8 @@ package name.abuchen.portfolio.checks.impl;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -84,7 +85,7 @@ public class NegativeExchangeRateCheck implements Check
     public List<Issue> execute(Client client)
     {
         List<Issue> issues = new ArrayList<>();
-        Set<String> reportedLedgerEntries = new HashSet<>();
+        Set<LedgerEntry> reportedLedgerEntries = Collections.newSetFromMap(new IdentityHashMap<>());
 
         for (Account account : client.getAccounts())
         {
@@ -92,7 +93,7 @@ public class NegativeExchangeRateCheck implements Check
             {
                 if (t instanceof LedgerBackedTransaction ledgerBacked)
                 {
-                    if (reportedLedgerEntries.add(ledgerBacked.getLedgerEntry().getUUID()))
+                    if (reportedLedgerEntries.add(ledgerBacked.getLedgerEntry()))
                         addLedgerBackedIssue(client, issues, new TransactionPair<>(account, t),
                                         ledgerBacked.getLedgerEntry());
                     continue;
@@ -124,7 +125,7 @@ public class NegativeExchangeRateCheck implements Check
             {
                 if (t instanceof LedgerBackedTransaction ledgerBacked)
                 {
-                    if (reportedLedgerEntries.add(ledgerBacked.getLedgerEntry().getUUID()))
+                    if (reportedLedgerEntries.add(ledgerBacked.getLedgerEntry()))
                         addLedgerBackedIssue(client, issues, new TransactionPair<>(portfolio, t),
                                         ledgerBacked.getLedgerEntry());
                     continue;

@@ -146,15 +146,6 @@ public final class LedgerProjectionSupport
         };
     }
 
-    private static boolean isUnitPosting(LedgerPosting posting)
-    {
-        return switch (posting.getType())
-        {
-            case FEE, TAX, GROSS_VALUE -> true;
-            default -> false;
-        };
-    }
-
     private static Unit unit(LedgerPosting posting)
     {
         var type = switch (posting.getType())

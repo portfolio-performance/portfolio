@@ -20,7 +20,6 @@ import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 import name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedAccountTransaction;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedPortfolioTransaction;
-import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
 import name.abuchen.portfolio.model.ledger.projection.LedgerProjectionSupport;
 import name.abuchen.portfolio.money.ExchangeRate;
 
@@ -245,17 +244,6 @@ public final class LedgerTransferDirectionConverter
         return projections.get(0);
     }
 
-    private AccountTransaction find(Account account, String projectionUUID)
-    {
-        return account.getTransactions().stream() //
-                        .filter(LedgerBackedTransaction.class::isInstance) //
-                        .filter(transaction -> projectionUUID.equals(transaction.getUUID())) //
-                        .findFirst()
-                        .orElseThrow(() -> new IllegalStateException(
-                                        "Ledger account transfer projection was not materialized: " //$NON-NLS-1$
-                                                        + projectionUUID));
-    }
-
     private AccountTransaction find(Account account, LedgerEntry entry, LedgerProjectionRole role)
     {
         return account.getTransactions().stream() //
@@ -267,17 +255,6 @@ public final class LedgerTransferDirectionConverter
                         .orElseThrow(() -> new IllegalStateException(
                                         "Ledger account transfer projection was not materialized: " //$NON-NLS-1$
                                                         + entry.getUUID() + ":" + role)); //$NON-NLS-1$
-    }
-
-    private PortfolioTransaction find(Portfolio portfolio, String projectionUUID)
-    {
-        return portfolio.getTransactions().stream() //
-                        .filter(LedgerBackedTransaction.class::isInstance) //
-                        .filter(transaction -> projectionUUID.equals(transaction.getUUID())) //
-                        .findFirst()
-                        .orElseThrow(() -> new IllegalStateException(
-                                        "Ledger portfolio transfer projection was not materialized: " //$NON-NLS-1$
-                                                        + projectionUUID));
     }
 
     private PortfolioTransaction find(Portfolio portfolio, LedgerEntry entry, LedgerProjectionRole role)

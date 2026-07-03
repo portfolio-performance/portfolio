@@ -36,13 +36,13 @@ public final class LedgerPortfolioTransferEditor
 
         var sourceProjection = LedgerProjectionSupport.descriptor(entry, LedgerProjectionRole.SOURCE_PORTFOLIO);
         var targetProjection = LedgerProjectionSupport.descriptor(entry, LedgerProjectionRole.TARGET_PORTFOLIO);
-        var sourcePostingUUID = sourceProjection.getPrimaryPosting().getUUID();
-        var targetPostingUUID = targetProjection.getPrimaryPosting().getUUID();
+        var sourcePostingIndex = LedgerEntryEditSupport.postingIndex(entry, sourceProjection.getPrimaryPosting());
+        var targetPostingIndex = LedgerEntryEditSupport.postingIndex(entry, targetProjection.getPrimaryPosting());
         var sourcePortfolio = sourceProjection.getPortfolio();
         var targetPortfolio = targetProjection.getPortfolio();
 
         LedgerEntryEditSupport.applyValidated(entry, editedEntry -> applyEdit(editedEntry, edit,
-                        sourcePortfolio, targetPortfolio, sourcePostingUUID, targetPostingUUID));
+                        sourcePortfolio, targetPortfolio, sourcePostingIndex, targetPostingIndex));
     }
 
     public void validate(LedgerEntry entry, LedgerPortfolioTransferEdit edit)
@@ -56,23 +56,23 @@ public final class LedgerPortfolioTransferEditor
 
         var sourceProjection = LedgerProjectionSupport.descriptor(entry, LedgerProjectionRole.SOURCE_PORTFOLIO);
         var targetProjection = LedgerProjectionSupport.descriptor(entry, LedgerProjectionRole.TARGET_PORTFOLIO);
-        var sourcePostingUUID = sourceProjection.getPrimaryPosting().getUUID();
-        var targetPostingUUID = targetProjection.getPrimaryPosting().getUUID();
+        var sourcePostingIndex = LedgerEntryEditSupport.postingIndex(entry, sourceProjection.getPrimaryPosting());
+        var targetPostingIndex = LedgerEntryEditSupport.postingIndex(entry, targetProjection.getPrimaryPosting());
         var sourcePortfolio = sourceProjection.getPortfolio();
         var targetPortfolio = targetProjection.getPortfolio();
 
         LedgerEntryEditSupport.validatePatch(entry, editedEntry -> applyEdit(editedEntry, edit,
-                        sourcePortfolio, targetPortfolio, sourcePostingUUID, targetPostingUUID));
+                        sourcePortfolio, targetPortfolio, sourcePostingIndex, targetPostingIndex));
     }
 
     private void applyEdit(LedgerEntry editedEntry, LedgerPortfolioTransferEdit edit,
                     name.abuchen.portfolio.model.Portfolio sourcePortfolio,
                     name.abuchen.portfolio.model.Portfolio targetPortfolio,
-                    String sourcePostingUUID, String targetPostingUUID)
+                    int sourcePostingIndex, int targetPostingIndex)
     {
         LedgerEntryMetadataPatchHelper.apply(editedEntry, edit.getMetadata());
-        edit.getSourcePosting().applyTo(LedgerEntryEditSupport.postingByUUID(editedEntry, sourcePostingUUID));
-        edit.getTargetPosting().applyTo(LedgerEntryEditSupport.postingByUUID(editedEntry, targetPostingUUID));
+        edit.getSourcePosting().applyTo(LedgerEntryEditSupport.postingAt(editedEntry, sourcePostingIndex));
+        edit.getTargetPosting().applyTo(LedgerEntryEditSupport.postingAt(editedEntry, targetPostingIndex));
         unitPostingUpdater.apply(editedEntry, edit.getUnits());
         ensureOwners(editedEntry, sourcePortfolio, targetPortfolio);
     }

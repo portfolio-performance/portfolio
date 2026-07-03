@@ -5,10 +5,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -1106,108 +1104,6 @@ public class LegacyTransactionToLedgerMigratorTest
         assertFalse(account.getTransactions().stream().anyMatch(LedgerBackedTransaction.class::isInstance));
     }
 
-    private void assertBuySellDuplicateConflict(Consumer<LedgerEntry> mutator, String expectedMismatch)
-    {
-        assertBuySellDuplicateConflict((existing, account, portfolio, otherAccount, otherPortfolio) -> mutator.accept(
-                        existing), expectedMismatch);
-    }
-
-    private void assertBuySellDuplicateConflict(BuySellDuplicateMutator mutator, String expectedMismatch)
-    {
-        var client = new Client();
-        var account = register(client, account());
-        var portfolio = register(client, portfolio());
-        var otherAccount = register(client, account());
-        var otherPortfolio = register(client, portfolio());
-        var entry = buySellEntry(portfolio, account, PortfolioTransaction.Type.BUY);
-        var existing = existingBuySellEntry(account, portfolio, entry.getAccountTransaction().getUUID(),
-                        entry.getPortfolioTransaction().getUUID());
-
-        entry.insert();
-        mutator.accept(existing, account, portfolio, otherAccount, otherPortfolio);
-        client.getLedger().addEntry(existing);
-
-        var result = migrate(client);
-
-        assertDuplicateConflictWithMismatch(result, "BUY_SELL", expectedMismatch, entry.getAccountTransaction().getUUID(),
-                        entry.getPortfolioTransaction().getUUID());
-        assertThat(client.getLedger().getEntries().size(), is(1));
-        assertSame(entry.getAccountTransaction(), account.getTransactions().get(0));
-        assertSame(entry.getPortfolioTransaction(), portfolio.getTransactions().get(0));
-        assertFalse(account.getTransactions().stream().anyMatch(LedgerBackedTransaction.class::isInstance));
-        assertFalse(portfolio.getTransactions().stream().anyMatch(LedgerBackedTransaction.class::isInstance));
-    }
-
-    private void assertAccountTransferDuplicateConflict(Consumer<LedgerEntry> mutator, String expectedMismatch)
-    {
-        assertAccountTransferDuplicateConflict((existing, source, target, other) -> mutator.accept(existing),
-                        expectedMismatch);
-    }
-
-    private void assertAccountTransferDuplicateConflict(AccountTransferDuplicateMutator mutator,
-                    String expectedMismatch)
-    {
-        var client = new Client();
-        var source = register(client, account());
-        var target = register(client, account());
-        var other = register(client, account());
-        var transfer = new AccountTransferEntry(source, target);
-        transfer.setDate(DATE_TIME);
-        transfer.setAmount(Values.Amount.factorize(55));
-        transfer.setCurrencyCode(CurrencyUnit.EUR);
-        transfer.insert();
-        var existing = existingAccountTransferEntry(source, target, transfer.getSourceTransaction().getUUID(),
-                        transfer.getTargetTransaction().getUUID());
-
-        mutator.accept(existing, source, target, other);
-        client.getLedger().addEntry(existing);
-
-        var result = migrate(client);
-
-        assertDuplicateConflictWithMismatch(result, "ACCOUNT_TRANSFER", expectedMismatch,
-                        transfer.getSourceTransaction().getUUID(),
-                        transfer.getTargetTransaction().getUUID());
-        assertThat(client.getLedger().getEntries().size(), is(1));
-        assertSame(transfer.getSourceTransaction(), source.getTransactions().get(0));
-        assertSame(transfer.getTargetTransaction(), target.getTransactions().get(0));
-    }
-
-    private void assertPortfolioTransferDuplicateConflict(Consumer<LedgerEntry> mutator, String expectedMismatch)
-    {
-        assertPortfolioTransferDuplicateConflict((existing, source, target, other) -> mutator.accept(existing),
-                        expectedMismatch);
-    }
-
-    private void assertPortfolioTransferDuplicateConflict(PortfolioTransferDuplicateMutator mutator,
-                    String expectedMismatch)
-    {
-        var client = new Client();
-        var source = register(client, portfolio());
-        var target = register(client, portfolio());
-        var other = register(client, portfolio());
-        var transfer = new name.abuchen.portfolio.model.PortfolioTransferEntry(source, target);
-        transfer.setDate(DATE_TIME);
-        transfer.setSecurity(security());
-        transfer.setShares(Values.Share.factorize(7));
-        transfer.setAmount(Values.Amount.factorize(400));
-        transfer.setCurrencyCode(CurrencyUnit.EUR);
-        transfer.insert();
-        var existing = existingPortfolioTransferEntry(source, target, transfer.getSourceTransaction().getUUID(),
-                        transfer.getTargetTransaction().getUUID());
-
-        mutator.accept(existing, source, target, other);
-        client.getLedger().addEntry(existing);
-
-        var result = migrate(client);
-
-        assertDuplicateConflictWithMismatch(result, "PORTFOLIO_TRANSFER", expectedMismatch,
-                        transfer.getSourceTransaction().getUUID(),
-                        transfer.getTargetTransaction().getUUID());
-        assertThat(client.getLedger().getEntries().size(), is(1));
-        assertSame(transfer.getSourceTransaction(), source.getTransactions().get(0));
-        assertSame(transfer.getTargetTransaction(), target.getTransactions().get(0));
-    }
-
     private void assertDeliveryDuplicateConflict(LedgerEntryType existingEntryType, boolean wrongOwner,
                     String expectedMismatch)
     {
@@ -1417,69 +1313,6 @@ public class LegacyTransactionToLedgerMigratorTest
         return entry;
     }
 
-    private LedgerEntry existingAccountTransferEntry(Account source, Account target, String sourceProjectionUUID,
-                    String targetProjectionUUID)
-    {
-        var entry = new LedgerEntry();
-        var sourcePosting = new LedgerPosting();
-        var targetPosting = new LedgerPosting();
-
-        entry.setType(LedgerEntryType.CASH_TRANSFER);
-        entry.setDateTime(DATE_TIME);
-        sourcePosting.setType(LedgerPostingType.CASH);
-        sourcePosting.setAccount(source);
-        sourcePosting.setAmount(Values.Amount.factorize(55));
-        sourcePosting.setCurrency(CurrencyUnit.EUR);
-        sourcePosting.setSemanticRole(LedgerPostingSemanticRole.CASH);
-        sourcePosting.setDirection(LedgerPostingDirection.OUTBOUND);
-        sourcePosting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
-        targetPosting.setType(LedgerPostingType.CASH);
-        targetPosting.setAccount(target);
-        targetPosting.setAmount(Values.Amount.factorize(55));
-        targetPosting.setCurrency(CurrencyUnit.EUR);
-        targetPosting.setSemanticRole(LedgerPostingSemanticRole.CASH);
-        targetPosting.setDirection(LedgerPostingDirection.INBOUND);
-        targetPosting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
-        entry.addPosting(sourcePosting);
-        entry.addPosting(targetPosting);
-
-        return entry;
-    }
-
-    private LedgerEntry existingPortfolioTransferEntry(Portfolio source, Portfolio target, String sourceProjectionUUID,
-                    String targetProjectionUUID)
-    {
-        var entry = new LedgerEntry();
-        var sourcePosting = new LedgerPosting();
-        var targetPosting = new LedgerPosting();
-        var security = security();
-
-        entry.setType(LedgerEntryType.SECURITY_TRANSFER);
-        entry.setDateTime(DATE_TIME);
-        sourcePosting.setType(LedgerPostingType.SECURITY);
-        sourcePosting.setPortfolio(source);
-        sourcePosting.setAmount(Values.Amount.factorize(400));
-        sourcePosting.setCurrency(CurrencyUnit.EUR);
-        sourcePosting.setSecurity(security);
-        sourcePosting.setShares(Values.Share.factorize(7));
-        sourcePosting.setSemanticRole(LedgerPostingSemanticRole.SECURITY);
-        sourcePosting.setDirection(LedgerPostingDirection.OUTBOUND);
-        sourcePosting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
-        targetPosting.setType(LedgerPostingType.SECURITY);
-        targetPosting.setPortfolio(target);
-        targetPosting.setAmount(Values.Amount.factorize(400));
-        targetPosting.setCurrency(CurrencyUnit.EUR);
-        targetPosting.setSecurity(security);
-        targetPosting.setShares(Values.Share.factorize(7));
-        targetPosting.setSemanticRole(LedgerPostingSemanticRole.SECURITY);
-        targetPosting.setDirection(LedgerPostingDirection.INBOUND);
-        targetPosting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
-        entry.addPosting(sourcePosting);
-        entry.addPosting(targetPosting);
-
-        return entry;
-    }
-
     private LedgerEntry existingDeliveryEntry(LedgerEntryType entryType, Portfolio portfolio, String projectionUUID,
                     LedgerProjectionRole role)
     {
@@ -1529,25 +1362,6 @@ public class LegacyTransactionToLedgerMigratorTest
         posting.setExchangeRate(exchangeRate);
 
         return posting;
-    }
-
-    @FunctionalInterface
-    private interface BuySellDuplicateMutator
-    {
-        void accept(LedgerEntry entry, Account account, Portfolio portfolio, Account otherAccount,
-                        Portfolio otherPortfolio);
-    }
-
-    @FunctionalInterface
-    private interface AccountTransferDuplicateMutator
-    {
-        void accept(LedgerEntry entry, Account source, Account target, Account other);
-    }
-
-    @FunctionalInterface
-    private interface PortfolioTransferDuplicateMutator
-    {
-        void accept(LedgerEntry entry, Portfolio source, Portfolio target, Portfolio other);
     }
 
     private LegacyTransactionToLedgerMigrator.MigrationResult migrate(Client client)

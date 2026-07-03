@@ -2,8 +2,8 @@ package name.abuchen.portfolio.model.ledger.projection;
 
 import java.util.List;
 
-import name.abuchen.portfolio.model.LedgerDiagnosticCode;
 import name.abuchen.portfolio.model.CrossEntry;
+import name.abuchen.portfolio.model.LedgerDiagnosticCode;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;

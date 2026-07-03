@@ -31,6 +31,24 @@ public final class LedgerEntryEditSupport
         validate(candidate);
     }
 
+    public static int postingIndex(LedgerEntry entry, LedgerPosting posting)
+    {
+        var index = entry.getPostings().indexOf(posting);
+
+        if (index < 0)
+            throw new IllegalArgumentException("Ledger posting does not belong to entry"); //$NON-NLS-1$
+
+        return index;
+    }
+
+    public static LedgerPosting postingAt(LedgerEntry entry, int index)
+    {
+        if (index < 0 || index >= entry.getPostings().size())
+            throw new IllegalArgumentException("Ledger posting index out of range: " + index); //$NON-NLS-1$
+
+        return entry.getPostings().get(index);
+    }
+
     public static LedgerPosting postingByUUID(LedgerEntry entry, String uuid)
     {
         return entry.getPostings().stream() //

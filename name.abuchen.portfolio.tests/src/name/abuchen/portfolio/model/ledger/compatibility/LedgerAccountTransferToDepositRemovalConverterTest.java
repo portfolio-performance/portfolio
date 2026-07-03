@@ -358,16 +358,6 @@ public class LedgerAccountTransferToDepositRemovalConverterTest
         return plan;
     }
 
-    private void assertExecutionRef(InvestmentPlan plan, int index, String entryUUID, String projectionUUID,
-                    LedgerProjectionRole role)
-    {
-        var ref = plan.getLedgerExecutionRefs().get(index);
-
-        assertThat(ref.getLedgerEntryUUID(), is(entryUUID));
-        assertThat(ref.getProjectionUUID(), is(projectionUUID));
-        assertThat(ref.getProjectionRole(), is(role));
-    }
-
     private void assertResolvedPlanTransaction(Client client, InvestmentPlan plan, int index,
                     AccountTransaction.Type type)
     {

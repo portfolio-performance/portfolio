@@ -41,9 +41,10 @@ public final class LedgerAccountTransactionEditor
                             .message("Unsupported account transaction edit for " + entry.getType())); //$NON-NLS-1$
 
         var role = transaction.getLedgerProjectionRole();
-        var postingUUID = transaction.getLedgerProjectionDescriptor().getPrimaryPosting().getUUID();
+        var postingIndex = LedgerEntryEditSupport.postingIndex(entry,
+                        transaction.getLedgerProjectionDescriptor().getPrimaryPosting());
 
-        LedgerEntryEditSupport.applyValidated(entry, editedEntry -> applyEdit(editedEntry, edit, role, postingUUID));
+        LedgerEntryEditSupport.applyValidated(entry, editedEntry -> applyEdit(editedEntry, edit, role, postingIndex));
     }
 
     public void validate(LedgerBackedAccountTransaction transaction, LedgerAccountTransactionEdit edit)
@@ -58,18 +59,20 @@ public final class LedgerAccountTransactionEditor
                             .message("Unsupported account transaction edit for " + entry.getType())); //$NON-NLS-1$
 
         var role = transaction.getLedgerProjectionRole();
-        var postingUUID = transaction.getLedgerProjectionDescriptor().getPrimaryPosting().getUUID();
+        var postingIndex = LedgerEntryEditSupport.postingIndex(entry,
+                        transaction.getLedgerProjectionDescriptor().getPrimaryPosting());
 
-        LedgerEntryEditSupport.validatePatch(entry, editedEntry -> applyEdit(editedEntry, edit, role, postingUUID));
+        LedgerEntryEditSupport.validatePatch(entry, editedEntry -> applyEdit(editedEntry, edit, role, postingIndex));
     }
 
     private void applyEdit(LedgerEntry editedEntry, LedgerAccountTransactionEdit edit,
                     name.abuchen.portfolio.model.ledger.LedgerProjectionRole role,
-                    String postingUUID)
+                    int postingIndex)
     {
         LedgerEntryMetadataPatchHelper.apply(editedEntry, edit.getMetadata());
-        edit.getPosting().applyTo(LedgerEntryEditSupport.postingByUUID(editedEntry, postingUUID));
-        applyExDate(LedgerEntryEditSupport.postingByUUID(editedEntry, postingUUID), edit.getExDate());
+        var posting = LedgerEntryEditSupport.postingAt(editedEntry, postingIndex);
+        edit.getPosting().applyTo(posting);
+        applyExDate(posting, edit.getExDate());
         unitPostingUpdater.apply(editedEntry, edit.getUnits());
         ensureDescriptorExists(editedEntry, role);
     }

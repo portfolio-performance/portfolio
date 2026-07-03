@@ -7,11 +7,9 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.ledger.LedgerParameter;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
+import name.abuchen.portfolio.model.ledger.LedgerParameter;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
 import name.abuchen.portfolio.model.ledger.LedgerPostingDirection;
 import name.abuchen.portfolio.model.ledger.LedgerPostingSemanticRole;
@@ -456,7 +454,7 @@ public final class DerivedProjectionDescriptorService
 
         public String format()
         {
-            return "[" + code + "] entry=" + entry.getUUID() + " role=" + role + " " + message //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            return "[" + code + "] entry=" + entry.getUUID() + " role=" + role + " " + message //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                             + (postingUUIDs.isEmpty() ? "" : " postings=" + postingUUIDs); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }

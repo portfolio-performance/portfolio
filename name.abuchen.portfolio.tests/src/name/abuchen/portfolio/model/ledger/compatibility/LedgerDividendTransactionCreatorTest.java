@@ -324,14 +324,6 @@ public class LedgerDividendTransactionCreatorTest
                         .orElse(null);
     }
 
-    private List<String> projectionUUIDs(Client client)
-    {
-        return client.getLedger().getEntries().stream()
-                        .flatMap(entry -> name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream())
-                        .map(descriptor -> descriptor.getRuntimeProjectionId())
-                        .toList();
-    }
-
     private List<LedgerProjectionRole> projectionRoles(Client client)
     {
         return client.getLedger().getEntries().stream()

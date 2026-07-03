@@ -36,7 +36,6 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerAccountOnlyTransactionCreator;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerAccountTransferTransactionCreator;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerBuySellTransactionCreator;
@@ -512,14 +511,6 @@ public class CrossEntryCheckTest
     private LedgerEntry ledgerEntry(Transaction transaction)
     {
         return ((LedgerBackedTransaction) transaction).getLedgerEntry();
-    }
-
-    private void rematerializeLedgerProjections()
-    {
-        client.getAccounts().forEach(owner -> owner.getTransactions().removeIf(LedgerCheckSupport::isLedgerBacked));
-        client.getPortfolios().forEach(owner -> owner.getTransactions().removeIf(LedgerCheckSupport::isLedgerBacked));
-
-        LedgerProjectionService.materialize(client);
     }
 
     private void assertEntryDeleted(String entryUUID)
