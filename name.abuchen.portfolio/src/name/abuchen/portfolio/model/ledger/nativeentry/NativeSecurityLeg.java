@@ -31,6 +31,8 @@ public final class NativeSecurityLeg
     private final long shares;
     private final Money amount;
     private final LedgerProjectionRole projectionRole;
+    private final String groupKey;
+    private final String localKey;
     private final List<NativeParameterValue> parameters;
 
     private NativeSecurityLeg(Builder builder)
@@ -42,6 +44,8 @@ public final class NativeSecurityLeg
         this.shares = builder.shares;
         this.amount = builder.amount;
         this.projectionRole = builder.projectionRole;
+        this.groupKey = builder.groupKey;
+        this.localKey = builder.localKey;
         this.parameters = List.copyOf(builder.parameters);
     }
 
@@ -98,6 +102,16 @@ public final class NativeSecurityLeg
         return projectionRole;
     }
 
+    String getGroupKey()
+    {
+        return groupKey;
+    }
+
+    String getLocalKey()
+    {
+        return localKey;
+    }
+
     List<NativeParameterValue> getParameters()
     {
         return parameters;
@@ -112,6 +126,8 @@ public final class NativeSecurityLeg
         private long shares;
         private Money amount;
         private LedgerProjectionRole projectionRole;
+        private String groupKey;
+        private String localKey;
         private final List<NativeParameterValue> parameters = new ArrayList<>();
 
         private Builder(LedgerPostingType postingType, String legCode, LedgerProjectionRole projectionRole)
@@ -165,6 +181,18 @@ public final class NativeSecurityLeg
         public Builder projectAs(LedgerProjectionRole projectionRole)
         {
             this.projectionRole = projectionRole;
+            return this;
+        }
+
+        public Builder groupKey(String groupKey)
+        {
+            this.groupKey = groupKey;
+            return this;
+        }
+
+        public Builder localKey(String localKey)
+        {
+            this.localKey = localKey;
             return this;
         }
 

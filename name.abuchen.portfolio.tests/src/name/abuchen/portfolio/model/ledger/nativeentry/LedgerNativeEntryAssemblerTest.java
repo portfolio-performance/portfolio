@@ -430,6 +430,107 @@ public class LedgerNativeEntryAssemblerTest
     }
 
     @Test
+    public void testNativeAssemblerCreatesRepeatedSpinOffMovementLegsWithSemanticKeys()
+    {
+        var fixture = fixture();
+        var secondTarget = new Security("Siemens Healthineers AG", CurrencyUnit.EUR);
+        secondTarget.setIsin("DE000SHL1006");
+        fixture.client.addSecurity(secondTarget);
+
+        var entry = repeatedSpinOff(fixture, secondTarget).buildDetached().getEntry();
+        var targetPostings = postings(entry, LedgerPostingType.SECURITY, CorporateActionLeg.TARGET_SECURITY);
+        var cashPostings = postings(entry, LedgerPostingType.CASH_COMPENSATION,
+                        CorporateActionLeg.CASH_COMPENSATION);
+        var targetDescriptors = descriptors(entry).stream()
+                        .filter(descriptor -> descriptor.getRole() == LedgerProjectionRole.NEW_SECURITY_LEG)
+                        .toList();
+        var cashOneDescriptor = descriptor(entry, LedgerProjectionRole.CASH_COMPENSATION, "cash-1");
+        var cashTwoDescriptor = descriptor(entry, LedgerProjectionRole.CASH_COMPENSATION, "cash-2");
+
+        assertThat(targetPostings.size(), is(2));
+        assertThat(targetPostings.stream().map(LedgerPosting::getLocalKey).collect(Collectors.toSet()),
+                        is(java.util.Set.of("target-1", "target-2")));
+        assertThat(targetPostings.stream().map(LedgerPosting::getGroupKey).collect(Collectors.toSet()),
+                        is(java.util.Set.of("main")));
+
+        assertThat(cashPostings.size(), is(2));
+        assertThat(cashPostings.stream().map(LedgerPosting::getLocalKey).collect(Collectors.toSet()),
+                        is(java.util.Set.of("cash-1", "cash-2")));
+        assertThat(cashPostings.stream().map(LedgerPosting::getGroupKey).collect(Collectors.toSet()),
+                        is(java.util.Set.of("cash-1", "cash-2")));
+
+        assertThat(targetDescriptors.size(), is(2));
+        assertThat(targetDescriptors.stream().map(DerivedProjectionDescriptor::getSemanticInstanceKey)
+                        .map(Optional::orElseThrow).collect(Collectors.toSet()),
+                        is(java.util.Set.of("target-1", "target-2")));
+        assertThat(targetDescriptors.stream().map(DerivedProjectionDescriptor::getRuntimeProjectionId)
+                        .collect(Collectors.toSet()).size(), is(2));
+        assertThat(descriptor(entry, LedgerProjectionRole.NEW_SECURITY_LEG, "target-1").getPrimaryPosting()
+                        .getSecurity(), is(fixture.siemensEnergy));
+        assertThat(descriptor(entry, LedgerProjectionRole.NEW_SECURITY_LEG, "target-2").getPrimaryPosting()
+                        .getSecurity(), is(secondTarget));
+
+        assertThat(cashOneDescriptor.getUnitPostings().stream().map(LedgerPosting::getLocalKey)
+                        .collect(Collectors.toSet()), is(java.util.Set.of("fee-1", "tax-1")));
+        assertThat(cashTwoDescriptor.getUnitPostings().isEmpty(), is(true));
+        assertTrue(LedgerStructuralValidator.validate(ledger(entry)).isOK());
+    }
+
+    @Test
+    public void testNativeAssemblerRepeatedTargetDuplicateLocalKeyIsRejected()
+    {
+        var fixture = fixture();
+        var secondTarget = new Security("Siemens Healthineers AG", CurrencyUnit.EUR);
+        fixture.client.addSecurity(secondTarget);
+
+        var exception = assertThrows(LedgerNativeEntryAssemblyException.class,
+                        () -> baseSpinOff(fixture) //
+                                        .securityLeg(sourceLeg(fixture).build()) //
+                                        .securityLeg(targetLeg(fixture).groupKey("main").localKey("target-1").build()) //
+                                        .securityLeg(targetLeg(fixture).security(secondTarget)
+                                                        .targetSecurity(secondTarget).groupKey("main")
+                                                        .localKey("target-1").build()) //
+                                        .buildDetached());
+
+        assertThat(exception.getIssue(), is(LedgerNativeEntryAssemblyIssue.NATIVE_DEFINITION_VALIDATION_FAILED));
+    }
+
+    @Test
+    public void testNativeAssemblerRepeatedTargetBlankLocalKeyIsRejected()
+    {
+        var fixture = fixture();
+        var secondTarget = new Security("Siemens Healthineers AG", CurrencyUnit.EUR);
+        fixture.client.addSecurity(secondTarget);
+
+        var exception = assertThrows(LedgerNativeEntryAssemblyException.class,
+                        () -> baseSpinOff(fixture) //
+                                        .securityLeg(sourceLeg(fixture).build()) //
+                                        .securityLeg(targetLeg(fixture).groupKey("main").localKey("target-1").build()) //
+                                        .securityLeg(targetLeg(fixture).security(secondTarget)
+                                                        .targetSecurity(secondTarget).groupKey("main")
+                                                        .localKey(" ").build()) //
+                                        .buildDetached());
+
+        assertThat(exception.getIssue(), is(LedgerNativeEntryAssemblyIssue.NATIVE_DEFINITION_VALIDATION_FAILED));
+    }
+
+    @Test
+    public void testNativeAssemblerRepeatedCashDuplicateLocalKeyIsRejected()
+    {
+        var fixture = fixture();
+
+        var exception = assertThrows(LedgerNativeEntryAssemblyException.class,
+                        () -> baseSpinOff(fixture) //
+                                        .securityLeg(sourceLeg(fixture).build()) //
+                                        .securityLeg(targetLeg(fixture).build()) //
+                                        .cashCompensation(cashCompensation(fixture, "cash-1", "cash-1", 5)) //
+                                        .cashCompensationMovement(cashCompensation(fixture, "cash-2", "cash-1", 7)) //
+                                        .buildDetached());
+
+        assertThat(exception.getIssue(), is(LedgerNativeEntryAssemblyIssue.NATIVE_DEFINITION_VALIDATION_FAILED));
+    }
+
+    @Test
     public void testNativeAssemblerDescriptorsCoverCorporateActionFamilies()
     {
         assertThat(roles(stockDividendEntry(fixture()).buildDetached().getEntry()),
@@ -668,6 +769,51 @@ public class LedgerNativeEntryAssemblerTest
                         .tax(NativeTax.withholding(fixture.account, money(1)));
     }
 
+    private static LedgerNativeEntryAssembler.EntryBuilder repeatedSpinOff(Fixture fixture, Security secondTarget)
+    {
+        return baseSpinOff(fixture) //
+                        .securityLeg(sourceLeg(fixture).build()) //
+                        .securityLeg(targetLeg(fixture).groupKey("main").localKey("target-1").build()) //
+                        .securityLeg(targetLeg(fixture) //
+                                        .security(secondTarget) //
+                                        .targetSecurity(secondTarget) //
+                                        .shares(Values.Share.factorize(7)) //
+                                        .amount(money(70)) //
+                                        .groupKey("main") //
+                                        .localKey("target-2") //
+                                        .build()) //
+                        .cashCompensation(cashCompensation(fixture, "cash-1", "cash-1", 5)) //
+                        .cashCompensationMovement(cashCompensation(fixture, "cash-2", "cash-2", 7)) //
+                        .fee(NativeFee.builder() //
+                                        .account(fixture.account) //
+                                        .amount(money(2)) //
+                                        .reason(FeeReason.CORPORATE_ACTION_FEE) //
+                                        .groupKey("cash-1") //
+                                        .localKey("fee-1") //
+                                        .build()) //
+                        .tax(NativeTax.builder() //
+                                        .account(fixture.account) //
+                                        .amount(money(1)) //
+                                        .reason(TaxReason.WITHHOLDING_TAX) //
+                                        .withholdingTax(true) //
+                                        .groupKey("cash-1") //
+                                        .localKey("tax-1") //
+                                        .build());
+    }
+
+    private static NativeCashCompensation cashCompensation(Fixture fixture, String groupKey, String localKey,
+                    long amount)
+    {
+        return NativeCashCompensation.builder() //
+                        .account(fixture.account) //
+                        .amount(money(amount)) //
+                        .kind(CashCompensationKind.CASH_IN_LIEU) //
+                        .applied(true) //
+                        .groupKey(groupKey) //
+                        .localKey(localKey) //
+                        .build();
+    }
+
     private static LedgerNativeEntryAssembler.EntryBuilder stockDividendEntry(Fixture fixture)
     {
         return LedgerNativeEntryAssembler.forClient(fixture.client) //
@@ -799,6 +945,16 @@ public class LedgerNativeEntryAssemblerTest
                         .orElseThrow();
     }
 
+    private static DerivedProjectionDescriptor descriptor(name.abuchen.portfolio.model.ledger.LedgerEntry entry,
+                    LedgerProjectionRole role, String semanticInstanceKey)
+    {
+        return descriptors(entry).stream() //
+                        .filter(descriptor -> descriptor.getRole() == role) //
+                        .filter(descriptor -> descriptor.getSemanticInstanceKey()
+                                        .filter(semanticInstanceKey::equals).isPresent())
+                        .findFirst().orElseThrow();
+    }
+
     private static java.util.List<DerivedProjectionDescriptor> descriptors(
                     name.abuchen.portfolio.model.ledger.LedgerEntry entry)
     {
@@ -813,6 +969,22 @@ public class LedgerNativeEntryAssemblerTest
     {
         return descriptors(entry).stream().map(DerivedProjectionDescriptor::getRole)
                         .collect(Collectors.toSet());
+    }
+
+    private static java.util.List<LedgerPosting> postings(name.abuchen.portfolio.model.ledger.LedgerEntry entry,
+                    LedgerPostingType type, CorporateActionLeg leg)
+    {
+        return entry.getPostings().stream() //
+                        .filter(posting -> posting.getType() == type) //
+                        .filter(posting -> posting.getCorporateActionLeg() == leg) //
+                        .toList();
+    }
+
+    private static Ledger ledger(name.abuchen.portfolio.model.ledger.LedgerEntry entry)
+    {
+        var ledger = new Ledger();
+        ledger.addEntry(entry);
+        return ledger;
     }
 
     private static void assertPrimarySemantics(LedgerPosting posting, LedgerPostingSemanticRole semanticRole,

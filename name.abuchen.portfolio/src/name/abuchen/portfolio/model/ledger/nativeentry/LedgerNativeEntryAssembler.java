@@ -104,11 +104,11 @@ public final class LedgerNativeEntryAssembler
         private final LedgerEntryDefinition definition;
         private final Function<LedgerPostingType, Optional<LedgerPostingTypeDefinition>> postingDefinitionLookup;
         private final List<NativeSecurityLeg> securityLegs = new ArrayList<>();
+        private final List<NativeCashCompensation> cashCompensations = new ArrayList<>();
         private final List<NativeFee> fees = new ArrayList<>();
         private final List<NativeTax> taxes = new ArrayList<>();
         private NativeEntryMetadata metadata;
         private NativeCorporateActionEvent event;
-        private NativeCashCompensation cashCompensation;
 
         private EntryBuilder(Client client, LedgerEntryDefinition definition,
                         Function<LedgerPostingType, Optional<LedgerPostingTypeDefinition>> postingDefinitionLookup)
@@ -138,7 +138,13 @@ public final class LedgerNativeEntryAssembler
 
         public EntryBuilder cashCompensation(NativeCashCompensation compensation)
         {
-            this.cashCompensation = Objects.requireNonNull(compensation);
+            cashCompensations.add(Objects.requireNonNull(compensation));
+            return this;
+        }
+
+        public EntryBuilder cashCompensationMovement(NativeCashCompensation compensation)
+        {
+            cashCompensations.add(Objects.requireNonNull(compensation));
             return this;
         }
 
@@ -165,9 +171,10 @@ public final class LedgerNativeEntryAssembler
             for (var leg : securityLegs)
                 addSecurityLeg(entry, leg);
 
-            LedgerPosting compensationPosting = null;
-            if (cashCompensation != null)
-                compensationPosting = addCashCompensation(entry, cashCompensation);
+            var compensationPostings = new ArrayList<CashCompensationPosting>();
+            for (var compensation : cashCompensations)
+                compensationPostings.add(new CashCompensationPosting(compensation,
+                                addCashCompensation(entry, compensation)));
 
             for (var fee : fees)
                 addFee(entry, fee);
@@ -175,8 +182,9 @@ public final class LedgerNativeEntryAssembler
             for (var tax : taxes)
                 addTax(entry, tax);
 
-            if (compensationPosting != null)
-                addCashCompensationProjection(entry, cashCompensation, compensationPosting);
+            for (var compensationPosting : compensationPostings)
+                addCashCompensationProjection(entry, compensationPosting.compensation(),
+                                compensationPosting.posting());
 
             var definitionValidationResult = LedgerNativeEntryDefinitionValidator.validate(entry);
 
@@ -243,6 +251,7 @@ public final class LedgerNativeEntryAssembler
             applyMoney(posting, leg.getAmount());
             markPrimary(posting, semanticRole(leg.getPostingType()), direction(leg.getProjectionRole()),
                             corporateActionLeg(leg.getLegCode()), leg.getProjectionRole());
+            applySemanticKeys(posting, leg.getGroupKey(), leg.getLocalKey());
 
             if (leg.getLegCode() != null)
                 addPostingParameter(posting, leg.getPostingType(),
@@ -267,6 +276,7 @@ public final class LedgerNativeEntryAssembler
             applyMoney(posting, compensation.getAmount());
             markPrimary(posting, LedgerPostingSemanticRole.CASH_COMPENSATION, LedgerPostingDirection.NEUTRAL,
                             CorporateActionLeg.CASH_COMPENSATION, LedgerProjectionRole.CASH_COMPENSATION);
+            applySemanticKeys(posting, compensation.getGroupKey(), compensation.getLocalKey());
 
             if (compensation.getAccount() != null)
                 addPostingParameter(posting, LedgerPostingType.CASH_COMPENSATION,
@@ -306,7 +316,8 @@ public final class LedgerNativeEntryAssembler
             posting.setAccount(fee.getAccount());
             applyMoney(posting, fee.getAmount());
             markUnit(posting, LedgerPostingSemanticRole.FEE, LedgerPostingUnitRole.FEE,
-                            LedgerProjectionRole.CASH_COMPENSATION.name());
+                            semanticGroupKey(fee.getGroupKey(), LedgerProjectionRole.CASH_COMPENSATION.name()));
+            posting.setLocalKey(fee.getLocalKey());
             addPostingParameter(posting, LedgerPostingType.FEE,
                             new NativeParameterValue(LedgerParameterType.CORPORATE_ACTION_LEG,
                                             CorporateActionLeg.FEE.getCode()));
@@ -326,7 +337,8 @@ public final class LedgerNativeEntryAssembler
             posting.setAccount(tax.getAccount());
             applyMoney(posting, tax.getAmount());
             markUnit(posting, LedgerPostingSemanticRole.TAX, LedgerPostingUnitRole.TAX,
-                            LedgerProjectionRole.CASH_COMPENSATION.name());
+                            semanticGroupKey(tax.getGroupKey(), LedgerProjectionRole.CASH_COMPENSATION.name()));
+            posting.setLocalKey(tax.getLocalKey());
             addPostingParameter(posting, LedgerPostingType.TAX,
                             new NativeParameterValue(LedgerParameterType.CORPORATE_ACTION_LEG,
                                             CorporateActionLeg.TAX.getCode()));
@@ -360,6 +372,20 @@ public final class LedgerNativeEntryAssembler
                 posting.setGroupKey(projectionRole.name());
                 posting.setLocalKey(projectionRole.name());
             }
+        }
+
+        private void applySemanticKeys(LedgerPosting posting, String groupKey, String localKey)
+        {
+            if (groupKey != null)
+                posting.setGroupKey(groupKey);
+
+            if (localKey != null)
+                posting.setLocalKey(localKey);
+        }
+
+        private String semanticGroupKey(String groupKey, String defaultGroupKey)
+        {
+            return groupKey == null ? defaultGroupKey : groupKey;
         }
 
         private void markUnit(LedgerPosting posting, LedgerPostingSemanticRole semanticRole,
@@ -536,6 +562,10 @@ public final class LedgerNativeEntryAssembler
             {
                 return new ProjectionIntent(role, account, null, primaryPosting, postingGroup);
             }
+        }
+
+        private record CashCompensationPosting(NativeCashCompensation compensation, LedgerPosting posting)
+        {
         }
     }
 }

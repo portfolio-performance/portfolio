@@ -25,12 +25,16 @@ public final class NativeCashCompensation
 {
     private final Account account;
     private final Money amount;
+    private final String groupKey;
+    private final String localKey;
     private final List<NativeParameterValue> parameters;
 
     private NativeCashCompensation(Builder builder)
     {
         this.account = builder.account;
         this.amount = builder.amount;
+        this.groupKey = builder.groupKey;
+        this.localKey = builder.localKey;
         this.parameters = List.copyOf(builder.parameters);
     }
 
@@ -49,6 +53,16 @@ public final class NativeCashCompensation
         return amount;
     }
 
+    String getGroupKey()
+    {
+        return groupKey;
+    }
+
+    String getLocalKey()
+    {
+        return localKey;
+    }
+
     List<NativeParameterValue> getParameters()
     {
         return parameters;
@@ -58,6 +72,8 @@ public final class NativeCashCompensation
     {
         private Account account;
         private Money amount;
+        private String groupKey;
+        private String localKey;
         private final List<NativeParameterValue> parameters = new ArrayList<>();
 
         private Builder()
@@ -73,6 +89,18 @@ public final class NativeCashCompensation
         public Builder amount(Money amount)
         {
             this.amount = amount;
+            return this;
+        }
+
+        public Builder groupKey(String groupKey)
+        {
+            this.groupKey = groupKey;
+            return this;
+        }
+
+        public Builder localKey(String localKey)
+        {
+            this.localKey = localKey;
             return this;
         }
 
