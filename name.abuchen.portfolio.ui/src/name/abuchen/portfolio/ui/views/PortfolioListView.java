@@ -25,7 +25,6 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -208,15 +207,7 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
                         getPreferenceStore(), portfolios, layout);
 
         Column column = new NameColumn("0", Messages.ColumnPortfolio, SWT.None, 100, getClient()); //$NON-NLS-1$
-        column.setLabelProvider(new NameColumnLabelProvider(getClient()) // NOSONAR
-        {
-            @Override
-            public Color getForeground(Object e)
-            {
-                boolean isRetired = ((Portfolio) e).isRetired();
-                return isRetired ? Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY) : null;
-            }
-        });
+        column.setLabelProvider(new NameColumnLabelProvider(getClient()));
         column.getEditingSupport().addListener(this);
         portfolioColumns.addColumn(column);
 

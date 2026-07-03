@@ -24,7 +24,6 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -239,15 +238,7 @@ public class AccountListView extends AbstractFinanceView implements Modification
     private Column defineAccountNameColumn()
     {
         var column = new NameColumn("0", Messages.ColumnAccount, SWT.None, 150, getClient()); //$NON-NLS-1$
-        column.setLabelProvider(new NameColumnLabelProvider(getClient()) // NOSONAR
-        {
-            @Override
-            public Color getForeground(Object e)
-            {
-                boolean isRetired = ((Account) e).isRetired();
-                return isRetired ? Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY) : null;
-            }
-        });
+        column.setLabelProvider(new NameColumnLabelProvider(getClient()));
         column.getEditingSupport().addListener(this);
         return column;
     }
