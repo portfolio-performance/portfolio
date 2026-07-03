@@ -11,6 +11,7 @@ import java.util.HashSet;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.model.ledger.configuration.CorporateActionKind;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerDownstreamResult;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryDefinitionRegistry;
@@ -79,11 +80,7 @@ public class LedgerEntryDefinitionTest
             assertFalse(definition.getRequiredEntryParameterRules().isEmpty());
             assertFalse(definition.getEntryParameterRules().isEmpty());
             assertFalse(definition.getPostingParameterTypes().isEmpty());
-            assertFalse(definition.getRequiredPostingParameterRules().isEmpty());
             assertFalse(definition.getPostingParameterRules().isEmpty());
-            assertFalse(definition.getProjectionRoles().isEmpty());
-            assertFalse(definition.getProjectionRules().isEmpty());
-            assertFalse(definition.getAlternativeRequirementGroups().isEmpty());
             assertFalse(definition.getLegDefinitions().isEmpty());
             assertTrue(definition.getReportingClass() != LedgerReportingClass.UNDEFINED);
             assertTrue(definition.getPerformanceTreatment() != LedgerPerformanceTreatment.UNDEFINED);
@@ -110,9 +107,6 @@ public class LedgerEntryDefinitionTest
             assertFalse(definition.getPostingRules().isEmpty());
             assertFalse(definition.getEntryParameterRules().isEmpty());
             assertFalse(definition.getPostingParameterRules().isEmpty());
-            assertFalse(definition.getProjectionRules().isEmpty());
-            assertFalse(definition.getPostingGroupRules().isEmpty());
-            assertFalse(definition.getAlternativeRequirementGroups().isEmpty());
             assertTrue(definition.getReportingClass() != LedgerReportingClass.UNDEFINED);
             assertTrue(definition.getPerformanceTreatment() != LedgerPerformanceTreatment.UNDEFINED);
             assertThat(definition.getDownstreamResultsNotPersisted(), is(EnumSet.allOf(LedgerDownstreamResult.class)));
@@ -214,7 +208,8 @@ public class LedgerEntryDefinitionTest
     @Test
     public void testSpinOffDefinitionDescribesNativeDataModel()
     {
-        var definition = LedgerEntryDefinitionRegistry.lookup(LedgerEntryType.CORPORATE_ACTION).orElseThrow();
+        var definition = LedgerEntryDefinitionRegistry
+                        .lookup(LedgerEntryType.CORPORATE_ACTION, CorporateActionKind.SPIN_OFF).orElseThrow();
 
         assertThat(definition.getNativeShape(), is(LedgerNativeEntryShape.DUAL_INSTRUMENT_PLUS_ACCOUNT));
         assertTrue(definition.getPostingTypes().contains(LedgerPostingType.SECURITY));
@@ -260,7 +255,8 @@ public class LedgerEntryDefinitionTest
     @Test
     public void testSpinOffDefinitionDescribesFunctionalLegs()
     {
-        var definition = LedgerEntryDefinitionRegistry.lookup(LedgerEntryType.CORPORATE_ACTION).orElseThrow();
+        var definition = LedgerEntryDefinitionRegistry
+                        .lookup(LedgerEntryType.CORPORATE_ACTION, CorporateActionKind.SPIN_OFF).orElseThrow();
 
         var sourceLeg = assertLeg(definition, LedgerLegRole.SOURCE_SECURITY_LEG, LedgerPostingType.SECURITY,
                         LedgerLegCardinality.REPEATABLE);
@@ -305,6 +301,63 @@ public class LedgerEntryDefinitionTest
                         LedgerLegCardinality.OPTIONAL);
         assertTrue(forexLeg.getProjectionRole().isEmpty());
         assertTrue(forexLeg.getGroupNames().isEmpty());
+    }
+
+    /**
+     * Checks the ledger rule scenario: corporate action kinds can be registered as stable
+     * identities before all Registry.md profile dimensions are modeled. Definitions only
+     * include dimensions that current Ledger primitives can express honestly.
+     */
+    @Test
+    public void testCorporateActionKindDefinitionsRegisterRepresentableProfileSubsets()
+    {
+        for (var kind : new CorporateActionKind[] { CorporateActionKind.STOCK_DIVIDEND,
+                        CorporateActionKind.SPIN_OFF, CorporateActionKind.BONUS_ISSUE,
+                        CorporateActionKind.RIGHTS_DISTRIBUTION, CorporateActionKind.COUPON_PAYMENT,
+                        CorporateActionKind.PIK_INTEREST, CorporateActionKind.MATURITY,
+                        CorporateActionKind.PARTIAL_REDEMPTION, CorporateActionKind.CALL,
+                        CorporateActionKind.PUT, CorporateActionKind.CONVERSION,
+                        CorporateActionKind.EXCHANGE })
+            assertTrue(kind.name(), LedgerEntryDefinitionRegistry
+                            .lookup(LedgerEntryType.CORPORATE_ACTION, kind).isPresent());
+
+        for (var kind : new CorporateActionKind[] { CorporateActionKind.DEFAULTED_INTEREST,
+                        CorporateActionKind.RESTRUCTURING, CorporateActionKind.DEFAULT })
+            assertFalse(kind.name(), LedgerEntryDefinitionRegistry
+                            .lookup(LedgerEntryType.CORPORATE_ACTION, kind).isPresent());
+
+        var stockDividend = LedgerEntryDefinitionRegistry
+                        .lookup(LedgerEntryType.CORPORATE_ACTION, CorporateActionKind.STOCK_DIVIDEND)
+                        .orElseThrow();
+        assertLeg(stockDividend, LedgerLegRole.TARGET_SECURITY_LEG, LedgerPostingType.SECURITY,
+                        LedgerLegCardinality.AT_LEAST_ONE);
+        assertLeg(stockDividend, LedgerLegRole.CASH_COMPENSATION_LEG, LedgerPostingType.CASH_COMPENSATION,
+                        LedgerLegCardinality.REPEATABLE);
+        assertTrue(stockDividend.getProjectionRoles().isEmpty());
+
+        var coupon = LedgerEntryDefinitionRegistry
+                        .lookup(LedgerEntryType.CORPORATE_ACTION, CorporateActionKind.COUPON_PAYMENT)
+                        .orElseThrow();
+        assertLeg(coupon, LedgerLegRole.CASH_LEG, LedgerPostingType.CASH, LedgerLegCardinality.AT_LEAST_ONE);
+        assertLeg(coupon, LedgerLegRole.ACCRUED_INTEREST_LEG, LedgerPostingType.ACCRUED_INTEREST,
+                        LedgerLegCardinality.OPTIONAL);
+
+        var maturity = LedgerEntryDefinitionRegistry
+                        .lookup(LedgerEntryType.CORPORATE_ACTION, CorporateActionKind.MATURITY)
+                        .orElseThrow();
+        assertLeg(maturity, LedgerLegRole.SOURCE_SECURITY_LEG, LedgerPostingType.SECURITY,
+                        LedgerLegCardinality.AT_LEAST_ONE);
+        assertLeg(maturity, LedgerLegRole.CASH_LEG, LedgerPostingType.CASH, LedgerLegCardinality.AT_LEAST_ONE);
+        assertLeg(maturity, LedgerLegRole.PRINCIPAL_REDEMPTION_LEG, LedgerPostingType.PRINCIPAL_REDEMPTION,
+                        LedgerLegCardinality.AT_LEAST_ONE);
+
+        var conversion = LedgerEntryDefinitionRegistry
+                        .lookup(LedgerEntryType.CORPORATE_ACTION, CorporateActionKind.CONVERSION)
+                        .orElseThrow();
+        assertLeg(conversion, LedgerLegRole.SOURCE_SECURITY_LEG, LedgerPostingType.SECURITY,
+                        LedgerLegCardinality.AT_LEAST_ONE);
+        assertLeg(conversion, LedgerLegRole.TARGET_SECURITY_LEG, LedgerPostingType.SECURITY,
+                        LedgerLegCardinality.AT_LEAST_ONE);
     }
 
     /**

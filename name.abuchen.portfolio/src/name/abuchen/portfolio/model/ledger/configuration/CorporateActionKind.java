@@ -18,7 +18,21 @@ import name.abuchen.portfolio.model.ledger.LedgerParameter;
 @SuppressWarnings("nls")
 public enum CorporateActionKind implements LedgerCode
 {
-    SPIN_OFF("SPIN_OFF");
+    STOCK_DIVIDEND("STOCK_DIVIDEND"),
+    SPIN_OFF("SPIN_OFF"),
+    BONUS_ISSUE("BONUS_ISSUE"),
+    RIGHTS_DISTRIBUTION("RIGHTS_DISTRIBUTION"),
+    COUPON_PAYMENT("COUPON_PAYMENT"),
+    PIK_INTEREST("PIK_INTEREST"),
+    DEFAULTED_INTEREST("DEFAULTED_INTEREST"),
+    MATURITY("MATURITY"),
+    PARTIAL_REDEMPTION("PARTIAL_REDEMPTION"),
+    CALL("CALL"),
+    PUT("PUT"),
+    CONVERSION("CONVERSION"),
+    EXCHANGE("EXCHANGE"),
+    RESTRUCTURING("RESTRUCTURING"),
+    DEFAULT("DEFAULT");
 
     private final String code;
 

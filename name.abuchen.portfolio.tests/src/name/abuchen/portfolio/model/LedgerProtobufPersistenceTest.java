@@ -273,6 +273,40 @@ public class LedgerProtobufPersistenceTest
     }
 
     /**
+     * Verifies that newly registered corporate action kind identities roundtrip through
+     * existing protobuf parameter persistence without adding legacy transaction types.
+     */
+    @Test
+    public void testProtobufRoundtripPreservesRegisteredCorporateActionKind() throws IOException
+    {
+        var client = new Client();
+        var entry = new LedgerEntry("entry-maturity-kind");
+
+        entry.setType(LedgerEntryType.CORPORATE_ACTION);
+        entry.setDateTime(DATE_TIME);
+        entry.addParameter(LedgerParameter.ofCode(LedgerParameterType.CORPORATE_ACTION_KIND,
+                        CorporateActionKind.MATURITY));
+        client.getLedger().addEntry(entry);
+
+        var proto = saveProto(client);
+        var protoEntry = proto.getLedger().getEntries(0);
+
+        assertThat(protoEntry.getTypeCode(), is(LedgerEntryType.CORPORATE_ACTION.getCode()));
+        assertThat(protoEntry.getParameters(0).getTypeCode(), is(LedgerParameterType.CORPORATE_ACTION_KIND.getCode()));
+        assertThat(protoEntry.getParameters(0).getStringValue(), is(CorporateActionKind.MATURITY.getCode()));
+        assertTrue(proto.getTransactionsList().stream()
+                        .noneMatch(transaction -> "MATURITY".equals(transaction.getType().name())));
+
+        var loaded = load(wrap(proto));
+        var reloadedEntry = loaded.getLedger().getEntries().get(0);
+
+        assertThat(reloadedEntry.getType(), is(LedgerEntryType.CORPORATE_ACTION));
+        assertThat(reloadedEntry.getParameters().size(), is(1));
+        assertThat(reloadedEntry.getParameters().get(0).getType(), is(LedgerParameterType.CORPORATE_ACTION_KIND));
+        assertThat(reloadedEntry.getParameters().get(0).getValue(), is(CorporateActionKind.MATURITY.getCode()));
+    }
+
+    /**
      * Verifies that protobuf save writes derived shadows for cross-entry families.
      * Those shadows must mirror the ledger without becoming independent transaction truth.
      */

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
@@ -36,6 +37,7 @@ public final class LedgerEntryDefinitionRegistry
     private static final SetBuilder SETS = new SetBuilder();
 
     private static final Map<LedgerEntryType, LedgerEntryDefinition> DEFINITIONS = definitions();
+    private static final Map<CorporateActionKind, LedgerEntryDefinition> CORPORATE_ACTION_DEFINITIONS = corporateActionDefinitions();
 
     private LedgerEntryDefinitionRegistry()
     {
@@ -43,6 +45,9 @@ public final class LedgerEntryDefinitionRegistry
 
     public static Optional<LedgerEntryDefinition> lookup(LedgerEntryType entryType)
     {
+        if (entryType == LedgerEntryType.CORPORATE_ACTION)
+            return lookup(entryType, CorporateActionKind.SPIN_OFF);
+
         return Optional.ofNullable(DEFINITIONS.get(entryType));
     }
 
@@ -62,19 +67,25 @@ public final class LedgerEntryDefinitionRegistry
         if (entryType != LedgerEntryType.CORPORATE_ACTION)
             return lookup(entryType);
 
-        if (kind != CorporateActionKind.SPIN_OFF)
+        if (kind == null)
             return Optional.empty();
 
-        return lookup(entryType);
+        return Optional.ofNullable(CORPORATE_ACTION_DEFINITIONS.get(kind));
     }
 
     public static Collection<LedgerEntryDefinition> getDefinitions()
     {
-        return DEFINITIONS.values();
+        var definitions = new ArrayList<LedgerEntryDefinition>();
+        definitions.addAll(DEFINITIONS.values());
+        definitions.addAll(CORPORATE_ACTION_DEFINITIONS.values());
+        return Collections.unmodifiableList(definitions);
     }
 
     public static boolean hasDefinition(LedgerEntryType entryType)
     {
+        if (entryType == LedgerEntryType.CORPORATE_ACTION)
+            return !CORPORATE_ACTION_DEFINITIONS.isEmpty();
+
         return DEFINITIONS.containsKey(entryType);
     }
 
@@ -82,7 +93,25 @@ public final class LedgerEntryDefinitionRegistry
     {
         var definitions = new EnumMap<LedgerEntryType, LedgerEntryDefinition>(LedgerEntryType.class);
 
-        register(definitions, spinOff());
+        return Collections.unmodifiableMap(definitions);
+    }
+
+    private static Map<CorporateActionKind, LedgerEntryDefinition> corporateActionDefinitions()
+    {
+        var definitions = new EnumMap<CorporateActionKind, LedgerEntryDefinition>(CorporateActionKind.class);
+
+        register(definitions, CorporateActionKind.STOCK_DIVIDEND, stockDividend());
+        register(definitions, CorporateActionKind.SPIN_OFF, spinOff());
+        register(definitions, CorporateActionKind.BONUS_ISSUE, bonusIssue());
+        register(definitions, CorporateActionKind.RIGHTS_DISTRIBUTION, rightsDistribution());
+        register(definitions, CorporateActionKind.COUPON_PAYMENT, couponPayment());
+        register(definitions, CorporateActionKind.PIK_INTEREST, pikInterest());
+        register(definitions, CorporateActionKind.MATURITY, maturity());
+        register(definitions, CorporateActionKind.PARTIAL_REDEMPTION, partialRedemption());
+        register(definitions, CorporateActionKind.CALL, call());
+        register(definitions, CorporateActionKind.PUT, put());
+        register(definitions, CorporateActionKind.CONVERSION, conversion());
+        register(definitions, CorporateActionKind.EXCHANGE, exchange());
 
         return Collections.unmodifiableMap(definitions);
     }
@@ -93,6 +122,14 @@ public final class LedgerEntryDefinitionRegistry
         if (definitions.put(definition.getEntryType(), definition) != null)
             throw new IllegalStateException(LedgerDiagnosticCode.LEDGER_CORE_016
                             .message("Duplicate Ledger entry definition: " + definition.getEntryType())); //$NON-NLS-1$
+    }
+
+    private static void register(Map<CorporateActionKind, LedgerEntryDefinition> definitions,
+                    CorporateActionKind kind, LedgerEntryDefinition definition)
+    {
+        if (definitions.put(kind, definition) != null)
+            throw new IllegalStateException(LedgerDiagnosticCode.LEDGER_CORE_016
+                            .message("Duplicate Ledger corporate action definition: " + kind)); //$NON-NLS-1$
     }
 
     private static LedgerEntryDefinition spinOff()
@@ -152,6 +189,296 @@ public final class LedgerEntryDefinitionRegistry
                         spinOffLegDefinitions(),
                         LedgerReportingClass.SECURITIES_DISTRIBUTION,
                         LedgerPerformanceTreatment.COST_BASIS_REALLOCATION, downstreamResults());
+    }
+
+    private static LedgerEntryDefinition stockDividend()
+    {
+        return corporateActionDefinition(
+                        SETS.legDefinitions(targetSecurityLeg(LedgerLegCardinality.AT_LEAST_ONE),
+                                        cashCompensationLeg(), feeLeg(), taxLeg(), forexLeg()),
+                        LedgerReportingClass.SECURITIES_DISTRIBUTION,
+                        LedgerPerformanceTreatment.SECURITY_DISTRIBUTION);
+    }
+
+    private static LedgerEntryDefinition bonusIssue()
+    {
+        return corporateActionDefinition(
+                        SETS.legDefinitions(targetSecurityLeg(LedgerLegCardinality.AT_LEAST_ONE),
+                                        cashCompensationLeg(), feeLeg(), taxLeg(), forexLeg()),
+                        LedgerReportingClass.SECURITIES_DISTRIBUTION,
+                        LedgerPerformanceTreatment.SECURITY_DISTRIBUTION);
+    }
+
+    private static LedgerEntryDefinition rightsDistribution()
+    {
+        return corporateActionDefinition(
+                        SETS.legDefinitions(distributedRightLeg(LedgerLegCardinality.AT_LEAST_ONE),
+                                        cashCompensationLeg(), feeLeg(), taxLeg(), forexLeg()),
+                        LedgerReportingClass.RIGHTS_EVENT,
+                        LedgerPerformanceTreatment.SECURITY_DISTRIBUTION);
+    }
+
+    private static LedgerEntryDefinition couponPayment()
+    {
+        return corporateActionDefinition(
+                        SETS.legDefinitions(cashLeg(LedgerLegCardinality.AT_LEAST_ONE),
+                                        accruedInterestLeg(LedgerLegCardinality.OPTIONAL), feeLeg(), taxLeg(),
+                                        forexLeg()),
+                        LedgerReportingClass.FIXED_INCOME_COUPON,
+                        LedgerPerformanceTreatment.INCOME_DISTRIBUTION);
+    }
+
+    private static LedgerEntryDefinition pikInterest()
+    {
+        return corporateActionDefinition(
+                        SETS.legDefinitions(targetSecurityLeg(LedgerLegCardinality.AT_LEAST_ONE),
+                                        cashCompensationLeg(), accruedInterestLeg(LedgerLegCardinality.OPTIONAL),
+                                        feeLeg(), taxLeg(), forexLeg()),
+                        LedgerReportingClass.FIXED_INCOME_COUPON,
+                        LedgerPerformanceTreatment.INCOME_DISTRIBUTION);
+    }
+
+    private static LedgerEntryDefinition maturity()
+    {
+        return fixedIncomeRedemption();
+    }
+
+    private static LedgerEntryDefinition partialRedemption()
+    {
+        return fixedIncomeRedemption();
+    }
+
+    private static LedgerEntryDefinition call()
+    {
+        return fixedIncomeRedemption();
+    }
+
+    private static LedgerEntryDefinition put()
+    {
+        return fixedIncomeRedemption();
+    }
+
+    private static LedgerEntryDefinition fixedIncomeRedemption()
+    {
+        return corporateActionDefinition(
+                        SETS.legDefinitions(sourceSecurityLeg(LedgerLegCardinality.AT_LEAST_ONE),
+                                        cashLeg(LedgerLegCardinality.AT_LEAST_ONE),
+                                        principalRedemptionLeg(LedgerLegCardinality.AT_LEAST_ONE),
+                                        accruedInterestLeg(LedgerLegCardinality.OPTIONAL), feeLeg(), taxLeg(),
+                                        forexLeg()),
+                        LedgerReportingClass.PRINCIPAL_REDEMPTION,
+                        LedgerPerformanceTreatment.PRINCIPAL_RETURN);
+    }
+
+    private static LedgerEntryDefinition conversion()
+    {
+        return securityReorganization();
+    }
+
+    private static LedgerEntryDefinition exchange()
+    {
+        return securityReorganization();
+    }
+
+    private static LedgerEntryDefinition securityReorganization()
+    {
+        return corporateActionDefinition(
+                        SETS.legDefinitions(sourceSecurityLeg(LedgerLegCardinality.AT_LEAST_ONE),
+                                        targetSecurityLeg(LedgerLegCardinality.AT_LEAST_ONE),
+                                        cashCompensationLeg(),
+                                        accruedInterestLeg(LedgerLegCardinality.OPTIONAL), feeLeg(), taxLeg(),
+                                        forexLeg()),
+                        LedgerReportingClass.SECURITY_REORGANIZATION,
+                        LedgerPerformanceTreatment.COST_BASIS_REALLOCATION);
+    }
+
+    private static LedgerEntryDefinition corporateActionDefinition(Set<LedgerLegDefinition> legDefinitions,
+                    LedgerReportingClass reportingClass, LedgerPerformanceTreatment performanceTreatment)
+    {
+        return LedgerEntryDefinition.of(LedgerEntryType.CORPORATE_ACTION,
+                        LedgerNativeEntryShape.DUAL_INSTRUMENT_PLUS_ACCOUNT,
+                        optionalPostingRulesFor(legDefinitions),
+                        corporateActionEntryParameterRules(),
+                        corporateActionPostingParameterRulesFor(legDefinitions),
+                        Set.of(),
+                        Set.of(),
+                        Set.of(),
+                        legDefinitions,
+                        reportingClass,
+                        performanceTreatment,
+                        downstreamResults());
+    }
+
+    private static Set<LedgerPostingRule> optionalPostingRulesFor(Set<LedgerLegDefinition> legDefinitions)
+    {
+        var postingTypes = EnumSet.noneOf(LedgerPostingType.class);
+
+        for (var legDefinition : legDefinitions)
+            postingTypes.add(legDefinition.getPostingType());
+
+        var rules = new LinkedHashSet<LedgerPostingRule>();
+        for (var postingType : postingTypes)
+            rules.add(optionalPosting(postingType, SETS.parameterTypes(),
+                            corporateActionPostingOptionalParametersFor(postingType)));
+
+        return Collections.unmodifiableSet(rules);
+    }
+
+    private static Set<LedgerParameterRule> corporateActionEntryParameterRules()
+    {
+        return SETS.parameterRules(requiredEntryParameter(LedgerParameterType.CORPORATE_ACTION_KIND),
+                        optionalEntryParameter(LedgerParameterType.EX_DATE),
+                        optionalEntryParameter(LedgerParameterType.CORPORATE_ACTION_SUBTYPE),
+                        optionalEntryParameter(LedgerParameterType.EVENT_REFERENCE),
+                        optionalEntryParameter(LedgerParameterType.EVENT_STAGE),
+                        optionalEntryParameter(LedgerParameterType.RECORD_DATE),
+                        optionalEntryParameter(LedgerParameterType.PAYMENT_DATE),
+                        optionalEntryParameter(LedgerParameterType.EFFECTIVE_DATE),
+                        optionalEntryParameter(LedgerParameterType.SETTLEMENT_DATE));
+    }
+
+    private static Set<LedgerParameterRule> corporateActionPostingParameterRulesFor(
+                    Set<LedgerLegDefinition> legDefinitions)
+    {
+        var parameters = EnumSet.noneOf(LedgerParameterType.class);
+
+        for (var legDefinition : legDefinitions)
+        {
+            parameters.addAll(legDefinition.getRequiredParameterTypes());
+            parameters.addAll(legDefinition.getOptionalParameterTypes());
+            parameters.addAll(corporateActionPostingOptionalParametersFor(legDefinition.getPostingType()));
+        }
+
+        var rules = new LinkedHashSet<LedgerParameterRule>();
+        for (var parameter : parameters)
+            rules.add(repeatableOptionalPostingParameter(parameter));
+
+        return Collections.unmodifiableSet(rules);
+    }
+
+    private static EnumSet<LedgerParameterType> corporateActionPostingOptionalParametersFor(
+                    LedgerPostingType postingType)
+    {
+        return switch (postingType)
+        {
+            case SECURITY -> SETS.parameterTypes(LedgerParameterType.CORPORATE_ACTION_LEG,
+                            LedgerParameterType.SOURCE_SECURITY, LedgerParameterType.TARGET_SECURITY,
+                            LedgerParameterType.RATIO_NUMERATOR, LedgerParameterType.RATIO_DENOMINATOR,
+                            LedgerParameterType.FRACTION_QUANTITY, LedgerParameterType.FRACTION_TREATMENT,
+                            LedgerParameterType.ROUNDING_MODE, LedgerParameterType.COST_ALLOCATION_METHOD,
+                            LedgerParameterType.SOURCE_COST_PERCENT, LedgerParameterType.TARGET_COST_PERCENT,
+                            LedgerParameterType.REFERENCE_PRICE, LedgerParameterType.FAIR_MARKET_VALUE,
+                            LedgerParameterType.VALUATION_PRICE, LedgerParameterType.MANUAL_VALUATION_OVERRIDE);
+            case RIGHT -> SETS.parameterTypes(LedgerParameterType.CORPORATE_ACTION_LEG,
+                            LedgerParameterType.RIGHT_SECURITY, LedgerParameterType.SOURCE_SECURITY,
+                            LedgerParameterType.SUBSCRIPTION_PRICE, LedgerParameterType.ELECTION_DEADLINE,
+                            LedgerParameterType.FRACTION_QUANTITY, LedgerParameterType.FRACTION_TREATMENT,
+                            LedgerParameterType.ROUNDING_MODE);
+            case CASH -> SETS.parameterTypes(LedgerParameterType.SOURCE_ACCOUNT,
+                            LedgerParameterType.TARGET_ACCOUNT, LedgerParameterType.CASH_ACCOUNT,
+                            LedgerParameterType.EVENT_REFERENCE, LedgerParameterType.PAYMENT_DATE,
+                            LedgerParameterType.SETTLEMENT_DATE);
+            case CASH_COMPENSATION -> cashCompensationOptionalParameters();
+            case FEE -> feeOptionalParameters();
+            case TAX -> taxOptionalParameters();
+            case FOREX -> forexOptionalParameters();
+            case ACCRUED_INTEREST -> SETS.parameterTypes(LedgerParameterType.CORPORATE_ACTION_LEG,
+                            LedgerParameterType.ACCRUED_INTEREST_AMOUNT, LedgerParameterType.COUPON_RATE,
+                            LedgerParameterType.INTEREST_PERIOD_START, LedgerParameterType.INTEREST_PERIOD_END,
+                            LedgerParameterType.PAYMENT_DATE, LedgerParameterType.SETTLEMENT_DATE,
+                            LedgerParameterType.WITHHOLDING_TAX, LedgerParameterType.RECLAIMABLE_TAX,
+                            LedgerParameterType.TAX_REASON);
+            case PRINCIPAL_REDEMPTION -> SETS.parameterTypes(LedgerParameterType.CORPORATE_ACTION_LEG,
+                            LedgerParameterType.NOMINAL_VALUE, LedgerParameterType.PARTIAL_REDEMPTION_FACTOR,
+                            LedgerParameterType.REDEMPTION_PRICE_PERCENT, LedgerParameterType.SOURCE_SECURITY,
+                            LedgerParameterType.CASH_ACCOUNT, LedgerParameterType.PAYMENT_DATE,
+                            LedgerParameterType.SETTLEMENT_DATE);
+            default -> SETS.parameterTypes(LedgerParameterType.CORPORATE_ACTION_LEG);
+        };
+    }
+
+    private static LedgerLegDefinition sourceSecurityLeg(LedgerLegCardinality cardinality)
+    {
+        return LedgerLegDefinition.of(LedgerLegRole.SOURCE_SECURITY_LEG, LedgerPostingType.SECURITY,
+                        cardinality)
+                        .requiredParameters(SETS.parameterTypes(LedgerParameterType.CORPORATE_ACTION_LEG,
+                                        LedgerParameterType.SOURCE_SECURITY))
+                        .optionalParameters(corporateActionPostingOptionalParametersFor(LedgerPostingType.SECURITY))
+                        .build();
+    }
+
+    private static LedgerLegDefinition targetSecurityLeg(LedgerLegCardinality cardinality)
+    {
+        return LedgerLegDefinition.of(LedgerLegRole.TARGET_SECURITY_LEG, LedgerPostingType.SECURITY,
+                        cardinality)
+                        .requiredParameters(SETS.parameterTypes(LedgerParameterType.CORPORATE_ACTION_LEG,
+                                        LedgerParameterType.TARGET_SECURITY))
+                        .optionalParameters(corporateActionPostingOptionalParametersFor(LedgerPostingType.SECURITY))
+                        .build();
+    }
+
+    private static LedgerLegDefinition distributedRightLeg(LedgerLegCardinality cardinality)
+    {
+        return LedgerLegDefinition.of(LedgerLegRole.DISTRIBUTED_RIGHT_LEG, LedgerPostingType.RIGHT,
+                        cardinality)
+                        .requiredParameters(SETS.parameterTypes(LedgerParameterType.CORPORATE_ACTION_LEG,
+                                        LedgerParameterType.RIGHT_SECURITY))
+                        .optionalParameters(corporateActionPostingOptionalParametersFor(LedgerPostingType.RIGHT))
+                        .build();
+    }
+
+    private static LedgerLegDefinition cashLeg(LedgerLegCardinality cardinality)
+    {
+        return LedgerLegDefinition.of(LedgerLegRole.CASH_LEG, LedgerPostingType.CASH, cardinality)
+                        .optionalParameters(corporateActionPostingOptionalParametersFor(LedgerPostingType.CASH))
+                        .build();
+    }
+
+    private static LedgerLegDefinition cashCompensationLeg()
+    {
+        return LedgerLegDefinition.of(LedgerLegRole.CASH_COMPENSATION_LEG,
+                        LedgerPostingType.CASH_COMPENSATION, LedgerLegCardinality.REPEATABLE)
+                        .optionalParameters(cashCompensationOptionalParameters()).build();
+    }
+
+    private static LedgerLegDefinition accruedInterestLeg(LedgerLegCardinality cardinality)
+    {
+        return LedgerLegDefinition.of(LedgerLegRole.ACCRUED_INTEREST_LEG,
+                        LedgerPostingType.ACCRUED_INTEREST, cardinality)
+                        .optionalParameters(corporateActionPostingOptionalParametersFor(
+                                        LedgerPostingType.ACCRUED_INTEREST))
+                        .build();
+    }
+
+    private static LedgerLegDefinition principalRedemptionLeg(LedgerLegCardinality cardinality)
+    {
+        return LedgerLegDefinition.of(LedgerLegRole.PRINCIPAL_REDEMPTION_LEG,
+                        LedgerPostingType.PRINCIPAL_REDEMPTION, cardinality)
+                        .requiredParameters(SETS.parameterTypes(LedgerParameterType.CORPORATE_ACTION_LEG))
+                        .optionalParameters(corporateActionPostingOptionalParametersFor(
+                                        LedgerPostingType.PRINCIPAL_REDEMPTION))
+                        .build();
+    }
+
+    private static LedgerLegDefinition feeLeg()
+    {
+        return LedgerLegDefinition.of(LedgerLegRole.FEE_LEG, LedgerPostingType.FEE,
+                        LedgerLegCardinality.REPEATABLE)
+                        .optionalParameters(feeOptionalParameters()).build();
+    }
+
+    private static LedgerLegDefinition taxLeg()
+    {
+        return LedgerLegDefinition.of(LedgerLegRole.TAX_LEG, LedgerPostingType.TAX,
+                        LedgerLegCardinality.REPEATABLE)
+                        .optionalParameters(taxOptionalParameters()).build();
+    }
+
+    private static LedgerLegDefinition forexLeg()
+    {
+        return LedgerLegDefinition.of(LedgerLegRole.FOREX_CONTEXT_LEG, LedgerPostingType.FOREX,
+                        LedgerLegCardinality.OPTIONAL)
+                        .optionalParameters(forexOptionalParameters()).build();
     }
 
     private static LedgerPostingRule optionalPosting(LedgerPostingType postingType,

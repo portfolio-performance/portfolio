@@ -142,9 +142,6 @@ public class LedgerNativeEntryAssemblerTest
             assertThat(definition.getPostingRules().isEmpty(), is(false));
             assertThat(definition.getEntryParameterRules().isEmpty(), is(false));
             assertThat(definition.getPostingParameterRules().isEmpty(), is(false));
-            assertThat(definition.getProjectionRules().isEmpty(), is(false));
-            assertThat(definition.getPostingGroupRules().isEmpty(), is(false));
-            assertThat(definition.getAlternativeRequirementGroups().isEmpty(), is(false));
             assertThat(definition.getReportingClass() != LedgerReportingClass.UNDEFINED, is(true));
             assertThat(definition.getPerformanceTreatment() != LedgerPerformanceTreatment.UNDEFINED, is(true));
             assertThat(definition.getDownstreamResultsNotPersisted().isEmpty(), is(false));
@@ -200,6 +197,9 @@ public class LedgerNativeEntryAssemblerTest
 
         for (var definition : LedgerEntryDefinitionRegistry.getDefinitions())
         {
+            if (definition.getProjectionRules().isEmpty())
+                continue;
+
             var invalidPostingType = java.util.Arrays.stream(LedgerPostingType.values()) //
                             .filter(postingType -> !definition.getPostingTypes().contains(postingType)) //
                             .findFirst().orElseThrow();

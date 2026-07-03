@@ -529,6 +529,16 @@ public final class LedgerNativeEntryDefinitionValidator
                 return Optional.of(CorporateActionLeg.SOURCE_SECURITY.getCode());
             if (role == LedgerLegRole.TARGET_SECURITY_LEG)
                 return Optional.of(CorporateActionLeg.TARGET_SECURITY.getCode());
+            if (role == LedgerLegRole.RECEIVED_SECURITY_LEG)
+                return Optional.of(CorporateActionLeg.TARGET_SECURITY.getCode());
+            if (role == LedgerLegRole.DISTRIBUTED_SECURITY_LEG)
+                return Optional.of(CorporateActionLeg.DISTRIBUTED_SECURITY.getCode());
+            if (role == LedgerLegRole.DISTRIBUTED_RIGHT_LEG)
+                return Optional.of(CorporateActionLeg.RIGHT_SECURITY.getCode());
+            if (role == LedgerLegRole.SOURCE_BOND_LEG)
+                return Optional.of(CorporateActionLeg.SOURCE_SECURITY.getCode());
+            if (role == LedgerLegRole.PRINCIPAL_REDEMPTION_LEG)
+                return Optional.of(CorporateActionLeg.PRINCIPAL.getCode());
         }
 
         if (role == LedgerLegRole.CASH_COMPENSATION_LEG)

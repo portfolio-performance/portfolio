@@ -98,11 +98,7 @@ public final class DerivedProjectionDescriptorService
         var kind = CorporateActionKind.fromEntry(entry);
 
         if (kind.filter(CorporateActionKind.SPIN_OFF::equals).isEmpty())
-        {
-            diagnostics.add(Diagnostic.missing(entry, null,
-                            "No derived projection rule for corporate action kind")); //$NON-NLS-1$
             return;
-        }
 
         repeatedPortfolio(entry, LedgerProjectionRole.OLD_SECURITY_LEG,
                         primary().and(corporateLeg(CorporateActionLeg.SOURCE_SECURITY))

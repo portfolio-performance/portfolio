@@ -95,8 +95,24 @@ public class LedgerCodeTest
     public void testCorporateActionKindsClassifyGenericNativeEntryType()
     {
         assertTrue(LedgerEntryType.CORPORATE_ACTION.isLedgerNativeTargeted());
-        assertThat(List.of(CorporateActionKind.values()), is(List.of(CorporateActionKind.SPIN_OFF)));
+        assertThat(List.of(CorporateActionKind.values()), is(List.of(
+                        CorporateActionKind.STOCK_DIVIDEND,
+                        CorporateActionKind.SPIN_OFF,
+                        CorporateActionKind.BONUS_ISSUE,
+                        CorporateActionKind.RIGHTS_DISTRIBUTION,
+                        CorporateActionKind.COUPON_PAYMENT,
+                        CorporateActionKind.PIK_INTEREST,
+                        CorporateActionKind.DEFAULTED_INTEREST,
+                        CorporateActionKind.MATURITY,
+                        CorporateActionKind.PARTIAL_REDEMPTION,
+                        CorporateActionKind.CALL,
+                        CorporateActionKind.PUT,
+                        CorporateActionKind.CONVERSION,
+                        CorporateActionKind.EXCHANGE,
+                        CorporateActionKind.RESTRUCTURING,
+                        CorporateActionKind.DEFAULT)));
         assertThat(CorporateActionKind.fromCode("SPIN_OFF").orElseThrow(), is(CorporateActionKind.SPIN_OFF));
+        assertThat(CorporateActionKind.fromCode("MATURITY").orElseThrow(), is(CorporateActionKind.MATURITY));
         assertTrue(CorporateActionKind.fromCode("OTHER").isEmpty());
     }
 

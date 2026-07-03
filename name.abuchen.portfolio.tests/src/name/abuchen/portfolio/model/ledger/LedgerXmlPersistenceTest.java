@@ -262,6 +262,37 @@ public class LedgerXmlPersistenceTest
     }
 
     /**
+     * Verifies that newly registered corporate action kind identities roundtrip through
+     * existing Ledger parameter persistence without implying projection service support.
+     */
+    @Test
+    public void testXmlRoundtripPreservesRegisteredCorporateActionKind() throws Exception
+    {
+        var client = new Client();
+        var entry = new LedgerEntry("entry-maturity-kind");
+
+        entry.setType(LedgerEntryType.CORPORATE_ACTION);
+        entry.setDateTime(DATE_TIME);
+        entry.addParameter(LedgerParameter.ofCode(LedgerParameterType.CORPORATE_ACTION_KIND,
+                        CorporateActionKind.MATURITY));
+        client.getLedger().addEntry(entry);
+
+        var xml = save(client);
+
+        assertTrue(xml.contains("CORPORATE_ACTION"));
+        assertTrue(xml.contains("MATURITY"));
+        assertFalse(xml.contains("<type>SPIN_OFF</type>"));
+
+        var loaded = load(xml);
+        var reloadedEntry = loaded.getLedger().getEntries().get(0);
+
+        assertThat(reloadedEntry.getType(), is(LedgerEntryType.CORPORATE_ACTION));
+        assertThat(reloadedEntry.getParameters().size(), is(1));
+        assertThat(reloadedEntry.getParameters().get(0).getType(), is(LedgerParameterType.CORPORATE_ACTION_KIND));
+        assertThat(reloadedEntry.getParameters().get(0).getValue(), is(CorporateActionKind.MATURITY.getCode()));
+    }
+
+    /**
      * Verifies that loading XML with ledger truth does not migrate compatibility rows again.
      * Shadow rows must stay derived data and not create duplicate ledger entries.
      */
