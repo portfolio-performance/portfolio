@@ -160,6 +160,29 @@ public class LedgerNativeEntryDefinitionValidatorTest
     }
 
     /**
+     * Checks that semantic instance keys do not widen the current SPIN_OFF
+     * definition by themselves.
+     * Two target security legs remain invalid until the definition is explicitly
+     * changed from exactly one to a repeatable cardinality in a later slice.
+     */
+    @Test
+    public void testCurrentSpinOffDefinitionStillRejectsRepeatedTargetLegs()
+    {
+        var entry = copyValidSpinOff();
+        var targetPosting = postingFor(entry, LedgerProjectionRole.NEW_SECURITY_LEG);
+        var duplicateTarget = LedgerModelCopy.copyPosting(targetPosting);
+
+        targetPosting.setLocalKey("target-1");
+        targetPosting.setGroupKey("main");
+        duplicateTarget.setUUID("duplicate-target-posting");
+        duplicateTarget.setLocalKey("target-2");
+        duplicateTarget.setGroupKey("main");
+        entry.addPosting(duplicateTarget);
+
+        assertIssue(entry, IssueCode.LEG_CARDINALITY_VIOLATED);
+    }
+
+    /**
      * Checks that a projection cannot satisfy a security leg with a posting of
      * the wrong type.
      * The validator rejects the entry before a supported create path can attach it.

@@ -47,7 +47,9 @@ public final class LedgerNativeEntryDefinitionValidator
         PROJECTION_PRIMARY_POSTING_REQUIRED,
         PROJECTION_PRIMARY_POSTING_MISMATCH,
         PROJECTION_POSTING_GROUP_REQUIRED,
-        PROJECTION_POSTING_GROUP_NOT_FOUND
+        PROJECTION_POSTING_GROUP_NOT_FOUND,
+        LEG_LOCAL_KEY_REQUIRED,
+        LEG_LOCAL_KEY_DUPLICATE
     }
 
     private LedgerNativeEntryDefinitionValidator()
@@ -272,6 +274,9 @@ public final class LedgerNativeEntryDefinitionValidator
                                             .withDetail("legRole", leg.getRole()) //$NON-NLS-1$
                                             .withDetail("projectionRole", projectionRole)); //$NON-NLS-1$
 
+        if (refs.size() > 1 && allowsRepeatedLegs(leg.getCardinality()))
+            validateDescriptorInstanceKeys(entry, leg, refs, issues);
+
         validateAllowedProjectionRole(definition, entry, leg, projectionRole, issues);
 
         return new LegMatch(matchingPostings);
@@ -319,6 +324,8 @@ public final class LedgerNativeEntryDefinitionValidator
                 if (count < 1)
                     issues.add(cardinalityIssue(LedgerDiagnosticCode.LEDGER_STRUCT_050, entry, leg, count,
                                     "at least one")); //$NON-NLS-1$
+                else
+                    validateRepeatedPrimaryKeys(entry, leg, postings, issues);
                 break;
             case OPTIONAL:
                 if (count > 1)
@@ -330,11 +337,96 @@ public final class LedgerNativeEntryDefinitionValidator
                                                     .withDetail("actualCount", count)); //$NON-NLS-1$
                 break;
             case REPEATABLE:
+                validateRepeatedPrimaryKeys(entry, leg, postings, issues);
                 break;
             default:
                 throw new IllegalStateException(LedgerDiagnosticCode.LEDGER_STRUCT_052
                                 .message("Unhandled LedgerLegCardinality: " + leg.getCardinality())); //$NON-NLS-1$
         }
+    }
+
+    static ValidationResult validateCardinalityForTesting(LedgerEntry entry, LedgerLegDefinition leg,
+                    List<LedgerPosting> postings)
+    {
+        var issues = new ArrayList<ValidationIssue>();
+
+        validateCardinality(entry, leg, postings, issues);
+
+        return new ValidationResult(issues);
+    }
+
+    private static void validateRepeatedPrimaryKeys(LedgerEntry entry, LedgerLegDefinition leg,
+                    List<LedgerPosting> postings, List<ValidationIssue> issues)
+    {
+        if (postings.size() <= 1)
+            return;
+
+        var keys = new java.util.HashSet<SemanticLegInstanceKey>();
+
+        for (var posting : postings)
+        {
+            if (isBlank(posting.getLocalKey()))
+            {
+                issues.add(issue(IssueCode.LEG_LOCAL_KEY_REQUIRED,
+                                LedgerDiagnosticCode.LEDGER_STRUCT_051.message(
+                                                "Repeated native leg posting requires a localKey: " + leg.getRole()), //$NON-NLS-1$
+                                entry)
+                                                .withPosting(posting)
+                                                .withDetail("legRole", leg.getRole())); //$NON-NLS-1$
+                continue;
+            }
+
+            var key = SemanticLegInstanceKey.of(entry, leg, posting);
+
+            if (!keys.add(key))
+                issues.add(issue(IssueCode.LEG_LOCAL_KEY_DUPLICATE,
+                                LedgerDiagnosticCode.LEDGER_STRUCT_051.message(
+                                                "Repeated native leg posting localKey is duplicated: " //$NON-NLS-1$
+                                                                + leg.getRole()),
+                                entry)
+                                                .withPosting(posting)
+                                                .withDetail("legRole", leg.getRole()) //$NON-NLS-1$
+                                                .withDetail("localKey", posting.getLocalKey())); //$NON-NLS-1$
+        }
+    }
+
+    private static void validateDescriptorInstanceKeys(LedgerEntry entry, LedgerLegDefinition leg,
+                    List<name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor> descriptors,
+                    List<ValidationIssue> issues)
+    {
+        var keys = new java.util.HashSet<String>();
+
+        for (var descriptor : descriptors)
+        {
+            var semanticInstanceKey = descriptor.getSemanticInstanceKey();
+
+            if (semanticInstanceKey.isEmpty())
+            {
+                issues.add(issue(IssueCode.LEG_LOCAL_KEY_REQUIRED,
+                                LedgerDiagnosticCode.LEDGER_STRUCT_051.message(
+                                                "Repeated native leg descriptor requires a semantic instance key: " //$NON-NLS-1$
+                                                                + leg.getRole()),
+                                entry)
+                                                .withPosting(descriptor.getPrimaryPosting())
+                                                .withDetail("legRole", leg.getRole())); //$NON-NLS-1$
+                continue;
+            }
+
+            if (!keys.add(semanticInstanceKey.get()))
+                issues.add(issue(IssueCode.LEG_LOCAL_KEY_DUPLICATE,
+                                LedgerDiagnosticCode.LEDGER_STRUCT_051.message(
+                                                "Repeated native leg descriptor semantic instance key is duplicated: " //$NON-NLS-1$
+                                                                + leg.getRole()),
+                                entry)
+                                                .withPosting(descriptor.getPrimaryPosting())
+                                                .withDetail("legRole", leg.getRole()) //$NON-NLS-1$
+                                                .withDetail("localKey", semanticInstanceKey.get())); //$NON-NLS-1$
+        }
+    }
+
+    private static boolean allowsRepeatedLegs(LedgerLegCardinality cardinality)
+    {
+        return cardinality == LedgerLegCardinality.AT_LEAST_ONE || cardinality == LedgerLegCardinality.REPEATABLE;
     }
 
     private static ValidationIssue cardinalityIssue(LedgerDiagnosticCode diagnosticCode, LedgerEntry entry,
@@ -499,9 +591,27 @@ public final class LedgerNativeEntryDefinitionValidator
                         .findFirst();
     }
 
+    private static boolean isBlank(String value)
+    {
+        return value == null || value.isBlank();
+    }
+
     private static ValidationIssue issue(IssueCode code, String message, LedgerEntry entry)
     {
         return new ValidationIssue(code, message).withEntry(entry);
+    }
+
+    private record SemanticLegInstanceKey(LedgerEntryType entryType, LedgerPostingType postingType,
+                    name.abuchen.portfolio.model.ledger.LedgerPostingDirection direction,
+                    CorporateActionLeg corporateActionLeg, LedgerProjectionRole projectionRole, LedgerLegRole legRole,
+                    String localKey)
+    {
+        private static SemanticLegInstanceKey of(LedgerEntry entry, LedgerLegDefinition leg, LedgerPosting posting)
+        {
+            return new SemanticLegInstanceKey(entry.getType(), leg.getPostingType(), posting.getDirection(),
+                            posting.getCorporateActionLeg(), leg.getProjectionRole().orElse(null), leg.getRole(),
+                            posting.getLocalKey());
+        }
     }
 
     private record LegMatch(List<LedgerPosting> postings)
