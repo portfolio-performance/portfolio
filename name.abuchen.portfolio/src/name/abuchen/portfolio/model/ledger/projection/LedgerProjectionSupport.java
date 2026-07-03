@@ -48,10 +48,32 @@ public final class LedgerProjectionSupport
         Objects.requireNonNull(entry);
         Objects.requireNonNull(role);
 
+        var matches = descriptors(entry).stream() //
+                        .filter(descriptor -> descriptor.getRole() == role) //
+                        .toList();
+
+        if (matches.size() == 1)
+            return matches.get(0);
+
+        if (matches.isEmpty())
+            throw new IllegalArgumentException("Projection descriptor not found: " + role); //$NON-NLS-1$
+
+        throw new IllegalArgumentException("Projection descriptor role is ambiguous: " + role); //$NON-NLS-1$
+    }
+
+    public static DerivedProjectionDescriptor descriptor(LedgerEntry entry, LedgerProjectionRole role,
+                    String semanticInstanceKey)
+    {
+        Objects.requireNonNull(entry);
+        Objects.requireNonNull(role);
+        Objects.requireNonNull(semanticInstanceKey);
+
         return descriptors(entry).stream() //
                         .filter(descriptor -> descriptor.getRole() == role) //
-                        .findFirst()
-                        .orElseThrow(() -> new IllegalArgumentException("Projection descriptor not found: " + role)); //$NON-NLS-1$
+                        .filter(descriptor -> descriptor.getSemanticInstanceKey()
+                                        .filter(semanticInstanceKey::equals).isPresent()) //
+                        .findFirst().orElseThrow(() -> new IllegalArgumentException(
+                                        "Projection descriptor not found: " + role + "/" + semanticInstanceKey)); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     public static List<DerivedProjectionDescriptor> descriptors(LedgerEntry entry)

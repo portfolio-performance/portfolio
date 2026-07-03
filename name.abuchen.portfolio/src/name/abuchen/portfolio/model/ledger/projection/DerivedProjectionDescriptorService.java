@@ -2,6 +2,7 @@ package name.abuchen.portfolio.model.ledger.projection;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -94,17 +95,20 @@ public final class DerivedProjectionDescriptorService
                                                 .and(localKey(LedgerProjectionRole.DELIVERY_INBOUND))
                                                 .or(legacyRetainedSpinOffTarget()),
                                 diagnostics).ifPresent(descriptors::add);
-                portfolio(entry, LedgerProjectionRole.NEW_SECURITY_LEG,
+                repeatedPortfolio(entry, LedgerProjectionRole.NEW_SECURITY_LEG,
                                 primary().and(corporateLeg(CorporateActionLeg.TARGET_SECURITY))
                                                 .and(localKey(LedgerProjectionRole.NEW_SECURITY_LEG))
                                                 .or(legacyNewSpinOffTarget()),
-                                diagnostics).ifPresent(descriptors::add);
-                optionalAccount(entry, LedgerProjectionRole.CASH_COMPENSATION,
+                                primary().and(corporateLeg(CorporateActionLeg.TARGET_SECURITY))
+                                                .and(localKey(LedgerProjectionRole.DELIVERY_INBOUND).negate()),
+                                false, diagnostics).forEach(descriptors::add);
+                repeatedAccount(entry, LedgerProjectionRole.CASH_COMPENSATION,
                                 primary().and(corporateLeg(CorporateActionLeg.CASH_COMPENSATION))
+                                                .and(localKey(LedgerProjectionRole.CASH_COMPENSATION))
                                                 .or(legacyCorporateLeg(LedgerPostingType.CASH_COMPENSATION,
                                                                 CorporateActionLeg.CASH_COMPENSATION)),
-                                diagnostics)
-                                                .ifPresent(descriptors::add);
+                                primary().and(corporateLeg(CorporateActionLeg.CASH_COMPENSATION)), true, diagnostics)
+                                .forEach(descriptors::add);
             }
             case STOCK_DIVIDEND, BONUS_ISSUE -> {
                 portfolio(entry, LedgerProjectionRole.DELIVERY_INBOUND,
@@ -189,12 +193,66 @@ public final class DerivedProjectionDescriptorService
         return descriptor(entry, role, DerivedProjectionViewKind.PORTFOLIO, selector, true, diagnostics);
     }
 
+    private List<DerivedProjectionDescriptor> repeatedAccount(LedgerEntry entry, LedgerProjectionRole role,
+                    Predicate<LedgerPosting> preferredSelector, Predicate<LedgerPosting> repeatedSelector,
+                    boolean optional, List<Diagnostic> diagnostics)
+    {
+        return repeated(entry, role, DerivedProjectionViewKind.ACCOUNT, preferredSelector, repeatedSelector, optional,
+                        diagnostics);
+    }
+
+    private List<DerivedProjectionDescriptor> repeatedPortfolio(LedgerEntry entry, LedgerProjectionRole role,
+                    Predicate<LedgerPosting> preferredSelector, Predicate<LedgerPosting> repeatedSelector,
+                    boolean optional, List<Diagnostic> diagnostics)
+    {
+        return repeated(entry, role, DerivedProjectionViewKind.PORTFOLIO, preferredSelector, repeatedSelector, optional,
+                        diagnostics);
+    }
+
+    private List<DerivedProjectionDescriptor> repeated(LedgerEntry entry, LedgerProjectionRole role,
+                    DerivedProjectionViewKind viewKind, Predicate<LedgerPosting> preferredSelector,
+                    Predicate<LedgerPosting> repeatedSelector, boolean optional, List<Diagnostic> diagnostics)
+    {
+        var preferredMatches = matches(entry, preferredSelector);
+
+        if (!preferredMatches.isEmpty())
+        {
+            var extraMatches = matches(entry, repeatedSelector.and(preferredSelector.negate()));
+
+            if (!extraMatches.isEmpty())
+            {
+                diagnostics.add(Diagnostic.ambiguous(entry, role,
+                                "Ambiguous semantic primary postings; use distinct localKey values", //$NON-NLS-1$
+                                extraMatches));
+                return List.of();
+            }
+
+            return descriptor(entry, role, viewKind, preferredMatches, optional, diagnostics).stream().toList();
+        }
+
+        var repeatedMatches = matches(entry, repeatedSelector);
+
+        if (repeatedMatches.isEmpty())
+        {
+            if (!optional)
+                diagnostics.add(Diagnostic.missing(entry, role, "Missing semantic primary posting")); //$NON-NLS-1$
+            return List.of();
+        }
+
+        return repeatedDescriptors(entry, role, viewKind, repeatedMatches, diagnostics);
+    }
+
     private java.util.Optional<DerivedProjectionDescriptor> descriptor(LedgerEntry entry, LedgerProjectionRole role,
                     DerivedProjectionViewKind viewKind, Predicate<LedgerPosting> selector, boolean optional,
                     List<Diagnostic> diagnostics)
     {
-        var matches = entry.getPostings().stream().filter(selector).toList();
+        return descriptor(entry, role, viewKind, matches(entry, selector), optional, diagnostics);
+    }
 
+    private java.util.Optional<DerivedProjectionDescriptor> descriptor(LedgerEntry entry, LedgerProjectionRole role,
+                    DerivedProjectionViewKind viewKind, List<LedgerPosting> matches, boolean optional,
+                    List<Diagnostic> diagnostics)
+    {
         if (matches.isEmpty())
         {
             if (!optional)
@@ -228,6 +286,69 @@ public final class DerivedProjectionDescriptorService
                         primary, unitPostings(entry, primary), primarySelector(role), unitSelector(primary)));
     }
 
+    private List<DerivedProjectionDescriptor> repeatedDescriptors(LedgerEntry entry, LedgerProjectionRole role,
+                    DerivedProjectionViewKind viewKind, List<LedgerPosting> matches, List<Diagnostic> diagnostics)
+    {
+        var invalid = false;
+        var localKeys = new HashSet<String>();
+
+        for (var posting : matches)
+        {
+            if (isBlank(posting.getLocalKey()))
+            {
+                diagnostics.add(Diagnostic.missingInstanceKey(entry, role,
+                                "Repeated semantic primary posting requires a localKey")); //$NON-NLS-1$
+                invalid = true;
+            }
+            else if (!localKeys.add(posting.getLocalKey()))
+            {
+                diagnostics.add(Diagnostic.duplicateInstanceKey(entry, role,
+                                "Repeated semantic primary postings require distinct localKey values", //$NON-NLS-1$
+                                posting));
+                invalid = true;
+            }
+        }
+
+        if (invalid)
+            return List.of();
+
+        var descriptors = new ArrayList<DerivedProjectionDescriptor>();
+
+        for (var primary : matches)
+        {
+            var account = primary.getAccount();
+            var portfolio = primary.getPortfolio();
+
+            if (viewKind == DerivedProjectionViewKind.ACCOUNT && account == null)
+            {
+                diagnostics.add(Diagnostic.missing(entry, role, "Semantic account owner is missing")); //$NON-NLS-1$
+                invalid = true;
+                continue;
+            }
+
+            if (viewKind == DerivedProjectionViewKind.PORTFOLIO && portfolio == null)
+            {
+                diagnostics.add(Diagnostic.missing(entry, role, "Semantic portfolio owner is missing")); //$NON-NLS-1$
+                invalid = true;
+                continue;
+            }
+
+            descriptors.add(new DerivedProjectionDescriptor(entry, role, viewKind, account, portfolio, primary,
+                            unitPostings(entry, primary), primary.getLocalKey(),
+                            primarySelector(role, primary.getLocalKey()), unitSelector(primary)));
+        }
+
+        if (invalid)
+            return List.of();
+
+        return List.copyOf(descriptors);
+    }
+
+    private List<LedgerPosting> matches(LedgerEntry entry, Predicate<LedgerPosting> selector)
+    {
+        return entry.getPostings().stream().filter(selector).toList();
+    }
+
     private List<LedgerPosting> unitPostings(LedgerEntry entry, LedgerPosting primary)
     {
         return entry.getPostings().stream() //
@@ -241,6 +362,11 @@ public final class DerivedProjectionDescriptorService
     private String primarySelector(LedgerProjectionRole role)
     {
         return "semantic primary for " + role; //$NON-NLS-1$
+    }
+
+    private String primarySelector(LedgerProjectionRole role, String semanticInstanceKey)
+    {
+        return primarySelector(role) + " instance " + semanticInstanceKey; //$NON-NLS-1$
     }
 
     private String unitSelector(LedgerPosting primary)
@@ -272,6 +398,11 @@ public final class DerivedProjectionDescriptorService
     private Predicate<LedgerPosting> localKey(LedgerProjectionRole role)
     {
         return posting -> role.name().equals(posting.getLocalKey());
+    }
+
+    private boolean isBlank(String value)
+    {
+        return value == null || value.isBlank();
     }
 
     private Predicate<LedgerPosting> legacyAccountPrimary(LedgerEntryType entryType)
@@ -396,7 +527,9 @@ public final class DerivedProjectionDescriptorService
         public enum IssueCode
         {
             MISSING_SEMANTIC_PRIMARY,
-            AMBIGUOUS_SEMANTIC_PRIMARY
+            AMBIGUOUS_SEMANTIC_PRIMARY,
+            MISSING_SEMANTIC_INSTANCE_KEY,
+            DUPLICATE_SEMANTIC_INSTANCE_KEY
         }
 
         private final IssueCode code;
@@ -425,6 +558,18 @@ public final class DerivedProjectionDescriptorService
         {
             return new Diagnostic(IssueCode.AMBIGUOUS_SEMANTIC_PRIMARY, entry, role, message,
                             postings.stream().map(LedgerPosting::getUUID).toList());
+        }
+
+        private static Diagnostic missingInstanceKey(LedgerEntry entry, LedgerProjectionRole role, String message)
+        {
+            return new Diagnostic(IssueCode.MISSING_SEMANTIC_INSTANCE_KEY, entry, role, message, List.of());
+        }
+
+        private static Diagnostic duplicateInstanceKey(LedgerEntry entry, LedgerProjectionRole role, String message,
+                        LedgerPosting posting)
+        {
+            return new Diagnostic(IssueCode.DUPLICATE_SEMANTIC_INSTANCE_KEY, entry, role, message,
+                            List.of(posting.getUUID()));
         }
 
         public IssueCode getCode()

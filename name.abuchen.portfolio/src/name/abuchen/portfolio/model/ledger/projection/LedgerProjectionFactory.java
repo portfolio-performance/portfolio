@@ -39,12 +39,33 @@ final class LedgerProjectionFactory
         Objects.requireNonNull(entry);
         Objects.requireNonNull(role);
 
+        var descriptors = createDescriptors(entry).stream() //
+                        .filter(descriptor -> descriptor.getRole() == role) //
+                        .toList();
+
+        if (descriptors.size() == 1)
+            return create(descriptors.get(0));
+
+        if (descriptors.isEmpty())
+            throw new IllegalArgumentException("Projection descriptor does not belong to entry role: " + role); //$NON-NLS-1$
+
+        throw new IllegalArgumentException("Projection descriptor role is ambiguous: " + role); //$NON-NLS-1$
+    }
+
+    Transaction createProjection(LedgerEntry entry, LedgerProjectionRole role, String semanticInstanceKey)
+    {
+        Objects.requireNonNull(entry);
+        Objects.requireNonNull(role);
+        Objects.requireNonNull(semanticInstanceKey);
+
         return createDescriptors(entry).stream() //
                         .filter(descriptor -> descriptor.getRole() == role) //
+                        .filter(descriptor -> descriptor.getSemanticInstanceKey()
+                                        .filter(semanticInstanceKey::equals).isPresent()) //
                         .map(this::create) //
                         .findFirst().orElseThrow(() -> new IllegalArgumentException(
-                                        "Projection descriptor does not belong to entry role: " //$NON-NLS-1$
-                                                        + role));
+                                        "Projection descriptor does not belong to entry role and instance: " //$NON-NLS-1$
+                                                        + role + "/" + semanticInstanceKey)); //$NON-NLS-1$
     }
 
     List<Transaction> createProjections(LedgerEntry entry)

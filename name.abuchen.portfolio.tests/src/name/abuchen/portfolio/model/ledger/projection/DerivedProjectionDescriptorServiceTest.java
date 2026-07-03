@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDateTime;
@@ -192,6 +193,74 @@ public class DerivedProjectionDescriptorServiceTest
     }
 
     @Test
+    public void testExistingSpinOffDescriptorRuntimeIdRemainsRoleOnly()
+    {
+        var entry = spinOffEntry(fixture());
+
+        var descriptor = descriptor(descriptors(entry), LedgerProjectionRole.NEW_SECURITY_LEG);
+
+        assertFalse(descriptor.hasSemanticInstanceKey());
+        assertThat(descriptor.getRuntimeProjectionId(), is("spin-off:NEW_SECURITY_LEG"));
+    }
+
+    @Test
+    public void testRepeatedTargetDescriptorsUseSemanticInstanceKeys()
+    {
+        var entry = repeatedTargetSpinOffEntry("target-1", "target-2");
+
+        var targetDescriptors = descriptors(entry).stream()
+                        .filter(descriptor -> descriptor.getRole() == LedgerProjectionRole.NEW_SECURITY_LEG)
+                        .toList();
+
+        assertThat(targetDescriptors.size(), is(2));
+        assertThat(targetDescriptors.stream().map(descriptor -> descriptor.getSemanticInstanceKey().orElseThrow())
+                        .collect(Collectors.toSet()), is(Set.of("target-1", "target-2")));
+        assertThat(targetDescriptors.stream().map(DerivedProjectionDescriptor::getRuntimeProjectionId)
+                        .collect(Collectors.toSet()), is(Set.of("spin-off-repeated:NEW_SECURITY_LEG:target-1",
+                                        "spin-off-repeated:NEW_SECURITY_LEG:target-2")));
+        assertFalse(targetDescriptors.stream().map(DerivedProjectionDescriptor::getRuntimeProjectionId)
+                        .anyMatch(id -> id.contains("target-posting")));
+    }
+
+    @Test
+    public void testDuplicateRepeatedTargetLocalKeyIsReported()
+    {
+        var entry = repeatedTargetSpinOffEntry("target-1", "target-1");
+
+        var result = new DerivedProjectionDescriptorService().derive(entry);
+
+        assertFalse(result.isOK());
+        assertTrue(result.getDiagnostics().stream().anyMatch(diagnostic -> diagnostic
+                        .getCode() == DerivedProjectionDescriptorService.Diagnostic.IssueCode.DUPLICATE_SEMANTIC_INSTANCE_KEY));
+    }
+
+    @Test
+    public void testMissingRepeatedTargetLocalKeyIsReported()
+    {
+        var entry = repeatedTargetSpinOffEntry(null, "target-2");
+
+        var result = new DerivedProjectionDescriptorService().derive(entry);
+
+        assertFalse(result.isOK());
+        assertTrue(result.getDiagnostics().stream().anyMatch(diagnostic -> diagnostic
+                        .getCode() == DerivedProjectionDescriptorService.Diagnostic.IssueCode.MISSING_SEMANTIC_INSTANCE_KEY));
+    }
+
+    @Test
+    public void testRoleOnlyProjectionLookupRejectsRepeatedDescriptorRole()
+    {
+        var entry = repeatedTargetSpinOffEntry("target-1", "target-2");
+        var factory = new LedgerProjectionFactory();
+
+        assertThrows(IllegalArgumentException.class,
+                        () -> factory.createProjection(entry, LedgerProjectionRole.NEW_SECURITY_LEG));
+
+        var projection = factory.createProjection(entry, LedgerProjectionRole.NEW_SECURITY_LEG, "target-1");
+
+        assertThat(projection.getUUID(), is("spin-off-repeated:NEW_SECURITY_LEG:target-1"));
+    }
+
+    @Test
     public void testNativeCorporateActionSmokeDescriptors()
     {
         assertThat(roles(descriptors(nativeSinglePortfolioEntry(LedgerEntryType.STOCK_DIVIDEND,
@@ -319,6 +388,27 @@ public class DerivedProjectionDescriptorServiceTest
         return entry;
     }
 
+    private LedgerEntry repeatedTargetSpinOffEntry(String firstTargetLocalKey, String secondTargetLocalKey)
+    {
+        var fixture = fixture();
+        var entry = new LedgerEntry("spin-off-repeated");
+        var oldLeg = portfolioPosting("old-posting", fixture.portfolio, fixture.siemens, 10, 100,
+                        CorporateActionLeg.SOURCE_SECURITY, LedgerProjectionRole.OLD_SECURITY_LEG);
+        var targetA = repeatedPortfolioPosting("target-posting-1", fixture.portfolio, fixture.siemensEnergy, 5, 50,
+                        CorporateActionLeg.TARGET_SECURITY, LedgerProjectionRole.NEW_SECURITY_LEG, firstTargetLocalKey);
+        var targetB = repeatedPortfolioPosting("target-posting-2", fixture.portfolio, security("Siemens Energy B"), 3,
+                        30, CorporateActionLeg.TARGET_SECURITY, LedgerProjectionRole.NEW_SECURITY_LEG,
+                        secondTargetLocalKey);
+
+        entry.setType(LedgerEntryType.SPIN_OFF);
+        entry.setDateTime(DATE_TIME);
+        entry.addPosting(oldLeg);
+        entry.addPosting(targetA);
+        entry.addPosting(targetB);
+
+        return entry;
+    }
+
     private LedgerEntry nativeSinglePortfolioEntry(LedgerEntryType type, CorporateActionLeg leg)
     {
         var fixture = fixture();
@@ -384,6 +474,17 @@ public class DerivedProjectionDescriptorServiceTest
         posting.setGroupKey(role.name());
         posting.setLocalKey(role.name());
         posting.addParameter(LedgerParameter.ofString(LedgerParameterType.CORPORATE_ACTION_LEG, leg.getCode()));
+
+        return posting;
+    }
+
+    private LedgerPosting repeatedPortfolioPosting(String uuid, Portfolio portfolio, Security security, int shares,
+                    int amount, CorporateActionLeg leg, LedgerProjectionRole role, String localKey)
+    {
+        var posting = portfolioPosting(uuid, portfolio, security, shares, amount, leg, role);
+
+        posting.setGroupKey("main");
+        posting.setLocalKey(localKey);
 
         return posting;
     }
