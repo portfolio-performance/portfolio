@@ -46,12 +46,16 @@ import name.abuchen.portfolio.model.ledger.nativeentry.LedgerNativeEntryAssemble
 import name.abuchen.portfolio.model.ledger.nativeentry.NativeCashCompensation;
 import name.abuchen.portfolio.model.ledger.nativeentry.NativeCorporateActionEvent;
 import name.abuchen.portfolio.model.ledger.nativeentry.NativeEntryMetadata;
+import name.abuchen.portfolio.model.ledger.nativeentry.NativeFee;
 import name.abuchen.portfolio.model.ledger.nativeentry.NativeSecurityLeg;
+import name.abuchen.portfolio.model.ledger.nativeentry.NativeTax;
 import name.abuchen.portfolio.model.ledger.nativeentry.Ratio;
+import name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedAccountTransaction;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedPortfolioTransaction;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
 import name.abuchen.portfolio.model.ledger.projection.LedgerProjectionService;
+import name.abuchen.portfolio.model.ledger.projection.LedgerProjectionSupport;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -192,6 +196,63 @@ public class LedgerProjectionMaterializerTest
                         .anyMatch(transaction -> transaction.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
                                         && transaction.getSecurity() == siemensEnergy));
         assertThat(account.getTransactions().get(0).getType(), is(AccountTransaction.Type.DEPOSIT));
+    }
+
+    @Test
+    public void testMaterializesRepeatedSpinOffMovementProjections()
+    {
+        var fixture = repeatedSpinOffFixture();
+        var entry = repeatedSpinOffEntry(fixture);
+
+        fixture.client.getLedger().addEntry(entry);
+
+        var descriptors = LedgerProjectionSupport.descriptors(entry);
+        var targetDescriptors = descriptors.stream()
+                        .filter(descriptor -> descriptor.getRole() == LedgerProjectionRole.NEW_SECURITY_LEG)
+                        .toList();
+        var cashDescriptors = descriptors.stream()
+                        .filter(descriptor -> descriptor.getRole() == LedgerProjectionRole.CASH_COMPENSATION)
+                        .toList();
+
+        assertThat(descriptors.size(), is(5));
+        assertThat(semanticKeys(targetDescriptors), is(java.util.Set.of("target-1", "target-2")));
+        assertThat(semanticKeys(cashDescriptors), is(java.util.Set.of("cash-1", "cash-2")));
+        assertThat(descriptorRuntimeProjectionIds(targetDescriptors).size(), is(2));
+        assertThat(descriptorRuntimeProjectionIds(cashDescriptors).size(), is(2));
+        assertThrows(IllegalArgumentException.class,
+                        () -> LedgerProjectionService.createProjection(entry, LedgerProjectionRole.NEW_SECURITY_LEG));
+        assertSame(fixture.firstTarget, LedgerProjectionSupport
+                        .descriptor(entry, LedgerProjectionRole.NEW_SECURITY_LEG, "target-1").getPrimaryPosting()
+                        .getSecurity());
+        assertSame(fixture.secondTarget, LedgerProjectionSupport
+                        .descriptor(entry, LedgerProjectionRole.NEW_SECURITY_LEG, "target-2").getPrimaryPosting()
+                        .getSecurity());
+
+        LedgerProjectionService.materialize(fixture.client);
+        LedgerProjectionService.materialize(fixture.client);
+
+        var targetProjections = ledgerBackedPortfolioProjections(fixture.portfolio,
+                        LedgerProjectionRole.NEW_SECURITY_LEG);
+        var cashProjections = ledgerBackedAccountProjections(fixture.account, LedgerProjectionRole.CASH_COMPENSATION);
+
+        assertThat(targetProjections.size(), is(2));
+        assertThat(cashProjections.size(), is(2));
+        assertThat(runtimeProjectionIds(targetProjections), is(descriptorRuntimeProjectionIds(targetDescriptors)));
+        assertThat(runtimeProjectionIds(cashProjections), is(descriptorRuntimeProjectionIds(cashDescriptors)));
+        assertThat(targetProjections.stream().map(PortfolioTransaction::getSecurity).collect(java.util.stream.Collectors.toSet()),
+                        is(java.util.Set.of(fixture.firstTarget, fixture.secondTarget)));
+
+        var cashOne = ledgerBackedAccountProjection(fixture.account, LedgerProjectionRole.CASH_COMPENSATION, "cash-1");
+        var cashTwo = ledgerBackedAccountProjection(fixture.account, LedgerProjectionRole.CASH_COMPENSATION, "cash-2");
+
+        assertThat(cashOne.getAmount(), is(Values.Amount.factorize(5)));
+        assertThat(cashTwo.getAmount(), is(Values.Amount.factorize(7)));
+        assertTrue(cashOne.getUnit(Unit.Type.FEE).isPresent());
+        assertTrue(cashOne.getUnit(Unit.Type.TAX).isPresent());
+        assertTrue(cashTwo.getUnit(Unit.Type.FEE).isEmpty());
+        assertTrue(cashTwo.getUnit(Unit.Type.TAX).isEmpty());
+        assertThat(fixture.portfolio.getTransactions().size(), is(3));
+        assertThat(fixture.account.getTransactions().size(), is(2));
     }
 
     /**
@@ -699,5 +760,146 @@ public class LedgerProjectionMaterializerTest
 
         entry.removePosting(posting);
         entry.addPosting(posting);
+    }
+
+    private RepeatedSpinOffFixture repeatedSpinOffFixture()
+    {
+        var client = new Client();
+        var account = account();
+        var portfolio = portfolio();
+        var source = new Security("Siemens AG", CurrencyUnit.EUR);
+        var firstTarget = new Security("Siemens Energy AG", CurrencyUnit.EUR);
+        var secondTarget = new Security("Siemens Healthineers AG", CurrencyUnit.EUR);
+
+        source.setIsin("DE0007236101");
+        firstTarget.setIsin("DE000ENER6Y0");
+        secondTarget.setIsin("DE000SHL1006");
+        client.addAccount(account);
+        client.addPortfolio(portfolio);
+        client.addSecurity(source);
+        client.addSecurity(firstTarget);
+        client.addSecurity(secondTarget);
+
+        return new RepeatedSpinOffFixture(client, account, portfolio, source, firstTarget, secondTarget);
+    }
+
+    private LedgerEntry repeatedSpinOffEntry(RepeatedSpinOffFixture fixture)
+    {
+        return LedgerNativeEntryAssembler.forClient(fixture.client).spinOff() //
+                        .metadata(NativeEntryMetadata.of(DATE_TIME).note("Repeated spin-off").source("test")) //
+                        .event(NativeCorporateActionEvent.builder() //
+                                        .kind(CorporateActionKind.SPIN_OFF) //
+                                        .subtype(CorporateActionSubtype.STANDARD) //
+                                        .stage(EventStage.SETTLED) //
+                                        .effectiveDate(LocalDate.of(2020, 9, 28)) //
+                                        .build()) //
+                        .securityLeg(NativeSecurityLeg.source() //
+                                        .portfolio(fixture.portfolio) //
+                                        .security(fixture.source) //
+                                        .shares(Values.Share.factorize(10)) //
+                                        .amount(money(100)) //
+                                        .sourceSecurity(fixture.source) //
+                                        .targetSecurity(fixture.firstTarget) //
+                                        .ratio(Ratio.of(BigDecimal.ONE, BigDecimal.valueOf(2))) //
+                                        .build()) //
+                        .securityLeg(targetLeg(fixture, fixture.firstTarget, Values.Share.factorize(5), 50,
+                                        "target-1")) //
+                        .securityLeg(targetLeg(fixture, fixture.secondTarget, Values.Share.factorize(7), 70,
+                                        "target-2")) //
+                        .cashCompensation(cashCompensation(fixture, "cash-1", 5)) //
+                        .cashCompensationMovement(cashCompensation(fixture, "cash-2", 7)) //
+                        .fee(NativeFee.builder() //
+                                        .account(fixture.account) //
+                                        .amount(money(2)) //
+                                        .groupKey("cash-1") //
+                                        .localKey("fee-1") //
+                                        .build()) //
+                        .tax(NativeTax.builder() //
+                                        .account(fixture.account) //
+                                        .amount(money(1)) //
+                                        .groupKey("cash-1") //
+                                        .localKey("tax-1") //
+                                        .build()) //
+                        .buildDetached().getEntry();
+    }
+
+    private NativeSecurityLeg targetLeg(RepeatedSpinOffFixture fixture, Security target, long shares, int amount,
+                    String localKey)
+    {
+        return NativeSecurityLeg.target() //
+                        .portfolio(fixture.portfolio) //
+                        .security(target) //
+                        .shares(shares) //
+                        .amount(money(amount)) //
+                        .sourceSecurity(fixture.source) //
+                        .targetSecurity(target) //
+                        .ratio(Ratio.of(BigDecimal.ONE, BigDecimal.valueOf(2))) //
+                        .groupKey("main") //
+                        .localKey(localKey) //
+                        .build();
+    }
+
+    private NativeCashCompensation cashCompensation(RepeatedSpinOffFixture fixture, String semanticKey, int amount)
+    {
+        return NativeCashCompensation.builder() //
+                        .account(fixture.account) //
+                        .amount(money(amount)) //
+                        .kind(CashCompensationKind.CASH_IN_LIEU) //
+                        .groupKey(semanticKey) //
+                        .localKey(semanticKey) //
+                        .build();
+    }
+
+    private java.util.Set<String> semanticKeys(List<DerivedProjectionDescriptor> descriptors)
+    {
+        return descriptors.stream() //
+                        .map(descriptor -> descriptor.getSemanticInstanceKey().orElseThrow()) //
+                        .collect(java.util.stream.Collectors.toSet());
+    }
+
+    private java.util.Set<String> runtimeProjectionIds(List<? extends LedgerBackedTransaction> transactions)
+    {
+        return transactions.stream().map(LedgerBackedTransaction::getRuntimeProjectionId)
+                        .collect(java.util.stream.Collectors.toSet());
+    }
+
+    private java.util.Set<String> descriptorRuntimeProjectionIds(List<DerivedProjectionDescriptor> descriptors)
+    {
+        return descriptors.stream().map(DerivedProjectionDescriptor::getRuntimeProjectionId)
+                        .collect(java.util.stream.Collectors.toSet());
+    }
+
+    private List<LedgerBackedPortfolioTransaction> ledgerBackedPortfolioProjections(Portfolio portfolio,
+                    LedgerProjectionRole role)
+    {
+        return portfolio.getTransactions().stream() //
+                        .filter(LedgerBackedPortfolioTransaction.class::isInstance) //
+                        .map(LedgerBackedPortfolioTransaction.class::cast) //
+                        .filter(transaction -> transaction.getLedgerProjectionRole() == role) //
+                        .toList();
+    }
+
+    private List<LedgerBackedAccountTransaction> ledgerBackedAccountProjections(Account account,
+                    LedgerProjectionRole role)
+    {
+        return account.getTransactions().stream() //
+                        .filter(LedgerBackedAccountTransaction.class::isInstance) //
+                        .map(LedgerBackedAccountTransaction.class::cast) //
+                        .filter(transaction -> transaction.getLedgerProjectionRole() == role) //
+                        .toList();
+    }
+
+    private LedgerBackedAccountTransaction ledgerBackedAccountProjection(Account account, LedgerProjectionRole role,
+                    String semanticInstanceKey)
+    {
+        return ledgerBackedAccountProjections(account, role).stream() //
+                        .filter(transaction -> transaction.getLedgerProjectionDescriptor().getSemanticInstanceKey()
+                                        .filter(semanticInstanceKey::equals).isPresent()) //
+                        .findFirst().orElseThrow();
+    }
+
+    private record RepeatedSpinOffFixture(Client client, Account account, Portfolio portfolio, Security source,
+                    Security firstTarget, Security secondTarget)
+    {
     }
 }
