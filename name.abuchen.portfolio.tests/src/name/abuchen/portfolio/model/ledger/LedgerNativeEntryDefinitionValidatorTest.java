@@ -2,7 +2,6 @@ package name.abuchen.portfolio.model.ledger;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
@@ -29,8 +28,6 @@ import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
 import name.abuchen.portfolio.model.ledger.configuration.RoundingModeCode;
 import name.abuchen.portfolio.model.ledger.configuration.TaxReason;
 import name.abuchen.portfolio.model.ledger.nativeentry.LedgerNativeEntryAssembler;
-import name.abuchen.portfolio.model.ledger.nativeentry.LedgerNativeEntryAssemblyException;
-import name.abuchen.portfolio.model.ledger.nativeentry.LedgerNativeEntryAssemblyIssue;
 import name.abuchen.portfolio.model.ledger.nativeentry.NativeCashCompensation;
 import name.abuchen.portfolio.model.ledger.nativeentry.NativeCorporateActionEvent;
 import name.abuchen.portfolio.model.ledger.nativeentry.NativeEntryMetadata;
@@ -112,11 +109,11 @@ public class LedgerNativeEntryDefinitionValidatorTest
     }
 
     /**
-     * Checks that the source security leg is required for spin-offs.
-     * Removing its posting and projection leaves the entry definition incomplete.
+     * Checks that source security legs are optional after the spin-off cardinality cleanup.
+     * Supported create paths may persist partial native shapes while repeated present legs still need keys.
      */
     @Test
-    public void testMissingSourceSecurityLegIsRejected()
+    public void testMissingSourceSecurityLegIsAccepted()
     {
         var entry = copyValidSpinOff();
         var sourcePosting = postingFor(entry, LedgerProjectionRole.OLD_SECURITY_LEG);
@@ -124,36 +121,57 @@ public class LedgerNativeEntryDefinitionValidatorTest
         projection(entry, LedgerProjectionRole.OLD_SECURITY_LEG).getPrimaryPosting().setUnitRole(null);
         entry.removePosting(sourcePosting);
 
-        assertIssue(entry, IssueCode.LEG_CARDINALITY_VIOLATED);
+        assertOK(entry);
     }
 
     /**
-     * Checks that the target security leg is required for spin-offs.
-     * Removing its posting and projection prevents the new security side from
-     * being represented as a native leg.
+     * Checks that target security legs are optional after the spin-off cardinality cleanup.
+     * Missing movement rows no longer violate the configured native definition.
      */
     @Test
-    public void testMissingTargetSecurityLegIsRejected()
+    public void testMissingTargetSecurityLegIsAccepted()
     {
         var entry = copyValidSpinOff();
         var targetPosting = postingFor(entry, LedgerProjectionRole.NEW_SECURITY_LEG);
 
         entry.removePosting(targetPosting);
 
-        assertIssue(entry, IssueCode.LEG_CARDINALITY_VIOLATED);
+        assertOK(entry);
     }
 
     /**
-     * Checks that an exactly-one source leg cannot map to multiple postings.
-     * The validator reports the ambiguity instead of guessing which posting is
-     * the real source side.
+     * Checks that repeated source legs follow the same semantic-key policy as
+     * repeated target and cash movement legs.
      */
     @Test
-    public void testDuplicateSourceLegIsRejectedAsAmbiguous()
+    public void testSpinOffDefinitionAcceptsRepeatedSourceLegsWithDistinctLocalKeys()
     {
         var entry = copyValidSpinOff();
+        var originalSource = postingFor(entry, LedgerProjectionRole.OLD_SECURITY_LEG);
         var sourcePosting = LedgerModelCopy.copyPosting(postingFor(entry, LedgerProjectionRole.OLD_SECURITY_LEG));
+
+        originalSource.setLocalKey("source-1");
+        originalSource.setGroupKey("main");
         sourcePosting.setUUID("duplicate-source-posting");
+        sourcePosting.setLocalKey("source-2");
+        sourcePosting.setGroupKey("main");
+        entry.addPosting(sourcePosting);
+
+        assertOK(entry);
+    }
+
+    @Test
+    public void testSpinOffDefinitionRejectsDuplicateSourceLocalKey()
+    {
+        var entry = copyValidSpinOff();
+        var originalSource = postingFor(entry, LedgerProjectionRole.OLD_SECURITY_LEG);
+        var sourcePosting = LedgerModelCopy.copyPosting(originalSource);
+
+        originalSource.setLocalKey("source-1");
+        originalSource.setGroupKey("main");
+        sourcePosting.setUUID("duplicate-source-posting");
+        sourcePosting.setLocalKey("source-1");
+        sourcePosting.setGroupKey("main");
         entry.addPosting(sourcePosting);
 
         assertIssue(entry, IssueCode.REQUIRED_PROJECTION_MISSING);
@@ -350,37 +368,33 @@ public class LedgerNativeEntryDefinitionValidatorTest
     }
 
     /**
-     * Checks that buildDetached rejects native entries that are incomplete
-     * against the definition.
-     * Raw model construction remains possible for tests, but supported builder
-     * paths must not return invalid native entries.
+     * Checks that buildDetached accepts partial spin-off movement shapes after
+     * the definition cardinality cleanup.
      */
     @Test
-    public void testAssemblerBuildDetachedRejectsDefinitionIncompleteEntry()
+    public void testAssemblerBuildDetachedAcceptsPartialSpinOffEntry()
     {
         var fixture = fixture();
-        var exception = assertThrows(LedgerNativeEntryAssemblyException.class,
-                        () -> baseSpinOff(fixture).securityLeg(targetLeg(fixture).build()).buildDetached());
+        var result = baseSpinOff(fixture).securityLeg(targetLeg(fixture).build()).buildDetached();
 
-        assertThat(exception.getIssue(), is(LedgerNativeEntryAssemblyIssue.NATIVE_DEFINITION_VALIDATION_FAILED));
+        assertTrue(result.getValidationResult().isOK());
+        assertThat(result.getEntry().getPostings().size(), is(1));
     }
 
     /**
-     * Checks that buildAndAdd does not attach a definition-incomplete native
-     * entry to the live client.
-     * The failure happens before any Ledger entry or runtime projection is added.
+     * Checks that buildAndAdd accepts partial spin-off movement shapes and
+     * materializes the descriptors that are present.
      */
     @Test
-    public void testAssemblerBuildAndAddRejectsDefinitionIncompleteEntryBeforeMutation()
+    public void testAssemblerBuildAndAddAcceptsPartialSpinOffEntry()
     {
         var fixture = fixture();
-        var exception = assertThrows(LedgerNativeEntryAssemblyException.class,
-                        () -> baseSpinOff(fixture).securityLeg(targetLeg(fixture).build()).buildAndAdd());
+        var result = baseSpinOff(fixture).securityLeg(targetLeg(fixture).build()).buildAndAdd();
 
-        assertThat(exception.getIssue(), is(LedgerNativeEntryAssemblyIssue.NATIVE_DEFINITION_VALIDATION_FAILED));
-        assertThat(fixture.client.getLedger().getEntries().size(), is(0));
+        assertTrue(result.getValidationResult().isOK());
+        assertThat(fixture.client.getLedger().getEntries().size(), is(1));
         assertThat(fixture.account.getTransactions().size(), is(0));
-        assertThat(fixture.portfolio.getTransactions().size(), is(0));
+        assertThat(fixture.portfolio.getTransactions().size(), is(1));
     }
 
     /**

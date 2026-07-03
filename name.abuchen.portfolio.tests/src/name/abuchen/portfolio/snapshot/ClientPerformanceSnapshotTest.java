@@ -29,7 +29,6 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
-import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.LedgerTransactionMetadata;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerAccountCashLeg;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerCreationUnit;
@@ -46,9 +45,7 @@ import name.abuchen.portfolio.model.ledger.nativeentry.NativeCashCompensation;
 import name.abuchen.portfolio.model.ledger.nativeentry.NativeCorporateActionEvent;
 import name.abuchen.portfolio.model.ledger.nativeentry.NativeEntryMetadata;
 import name.abuchen.portfolio.model.ledger.nativeentry.NativeFee;
-import name.abuchen.portfolio.model.ledger.nativeentry.NativeSecurityLeg;
 import name.abuchen.portfolio.model.ledger.nativeentry.NativeTax;
-import name.abuchen.portfolio.model.ledger.nativeentry.Ratio;
 import name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
 import name.abuchen.portfolio.model.ledger.projection.LedgerProjectionService;
@@ -340,25 +337,12 @@ public class ClientPerformanceSnapshotTest
     {
         Client client = new Client();
         Account account = account();
-        Portfolio portfolio = new Portfolio();
-        Security security = new Security("SpinCo", CurrencyUnit.EUR);
 
         client.addAccount(account);
-        client.addPortfolio(portfolio);
-        client.addSecurity(security);
 
-        LedgerNativeEntryAssembler.forClient(client).forType(LedgerEntryType.STOCK_DIVIDEND)
+        LedgerNativeEntryAssembler.forClient(client).spinOff()
                         .metadata(nativeMetadata())
-                        .event(nativeEvent(LedgerEntryType.STOCK_DIVIDEND))
-                        .securityLeg(NativeSecurityLeg.target() //
-                                        .portfolio(portfolio) //
-                                        .security(security) //
-                                        .shares(Values.Share.factorize(1)) //
-                                        .amount(Money.of(CurrencyUnit.EUR, 50_00)) //
-                                        .targetSecurity(security) //
-                                        .ratio(Ratio.of(BigDecimal.ONE, BigDecimal.ONE)) //
-                                        .projectAs(LedgerProjectionRole.DELIVERY_INBOUND) //
-                                        .build()) //
+                        .event(nativeEvent(LedgerEntryType.SPIN_OFF))
                         .cashCompensation(NativeCashCompensation.builder() //
                                         .account(account) //
                                         .amount(Money.of(CurrencyUnit.EUR, 5_00)) //
@@ -384,7 +368,7 @@ public class ClientPerformanceSnapshotTest
     {
         Client client = new Client();
         Account account = account();
-        var transaction = ledgerBackedAccountTransaction(LedgerEntryType.RIGHTS_DISTRIBUTION,
+        var transaction = ledgerBackedAccountTransaction(LedgerEntryType.SPIN_OFF,
                         AccountTransaction.Type.REMOVAL, 5_00);
 
         transaction.addUnit(new Unit(Unit.Type.FEE, Money.of(CurrencyUnit.EUR, 2_00)));

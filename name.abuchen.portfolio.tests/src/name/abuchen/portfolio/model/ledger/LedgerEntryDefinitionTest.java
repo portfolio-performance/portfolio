@@ -74,7 +74,6 @@ public class LedgerEntryDefinitionTest
             assertTrue(definition.getEntryType().isLedgerNativeTargeted());
             assertTrue(definition.getNativeShape() != LedgerNativeEntryShape.UNDEFINED);
             assertFalse(definition.getPostingTypes().isEmpty());
-            assertTrue(!definition.getRequiredPostingRules().isEmpty() || hasRequiredPostingAlternative(definition));
             assertFalse(definition.getPostingRules().isEmpty());
             assertFalse(definition.getEntryParameterTypes().isEmpty());
             assertFalse(definition.getRequiredEntryParameterRules().isEmpty());
@@ -231,7 +230,7 @@ public class LedgerEntryDefinitionTest
         assertTrue(definition.getProjectionRoles().contains(LedgerProjectionRole.OLD_SECURITY_LEG));
         assertTrue(definition.getProjectionRoles().contains(LedgerProjectionRole.NEW_SECURITY_LEG));
         assertTrue(definition.getProjectionRoles().contains(LedgerProjectionRole.CASH_COMPENSATION));
-        assertRequiredPosting(definition, LedgerPostingType.SECURITY);
+        assertOptionalPosting(definition, LedgerPostingType.SECURITY);
         assertOptionalPosting(definition, LedgerPostingType.CASH_COMPENSATION);
         assertOptionalPosting(definition, LedgerPostingType.FEE);
         assertOptionalPosting(definition, LedgerPostingType.TAX);
@@ -244,8 +243,8 @@ public class LedgerEntryDefinitionTest
         assertRequiredPostingParameter(definition, LedgerParameterType.TARGET_SECURITY);
         assertOptionalPostingParameter(definition, LedgerParameterType.CASH_IN_LIEU_AMOUNT);
         assertRepeatableParameter(definition, LedgerParameterType.CORPORATE_ACTION_LEG);
-        assertRequiredProjection(definition, LedgerProjectionRole.OLD_SECURITY_LEG, true, false);
-        assertRequiredProjection(definition, LedgerProjectionRole.NEW_SECURITY_LEG, true, false);
+        assertOptionalProjection(definition, LedgerProjectionRole.OLD_SECURITY_LEG, true, false);
+        assertOptionalProjection(definition, LedgerProjectionRole.NEW_SECURITY_LEG, true, false);
         assertOptionalProjection(definition, LedgerProjectionRole.CASH_COMPENSATION, true, true);
         assertAlternativeGroup(definition, "SPIN_OFF_DATE", LedgerRequirement.REQUIRED,
                         LedgerParameterType.EX_DATE, LedgerParameterType.EFFECTIVE_DATE);
@@ -264,7 +263,7 @@ public class LedgerEntryDefinitionTest
         var definition = LedgerEntryDefinitionRegistry.lookup(LedgerEntryType.SPIN_OFF).orElseThrow();
 
         var sourceLeg = assertLeg(definition, LedgerLegRole.SOURCE_SECURITY_LEG, LedgerPostingType.SECURITY,
-                        LedgerLegCardinality.EXACTLY_ONE);
+                        LedgerLegCardinality.REPEATABLE);
         assertTrue(sourceLeg.getRequiredParameterTypes().contains(LedgerParameterType.CORPORATE_ACTION_LEG));
         assertTrue(sourceLeg.getRequiredParameterTypes().contains(LedgerParameterType.SOURCE_SECURITY));
         assertTrue(sourceLeg.getRequiredParameterTypes().contains(LedgerParameterType.RATIO_NUMERATOR));
@@ -275,7 +274,7 @@ public class LedgerEntryDefinitionTest
         assertFalse(sourceLeg.isPostingGroupExpected());
 
         var targetLeg = assertLeg(definition, LedgerLegRole.TARGET_SECURITY_LEG, LedgerPostingType.SECURITY,
-                        LedgerLegCardinality.AT_LEAST_ONE);
+                        LedgerLegCardinality.REPEATABLE);
         assertTrue(targetLeg.getRequiredParameterTypes().contains(LedgerParameterType.CORPORATE_ACTION_LEG));
         assertTrue(targetLeg.getRequiredParameterTypes().contains(LedgerParameterType.TARGET_SECURITY));
         assertTrue(targetLeg.getRequiredParameterTypes().contains(LedgerParameterType.RATIO_NUMERATOR));
@@ -306,212 +305,6 @@ public class LedgerEntryDefinitionTest
                         LedgerLegCardinality.OPTIONAL);
         assertTrue(forexLeg.getProjectionRole().isEmpty());
         assertTrue(forexLeg.getGroupNames().isEmpty());
-    }
-
-    /**
-     * Checks that stock dividends name the received security leg explicitly.
-     * The cash, fee, and tax legs remain optional support components and use
-     * the existing cash compensation group metadata.
-     */
-    @Test
-    public void testStockDividendDefinitionDescribesFunctionalLegs()
-    {
-        var definition = LedgerEntryDefinitionRegistry.lookup(LedgerEntryType.STOCK_DIVIDEND).orElseThrow();
-
-        var receivedLeg = assertLeg(definition, LedgerLegRole.RECEIVED_SECURITY_LEG, LedgerPostingType.SECURITY,
-                        LedgerLegCardinality.EXACTLY_ONE);
-        assertTrue(receivedLeg.getRequiredParameterTypes().contains(LedgerParameterType.CORPORATE_ACTION_LEG));
-        assertTrue(receivedLeg.getRequiredParameterTypes().contains(LedgerParameterType.TARGET_SECURITY));
-        assertTrue(receivedLeg.getRequiredParameterTypes().contains(LedgerParameterType.RATIO_NUMERATOR));
-        assertTrue(receivedLeg.getRequiredParameterTypes().contains(LedgerParameterType.RATIO_DENOMINATOR));
-        assertTrue(receivedLeg.getOptionalParameterTypes().contains(LedgerParameterType.SOURCE_SECURITY));
-        assertThat(receivedLeg.getProjectionRole().orElseThrow(), is(LedgerProjectionRole.DELIVERY_INBOUND));
-        assertTrue(receivedLeg.isPrimaryPostingExpected());
-        assertFalse(receivedLeg.isPostingGroupExpected());
-
-        assertCashCompensationFeeAndTaxLegs(definition);
-    }
-
-    /**
-     * Checks that bonus issues use the same received-security leg shape as
-     * stock dividends while preserving their own optional parameter vocabulary.
-     * This keeps the Java-only leg metadata aligned with the existing rules.
-     */
-    @Test
-    public void testBonusIssueDefinitionDescribesFunctionalLegs()
-    {
-        var definition = LedgerEntryDefinitionRegistry.lookup(LedgerEntryType.BONUS_ISSUE).orElseThrow();
-
-        var receivedLeg = assertLeg(definition, LedgerLegRole.RECEIVED_SECURITY_LEG, LedgerPostingType.SECURITY,
-                        LedgerLegCardinality.EXACTLY_ONE);
-        assertTrue(receivedLeg.getRequiredParameterTypes().contains(LedgerParameterType.CORPORATE_ACTION_LEG));
-        assertTrue(receivedLeg.getRequiredParameterTypes().contains(LedgerParameterType.TARGET_SECURITY));
-        assertTrue(receivedLeg.getRequiredParameterTypes().contains(LedgerParameterType.RATIO_NUMERATOR));
-        assertTrue(receivedLeg.getRequiredParameterTypes().contains(LedgerParameterType.RATIO_DENOMINATOR));
-        assertTrue(receivedLeg.getOptionalParameterTypes().contains(LedgerParameterType.SAME_SECURITY_AS_SOURCE));
-        assertThat(receivedLeg.getProjectionRole().orElseThrow(), is(LedgerProjectionRole.DELIVERY_INBOUND));
-        assertTrue(receivedLeg.isPrimaryPostingExpected());
-        assertFalse(receivedLeg.isPostingGroupExpected());
-
-        assertCashCompensationFeeAndTaxLegs(definition);
-    }
-
-    /**
-     * Checks that rights distributions expose the current distributed
-     * instrument alternative as leg metadata.
-     * The test does not add rights lifecycle behavior; it only mirrors the
-     * existing RIGHT-or-SECURITY alternative and projection rules.
-     */
-    @Test
-    public void testRightsDistributionDefinitionDescribesFunctionalLegs()
-    {
-        var definition = LedgerEntryDefinitionRegistry.lookup(LedgerEntryType.RIGHTS_DISTRIBUTION).orElseThrow();
-
-        var rightLeg = assertLeg(definition, LedgerLegRole.DISTRIBUTED_RIGHT_LEG, LedgerPostingType.RIGHT,
-                        LedgerLegCardinality.OPTIONAL);
-        assertTrue(rightLeg.getRequiredParameterTypes().contains(LedgerParameterType.CORPORATE_ACTION_LEG));
-        assertTrue(rightLeg.getRequiredParameterTypes().contains(LedgerParameterType.SOURCE_SECURITY));
-        assertTrue(rightLeg.getRequiredParameterTypes().contains(LedgerParameterType.RIGHT_SECURITY));
-        assertTrue(rightLeg.getRequiredParameterTypes().contains(LedgerParameterType.RATIO_NUMERATOR));
-        assertTrue(rightLeg.getRequiredParameterTypes().contains(LedgerParameterType.RATIO_DENOMINATOR));
-        assertThat(rightLeg.getProjectionRole().orElseThrow(), is(LedgerProjectionRole.NEW_SECURITY_LEG));
-        assertTrue(rightLeg.isPrimaryPostingExpected());
-        assertFalse(rightLeg.isPostingGroupExpected());
-
-        var securityLeg = assertLeg(definition, LedgerLegRole.DISTRIBUTED_SECURITY_LEG,
-                        LedgerPostingType.SECURITY, LedgerLegCardinality.OPTIONAL);
-        assertTrue(securityLeg.getRequiredParameterTypes().contains(LedgerParameterType.CORPORATE_ACTION_LEG));
-        assertThat(securityLeg.getProjectionRole().orElseThrow(), is(LedgerProjectionRole.NEW_SECURITY_LEG));
-        assertTrue(securityLeg.isPrimaryPostingExpected());
-
-        var sourceLeg = assertLeg(definition, LedgerLegRole.SOURCE_SECURITY_LEG, LedgerPostingType.SECURITY,
-                        LedgerLegCardinality.OPTIONAL);
-        assertThat(sourceLeg.getProjectionRole().orElseThrow(), is(LedgerProjectionRole.OLD_SECURITY_LEG));
-        assertTrue(sourceLeg.isPrimaryPostingExpected());
-
-        assertAlternativePostingGroup(definition, "RIGHTS_DISTRIBUTED_INSTRUMENT", LedgerRequirement.REQUIRED,
-                        LedgerPostingType.RIGHT, LedgerPostingType.SECURITY);
-        assertCashCompensationFeeAndTaxLegs(definition);
-    }
-
-    /**
-     * Checks that bond conversion separates the source bond, target security,
-     * cash, accrued interest, fee, and tax components.
-     * The required ratio and date alternatives remain the existing aggregate
-     * rules; the leg metadata does not add fixed-income behavior.
-     */
-    @Test
-    public void testBondConversionDefinitionDescribesFunctionalLegs()
-    {
-        var definition = LedgerEntryDefinitionRegistry.lookup(LedgerEntryType.BOND_CONVERSION).orElseThrow();
-
-        var sourceLeg = assertLeg(definition, LedgerLegRole.SOURCE_BOND_LEG, LedgerPostingType.BOND,
-                        LedgerLegCardinality.EXACTLY_ONE);
-        assertTrue(sourceLeg.getRequiredParameterTypes().contains(LedgerParameterType.CORPORATE_ACTION_LEG));
-        assertTrue(sourceLeg.getRequiredParameterTypes().contains(LedgerParameterType.SOURCE_SECURITY));
-        assertTrue(sourceLeg.getRequiredParameterTypes().contains(LedgerParameterType.NOMINAL_VALUE));
-        assertTrue(sourceLeg.getRequiredParameterTypes().contains(LedgerParameterType.QUOTATION_STYLE));
-        assertThat(sourceLeg.getProjectionRole().orElseThrow(), is(LedgerProjectionRole.OLD_SECURITY_LEG));
-        assertTrue(sourceLeg.isPrimaryPostingExpected());
-
-        var targetLeg = assertLeg(definition, LedgerLegRole.TARGET_SECURITY_LEG, LedgerPostingType.SECURITY,
-                        LedgerLegCardinality.EXACTLY_ONE);
-        assertTrue(targetLeg.getRequiredParameterTypes().contains(LedgerParameterType.CORPORATE_ACTION_LEG));
-        assertTrue(targetLeg.getRequiredParameterTypes().contains(LedgerParameterType.TARGET_SECURITY));
-        assertThat(targetLeg.getProjectionRole().orElseThrow(), is(LedgerProjectionRole.NEW_SECURITY_LEG));
-        assertTrue(targetLeg.isPrimaryPostingExpected());
-
-        var cashLeg = assertLeg(definition, LedgerLegRole.CASH_LEG, LedgerPostingType.CASH,
-                        LedgerLegCardinality.OPTIONAL);
-        assertTrue(cashLeg.getProjectionRole().isEmpty());
-
-        var accruedInterestLeg = assertLeg(definition, LedgerLegRole.ACCRUED_INTEREST_LEG,
-                        LedgerPostingType.ACCRUED_INTEREST, LedgerLegCardinality.OPTIONAL);
-        assertTrue(accruedInterestLeg.getOptionalParameterTypes()
-                        .contains(LedgerParameterType.ACCRUED_INTEREST_AMOUNT));
-        assertTrue(accruedInterestLeg.getProjectionRole().isEmpty());
-
-        assertAlternativeGroup(definition, "BOND_CONVERSION_RATIO", LedgerRequirement.REQUIRED,
-                        LedgerParameterType.CONVERSION_RATIO, LedgerParameterType.RATIO_NUMERATOR,
-                        LedgerParameterType.RATIO_DENOMINATOR);
-        assertAlternativeGroup(definition, "BOND_CONVERSION_DATE", LedgerRequirement.REQUIRED,
-                        LedgerParameterType.EFFECTIVE_DATE, LedgerParameterType.SETTLEMENT_DATE);
-        assertCashCompensationFeeAndTaxLegs(definition);
-    }
-
-    /**
-     * Checks the ledger rule scenario: bond conversion definition describes fixed income data model.
-     * Invalid entry shapes must be rejected before they can be stored.
-     * This keeps higher-level Ledger-V6 transaction flows predictable.
-     */
-    @Test
-    public void testBondConversionDefinitionDescribesFixedIncomeDataModel()
-    {
-        var definition = LedgerEntryDefinitionRegistry.lookup(LedgerEntryType.BOND_CONVERSION).orElseThrow();
-
-        assertThat(definition.getNativeShape(), is(LedgerNativeEntryShape.DUAL_INSTRUMENT_PLUS_ACCOUNT));
-        assertTrue(definition.getPostingTypes().contains(LedgerPostingType.BOND));
-        assertTrue(definition.getPostingTypes().contains(LedgerPostingType.SECURITY));
-        assertTrue(definition.getPostingTypes().contains(LedgerPostingType.ACCRUED_INTEREST));
-        assertTrue(definition.getPostingParameterTypes().contains(LedgerParameterType.CONVERSION_RATIO));
-        assertTrue(definition.getPostingParameterTypes().contains(LedgerParameterType.NOMINAL_VALUE));
-        assertTrue(definition.getPostingParameterTypes().contains(LedgerParameterType.QUOTATION_STYLE));
-        assertTrue(definition.getPostingParameterTypes().contains(LedgerParameterType.ACCRUED_INTEREST_AMOUNT));
-        assertRequiredPosting(definition, LedgerPostingType.BOND);
-        assertRequiredPosting(definition, LedgerPostingType.SECURITY);
-        assertOptionalPosting(definition, LedgerPostingType.ACCRUED_INTEREST);
-        assertRequiredEntryParameter(definition, LedgerParameterType.CORPORATE_ACTION_KIND);
-        assertOptionalEntryParameter(definition, LedgerParameterType.EFFECTIVE_DATE);
-        assertOptionalEntryParameter(definition, LedgerParameterType.SETTLEMENT_DATE);
-        assertRequiredPostingParameter(definition, LedgerParameterType.SOURCE_SECURITY);
-        assertRequiredPostingParameter(definition, LedgerParameterType.TARGET_SECURITY);
-        assertRequiredPostingParameter(definition, LedgerParameterType.NOMINAL_VALUE);
-        assertRequiredPostingParameter(definition, LedgerParameterType.QUOTATION_STYLE);
-        assertOptionalPostingParameter(definition, LedgerParameterType.ACCRUED_INTEREST_AMOUNT);
-        assertAlternativeGroup(definition, "BOND_CONVERSION_RATIO", LedgerRequirement.REQUIRED,
-                        LedgerParameterType.CONVERSION_RATIO, LedgerParameterType.RATIO_NUMERATOR,
-                        LedgerParameterType.RATIO_DENOMINATOR);
-        assertAlternativeGroup(definition, "BOND_CONVERSION_DATE", LedgerRequirement.REQUIRED,
-                        LedgerParameterType.EFFECTIVE_DATE, LedgerParameterType.SETTLEMENT_DATE);
-        assertRequiredProjection(definition, LedgerProjectionRole.OLD_SECURITY_LEG, true, false);
-        assertRequiredProjection(definition, LedgerProjectionRole.NEW_SECURITY_LEG, true, false);
-        assertThat(definition.getReportingClass(), is(LedgerReportingClass.SECURITY_REORGANIZATION));
-        assertThat(definition.getPerformanceTreatment(), is(LedgerPerformanceTreatment.INTERNAL_RECLASSIFICATION));
-    }
-
-    /**
-     * Checks the ledger rule scenario: stock dividend bonus issue and rights rules describe native data model.
-     * Invalid entry shapes must be rejected before they can be stored.
-     * This keeps higher-level Ledger-V6 transaction flows predictable.
-     */
-    @Test
-    public void testStockDividendBonusIssueAndRightsRulesDescribeNativeDataModel()
-    {
-        var stockDividend = LedgerEntryDefinitionRegistry.lookup(LedgerEntryType.STOCK_DIVIDEND).orElseThrow();
-        assertRequiredPosting(stockDividend, LedgerPostingType.SECURITY);
-        assertOptionalPosting(stockDividend, LedgerPostingType.CASH_COMPENSATION);
-        assertRequiredPostingParameter(stockDividend, LedgerParameterType.TARGET_SECURITY);
-        assertRequiredPostingParameter(stockDividend, LedgerParameterType.RATIO_NUMERATOR);
-        assertRequiredProjection(stockDividend, LedgerProjectionRole.DELIVERY_INBOUND, true, false);
-        assertThat(stockDividend.getPerformanceTreatment(), is(LedgerPerformanceTreatment.SECURITY_DISTRIBUTION));
-
-        var bonusIssue = LedgerEntryDefinitionRegistry.lookup(LedgerEntryType.BONUS_ISSUE).orElseThrow();
-        assertRequiredPosting(bonusIssue, LedgerPostingType.SECURITY);
-        assertOptionalPostingParameter(bonusIssue, LedgerParameterType.SAME_SECURITY_AS_SOURCE);
-        assertRequiredProjection(bonusIssue, LedgerProjectionRole.DELIVERY_INBOUND, true, false);
-        assertThat(bonusIssue.getPerformanceTreatment(), is(LedgerPerformanceTreatment.PERFORMANCE_NEUTRAL));
-
-        var rightsDistribution = LedgerEntryDefinitionRegistry.lookup(LedgerEntryType.RIGHTS_DISTRIBUTION)
-                        .orElseThrow();
-        assertOptionalPosting(rightsDistribution, LedgerPostingType.RIGHT);
-        assertOptionalPosting(rightsDistribution, LedgerPostingType.SECURITY);
-        assertRequiredPostingParameter(rightsDistribution, LedgerParameterType.RIGHT_SECURITY);
-        assertRequiredPostingParameter(rightsDistribution, LedgerParameterType.SOURCE_SECURITY);
-        assertOptionalPostingParameter(rightsDistribution, LedgerParameterType.SUBSCRIPTION_PRICE);
-        assertAlternativePostingGroup(rightsDistribution, "RIGHTS_DISTRIBUTED_INSTRUMENT", LedgerRequirement.REQUIRED,
-                        LedgerPostingType.RIGHT, LedgerPostingType.SECURITY);
-        assertRequiredProjection(rightsDistribution, LedgerProjectionRole.NEW_SECURITY_LEG, true, false);
-        assertThat(rightsDistribution.getReportingClass(), is(LedgerReportingClass.RIGHTS_EVENT));
     }
 
     /**
@@ -598,11 +391,6 @@ public class LedgerEntryDefinitionTest
         assertTrue(allPostingParameters.contains(LedgerParameterType.FAIR_MARKET_VALUE));
         assertTrue(allPostingParameters.contains(LedgerParameterType.FEE_REASON));
         assertTrue(allPostingParameters.contains(LedgerParameterType.TAX_REASON));
-        assertTrue(allPostingParameters.contains(LedgerParameterType.NOMINAL_VALUE));
-        assertTrue(allPostingParameters.contains(LedgerParameterType.QUOTATION_STYLE));
-        assertTrue(allPostingParameters.contains(LedgerParameterType.ACCRUED_INTEREST_AMOUNT));
-        assertTrue(allPostingTypes.contains(LedgerPostingType.ACCRUED_INTEREST));
-        assertTrue(allPostingTypes.contains(LedgerPostingType.BOND));
     }
 
     /**
@@ -623,12 +411,12 @@ public class LedgerEntryDefinitionTest
     }
 
     /**
-     * Checks the ledger rule scenario: definition layer does not enforce native completeness.
+     * Checks the ledger rule scenario: definition layer allows partial native completeness.
      * Invalid entry shapes must be rejected before they can be stored.
      * This keeps higher-level Ledger-V6 transaction flows predictable.
      */
     @Test
-    public void testDefinitionLayerDoesNotEnforceNativeCompleteness()
+    public void testDefinitionLayerAllowsPartialNativeCompleteness()
     {
         var ledger = new Ledger();
         var entry = new LedgerEntry("entry-1");
@@ -644,15 +432,7 @@ public class LedgerEntryDefinitionTest
         entry.addPosting(posting);
         ledger.addEntry(entry);
 
-        assertFalse(LedgerStructuralValidator.validate(ledger).isOK());
-        assertTrue(LedgerStructuralValidator.validate(ledger)
-                        .hasIssue(LedgerStructuralValidator.IssueCode.SEMANTIC_SOURCE_REQUIRED));
-    }
-
-    private void assertRequiredPosting(name.abuchen.portfolio.model.ledger.configuration.LedgerEntryDefinition definition,
-                    LedgerPostingType postingType)
-    {
-        assertTrue(postingType.name(), hasPostingRule(definition.getRequiredPostingRules(), postingType));
+        assertTrue(LedgerStructuralValidator.validate(ledger).isOK());
     }
 
     private void assertOptionalPosting(name.abuchen.portfolio.model.ledger.configuration.LedgerEntryDefinition definition,
@@ -696,13 +476,6 @@ public class LedgerEntryDefinitionTest
         assertTrue(parameterType.name(), definition.getRepeatableParameterTypes().contains(parameterType));
     }
 
-    private void assertRequiredProjection(
-                    name.abuchen.portfolio.model.ledger.configuration.LedgerEntryDefinition definition,
-                    LedgerProjectionRole role, boolean primaryPostingExpected, boolean postingGroupExpected)
-    {
-        assertProjection(definition.getRequiredProjectionRules(), role, primaryPostingExpected, postingGroupExpected);
-    }
-
     private void assertOptionalProjection(
                     name.abuchen.portfolio.model.ledger.configuration.LedgerEntryDefinition definition,
                     LedgerProjectionRole role, boolean primaryPostingExpected, boolean postingGroupExpected)
@@ -743,35 +516,6 @@ public class LedgerEntryDefinitionTest
         }
 
         assertTrue(name, false);
-    }
-
-    private void assertAlternativePostingGroup(
-                    name.abuchen.portfolio.model.ledger.configuration.LedgerEntryDefinition definition, String name,
-                    LedgerRequirement requirement, LedgerPostingType first, LedgerPostingType... rest)
-    {
-        var expected = EnumSet.of(first, rest);
-
-        for (var group : definition.getAlternativeRequirementGroups())
-        {
-            if (group.getName().equals(name))
-            {
-                assertThat(group.getRequirement(), is(requirement));
-                assertThat(group.getPostingTypes(), is(expected));
-                return;
-            }
-        }
-
-        assertTrue(name, false);
-    }
-
-    private boolean hasRequiredPostingAlternative(
-                    name.abuchen.portfolio.model.ledger.configuration.LedgerEntryDefinition definition)
-    {
-        for (var group : definition.getAlternativeRequirementGroups())
-            if (group.isRequired() && !group.getPostingTypes().isEmpty())
-                return true;
-
-        return false;
     }
 
     private boolean hasPostingRule(Iterable<LedgerPostingRule> rules, LedgerPostingType postingType)
@@ -847,27 +591,6 @@ public class LedgerEntryDefinitionTest
 
         for (var leg : definition.getLegDefinitions())
             assertTrue(definition.getEntryType() + ": leg " + leg.getRole(), seen.add(leg.getRole()));
-    }
-
-    private void assertCashCompensationFeeAndTaxLegs(
-                    name.abuchen.portfolio.model.ledger.configuration.LedgerEntryDefinition definition)
-    {
-        var cashLeg = assertLeg(definition, LedgerLegRole.CASH_COMPENSATION_LEG,
-                        LedgerPostingType.CASH_COMPENSATION, LedgerLegCardinality.OPTIONAL);
-        assertThat(cashLeg.getProjectionRole().orElseThrow(), is(LedgerProjectionRole.CASH_COMPENSATION));
-        assertTrue(cashLeg.isPrimaryPostingExpected());
-        assertTrue(cashLeg.isPostingGroupExpected());
-        assertTrue(cashLeg.getGroupNames().contains("CASH_COMPENSATION_GROUP"));
-
-        var feeLeg = assertLeg(definition, LedgerLegRole.FEE_LEG, LedgerPostingType.FEE,
-                        LedgerLegCardinality.REPEATABLE);
-        assertTrue(feeLeg.getProjectionRole().isEmpty());
-        assertTrue(feeLeg.getGroupNames().contains("CASH_COMPENSATION_GROUP"));
-
-        var taxLeg = assertLeg(definition, LedgerLegRole.TAX_LEG, LedgerPostingType.TAX,
-                        LedgerLegCardinality.REPEATABLE);
-        assertTrue(taxLeg.getProjectionRole().isEmpty());
-        assertTrue(taxLeg.getGroupNames().contains("CASH_COMPENSATION_GROUP"));
     }
 
     private LedgerLegDefinition assertLeg(

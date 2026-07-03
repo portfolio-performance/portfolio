@@ -84,12 +84,13 @@ public final class DerivedProjectionDescriptorService
                                                 .ifPresent(descriptors::add);
             }
             case SPIN_OFF -> {
-                portfolio(entry, LedgerProjectionRole.OLD_SECURITY_LEG,
+                repeatedPortfolio(entry, LedgerProjectionRole.OLD_SECURITY_LEG,
                                 primary().and(corporateLeg(CorporateActionLeg.SOURCE_SECURITY))
+                                                .and(localKey(LedgerProjectionRole.OLD_SECURITY_LEG))
                                                 .or(legacyCorporateLeg(LedgerPostingType.SECURITY,
                                                                 CorporateActionLeg.SOURCE_SECURITY)),
-                                diagnostics)
-                                                .ifPresent(descriptors::add);
+                                primary().and(corporateLeg(CorporateActionLeg.SOURCE_SECURITY)), true, diagnostics)
+                                                .forEach(descriptors::add);
                 optionalPortfolio(entry, LedgerProjectionRole.DELIVERY_INBOUND,
                                 primary().and(corporateLeg(CorporateActionLeg.TARGET_SECURITY))
                                                 .and(localKey(LedgerProjectionRole.DELIVERY_INBOUND))
@@ -101,7 +102,7 @@ public final class DerivedProjectionDescriptorService
                                                 .or(legacyNewSpinOffTarget()),
                                 primary().and(corporateLeg(CorporateActionLeg.TARGET_SECURITY))
                                                 .and(localKey(LedgerProjectionRole.DELIVERY_INBOUND).negate()),
-                                false, diagnostics).forEach(descriptors::add);
+                                true, diagnostics).forEach(descriptors::add);
                 repeatedAccount(entry, LedgerProjectionRole.CASH_COMPENSATION,
                                 primary().and(corporateLeg(CorporateActionLeg.CASH_COMPENSATION))
                                                 .and(localKey(LedgerProjectionRole.CASH_COMPENSATION))
@@ -109,58 +110,6 @@ public final class DerivedProjectionDescriptorService
                                                                 CorporateActionLeg.CASH_COMPENSATION)),
                                 primary().and(corporateLeg(CorporateActionLeg.CASH_COMPENSATION)), true, diagnostics)
                                 .forEach(descriptors::add);
-            }
-            case STOCK_DIVIDEND, BONUS_ISSUE -> {
-                portfolio(entry, LedgerProjectionRole.DELIVERY_INBOUND,
-                                primary().and(corporateLeg(CorporateActionLeg.TARGET_SECURITY))
-                                                .or(legacyCorporateLeg(LedgerPostingType.SECURITY,
-                                                                CorporateActionLeg.TARGET_SECURITY)),
-                                diagnostics)
-                                                .ifPresent(descriptors::add);
-                optionalAccount(entry, LedgerProjectionRole.CASH_COMPENSATION,
-                                primary().and(corporateLeg(CorporateActionLeg.CASH_COMPENSATION))
-                                                .or(legacyCorporateLeg(LedgerPostingType.CASH_COMPENSATION,
-                                                                CorporateActionLeg.CASH_COMPENSATION)),
-                                diagnostics)
-                                                .ifPresent(descriptors::add);
-            }
-            case RIGHTS_DISTRIBUTION -> {
-                portfolio(entry, LedgerProjectionRole.NEW_SECURITY_LEG,
-                                primary().and(posting -> posting.getCorporateActionLeg() == CorporateActionLeg.RIGHT_SECURITY
-                                                || posting.getCorporateActionLeg() == CorporateActionLeg.DISTRIBUTED_SECURITY),
-                                diagnostics).ifPresent(descriptors::add);
-                optionalPortfolio(entry, LedgerProjectionRole.OLD_SECURITY_LEG,
-                                primary().and(corporateLeg(CorporateActionLeg.SOURCE_SECURITY))
-                                                .or(legacyCorporateLeg(LedgerPostingType.SECURITY,
-                                                                CorporateActionLeg.SOURCE_SECURITY)),
-                                diagnostics)
-                                                .ifPresent(descriptors::add);
-                optionalAccount(entry, LedgerProjectionRole.CASH_COMPENSATION,
-                                primary().and(corporateLeg(CorporateActionLeg.CASH_COMPENSATION))
-                                                .or(legacyCorporateLeg(LedgerPostingType.CASH_COMPENSATION,
-                                                                CorporateActionLeg.CASH_COMPENSATION)),
-                                diagnostics)
-                                                .ifPresent(descriptors::add);
-            }
-            case BOND_CONVERSION -> {
-                portfolio(entry, LedgerProjectionRole.OLD_SECURITY_LEG,
-                                primary().and(corporateLeg(CorporateActionLeg.CONVERSION_SOURCE))
-                                                .or(legacyCorporateLeg(LedgerPostingType.BOND,
-                                                                CorporateActionLeg.CONVERSION_SOURCE)),
-                                diagnostics)
-                                                .ifPresent(descriptors::add);
-                portfolio(entry, LedgerProjectionRole.NEW_SECURITY_LEG,
-                                primary().and(corporateLeg(CorporateActionLeg.CONVERSION_TARGET))
-                                                .or(legacyCorporateLeg(LedgerPostingType.BOND,
-                                                                CorporateActionLeg.CONVERSION_TARGET)),
-                                diagnostics)
-                                                .ifPresent(descriptors::add);
-                optionalAccount(entry, LedgerProjectionRole.CASH_COMPENSATION,
-                                primary().and(corporateLeg(CorporateActionLeg.CASH_COMPENSATION))
-                                                .or(legacyCorporateLeg(LedgerPostingType.CASH_COMPENSATION,
-                                                                CorporateActionLeg.CASH_COMPENSATION)),
-                                diagnostics)
-                                                .ifPresent(descriptors::add);
             }
             default -> diagnostics.add(Diagnostic.missing(entry, null,
                             "No derived projection rule for entry type " + entry.getType())); //$NON-NLS-1$
@@ -173,12 +122,6 @@ public final class DerivedProjectionDescriptorService
                     Predicate<LedgerPosting> selector, List<Diagnostic> diagnostics)
     {
         return descriptor(entry, role, DerivedProjectionViewKind.ACCOUNT, selector, false, diagnostics);
-    }
-
-    private java.util.Optional<DerivedProjectionDescriptor> optionalAccount(LedgerEntry entry, LedgerProjectionRole role,
-                    Predicate<LedgerPosting> selector, List<Diagnostic> diagnostics)
-    {
-        return descriptor(entry, role, DerivedProjectionViewKind.ACCOUNT, selector, true, diagnostics);
     }
 
     private java.util.Optional<DerivedProjectionDescriptor> portfolio(LedgerEntry entry, LedgerProjectionRole role,

@@ -265,19 +265,6 @@ public class DerivedProjectionDescriptorServiceTest
     }
 
     @Test
-    public void testNativeCorporateActionSmokeDescriptors()
-    {
-        assertThat(roles(descriptors(nativeSinglePortfolioEntry(LedgerEntryType.STOCK_DIVIDEND,
-                        CorporateActionLeg.TARGET_SECURITY))), is(Set.of(LedgerProjectionRole.DELIVERY_INBOUND)));
-        assertThat(roles(descriptors(nativeSinglePortfolioEntry(LedgerEntryType.BONUS_ISSUE,
-                        CorporateActionLeg.TARGET_SECURITY))), is(Set.of(LedgerProjectionRole.DELIVERY_INBOUND)));
-        assertThat(roles(descriptors(nativeSinglePortfolioEntry(LedgerEntryType.RIGHTS_DISTRIBUTION,
-                        CorporateActionLeg.RIGHT_SECURITY))), is(Set.of(LedgerProjectionRole.NEW_SECURITY_LEG)));
-        assertThat(roles(descriptors(bondConversionEntry())),
-                        is(Set.of(LedgerProjectionRole.OLD_SECURITY_LEG, LedgerProjectionRole.NEW_SECURITY_LEG)));
-    }
-
-    @Test
     public void testDuplicateSemanticPrimaryIsReportedAsAmbiguous()
     {
         var entry = new LedgerEntry("entry-1");
@@ -409,38 +396,6 @@ public class DerivedProjectionDescriptorServiceTest
         entry.addPosting(oldLeg);
         entry.addPosting(targetA);
         entry.addPosting(targetB);
-
-        return entry;
-    }
-
-    private LedgerEntry nativeSinglePortfolioEntry(LedgerEntryType type, CorporateActionLeg leg)
-    {
-        var fixture = fixture();
-        var role = type == LedgerEntryType.RIGHTS_DISTRIBUTION ? LedgerProjectionRole.NEW_SECURITY_LEG
-                        : LedgerProjectionRole.DELIVERY_INBOUND;
-        var entry = new LedgerEntry(type.name());
-        var posting = portfolioPosting("primary", fixture.portfolio, fixture.siemensEnergy, 5, 50, leg, role);
-
-        entry.setType(type);
-        entry.setDateTime(DATE_TIME);
-        entry.addPosting(posting);
-
-        return entry;
-    }
-
-    private LedgerEntry bondConversionEntry()
-    {
-        var fixture = fixture();
-        var entry = new LedgerEntry("bond-conversion");
-        var source = portfolioPosting("bond", fixture.portfolio, fixture.siemens, 10, 100,
-                        CorporateActionLeg.CONVERSION_SOURCE, LedgerProjectionRole.OLD_SECURITY_LEG);
-        var target = portfolioPosting("share", fixture.portfolio, fixture.siemensEnergy, 5, 50,
-                        CorporateActionLeg.CONVERSION_TARGET, LedgerProjectionRole.NEW_SECURITY_LEG);
-
-        entry.setType(LedgerEntryType.BOND_CONVERSION);
-        entry.setDateTime(DATE_TIME);
-        entry.addPosting(source);
-        entry.addPosting(target);
 
         return entry;
     }

@@ -9,7 +9,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.Test;
 
@@ -104,19 +103,6 @@ public class LedgerNativeComponentInspectorModelTest
     }
 
     /**
-     * Checks that other configured native corporate-action entries can be inspected as native
-     * Ledger entries.
-     * Each smoke case must expose at least the leg rows from its entry definition.
-     */
-    @Test
-    public void testOtherNativeEntryTypesExposeConfiguredLegs()
-    {
-        assertHasLegRows(LedgerEntryType.STOCK_DIVIDEND, LedgerProjectionRole.DELIVERY_INBOUND);
-        assertHasLegRows(LedgerEntryType.BONUS_ISSUE, LedgerProjectionRole.DELIVERY_INBOUND);
-        assertHasLegRows(LedgerEntryType.BOND_CONVERSION, LedgerProjectionRole.OLD_SECURITY_LEG);
-    }
-
-    /**
      * Checks that a materialized native corporate-action projection is recognized by the
      * inspector support method.
      * UI guards use this result to offer inspection without legacy edit, duplicate, delete, or
@@ -195,35 +181,6 @@ public class LedgerNativeComponentInspectorModelTest
     }
 
     /**
-     * Checks that a native entry without a matching Java definition still shows persisted facts.
-     * The model must not guess functional legs when the registry cannot describe the entry.
-     */
-    @Test
-    public void testNativeEntryWithMissingDefinitionShowsLedgerFactsWithoutLegs()
-    {
-        var entry = new LedgerEntry("entry-spin-off");
-        entry.setType(LedgerEntryType.STOCK_DIVIDEND);
-        entry.setDateTime(LocalDateTime.of(2026, 6, 23, 9, 0));
-        var portfolio = new Portfolio("Portfolio");
-        var security = new Security("Security", CurrencyUnit.EUR);
-        var posting = securityPosting("posting-target", security, CorporateActionLeg.TARGET_SECURITY,
-                        LedgerParameterType.TARGET_SECURITY, security);
-        posting.setPortfolio(portfolio);
-        posting.setSemanticRole(LedgerPostingSemanticRole.SECURITY);
-        posting.setDirection(LedgerPostingDirection.INBOUND);
-        posting.setCorporateActionLeg(CorporateActionLeg.TARGET_SECURITY);
-        posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
-        entry.addPosting(posting);
-
-        var model = LedgerNativeComponentInspectorModel.from(entry, name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).get(0),
-                        ignored -> Optional.empty()).orElseThrow();
-
-        assertFalse(model.isNativeEntryDefinitionAvailable());
-        assertTrue(model.getLegs().isEmpty());
-        assertThat(model.getDescriptors().size(), is(1));
-    }
-
-    /**
      * Checks that normal legacy transactions are not offered to the Ledger inspector.
      * The action must only appear when a selected row resolves to a ledger-backed projection.
      */
@@ -234,23 +191,6 @@ public class LedgerNativeComponentInspectorModelTest
         transaction.setType(AccountTransaction.Type.DEPOSIT);
 
         assertFalse(LedgerNativeComponentInspectorModel.from(transaction).isPresent());
-    }
-
-    private static void assertHasLegRows(LedgerEntryType type, LedgerProjectionRole projectionRole)
-    {
-        var entry = new LedgerEntry("entry-" + type.name());
-        entry.setType(type);
-        entry.setDateTime(LocalDateTime.of(2026, 6, 23, 9, 0));
-        addPostingForRole(entry, projectionRole);
-        if (type == LedgerEntryType.BOND_CONVERSION)
-            addPostingForRole(entry, LedgerProjectionRole.NEW_SECURITY_LEG);
-
-        var model = LedgerNativeComponentInspectorModel.from(entry,
-                        name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptor(entry,
-                                        projectionRole),
-                        LedgerEntryDefinitionRegistry::lookup).orElseThrow();
-
-        assertTrue(type + " should expose configured legs", model.getLegs().size() > 0);
     }
 
     private static LedgerEntry spinOffEntry()
@@ -319,29 +259,6 @@ public class LedgerNativeComponentInspectorModelTest
         posting.addParameter(LedgerParameter.ofDecimal(LedgerParameterType.RATIO_NUMERATOR, BigDecimal.ONE));
         posting.addParameter(LedgerParameter.ofDecimal(LedgerParameterType.RATIO_DENOMINATOR, BigDecimal.TEN));
         return posting;
-    }
-
-    private static void addPostingForRole(LedgerEntry entry, LedgerProjectionRole role)
-    {
-        var portfolio = new Portfolio("Portfolio");
-        var security = new Security("Security", CurrencyUnit.EUR);
-        var leg = entry.getType() == LedgerEntryType.BOND_CONVERSION
-                        ? (role == LedgerProjectionRole.OLD_SECURITY_LEG ? CorporateActionLeg.CONVERSION_SOURCE
-                                        : CorporateActionLeg.CONVERSION_TARGET)
-                        : switch (role)
-                        {
-                            case OLD_SECURITY_LEG -> CorporateActionLeg.SOURCE_SECURITY;
-                            case NEW_SECURITY_LEG, DELIVERY_INBOUND -> CorporateActionLeg.TARGET_SECURITY;
-                            default -> CorporateActionLeg.TARGET_SECURITY;
-                        };
-        var posting = securityPosting("posting-" + role.name(), security, leg, LedgerParameterType.TARGET_SECURITY,
-                        security);
-
-        if (entry.getType() == LedgerEntryType.BOND_CONVERSION)
-            posting.setType(LedgerPostingType.BOND);
-        posting.setPortfolio(portfolio);
-        posting.setLocalKey(role.name());
-        entry.addPosting(posting);
     }
 
     private record Fixture(Client client, Account account, Portfolio portfolio, Security security, Security targetSecurity)

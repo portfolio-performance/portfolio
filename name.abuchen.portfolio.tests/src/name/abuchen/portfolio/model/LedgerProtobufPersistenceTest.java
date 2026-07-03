@@ -690,10 +690,6 @@ public class LedgerProtobufPersistenceTest
         var transactionTypes = java.util.Arrays.stream(PTransaction.Type.values()).map(Enum::name).toList();
 
         assertFalse(transactionTypes.contains("SPIN_OFF"));
-        assertFalse(transactionTypes.contains("STOCK_DIVIDEND"));
-        assertFalse(transactionTypes.contains("BONUS_ISSUE"));
-        assertFalse(transactionTypes.contains("RIGHTS_DISTRIBUTION"));
-        assertFalse(transactionTypes.contains("BOND_CONVERSION"));
     }
 
     /**
@@ -703,9 +699,7 @@ public class LedgerProtobufPersistenceTest
     @Test
     public void testNativeCorporateActionsRoundtripAsSemanticLedgerTruth() throws IOException
     {
-        for (var entryType : List.of(LedgerEntryType.SPIN_OFF, LedgerEntryType.STOCK_DIVIDEND,
-                        LedgerEntryType.BONUS_ISSUE, LedgerEntryType.RIGHTS_DISTRIBUTION,
-                        LedgerEntryType.BOND_CONVERSION))
+        for (var entryType : List.of(LedgerEntryType.SPIN_OFF))
         {
             var fixture = fixture();
             addNativeEntry(fixture, entryType);
@@ -1099,25 +1093,6 @@ public class LedgerProtobufPersistenceTest
                                 CorporateActionLeg.TARGET_SECURITY, fixture.otherSecurity(),
                                 LedgerPostingDirection.INBOUND, LedgerProjectionRole.NEW_SECURITY_LEG));
                 break;
-            case STOCK_DIVIDEND:
-            case BONUS_ISSUE:
-                entry.addPosting(nativeSecurityPosting(fixture, LedgerPostingType.SECURITY,
-                                CorporateActionLeg.TARGET_SECURITY, fixture.otherSecurity(),
-                                LedgerPostingDirection.INBOUND, LedgerProjectionRole.DELIVERY_INBOUND));
-                break;
-            case RIGHTS_DISTRIBUTION:
-                entry.addPosting(nativeSecurityPosting(fixture, LedgerPostingType.SECURITY,
-                                CorporateActionLeg.DISTRIBUTED_SECURITY, fixture.otherSecurity(),
-                                LedgerPostingDirection.INBOUND, LedgerProjectionRole.NEW_SECURITY_LEG));
-                break;
-            case BOND_CONVERSION:
-                entry.addPosting(nativeSecurityPosting(fixture, LedgerPostingType.BOND,
-                                CorporateActionLeg.CONVERSION_SOURCE, fixture.security(), LedgerPostingDirection.OUTBOUND,
-                                LedgerProjectionRole.OLD_SECURITY_LEG));
-                entry.addPosting(nativeSecurityPosting(fixture, LedgerPostingType.BOND,
-                                CorporateActionLeg.CONVERSION_TARGET, fixture.otherSecurity(),
-                                LedgerPostingDirection.INBOUND, LedgerProjectionRole.NEW_SECURITY_LEG));
-                break;
             default:
                 throw new IllegalArgumentException(entryType.name());
         }
@@ -1130,8 +1105,6 @@ public class LedgerProtobufPersistenceTest
         return switch (entryType)
         {
             case SPIN_OFF -> List.of(PTransaction.Type.OUTBOUND_DELIVERY, PTransaction.Type.INBOUND_DELIVERY);
-            case STOCK_DIVIDEND, BONUS_ISSUE, RIGHTS_DISTRIBUTION -> List.of(PTransaction.Type.INBOUND_DELIVERY);
-            case BOND_CONVERSION -> List.of(PTransaction.Type.OUTBOUND_DELIVERY, PTransaction.Type.INBOUND_DELIVERY);
             default -> throw new IllegalArgumentException(entryType.name());
         };
     }

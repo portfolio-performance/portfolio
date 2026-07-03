@@ -16,10 +16,6 @@ import java.util.Optional;
 public enum CorporateActionKind implements LedgerCode
 {
     SPIN_OFF("SPIN_OFF", LedgerEntryType.SPIN_OFF),
-    STOCK_DIVIDEND("STOCK_DIVIDEND", LedgerEntryType.STOCK_DIVIDEND),
-    BONUS_ISSUE("BONUS_ISSUE", LedgerEntryType.BONUS_ISSUE),
-    RIGHTS_DISTRIBUTION("RIGHTS_DISTRIBUTION", LedgerEntryType.RIGHTS_DISTRIBUTION),
-    BOND_CONVERSION("BOND_CONVERSION", LedgerEntryType.BOND_CONVERSION),
     OTHER("OTHER");
 
     private final String code;

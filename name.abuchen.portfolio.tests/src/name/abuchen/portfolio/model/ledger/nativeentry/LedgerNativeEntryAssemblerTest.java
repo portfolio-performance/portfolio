@@ -268,23 +268,10 @@ public class LedgerNativeEntryAssemblerTest
     public void testRejectsProjectionRoleNotAllowedByEntryDefinition()
     {
         var fixture = fixture();
-        var stockDividendLeg = NativeSecurityLeg.target() //
-                        .portfolio(fixture.portfolio) //
-                        .security(fixture.siemensEnergy) //
-                        .shares(Values.Share.factorize(5)) //
-                        .amount(money(50)) //
-                        .targetSecurity(fixture.siemensEnergy) //
-                        .ratio(Ratio.of(BigDecimal.ONE, BigDecimal.valueOf(2))) //
-                        .projectAs(LedgerProjectionRole.OLD_SECURITY_LEG) //
-                        .build();
+        var targetLeg = targetLeg(fixture).projectAs(LedgerProjectionRole.SOURCE_ACCOUNT).build();
 
         var exception = assertThrows(LedgerNativeEntryAssemblyException.class,
-                        () -> LedgerNativeEntryAssembler.forClient(fixture.client) //
-                                        .forType(LedgerEntryType.STOCK_DIVIDEND) //
-                                        .metadata(metadata()) //
-                                        .event(event(LedgerEntryType.STOCK_DIVIDEND)) //
-                                        .securityLeg(stockDividendLeg) //
-                                        .buildDetached());
+                        () -> baseSpinOff(fixture).securityLeg(targetLeg).buildDetached());
 
         assertThat(exception.getIssue(), is(LedgerNativeEntryAssemblyIssue.PROJECTION_ROLE_NOT_IN_ENTRY_DEFINITION));
     }
@@ -369,39 +356,6 @@ public class LedgerNativeEntryAssemblerTest
         assertThat(fixture.client.getLedger().getEntries().size(), is(0));
         assertThat(fixture.account.getTransactions().size(), is(0));
         assertThat(fixture.portfolio.getTransactions().size(), is(0));
-    }
-
-    /**
-     * Checks the Ledger-V6 scenario: builds detached minimal stock dividend through generic for type.
-     * The result must keep ledger truth and visible runtime rows consistent.
-     * This protects against duplicate truth or partial mutation.
-     */
-    @Test
-    public void testBuildsDetachedMinimalStockDividendThroughGenericForType()
-    {
-        var fixture = fixture();
-        var stockDividendLeg = NativeSecurityLeg.target() //
-                        .portfolio(fixture.portfolio) //
-                        .security(fixture.siemensEnergy) //
-                        .shares(Values.Share.factorize(5)) //
-                        .amount(money(50)) //
-                        .targetSecurity(fixture.siemensEnergy) //
-                        .ratio(Ratio.of(BigDecimal.ONE, BigDecimal.valueOf(2))) //
-                        .projectAs(LedgerProjectionRole.DELIVERY_INBOUND) //
-                        .build();
-
-        var result = LedgerNativeEntryAssembler.forClient(fixture.client) //
-                        .forType(LedgerEntryType.STOCK_DIVIDEND) //
-                        .metadata(metadata()) //
-                        .event(event(LedgerEntryType.STOCK_DIVIDEND)) //
-                        .securityLeg(stockDividendLeg) //
-                        .buildDetached();
-
-        assertThat(result.getEntry().getType(), is(LedgerEntryType.STOCK_DIVIDEND));
-        assertThat(descriptor(result.getEntry(), LedgerProjectionRole.DELIVERY_INBOUND).getRole(),
-                        is(LedgerProjectionRole.DELIVERY_INBOUND));
-        assertTrue(result.getValidationResult().isOK());
-        assertThat(fixture.client.getLedger().getEntries().size(), is(0));
     }
 
     @Test
@@ -528,20 +482,6 @@ public class LedgerNativeEntryAssemblerTest
                                         .buildDetached());
 
         assertThat(exception.getIssue(), is(LedgerNativeEntryAssemblyIssue.NATIVE_DEFINITION_VALIDATION_FAILED));
-    }
-
-    @Test
-    public void testNativeAssemblerDescriptorsCoverCorporateActionFamilies()
-    {
-        assertThat(roles(stockDividendEntry(fixture()).buildDetached().getEntry()),
-                        is(java.util.Set.of(LedgerProjectionRole.DELIVERY_INBOUND)));
-        assertThat(roles(bonusIssueEntry(fixture()).buildDetached().getEntry()),
-                        is(java.util.Set.of(LedgerProjectionRole.DELIVERY_INBOUND)));
-        assertThat(roles(rightsDistributionEntry(fixture()).buildDetached().getEntry()),
-                        is(java.util.Set.of(LedgerProjectionRole.NEW_SECURITY_LEG)));
-        assertThat(roles(bondConversionEntry(fixture()).buildDetached().getEntry()),
-                        is(java.util.Set.of(LedgerProjectionRole.OLD_SECURITY_LEG,
-                                        LedgerProjectionRole.NEW_SECURITY_LEG)));
     }
 
     /**
@@ -812,74 +752,6 @@ public class LedgerNativeEntryAssemblerTest
                         .groupKey(groupKey) //
                         .localKey(localKey) //
                         .build();
-    }
-
-    private static LedgerNativeEntryAssembler.EntryBuilder stockDividendEntry(Fixture fixture)
-    {
-        return LedgerNativeEntryAssembler.forClient(fixture.client) //
-                        .forType(LedgerEntryType.STOCK_DIVIDEND) //
-                        .metadata(metadata()) //
-                        .event(event(LedgerEntryType.STOCK_DIVIDEND)) //
-                        .securityLeg(targetLeg(fixture).projectAs(LedgerProjectionRole.DELIVERY_INBOUND).build());
-    }
-
-    private static LedgerNativeEntryAssembler.EntryBuilder bonusIssueEntry(Fixture fixture)
-    {
-        return LedgerNativeEntryAssembler.forClient(fixture.client) //
-                        .forType(LedgerEntryType.BONUS_ISSUE) //
-                        .metadata(metadata()) //
-                        .event(event(LedgerEntryType.BONUS_ISSUE)) //
-                        .securityLeg(targetLeg(fixture).projectAs(LedgerProjectionRole.DELIVERY_INBOUND).build());
-    }
-
-    private static LedgerNativeEntryAssembler.EntryBuilder rightsDistributionEntry(Fixture fixture)
-    {
-        var distributedSecurity = NativeSecurityLeg.ofType(LedgerPostingType.SECURITY) //
-                        .legCode(CorporateActionLeg.DISTRIBUTED_SECURITY.getCode()) //
-                        .portfolio(fixture.portfolio) //
-                        .security(fixture.siemensEnergy) //
-                        .shares(Values.Share.factorize(5)) //
-                        .amount(money(50)) //
-                        .projectAs(LedgerProjectionRole.NEW_SECURITY_LEG) //
-                        .build();
-
-        return LedgerNativeEntryAssembler.forClient(fixture.client) //
-                        .forType(LedgerEntryType.RIGHTS_DISTRIBUTION) //
-                        .metadata(metadata()) //
-                        .event(event(LedgerEntryType.RIGHTS_DISTRIBUTION)) //
-                        .securityLeg(distributedSecurity);
-    }
-
-    private static LedgerNativeEntryAssembler.EntryBuilder bondConversionEntry(Fixture fixture)
-    {
-        var sourceBond = NativeSecurityLeg.ofType(LedgerPostingType.BOND) //
-                        .legCode(CorporateActionLeg.CONVERSION_SOURCE.getCode()) //
-                        .portfolio(fixture.portfolio) //
-                        .security(fixture.siemens) //
-                        .shares(Values.Share.factorize(10)) //
-                        .amount(money(100)) //
-                        .parameter(LedgerParameterType.SOURCE_SECURITY, fixture.siemens) //
-                        .parameter(LedgerParameterType.NOMINAL_VALUE, money(100)) //
-                        .parameter(LedgerParameterType.QUOTATION_STYLE, "PERCENT") //
-                        .parameter(LedgerParameterType.CONVERSION_RATIO, BigDecimal.valueOf(2)) //
-                        .projectAs(LedgerProjectionRole.OLD_SECURITY_LEG) //
-                        .build();
-        var targetSecurity = NativeSecurityLeg.ofType(LedgerPostingType.SECURITY) //
-                        .legCode(CorporateActionLeg.CONVERSION_TARGET.getCode()) //
-                        .portfolio(fixture.portfolio) //
-                        .security(fixture.siemensEnergy) //
-                        .shares(Values.Share.factorize(5)) //
-                        .amount(money(50)) //
-                        .parameter(LedgerParameterType.TARGET_SECURITY, fixture.siemensEnergy) //
-                        .projectAs(LedgerProjectionRole.NEW_SECURITY_LEG) //
-                        .build();
-
-        return LedgerNativeEntryAssembler.forClient(fixture.client) //
-                        .forType(LedgerEntryType.BOND_CONVERSION) //
-                        .metadata(metadata()) //
-                        .event(event(LedgerEntryType.BOND_CONVERSION)) //
-                        .securityLeg(sourceBond) //
-                        .securityLeg(targetSecurity);
     }
 
     private static NativeEntryMetadata metadata()

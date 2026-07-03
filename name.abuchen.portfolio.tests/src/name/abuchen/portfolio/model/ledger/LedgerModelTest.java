@@ -411,8 +411,6 @@ public class LedgerModelTest
                         CorporateActionLeg.CONVERSION_TARGET, CorporateActionLeg.OTHER);
         assertCodeDomain(LedgerParameterType.CORPORATE_ACTION_KIND,
                         LedgerParameterCodeDomain.CORPORATE_ACTION_KIND, CorporateActionKind.SPIN_OFF,
-                        CorporateActionKind.STOCK_DIVIDEND, CorporateActionKind.BONUS_ISSUE,
-                        CorporateActionKind.RIGHTS_DISTRIBUTION, CorporateActionKind.BOND_CONVERSION,
                         CorporateActionKind.OTHER);
         assertCodeDomain(LedgerParameterType.CORPORATE_ACTION_SUBTYPE,
                         LedgerParameterCodeDomain.CORPORATE_ACTION_SUBTYPE, CorporateActionSubtype.STANDARD,
@@ -525,16 +523,11 @@ public class LedgerModelTest
     @Test
     public void testLedgerEntryTypePoliciesSeparateStandardAndLedgerNativeShapes()
     {
-        var corporateActionFamilies = EnumSet.of(LedgerEntryType.SPIN_OFF, LedgerEntryType.STOCK_DIVIDEND,
-                        LedgerEntryType.BONUS_ISSUE, LedgerEntryType.RIGHTS_DISTRIBUTION,
-                        LedgerEntryType.BOND_CONVERSION);
-        var modelOnlyFamilies = EnumSet.of(LedgerEntryType.CORPORATE_ACTION_MOVEMENT_CONFIRMATION);
+        var corporateActionFamilies = EnumSet.of(LedgerEntryType.SPIN_OFF);
         var standardFamilies = EnumSet.complementOf(corporateActionFamilies);
-        standardFamilies.removeAll(modelOnlyFamilies);
 
         standardFamilies.forEach(this::assertStandardLegacyShape);
         corporateActionFamilies.forEach(this::assertLedgerNativeTargetedShape);
-        modelOnlyFamilies.forEach(this::assertLedgerNativeModelOnlyShape);
 
         assertTrue(LedgerEntryType.SPIN_OFF.requiresTargetedDerivedDescriptors());
         assertTrue(LedgerEntryType.SPIN_OFF.usesSignedTargetedProjectionFacts());
@@ -730,15 +723,6 @@ public class LedgerModelTest
         assertTrue(type.requiresTargetedDerivedDescriptors());
         assertTrue(type.supportsDerivedDescriptors());
         assertTrue(type.usesSignedTargetedProjectionFacts());
-    }
-
-    private void assertLedgerNativeModelOnlyShape(LedgerEntryType type)
-    {
-        assertFalse(type.isLegacyFixedShape());
-        assertFalse(type.isLedgerNativeTargeted());
-        assertFalse(type.requiresTargetedDerivedDescriptors());
-        assertFalse(type.supportsDerivedDescriptors());
-        assertFalse(type.usesSignedTargetedProjectionFacts());
     }
 
     private void assertValueKindPolicy(ValueKind valueKind, Class<?> valueType)

@@ -146,19 +146,17 @@ public class LedgerStructuralValidatorTest
     @Test
     public void testCorporateActionLegCompletenessIsValidated()
     {
-        for (var type : new LedgerEntryType[] { LedgerEntryType.SPIN_OFF, LedgerEntryType.STOCK_DIVIDEND,
-                        LedgerEntryType.BONUS_ISSUE, LedgerEntryType.RIGHTS_DISTRIBUTION,
-                        LedgerEntryType.BOND_CONVERSION })
-            assertOK(LedgerStructuralValidator.validate(ledger(nativeEntry(type))));
+        assertOK(LedgerStructuralValidator.validate(ledger(nativeEntry(LedgerEntryType.SPIN_OFF))));
     }
 
     @Test
-    public void testMissingCorporateActionLegIsRejected()
+    public void testSpinOffAllowsNoCorporateActionPrimaryLegs()
     {
-        var entry = nativeEntry(LedgerEntryType.SPIN_OFF);
-        entry.removePosting(posting(entry, CorporateActionLeg.SOURCE_SECURITY));
+        var entry = new LedgerEntry();
+        entry.setType(LedgerEntryType.SPIN_OFF);
+        entry.setDateTime(LocalDateTime.of(2026, 1, 1, 10, 0));
 
-        assertIssue(entry, IssueCode.SEMANTIC_SOURCE_REQUIRED);
+        assertOK(LedgerStructuralValidator.validate(ledger(entry)));
     }
 
     @Test
@@ -204,12 +202,12 @@ public class LedgerStructuralValidatorTest
     }
 
     @Test
-    public void testSpinOffWithoutTargetLegIsRejected()
+    public void testSpinOffWithoutTargetLegIsAccepted()
     {
         var entry = nativeEntry(LedgerEntryType.SPIN_OFF);
         entry.removePosting(posting(entry, CorporateActionLeg.TARGET_SECURITY));
 
-        assertIssue(entry, IssueCode.SEMANTIC_TARGET_REQUIRED);
+        assertOK(LedgerStructuralValidator.validate(ledger(entry)));
     }
 
     @Test
@@ -304,15 +302,6 @@ public class LedgerStructuralValidatorTest
                 entry.addPosting(securityPosting(LedgerProjectionRole.NEW_SECURITY_LEG.name(),
                                 LedgerPostingDirection.INBOUND,
                                 CorporateActionLeg.TARGET_SECURITY));
-            }
-            case STOCK_DIVIDEND, BONUS_ISSUE -> entry.addPosting(securityPosting("target", //$NON-NLS-1$
-                            LedgerPostingDirection.INBOUND, CorporateActionLeg.TARGET_SECURITY));
-            case RIGHTS_DISTRIBUTION -> entry.addPosting(rightPosting("right", CorporateActionLeg.RIGHT_SECURITY)); //$NON-NLS-1$
-            case BOND_CONVERSION -> {
-                entry.addPosting(bondPosting("source", LedgerPostingDirection.OUTBOUND, //$NON-NLS-1$
-                                CorporateActionLeg.CONVERSION_SOURCE));
-                entry.addPosting(bondPosting("target", LedgerPostingDirection.INBOUND, //$NON-NLS-1$
-                                CorporateActionLeg.CONVERSION_TARGET));
             }
             default -> throw new IllegalArgumentException(type.name());
         }

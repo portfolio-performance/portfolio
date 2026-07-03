@@ -215,45 +215,15 @@ public final class LedgerStructuralValidator
                                 LedgerPostingDirection.INBOUND, OwnerKind.PORTFOLIO, null, false, issues);
             }
             case SPIN_OFF -> {
-                requireCorporatePrimary(entry, LedgerProjectionRole.OLD_SECURITY_LEG,
+                requireRepeatableCorporatePrimary(entry, LedgerProjectionRole.OLD_SECURITY_LEG,
                                 LedgerPostingSemanticRole.SECURITY, CorporateActionLeg.SOURCE_SECURITY,
-                                LedgerPostingDirection.OUTBOUND, false, false, issues);
+                                LedgerPostingDirection.OUTBOUND, true, issues);
                 requireRepeatableCorporatePrimary(entry, LedgerProjectionRole.NEW_SECURITY_LEG,
                                 LedgerPostingSemanticRole.SECURITY, CorporateActionLeg.TARGET_SECURITY,
-                                LedgerPostingDirection.INBOUND, false, issues, LedgerProjectionRole.DELIVERY_INBOUND);
+                                LedgerPostingDirection.INBOUND, true, issues, LedgerProjectionRole.DELIVERY_INBOUND);
                 requireRepeatableCorporatePrimary(entry, LedgerProjectionRole.CASH_COMPENSATION,
                                 LedgerPostingSemanticRole.CASH_COMPENSATION, CorporateActionLeg.CASH_COMPENSATION,
                                 LedgerPostingDirection.NEUTRAL, true, issues);
-            }
-            case STOCK_DIVIDEND, BONUS_ISSUE -> {
-                requireCorporatePrimary(entry, LedgerProjectionRole.DELIVERY_INBOUND,
-                                LedgerPostingSemanticRole.SECURITY, CorporateActionLeg.TARGET_SECURITY,
-                                LedgerPostingDirection.INBOUND, false, false, issues);
-                requireCorporatePrimary(entry, LedgerProjectionRole.CASH_COMPENSATION,
-                                LedgerPostingSemanticRole.CASH_COMPENSATION, CorporateActionLeg.CASH_COMPENSATION,
-                                LedgerPostingDirection.NEUTRAL, false, true, issues);
-            }
-            case RIGHTS_DISTRIBUTION -> {
-                requireOneOfCorporatePrimary(entry, LedgerProjectionRole.NEW_SECURITY_LEG,
-                                LedgerPostingDirection.INBOUND, false, issues, CorporateActionLeg.RIGHT_SECURITY,
-                                CorporateActionLeg.DISTRIBUTED_SECURITY);
-                requireCorporatePrimary(entry, LedgerProjectionRole.OLD_SECURITY_LEG,
-                                LedgerPostingSemanticRole.SECURITY, CorporateActionLeg.SOURCE_SECURITY,
-                                LedgerPostingDirection.OUTBOUND, false, true, issues);
-                requireCorporatePrimary(entry, LedgerProjectionRole.CASH_COMPENSATION,
-                                LedgerPostingSemanticRole.CASH_COMPENSATION, CorporateActionLeg.CASH_COMPENSATION,
-                                LedgerPostingDirection.NEUTRAL, false, true, issues);
-            }
-            case BOND_CONVERSION -> {
-                requireCorporatePrimary(entry, LedgerProjectionRole.OLD_SECURITY_LEG,
-                                CorporateActionLeg.CONVERSION_SOURCE, LedgerPostingDirection.OUTBOUND, false, false,
-                                issues);
-                requireCorporatePrimary(entry, LedgerProjectionRole.NEW_SECURITY_LEG,
-                                CorporateActionLeg.CONVERSION_TARGET, LedgerPostingDirection.INBOUND, false, false,
-                                issues);
-                requireCorporatePrimary(entry, LedgerProjectionRole.CASH_COMPENSATION,
-                                LedgerPostingSemanticRole.CASH_COMPENSATION, CorporateActionLeg.CASH_COMPENSATION,
-                                LedgerPostingDirection.NEUTRAL, false, true, issues);
             }
             default -> {
                 // No semantic shape rule.
@@ -261,73 +231,6 @@ public final class LedgerStructuralValidator
         }
 
         validateUnitGrouping(entry, issues);
-    }
-
-    private static void requireCorporatePrimary(LedgerEntry entry, LedgerProjectionRole role,
-                    LedgerPostingSemanticRole semanticRole, CorporateActionLeg leg, LedgerPostingDirection direction,
-                    boolean localKeyRequired, boolean optional, List<ValidationIssue> issues)
-    {
-        var matches = entry.getPostings().stream() //
-                        .filter(posting -> matchesPrimary(posting, semanticRole, direction, leg)) //
-                        .filter(posting -> !localKeyRequired || role.name().equals(posting.getLocalKey())) //
-                        .toList();
-
-        validatePrimaryMatches(entry, role, OwnerKind.PORTFOLIO_OR_ACCOUNT, optional, matches, issues);
-
-        if (!localKeyRequired)
-            return;
-
-        entry.getPostings().stream() //
-                        .filter(posting -> matchesPrimary(posting, semanticRole, direction, leg)) //
-                        .filter(posting -> isBlank(posting.getLocalKey())) //
-                        .findFirst()
-                        .ifPresent(posting -> issues.add(postingIssue(IssueCode.SEMANTIC_LOCAL_KEY_REQUIRED,
-                                        LedgerDiagnosticCode.LEDGER_STRUCT_027.message(
-                                                        "Repeated corporate-action leg requires a local key for " //$NON-NLS-1$
-                                                                        + role),
-                                        entry, posting).withDetail("projectionRole", role))); //$NON-NLS-1$
-    }
-
-    private static void requireCorporatePrimary(LedgerEntry entry, LedgerProjectionRole role, CorporateActionLeg leg,
-                    LedgerPostingDirection direction, boolean localKeyRequired, boolean optional,
-                    List<ValidationIssue> issues)
-    {
-        var matches = entry.getPostings().stream() //
-                        .filter(posting -> posting.getUnitRole() == LedgerPostingUnitRole.PRIMARY) //
-                        .filter(posting -> posting.getDirection() == direction) //
-                        .filter(posting -> posting.getCorporateActionLeg() == leg) //
-                        .filter(posting -> !localKeyRequired || role.name().equals(posting.getLocalKey())) //
-                        .toList();
-
-        validatePrimaryMatches(entry, role, OwnerKind.PORTFOLIO_OR_ACCOUNT, optional, matches, issues);
-
-        if (!localKeyRequired)
-            return;
-
-        entry.getPostings().stream() //
-                        .filter(posting -> posting.getUnitRole() == LedgerPostingUnitRole.PRIMARY) //
-                        .filter(posting -> posting.getDirection() == direction) //
-                        .filter(posting -> posting.getCorporateActionLeg() == leg) //
-                        .filter(posting -> isBlank(posting.getLocalKey())) //
-                        .findFirst()
-                        .ifPresent(posting -> issues.add(postingIssue(IssueCode.SEMANTIC_LOCAL_KEY_REQUIRED,
-                                        LedgerDiagnosticCode.LEDGER_STRUCT_027.message(
-                                                        "Repeated corporate-action leg requires a local key for " //$NON-NLS-1$
-                                                                        + role),
-                                        entry, posting).withDetail("projectionRole", role))); //$NON-NLS-1$
-    }
-
-    private static void requireOneOfCorporatePrimary(LedgerEntry entry, LedgerProjectionRole role,
-                    LedgerPostingDirection direction, boolean optional, List<ValidationIssue> issues,
-                    CorporateActionLeg... legs)
-    {
-        var matches = entry.getPostings().stream() //
-                        .filter(posting -> posting.getUnitRole() == LedgerPostingUnitRole.PRIMARY) //
-                        .filter(posting -> posting.getDirection() == direction) //
-                        .filter(posting -> contains(legs, posting.getCorporateActionLeg())) //
-                        .toList();
-
-        validatePrimaryMatches(entry, role, OwnerKind.PORTFOLIO, optional, matches, issues);
     }
 
     private static void requireRepeatableCorporatePrimary(LedgerEntry entry, LedgerProjectionRole role,
@@ -534,15 +437,6 @@ public final class LedgerStructuralValidator
         return unitRole == LedgerPostingUnitRole.FEE || unitRole == LedgerPostingUnitRole.TAX
                         || unitRole == LedgerPostingUnitRole.GROSS_VALUE
                         || unitRole == LedgerPostingUnitRole.FOREX_CONTEXT;
-    }
-
-    private static boolean contains(CorporateActionLeg[] legs, CorporateActionLeg value)
-    {
-        for (var leg : legs)
-            if (leg == value)
-                return true;
-
-        return false;
     }
 
     private static void validateParameters(LedgerEntry entry, LedgerPosting posting,
