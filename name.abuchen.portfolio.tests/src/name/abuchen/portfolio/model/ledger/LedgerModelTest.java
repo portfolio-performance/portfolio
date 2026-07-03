@@ -410,8 +410,7 @@ public class LedgerModelTest
                         CorporateActionLeg.REDEMPTION, CorporateActionLeg.CONVERSION_SOURCE,
                         CorporateActionLeg.CONVERSION_TARGET, CorporateActionLeg.OTHER);
         assertCodeDomain(LedgerParameterType.CORPORATE_ACTION_KIND,
-                        LedgerParameterCodeDomain.CORPORATE_ACTION_KIND, CorporateActionKind.SPIN_OFF,
-                        CorporateActionKind.OTHER);
+                        LedgerParameterCodeDomain.CORPORATE_ACTION_KIND, CorporateActionKind.SPIN_OFF);
         assertCodeDomain(LedgerParameterType.CORPORATE_ACTION_SUBTYPE,
                         LedgerParameterCodeDomain.CORPORATE_ACTION_SUBTYPE, CorporateActionSubtype.STANDARD,
                         CorporateActionSubtype.OPTIONAL, CorporateActionSubtype.MANDATORY,
@@ -523,14 +522,14 @@ public class LedgerModelTest
     @Test
     public void testLedgerEntryTypePoliciesSeparateStandardAndLedgerNativeShapes()
     {
-        var corporateActionFamilies = EnumSet.of(LedgerEntryType.SPIN_OFF);
+        var corporateActionFamilies = EnumSet.of(LedgerEntryType.CORPORATE_ACTION);
         var standardFamilies = EnumSet.complementOf(corporateActionFamilies);
 
         standardFamilies.forEach(this::assertStandardLegacyShape);
         corporateActionFamilies.forEach(this::assertLedgerNativeTargetedShape);
 
-        assertTrue(LedgerEntryType.SPIN_OFF.requiresTargetedDerivedDescriptors());
-        assertTrue(LedgerEntryType.SPIN_OFF.usesSignedTargetedProjectionFacts());
+        assertTrue(LedgerEntryType.CORPORATE_ACTION.requiresTargetedDerivedDescriptors());
+        assertTrue(LedgerEntryType.CORPORATE_ACTION.usesSignedTargetedProjectionFacts());
     }
 
     /**

@@ -85,7 +85,7 @@ public final class LedgerSpinOffXmlDefinitionCheckerTest
 
         for (var entry : client.getLedger().getEntries())
         {
-            if (entry.getType() == LedgerEntryType.SPIN_OFF)
+            if (entry.getType() == LedgerEntryType.CORPORATE_ACTION)
                 spinOffEntryCount++;
 
             var definition = entry.getType() == null ? null

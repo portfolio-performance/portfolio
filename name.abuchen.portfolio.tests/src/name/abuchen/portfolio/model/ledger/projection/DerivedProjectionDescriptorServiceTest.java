@@ -36,6 +36,7 @@ import name.abuchen.portfolio.model.ledger.compatibility.LedgerPortfolioTransfer
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerSecurityQuantity;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerTransactionCreator;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
+import name.abuchen.portfolio.model.ledger.configuration.CorporateActionKind;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerParameterType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
@@ -365,8 +366,10 @@ public class DerivedProjectionDescriptorServiceTest
         var fee = unitPosting("fee", LedgerPostingType.FEE, 2, LedgerPostingUnitRole.FEE);
         var tax = unitPosting("tax", LedgerPostingType.TAX, 1, LedgerPostingUnitRole.TAX);
 
-        entry.setType(LedgerEntryType.SPIN_OFF);
+        entry.setType(LedgerEntryType.CORPORATE_ACTION);
         entry.setDateTime(DATE_TIME);
+        entry.addParameter(LedgerParameter.ofCode(LedgerParameterType.CORPORATE_ACTION_KIND,
+                        CorporateActionKind.SPIN_OFF));
         entry.addPosting(oldLeg);
         entry.addPosting(retainedLeg);
         entry.addPosting(newLeg);
@@ -391,8 +394,10 @@ public class DerivedProjectionDescriptorServiceTest
                         30, CorporateActionLeg.TARGET_SECURITY, LedgerProjectionRole.NEW_SECURITY_LEG,
                         secondTargetLocalKey);
 
-        entry.setType(LedgerEntryType.SPIN_OFF);
+        entry.setType(LedgerEntryType.CORPORATE_ACTION);
         entry.setDateTime(DATE_TIME);
+        entry.addParameter(LedgerParameter.ofCode(LedgerParameterType.CORPORATE_ACTION_KIND,
+                        CorporateActionKind.SPIN_OFF));
         entry.addPosting(oldLeg);
         entry.addPosting(targetA);
         entry.addPosting(targetB);

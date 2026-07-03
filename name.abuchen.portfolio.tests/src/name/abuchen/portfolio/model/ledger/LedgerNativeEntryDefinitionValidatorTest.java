@@ -66,16 +66,16 @@ public class LedgerNativeEntryDefinitionValidatorTest
     }
 
     /**
-     * Checks that a native entry without its required corporate-action kind is
-     * rejected before it can be used by supported create paths.
+     * Checks that a native corporate-action entry without a kind is rejected
+     * before it can select a kind-specific native definition.
      */
     @Test
-    public void testMissingRequiredEntryParameterIsRejected()
+    public void testCorporateActionWithoutKindIsRejected()
     {
         var entry = copyValidSpinOff();
         removeEntryParameters(entry, LedgerParameterType.CORPORATE_ACTION_KIND);
 
-        assertIssue(entry, IssueCode.REQUIRED_ENTRY_PARAMETER_MISSING);
+        assertIssue(entry, IssueCode.ENTRY_DEFINITION_MISSING);
     }
 
     /**

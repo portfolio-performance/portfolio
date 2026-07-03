@@ -17,6 +17,7 @@ import name.abuchen.portfolio.model.ledger.LedgerPostingSemanticRole;
 import name.abuchen.portfolio.model.ledger.LedgerPostingUnitRole;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
+import name.abuchen.portfolio.model.ledger.configuration.CorporateActionKind;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerParameterType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
@@ -83,39 +84,52 @@ public final class DerivedProjectionDescriptorService
                                 primary().and(direction(LedgerPostingDirection.INBOUND)), diagnostics)
                                                 .ifPresent(descriptors::add);
             }
-            case SPIN_OFF -> {
-                repeatedPortfolio(entry, LedgerProjectionRole.OLD_SECURITY_LEG,
-                                primary().and(corporateLeg(CorporateActionLeg.SOURCE_SECURITY))
-                                                .and(localKey(LedgerProjectionRole.OLD_SECURITY_LEG))
-                                                .or(legacyCorporateLeg(LedgerPostingType.SECURITY,
-                                                                CorporateActionLeg.SOURCE_SECURITY)),
-                                primary().and(corporateLeg(CorporateActionLeg.SOURCE_SECURITY)), true, diagnostics)
-                                                .forEach(descriptors::add);
-                optionalPortfolio(entry, LedgerProjectionRole.DELIVERY_INBOUND,
-                                primary().and(corporateLeg(CorporateActionLeg.TARGET_SECURITY))
-                                                .and(localKey(LedgerProjectionRole.DELIVERY_INBOUND))
-                                                .or(legacyRetainedSpinOffTarget()),
-                                diagnostics).ifPresent(descriptors::add);
-                repeatedPortfolio(entry, LedgerProjectionRole.NEW_SECURITY_LEG,
-                                primary().and(corporateLeg(CorporateActionLeg.TARGET_SECURITY))
-                                                .and(localKey(LedgerProjectionRole.NEW_SECURITY_LEG))
-                                                .or(legacyNewSpinOffTarget()),
-                                primary().and(corporateLeg(CorporateActionLeg.TARGET_SECURITY))
-                                                .and(localKey(LedgerProjectionRole.DELIVERY_INBOUND).negate()),
-                                true, diagnostics).forEach(descriptors::add);
-                repeatedAccount(entry, LedgerProjectionRole.CASH_COMPENSATION,
-                                primary().and(corporateLeg(CorporateActionLeg.CASH_COMPENSATION))
-                                                .and(localKey(LedgerProjectionRole.CASH_COMPENSATION))
-                                                .or(legacyCorporateLeg(LedgerPostingType.CASH_COMPENSATION,
-                                                                CorporateActionLeg.CASH_COMPENSATION)),
-                                primary().and(corporateLeg(CorporateActionLeg.CASH_COMPENSATION)), true, diagnostics)
-                                .forEach(descriptors::add);
-            }
+            case CORPORATE_ACTION -> corporateAction(entry, descriptors, diagnostics);
             default -> diagnostics.add(Diagnostic.missing(entry, null,
                             "No derived projection rule for entry type " + entry.getType())); //$NON-NLS-1$
         }
 
         return new Result(descriptors, diagnostics);
+    }
+
+    private void corporateAction(LedgerEntry entry, List<DerivedProjectionDescriptor> descriptors,
+                    List<Diagnostic> diagnostics)
+    {
+        var kind = CorporateActionKind.fromEntry(entry);
+
+        if (kind.filter(CorporateActionKind.SPIN_OFF::equals).isEmpty())
+        {
+            diagnostics.add(Diagnostic.missing(entry, null,
+                            "No derived projection rule for corporate action kind")); //$NON-NLS-1$
+            return;
+        }
+
+        repeatedPortfolio(entry, LedgerProjectionRole.OLD_SECURITY_LEG,
+                        primary().and(corporateLeg(CorporateActionLeg.SOURCE_SECURITY))
+                                        .and(localKey(LedgerProjectionRole.OLD_SECURITY_LEG))
+                                        .or(legacyCorporateLeg(LedgerPostingType.SECURITY,
+                                                        CorporateActionLeg.SOURCE_SECURITY)),
+                        primary().and(corporateLeg(CorporateActionLeg.SOURCE_SECURITY)), true, diagnostics)
+                                        .forEach(descriptors::add);
+        optionalPortfolio(entry, LedgerProjectionRole.DELIVERY_INBOUND,
+                        primary().and(corporateLeg(CorporateActionLeg.TARGET_SECURITY))
+                                        .and(localKey(LedgerProjectionRole.DELIVERY_INBOUND))
+                                        .or(legacyRetainedSpinOffTarget()),
+                        diagnostics).ifPresent(descriptors::add);
+        repeatedPortfolio(entry, LedgerProjectionRole.NEW_SECURITY_LEG,
+                        primary().and(corporateLeg(CorporateActionLeg.TARGET_SECURITY))
+                                        .and(localKey(LedgerProjectionRole.NEW_SECURITY_LEG))
+                                        .or(legacyNewSpinOffTarget()),
+                        primary().and(corporateLeg(CorporateActionLeg.TARGET_SECURITY))
+                                        .and(localKey(LedgerProjectionRole.DELIVERY_INBOUND).negate()),
+                        true, diagnostics).forEach(descriptors::add);
+        repeatedAccount(entry, LedgerProjectionRole.CASH_COMPENSATION,
+                        primary().and(corporateLeg(CorporateActionLeg.CASH_COMPENSATION))
+                                        .and(localKey(LedgerProjectionRole.CASH_COMPENSATION))
+                                        .or(legacyCorporateLeg(LedgerPostingType.CASH_COMPENSATION,
+                                                        CorporateActionLeg.CASH_COMPENSATION)),
+                        primary().and(corporateLeg(CorporateActionLeg.CASH_COMPENSATION)), true, diagnostics)
+                        .forEach(descriptors::add);
     }
 
     private java.util.Optional<DerivedProjectionDescriptor> account(LedgerEntry entry, LedgerProjectionRole role,

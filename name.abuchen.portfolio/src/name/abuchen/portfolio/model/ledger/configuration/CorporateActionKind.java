@@ -2,6 +2,9 @@ package name.abuchen.portfolio.model.ledger.configuration;
 
 import java.util.Optional;
 
+import name.abuchen.portfolio.model.ledger.LedgerEntry;
+import name.abuchen.portfolio.model.ledger.LedgerParameter;
+
 /**
  * Defines the corporate action kind Ledger code domain used by configuration or validation.
  * This is configuration metadata. Normal transaction-editing code should not treat these
@@ -15,21 +18,13 @@ import java.util.Optional;
 @SuppressWarnings("nls")
 public enum CorporateActionKind implements LedgerCode
 {
-    SPIN_OFF("SPIN_OFF", LedgerEntryType.SPIN_OFF),
-    OTHER("OTHER");
+    SPIN_OFF("SPIN_OFF");
 
     private final String code;
-    private final LedgerEntryType relatedEntryType;
 
     private CorporateActionKind(String code)
     {
-        this(code, null);
-    }
-
-    private CorporateActionKind(String code, LedgerEntryType relatedEntryType)
-    {
         this.code = code;
-        this.relatedEntryType = relatedEntryType;
     }
 
     @Override
@@ -44,8 +39,31 @@ public enum CorporateActionKind implements LedgerCode
         return code;
     }
 
-    public Optional<LedgerEntryType> getRelatedEntryType()
+    public static Optional<CorporateActionKind> fromCode(String code)
     {
-        return Optional.ofNullable(relatedEntryType);
+        if (code == null || code.isBlank())
+            return Optional.empty();
+
+        for (var kind : values())
+            if (kind.code.equals(code))
+                return Optional.of(kind);
+
+        return Optional.empty();
+    }
+
+    public static Optional<CorporateActionKind> fromEntry(LedgerEntry entry)
+    {
+        if (entry == null)
+            return Optional.empty();
+
+        return entry.getParameters().stream() //
+                        .filter(parameter -> parameter.getType() == LedgerParameterType.CORPORATE_ACTION_KIND) //
+                        .map(LedgerParameter::getValue) //
+                        .filter(String.class::isInstance) //
+                        .map(String.class::cast) //
+                        .map(CorporateActionKind::fromCode) //
+                        .filter(Optional::isPresent) //
+                        .map(Optional::get) //
+                        .findFirst();
     }
 }

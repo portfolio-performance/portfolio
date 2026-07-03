@@ -199,8 +199,9 @@ final class LedgerProtobufPersistenceSupport
     {
         for (PLedgerEntry newEntry : newLedger.getEntriesList())
         {
+            var typeCode = newEntry.getTypeCode();
             LedgerEntry entry = LedgerModelLoadSupport.newEntry(UUID.randomUUID().toString(),
-                            LedgerEntryType.fromCode(newEntry.getTypeCode()),
+                            LedgerModelLoadSupport.entryTypeFromPersistedCode(typeCode),
                             fromTimestamp(newEntry.getDateTime()));
 
             if (newEntry.hasNote())
@@ -221,6 +222,9 @@ final class LedgerProtobufPersistenceSupport
 
             for (PLedgerParameter newParameter : newEntry.getParametersList())
                 LedgerModelLoadSupport.addEntryParameter(entry, loadLedgerParameter(newParameter, lookup));
+
+            if (LedgerModelLoadSupport.isLegacySpinOffTypeCode(typeCode))
+                LedgerModelLoadSupport.addLegacySpinOffKindIfMissing(entry);
 
             for (PLedgerPosting newPosting : newEntry.getPostingsList())
                 LedgerModelLoadSupport.addPosting(entry, loadLedgerPosting(newPosting, lookup));

@@ -31,9 +31,9 @@ public class LedgerInlineEditingPolicyTest
                         LedgerInlineEditingField.SHARES), is(false));
         assertThat(LedgerInlineEditingPolicy.isEditable(LedgerEntryType.DELIVERY_INBOUND,
                         LedgerProjectionRole.DELIVERY_INBOUND, LedgerInlineEditingField.TYPE), is(true));
-        assertThat(LedgerInlineEditingPolicy.isEditable(LedgerEntryType.SPIN_OFF,
+        assertThat(LedgerInlineEditingPolicy.isEditable(LedgerEntryType.CORPORATE_ACTION,
                         LedgerProjectionRole.DELIVERY_INBOUND, LedgerInlineEditingField.DATE), is(false));
-        assertThat(LedgerInlineEditingPolicy.isEditable(LedgerEntryType.SPIN_OFF,
+        assertThat(LedgerInlineEditingPolicy.isEditable(LedgerEntryType.CORPORATE_ACTION,
                         LedgerProjectionRole.CASH_COMPENSATION, LedgerInlineEditingField.SOURCE), is(false));
     }
 }

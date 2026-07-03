@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import name.abuchen.portfolio.model.LedgerDiagnosticCode;
+import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.configuration.rule.LedgerParameterRule;
 import name.abuchen.portfolio.model.ledger.configuration.rule.LedgerPostingGroupRule;
@@ -45,6 +46,28 @@ public final class LedgerEntryDefinitionRegistry
         return Optional.ofNullable(DEFINITIONS.get(entryType));
     }
 
+    public static Optional<LedgerEntryDefinition> lookup(LedgerEntry entry)
+    {
+        if (entry == null || entry.getType() == null)
+            return Optional.empty();
+
+        if (entry.getType() == LedgerEntryType.CORPORATE_ACTION)
+            return CorporateActionKind.fromEntry(entry).flatMap(kind -> lookup(entry.getType(), kind));
+
+        return lookup(entry.getType());
+    }
+
+    public static Optional<LedgerEntryDefinition> lookup(LedgerEntryType entryType, CorporateActionKind kind)
+    {
+        if (entryType != LedgerEntryType.CORPORATE_ACTION)
+            return lookup(entryType);
+
+        if (kind != CorporateActionKind.SPIN_OFF)
+            return Optional.empty();
+
+        return lookup(entryType);
+    }
+
     public static Collection<LedgerEntryDefinition> getDefinitions()
     {
         return DEFINITIONS.values();
@@ -74,7 +97,8 @@ public final class LedgerEntryDefinitionRegistry
 
     private static LedgerEntryDefinition spinOff()
     {
-        return LedgerEntryDefinition.of(LedgerEntryType.SPIN_OFF, LedgerNativeEntryShape.DUAL_INSTRUMENT_PLUS_ACCOUNT,
+        return LedgerEntryDefinition.of(LedgerEntryType.CORPORATE_ACTION,
+                        LedgerNativeEntryShape.DUAL_INSTRUMENT_PLUS_ACCOUNT,
                         SETS.postingRules(
                                         optionalPosting(LedgerPostingType.SECURITY, requiredSecurityLegParameters(),
                                                         spinOffSecurityOptionalParameters()),

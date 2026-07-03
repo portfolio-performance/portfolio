@@ -79,7 +79,7 @@ public class LedgerNativeEntryDefinitionValidatorPolicyTest
     {
         var entry = new LedgerEntry("policy-entry");
 
-        entry.setType(LedgerEntryType.SPIN_OFF);
+        entry.setType(LedgerEntryType.CORPORATE_ACTION);
 
         return entry;
     }

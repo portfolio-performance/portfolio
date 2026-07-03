@@ -14,6 +14,7 @@ import name.abuchen.portfolio.model.LedgerDiagnosticCode;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
+import name.abuchen.portfolio.model.ledger.configuration.CorporateActionKind;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerParameterType;
 
@@ -214,23 +215,31 @@ public final class LedgerStructuralValidator
                 requirePrimary(entry, LedgerProjectionRole.TARGET_PORTFOLIO, LedgerPostingSemanticRole.SECURITY,
                                 LedgerPostingDirection.INBOUND, OwnerKind.PORTFOLIO, null, false, issues);
             }
-            case SPIN_OFF -> {
-                requireRepeatableCorporatePrimary(entry, LedgerProjectionRole.OLD_SECURITY_LEG,
-                                LedgerPostingSemanticRole.SECURITY, CorporateActionLeg.SOURCE_SECURITY,
-                                LedgerPostingDirection.OUTBOUND, true, issues);
-                requireRepeatableCorporatePrimary(entry, LedgerProjectionRole.NEW_SECURITY_LEG,
-                                LedgerPostingSemanticRole.SECURITY, CorporateActionLeg.TARGET_SECURITY,
-                                LedgerPostingDirection.INBOUND, true, issues, LedgerProjectionRole.DELIVERY_INBOUND);
-                requireRepeatableCorporatePrimary(entry, LedgerProjectionRole.CASH_COMPENSATION,
-                                LedgerPostingSemanticRole.CASH_COMPENSATION, CorporateActionLeg.CASH_COMPENSATION,
-                                LedgerPostingDirection.NEUTRAL, true, issues);
-            }
+            case CORPORATE_ACTION -> validateCorporateActionSemanticShape(entry, issues);
             default -> {
                 // No semantic shape rule.
             }
         }
 
         validateUnitGrouping(entry, issues);
+    }
+
+    private static void validateCorporateActionSemanticShape(LedgerEntry entry, List<ValidationIssue> issues)
+    {
+        var kind = CorporateActionKind.fromEntry(entry);
+
+        if (kind.filter(CorporateActionKind.SPIN_OFF::equals).isEmpty())
+            return;
+
+        requireRepeatableCorporatePrimary(entry, LedgerProjectionRole.OLD_SECURITY_LEG,
+                        LedgerPostingSemanticRole.SECURITY, CorporateActionLeg.SOURCE_SECURITY,
+                        LedgerPostingDirection.OUTBOUND, true, issues);
+        requireRepeatableCorporatePrimary(entry, LedgerProjectionRole.NEW_SECURITY_LEG,
+                        LedgerPostingSemanticRole.SECURITY, CorporateActionLeg.TARGET_SECURITY,
+                        LedgerPostingDirection.INBOUND, true, issues, LedgerProjectionRole.DELIVERY_INBOUND);
+        requireRepeatableCorporatePrimary(entry, LedgerProjectionRole.CASH_COMPENSATION,
+                        LedgerPostingSemanticRole.CASH_COMPENSATION, CorporateActionLeg.CASH_COMPENSATION,
+                        LedgerPostingDirection.NEUTRAL, true, issues);
     }
 
     private static void requireRepeatableCorporatePrimary(LedgerEntry entry, LedgerProjectionRole role,

@@ -64,7 +64,8 @@ public class LedgerNativeComponentInspectorModelTest
                         .from(entry, selectedDescriptor, LedgerEntryDefinitionRegistry::lookup).orElseThrow();
 
         assertThat(model.getHeaderRows().stream()
-                        .anyMatch(row -> row.field() == HeaderField.ENTRY_TYPE && "SPIN_OFF".equals(row.value())),
+                        .anyMatch(row -> row.field() == HeaderField.ENTRY_TYPE
+                                        && "CORPORATE_ACTION".equals(row.value())),
                         is(true));
         assertThat(model.getHeaderRows().stream()
                         .anyMatch(row -> row.field() == HeaderField.NATIVE_TARGETED && "true".equals(row.value())),
@@ -196,7 +197,7 @@ public class LedgerNativeComponentInspectorModelTest
     private static LedgerEntry spinOffEntry()
     {
         var entry = new LedgerEntry("entry-spin-off");
-        entry.setType(LedgerEntryType.SPIN_OFF);
+        entry.setType(LedgerEntryType.CORPORATE_ACTION);
         entry.setDateTime(LocalDateTime.of(2026, 6, 23, 9, 0));
         entry.setNote("Spin-off note");
         entry.setSource("manual");

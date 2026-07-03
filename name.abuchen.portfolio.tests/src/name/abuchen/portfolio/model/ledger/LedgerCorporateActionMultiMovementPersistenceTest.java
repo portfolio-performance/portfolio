@@ -83,7 +83,7 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
         var protoEntry = proto.getLedger().getEntries(0);
 
         assertThat(proto.getLedger().getEntriesCount(), is(1));
-        assertThat(protoEntry.getTypeCode(), is(LedgerEntryType.SPIN_OFF.getCode()));
+        assertThat(protoEntry.getTypeCode(), is(LedgerEntryType.CORPORATE_ACTION.getCode()));
         assertThat(protoEntry.getPostingsCount(), is(8));
         assertNoCorporateActionSpecificLegacyTransactionType(proto);
 
@@ -124,7 +124,7 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
         client.addSecurity(targetSecurityB);
 
         var entry = new LedgerEntry("spin-off-repeated");
-        entry.setType(LedgerEntryType.SPIN_OFF);
+        entry.setType(LedgerEntryType.CORPORATE_ACTION);
         entry.setDateTime(DATE_TIME);
         entry.setSource("SPIN_OFF repeated movement proof");
         entry.setNote("core service proof only");
@@ -244,7 +244,7 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
 
     private void assertRepeatedSpinOff(LedgerEntry entry)
     {
-        assertThat(entry.getType(), is(LedgerEntryType.SPIN_OFF));
+        assertThat(entry.getType(), is(LedgerEntryType.CORPORATE_ACTION));
         assertThat(entry.getPostings().size(), is(8));
 
         var sourceSecurities = postings(entry, LedgerPostingType.SECURITY, LedgerPostingDirection.OUTBOUND,

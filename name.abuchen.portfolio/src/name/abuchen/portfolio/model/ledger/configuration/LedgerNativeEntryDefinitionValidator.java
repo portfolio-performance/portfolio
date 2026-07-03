@@ -78,7 +78,7 @@ public final class LedgerNativeEntryDefinitionValidator
         if (!entryType.isLedgerNativeTargeted())
             return new ValidationResult(issues);
 
-        var definition = LedgerEntryDefinitionRegistry.lookup(entryType);
+        var definition = LedgerEntryDefinitionRegistry.lookup(entry);
         if (definition.isEmpty())
         {
             issues.add(issue(IssueCode.ENTRY_DEFINITION_MISSING,
@@ -523,7 +523,7 @@ public final class LedgerNativeEntryDefinitionValidator
 
     private static Optional<String> expectedCorporateActionLegCode(LedgerEntryType entryType, LedgerLegRole role)
     {
-        if (entryType == LedgerEntryType.SPIN_OFF)
+        if (entryType == LedgerEntryType.CORPORATE_ACTION)
         {
             if (role == LedgerLegRole.SOURCE_SECURITY_LEG)
                 return Optional.of(CorporateActionLeg.SOURCE_SECURITY.getCode());

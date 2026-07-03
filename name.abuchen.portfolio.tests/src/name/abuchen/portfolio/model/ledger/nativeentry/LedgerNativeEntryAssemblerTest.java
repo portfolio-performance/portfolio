@@ -124,7 +124,7 @@ public class LedgerNativeEntryAssemblerTest
         var fixture = fixture();
 
         assertThat(LedgerNativeEntryAssembler.forClient(fixture.client).spinOff(), is(notNullValue()));
-        assertThat(LedgerNativeEntryAssembler.forClient(fixture.client).forType(LedgerEntryType.SPIN_OFF),
+        assertThat(LedgerNativeEntryAssembler.forClient(fixture.client).forType(LedgerEntryType.CORPORATE_ACTION),
                         is(notNullValue()));
     }
 
@@ -161,7 +161,7 @@ public class LedgerNativeEntryAssemblerTest
     {
         var exception = assertThrows(LedgerNativeEntryAssemblyException.class,
                         () -> new LedgerNativeEntryAssembler(new Client(), type -> Optional.empty())
-                                        .forType(LedgerEntryType.SPIN_OFF));
+                                        .forType(LedgerEntryType.CORPORATE_ACTION));
 
         assertThat(exception.getIssue(), is(LedgerNativeEntryAssemblyIssue.ENTRY_DEFINITION_MISSING));
     }
@@ -214,7 +214,7 @@ public class LedgerNativeEntryAssemblerTest
                             () -> LedgerNativeEntryAssembler.forClient(fixture.client)
                                             .forType(definition.getEntryType()) //
                                             .metadata(metadata()) //
-                                            .event(event(definition.getEntryType())) //
+                                            .event(event()) //
                                             .securityLeg(invalidLeg) //
                                             .buildDetached());
 
@@ -325,7 +325,7 @@ public class LedgerNativeEntryAssemblerTest
         var result = validSpinOff(fixture).buildDetached();
         var entry = result.getEntry();
 
-        assertThat(entry.getType(), is(LedgerEntryType.SPIN_OFF));
+        assertThat(entry.getType(), is(LedgerEntryType.CORPORATE_ACTION));
         assertThat(entry.getPostings().size(), is(5));
         assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).size(), is(3));
         assertThat(fixture.client.getLedger().getEntries().size(), is(0));
@@ -687,7 +687,7 @@ public class LedgerNativeEntryAssemblerTest
     {
         return LedgerNativeEntryAssembler.forClient(fixture.client).spinOff() //
                         .metadata(metadata()) //
-                        .event(event(LedgerEntryType.SPIN_OFF));
+                        .event(event());
     }
 
     private static LedgerNativeEntryAssembler.EntryBuilder spinOffWithRetainedAndNewLegs(Fixture fixture)
@@ -761,24 +761,15 @@ public class LedgerNativeEntryAssemblerTest
                         .source("native-entry-assembler-test");
     }
 
-    private static NativeCorporateActionEvent event(LedgerEntryType entryType)
+    private static NativeCorporateActionEvent event()
     {
         return NativeCorporateActionEvent.builder() //
-                        .kind(corporateActionKind(entryType)) //
+                        .kind(CorporateActionKind.SPIN_OFF) //
                         .subtype(CorporateActionSubtype.STANDARD) //
-                        .reference(entryType.name() + "-2020") //
+                        .reference(CorporateActionKind.SPIN_OFF.getCode() + "-2020") //
                         .stage(EventStage.SETTLED) //
                         .effectiveDate(LocalDate.of(2020, 9, 28)) //
                         .build();
-    }
-
-    private static CorporateActionKind corporateActionKind(LedgerEntryType entryType)
-    {
-        for (var kind : CorporateActionKind.values())
-            if (kind.getRelatedEntryType().filter(entryType::equals).isPresent())
-                return kind;
-
-        throw new IllegalArgumentException("No corporate action kind for " + entryType);
     }
 
     private static NativeSecurityLeg.Builder sourceLeg(Fixture fixture)

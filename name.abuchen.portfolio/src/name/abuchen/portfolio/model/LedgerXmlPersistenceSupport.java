@@ -241,9 +241,15 @@ public final class LedgerXmlPersistenceSupport
         {
             var entry = new LedgerEntry();
             var updatedAt = reader.getAttribute("updatedAt"); //$NON-NLS-1$
+            var legacySpinOffTypeCode = false;
+            var typeAttribute = reader.getAttribute("type"); //$NON-NLS-1$
 
             readAttribute(reader, "uuid").ifPresent(entry::setUUID); //$NON-NLS-1$
-            readAttribute(reader, "type").map(LedgerEntryType::valueOf).ifPresent(entry::setType); //$NON-NLS-1$
+            if (typeAttribute != null)
+            {
+                entry.setType(LedgerModelLoadSupport.entryTypeFromPersistedCode(typeAttribute));
+                legacySpinOffTypeCode = LedgerModelLoadSupport.isLegacySpinOffTypeCode(typeAttribute);
+            }
             readAttribute(reader, "dateTime").map(LocalDateTime::parse).ifPresent(entry::setDateTime); //$NON-NLS-1$
 
             while (reader.hasMoreChildren())
@@ -253,8 +259,11 @@ public final class LedgerXmlPersistenceSupport
                 switch (reader.getNodeName())
                 {
                     case "uuid" -> entry.setUUID(reader.getValue()); //$NON-NLS-1$
-                    case "type" -> entry.setType((LedgerEntryType) context.convertAnother(entry, //$NON-NLS-1$
-                                    LedgerEntryType.class));
+                    case "type" -> { //$NON-NLS-1$
+                        var typeCode = reader.getValue();
+                        entry.setType(LedgerModelLoadSupport.entryTypeFromPersistedCode(typeCode));
+                        legacySpinOffTypeCode |= LedgerModelLoadSupport.isLegacySpinOffTypeCode(typeCode);
+                    }
                     case "dateTime" -> entry.setDateTime((LocalDateTime) context.convertAnother(entry, //$NON-NLS-1$
                                     LocalDateTime.class));
                     case "updatedAt" -> updatedAt = reader.getValue(); //$NON-NLS-1$
@@ -278,6 +287,9 @@ public final class LedgerXmlPersistenceSupport
 
             if (updatedAt != null)
                 entry.setUpdatedAt(Instant.parse(updatedAt));
+
+            if (legacySpinOffTypeCode)
+                LedgerModelLoadSupport.addLegacySpinOffKindIfMissing(entry);
 
             return entry;
         }

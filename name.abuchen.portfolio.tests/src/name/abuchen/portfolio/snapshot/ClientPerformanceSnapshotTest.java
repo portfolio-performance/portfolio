@@ -342,7 +342,7 @@ public class ClientPerformanceSnapshotTest
 
         LedgerNativeEntryAssembler.forClient(client).spinOff()
                         .metadata(nativeMetadata())
-                        .event(nativeEvent(LedgerEntryType.SPIN_OFF))
+                        .event(nativeEvent(LedgerEntryType.CORPORATE_ACTION))
                         .cashCompensation(NativeCashCompensation.builder() //
                                         .account(account) //
                                         .amount(Money.of(CurrencyUnit.EUR, 5_00)) //
@@ -368,7 +368,7 @@ public class ClientPerformanceSnapshotTest
     {
         Client client = new Client();
         Account account = account();
-        var transaction = ledgerBackedAccountTransaction(LedgerEntryType.SPIN_OFF,
+        var transaction = ledgerBackedAccountTransaction(LedgerEntryType.CORPORATE_ACTION,
                         AccountTransaction.Type.REMOVAL, 5_00);
 
         transaction.addUnit(new Unit(Unit.Type.FEE, Money.of(CurrencyUnit.EUR, 2_00)));
@@ -849,7 +849,7 @@ public class ClientPerformanceSnapshotTest
     private NativeCorporateActionEvent nativeEvent(LedgerEntryType entryType)
     {
         return NativeCorporateActionEvent.builder() //
-                        .kind(CorporateActionKind.valueOf(entryType.name())) //
+                        .kind(CorporateActionKind.SPIN_OFF) //
                         .subtype(CorporateActionSubtype.STANDARD) //
                         .stage(EventStage.SETTLED) //
                         .effectiveDate(LocalDate.of(2011, Month.MARCH, 1)) //

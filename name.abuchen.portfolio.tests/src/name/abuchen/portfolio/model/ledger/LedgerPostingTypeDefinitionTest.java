@@ -155,7 +155,7 @@ public class LedgerPostingTypeDefinitionTest
         var entry = new LedgerEntry("entry-1");
         var posting = new LedgerPosting("posting-1");
 
-        entry.setType(LedgerEntryType.SPIN_OFF);
+        entry.setType(LedgerEntryType.CORPORATE_ACTION);
         entry.setDateTime(LocalDateTime.of(2026, 1, 2, 0, 0));
         posting.setType(LedgerPostingType.CASH);
         posting.setCurrency(CurrencyUnit.EUR);

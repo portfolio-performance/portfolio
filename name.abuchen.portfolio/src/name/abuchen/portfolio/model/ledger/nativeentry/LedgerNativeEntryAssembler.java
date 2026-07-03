@@ -90,7 +90,7 @@ public final class LedgerNativeEntryAssembler
 
     public EntryBuilder spinOff()
     {
-        return forType(LedgerEntryType.SPIN_OFF);
+        return forType(LedgerEntryType.CORPORATE_ACTION);
     }
 
     static LedgerNativeEntryAssemblyException issue(LedgerNativeEntryAssemblyIssue issue, String message)

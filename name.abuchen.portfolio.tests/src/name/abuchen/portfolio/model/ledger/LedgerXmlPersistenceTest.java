@@ -359,9 +359,34 @@ public class LedgerXmlPersistenceTest
         assertFalse(currentXml.contains("<ledger-posting-parameter>"));
         assertFalse(currentXml.contains("ledger-posting-parameter-type"));
         assertFalse(currentXml.contains("LedgerBacked"));
+        assertCurrentCorporateActionType(currentXml);
         assertNoLedgerUuidTruth(currentXml);
         assertTrue(currentXml.contains("<ledger-parameter type=\"CORPORATE_ACTION_LEG\" "
                         + "valueKind=\"STRING\" value=\"SOURCE_SECURITY\"/>"));
+    }
+
+    /**
+     * Verifies that legacy native spin-off XML type codes load into the generic
+     * Corporate Action entry family with the concrete kind parameter.
+     */
+    @Test
+    public void testLegacySpinOffXmlTypeCodeLoadsAsCorporateActionKind() throws Exception
+    {
+        var xml = save(legacyLedgerParameterCompatibilityClient());
+        var legacyXml = replaceCorporateActionTypeWithLegacySpinOff(xml);
+
+        var loaded = load(legacyXml);
+        var entry = loaded.getLedger().getEntries().get(0);
+
+        assertThat(entry.getType(), is(LedgerEntryType.CORPORATE_ACTION));
+        assertThat(parameter(entry.getParameters(), LedgerParameterType.CORPORATE_ACTION_KIND).getValue(),
+                        is(CorporateActionKind.SPIN_OFF.getCode()));
+        assertTrue(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).size() > 0);
+        assertValid(loaded);
+
+        var currentXml = save(loaded);
+
+        assertCurrentCorporateActionType(currentXml);
     }
 
     /**
@@ -629,6 +654,25 @@ public class LedgerXmlPersistenceTest
         assertFalse(replaced.equals(xml));
 
         return replaced;
+    }
+
+    private String replaceCorporateActionTypeWithLegacySpinOff(String xml)
+    {
+        var replaced = xml.replace("type=\"CORPORATE_ACTION\"", "type=\"SPIN_OFF\"");
+
+        if (replaced.equals(xml))
+            replaced = xml.replace("<type>CORPORATE_ACTION</type>", "<type>SPIN_OFF</type>");
+
+        assertFalse(replaced.equals(xml));
+
+        return replaced;
+    }
+
+    private void assertCurrentCorporateActionType(String xml)
+    {
+        assertTrue(xml.contains("type=\"CORPORATE_ACTION\"") || xml.contains("<type>CORPORATE_ACTION</type>"));
+        assertFalse(xml.contains("type=\"SPIN_OFF\""));
+        assertFalse(xml.contains("<type>SPIN_OFF</type>"));
     }
 
     private String replaceRequiredPattern(String xml, String pattern, String replacement)

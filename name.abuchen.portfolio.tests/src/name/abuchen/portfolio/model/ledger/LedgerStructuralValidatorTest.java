@@ -13,7 +13,9 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator.IssueCode;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
+import name.abuchen.portfolio.model.ledger.configuration.CorporateActionKind;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
+import name.abuchen.portfolio.model.ledger.configuration.LedgerParameterType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
@@ -146,15 +148,17 @@ public class LedgerStructuralValidatorTest
     @Test
     public void testCorporateActionLegCompletenessIsValidated()
     {
-        assertOK(LedgerStructuralValidator.validate(ledger(nativeEntry(LedgerEntryType.SPIN_OFF))));
+        assertOK(LedgerStructuralValidator.validate(ledger(nativeEntry(LedgerEntryType.CORPORATE_ACTION))));
     }
 
     @Test
     public void testSpinOffAllowsNoCorporateActionPrimaryLegs()
     {
         var entry = new LedgerEntry();
-        entry.setType(LedgerEntryType.SPIN_OFF);
+        entry.setType(LedgerEntryType.CORPORATE_ACTION);
         entry.setDateTime(LocalDateTime.of(2026, 1, 1, 10, 0));
+        entry.addParameter(LedgerParameter.ofCode(LedgerParameterType.CORPORATE_ACTION_KIND,
+                        CorporateActionKind.SPIN_OFF));
 
         assertOK(LedgerStructuralValidator.validate(ledger(entry)));
     }
@@ -162,7 +166,7 @@ public class LedgerStructuralValidatorTest
     @Test
     public void testDuplicateCorporateActionLegWithoutLocalKeyIsRejected()
     {
-        var entry = nativeEntry(LedgerEntryType.SPIN_OFF);
+        var entry = nativeEntry(LedgerEntryType.CORPORATE_ACTION);
         var duplicate = securityPosting("duplicate-target", LedgerPostingDirection.INBOUND, //$NON-NLS-1$
                         CorporateActionLeg.TARGET_SECURITY);
         duplicate.setLocalKey(null);
@@ -174,7 +178,7 @@ public class LedgerStructuralValidatorTest
     @Test
     public void testSpinOffAcceptsRepeatedTargetLegsWithDistinctLocalKeys()
     {
-        var entry = nativeEntry(LedgerEntryType.SPIN_OFF);
+        var entry = nativeEntry(LedgerEntryType.CORPORATE_ACTION);
         var target = posting(entry, CorporateActionLeg.TARGET_SECURITY);
         var duplicate = securityPosting("target-2", LedgerPostingDirection.INBOUND, //$NON-NLS-1$
                         CorporateActionLeg.TARGET_SECURITY);
@@ -190,7 +194,7 @@ public class LedgerStructuralValidatorTest
     @Test
     public void testSpinOffRejectsRepeatedTargetLegsWithDuplicateLocalKey()
     {
-        var entry = nativeEntry(LedgerEntryType.SPIN_OFF);
+        var entry = nativeEntry(LedgerEntryType.CORPORATE_ACTION);
         var target = posting(entry, CorporateActionLeg.TARGET_SECURITY);
         var duplicate = securityPosting("target-1", LedgerPostingDirection.INBOUND, //$NON-NLS-1$
                         CorporateActionLeg.TARGET_SECURITY);
@@ -204,7 +208,7 @@ public class LedgerStructuralValidatorTest
     @Test
     public void testSpinOffWithoutTargetLegIsAccepted()
     {
-        var entry = nativeEntry(LedgerEntryType.SPIN_OFF);
+        var entry = nativeEntry(LedgerEntryType.CORPORATE_ACTION);
         entry.removePosting(posting(entry, CorporateActionLeg.TARGET_SECURITY));
 
         assertOK(LedgerStructuralValidator.validate(ledger(entry)));
@@ -213,7 +217,7 @@ public class LedgerStructuralValidatorTest
     @Test
     public void testSpinOffAcceptsRepeatedCashCompensationWithDistinctLocalKeys()
     {
-        var entry = nativeEntry(LedgerEntryType.SPIN_OFF);
+        var entry = nativeEntry(LedgerEntryType.CORPORATE_ACTION);
 
         entry.addPosting(cashCompensationPosting("cash-1")); //$NON-NLS-1$
         entry.addPosting(cashCompensationPosting("cash-2")); //$NON-NLS-1$
@@ -224,7 +228,7 @@ public class LedgerStructuralValidatorTest
     @Test
     public void testSpinOffRejectsRepeatedCashCompensationWithDuplicateLocalKey()
     {
-        var entry = nativeEntry(LedgerEntryType.SPIN_OFF);
+        var entry = nativeEntry(LedgerEntryType.CORPORATE_ACTION);
 
         entry.addPosting(cashCompensationPosting("cash-1")); //$NON-NLS-1$
         entry.addPosting(cashCompensationPosting("cash-1")); //$NON-NLS-1$
@@ -296,7 +300,9 @@ public class LedgerStructuralValidatorTest
 
         switch (type)
         {
-            case SPIN_OFF -> {
+            case CORPORATE_ACTION -> {
+                entry.addParameter(LedgerParameter.ofCode(LedgerParameterType.CORPORATE_ACTION_KIND,
+                                CorporateActionKind.SPIN_OFF));
                 entry.addPosting(securityPosting(LedgerProjectionRole.OLD_SECURITY_LEG.name(),
                                 LedgerPostingDirection.OUTBOUND, CorporateActionLeg.SOURCE_SECURITY));
                 entry.addPosting(securityPosting(LedgerProjectionRole.NEW_SECURITY_LEG.name(),

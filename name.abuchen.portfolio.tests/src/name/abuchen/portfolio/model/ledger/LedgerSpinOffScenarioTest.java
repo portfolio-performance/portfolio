@@ -84,10 +84,10 @@ public class LedgerSpinOffScenarioTest
     @Test
     public void testSpinOffUsesLedgerNativeTargetedPolicy()
     {
-        assertFalse(LedgerEntryType.SPIN_OFF.isLegacyFixedShape());
-        assertTrue(LedgerEntryType.SPIN_OFF.isLedgerNativeTargeted());
-        assertTrue(LedgerEntryType.SPIN_OFF.requiresTargetedDerivedDescriptors());
-        assertTrue(LedgerEntryType.SPIN_OFF.usesSignedTargetedProjectionFacts());
+        assertFalse(LedgerEntryType.CORPORATE_ACTION.isLegacyFixedShape());
+        assertTrue(LedgerEntryType.CORPORATE_ACTION.isLedgerNativeTargeted());
+        assertTrue(LedgerEntryType.CORPORATE_ACTION.requiresTargetedDerivedDescriptors());
+        assertTrue(LedgerEntryType.CORPORATE_ACTION.usesSignedTargetedProjectionFacts());
     }
 
     /**
@@ -239,8 +239,10 @@ public class LedgerSpinOffScenarioTest
 
         client.addPortfolio(portfolio);
         client.addSecurity(security);
-        entry.setType(LedgerEntryType.SPIN_OFF);
+        entry.setType(LedgerEntryType.CORPORATE_ACTION);
         entry.setDateTime(SPIN_OFF_DATE);
+        entry.addParameter(LedgerParameter.ofCode(LedgerParameterType.CORPORATE_ACTION_KIND,
+                        CorporateActionKind.SPIN_OFF));
 
         var posting = invalidTargetSecurityPosting(portfolio, security, Values.Share.factorize(10),
                         Values.Amount.factorize(100), CorporateActionLeg.TARGET_SECURITY.getCode(), security,
@@ -416,7 +418,7 @@ public class LedgerSpinOffScenarioTest
 
     private LedgerEntry spinOffEntry(Client client)
     {
-        return client.getLedger().getEntries().stream().filter(entry -> entry.getType() == LedgerEntryType.SPIN_OFF)
+        return client.getLedger().getEntries().stream().filter(entry -> entry.getType() == LedgerEntryType.CORPORATE_ACTION)
                         .filter(entry -> SPIN_OFF_DATE.equals(entry.getDateTime())).findFirst().orElseThrow();
     }
 
@@ -548,7 +550,7 @@ public class LedgerSpinOffScenarioTest
         assertThat(client.getSecurities().stream().filter(security -> "Siemens Energy AG".equals(security.getName()))
                         .count(), is(1L));
         assertThat(client.getPortfolios().get(0).getReferenceAccount(), is(client.getAccounts().get(0)));
-        assertThat(entry.getType(), is(LedgerEntryType.SPIN_OFF));
+        assertThat(entry.getType(), is(LedgerEntryType.CORPORATE_ACTION));
         assertThat(entry.getUpdatedAt(), is(UPDATED_AT));
         assertThat(entry.getPostings().size(), is(6));
         var oldSecurityLeg = securityPosting(entry, siemens(client), CorporateActionLeg.SOURCE_SECURITY.getCode(),

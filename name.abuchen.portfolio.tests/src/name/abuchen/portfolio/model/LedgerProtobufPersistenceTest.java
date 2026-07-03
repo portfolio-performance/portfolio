@@ -47,6 +47,7 @@ import name.abuchen.portfolio.model.ledger.compatibility.LedgerPortfolioTransfer
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerSecurityQuantity;
 import name.abuchen.portfolio.model.ledger.compatibility.LedgerTransactionCreator;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
+import name.abuchen.portfolio.model.ledger.configuration.CorporateActionKind;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerParameterType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
@@ -604,6 +605,32 @@ public class LedgerProtobufPersistenceTest
     }
 
     /**
+     * Verifies that legacy native spin-off protobuf type codes load into the generic
+     * Corporate Action entry family with the concrete kind parameter.
+     */
+    @Test
+    public void testLegacySpinOffProtobufTypeCodeLoadsAsCorporateActionKind() throws IOException
+    {
+        var fixture = fixture();
+        addNativeEntry(fixture, LedgerEntryType.CORPORATE_ACTION);
+        var proto = saveProto(fixture.client()).toBuilder();
+
+        proto.getLedgerBuilder().getEntriesBuilder(0).setTypeCode("SPIN_OFF").clearParameters();
+
+        var loaded = load(wrap(proto.build()));
+        var entry = loaded.getLedger().getEntries().get(0);
+
+        assertThat(entry.getType(), is(LedgerEntryType.CORPORATE_ACTION));
+        assertThat(entry.getParameters().stream().filter(
+                        parameter -> parameter.getType() == LedgerParameterType.CORPORATE_ACTION_KIND)
+                        .map(LedgerParameter::getValue).findFirst().orElseThrow(),
+                        is(CorporateActionKind.SPIN_OFF.getCode()));
+        assertThat(saveProto(loaded).getLedger().getEntries(0).getTypeCode(),
+                        is(LedgerEntryType.CORPORATE_ACTION.getCode()));
+        assertValid(loaded);
+    }
+
+    /**
      * Verifies that an unknown ledger posting type code fails with a clear protobuf load error.
      * Unsupported posting vocabulary must not be guessed during load.
      */
@@ -699,7 +726,7 @@ public class LedgerProtobufPersistenceTest
     @Test
     public void testNativeCorporateActionsRoundtripAsSemanticLedgerTruth() throws IOException
     {
-        for (var entryType : List.of(LedgerEntryType.SPIN_OFF))
+        for (var entryType : List.of(LedgerEntryType.CORPORATE_ACTION))
         {
             var fixture = fixture();
             addNativeEntry(fixture, entryType);
@@ -1082,10 +1109,12 @@ public class LedgerProtobufPersistenceTest
         entry.setDateTime(DATE_TIME);
         entry.setNote("Native corporate action");
         entry.setSource("protobuf-test");
+        entry.addParameter(LedgerParameter.ofCode(LedgerParameterType.CORPORATE_ACTION_KIND,
+                        CorporateActionKind.SPIN_OFF));
 
         switch (entryType)
         {
-            case SPIN_OFF:
+            case CORPORATE_ACTION:
                 entry.addPosting(nativeSecurityPosting(fixture, LedgerPostingType.SECURITY,
                                 CorporateActionLeg.SOURCE_SECURITY, fixture.security(), LedgerPostingDirection.OUTBOUND,
                                 LedgerProjectionRole.OLD_SECURITY_LEG));
@@ -1104,7 +1133,7 @@ public class LedgerProtobufPersistenceTest
     {
         return switch (entryType)
         {
-            case SPIN_OFF -> List.of(PTransaction.Type.OUTBOUND_DELIVERY, PTransaction.Type.INBOUND_DELIVERY);
+            case CORPORATE_ACTION -> List.of(PTransaction.Type.OUTBOUND_DELIVERY, PTransaction.Type.INBOUND_DELIVERY);
             default -> throw new IllegalArgumentException(entryType.name());
         };
     }

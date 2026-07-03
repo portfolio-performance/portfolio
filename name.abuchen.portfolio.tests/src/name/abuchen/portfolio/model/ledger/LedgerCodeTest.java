@@ -88,37 +88,16 @@ public class LedgerCodeTest
     }
 
     /**
-     * Checks the ledger rule scenario: corporate action kind codes map to ledger native entry types.
-     * Invalid entry shapes must be rejected before they can be stored.
-     * This keeps higher-level Ledger-V6 transaction flows predictable.
+     * Checks the ledger rule scenario: corporate action kinds classify the generic
+     * native corporate action entry family.
      */
     @Test
-    public void testCorporateActionKindCodesMapToLedgerNativeEntryTypes()
+    public void testCorporateActionKindsClassifyGenericNativeEntryType()
     {
-        var relatedTypes = EnumSet.noneOf(LedgerEntryType.class);
-
-        for (var kind : CorporateActionKind.values())
-        {
-            if (kind == CorporateActionKind.OTHER)
-            {
-                assertTrue(kind.getRelatedEntryType().isEmpty());
-                continue;
-            }
-
-            var entryType = kind.getRelatedEntryType().orElseThrow();
-
-            assertTrue(entryType.isLedgerNativeTargeted());
-            assertThat(kind.getCode(), is(entryType.name()));
-            assertTrue(entryType.name(), relatedTypes.add(entryType));
-        }
-
-        var nativeTypes = EnumSet.noneOf(LedgerEntryType.class);
-
-        for (var entryType : LedgerEntryType.values())
-            if (entryType.isLedgerNativeTargeted())
-                nativeTypes.add(entryType);
-
-        assertThat(relatedTypes, is(nativeTypes));
+        assertTrue(LedgerEntryType.CORPORATE_ACTION.isLedgerNativeTargeted());
+        assertThat(List.of(CorporateActionKind.values()), is(List.of(CorporateActionKind.SPIN_OFF)));
+        assertThat(CorporateActionKind.fromCode("SPIN_OFF").orElseThrow(), is(CorporateActionKind.SPIN_OFF));
+        assertTrue(CorporateActionKind.fromCode("OTHER").isEmpty());
     }
 
     private List<LedgerCode> allCodes()
