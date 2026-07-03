@@ -35,6 +35,14 @@ import name.abuchen.portfolio.util.Interval;
     {
         Map<Security, T> transactions = initRecords(type);
 
+        DistributionBasisCache distributionBasisCache = new DistributionBasisCache();
+        transactions.values().forEach(record -> record.setDistributionBasisCache(distributionBasisCache));
+        distributionBasisCache.setParentCostTrigger(security -> {
+            T parentRecord = transactions.get(security);
+            if (parentRecord != null)
+                parentRecord.ensureCostComputed();
+        });
+
         for (Account account : client.getAccounts())
         {
             extractSecurityRelatedAccountTransactions(account, transactions);
@@ -55,6 +63,14 @@ import name.abuchen.portfolio.util.Interval;
     public List<T> create(Class<T> type, ClientSnapshot valuationAtStart, ClientSnapshot valuationAtEnd)
     {
         Map<Security, T> transactions = initRecords(type);
+
+        DistributionBasisCache distributionBasisCache = new DistributionBasisCache();
+        transactions.values().forEach(record -> record.setDistributionBasisCache(distributionBasisCache));
+        distributionBasisCache.setParentCostTrigger(security -> {
+            T parentRecord = transactions.get(security);
+            if (parentRecord != null)
+                parentRecord.ensureCostComputed();
+        });
 
         for (Account account : client.getAccounts())
             extractSecurityRelatedAccountTransactions(account, transactions);

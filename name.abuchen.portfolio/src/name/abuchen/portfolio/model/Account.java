@@ -25,6 +25,7 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
     public Account()
     {
         this.uuid = UUID.randomUUID().toString();
+        this.updatedAt = Instant.now();
     }
 
     public Account(String name)
@@ -37,6 +38,7 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
     {
         this.uuid = uuid;
         this.name = name;
+        this.updatedAt = Instant.now();
     }
 
     @Override

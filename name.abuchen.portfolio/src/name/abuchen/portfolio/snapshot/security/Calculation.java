@@ -13,6 +13,18 @@ import name.abuchen.portfolio.money.CurrencyConverter;
     private Security security;
     private String termCurrency;
 
+    protected DistributionBasisCache distributionBasisCache = new DistributionBasisCache();
+
+    protected DistributionBasisCache getDistributionBasisCache()
+    {
+        return distributionBasisCache;
+    }
+
+    public void setDistributionBasisCache(DistributionBasisCache distributionBasisCache)
+    {
+        this.distributionBasisCache = distributionBasisCache;
+    }
+
     /**
      * Prepare calculations.
      */
@@ -106,11 +118,18 @@ import name.abuchen.portfolio.money.CurrencyConverter;
     public static <T extends Calculation> T perform(Class<T> type, CurrencyConverter converter, Security security,
                     List<CalculationLineItem> lineItems)
     {
+        return perform(type, converter, security, lineItems, new DistributionBasisCache());
+    }
+
+    public static <T extends Calculation> T perform(Class<T> type, CurrencyConverter converter, Security security,
+                    List<CalculationLineItem> lineItems, DistributionBasisCache cache)
+    {
         try
         {
             T thing = type.getDeclaredConstructor().newInstance();
             thing.setSecurity(security);
             thing.setTermCurrency(converter.getTermCurrency());
+            thing.setDistributionBasisCache(cache);
             thing.prepare();
             thing.visitAll(converter, lineItems);
             thing.finish(converter, lineItems);

@@ -15,3 +15,4 @@ name.abuchen.portfolio.checks.impl.FixDepositsWithSecurityCheck
 name.abuchen.portfolio.checks.impl.NegativeExchangeRateCheck
 name.abuchen.portfolio.checks.impl.MissingTransactionDateCheck
 name.abuchen.portfolio.checks.impl.OnlyAccountTransactionsWithSecurityCanHaveExDateCheck
+name.abuchen.portfolio.checks.impl.SpinOffConsistencyCheck

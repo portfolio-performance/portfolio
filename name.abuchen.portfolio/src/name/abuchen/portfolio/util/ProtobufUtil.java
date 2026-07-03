@@ -35,7 +35,8 @@ public class ProtobufUtil
 
     public static Timestamp asUpdatedAtTimestamp(Instant instant)
     {
-        return Timestamp.newBuilder().setSeconds(instant.getEpochSecond()).setNanos(instant.getNano()).build();
+        Instant value = instant != null ? instant : Instant.now();
+        return Timestamp.newBuilder().setSeconds(value.getEpochSecond()).setNanos(value.getNano()).build();
     }
 
     public static Instant fromUpdatedAtTimestamp(Timestamp ts)

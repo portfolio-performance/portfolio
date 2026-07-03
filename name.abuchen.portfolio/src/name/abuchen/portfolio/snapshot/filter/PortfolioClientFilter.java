@@ -173,6 +173,8 @@ public class PortfolioClientFilter implements ClientFilter
                     break;
                 case DELIVERY_INBOUND:
                 case DELIVERY_OUTBOUND:
+                case DISTRIBUTION_INBOUND:
+                case DISTRIBUTION_OUTBOUND:
                     pseudoPortfolio.internalAddTransaction(t);
                     break;
                 default:

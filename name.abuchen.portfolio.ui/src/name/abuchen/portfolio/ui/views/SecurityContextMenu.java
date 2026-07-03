@@ -17,6 +17,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.CorporateActionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
@@ -81,6 +82,14 @@ public class SecurityContextMenu
                         .with(portfolio) //
                         .with(security) //
                         .addTo(manager);
+
+        if (securities.size() == 1)
+        {
+            new OpenDialogAction(owner, Messages.SecurityMenuSpinOff + "...") //$NON-NLS-1$
+                            .type(CorporateActionDialog.class) //
+                            .with(security) //
+                            .addTo(manager);
+        }
 
         new OpenDialogAction(owner, Messages.SecurityMenuDividends + "...") //$NON-NLS-1$
                         .type(AccountTransactionDialog.class) //

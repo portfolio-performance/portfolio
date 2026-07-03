@@ -115,6 +115,22 @@ private static final long serialVersionUID = 0L;
      * <code>FEE_REFUND = 14;</code>
      */
     FEE_REFUND(14),
+    /**
+     * <code>DISTRIBUTION_INBOUND = 15;</code>
+     */
+    DISTRIBUTION_INBOUND(15),
+    /**
+     * <code>DISTRIBUTION_OUTBOUND = 16;</code>
+     */
+    DISTRIBUTION_OUTBOUND(16),
+    /**
+     * <code>DISTRIBUTION_FRACTION_SALE = 17;</code>
+     */
+    DISTRIBUTION_FRACTION_SALE(17),
+    /**
+     * <code>DISTRIBUTION_CASH_IN_LIEU = 18;</code>
+     */
+    DISTRIBUTION_CASH_IN_LIEU(18),
     UNRECOGNIZED(-1),
     ;
 
@@ -178,6 +194,22 @@ private static final long serialVersionUID = 0L;
      * <code>FEE_REFUND = 14;</code>
      */
     public static final int FEE_REFUND_VALUE = 14;
+    /**
+     * <code>DISTRIBUTION_INBOUND = 15;</code>
+     */
+    public static final int DISTRIBUTION_INBOUND_VALUE = 15;
+    /**
+     * <code>DISTRIBUTION_OUTBOUND = 16;</code>
+     */
+    public static final int DISTRIBUTION_OUTBOUND_VALUE = 16;
+    /**
+     * <code>DISTRIBUTION_FRACTION_SALE = 17;</code>
+     */
+    public static final int DISTRIBUTION_FRACTION_SALE_VALUE = 17;
+    /**
+     * <code>DISTRIBUTION_CASH_IN_LIEU = 18;</code>
+     */
+    public static final int DISTRIBUTION_CASH_IN_LIEU_VALUE = 18;
 
 
     public final int getNumber() {
@@ -219,6 +251,10 @@ private static final long serialVersionUID = 0L;
         case 12: return TAX_REFUND;
         case 13: return FEE;
         case 14: return FEE_REFUND;
+        case 15: return DISTRIBUTION_INBOUND;
+        case 16: return DISTRIBUTION_OUTBOUND;
+        case 17: return DISTRIBUTION_FRACTION_SALE;
+        case 18: return DISTRIBUTION_CASH_IN_LIEU;
         default: return null;
       }
     }

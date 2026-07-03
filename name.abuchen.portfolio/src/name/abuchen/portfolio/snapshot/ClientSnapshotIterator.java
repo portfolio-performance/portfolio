@@ -120,12 +120,26 @@ import name.abuchen.portfolio.money.Values;
 
             if (price.getValue() == 0L)
             {
-                // try to fallback to the price of the last // transaction
-                PortfolioTransaction last = position.transactions.get(position.transactions.size() - 1);
-                price = new SecurityPrice(last.getDateTime().toLocalDate(),
-                                last.getGrossPricePerShare(converter.with(position.security.getCurrencyCode()))
-                                                .getAmount());
+                // fall back to the price of the last transaction that carries a
+                // meaningful per-share price; skip shares-0 legs (e.g. a
+                // DISTRIBUTION_OUTBOUND spin-off source leg) which would
+                // otherwise value a still-held position at zero
+                PortfolioTransaction lastPriced = null;
+                for (int i = position.transactions.size() - 1; i >= 0; i--)
+                {
+                    var candidate = position.transactions.get(i);
+                    if (candidate.getShares() == 0)
+                        continue;
+                    lastPriced = candidate;
+                    break;
+                }
 
+                if (lastPriced != null)
+                {
+                    price = new SecurityPrice(lastPriced.getDateTime().toLocalDate(),
+                                    lastPriced.getGrossPricePerShare(converter.with(position.security.getCurrencyCode()))
+                                                    .getAmount());
+                }
             }
 
             long marketValue = BigDecimal.valueOf(position.shares) //

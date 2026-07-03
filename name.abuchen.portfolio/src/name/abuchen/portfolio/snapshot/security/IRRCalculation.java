@@ -77,11 +77,13 @@ import name.abuchen.portfolio.money.Values;
             case BUY:
             case DELIVERY_INBOUND:
             case TRANSFER_IN:
+            case DISTRIBUTION_INBOUND:
                 values.add((-amount + taxes) / Values.Amount.divider());
                 break;
             case SELL:
             case DELIVERY_OUTBOUND:
             case TRANSFER_OUT:
+            case DISTRIBUTION_OUTBOUND:
                 values.add((amount + taxes) / Values.Amount.divider());
                 break;
             default:

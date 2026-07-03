@@ -31,9 +31,10 @@ public class Client
         String WATCHLISTS = "watchlists"; //$NON-NLS-1$
     }
 
-    public static final int CURRENT_VERSION = 69;
+    public static final int CURRENT_VERSION = 71;
     public static final int VERSION_WITH_CURRENCY_SUPPORT = 29;
     public static final int VERSION_WITH_UNIQUE_FILTER_KEY = 57;
+    public static final int VERSION_WITH_CORPORATE_ACTIONS = 71;
 
     private transient PropertyChangeSupport propertyChangeSupport; // NOSONAR
 
@@ -62,6 +63,7 @@ public class Client
     private List<Account> accounts = new ArrayList<>();
     private List<Portfolio> portfolios = new ArrayList<>();
     private List<InvestmentPlan> plans;
+    private List<CorporateActionEntry> corporateActions;
     private List<Taxonomy> taxonomies;
     private List<Dashboard> dashboards;
 
@@ -105,6 +107,9 @@ public class Client
 
         if (plans == null)
             plans = new ArrayList<>();
+
+        if (corporateActions == null)
+            corporateActions = new ArrayList<>();
 
         if (taxonomies == null)
             taxonomies = new ArrayList<>();
@@ -206,6 +211,21 @@ public class Client
     public void removePlan(InvestmentPlan plan)
     {
         plans.remove(plan);
+    }
+
+    public List<CorporateActionEntry> getCorporateActions()
+    {
+        return Collections.unmodifiableList(corporateActions);
+    }
+
+    public void addCorporateAction(CorporateActionEntry entry)
+    {
+        corporateActions.add(entry);
+    }
+
+    public void removeCorporateAction(CorporateActionEntry entry)
+    {
+        corporateActions.remove(entry);
     }
 
     public List<Security> getSecurities()

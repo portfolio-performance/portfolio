@@ -15,10 +15,14 @@ import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CorporateActionEntry;
+import name.abuchen.portfolio.model.CorporateActionEntry.LegRole;
 import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
@@ -242,5 +246,153 @@ public class CapitalGainsCalculationTest
         assertThat(realizedUsingMovingAverage.getForexCaptialGains(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(-97.54))));
 
+    }
+
+    @Test
+    public void testSpinOffDistributionCapitalGains()
+    {
+        Client client = new Client();
+
+        // parent: 100 sh @ 5,000 basis; end price 50 -> end value 5,000
+        Security parent = new SecurityBuilder() //
+                        .addPrice("2010-12-01", Values.Quote.factorize(50)) //
+                        .addTo(client);
+        // spinco: 100 sh derived basis 1,250; end price 20 -> end value 2,000
+        Security spinco = new SecurityBuilder() //
+                        .addPrice("2010-12-01", Values.Quote.factorize(20)) //
+                        .addTo(client);
+
+        Portfolio portfolio = new PortfolioBuilder() //
+                        .buy(parent, "2010-01-01", Values.Share.factorize(100), Values.Amount.factorize(5000)) //
+                        .addTo(client);
+
+        var exDate = LocalDateTime.parse("2010-06-01T00:00");
+
+        // source leg: 25% of parent basis leaves, shares unchanged
+        var source = new PortfolioTransaction();
+        source.setType(PortfolioTransaction.Type.DISTRIBUTION_OUTBOUND);
+        source.setDateTime(exDate);
+        source.setSecurity(parent);
+        source.setShares(0);
+        source.setCurrencyCode(CurrencyUnit.EUR);
+        source.setAmount(Values.Amount.factorize(2000));
+
+        // target leg: 100 spinco shares received, basis derived from parent
+        var target = new PortfolioTransaction();
+        target.setType(PortfolioTransaction.Type.DISTRIBUTION_INBOUND);
+        target.setDateTime(exDate);
+        target.setSecurity(spinco);
+        target.setShares(Values.Share.factorize(100));
+        target.setCurrencyCode(CurrencyUnit.EUR);
+        target.setAmount(Values.Amount.factorize(2000));
+
+        CorporateActionEntry entry = new CorporateActionEntry();
+        entry.setBasisRatio(new BigDecimal("0.25"));
+        entry.addLeg(portfolio, source, LegRole.SOURCE);
+        entry.addLeg(portfolio, target, LegRole.TARGET);
+
+        portfolio.addTransaction(source);
+        portfolio.addTransaction(target);
+
+        var interval = Interval.of(LocalDate.parse("2009-12-31"), LocalDate.parse("2010-12-31"));
+        LazySecurityPerformanceSnapshot snapshot = LazySecurityPerformanceSnapshot.create(client,
+                        new TestCurrencyConverter(), interval);
+
+        LazySecurityPerformanceRecord parentRecord = snapshot.getRecord(parent)
+                        .orElseThrow(IllegalArgumentException::new);
+        LazySecurityPerformanceRecord spincoRecord = snapshot.getRecord(spinco)
+                        .orElseThrow(IllegalArgumentException::new);
+
+        Money zero = Money.of(CurrencyUnit.EUR, 0);
+
+        // the distribution legs themselves produce no realized gain
+        assertThat(parentRecord.getRealizedCapitalGains(CostMethod.FIFO).getCapitalGains(), is(zero));
+        assertThat(parentRecord.getRealizedCapitalGains(CostMethod.MOVING_AVERAGE).getCapitalGains(), is(zero));
+        assertThat(spincoRecord.getRealizedCapitalGains(CostMethod.FIFO).getCapitalGains(), is(zero));
+        assertThat(spincoRecord.getRealizedCapitalGains(CostMethod.MOVING_AVERAGE).getCapitalGains(), is(zero));
+
+        // parent unrealized gain reflects the reduced basis: 5,000 - 3,750 = 1,250
+        Money parentGain = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1250));
+        assertThat(parentRecord.getUnrealizedCapitalGains(CostMethod.FIFO).getCapitalGains(), is(parentGain));
+        assertThat(parentRecord.getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE).getCapitalGains(),
+                        is(parentGain));
+
+        // spinco unrealized gain reflects the derived basis: 2,000 - 1,250 = 750
+        Money spincoGain = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(750));
+        assertThat(spincoRecord.getUnrealizedCapitalGains(CostMethod.FIFO).getCapitalGains(), is(spincoGain));
+        assertThat(spincoRecord.getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE).getCapitalGains(),
+                        is(spincoGain));
+    }
+
+    /**
+     * Deferred item #3: FIFO vs moving-average derived basis at the
+     * multi-lot boundary. Two differently-priced parent lots force FIFO
+     * (per-lot) and moving average (aggregate) to split the removed basis
+     * differently.
+     */
+    @Test
+    public void testSpinOffTwoLotsPerVariantDerivation()
+    {
+        Client client = new Client();
+
+        Security parent = new SecurityBuilder().addTo(client);
+        // seed a spinco end-of-period quote of 120.00 per share
+        Security spinco = new SecurityBuilder().addPrice("2010-12-31", Values.Quote.factorize(120)).addTo(client);
+
+        // two lots of 50 shares @ 100.01 -> total basis 200.02 (100 shares)
+        Portfolio portfolio = new PortfolioBuilder() //
+                        .buy(parent, "2010-01-01", Values.Share.factorize(50), Values.Amount.factorize(100.01)) //
+                        .buy(parent, "2010-02-01", Values.Share.factorize(50), Values.Amount.factorize(100.01)) //
+                        .addTo(client);
+
+        var exDate = LocalDateTime.parse("2010-06-01T00:00");
+
+        var source = new PortfolioTransaction();
+        source.setType(PortfolioTransaction.Type.DISTRIBUTION_OUTBOUND);
+        source.setDateTime(exDate);
+        source.setSecurity(parent);
+        source.setShares(0);
+        source.setCurrencyCode(CurrencyUnit.EUR);
+        source.setAmount(Values.Amount.factorize(50));
+
+        var target = new PortfolioTransaction();
+        target.setType(PortfolioTransaction.Type.DISTRIBUTION_INBOUND);
+        target.setDateTime(exDate);
+        target.setSecurity(spinco);
+        target.setShares(Values.Share.factorize(1)); // 1 spinco share received
+        target.setCurrencyCode(CurrencyUnit.EUR);
+        target.setAmount(Values.Amount.factorize(50));
+
+        CorporateActionEntry entry = new CorporateActionEntry();
+        entry.setBasisRatio(new BigDecimal("0.5"));
+        entry.addLeg(portfolio, source, LegRole.SOURCE);
+        entry.addLeg(portfolio, target, LegRole.TARGET);
+        portfolio.addTransaction(source);
+        portfolio.addTransaction(target);
+
+        var interval = Interval.of(LocalDate.parse("2009-12-31"), LocalDate.parse("2010-12-31"));
+        LazySecurityPerformanceSnapshot snapshot = LazySecurityPerformanceSnapshot.create(client,
+                        new TestCurrencyConverter(), interval);
+
+        LazySecurityPerformanceRecord spincoRecord = snapshot.getRecord(spinco)
+                        .orElseThrow(IllegalArgumentException::new);
+
+        // no realized gain from the receipt itself, either variant
+        assertThat(spincoRecord.getRealizedCapitalGains(CostMethod.FIFO).getCapitalGains(),
+                        is(Money.of(CurrencyUnit.EUR, 0)));
+        assertThat(spincoRecord.getRealizedCapitalGains(CostMethod.MOVING_AVERAGE).getCapitalGains(),
+                        is(Money.of(CurrencyUnit.EUR, 0)));
+
+        // derived spinco basis: FIFO per-lot 100.02, moving average aggregate 100.01
+        assertThat(spincoRecord.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.02))));
+        assertThat(spincoRecord.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.01))));
+
+        // unrealized gain = end market value (120.00) - derived basis, per variant
+        assertThat(spincoRecord.getUnrealizedCapitalGains(CostMethod.FIFO).getCapitalGains(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(19.98))));
+        assertThat(spincoRecord.getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE).getCapitalGains(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(19.99))));
     }
 }

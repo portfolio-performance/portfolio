@@ -15,6 +15,8 @@ import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CorporateActionEntry;
+import name.abuchen.portfolio.model.CorporateActionEntry.LegRole;
 import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -65,6 +67,45 @@ public class CostCalculationTest
 
         assertThat(cost.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5360.04))));
+    }
+
+    @Test
+    public void testDistributionOutboundReducesBasisProportionally()
+    {
+        Client client = new Client();
+
+        Security security = new SecurityBuilder() //
+                        .addTo(client);
+
+        // 100 shares, cost basis 5,000.00
+        Portfolio portfolio = new PortfolioBuilder() //
+                        .buy(security, "2010-01-01", Values.Share.factorize(100), Values.Amount.factorize(5000)) //
+                        .addTo(client);
+
+        // spin-off source leg: 25% of basis leaves, shares unchanged
+        PortfolioTransaction distribution = new PortfolioTransaction();
+        distribution.setType(PortfolioTransaction.Type.DISTRIBUTION_OUTBOUND);
+        distribution.setDateTime(LocalDateTime.parse("2010-06-01T00:00"));
+        distribution.setSecurity(security);
+        distribution.setShares(0);
+        distribution.setCurrencyCode(CurrencyUnit.EUR);
+        distribution.setAmount(Values.Amount.factorize(2000)); // market value; NOT the basis
+
+        CorporateActionEntry entry = new CorporateActionEntry();
+        entry.setBasisRatio(new BigDecimal("0.25")); // 25% of basis leaves
+        entry.addLeg(portfolio, distribution, LegRole.SOURCE);
+        portfolio.addTransaction(distribution);
+
+        CostCalculation cost = new CostCalculation();
+        cost.setTermCurrency(CurrencyUnit.EUR);
+        cost.visitAll(new TestCurrencyConverter(), portfolio.getTransactions().stream()
+                        .map(t -> CalculationLineItem.of(portfolio, t)).collect(Collectors.toList()));
+
+        // 5,000 - 25% = 3,750 basis remaining; shares still 100
+        assertThat(cost.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3750))));
+        assertThat(cost.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3750))));
     }
 
     @Test
@@ -198,6 +239,68 @@ public class CostCalculationTest
         assertThat(cost.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, 0L)));
         assertThat(cost.getFifoCostTrail(), is(TrailRecord.empty()));
         assertThat(cost.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, 0L)));
+    }
+
+    @Test
+    public void testDistributionMultiLotConservationIsExact()
+    {
+        Client client = new Client();
+
+        Security parent = new SecurityBuilder().addTo(client);
+        Security spinco = new SecurityBuilder().addTo(client);
+
+        // two separate lots of 50 shares @ 100.01 each -> total basis 200.02
+        Portfolio portfolio = new PortfolioBuilder() //
+                        .buy(parent, "2010-01-01", Values.Share.factorize(50), Values.Amount.factorize(100.01)) //
+                        .buy(parent, "2010-02-01", Values.Share.factorize(50), Values.Amount.factorize(100.01)) //
+                        .addTo(client);
+
+        var exDate = LocalDateTime.parse("2010-06-01T00:00");
+
+        var source = new PortfolioTransaction();
+        source.setType(PortfolioTransaction.Type.DISTRIBUTION_OUTBOUND);
+        source.setDateTime(exDate);
+        source.setSecurity(parent);
+        source.setShares(0);
+        source.setCurrencyCode(CurrencyUnit.EUR);
+        source.setAmount(Values.Amount.factorize(50));
+
+        var target = new PortfolioTransaction();
+        target.setType(PortfolioTransaction.Type.DISTRIBUTION_INBOUND);
+        target.setDateTime(exDate);
+        target.setSecurity(spinco);
+        target.setShares(Values.Share.factorize(50));
+        target.setCurrencyCode(CurrencyUnit.EUR);
+        target.setAmount(Values.Amount.factorize(50));
+
+        CorporateActionEntry entry = new CorporateActionEntry();
+        entry.setBasisRatio(new BigDecimal("0.5"));
+        entry.addLeg(portfolio, source, LegRole.SOURCE);
+        entry.addLeg(portfolio, target, LegRole.TARGET);
+        portfolio.addTransaction(source);
+        portfolio.addTransaction(target);
+
+        CurrencyConverter converter = new TestCurrencyConverter();
+        Interval interval = Interval.of(LocalDate.parse("2009-12-31"), LocalDate.parse("2010-12-31"));
+        LazySecurityPerformanceSnapshot snapshot = LazySecurityPerformanceSnapshot.create(client, converter, interval);
+
+        Money parentFifo = snapshot.getRecord(parent).orElseThrow().getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED);
+        Money spincoFifo = snapshot.getRecord(spinco).orElseThrow().getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED);
+
+        // per-lot rounding: parent 100.00, spinco 100.02, sum == 200.02 to the cent
+        assertThat(parentFifo, is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.00))));
+        assertThat(spincoFifo, is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.02))));
+        assertThat(parentFifo.add(spincoFifo), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(200.02))));
+
+        Money parentMovAvg = snapshot.getRecord(parent).orElseThrow()
+                        .getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED);
+        Money spincoMovAvg = snapshot.getRecord(spinco).orElseThrow()
+                        .getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED);
+
+        // moving average rounds on the aggregate: parent 100.01, spinco 100.01, sum == 200.02
+        assertThat(parentMovAvg, is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.01))));
+        assertThat(spincoMovAvg, is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.01))));
+        assertThat(parentMovAvg.add(spincoMovAvg), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(200.02))));
     }
 
 }

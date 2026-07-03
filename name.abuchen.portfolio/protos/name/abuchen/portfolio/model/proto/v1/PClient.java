@@ -25,6 +25,7 @@ private static final long serialVersionUID = 0L;
     taxonomies_ = java.util.Collections.emptyList();
     dashboards_ = java.util.Collections.emptyList();
     baseCurrency_ = "";
+    corporateActions_ = java.util.Collections.emptyList();
     extensions_ = java.util.Collections.emptyList();
   }
 
@@ -543,6 +544,47 @@ java.lang.String defaultValue) {
     }
   }
 
+  public static final int CORPORATEACTIONS_FIELD_NUMBER = 13;
+  @SuppressWarnings("serial")
+  private java.util.List<name.abuchen.portfolio.model.proto.v1.PCorporateAction> corporateActions_;
+  /**
+   * <code>repeated .name.abuchen.portfolio.PCorporateAction corporateActions = 13;</code>
+   */
+  @java.lang.Override
+  public java.util.List<name.abuchen.portfolio.model.proto.v1.PCorporateAction> getCorporateActionsList() {
+    return corporateActions_;
+  }
+  /**
+   * <code>repeated .name.abuchen.portfolio.PCorporateAction corporateActions = 13;</code>
+   */
+  @java.lang.Override
+  public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PCorporateActionOrBuilder> 
+      getCorporateActionsOrBuilderList() {
+    return corporateActions_;
+  }
+  /**
+   * <code>repeated .name.abuchen.portfolio.PCorporateAction corporateActions = 13;</code>
+   */
+  @java.lang.Override
+  public int getCorporateActionsCount() {
+    return corporateActions_.size();
+  }
+  /**
+   * <code>repeated .name.abuchen.portfolio.PCorporateAction corporateActions = 13;</code>
+   */
+  @java.lang.Override
+  public name.abuchen.portfolio.model.proto.v1.PCorporateAction getCorporateActions(int index) {
+    return corporateActions_.get(index);
+  }
+  /**
+   * <code>repeated .name.abuchen.portfolio.PCorporateAction corporateActions = 13;</code>
+   */
+  @java.lang.Override
+  public name.abuchen.portfolio.model.proto.v1.PCorporateActionOrBuilder getCorporateActionsOrBuilder(
+      int index) {
+    return corporateActions_.get(index);
+  }
+
   public static final int EXTENSIONS_FIELD_NUMBER = 99;
   @SuppressWarnings("serial")
   private java.util.List<com.google.protobuf.Any> extensions_;
@@ -657,6 +699,9 @@ java.lang.String defaultValue) {
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(baseCurrency_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 12, baseCurrency_);
     }
+    for (int i = 0; i < corporateActions_.size(); i++) {
+      output.writeMessage(13, corporateActions_.get(i));
+    }
     for (int i = 0; i < extensions_.size(); i++) {
       output.writeMessage(99, extensions_.get(i));
     }
@@ -722,6 +767,10 @@ java.lang.String defaultValue) {
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(baseCurrency_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(12, baseCurrency_);
     }
+    for (int i = 0; i < corporateActions_.size(); i++) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(13, corporateActions_.get(i));
+    }
     for (int i = 0; i < extensions_.size(); i++) {
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(99, extensions_.get(i));
@@ -768,6 +817,8 @@ java.lang.String defaultValue) {
     }
     if (!getBaseCurrency()
         .equals(other.getBaseCurrency())) return false;
+    if (!getCorporateActionsList()
+        .equals(other.getCorporateActionsList())) return false;
     if (!getExtensionsList()
         .equals(other.getExtensionsList())) return false;
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
@@ -825,6 +876,10 @@ java.lang.String defaultValue) {
     }
     hash = (37 * hash) + BASECURRENCY_FIELD_NUMBER;
     hash = (53 * hash) + getBaseCurrency().hashCode();
+    if (getCorporateActionsCount() > 0) {
+      hash = (37 * hash) + CORPORATEACTIONS_FIELD_NUMBER;
+      hash = (53 * hash) + getCorporateActionsList().hashCode();
+    }
     if (getExtensionsCount() > 0) {
       hash = (37 * hash) + EXTENSIONS_FIELD_NUMBER;
       hash = (53 * hash) + getExtensionsList().hashCode();
@@ -1044,13 +1099,20 @@ java.lang.String defaultValue) {
         settingsBuilder_ = null;
       }
       baseCurrency_ = "";
+      if (corporateActionsBuilder_ == null) {
+        corporateActions_ = java.util.Collections.emptyList();
+      } else {
+        corporateActions_ = null;
+        corporateActionsBuilder_.clear();
+      }
+      bitField0_ = (bitField0_ & ~0x00001000);
       if (extensionsBuilder_ == null) {
         extensions_ = java.util.Collections.emptyList();
       } else {
         extensions_ = null;
         extensionsBuilder_.clear();
       }
-      bitField0_ = (bitField0_ & ~0x00001000);
+      bitField0_ = (bitField0_ & ~0x00002000);
       return this;
     }
 
@@ -1156,10 +1218,19 @@ java.lang.String defaultValue) {
       } else {
         result.dashboards_ = dashboardsBuilder_.build();
       }
-      if (extensionsBuilder_ == null) {
+      if (corporateActionsBuilder_ == null) {
         if (((bitField0_ & 0x00001000) != 0)) {
-          extensions_ = java.util.Collections.unmodifiableList(extensions_);
+          corporateActions_ = java.util.Collections.unmodifiableList(corporateActions_);
           bitField0_ = (bitField0_ & ~0x00001000);
+        }
+        result.corporateActions_ = corporateActions_;
+      } else {
+        result.corporateActions_ = corporateActionsBuilder_.build();
+      }
+      if (extensionsBuilder_ == null) {
+        if (((bitField0_ & 0x00002000) != 0)) {
+          extensions_ = java.util.Collections.unmodifiableList(extensions_);
+          bitField0_ = (bitField0_ & ~0x00002000);
         }
         result.extensions_ = extensions_;
       } else {
@@ -1420,11 +1491,37 @@ java.lang.String defaultValue) {
         bitField0_ |= 0x00000800;
         onChanged();
       }
+      if (corporateActionsBuilder_ == null) {
+        if (!other.corporateActions_.isEmpty()) {
+          if (corporateActions_.isEmpty()) {
+            corporateActions_ = other.corporateActions_;
+            bitField0_ = (bitField0_ & ~0x00001000);
+          } else {
+            ensureCorporateActionsIsMutable();
+            corporateActions_.addAll(other.corporateActions_);
+          }
+          onChanged();
+        }
+      } else {
+        if (!other.corporateActions_.isEmpty()) {
+          if (corporateActionsBuilder_.isEmpty()) {
+            corporateActionsBuilder_.dispose();
+            corporateActionsBuilder_ = null;
+            corporateActions_ = other.corporateActions_;
+            bitField0_ = (bitField0_ & ~0x00001000);
+            corporateActionsBuilder_ = 
+              com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                 getCorporateActionsFieldBuilder() : null;
+          } else {
+            corporateActionsBuilder_.addAllMessages(other.corporateActions_);
+          }
+        }
+      }
       if (extensionsBuilder_ == null) {
         if (!other.extensions_.isEmpty()) {
           if (extensions_.isEmpty()) {
             extensions_ = other.extensions_;
-            bitField0_ = (bitField0_ & ~0x00001000);
+            bitField0_ = (bitField0_ & ~0x00002000);
           } else {
             ensureExtensionsIsMutable();
             extensions_.addAll(other.extensions_);
@@ -1437,7 +1534,7 @@ java.lang.String defaultValue) {
             extensionsBuilder_.dispose();
             extensionsBuilder_ = null;
             extensions_ = other.extensions_;
-            bitField0_ = (bitField0_ & ~0x00001000);
+            bitField0_ = (bitField0_ & ~0x00002000);
             extensionsBuilder_ = 
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getExtensionsFieldBuilder() : null;
@@ -1602,6 +1699,19 @@ java.lang.String defaultValue) {
               bitField0_ |= 0x00000800;
               break;
             } // case 98
+            case 106: {
+              name.abuchen.portfolio.model.proto.v1.PCorporateAction m =
+                  input.readMessage(
+                      name.abuchen.portfolio.model.proto.v1.PCorporateAction.parser(),
+                      extensionRegistry);
+              if (corporateActionsBuilder_ == null) {
+                ensureCorporateActionsIsMutable();
+                corporateActions_.add(m);
+              } else {
+                corporateActionsBuilder_.addMessage(m);
+              }
+              break;
+            } // case 106
             case 794: {
               com.google.protobuf.Any m =
                   input.readMessage(
@@ -3902,12 +4012,252 @@ java.lang.String defaultValue) {
       return this;
     }
 
+    private java.util.List<name.abuchen.portfolio.model.proto.v1.PCorporateAction> corporateActions_ =
+      java.util.Collections.emptyList();
+    private void ensureCorporateActionsIsMutable() {
+      if (!((bitField0_ & 0x00001000) != 0)) {
+        corporateActions_ = new java.util.ArrayList<name.abuchen.portfolio.model.proto.v1.PCorporateAction>(corporateActions_);
+        bitField0_ |= 0x00001000;
+       }
+    }
+
+    private com.google.protobuf.RepeatedFieldBuilderV3<
+        name.abuchen.portfolio.model.proto.v1.PCorporateAction, name.abuchen.portfolio.model.proto.v1.PCorporateAction.Builder, name.abuchen.portfolio.model.proto.v1.PCorporateActionOrBuilder> corporateActionsBuilder_;
+
+    /**
+     * <code>repeated .name.abuchen.portfolio.PCorporateAction corporateActions = 13;</code>
+     */
+    public java.util.List<name.abuchen.portfolio.model.proto.v1.PCorporateAction> getCorporateActionsList() {
+      if (corporateActionsBuilder_ == null) {
+        return java.util.Collections.unmodifiableList(corporateActions_);
+      } else {
+        return corporateActionsBuilder_.getMessageList();
+      }
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PCorporateAction corporateActions = 13;</code>
+     */
+    public int getCorporateActionsCount() {
+      if (corporateActionsBuilder_ == null) {
+        return corporateActions_.size();
+      } else {
+        return corporateActionsBuilder_.getCount();
+      }
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PCorporateAction corporateActions = 13;</code>
+     */
+    public name.abuchen.portfolio.model.proto.v1.PCorporateAction getCorporateActions(int index) {
+      if (corporateActionsBuilder_ == null) {
+        return corporateActions_.get(index);
+      } else {
+        return corporateActionsBuilder_.getMessage(index);
+      }
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PCorporateAction corporateActions = 13;</code>
+     */
+    public Builder setCorporateActions(
+        int index, name.abuchen.portfolio.model.proto.v1.PCorporateAction value) {
+      if (corporateActionsBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureCorporateActionsIsMutable();
+        corporateActions_.set(index, value);
+        onChanged();
+      } else {
+        corporateActionsBuilder_.setMessage(index, value);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PCorporateAction corporateActions = 13;</code>
+     */
+    public Builder setCorporateActions(
+        int index, name.abuchen.portfolio.model.proto.v1.PCorporateAction.Builder builderForValue) {
+      if (corporateActionsBuilder_ == null) {
+        ensureCorporateActionsIsMutable();
+        corporateActions_.set(index, builderForValue.build());
+        onChanged();
+      } else {
+        corporateActionsBuilder_.setMessage(index, builderForValue.build());
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PCorporateAction corporateActions = 13;</code>
+     */
+    public Builder addCorporateActions(name.abuchen.portfolio.model.proto.v1.PCorporateAction value) {
+      if (corporateActionsBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureCorporateActionsIsMutable();
+        corporateActions_.add(value);
+        onChanged();
+      } else {
+        corporateActionsBuilder_.addMessage(value);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PCorporateAction corporateActions = 13;</code>
+     */
+    public Builder addCorporateActions(
+        int index, name.abuchen.portfolio.model.proto.v1.PCorporateAction value) {
+      if (corporateActionsBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureCorporateActionsIsMutable();
+        corporateActions_.add(index, value);
+        onChanged();
+      } else {
+        corporateActionsBuilder_.addMessage(index, value);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PCorporateAction corporateActions = 13;</code>
+     */
+    public Builder addCorporateActions(
+        name.abuchen.portfolio.model.proto.v1.PCorporateAction.Builder builderForValue) {
+      if (corporateActionsBuilder_ == null) {
+        ensureCorporateActionsIsMutable();
+        corporateActions_.add(builderForValue.build());
+        onChanged();
+      } else {
+        corporateActionsBuilder_.addMessage(builderForValue.build());
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PCorporateAction corporateActions = 13;</code>
+     */
+    public Builder addCorporateActions(
+        int index, name.abuchen.portfolio.model.proto.v1.PCorporateAction.Builder builderForValue) {
+      if (corporateActionsBuilder_ == null) {
+        ensureCorporateActionsIsMutable();
+        corporateActions_.add(index, builderForValue.build());
+        onChanged();
+      } else {
+        corporateActionsBuilder_.addMessage(index, builderForValue.build());
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PCorporateAction corporateActions = 13;</code>
+     */
+    public Builder addAllCorporateActions(
+        java.lang.Iterable<? extends name.abuchen.portfolio.model.proto.v1.PCorporateAction> values) {
+      if (corporateActionsBuilder_ == null) {
+        ensureCorporateActionsIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, corporateActions_);
+        onChanged();
+      } else {
+        corporateActionsBuilder_.addAllMessages(values);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PCorporateAction corporateActions = 13;</code>
+     */
+    public Builder clearCorporateActions() {
+      if (corporateActionsBuilder_ == null) {
+        corporateActions_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00001000);
+        onChanged();
+      } else {
+        corporateActionsBuilder_.clear();
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PCorporateAction corporateActions = 13;</code>
+     */
+    public Builder removeCorporateActions(int index) {
+      if (corporateActionsBuilder_ == null) {
+        ensureCorporateActionsIsMutable();
+        corporateActions_.remove(index);
+        onChanged();
+      } else {
+        corporateActionsBuilder_.remove(index);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PCorporateAction corporateActions = 13;</code>
+     */
+    public name.abuchen.portfolio.model.proto.v1.PCorporateAction.Builder getCorporateActionsBuilder(
+        int index) {
+      return getCorporateActionsFieldBuilder().getBuilder(index);
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PCorporateAction corporateActions = 13;</code>
+     */
+    public name.abuchen.portfolio.model.proto.v1.PCorporateActionOrBuilder getCorporateActionsOrBuilder(
+        int index) {
+      if (corporateActionsBuilder_ == null) {
+        return corporateActions_.get(index);  } else {
+        return corporateActionsBuilder_.getMessageOrBuilder(index);
+      }
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PCorporateAction corporateActions = 13;</code>
+     */
+    public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PCorporateActionOrBuilder> 
+         getCorporateActionsOrBuilderList() {
+      if (corporateActionsBuilder_ != null) {
+        return corporateActionsBuilder_.getMessageOrBuilderList();
+      } else {
+        return java.util.Collections.unmodifiableList(corporateActions_);
+      }
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PCorporateAction corporateActions = 13;</code>
+     */
+    public name.abuchen.portfolio.model.proto.v1.PCorporateAction.Builder addCorporateActionsBuilder() {
+      return getCorporateActionsFieldBuilder().addBuilder(
+          name.abuchen.portfolio.model.proto.v1.PCorporateAction.getDefaultInstance());
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PCorporateAction corporateActions = 13;</code>
+     */
+    public name.abuchen.portfolio.model.proto.v1.PCorporateAction.Builder addCorporateActionsBuilder(
+        int index) {
+      return getCorporateActionsFieldBuilder().addBuilder(
+          index, name.abuchen.portfolio.model.proto.v1.PCorporateAction.getDefaultInstance());
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PCorporateAction corporateActions = 13;</code>
+     */
+    public java.util.List<name.abuchen.portfolio.model.proto.v1.PCorporateAction.Builder> 
+         getCorporateActionsBuilderList() {
+      return getCorporateActionsFieldBuilder().getBuilderList();
+    }
+    private com.google.protobuf.RepeatedFieldBuilderV3<
+        name.abuchen.portfolio.model.proto.v1.PCorporateAction, name.abuchen.portfolio.model.proto.v1.PCorporateAction.Builder, name.abuchen.portfolio.model.proto.v1.PCorporateActionOrBuilder> 
+        getCorporateActionsFieldBuilder() {
+      if (corporateActionsBuilder_ == null) {
+        corporateActionsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+            name.abuchen.portfolio.model.proto.v1.PCorporateAction, name.abuchen.portfolio.model.proto.v1.PCorporateAction.Builder, name.abuchen.portfolio.model.proto.v1.PCorporateActionOrBuilder>(
+                corporateActions_,
+                ((bitField0_ & 0x00001000) != 0),
+                getParentForChildren(),
+                isClean());
+        corporateActions_ = null;
+      }
+      return corporateActionsBuilder_;
+    }
+
     private java.util.List<com.google.protobuf.Any> extensions_ =
       java.util.Collections.emptyList();
     private void ensureExtensionsIsMutable() {
-      if (!((bitField0_ & 0x00001000) != 0)) {
+      if (!((bitField0_ & 0x00002000) != 0)) {
         extensions_ = new java.util.ArrayList<com.google.protobuf.Any>(extensions_);
-        bitField0_ |= 0x00001000;
+        bitField0_ |= 0x00002000;
        }
     }
 
@@ -4101,7 +4451,7 @@ java.lang.String defaultValue) {
     public Builder clearExtensions() {
       if (extensionsBuilder_ == null) {
         extensions_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00001000);
+        bitField0_ = (bitField0_ & ~0x00002000);
         onChanged();
       } else {
         extensionsBuilder_.clear();
@@ -4206,7 +4556,7 @@ java.lang.String defaultValue) {
         extensionsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
             com.google.protobuf.Any, com.google.protobuf.Any.Builder, com.google.protobuf.AnyOrBuilder>(
                 extensions_,
-                ((bitField0_ & 0x00001000) != 0),
+                ((bitField0_ & 0x00002000) != 0),
                 getParentForChildren(),
                 isClean());
         extensions_ = null;

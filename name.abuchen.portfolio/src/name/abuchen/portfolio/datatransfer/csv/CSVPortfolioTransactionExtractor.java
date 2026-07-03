@@ -116,7 +116,7 @@ import name.abuchen.portfolio.money.Money;
                                             shares, grossAmount);
             case TRANSFER_IN, TRANSFER_OUT -> //
                             createTransfer(security, amount, date, note, shares);
-            case DELIVERY_INBOUND, DELIVERY_OUTBOUND -> //
+            case DELIVERY_INBOUND, DELIVERY_OUTBOUND, DISTRIBUTION_INBOUND, DISTRIBUTION_OUTBOUND -> //
                             createDelivery(rawValues, field2column, type, security, amount, fees, taxes, date, note,
                                             shares, grossAmount);
             default ->

@@ -13,7 +13,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.RecordComponent;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
@@ -67,9 +69,15 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.XStreamException;
+import com.thoughtworks.xstream.converters.ConversionException;
+import com.thoughtworks.xstream.converters.Converter;
+import com.thoughtworks.xstream.converters.MarshallingContext;
+import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.converters.collections.MapConverter;
 import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
 import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
+import com.thoughtworks.xstream.io.HierarchicalStreamReader;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.mapper.Mapper;
 
 import name.abuchen.portfolio.Messages;
@@ -114,6 +122,112 @@ public class ClientFactory
             return super.shouldUnmarshalField(field);
         }
 
+    }
+
+    /**
+     * XStream's default {@link ReflectionConverter} instantiates objects via
+     * {@code Unsafe#allocateInstance} and then writes fields via
+     * {@code Unsafe#objectFieldOffset}. The JVM refuses to hand out a field
+     * offset for a record component (to protect record invariants), so
+     * records such as {@link CorporateActionEntry.Leg} and
+     * {@link CorporateActionEntry.DistributionRatio} fail to unmarshal with
+     * this converter. Instead, gather the child values and build the record
+     * via its canonical constructor, which is how records are meant to be
+     * instantiated.
+     */
+    private static class RecordConverter implements Converter
+    {
+        private final Mapper mapper;
+
+        public RecordConverter(Mapper mapper)
+        {
+            this.mapper = mapper;
+        }
+
+        @Override
+        public boolean canConvert(@SuppressWarnings("rawtypes") Class type)
+        {
+            return type != null && type.isRecord();
+        }
+
+        @Override
+        public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context)
+        {
+            var type = source.getClass();
+
+            for (RecordComponent component : type.getRecordComponents())
+            {
+                Object value;
+                try
+                {
+                    value = component.getAccessor().invoke(source);
+                }
+                catch (ReflectiveOperationException e)
+                {
+                    throw new ConversionException(e);
+                }
+
+                if (value == null)
+                    continue;
+
+                writer.startNode(mapper.serializedMember(type, component.getName()));
+
+                var declaredType = component.getType();
+                var actualType = value.getClass();
+                if (!declaredType.isPrimitive() && !actualType.equals(declaredType))
+                    writer.addAttribute(mapper.aliasForSystemAttribute("class"), mapper.serializedClass(actualType)); //$NON-NLS-1$
+
+                context.convertAnother(value);
+                writer.endNode();
+            }
+        }
+
+        @Override
+        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context)
+        {
+            var type = context.getRequiredType();
+            var components = type.getRecordComponents();
+            var values = new HashMap<String, Object>();
+
+            while (reader.hasMoreChildren())
+            {
+                reader.moveDown();
+
+                var fieldName = mapper.realMember(type, reader.getNodeName());
+                var component = Arrays.stream(components).filter(c -> c.getName().equals(fieldName)).findFirst()
+                                .orElseThrow(() -> new ConversionException(
+                                                "unknown record component: " + fieldName)); //$NON-NLS-1$
+
+                var classAttribute = reader.getAttribute(mapper.aliasForSystemAttribute("class")); //$NON-NLS-1$
+                var actualType = classAttribute != null ? mapper.realClass(classAttribute) : component.getType();
+
+                values.put(fieldName, context.convertAnother(null, actualType));
+
+                reader.moveUp();
+            }
+
+            try
+            {
+                var paramTypes = new Class<?>[components.length];
+                var args = new Object[components.length];
+                for (int ii = 0; ii < components.length; ii++)
+                {
+                    paramTypes[ii] = components[ii].getType();
+                    Object value = values.get(components[ii].getName());
+                    if (value == null && paramTypes[ii].isPrimitive())
+                        value = Array.get(Array.newInstance(paramTypes[ii], 1), 0); // primitive zero-value
+                    args[ii] = value;
+                }
+
+                var constructor = type.getDeclaredConstructor(paramTypes);
+                constructor.setAccessible(true);
+                return constructor.newInstance(args);
+            }
+            catch (ReflectiveOperationException e)
+            {
+                throw new ConversionException(e);
+            }
+        }
     }
 
     /* package */ static class XmlSerialization
@@ -947,6 +1061,8 @@ public class ClientFactory
                 removeSourceAttributeFromTaxonomy(client);
             case 68: // NOSONAR
                 // added exDate date field
+            case 69: // NOSONAR
+                // added the corporate-action (spin-off) registry
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -1877,6 +1993,7 @@ public class ClientFactory
 
         xstream.registerConverter(new MapConverter(xstream.getMapper(), TypedMap.class));
         xstream.registerConverter(new XStreamArrayListConverter(xstream.getMapper()));
+        xstream.registerConverter(new RecordConverter(xstream.getMapper()));
 
         xstream.useAttributeFor(Money.class, "amount");
         xstream.useAttributeFor(Money.class, "currencyCode");
@@ -1918,6 +2035,9 @@ public class ClientFactory
         xstream.alias("buysell", BuySellEntry.class);
         xstream.alias("account-transfer", AccountTransferEntry.class);
         xstream.alias("portfolio-transfer", PortfolioTransferEntry.class);
+        xstream.alias("corporate-action", CorporateActionEntry.class);
+        xstream.alias("corporate-action-leg", CorporateActionEntry.Leg.class);
+        xstream.alias("distribution-ratio", CorporateActionEntry.DistributionRatio.class);
 
         xstream.alias("taxonomy", Taxonomy.class);
         xstream.alias("classification", Classification.class);

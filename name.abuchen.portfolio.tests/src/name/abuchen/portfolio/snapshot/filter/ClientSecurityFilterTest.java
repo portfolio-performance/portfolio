@@ -5,7 +5,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +21,10 @@ import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CorporateActionEntry;
+import name.abuchen.portfolio.model.CorporateActionEntry.LegRole;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
@@ -114,5 +120,59 @@ public class ClientSecurityFilterTest
 
         assertThat(all.getFinalAccumulatedPercentage(), is(filteredAll.getFinalAccumulatedPercentage()));
         assertThat(all.getDeltaPercentage(), is(filteredAll.getDeltaPercentage()));
+    }
+
+    @Test
+    public void testThatSpinOffDistributionLegsDoNotThrowWhenFiltered()
+    {
+        Security parent = new SecurityBuilder().addTo(client);
+        Security spinco = new SecurityBuilder().addTo(client);
+
+        Portfolio portfolio = new PortfolioBuilder(accountEUR) //
+                        .buy(parent, "2016-01-01", Values.Share.factorize(100), Values.Amount.factorize(5000)) //
+                        .addTo(client);
+
+        var exDate = LocalDateTime.parse("2016-06-01T00:00");
+
+        var source = new PortfolioTransaction();
+        source.setType(PortfolioTransaction.Type.DISTRIBUTION_OUTBOUND);
+        source.setDateTime(exDate);
+        source.setSecurity(parent);
+        source.setShares(0);
+        source.setCurrencyCode(CurrencyUnit.EUR);
+        source.setAmount(Values.Amount.factorize(2000));
+
+        var target = new PortfolioTransaction();
+        target.setType(PortfolioTransaction.Type.DISTRIBUTION_INBOUND);
+        target.setDateTime(exDate);
+        target.setSecurity(spinco);
+        target.setShares(Values.Share.factorize(100));
+        target.setCurrencyCode(CurrencyUnit.EUR);
+        target.setAmount(Values.Amount.factorize(2000));
+
+        CorporateActionEntry entry = new CorporateActionEntry();
+        entry.setBasisRatio(new BigDecimal("0.25"));
+        entry.addLeg(portfolio, source, LegRole.SOURCE);
+        entry.addLeg(portfolio, target, LegRole.TARGET);
+
+        portfolio.addTransaction(source);
+        portfolio.addTransaction(target);
+
+        // code under test: filtering by security must not throw on
+        // DISTRIBUTION_INBOUND/OUTBOUND legs
+        Client filtered = new ClientSecurityFilter(parent, spinco).filter(client);
+
+        List<Portfolio> filteredPortfolios = filtered.getPortfolios();
+        assertThat(filteredPortfolios, hasSize(1));
+
+        // both legs are converted to plain deliveries (like BUY/SELL are)
+        assertThat(filteredPortfolios.get(0).getTransactions().stream()
+                        .anyMatch(t -> t.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND
+                                        && t.getSecurity() == parent),
+                        is(true));
+        assertThat(filteredPortfolios.get(0).getTransactions().stream()
+                        .anyMatch(t -> t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
+                                        && t.getSecurity() == spinco),
+                        is(true));
     }
 }

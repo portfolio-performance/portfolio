@@ -22,12 +22,14 @@ import name.abuchen.portfolio.money.CurrencyConverter;
         {
             case BUY:
             case DELIVERY_INBOUND:
+            case DISTRIBUTION_INBOUND:
                 sharesHeld += t.getShares();
                 break;
             case SELL:
             case DELIVERY_OUTBOUND:
                 sharesHeld -= t.getShares();
                 break;
+            case DISTRIBUTION_OUTBOUND:
             case TRANSFER_IN:
             case TRANSFER_OUT:
                 break;

@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -22,6 +23,8 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CorporateActionEntry;
+import name.abuchen.portfolio.model.CorporateActionEntry.LegRole;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
@@ -285,6 +288,55 @@ public class PortfolioClientFilterTest
                         .filter(t -> t.getType() == AccountTransaction.Type.DIVIDENDS).collect(Collectors.toList());
 
         assertThat(dividendTx.size(), is(2));
+    }
+
+    @Test
+    public void testThatSpinOffDistributionLegsAreKept()
+    {
+        Portfolio portfolio = client.getPortfolios().get(0);
+        Security parent = client.getSecurities().get(0);
+        Security spinco = new SecurityBuilder().addTo(client);
+
+        var exDate = LocalDateTime.parse("2016-04-01T00:00");
+
+        var source = new PortfolioTransaction();
+        source.setType(PortfolioTransaction.Type.DISTRIBUTION_OUTBOUND);
+        source.setDateTime(exDate);
+        source.setSecurity(parent);
+        source.setShares(0);
+        source.setCurrencyCode(CurrencyUnit.EUR);
+        source.setAmount(Values.Amount.factorize(20));
+
+        var target = new PortfolioTransaction();
+        target.setType(PortfolioTransaction.Type.DISTRIBUTION_INBOUND);
+        target.setDateTime(exDate);
+        target.setSecurity(spinco);
+        target.setShares(Values.Share.factorize(10));
+        target.setCurrencyCode(CurrencyUnit.EUR);
+        target.setAmount(Values.Amount.factorize(20));
+
+        CorporateActionEntry entry = new CorporateActionEntry();
+        entry.setBasisRatio(new BigDecimal("0.2"));
+        entry.addLeg(portfolio, source, LegRole.SOURCE);
+        entry.addLeg(portfolio, target, LegRole.TARGET);
+
+        portfolio.addTransaction(source);
+        portfolio.addTransaction(target);
+
+        Client result = new PortfolioClientFilter(portfolio).filter(client);
+
+        assertThat(result.getPortfolios().size(), is(1));
+
+        Portfolio filteredPortfolio = result.getPortfolios().get(0);
+
+        assertThat(filteredPortfolio.getTransactions().stream()
+                        .anyMatch(t -> t.getType() == PortfolioTransaction.Type.DISTRIBUTION_OUTBOUND
+                                        && t.getSecurity() == parent),
+                        is(true));
+        assertThat(filteredPortfolio.getTransactions().stream()
+                        .anyMatch(t -> t.getType() == PortfolioTransaction.Type.DISTRIBUTION_INBOUND
+                                        && t.getSecurity() == spinco),
+                        is(true));
     }
 
 }

@@ -171,6 +171,8 @@ public class ClientClassificationFilter implements ClientFilter
 
                 case DELIVERY_INBOUND:
                 case DELIVERY_OUTBOUND:
+                case DISTRIBUTION_INBOUND:
+                case DISTRIBUTION_OUTBOUND:
                     addDeliveryT(state, portfolio, t, t.getType(), state.getWeight(t.getSecurity()));
                     break;
 
@@ -274,7 +276,7 @@ public class ClientClassificationFilter implements ClientFilter
         long taxes = value(t.getUnitSum(Unit.Type.TAX).getAmount(), weight);
         long amount = value(t.getAmount(), weight);
 
-        copy.setAmount(copy.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND ? amount - taxes : amount + taxes);
+        copy.setAmount(copy.getType().isPurchase() ? amount - taxes : amount + taxes);
 
         // copy all units (except for taxes) over to the new transaction
         t.getUnits().filter(u -> u.getType() != Unit.Type.TAX).forEach(u -> copy.addUnit(value(u, weight)));

@@ -22,6 +22,8 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CorporateActionEntry;
+import name.abuchen.portfolio.model.CorporateActionEntry.LegRole;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -703,6 +705,58 @@ public class ClientPerformanceSnapshotTest
 
         assertThat(snapshot.getEndClientSnapshot().getPositionsByVehicle().get(client.getSecurities().get(0))
                         .getPosition().getShares(), is(Values.Share.factorize(-1)));
+    }
+
+    @Test
+    public void testThatSpinOffDoesNotThrowInClientWidePerformanceAndIRRPass()
+    {
+        Client client = new Client();
+
+        Security parent = new SecurityBuilder().addTo(client);
+        Security spinco = new SecurityBuilder().addTo(client);
+
+        // 100 parent shares, cost basis 5,000.00
+        Portfolio portfolio = new PortfolioBuilder() //
+                        .buy(parent, "2010-01-01", Values.Share.factorize(100), Values.Amount.factorize(5000)) //
+                        .addTo(client);
+
+        var exDate = LocalDateTime.parse("2010-06-01T00:00");
+
+        // source leg: shares leave the parent position, market value moves out
+        var source = new PortfolioTransaction();
+        source.setType(PortfolioTransaction.Type.DISTRIBUTION_OUTBOUND);
+        source.setDateTime(exDate);
+        source.setSecurity(parent);
+        source.setShares(0);
+        source.setCurrencyCode(CurrencyUnit.EUR);
+        source.setAmount(Values.Amount.factorize(2000));
+
+        // target leg: spinco shares received, identical market value moves in
+        var target = new PortfolioTransaction();
+        target.setType(PortfolioTransaction.Type.DISTRIBUTION_INBOUND);
+        target.setDateTime(exDate);
+        target.setSecurity(spinco);
+        target.setShares(Values.Share.factorize(100));
+        target.setCurrencyCode(CurrencyUnit.EUR);
+        target.setAmount(Values.Amount.factorize(2000));
+
+        CorporateActionEntry entry = new CorporateActionEntry();
+        entry.setBasisRatio(new BigDecimal("0.25"));
+        entry.addLeg(portfolio, source, LegRole.SOURCE);
+        entry.addLeg(portfolio, target, LegRole.TARGET);
+
+        portfolio.addTransaction(source);
+        portfolio.addTransaction(target);
+
+        CurrencyConverter converter = new TestCurrencyConverter();
+
+        // code under test: a client-wide performance snapshot (which
+        // internally also runs ClientIRRYield.create) must not throw when
+        // portfolio transactions include DISTRIBUTION_INBOUND/OUTBOUND legs
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter,
+                        LocalDate.parse("2009-12-31"), LocalDate.parse("2010-12-31"));
+
+        assertNotNull(snapshot);
     }
 
     public static void assertThatCalculationWorksOut(ClientPerformanceSnapshot snapshot, CurrencyConverter converter)

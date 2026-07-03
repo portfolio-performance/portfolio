@@ -386,12 +386,16 @@ public class PerformanceIndex
             startValue += portfolio.getTransactions() //
                             .stream() //
                             .filter(t -> t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
-                                            || t.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
+                                            || t.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND
+                                            || t.getType() == PortfolioTransaction.Type.DISTRIBUTION_INBOUND
+                                            || t.getType() == PortfolioTransaction.Type.DISTRIBUTION_OUTBOUND)
                             .filter(t -> !t.getDateTime().toLocalDate().isAfter(intervalStart)) //
                             .mapToLong(t -> {
-                                if (t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND)
+                                if (t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
+                                                || t.getType() == PortfolioTransaction.Type.DISTRIBUTION_INBOUND)
                                     return convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDateTime());
-                                else if (t.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
+                                else if (t.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND
+                                                || t.getType() == PortfolioTransaction.Type.DISTRIBUTION_OUTBOUND)
                                     return -convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDateTime());
                                 else
                                     return 0;

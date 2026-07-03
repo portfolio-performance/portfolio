@@ -267,6 +267,30 @@ java.lang.String defaultValue);
       getBaseCurrencyBytes();
 
   /**
+   * <code>repeated .name.abuchen.portfolio.PCorporateAction corporateActions = 13;</code>
+   */
+  java.util.List<name.abuchen.portfolio.model.proto.v1.PCorporateAction> 
+      getCorporateActionsList();
+  /**
+   * <code>repeated .name.abuchen.portfolio.PCorporateAction corporateActions = 13;</code>
+   */
+  name.abuchen.portfolio.model.proto.v1.PCorporateAction getCorporateActions(int index);
+  /**
+   * <code>repeated .name.abuchen.portfolio.PCorporateAction corporateActions = 13;</code>
+   */
+  int getCorporateActionsCount();
+  /**
+   * <code>repeated .name.abuchen.portfolio.PCorporateAction corporateActions = 13;</code>
+   */
+  java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PCorporateActionOrBuilder> 
+      getCorporateActionsOrBuilderList();
+  /**
+   * <code>repeated .name.abuchen.portfolio.PCorporateAction corporateActions = 13;</code>
+   */
+  name.abuchen.portfolio.model.proto.v1.PCorporateActionOrBuilder getCorporateActionsOrBuilder(
+      int index);
+
+  /**
    * <pre>
    * Extension data using Any type for maximum flexibility
    * </pre>

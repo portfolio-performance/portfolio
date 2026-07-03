@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -23,9 +24,14 @@ import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CorporateActionEntry;
+import name.abuchen.portfolio.model.CorporateActionEntry.LegRole;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.Dates;
 import name.abuchen.portfolio.util.Interval;
@@ -409,6 +415,138 @@ public class ClientIndexTest
 
         long taxes[] = index.getTaxes();
         assertThat(taxes[taxes.length - 8], is(7_50L));
+    }
+
+    @Test
+    public void testThatSpinOffNetsToZeroTransferalAtClientLevel()
+    {
+        Client client = new Client();
+
+        Security parent = new SecurityBuilder().addTo(client);
+        Security spinco = new SecurityBuilder().addTo(client);
+
+        // 100 parent shares, cost basis 5,000.00
+        Portfolio portfolio = new PortfolioBuilder() //
+                        .buy(parent, "2010-01-01", Values.Share.factorize(100), Values.Amount.factorize(5000)) //
+                        .addTo(client);
+
+        var exDate = LocalDateTime.parse("2010-06-01T00:00");
+
+        // source leg: shares leave the parent position, market value moves out
+        var source = new PortfolioTransaction();
+        source.setType(PortfolioTransaction.Type.DISTRIBUTION_OUTBOUND);
+        source.setDateTime(exDate);
+        source.setSecurity(parent);
+        source.setShares(0);
+        source.setCurrencyCode(CurrencyUnit.EUR);
+        source.setAmount(Values.Amount.factorize(2000));
+
+        // target leg: spinco shares received, identical market value moves in
+        var target = new PortfolioTransaction();
+        target.setType(PortfolioTransaction.Type.DISTRIBUTION_INBOUND);
+        target.setDateTime(exDate);
+        target.setSecurity(spinco);
+        target.setShares(Values.Share.factorize(100));
+        target.setCurrencyCode(CurrencyUnit.EUR);
+        target.setAmount(Values.Amount.factorize(2000));
+
+        CorporateActionEntry entry = new CorporateActionEntry();
+        entry.setBasisRatio(new java.math.BigDecimal("0.25"));
+        entry.addLeg(portfolio, source, LegRole.SOURCE);
+        entry.addLeg(portfolio, target, LegRole.TARGET);
+
+        portfolio.addTransaction(source);
+        portfolio.addTransaction(target);
+
+        Interval period = Interval.of(LocalDate.of(2009, Month.DECEMBER, 31), //
+                        LocalDate.of(2010, Month.DECEMBER, 31));
+        CurrencyConverter converter = new TestCurrencyConverter();
+        // note: neither security carries a market price in this test, so the
+        // client-level valuation itself is not meaningful here (it falls back
+        // to a last-transaction-price heuristic); this test only exercises
+        // the transferal bookkeeping in ClientIndex#collectTransferalsAndTaxes
+        PerformanceIndex index = PerformanceIndex.forClient(client, converter, period, new ArrayList<>());
+
+        int exDateIndex = Arrays.binarySearch(index.getDates(), exDate.toLocalDate());
+
+        // both distribution legs must be tracked as transferals, just like
+        // ordinary deliveries -- not silently dropped
+        assertThat(index.getInboundTransferals()[exDateIndex], is(Values.Amount.factorize(2000)));
+        assertThat(index.getOutboundTransferals()[exDateIndex], is(Values.Amount.factorize(2000)));
+
+        // the spin-off itself must not show up as a net transferal at the
+        // client level: the outbound value leaving the parent and the
+        // inbound value entering the spinco position cancel each other out
+        assertThat(index.getTransferals()[exDateIndex], is(0L));
+
+        // and therefore invested capital is unaffected by the spin-off
+        long[] investedCapital = index.calculateInvestedCapital();
+        assertThat(investedCapital[exDateIndex], is(investedCapital[investedCapital.length - 1]));
+    }
+
+    @Test
+    public void testMultiCurrencySpinOffNetsToZeroTransferalAtClientLevel()
+    {
+        Client client = new Client();
+
+        // parent and spinco are USD securities; the reporting currency is EUR.
+        // per spec §6 both mandatory legs carry the source (event) currency USD.
+        Security parent = new SecurityBuilder(CurrencyUnit.USD).addTo(client);
+        Security spinco = new SecurityBuilder(CurrencyUnit.USD).addTo(client);
+
+        Portfolio portfolio = new PortfolioBuilder() //
+                        .buy(parent, "2015-01-02", Values.Share.factorize(100), Values.Amount.factorize(5000)) //
+                        .addTo(client);
+
+        var exDate = LocalDateTime.parse("2015-01-09T00:00");
+
+        // source leg: 2,000 USD of market value leaves the parent
+        var source = new PortfolioTransaction();
+        source.setType(PortfolioTransaction.Type.DISTRIBUTION_OUTBOUND);
+        source.setDateTime(exDate);
+        source.setSecurity(parent);
+        source.setShares(0);
+        source.setCurrencyCode(CurrencyUnit.USD);
+        source.setAmount(Values.Amount.factorize(2000));
+
+        // target leg: the identical 2,000 USD enters the spinco position
+        var target = new PortfolioTransaction();
+        target.setType(PortfolioTransaction.Type.DISTRIBUTION_INBOUND);
+        target.setDateTime(exDate);
+        target.setSecurity(spinco);
+        target.setShares(Values.Share.factorize(100));
+        target.setCurrencyCode(CurrencyUnit.USD);
+        target.setAmount(Values.Amount.factorize(2000));
+
+        CorporateActionEntry entry = new CorporateActionEntry();
+        entry.setBasisRatio(new java.math.BigDecimal("0.25"));
+        entry.addLeg(portfolio, source, LegRole.SOURCE);
+        entry.addLeg(portfolio, target, LegRole.TARGET);
+
+        portfolio.addTransaction(source);
+        portfolio.addTransaction(target);
+
+        Interval period = Interval.of(LocalDate.of(2015, Month.JANUARY, 1), LocalDate.of(2015, Month.JANUARY, 16));
+        CurrencyConverter converter = new TestCurrencyConverter();
+        PerformanceIndex index = PerformanceIndex.forClient(client, converter, period, new ArrayList<>());
+
+        int exDateIndex = Arrays.binarySearch(index.getDates(), exDate.toLocalDate());
+
+        // both legs are booked as the same USD amount converted to EUR on the
+        // same date, so the inbound and outbound transferals are equal ...
+        long convertedToEur = converter.convert(exDate.toLocalDate(),
+                        Money.of(CurrencyUnit.USD, Values.Amount.factorize(2000))).getAmount();
+        assertThat(index.getInboundTransferals()[exDateIndex], is(convertedToEur));
+        assertThat(index.getOutboundTransferals()[exDateIndex], is(convertedToEur));
+
+        // ... the conversion really happened (USD 2,000 != EUR 2,000) ...
+        assertThat(convertedToEur, is(not(Values.Amount.factorize(2000))));
+
+        // ... and the spin-off nets to zero at the client level, leaving
+        // invested capital undisturbed
+        assertThat(index.getTransferals()[exDateIndex], is(0L));
+        long[] investedCapital = index.calculateInvestedCapital();
+        assertThat(investedCapital[exDateIndex], is(investedCapital[investedCapital.length - 1]));
     }
 
 }

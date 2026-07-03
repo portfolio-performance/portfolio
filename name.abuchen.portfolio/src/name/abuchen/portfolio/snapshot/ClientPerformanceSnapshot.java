@@ -522,9 +522,11 @@ public class ClientPerformanceSnapshot
                 switch (t.getType())
                 {
                     case DELIVERY_INBOUND:
+                    case DISTRIBUTION_INBOUND:
                         mDeposits.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
                         break;
                     case DELIVERY_OUTBOUND:
+                    case DISTRIBUTION_OUTBOUND:
                         mRemovals.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
                         break;
                     case BUY:

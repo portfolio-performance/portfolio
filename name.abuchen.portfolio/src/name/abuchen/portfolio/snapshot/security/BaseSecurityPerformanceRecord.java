@@ -42,6 +42,30 @@ public class BaseSecurityPerformanceRecord
 
     protected final List<CalculationLineItem> lineItems = new ArrayList<>();
 
+    private DistributionBasisCache distributionBasisCache = new DistributionBasisCache();
+
+    /* package */ void setDistributionBasisCache(DistributionBasisCache distributionBasisCache)
+    {
+        this.distributionBasisCache = distributionBasisCache;
+    }
+
+    protected DistributionBasisCache getDistributionBasisCache()
+    {
+        return distributionBasisCache;
+    }
+
+    /**
+     * Forces this record's cost basis to be computed now, so a spinco deriving
+     * from this (parent) record reads the exact removed basis it publishes into
+     * the shared {@link DistributionBasisCache} (spec §7 Option A). Eager
+     * records compute at construction, so this is a no-op there; lazy records
+     * override it to trigger their cost {@code LazyValue}.
+     */
+    protected void ensureCostComputed()
+    {
+        // no-op: eager records have already computed their cost
+    }
+
     public BaseSecurityPerformanceRecord(Client client, Security security, CurrencyConverter converter,
                     Interval interval)
     {

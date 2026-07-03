@@ -7,6 +7,7 @@ import java.util.List;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.CorporateActionEntry;
 import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -219,6 +220,56 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
             case TRANSFER_OUT:
                 // ignore -> handled via TRANSFER_IN
                 break;
+
+            case DISTRIBUTION_OUTBOUND:
+                // reduce the cost basis proportionally across all held lots
+                // without changing the quantity (e.g. spin-off source leg), and
+                // publish the exact amount removed so the spinco's inbound leg
+                // can reuse it as its derived basis (spec §4.3, §7 Option A)
+                double basisRatio = DistributionBasis.basisRatio(t).doubleValue();
+
+                long fifoRemoved = 0;
+                for (LineItem entry : fifo)
+                {
+                    if (entry.shares == 0)
+                        continue;
+
+                    long removedGross = Math.round(entry.grossAmount * basisRatio);
+                    entry.grossAmount -= removedGross;
+                    entry.netAmount -= Math.round(entry.netAmount * basisRatio);
+                    fifoRemoved += removedGross;
+                }
+
+                long movingRemoved = Math.round(movingRelativeCost * basisRatio);
+                movingRelativeCost -= movingRemoved;
+                movingRelativeNetCost -= Math.round(movingRelativeNetCost * basisRatio);
+
+                if (t.getCrossEntry() instanceof CorporateActionEntry outboundEntry)
+                {
+                    distributionBasisCache.put(outboundEntry, CostMethod.FIFO, fifoRemoved);
+                    distributionBasisCache.put(outboundEntry, CostMethod.MOVING_AVERAGE, movingRemoved);
+                }
+
+                break;
+
+            case DISTRIBUTION_INBOUND:
+                // derive the incoming basis as the exact amount the source leg
+                // removed (spec §4.3); DistributionBasis reads the published
+                // value or recomputes it via a source sub-pass
+                var portfolio = (Portfolio) item.getOwner();
+                long derivedBasis = DistributionBasis.derivedInboundBasis(converter, portfolio, t, CostMethod.FIFO,
+                                getTermCurrency(), distributionBasisCache);
+                long movingDerivedBasis = DistributionBasis.derivedInboundBasis(converter, portfolio, t,
+                                CostMethod.MOVING_AVERAGE, getTermCurrency(), distributionBasisCache);
+
+                fifo.add(new LineItem(item.getOwner(), t.getShares(), derivedBasis, derivedBasis,
+                                TrailRecord.ofTransaction(t)));
+                movingRelativeCost += movingDerivedBasis;
+                movingRelativeNetCost += movingDerivedBasis;
+                heldShares += t.getShares();
+
+                break;
+
             default:
                 throw new UnsupportedOperationException();
         }

@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.TransactionOwner;
@@ -220,6 +221,42 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
             case TRANSFER_OUT:
                 // ignore -> handled via TRANSFER_IN
                 break;
+
+            case DISTRIBUTION_OUTBOUND:
+                // reduce the cost basis of each held lot proportionally by the
+                // basis ratio without changing the quantity (e.g. spin-off
+                // source leg). This is not a disposal -> no realized gain.
+                double basisRatio = DistributionBasis.basisRatio(t).doubleValue();
+
+                for (LineItem entry : fifo)
+                {
+                    if (entry.shares == 0)
+                        continue;
+
+                    if (!entry.source.getOwner().equals(transactionItem.getOwner()))
+                        continue;
+
+                    entry.value -= Math.round(entry.value * basisRatio);
+                }
+
+                break;
+
+            case DISTRIBUTION_INBOUND:
+                // derive the incoming basis from the source security's basis at
+                // ex-date, scaled by the ratio (source security + ratio come
+                // from the leg's CorporateActionEntry); delegated to
+                // DistributionBasis because the cross-security derivation is
+                // needed identically across all cost/gains calculations. No
+                // gain on receipt.
+                var portfolio = (Portfolio) transactionItem.getOwner();
+                long derivedBasis = DistributionBasis.derivedInboundBasis(converter, portfolio, t, CostMethod.FIFO,
+                                termCurrency, distributionBasisCache);
+
+                fifo.add(new LineItem(t.getShares(), t.getDateTime().toLocalDate(), derivedBasis,
+                                TrailRecord.ofTransaction(t), transactionItem));
+
+                break;
+
             default:
                 throw new UnsupportedOperationException();
         }

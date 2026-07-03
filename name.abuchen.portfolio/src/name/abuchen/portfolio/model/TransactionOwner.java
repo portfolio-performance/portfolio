@@ -29,14 +29,22 @@ public interface TransactionOwner<T extends Transaction>
      */
     default void deleteTransaction(T transaction, Client client)
     {
-        if (transaction.getCrossEntry() != null)
+        CrossEntry crossEntry = transaction.getCrossEntry();
+        if (crossEntry != null)
         {
-            Transaction other = transaction.getCrossEntry().getCrossTransaction(transaction);
-            @SuppressWarnings("unchecked")
-            TransactionOwner<Transaction> owner = (TransactionOwner<Transaction>) transaction.getCrossEntry()
-                            .getOwner(other);
+            for (Transaction other : crossEntry.getCrossTransactions(transaction))
+            {
+                @SuppressWarnings("unchecked")
+                TransactionOwner<Transaction> owner = (TransactionOwner<Transaction>) crossEntry.getOwner(other);
+                owner.shallowDeleteTransaction(other, client);
+            }
 
-            owner.shallowDeleteTransaction(other, client);
+            // a corporate action is owned by the client registry (unlike the
+            // binary cross entries, which live only via the back-pointer);
+            // removing the group must drop the registry entry so it is never
+            // persisted with dangling leg references
+            if (crossEntry instanceof CorporateActionEntry corporateAction)
+                client.removeCorporateAction(corporateAction);
         }
 
         shallowDeleteTransaction(transaction, client);

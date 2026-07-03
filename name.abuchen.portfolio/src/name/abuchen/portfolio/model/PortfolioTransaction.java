@@ -27,7 +27,17 @@ public class PortfolioTransaction extends Transaction
         /** Records the transfer of assets into the portfolio. */
         DELIVERY_INBOUND(true),
         /** Records the transfer of assets out of a portfolio. */
-        DELIVERY_OUTBOUND(false);
+        DELIVERY_OUTBOUND(false),
+        /**
+         * Reduces the cost basis of a security without changing its quantity
+         * (e.g. the source leg of a spin-off).
+         */
+        DISTRIBUTION_OUTBOUND(false),
+        /**
+         * Receives a security whose cost basis is assigned/derived rather than
+         * paid in cash (e.g. the target leg of a spin-off).
+         */
+        DISTRIBUTION_INBOUND(true);
 
         private static final ResourceBundle RESOURCES = ResourceBundle.getBundle("name.abuchen.portfolio.model.labels"); //$NON-NLS-1$
 

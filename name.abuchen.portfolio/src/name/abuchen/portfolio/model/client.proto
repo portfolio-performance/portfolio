@@ -163,6 +163,10 @@ message PTransaction {
     TAX_REFUND = 12;
     FEE = 13;
     FEE_REFUND = 14;
+    DISTRIBUTION_INBOUND = 15;
+    DISTRIBUTION_OUTBOUND = 16;
+    DISTRIBUTION_FRACTION_SALE = 17;
+    DISTRIBUTION_CASH_IN_LIEU = 18;
   }
 	
   string uuid = 1;
@@ -297,6 +301,29 @@ message PSettings {
   repeated PConfigurationSet configurationSets = 3;
 }
 
+message PCorporateAction {
+  enum Type {
+    SPIN_OFF = 0;
+  }
+
+  message DistributionRatio {
+    int32 numerator = 1;
+    int32 denominator = 2;
+  }
+
+  Type type = 1;
+
+  // property bag (spec §9.1): basis is a ratio, never a resolved amount
+  optional DistributionRatio distributionRatio = 2;
+  optional PDecimalValue basisRatio = 3;
+  int64 referencePrice = 4;             // spinco ex-date reference price (market value)
+  optional int64 exDate = 5;            // epoch day
+
+  optional string source = 6;
+
+  repeated string legs = 7;             // leg transaction uuids; the order-of-truth for the group
+}
+
 message PClient {
   int32 version = 1;
 	
@@ -315,7 +342,8 @@ message PClient {
    
   PSettings settings = 11;
   string baseCurrency = 12;
-  
+  repeated PCorporateAction corporateActions = 13;
+
   // Extension data using Any type for maximum flexibility
   repeated google.protobuf.Any extensions = 99;
 }

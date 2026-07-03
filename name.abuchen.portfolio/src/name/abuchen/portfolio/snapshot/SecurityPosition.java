@@ -62,11 +62,15 @@ public class SecurityPosition
                 case BUY:
                 case TRANSFER_IN:
                 case DELIVERY_INBOUND:
+                case DISTRIBUTION_INBOUND:
                     return t.getShares();
                 case SELL:
                 case TRANSFER_OUT:
                 case DELIVERY_OUTBOUND:
                     return -t.getShares();
+                case DISTRIBUTION_OUTBOUND:
+                    // basis-only leg: does not change quantity
+                    return 0;
                 default:
                     throw new UnsupportedOperationException();
             }

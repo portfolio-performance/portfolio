@@ -38,6 +38,7 @@ import name.abuchen.portfolio.model.proto.v1.PAttributeType;
 import name.abuchen.portfolio.model.proto.v1.PBookmark;
 import name.abuchen.portfolio.model.proto.v1.PClient;
 import name.abuchen.portfolio.model.proto.v1.PConfigurationSet;
+import name.abuchen.portfolio.model.proto.v1.PCorporateAction;
 import name.abuchen.portfolio.model.proto.v1.PDashboard;
 import name.abuchen.portfolio.model.proto.v1.PFullHistoricalPrice;
 import name.abuchen.portfolio.model.proto.v1.PHistoricalPrice;
@@ -135,6 +136,7 @@ import name.abuchen.portfolio.money.Money;
         loadDashboards(newClient, client);
         loadWatchlists(newClient, client, lookup);
         loadInvestmentPlans(newClient, client, lookup);
+        loadCorporateActions(newClient, client, lookup);
         loadExtensions(newClient, client);
 
         client.getSaveFlags().add(SaveFlag.BINARY);
@@ -406,6 +408,38 @@ import name.abuchen.portfolio.money.Money;
                     outbound.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
                     loadCommonTransaction(newTransaction, outbound, lookup, true);
                     lookup.getPortfolio(newTransaction.getPortfolio()).addTransaction(outbound);
+
+                    break;
+
+                case DISTRIBUTION_OUTBOUND:
+                    PortfolioTransaction distributionOut = new PortfolioTransaction(newTransaction.getUuid());
+                    distributionOut.setType(PortfolioTransaction.Type.DISTRIBUTION_OUTBOUND);
+                    loadCommonTransaction(newTransaction, distributionOut, lookup, true);
+                    lookup.getPortfolio(newTransaction.getPortfolio()).addTransaction(distributionOut);
+
+                    break;
+
+                case DISTRIBUTION_INBOUND:
+                    PortfolioTransaction distributionIn = new PortfolioTransaction(newTransaction.getUuid());
+                    distributionIn.setType(PortfolioTransaction.Type.DISTRIBUTION_INBOUND);
+                    loadCommonTransaction(newTransaction, distributionIn, lookup, true);
+                    lookup.getPortfolio(newTransaction.getPortfolio()).addTransaction(distributionIn);
+
+                    break;
+
+                case DISTRIBUTION_FRACTION_SALE:
+                    PortfolioTransaction fractionSale = new PortfolioTransaction(newTransaction.getUuid());
+                    fractionSale.setType(PortfolioTransaction.Type.SELL);
+                    loadCommonTransaction(newTransaction, fractionSale, lookup, true);
+                    lookup.getPortfolio(newTransaction.getPortfolio()).addTransaction(fractionSale);
+
+                    break;
+
+                case DISTRIBUTION_CASH_IN_LIEU:
+                    AccountTransaction cashInLieu = new AccountTransaction(newTransaction.getUuid());
+                    cashInLieu.setType(AccountTransaction.Type.SELL);
+                    loadCommonTransaction(newTransaction, cashInLieu, lookup, true);
+                    lookup.getAccount(newTransaction.getAccount()).addTransaction(cashInLieu);
 
                     break;
 
@@ -835,6 +869,93 @@ import name.abuchen.portfolio.money.Money;
         }
     }
 
+    private void loadCorporateActions(PClient newClient, Client client, Lookup lookup)
+    {
+        if (newClient.getCorporateActionsCount() == 0)
+            return;
+
+        Map<String, Transaction> uuid2transaction = new HashMap<>();
+        Map<String, TransactionOwner<? extends Transaction>> uuid2owner = new HashMap<>();
+        for (Account account : client.getAccounts())
+            for (AccountTransaction t : account.getTransactions())
+            {
+                uuid2transaction.put(t.getUUID(), t);
+                uuid2owner.put(t.getUUID(), account);
+            }
+        for (Portfolio portfolio : client.getPortfolios())
+            for (PortfolioTransaction t : portfolio.getTransactions())
+            {
+                uuid2transaction.put(t.getUUID(), t);
+                uuid2owner.put(t.getUUID(), portfolio);
+            }
+
+        for (PCorporateAction newEntry : newClient.getCorporateActionsList())
+        {
+            CorporateActionEntry entry = new CorporateActionEntry();
+
+            switch (newEntry.getType())
+            {
+                case SPIN_OFF:
+                    entry.setType(CorporateActionEntry.Type.SPIN_OFF);
+                    break;
+                default:
+                    throw new UnsupportedOperationException();
+            }
+
+            if (newEntry.hasDistributionRatio())
+                entry.setDistributionRatio(new CorporateActionEntry.DistributionRatio(
+                                newEntry.getDistributionRatio().getNumerator(),
+                                newEntry.getDistributionRatio().getDenominator()));
+
+            if (newEntry.hasBasisRatio())
+                entry.setBasisRatio(fromDecimalValue(newEntry.getBasisRatio()));
+
+            entry.setReferencePrice(newEntry.getReferencePrice());
+
+            if (newEntry.hasExDate())
+                entry.setExDate(LocalDate.ofEpochDay(newEntry.getExDate()));
+
+            if (newEntry.hasSource())
+                entry.setSource(newEntry.getSource());
+
+            for (String uuid : newEntry.getLegsList())
+            {
+                Transaction t = uuid2transaction.get(uuid);
+                TransactionOwner<? extends Transaction> owner = uuid2owner.get(uuid);
+                if (t == null || owner == null)
+                    throw new UnsupportedOperationException(uuid);
+                entry.addLeg(owner, t, roleOf(t));
+            }
+
+            client.addCorporateAction(entry);
+        }
+    }
+
+    private static CorporateActionEntry.LegRole roleOf(Transaction t)
+    {
+        if (t instanceof PortfolioTransaction pt)
+        {
+            switch (pt.getType())
+            {
+                case DISTRIBUTION_OUTBOUND:
+                    return CorporateActionEntry.LegRole.SOURCE;
+                case DISTRIBUTION_INBOUND:
+                    return CorporateActionEntry.LegRole.TARGET;
+                case SELL:
+                    // a fractional-sale leg is loaded via the DISTRIBUTION_FRACTION_SALE
+                    // wire type, reusing the model's SELL type (see addTransaction(...))
+                    return CorporateActionEntry.LegRole.FRACTION_SALE;
+                default:
+                    throw new UnsupportedOperationException(pt.getType().toString());
+            }
+        }
+        else if (t instanceof AccountTransaction at && at.getType() == AccountTransaction.Type.SELL)
+        {
+            return CorporateActionEntry.LegRole.CASH_IN_LIEU;
+        }
+        throw new UnsupportedOperationException();
+    }
+
     private void loadExtensions(PClient newClient, Client client)
     {
         // Load extension data from the Any fields
@@ -874,6 +995,7 @@ import name.abuchen.portfolio.money.Money;
         saveDashboards(client, newClient);
         saveWatchlists(client, newClient);
         saveInvestmentPlans(client, newClient);
+        saveCorporateActions(client, newClient);
         saveExtensions(client, newClient);
 
         // write signature
@@ -1057,7 +1179,12 @@ import name.abuchen.portfolio.money.Money;
 
         for (Account account : client.getAccounts())
         {
-            account.getTransactions().stream().filter(t -> !exclude.contains(t.getType()))
+            // a cash-in-lieu SELL leg of a corporate action must still be
+            // serialised bare (spec §9.1), unlike an ordinary buy/sell SELL
+            // leg, which is reconstructed from its portfolio counterpart
+            account.getTransactions().stream()
+                            .filter(t -> !exclude.contains(t.getType())
+                                            || t.getCrossEntry() instanceof CorporateActionEntry)
                             .forEach(t -> addTransaction(newClient, account, t));
         }
 
@@ -1079,11 +1206,21 @@ import name.abuchen.portfolio.money.Money;
                                 asUpdatedAtTimestamp(t.getCrossEntry().getCrossTransaction(t).getUpdatedAt()));
                 break;
             case SELL:
-                newTransaction.setTypeValue(PTransaction.Type.SALE_VALUE);
-                newTransaction.setAccount(t.getCrossEntry().getCrossOwner(t).getUUID());
-                newTransaction.setOtherUuid(t.getCrossEntry().getCrossTransaction(t).getUUID());
-                newTransaction.setOtherUpdatedAt(
-                                asUpdatedAtTimestamp(t.getCrossEntry().getCrossTransaction(t).getUpdatedAt()));
+                if (t.getCrossEntry() instanceof CorporateActionEntry)
+                {
+                    // fractional-sale leg of a corporate action: serialise bare
+                    // (no otherUuid / account); the group's leg list is the
+                    // source of truth and regroups it (spec §9.1)
+                    newTransaction.setTypeValue(PTransaction.Type.DISTRIBUTION_FRACTION_SALE_VALUE);
+                }
+                else
+                {
+                    newTransaction.setTypeValue(PTransaction.Type.SALE_VALUE);
+                    newTransaction.setAccount(t.getCrossEntry().getCrossOwner(t).getUUID());
+                    newTransaction.setOtherUuid(t.getCrossEntry().getCrossTransaction(t).getUUID());
+                    newTransaction.setOtherUpdatedAt(
+                                    asUpdatedAtTimestamp(t.getCrossEntry().getCrossTransaction(t).getUpdatedAt()));
+                }
                 break;
             case TRANSFER_OUT:
                 newTransaction.setTypeValue(PTransaction.Type.SECURITY_TRANSFER_VALUE);
@@ -1097,6 +1234,12 @@ import name.abuchen.portfolio.money.Money;
                 break;
             case DELIVERY_OUTBOUND:
                 newTransaction.setTypeValue(PTransaction.Type.OUTBOUND_DELIVERY_VALUE);
+                break;
+            case DISTRIBUTION_OUTBOUND:
+                newTransaction.setTypeValue(PTransaction.Type.DISTRIBUTION_OUTBOUND_VALUE);
+                break;
+            case DISTRIBUTION_INBOUND:
+                newTransaction.setTypeValue(PTransaction.Type.DISTRIBUTION_INBOUND_VALUE);
                 break;
             case TRANSFER_IN:
             default:
@@ -1152,8 +1295,18 @@ import name.abuchen.portfolio.money.Money;
                 newTransaction.setOtherUpdatedAt(
                                 asUpdatedAtTimestamp(t.getCrossEntry().getCrossTransaction(t).getUpdatedAt()));
                 break;
-            case BUY:
             case SELL:
+                if (t.getCrossEntry() instanceof CorporateActionEntry)
+                {
+                    // cash-in-lieu leg of a corporate action: serialise bare so
+                    // its uuid resolves during loadCorporateActions
+                    newTransaction.setTypeValue(PTransaction.Type.DISTRIBUTION_CASH_IN_LIEU_VALUE);
+                    break;
+                }
+                // fall through: ordinary buy/sell account leg is serialised via
+                // its portfolio counterpart's cross entry
+                //$FALL-THROUGH$
+            case BUY:
             case TRANSFER_IN:
                 // nothing to do - the cross entry is serialized
                 break;
@@ -1415,6 +1568,43 @@ import name.abuchen.portfolio.money.Money;
 
             newClient.addPlans(newPlan);
         });
+    }
+
+    private void saveCorporateActions(Client client, PClient.Builder newClient)
+    {
+        for (CorporateActionEntry entry : client.getCorporateActions())
+        {
+            PCorporateAction.Builder newEntry = PCorporateAction.newBuilder();
+
+            switch (entry.getType())
+            {
+                case SPIN_OFF:
+                    newEntry.setType(PCorporateAction.Type.SPIN_OFF);
+                    break;
+                default:
+                    throw new UnsupportedOperationException();
+            }
+
+            if (entry.getDistributionRatio() != null)
+                newEntry.setDistributionRatio(PCorporateAction.DistributionRatio.newBuilder()
+                                .setNumerator(entry.getDistributionRatio().numerator())
+                                .setDenominator(entry.getDistributionRatio().denominator()));
+
+            if (entry.getBasisRatio() != null)
+                newEntry.setBasisRatio(asDecimalValue(entry.getBasisRatio()));
+
+            newEntry.setReferencePrice(entry.getReferencePrice());
+
+            if (entry.getExDate() != null)
+                newEntry.setExDate(entry.getExDate().toEpochDay());
+
+            if (entry.getSource() != null)
+                newEntry.setSource(entry.getSource());
+
+            entry.getLegs().forEach(leg -> newEntry.addLegs(leg.transaction().getUUID()));
+
+            newClient.addCorporateActions(newEntry);
+        }
     }
 
     private void saveExtensions(Client client, PClient.Builder newClient)

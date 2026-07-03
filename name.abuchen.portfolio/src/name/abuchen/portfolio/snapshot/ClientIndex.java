@@ -192,9 +192,11 @@ import name.abuchen.portfolio.util.Interval;
                                 switch (t.getType())
                                 {
                                     case DELIVERY_INBOUND:
+                                    case DISTRIBUTION_INBOUND:
                                         addValue(inboundTransferals, t.getCurrencyCode(), t.getAmount(), interval, d);
                                         break;
                                     case DELIVERY_OUTBOUND:
+                                    case DISTRIBUTION_OUTBOUND:
                                         addValue(outboundTransferals, t.getCurrencyCode(), t.getAmount(), interval, d);
                                         break;
                                     case BUY:

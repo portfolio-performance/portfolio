@@ -108,4 +108,44 @@ public class PerformanceIndexTest
         assertThat(investedCapital[0], is(Values.Amount.factorize(1 + 10)));
 
     }
+
+    @Test
+    public void testDistributionTransactionsBeforeIntervalStartAreIncludedInAbsoluteInvestedCapital()
+    {
+        LocalDate[] dates = new LocalDate[] { LocalDate.now().minusYears(1),
+                        LocalDate.now().minusYears(1).plusDays(1) };
+        long[] totals = new long[] { 1000, 1100 };
+        double[] delta = new double[] { 0, 0.1 };
+
+        PerformanceIndex index = new PerformanceIndexStub(dates, totals, delta);
+
+        Client client = index.getClient();
+        Account account = new Account();
+        client.addAccount(account);
+
+        account.addTransaction(new AccountTransaction(LocalDateTime.now().minusYears(1).withHour(10), CurrencyUnit.EUR,
+                        Values.Amount.factorize(1000), null, AccountTransaction.Type.DEPOSIT));
+
+        Portfolio portfolio = new Portfolio();
+        portfolio.setReferenceAccount(account);
+        client.addPortfolio(portfolio);
+
+        Security parent = new Security();
+        Security spinco = new Security();
+
+        // spin-off before the interval start: 2,000.00 leaves the parent
+        // position, 1,800.00 enters the spinco position (unequal legs
+        // simulate a partial cash-in-lieu settlement, so the net effect is
+        // observable even though both legs are "transferals")
+        portfolio.addTransaction(new PortfolioTransaction(LocalDateTime.now().minusYears(1).withHour(11),
+                        CurrencyUnit.EUR, Values.Amount.factorize(2000), parent, 0,
+                        PortfolioTransaction.Type.DISTRIBUTION_OUTBOUND, 0, 0));
+        portfolio.addTransaction(new PortfolioTransaction(LocalDateTime.now().minusYears(1).withHour(11),
+                        CurrencyUnit.EUR, Values.Amount.factorize(1800), spinco, Values.Share.factorize(1),
+                        PortfolioTransaction.Type.DISTRIBUTION_INBOUND, 0, 0));
+
+        long[] investedCapital = index.calculateAbsoluteInvestedCapital();
+
+        assertThat(investedCapital[0], is(Values.Amount.factorize(1000 - 2000 + 1800)));
+    }
 }

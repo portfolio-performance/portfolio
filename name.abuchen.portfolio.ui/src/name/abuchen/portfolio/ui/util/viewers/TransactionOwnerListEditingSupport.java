@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CorporateActionEntry;
 import name.abuchen.portfolio.model.CrossEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Transaction;
@@ -85,7 +86,15 @@ public class TransactionOwnerListEditingSupport extends ColumnEditingSupport
     @Override
     public boolean canEdit(Object element)
     {
-        return getCrossEntry(element) != null;
+        CrossEntry crossEntry = getCrossEntry(element);
+
+        // owner reassignment for a corporate action is a dialog operation
+        // (spec §10) and inline delete->insert would drop the group's registry
+        // entry (insert() does not re-register it) -- refuse it here
+        if (crossEntry instanceof CorporateActionEntry)
+            return false;
+
+        return crossEntry != null;
     }
 
     @Override

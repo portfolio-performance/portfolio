@@ -8,6 +8,8 @@ import java.util.List;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
+import name.abuchen.portfolio.model.CostMethod;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
@@ -115,6 +117,30 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
             case TRANSFER_IN, TRANSFER_OUT:
                 // ignore --> not relevant for moving average
                 break;
+
+            case DISTRIBUTION_OUTBOUND:
+                // reduce the average cost basis proportionally by the basis
+                // ratio without changing the quantity (e.g. spin-off source
+                // leg). This is not a disposal -> no realized gain.
+                double basisRatio = DistributionBasis.basisRatio(t).doubleValue();
+                movingAverageNetCost -= Math.round(movingAverageNetCost * basisRatio);
+                movingAverageNetCostForex -= Math.round(movingAverageNetCostForex * basisRatio);
+                break;
+
+            case DISTRIBUTION_INBOUND:
+                // derive the incoming basis from the source security's basis at
+                // ex-date, scaled by the ratio; delegated to DistributionBasis
+                // because the cross-security derivation is needed identically
+                // across all cost/gains calculations. No gain on receipt.
+                var portfolio = (Portfolio) transactionItem.getOwner();
+                long derivedBasis = DistributionBasis.derivedInboundBasis(converter, portfolio, t,
+                                CostMethod.MOVING_AVERAGE, termCurrency, distributionBasisCache);
+
+                movingAverageNetCost += derivedBasis;
+                movingAverageNetCostForex += derivedBasis;
+                heldShares += t.getShares();
+                break;
+
             default:
                 throw new UnsupportedOperationException();
         }

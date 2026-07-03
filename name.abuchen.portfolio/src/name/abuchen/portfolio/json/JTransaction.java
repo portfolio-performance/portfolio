@@ -304,9 +304,11 @@ public class JTransaction
                                 .toString();
                 break;
             case DELIVERY_INBOUND:
+            case DISTRIBUTION_INBOUND:
                 jtx.type = JTransaction.Type.INBOUND_DELIVERY;
                 break;
             case DELIVERY_OUTBOUND:
+            case DISTRIBUTION_OUTBOUND:
                 jtx.type = JTransaction.Type.OUTBOUND_DELIVERY;
                 break;
             default:

@@ -84,11 +84,13 @@ public class ClientSecurityFilter implements ClientFilter
         {
             case BUY:
             case DELIVERY_INBOUND:
+            case DISTRIBUTION_INBOUND:
                 getPortfolio.apply((Portfolio) pair.getOwner()).internalAddTransaction(
                                 convertToDelivery(pair.getTransaction(), PortfolioTransaction.Type.DELIVERY_INBOUND));
                 break;
             case SELL:
             case DELIVERY_OUTBOUND:
+            case DISTRIBUTION_OUTBOUND:
                 getPortfolio.apply((Portfolio) pair.getOwner()).internalAddTransaction(
                                 convertToDelivery(pair.getTransaction(), PortfolioTransaction.Type.DELIVERY_OUTBOUND));
                 break;

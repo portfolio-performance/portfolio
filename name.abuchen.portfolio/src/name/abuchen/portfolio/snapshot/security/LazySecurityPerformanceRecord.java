@@ -65,8 +65,9 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
     /**
      * internal rate of return of security {@link #calculateIRR()}
      */
-    private final LazyValue<Double> irr = new LazyValue<>(
-                    () -> Calculation.perform(IRRCalculation.class, converter, security, lineItems).getIRR());
+    private final LazyValue<Double> irr = new LazyValue<>(() -> Calculation
+                    .perform(IRRCalculation.class, converter, security, lineItems, getDistributionBasisCache())
+                    .getIRR());
 
     /**
      * weak reference to the performance index, because it can consume a lot of
@@ -107,8 +108,8 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
         return index.getVolatility();
     });
 
-    private final LazyValue<DeltaCalculation> deltaCalculation = new LazyValue<>(
-                    () -> Calculation.perform(DeltaCalculation.class, converter, security, lineItems));
+    private final LazyValue<DeltaCalculation> deltaCalculation = new LazyValue<>(() -> Calculation
+                    .perform(DeltaCalculation.class, converter, security, lineItems, getDistributionBasisCache()));
 
     /**
      * delta = market value + sells + dividends - purchase costs
@@ -146,7 +147,8 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
     });
 
     private final LazyValue<CostCalculationResult> costCalculation = new LazyValue<>(
-                    () -> Calculation.perform(CostCalculation.class, converter, security, lineItems).getResult());
+                    () -> Calculation.perform(CostCalculation.class, converter, security, lineItems,
+                                    getDistributionBasisCache()).getResult());
 
     /**
      * cost of shares held
@@ -167,15 +169,17 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
         // ensure cost calculation is done (and has calculated
         // moving averages)
         costCalculation.get();
-        return Calculation.perform(DividendCalculation.class, converter, security, lineItems).getResult();
+        return Calculation.perform(DividendCalculation.class, converter, security, lineItems,
+                        getDistributionBasisCache()).getResult();
     });
 
     private final LazyValue<CapitalGainsCalculation> capitalGains = new LazyValue<>(
-                    () -> Calculation.perform(CapitalGainsCalculation.class, converter, security, lineItems));
+                    () -> Calculation.perform(CapitalGainsCalculation.class, converter, security, lineItems,
+                                    getDistributionBasisCache()));
 
     private final LazyValue<CapitalGainsCalculationMovingAverage> capitalGainsMovingAvg = new LazyValue<>(
                     () -> Calculation.perform(CapitalGainsCalculationMovingAverage.class, converter, security,
-                                    lineItems));
+                                    lineItems, getDistributionBasisCache()));
 
     /* package */ LazySecurityPerformanceRecord(Client client, Security security, CurrencyConverter converter,
                     Interval interval)
@@ -244,6 +248,12 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
     public Money getCost(CostMethod costMethod, TaxesAndFees taxesAndFees)
     {
         return getCostMoney(costMethod, taxesAndFees);
+    }
+
+    @Override
+    protected void ensureCostComputed()
+    {
+        costCalculation.get();
     }
 
     public Money getCapitalGainsOnHoldings(CostMethod costMethod)

@@ -65,4 +65,70 @@ public class IRRCalculationTest
 
         assertThat(calculation.getIRR(), IsCloseTo.closeTo(0.412128788d, 0.00000001d));
     }
+
+    @Test
+    public void testSpinOffDistributionOutbound()
+    {
+        List<CalculationLineItem> tx = new ArrayList<>();
+
+        Portfolio portfolio = new Portfolio();
+        Security security = new Security();
+
+        tx.add(CalculationLineItem.of(portfolio,
+                        new PortfolioTransaction(LocalDateTime.of(2017, Month.DECEMBER, 31, 0, 0), //
+                                        CurrencyUnit.EUR, Values.Amount.factorize(1000), //
+                                        security, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, //
+                                        Values.Amount.factorize(10), 0)));
+
+        tx.add(CalculationLineItem.of(portfolio,
+                        new PortfolioTransaction(LocalDateTime.of(2018, Month.DECEMBER, 31, 0, 0), //
+                                        CurrencyUnit.EUR, Values.Amount.factorize(200), //
+                                        security, 0,
+                                        PortfolioTransaction.Type.DISTRIBUTION_OUTBOUND, //
+                                        0, 0)));
+
+        IRRCalculation calculation = Calculation.perform(IRRCalculation.class, new TestCurrencyConverter(), security,
+                        tx);
+
+        // Excel verification (365-day, non-leap span)
+        // 31.12.17 -1000
+        // 31.12.18 200
+        // =XINTZINSFUSS(B1:B2;A1:A2) = -0,8
+
+        assertThat(calculation.getIRR(), IsCloseTo.closeTo(-0.8d, 0.00000001d));
+    }
+
+    @Test
+    public void testSpinOffDistributionInbound()
+    {
+        List<CalculationLineItem> tx = new ArrayList<>();
+
+        Portfolio portfolio = new Portfolio();
+        Security security = new Security();
+
+        // receive spinco shares valued at 1,000 (booked as invested capital)
+        tx.add(CalculationLineItem.of(portfolio,
+                        new PortfolioTransaction(LocalDateTime.of(2017, Month.DECEMBER, 31, 0, 0), //
+                                        CurrencyUnit.EUR, Values.Amount.factorize(1000), //
+                                        security, Values.Share.factorize(10),
+                                        PortfolioTransaction.Type.DISTRIBUTION_INBOUND, //
+                                        0, 0)));
+
+        // one year later the holding is worth 1,100 (end valuation via a SELL)
+        tx.add(CalculationLineItem.of(portfolio,
+                        new PortfolioTransaction(LocalDateTime.of(2018, Month.DECEMBER, 31, 0, 0), //
+                                        CurrencyUnit.EUR, Values.Amount.factorize(1100), //
+                                        security, Values.Share.factorize(10), PortfolioTransaction.Type.SELL, //
+                                        0, 0)));
+
+        IRRCalculation calculation = Calculation.perform(IRRCalculation.class, new TestCurrencyConverter(), security,
+                        tx);
+
+        // Excel verification (365-day span)
+        // 31.12.17 -1000
+        // 31.12.18 1100
+        // =XINTZINSFUSS(B1:B2;A1:A2) = 0.1
+
+        assertThat(calculation.getIRR(), IsCloseTo.closeTo(0.1d, 0.00000001d));
+    }
 }

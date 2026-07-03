@@ -64,6 +64,8 @@ public class WithoutTaxesFilter implements ClientFilter
                     break;
                 case DELIVERY_INBOUND:
                 case DELIVERY_OUTBOUND:
+                case DISTRIBUTION_INBOUND:
+                case DISTRIBUTION_OUTBOUND:
                     stripTaxes(t, pseudoPortfolio);
                     break;
                 case TRANSFER_IN:
@@ -116,7 +118,7 @@ public class WithoutTaxesFilter implements ClientFilter
 
     private void stripTaxes(PortfolioTransaction deliveryT, ReadOnlyPortfolio readOnlyPortfolio)
     {
-        boolean isInbound = deliveryT.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND;
+        boolean isInbound = deliveryT.getType().isPurchase();
 
         Money taxes = deliveryT.getUnitSum(Unit.Type.TAX);
 

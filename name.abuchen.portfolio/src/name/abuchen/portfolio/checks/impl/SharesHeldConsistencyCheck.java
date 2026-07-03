@@ -89,12 +89,17 @@ public class SharesHeldConsistencyCheck implements Check
                     case BUY:
                     case TRANSFER_IN:
                     case DELIVERY_INBOUND:
+                    case DISTRIBUTION_INBOUND:
                         shares[index] += t.getShares();
                         break;
                     case SELL:
                     case TRANSFER_OUT:
                     case DELIVERY_OUTBOUND:
                         shares[index] -= t.getShares();
+                        break;
+                    case DISTRIBUTION_OUTBOUND:
+                        // basis-only reduction: shares == 0 by construction
+                        // (spec §3.1); no effect on shares held
                         break;
                     default:
                         throw new UnsupportedOperationException();

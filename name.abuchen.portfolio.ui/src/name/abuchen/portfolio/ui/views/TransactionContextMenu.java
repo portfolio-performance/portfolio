@@ -16,6 +16,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
+import name.abuchen.portfolio.model.CorporateActionEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
@@ -23,6 +24,7 @@ import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransferDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.CorporateActionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
@@ -96,8 +98,17 @@ public class TransactionContextMenu
                 return;
 
             TransactionPair<?> tx = (TransactionPair<?>) selection.getFirstElement();
-            tx.withAccountTransaction().ifPresent(t -> createCopyAccountTransactionAction(t).run());
-            tx.withPortfolioTransaction().ifPresent(t -> createCopyPortfolioTransactionAction(t).run());
+            // duplicate is not offered for spin-off legs; the builders return null then
+            tx.withAccountTransaction().ifPresent(t -> {
+                Action a = createCopyAccountTransactionAction(t);
+                if (a != null)
+                    a.run();
+            });
+            tx.withPortfolioTransaction().ifPresent(t -> {
+                Action a = createCopyPortfolioTransactionAction(t);
+                if (a != null)
+                    a.run();
+            });
         }
     }
 
@@ -176,9 +187,13 @@ public class TransactionContextMenu
         action.setAccelerator(SWT.MOD1 | 'E');
         manager.add(action);
 
+        // duplicate is not offered for spin-off legs (see createCopyAccountTransactionAction)
         Action duplicateAction = createCopyAccountTransactionAction(tx);
-        duplicateAction.setAccelerator(SWT.MOD1 | 'D');
-        manager.add(duplicateAction);
+        if (duplicateAction != null)
+        {
+            duplicateAction.setAccelerator(SWT.MOD1 | 'D');
+            manager.add(duplicateAction);
+        }
 
         if (fullContextMenu)
         {
@@ -197,9 +212,13 @@ public class TransactionContextMenu
         editAction.setAccelerator(SWT.MOD1 | 'E');
         manager.add(editAction);
 
+        // duplicate is not offered for spin-off legs (see createCopyPortfolioTransactionAction)
         Action duplicateAction = createCopyPortfolioTransactionAction(tx);
-        duplicateAction.setAccelerator(SWT.MOD1 | 'D');
-        manager.add(duplicateAction);
+        if (duplicateAction != null)
+        {
+            duplicateAction.setAccelerator(SWT.MOD1 | 'D');
+            manager.add(duplicateAction);
+        }
 
         manager.add(new Separator());
 
@@ -224,6 +243,12 @@ public class TransactionContextMenu
             return new OpenDialogAction(owner, Messages.MenuEditTransaction) //
                             .type(AccountTransferDialog.class, d -> d.setEntry(entry));
         }
+        else if (tx.getTransaction().getCrossEntry() instanceof CorporateActionEntry entry)
+        {
+            // opening any leg of a spin-off opens the whole group
+            return new OpenDialogAction(owner, Messages.MenuEditTransaction) //
+                            .type(CorporateActionDialog.class, d -> d.setCorporateAction(entry));
+        }
         else
         {
             return new OpenDialogAction(owner, Messages.MenuEditTransaction) //
@@ -246,6 +271,14 @@ public class TransactionContextMenu
         {
             return new OpenDialogAction(owner, Messages.MenuDuplicateTransaction) //
                             .type(AccountTransferDialog.class, d -> d.presetEntry(entry));
+        }
+        else if (tx.getTransaction().getCrossEntry() instanceof CorporateActionEntry)
+        {
+            // a spin-off leg is not meaningfully duplicable on its own (it is one leg
+            // of an atomic, N-ary group); offer no duplicate action rather than let it
+            // fall through to the plain AccountTransactionDialog preset below, which
+            // would silently mis-handle it. Callers must null-check.
+            return null;
         }
         else
         {
@@ -270,6 +303,12 @@ public class TransactionContextMenu
             return new OpenDialogAction(owner, Messages.MenuEditTransaction) //
                             .type(SecurityTransferDialog.class, d -> d.setEntry(entry));
         }
+        else if (tx.getTransaction().getCrossEntry() instanceof CorporateActionEntry entry)
+        {
+            // opening any leg of a spin-off opens the whole group
+            return new OpenDialogAction(owner, Messages.MenuEditTransaction) //
+                            .type(CorporateActionDialog.class, d -> d.setCorporateAction(entry));
+        }
         else
         {
             return new OpenDialogAction(owner, Messages.MenuEditTransaction) //
@@ -291,6 +330,14 @@ public class TransactionContextMenu
         {
             return new OpenDialogAction(owner, Messages.MenuDuplicateTransaction) //
                             .type(SecurityTransferDialog.class, d -> d.presetEntry(entry));
+        }
+        else if (tx.getTransaction().getCrossEntry() instanceof CorporateActionEntry)
+        {
+            // a spin-off leg is not meaningfully duplicable on its own (it is one leg
+            // of an atomic, N-ary group); offer no duplicate action rather than let it
+            // fall through to presetDeliveryTransaction below, which would silently
+            // mis-handle it. Callers must null-check.
+            return null;
         }
         else
         {

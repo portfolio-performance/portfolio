@@ -67,6 +67,8 @@ public class ClientIRRYield
                                     case TRANSFER_OUT:
                                     case DELIVERY_INBOUND:
                                     case DELIVERY_OUTBOUND:
+                                    case DISTRIBUTION_INBOUND:
+                                    case DISTRIBUTION_OUTBOUND:
                                         transactions.add(t);
                                         break;
                                     case BUY:
