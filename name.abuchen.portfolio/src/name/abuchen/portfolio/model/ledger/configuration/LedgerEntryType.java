@@ -31,12 +31,14 @@ public enum LedgerEntryType
     STOCK_DIVIDEND("STOCK_DIVIDEND", Shape.LEDGER_NATIVE_TARGETED),
     BONUS_ISSUE("BONUS_ISSUE", Shape.LEDGER_NATIVE_TARGETED),
     RIGHTS_DISTRIBUTION("RIGHTS_DISTRIBUTION", Shape.LEDGER_NATIVE_TARGETED),
-    BOND_CONVERSION("BOND_CONVERSION", Shape.LEDGER_NATIVE_TARGETED);
+    BOND_CONVERSION("BOND_CONVERSION", Shape.LEDGER_NATIVE_TARGETED),
+    CORPORATE_ACTION_MOVEMENT_CONFIRMATION("CORPORATE_ACTION_MOVEMENT_CONFIRMATION", Shape.LEDGER_NATIVE_MODEL_ONLY);
 
     private enum Shape
     {
         LEGACY_FIXED,
-        LEDGER_NATIVE_TARGETED
+        LEDGER_NATIVE_TARGETED,
+        LEDGER_NATIVE_MODEL_ONLY
     }
 
     private final String code;
@@ -98,6 +100,11 @@ public enum LedgerEntryType
     public boolean requiresTargetedDerivedDescriptors()
     {
         return isLedgerNativeTargeted();
+    }
+
+    public boolean supportsDerivedDescriptors()
+    {
+        return shape == Shape.LEGACY_FIXED || shape == Shape.LEDGER_NATIVE_TARGETED;
     }
 
     public boolean usesSignedTargetedProjectionFacts()

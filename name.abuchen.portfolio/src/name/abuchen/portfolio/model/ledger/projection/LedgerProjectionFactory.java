@@ -63,6 +63,9 @@ final class LedgerProjectionFactory
 
     private List<DerivedProjectionDescriptor> createDescriptors(LedgerEntry entry)
     {
+        if (entry.getType() != null && !entry.getType().supportsDerivedDescriptors())
+            return List.of();
+
         var result = descriptorService.derive(entry);
 
         if (!result.isOK())

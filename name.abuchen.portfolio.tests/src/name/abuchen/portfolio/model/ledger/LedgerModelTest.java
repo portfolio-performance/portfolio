@@ -528,10 +528,13 @@ public class LedgerModelTest
         var corporateActionFamilies = EnumSet.of(LedgerEntryType.SPIN_OFF, LedgerEntryType.STOCK_DIVIDEND,
                         LedgerEntryType.BONUS_ISSUE, LedgerEntryType.RIGHTS_DISTRIBUTION,
                         LedgerEntryType.BOND_CONVERSION);
+        var modelOnlyFamilies = EnumSet.of(LedgerEntryType.CORPORATE_ACTION_MOVEMENT_CONFIRMATION);
         var standardFamilies = EnumSet.complementOf(corporateActionFamilies);
+        standardFamilies.removeAll(modelOnlyFamilies);
 
         standardFamilies.forEach(this::assertStandardLegacyShape);
         corporateActionFamilies.forEach(this::assertLedgerNativeTargetedShape);
+        modelOnlyFamilies.forEach(this::assertLedgerNativeModelOnlyShape);
 
         assertTrue(LedgerEntryType.SPIN_OFF.requiresTargetedDerivedDescriptors());
         assertTrue(LedgerEntryType.SPIN_OFF.usesSignedTargetedProjectionFacts());
@@ -716,6 +719,7 @@ public class LedgerModelTest
         assertTrue(type.isLegacyFixedShape());
         assertFalse(type.isLedgerNativeTargeted());
         assertFalse(type.requiresTargetedDerivedDescriptors());
+        assertTrue(type.supportsDerivedDescriptors());
         assertFalse(type.usesSignedTargetedProjectionFacts());
     }
 
@@ -724,7 +728,17 @@ public class LedgerModelTest
         assertFalse(type.isLegacyFixedShape());
         assertTrue(type.isLedgerNativeTargeted());
         assertTrue(type.requiresTargetedDerivedDescriptors());
+        assertTrue(type.supportsDerivedDescriptors());
         assertTrue(type.usesSignedTargetedProjectionFacts());
+    }
+
+    private void assertLedgerNativeModelOnlyShape(LedgerEntryType type)
+    {
+        assertFalse(type.isLegacyFixedShape());
+        assertFalse(type.isLedgerNativeTargeted());
+        assertFalse(type.requiresTargetedDerivedDescriptors());
+        assertFalse(type.supportsDerivedDescriptors());
+        assertFalse(type.usesSignedTargetedProjectionFacts());
     }
 
     private void assertValueKindPolicy(ValueKind valueKind, Class<?> valueType)
