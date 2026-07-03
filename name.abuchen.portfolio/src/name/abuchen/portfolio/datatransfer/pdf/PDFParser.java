@@ -211,7 +211,7 @@ import name.abuchen.portfolio.model.TypedMap;
         List<LineSpan> split(String[] lines);
     }
 
-    private static class PatternSplittingStrategy implements SplittingStrategy
+    public static class PatternSplittingStrategy implements SplittingStrategy
     {
         private Pattern startsWith;
         private Pattern endsWith;
@@ -260,7 +260,7 @@ import name.abuchen.portfolio.model.TypedMap;
             return spans;
         }
 
-        private int findBlockEnd(String[] lines, int startLine, int endLine)
+        protected int findBlockEnd(String[] lines, int startLine, int endLine)
         {
             for (var lineNo = startLine; lineNo <= endLine; lineNo++)
             {
@@ -468,13 +468,9 @@ import name.abuchen.portfolio.model.TypedMap;
                     {
                         try
                         {
-                            var prevSkipReason = ctx.getSkipReason();
                             section.parse(filename, documentContext, lines, lineNo, lineNoEnd, ctx, target);
 
                             // if parsing was successful, then return
-
-                            if (prevSkipReason != null)
-                                ctx.skipTransaction(null); // reset skip marker
                             return;
                         }
                         catch (DuplicateSecurityException e)

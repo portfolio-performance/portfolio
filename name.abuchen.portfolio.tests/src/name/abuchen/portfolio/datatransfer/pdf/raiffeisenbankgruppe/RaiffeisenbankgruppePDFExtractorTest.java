@@ -1678,13 +1678,10 @@ public class RaiffeisenbankgruppePDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(countSkippedItems(results), is(1L));
-        assertThat(results.size(), is(3));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
-        // check skipped item
-        assertThat(results, hasItem(skippedItem("second page without transaction")));
-        
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("AT0000821103"), hasWkn(null), hasTicker(null), //
@@ -1699,6 +1696,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
                         hasNote(null), //
                         hasAmount("EUR", 136.24), hasGrossValue("EUR", 187.92), //
                         hasTaxes("EUR", 51.68), hasFees("EUR", 0.00))));
+
     }
 
     @Test

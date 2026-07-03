@@ -5,13 +5,17 @@ import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.ParsedData;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.PatternSplittingStrategy;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
@@ -267,8 +271,25 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^.*(Private Banking|Abrechnungsnr|Gesch.ftsart|Anlageverm.gen).*$",
-                        "^(Den Betrag buchen|Der Betrag wird|Dieser Beleg (tr.gt|wurde|wird)).*$");
+        PatternSplittingStrategy strategy = new PatternSplittingStrategy(
+                        "^.*(Private Banking|Abrechnungsnr|Gesch.ftsart|Anlageverm.gen).*$",
+                        "^(Den Betrag buchen|Der Betrag wird|Dieser Beleg (tr.gt|wurde|wird)).*$")
+        {
+            @Override
+            protected int findBlockEnd(String[] lines, int startLine, int endLine)
+            {
+                Pattern secondPagePattern = Pattern.compile("^Steuerrelevante Daten.*$");
+                int ret = super.findBlockEnd(lines, startLine, endLine);
+                if (ret == -1)
+                    return ret;
+
+                return Arrays.stream(lines, startLine, endLine) //
+                                .map(secondPagePattern::matcher) //
+                                .anyMatch(Matcher::matches) ? -1 : ret;
+            }
+
+        };
+        var firstRelevantLine = new Block(strategy);
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -276,12 +297,6 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
-                        .optionalOneOf( //
-                                        section -> section //
-                                                        .attributes("dummy") //
-                                                        .match("^Eink.nfte/Verlust.berhang aktuell (?<dummy>.*)$") //
-                                                        .assign((t, v) -> v.getTransactionContext().skipTransaction(
-                                                                        "second page without transaction")))
                         .oneOf( //
                                         // @formatter:off
                                         // Titel: AT0000A1TW21 RAIFF.-EMERGINGMARKETS-AKTIEN RZ(A)
