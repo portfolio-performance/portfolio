@@ -189,9 +189,14 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
         super(client, security, converter, interval);
     }
 
-    public Double getIrr()
+   public Double getIrr()
     {
         return irr.get();
+    }
+
+    public Double getIrrAfterTax()
+    {
+        return irrAfterTax.get();
     }
 
     public Double getTrueTimeWeightedRateOfReturn()
