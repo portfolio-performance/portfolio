@@ -1,0 +1,40 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.84.2
+System: linux | x86_64 | 25.0.3+9-2-24.04.2-Ubuntu | Ubuntu
+-----------------------------------------
+Ein Service von:
+Für Rückfragen wenden Sie sich 
+bitte an: info@sunrise.app
+Herr
+XXXXXXX YYYYYY Fondsabrechnung
+ZZZZ Straße. XX
+54321 XXXXXXXX Datum: 03.07.2026
+Deutschland  Depotnummer: 1234567890
+Hiermit bestätigen wir Ihnen folgende Transaktion für Sie ausgeführt zu haben:
+Transaktion Fondsname Betrag Preis Anteile 
+ISIN Preisdatum
+Verwahrart/Lagerland
+Verwahrort
+Kauf Standortfonds Deutschland 100.24 € 192.77 € 0.520
+AT0000A1Z882 02.07.2026
+Girosammelverwahrung/AT 
+Raiffeisen Bank International AG
+  100.24 €
+ 0,00%
+ 20260701123456789000001944747
+ DE33 **** **** **** **** **
+Anlagen in Investmentfonds können erst nach Kenntnisnahme der gesetzlichen Verkaufsunterlagen 
+(Basisinformationsblatt) erfolgen. Diese Unterlagen haben Sie direkt über die Sunrise Kanäle erhalten bzw. vor 
+Auftragserteilung dort eingesehen.
+Die erworbenen Vermögenswerte fallen unter die Regelungen der Richtlinie 2014/65/EU („MiFID II“), insbesondere die 
+in dieser Richtlinie enthaltenen Bestimmungen zum Schutz Ihrer Vermögenswerte. Informationen und Risiken im 
+Zusammenhang mit der Sammelverwahrung entnehmen Sie bitte den "Allgemeinen Geschäftsbedingungen" unter 
+www.sunrise.app. 
+Wichtiger Hinweis: Einwendungen gegen diese Fondsabrechnung wegen Unrichtigkeit oder Unvollständigkeit richten 
+Sie bitte schriftlich spätestens einen Monat nach Zugang an: info@sunrise.app.
+Mit besten Grüßen
+Ihr Sunrise Team
+Sunrise Securities GmbH, Gußhausstraße 3/2, A-1040 Wien; UID-Nummer: ATU 68616777, Firmenbuchnummer: FN 410750w 
+Sunrise Securities GmbH nach österreichischem Recht Zweigniederlassung Deutschland, Rahel-Hirsch-Straße 10, D-10557 Berlin; Handelsregister: HRB 258310 B
+Version 2026_01
+Version_2025_01_K
