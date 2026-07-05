@@ -152,6 +152,69 @@ public class LedgerStructuralValidatorTest
     }
 
     @Test
+    public void testNativeCorporateActionRejectsSecurityPostingWithoutPortfolio()
+    {
+        var entry = nativeEntry(LedgerEntryType.CORPORATE_ACTION);
+        posting(entry, CorporateActionLeg.TARGET_SECURITY).setPortfolio(null);
+
+        assertIssue(entry, IssueCode.POSTING_PORTFOLIO_REQUIRED_FOR_SECURITY);
+    }
+
+    @Test
+    public void testNativeCorporateActionAcceptsSecurityPostingWithPortfolio()
+    {
+        assertOK(LedgerStructuralValidator.validate(ledger(nativeEntry(LedgerEntryType.CORPORATE_ACTION))));
+    }
+
+    @Test
+    public void testNativeCorporateActionAcceptsPureCashPostingWithoutPortfolio()
+    {
+        var entry = new LedgerEntry();
+        entry.setType(LedgerEntryType.CORPORATE_ACTION);
+        entry.setDateTime(LocalDateTime.of(2026, 1, 1, 10, 0));
+        entry.addParameter(LedgerParameter.ofCode(LedgerParameterType.CORPORATE_ACTION_KIND,
+                        CorporateActionKind.SPIN_OFF));
+        entry.addPosting(cashCompensationPosting("cash-1")); //$NON-NLS-1$
+
+        assertOK(LedgerStructuralValidator.validate(ledger(entry)));
+    }
+
+    @Test
+    public void testNativeCorporateActionAllowsPortfolioWithoutSecurityForThisRule()
+    {
+        var entry = nativeEntry(LedgerEntryType.CORPORATE_ACTION);
+        var posting = posting(entry, CorporateActionLeg.TARGET_SECURITY);
+        posting.setType(LedgerPostingType.CASH);
+        posting.setSecurity(null);
+
+        assertOK(LedgerStructuralValidator.validate(ledger(entry)));
+    }
+
+    @Test
+    public void testRegisteredCorporateActionKindRejectsSecurityPostingWithoutPortfolio()
+    {
+        var entry = corporateActionEntry(CorporateActionKind.STOCK_DIVIDEND);
+        entry.addPosting(securityPosting("target", LedgerPostingDirection.INBOUND, //$NON-NLS-1$
+                        CorporateActionLeg.TARGET_SECURITY));
+        posting(entry, CorporateActionLeg.TARGET_SECURITY).setPortfolio(null);
+
+        assertIssue(entry, IssueCode.POSTING_PORTFOLIO_REQUIRED_FOR_SECURITY);
+    }
+
+    @Test
+    public void testRegisteredCorporateActionKindAcceptsPureCashPostingWithoutPortfolio()
+    {
+        var entry = new LedgerEntry();
+        entry.setType(LedgerEntryType.CORPORATE_ACTION);
+        entry.setDateTime(LocalDateTime.of(2026, 1, 1, 10, 0));
+        entry.addParameter(LedgerParameter.ofCode(LedgerParameterType.CORPORATE_ACTION_KIND,
+                        CorporateActionKind.COUPON_PAYMENT));
+        entry.addPosting(cashCompensationPosting("coupon-cash")); //$NON-NLS-1$
+
+        assertOK(LedgerStructuralValidator.validate(ledger(entry)));
+    }
+
+    @Test
     public void testSpinOffAllowsNoCorporateActionPrimaryLegs()
     {
         var entry = new LedgerEntry();
@@ -311,6 +374,16 @@ public class LedgerStructuralValidatorTest
             }
             default -> throw new IllegalArgumentException(type.name());
         }
+
+        return entry;
+    }
+
+    private LedgerEntry corporateActionEntry(CorporateActionKind kind)
+    {
+        var entry = new LedgerEntry();
+        entry.setType(LedgerEntryType.CORPORATE_ACTION);
+        entry.setDateTime(LocalDateTime.of(2026, 1, 1, 10, 0));
+        entry.addParameter(LedgerParameter.ofCode(LedgerParameterType.CORPORATE_ACTION_KIND, kind));
 
         return entry;
     }

@@ -26,7 +26,7 @@ public class LedgerDiagnosticCodeTest
         assertThat(LedgerDiagnosticCode.LEDGER_IMPORT_001.getCode(), is("LEDGER-IMPORT-001"));
         assertThat(LedgerDiagnosticCode.LEDGER_IMPORT_021.getCode(), is("LEDGER-IMPORT-021"));
         assertThat(LedgerDiagnosticCode.LEDGER_STRUCT_001.getCode(), is("LEDGER-STRUCT-001"));
-        assertThat(LedgerDiagnosticCode.LEDGER_STRUCT_055.getCode(), is("LEDGER-STRUCT-055"));
+        assertThat(LedgerDiagnosticCode.LEDGER_STRUCT_056.getCode(), is("LEDGER-STRUCT-056"));
         assertThat(LedgerDiagnosticCode.LEDGER_PROJ_001.getCode(), is("LEDGER-PROJ-001"));
         assertThat(LedgerDiagnosticCode.LEDGER_PROJ_077.getCode(), is("LEDGER-PROJ-077"));
         assertThat(LedgerDiagnosticCode.LEDGER_PERSIST_001.getCode(), is("LEDGER-PERSIST-001"));

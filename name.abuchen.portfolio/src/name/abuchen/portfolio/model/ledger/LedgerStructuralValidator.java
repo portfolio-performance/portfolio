@@ -33,6 +33,7 @@ public final class LedgerStructuralValidator
         POSTING_TYPE_REQUIRED,
         POSTING_CURRENCY_REQUIRED,
         POSTING_SECURITY_REQUIRED,
+        POSTING_PORTFOLIO_REQUIRED_FOR_SECURITY,
         POSTING_EXCHANGE_RATE_POSITIVE,
         DIVIDEND_SECURITY_REQUIRED,
         PARAMETER_TYPE_REQUIRED,
@@ -160,6 +161,15 @@ public final class LedgerStructuralValidator
                             LedgerDiagnosticCode.LEDGER_STRUCT_015
                                             .message(MessageFormat.format(
                                                             Messages.LedgerStructuralValidatorPostingSecurityRequired,
+                                                            posting.getUUID())),
+                            entry, posting));
+
+        if (entry.getType() != null && entry.getType().isLedgerNativeTargeted() && posting.getSecurity() != null
+                        && posting.getPortfolio() == null)
+            issues.add(postingIssue(IssueCode.POSTING_PORTFOLIO_REQUIRED_FOR_SECURITY,
+                            LedgerDiagnosticCode.LEDGER_STRUCT_056
+                                            .message(MessageFormat.format(
+                                                            Messages.LedgerStructuralValidatorPostingPortfolioRequiredForSecurity,
                                                             posting.getUUID())),
                             entry, posting));
 

@@ -296,6 +296,7 @@ public class Messages extends NLS
     public static String LedgerStructuralValidatorPostingCurrencyRequired;
     public static String LedgerStructuralValidatorPostingExchangeRatePositive;
     public static String LedgerStructuralValidatorPostingGroupRefNotFound;
+    public static String LedgerStructuralValidatorPostingPortfolioRequiredForSecurity;
     public static String LedgerStructuralValidatorPostingSecurityRequired;
     public static String LedgerStructuralValidatorPostingTypeRequired;
     public static String LedgerStructuralValidatorPrimaryPostingRefNotFound;
