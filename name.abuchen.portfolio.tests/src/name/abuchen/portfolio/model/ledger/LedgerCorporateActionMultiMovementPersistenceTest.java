@@ -636,7 +636,13 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
                         .filter(posting -> posting.getType() == LedgerPostingType.CASH)
                         .filter(posting -> "cash-1".equals(posting.getLocalKey())) //$NON-NLS-1$
                         .count(), is(1L));
-        assertTrue(LedgerDescriptorTestSupport.descriptors(entry).isEmpty());
+        var descriptors = LedgerDescriptorTestSupport.descriptors(entry);
+        assertThat(descriptors.size(), is(1));
+        assertThat(descriptors.get(0).getRole(), is(LedgerProjectionRole.ACCOUNT));
+        assertThat(descriptors.get(0).getSemanticInstanceKey().orElseThrow(), is("cash-1"));
+        assertThat(descriptors.get(0).getPrimaryPosting().getType(), is(LedgerPostingType.CASH));
+        assertFalse(descriptors.stream().map(DerivedProjectionDescriptor::getPrimaryPosting)
+                        .anyMatch(posting -> posting.getCorporateActionLeg() == CorporateActionLeg.SECURITY_CONTEXT));
     }
 
     private void assertCashDistribution(LedgerEntry entry)

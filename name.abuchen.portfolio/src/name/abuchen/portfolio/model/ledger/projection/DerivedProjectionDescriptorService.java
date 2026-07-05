@@ -121,6 +121,12 @@ public final class DerivedProjectionDescriptorService
             return;
         }
 
+        if (kind.filter(this::isOpenMovementCorporateAction).isPresent())
+        {
+            openMovementCorporateAction(entry, descriptors, diagnostics);
+            return;
+        }
+
         if (kind.filter(k -> k == CorporateActionKind.CASH_DISTRIBUTION || k == CorporateActionKind.COUPON_PAYMENT)
                         .isPresent())
             cashOrientedCorporateAction(entry, descriptors, diagnostics);
@@ -140,6 +146,15 @@ public final class DerivedProjectionDescriptorService
         return switch (kind)
         {
             case CONVERSION, EXCHANGE -> true;
+            default -> false;
+        };
+    }
+
+    private boolean isOpenMovementCorporateAction(CorporateActionKind kind)
+    {
+        return switch (kind)
+        {
+            case DEFAULTED_INTEREST, RESTRUCTURING, DEFAULT -> true;
             default -> false;
         };
     }
@@ -217,6 +232,17 @@ public final class DerivedProjectionDescriptorService
                         cashCompensationRepeatedSelector(), true, diagnostics).forEach(descriptors::add);
     }
 
+    private void openMovementCorporateAction(LedgerEntry entry, List<DerivedProjectionDescriptor> descriptors,
+                    List<Diagnostic> diagnostics)
+    {
+        repeatedPortfolio(entry, LedgerProjectionRole.DELIVERY_OUTBOUND, sourceSecurityPreferredSelector(),
+                        sourceSecurityRepeatedSelector(), true, diagnostics).forEach(descriptors::add);
+        repeatedPortfolio(entry, LedgerProjectionRole.NEW_SECURITY_LEG, securityInPreferredSelector(),
+                        securityInRepeatedSelector(), true, diagnostics).forEach(descriptors::add);
+        repeatedAccount(entry, LedgerProjectionRole.ACCOUNT, openAccountPreferredSelector(),
+                        openAccountRepeatedSelector(), true, diagnostics).forEach(descriptors::add);
+    }
+
     private Predicate<LedgerPosting> securityInPreferredSelector()
     {
         return primary().and(corporateLeg(CorporateActionLeg.TARGET_SECURITY)
@@ -262,6 +288,22 @@ public final class DerivedProjectionDescriptorService
     private Predicate<LedgerPosting> cashRepeatedSelector()
     {
         return primary().and(postingType(LedgerPostingType.CASH)).and(semantic(LedgerPostingSemanticRole.CASH));
+    }
+
+    private Predicate<LedgerPosting> openAccountPreferredSelector()
+    {
+        return cashPreferredSelector().or(standaloneFeeTaxSelector().and(localKey(LedgerProjectionRole.ACCOUNT)));
+    }
+
+    private Predicate<LedgerPosting> openAccountRepeatedSelector()
+    {
+        return cashRepeatedSelector().or(standaloneFeeTaxSelector());
+    }
+
+    private Predicate<LedgerPosting> standaloneFeeTaxSelector()
+    {
+        return posting -> (posting.getType() == LedgerPostingType.FEE || posting.getType() == LedgerPostingType.TAX)
+                        && isBlank(posting.getGroupKey());
     }
 
     private java.util.Optional<DerivedProjectionDescriptor> account(LedgerEntry entry, LedgerProjectionRole role,
@@ -440,6 +482,9 @@ public final class DerivedProjectionDescriptorService
 
     private List<LedgerPosting> unitPostings(LedgerEntry entry, LedgerPosting primary)
     {
+        if (unitPosting(primary))
+            return List.of();
+
         return entry.getPostings().stream() //
                         .filter(posting -> posting != primary) //
                         .filter(this::unitPosting) //

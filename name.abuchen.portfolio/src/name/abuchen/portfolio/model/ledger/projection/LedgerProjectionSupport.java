@@ -19,6 +19,7 @@ import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionKind;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerParameterType;
+import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
 import name.abuchen.portfolio.money.Money;
 
 /**
@@ -126,6 +127,12 @@ public final class LedgerProjectionSupport
 
     private static AccountTransaction.Type corporateActionAccountType(DerivedProjectionDescriptor descriptor)
     {
+        if (descriptor.getPrimaryPosting().getType() == LedgerPostingType.FEE)
+            return AccountTransaction.Type.FEES;
+
+        if (descriptor.getPrimaryPosting().getType() == LedgerPostingType.TAX)
+            return AccountTransaction.Type.TAXES;
+
         var kind = CorporateActionKind.fromEntry(descriptor.getEntry()).orElse(null);
 
         if (kind == null)
@@ -135,8 +142,8 @@ public final class LedgerProjectionSupport
         return switch (kind)
         {
             case CASH_DISTRIBUTION -> AccountTransaction.Type.DIVIDENDS;
-            case COUPON_PAYMENT -> AccountTransaction.Type.INTEREST;
-            case MATURITY, PARTIAL_REDEMPTION, CALL, PUT -> AccountTransaction.Type.DEPOSIT;
+            case COUPON_PAYMENT, DEFAULTED_INTEREST -> AccountTransaction.Type.INTEREST;
+            case MATURITY, PARTIAL_REDEMPTION, CALL, PUT, RESTRUCTURING, DEFAULT -> AccountTransaction.Type.DEPOSIT;
             default -> throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_PROJ_072
                             .message("Unsupported targeted account kind " + kind)); //$NON-NLS-1$
         };
