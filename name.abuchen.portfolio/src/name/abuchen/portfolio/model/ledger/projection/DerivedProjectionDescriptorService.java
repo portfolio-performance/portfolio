@@ -115,6 +115,12 @@ public final class DerivedProjectionDescriptorService
             return;
         }
 
+        if (kind.filter(this::isSecurityReorganizationCorporateAction).isPresent())
+        {
+            securityReorganizationCorporateAction(entry, descriptors, diagnostics);
+            return;
+        }
+
         if (kind.filter(k -> k == CorporateActionKind.CASH_DISTRIBUTION || k == CorporateActionKind.COUPON_PAYMENT)
                         .isPresent())
             cashOrientedCorporateAction(entry, descriptors, diagnostics);
@@ -125,6 +131,15 @@ public final class DerivedProjectionDescriptorService
         return switch (kind)
         {
             case STOCK_DIVIDEND, BONUS_ISSUE, RIGHTS_DISTRIBUTION, PIK_INTEREST -> true;
+            default -> false;
+        };
+    }
+
+    private boolean isSecurityReorganizationCorporateAction(CorporateActionKind kind)
+    {
+        return switch (kind)
+        {
+            case CONVERSION, EXCHANGE -> true;
             default -> false;
         };
     }
@@ -189,6 +204,17 @@ public final class DerivedProjectionDescriptorService
                         sourceSecurityRepeatedSelector(), true, diagnostics).forEach(descriptors::add);
         repeatedAccount(entry, LedgerProjectionRole.ACCOUNT, cashPreferredSelector(), cashRepeatedSelector(), true,
                         diagnostics).forEach(descriptors::add);
+    }
+
+    private void securityReorganizationCorporateAction(LedgerEntry entry,
+                    List<DerivedProjectionDescriptor> descriptors, List<Diagnostic> diagnostics)
+    {
+        repeatedPortfolio(entry, LedgerProjectionRole.DELIVERY_OUTBOUND, sourceSecurityPreferredSelector(),
+                        sourceSecurityRepeatedSelector(), true, diagnostics).forEach(descriptors::add);
+        repeatedPortfolio(entry, LedgerProjectionRole.NEW_SECURITY_LEG, securityInPreferredSelector(),
+                        securityInRepeatedSelector(), true, diagnostics).forEach(descriptors::add);
+        repeatedAccount(entry, LedgerProjectionRole.CASH_COMPENSATION, cashCompensationPreferredSelector(),
+                        cashCompensationRepeatedSelector(), true, diagnostics).forEach(descriptors::add);
     }
 
     private Predicate<LedgerPosting> securityInPreferredSelector()
