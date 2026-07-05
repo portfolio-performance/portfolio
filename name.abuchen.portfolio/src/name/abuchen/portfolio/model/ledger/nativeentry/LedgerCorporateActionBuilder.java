@@ -229,6 +229,13 @@ public final class LedgerCorporateActionBuilder
         return this;
     }
 
+    public LedgerCorporateActionBuilder basisPercentageAllocation(LedgerCorporateActionLegHandle target,
+                    BigDecimal percent)
+    {
+        var key = Objects.requireNonNull(target).toSemanticKey();
+        return basisPercentageAllocation(key.role(), key.localKey(), key.groupKey(), percent);
+    }
+
     public LedgerNativeEntryBuildResult buildDetached()
     {
         var entry = assemble();

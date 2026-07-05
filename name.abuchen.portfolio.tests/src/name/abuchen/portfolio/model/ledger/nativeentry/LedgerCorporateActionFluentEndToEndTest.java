@@ -64,7 +64,10 @@ public class LedgerCorporateActionFluentEndToEndTest
                         .tax("tax-1", fixture.account, money(1), "cash-1") //
                         .buildAndAdd().getEntry();
 
-        exerciseEndToEnd(fixture, entry, LedgerLegRole.CASH_LEG, "cash-2", "cash-2",
+        exerciseEndToEnd(fixture, entry,
+                        (client, candidate) -> LedgerCorporateActionView.of(candidate).cash()
+                                        .withAccount(account(client, "Second Cash Account")).single(),
+                        LedgerLegRole.CASH_LEG, "cash-2", "cash-2",
                         posting -> setAmount(posting, 42),
                         reloaded -> {
                             assertAmount(reloaded, LedgerLegRole.CASH_LEG, "cash-2", "cash-2", 42);
@@ -87,7 +90,11 @@ public class LedgerCorporateActionFluentEndToEndTest
                         .basis(CorporateActionBasisStatus.UNKNOWN) //
                         .buildAndAdd().getEntry();
 
-        exerciseEndToEnd(fixture, entry, LedgerLegRole.TARGET_SECURITY_LEG, "target-2", "main",
+        exerciseEndToEnd(fixture, entry,
+                        (client, candidate) -> LedgerCorporateActionView.of(candidate).securityIn()
+                                        .withPortfolio(portfolio(client, "Second Portfolio"))
+                                        .withSecurity(security(client, "Second Target AG")).single(),
+                        LedgerLegRole.TARGET_SECURITY_LEG, "target-2", "main",
                         posting -> posting.setShares(shares(9)),
                         reloaded -> {
                             assertShares(reloaded, LedgerLegRole.TARGET_SECURITY_LEG, "target-2", "main", 9);
@@ -120,7 +127,11 @@ public class LedgerCorporateActionFluentEndToEndTest
                                         new BigDecimal("10")) //
                         .buildAndAdd().getEntry();
 
-        exerciseEndToEnd(fixture, entry, LedgerLegRole.TARGET_SECURITY_LEG, "target-2", "main",
+        exerciseEndToEnd(fixture, entry,
+                        (client, candidate) -> LedgerCorporateActionView.of(candidate).securityIn()
+                                        .withPortfolio(portfolio(client, "Second Portfolio"))
+                                        .withSecurity(security(client, "Second Target AG")).single(),
+                        LedgerLegRole.TARGET_SECURITY_LEG, "target-2", "main",
                         posting -> posting.setShares(shares(8)),
                         reloaded -> {
                             assertShares(reloaded, LedgerLegRole.TARGET_SECURITY_LEG, "target-2", "main", 8);
@@ -146,7 +157,11 @@ public class LedgerCorporateActionFluentEndToEndTest
                         .tax("tax-1", fixture.account, money(1), "cash-1") //
                         .buildAndAdd().getEntry();
 
-        exerciseEndToEnd(fixture, entry, LedgerLegRole.TARGET_SECURITY_LEG, "target-1", "main",
+        exerciseEndToEnd(fixture, entry,
+                        (client, candidate) -> LedgerCorporateActionView.of(candidate).securityIn()
+                                        .withPortfolio(portfolio(client, "Portfolio"))
+                                        .withSecurity(security(client, "Target AG")).single(),
+                        LedgerLegRole.TARGET_SECURITY_LEG, "target-1", "main",
                         posting -> posting.setShares(shares(7)),
                         reloaded -> {
                             assertShares(reloaded, LedgerLegRole.TARGET_SECURITY_LEG, "target-1", "main", 7);
@@ -167,7 +182,11 @@ public class LedgerCorporateActionFluentEndToEndTest
                         .cash("cash-1", "cash-1", fixture.account, money(2)) //
                         .buildAndAdd().getEntry();
 
-        exerciseEndToEnd(fixture, entry, LedgerLegRole.DISTRIBUTED_RIGHT_LEG, "right-1", "main",
+        exerciseEndToEnd(fixture, entry,
+                        (client, candidate) -> LedgerCorporateActionView.of(candidate).rightsIn()
+                                        .withPortfolio(portfolio(client, "Portfolio"))
+                                        .withSecurity(security(client, "Right AG")).single(),
+                        LedgerLegRole.DISTRIBUTED_RIGHT_LEG, "right-1", "main",
                         posting -> posting.setShares(shares(13)),
                         reloaded -> {
                             assertShares(reloaded, LedgerLegRole.DISTRIBUTED_RIGHT_LEG, "right-1", "main", 13);
@@ -190,7 +209,11 @@ public class LedgerCorporateActionFluentEndToEndTest
                         .tax("tax-1", fixture.account, money(1), "coupon-1") //
                         .buildAndAdd().getEntry();
 
-        exerciseEndToEnd(fixture, entry, LedgerLegRole.CASH_LEG, "cash-1", "coupon-1",
+        exerciseEndToEnd(fixture, entry,
+                        (client, candidate) -> LedgerCorporateActionView.of(candidate).cash()
+                                        .withAccount(account(client, "Cash Account")).withGroupKey("coupon-1")
+                                        .single(),
+                        LedgerLegRole.CASH_LEG, "cash-1", "coupon-1",
                         posting -> setAmount(posting, 14),
                         reloaded -> {
                             assertAmount(reloaded, LedgerLegRole.CASH_LEG, "cash-1", "coupon-1", 14);
@@ -213,7 +236,11 @@ public class LedgerCorporateActionFluentEndToEndTest
                         .basis(CorporateActionBasisStatus.UNKNOWN) //
                         .buildAndAdd().getEntry();
 
-        exerciseEndToEnd(fixture, entry, LedgerLegRole.TARGET_SECURITY_LEG, "target-1", "pik-1",
+        exerciseEndToEnd(fixture, entry,
+                        (client, candidate) -> LedgerCorporateActionView.of(candidate).securityIn()
+                                        .withPortfolio(portfolio(client, "Portfolio"))
+                                        .withSecurity(security(client, "Target AG")).single(),
+                        LedgerLegRole.TARGET_SECURITY_LEG, "target-1", "pik-1",
                         posting -> posting.setShares(shares(6)),
                         reloaded -> {
                             assertShares(reloaded, LedgerLegRole.TARGET_SECURITY_LEG, "target-1", "pik-1", 6);
@@ -235,7 +262,11 @@ public class LedgerCorporateActionFluentEndToEndTest
                         .cash("cash-1", "cash-1", fixture.account, money(4)) //
                         .buildAndAdd().getEntry();
 
-        exerciseEndToEnd(fixture, entry, LedgerLegRole.TARGET_SECURITY_LEG, "claim-1", "claim-1",
+        exerciseEndToEnd(fixture, entry,
+                        (client, candidate) -> LedgerCorporateActionView.of(candidate).securityIn()
+                                        .withPortfolio(portfolio(client, "Portfolio"))
+                                        .withSecurity(security(client, "Claim AG")).single(),
+                        LedgerLegRole.TARGET_SECURITY_LEG, "claim-1", "claim-1",
                         posting -> posting.setShares(shares(5)),
                         reloaded -> {
                             assertShares(reloaded, LedgerLegRole.TARGET_SECURITY_LEG, "claim-1", "claim-1", 5);
@@ -258,7 +289,11 @@ public class LedgerCorporateActionFluentEndToEndTest
                         .accruedInterest("interest-1", "redemption-1", fixture.account, money(5)) //
                         .buildAndAdd().getEntry();
 
-        exerciseEndToEnd(fixture, entry, LedgerLegRole.CASH_LEG, "cash-1", "redemption-1",
+        exerciseEndToEnd(fixture, entry,
+                        (client, candidate) -> LedgerCorporateActionView.of(candidate).cash()
+                                        .withAccount(account(client, "Cash Account")).withGroupKey("redemption-1")
+                                        .single(),
+                        LedgerLegRole.CASH_LEG, "cash-1", "redemption-1",
                         posting -> setAmount(posting, 105),
                         reloaded -> {
                             assertAmount(reloaded, LedgerLegRole.CASH_LEG, "cash-1", "redemption-1", 105);
@@ -283,7 +318,11 @@ public class LedgerCorporateActionFluentEndToEndTest
                         .basis(CorporateActionBasisStatus.UNKNOWN) //
                         .buildAndAdd().getEntry();
 
-        exerciseEndToEnd(fixture, entry, LedgerLegRole.PRINCIPAL_REDEMPTION_LEG, "principal-1", "redemption-1",
+        exerciseEndToEnd(fixture, entry,
+                        (client, candidate) -> LedgerCorporateActionView.of(candidate).principal()
+                                        .withAccount(account(client, "Cash Account")).withGroupKey("redemption-1")
+                                        .single(),
+                        LedgerLegRole.PRINCIPAL_REDEMPTION_LEG, "principal-1", "redemption-1",
                         posting -> setAmount(posting, 45),
                         reloaded -> {
                             assertAmount(reloaded, LedgerLegRole.PRINCIPAL_REDEMPTION_LEG, "principal-1",
@@ -307,7 +346,11 @@ public class LedgerCorporateActionFluentEndToEndTest
                         .fee("fee-1", fixture.account, money(1), "redemption-1") //
                         .buildAndAdd().getEntry();
 
-        exerciseEndToEnd(fixture, entry, LedgerLegRole.CASH_LEG, "cash-1", "redemption-1",
+        exerciseEndToEnd(fixture, entry,
+                        (client, candidate) -> LedgerCorporateActionView.of(candidate).cash()
+                                        .withAccount(account(client, "Cash Account")).withGroupKey("redemption-1")
+                                        .single(),
+                        LedgerLegRole.CASH_LEG, "cash-1", "redemption-1",
                         posting -> setAmount(posting, 71),
                         reloaded -> {
                             assertAmount(reloaded, LedgerLegRole.CASH_LEG, "cash-1", "redemption-1", 71);
@@ -330,7 +373,11 @@ public class LedgerCorporateActionFluentEndToEndTest
                         .tax("tax-1", fixture.account, money(1), "redemption-1") //
                         .buildAndAdd().getEntry();
 
-        exerciseEndToEnd(fixture, entry, LedgerLegRole.SOURCE_SECURITY_LEG, "source-1", "redemption-1",
+        exerciseEndToEnd(fixture, entry,
+                        (client, candidate) -> LedgerCorporateActionView.of(candidate).securityOut()
+                                        .withPortfolio(portfolio(client, "Portfolio"))
+                                        .withSecurity(security(client, "Bond AG")).single(),
+                        LedgerLegRole.SOURCE_SECURITY_LEG, "source-1", "redemption-1",
                         posting -> posting.setShares(shares(6)),
                         reloaded -> {
                             assertShares(reloaded, LedgerLegRole.SOURCE_SECURITY_LEG, "source-1", "redemption-1", 6);
@@ -356,7 +403,11 @@ public class LedgerCorporateActionFluentEndToEndTest
                                         new BigDecimal("100")) //
                         .buildAndAdd().getEntry();
 
-        exerciseEndToEnd(fixture, entry, LedgerLegRole.TARGET_SECURITY_LEG, "target-1", "main",
+        exerciseEndToEnd(fixture, entry,
+                        (client, candidate) -> LedgerCorporateActionView.of(candidate).securityIn()
+                                        .withPortfolio(portfolio(client, "Portfolio"))
+                                        .withSecurity(security(client, "Target AG")).single(),
+                        LedgerLegRole.TARGET_SECURITY_LEG, "target-1", "main",
                         posting -> posting.setShares(shares(6)),
                         reloaded -> {
                             assertShares(reloaded, LedgerLegRole.TARGET_SECURITY_LEG, "target-1", "main", 6);
@@ -387,7 +438,11 @@ public class LedgerCorporateActionFluentEndToEndTest
                                         new BigDecimal("40")) //
                         .buildAndAdd().getEntry();
 
-        exerciseEndToEnd(fixture, entry, LedgerLegRole.TARGET_SECURITY_LEG, "target-2", "main",
+        exerciseEndToEnd(fixture, entry,
+                        (client, candidate) -> LedgerCorporateActionView.of(candidate).securityIn()
+                                        .withPortfolio(portfolio(client, "Second Portfolio"))
+                                        .withSecurity(security(client, "Second Target AG")).single(),
+                        LedgerLegRole.TARGET_SECURITY_LEG, "target-2", "main",
                         posting -> posting.setShares(shares(9)),
                         reloaded -> {
                             assertShares(reloaded, LedgerLegRole.TARGET_SECURITY_LEG, "target-2", "main", 9);
@@ -415,7 +470,10 @@ public class LedgerCorporateActionFluentEndToEndTest
                         .basis(CorporateActionBasisStatus.UNKNOWN) //
                         .buildAndAdd().getEntry();
 
-        exerciseEndToEnd(fixture, entry, LedgerLegRole.CASH_LEG, "cash-1", "main",
+        exerciseEndToEnd(fixture, entry,
+                        (client, candidate) -> LedgerCorporateActionView.of(candidate).cash()
+                                        .withAccount(account(client, "Cash Account")).withGroupKey("main").single(),
+                        LedgerLegRole.CASH_LEG, "cash-1", "main",
                         posting -> setAmount(posting, 10),
                         reloaded -> {
                             assertAmount(reloaded, LedgerLegRole.CASH_LEG, "cash-1", "main", 10);
@@ -439,7 +497,10 @@ public class LedgerCorporateActionFluentEndToEndTest
                         .cash("cash-1", "cash-1", fixture.account, money(5)) //
                         .buildAndAdd().getEntry();
 
-        exerciseEndToEnd(fixture, entry, LedgerLegRole.CASH_LEG, "cash-1", "cash-1",
+        exerciseEndToEnd(fixture, entry,
+                        (client, candidate) -> LedgerCorporateActionView.of(candidate).cash()
+                                        .withAccount(account(client, "Cash Account")).single(),
+                        LedgerLegRole.CASH_LEG, "cash-1", "cash-1",
                         posting -> setAmount(posting, 6),
                         reloaded -> {
                             assertAmount(reloaded, LedgerLegRole.CASH_LEG, "cash-1", "cash-1", 6);
@@ -448,8 +509,9 @@ public class LedgerCorporateActionFluentEndToEndTest
                         });
     }
 
-    private void exerciseEndToEnd(Fixture fixture, LedgerEntry entry, LedgerLegRole editRole, String editLocalKey,
-                    String editGroupKey, PostingMutation edit, EntryAssertion assertion) throws Exception
+    private void exerciseEndToEnd(Fixture fixture, LedgerEntry entry, HandleLookup handleLookup,
+                    LedgerLegRole expectedRole, String expectedLocalKey, String expectedGroupKey, PostingMutation edit,
+                    EntryAssertion assertion) throws Exception
     {
         assertValid(fixture.client);
         assertNativeDefinitionValid(entry);
@@ -459,8 +521,8 @@ public class LedgerCorporateActionFluentEndToEndTest
         assertProjectingMovementsAreMaterialized(entry);
         assertNonProjectingFacts(entry);
 
-        LedgerCorporateActionEditSupport.mutatePosting(fixture.client, entry, editRole, editLocalKey, editGroupKey,
-                        edit::mutate);
+        var handle = assertHandle(fixture.client, entry, handleLookup, expectedRole, expectedLocalKey, expectedGroupKey);
+        LedgerCorporateActionEditSupport.mutatePosting(fixture.client, handle, edit::mutate);
         var liveEntry = entryByUUID(fixture.client, entry.getUUID());
 
         assertion.assertEntry(liveEntry);
@@ -475,6 +537,7 @@ public class LedgerCorporateActionFluentEndToEndTest
         var loadedFromXml = loadXml(xml);
         LedgerProjectionService.materialize(loadedFromXml);
         var xmlEntry = onlyLedgerEntry(loadedFromXml);
+        assertHandle(loadedFromXml, xmlEntry, handleLookup, expectedRole, expectedLocalKey, expectedGroupKey);
         assertion.assertEntry(xmlEntry);
         assertValid(loadedFromXml);
         assertNativeDefinitionValid(xmlEntry);
@@ -484,6 +547,7 @@ public class LedgerCorporateActionFluentEndToEndTest
         var loadedFromProtobuf = ProtobufTestUtilities.load(ProtobufTestUtilities.save(fixture.client));
         LedgerProjectionService.materialize(loadedFromProtobuf);
         var protobufEntry = onlyLedgerEntry(loadedFromProtobuf);
+        assertHandle(loadedFromProtobuf, protobufEntry, handleLookup, expectedRole, expectedLocalKey, expectedGroupKey);
         assertion.assertEntry(protobufEntry);
         assertValid(loadedFromProtobuf);
         assertNativeDefinitionValid(protobufEntry);
@@ -496,6 +560,20 @@ public class LedgerCorporateActionFluentEndToEndTest
         assertThat(fixture.client.getLedger().getEntries().size(), is(0));
         assertThat(ledgerBackedProjectionCount(fixture.client), is(0L));
         assertThat(fixture.client.getSecurities().size(), is(securityCount));
+    }
+
+    private static LedgerCorporateActionLegHandle assertHandle(Client client, LedgerEntry entry,
+                    HandleLookup handleLookup, LedgerLegRole expectedRole, String expectedLocalKey,
+                    String expectedGroupKey)
+    {
+        var handle = handleLookup.find(client, entry);
+        assertThat(handle.role(), is(expectedRole));
+        assertThat(handle.localKey(), is(expectedLocalKey));
+        assertThat(handle.groupKey(), is(expectedGroupKey));
+        assertThat(handle.toSemanticKey().role(), is(expectedRole));
+        assertThat(handle.toSemanticKey().localKey(), is(expectedLocalKey));
+        assertThat(handle.toSemanticKey().groupKey(), is(expectedGroupKey));
+        return handle;
     }
 
     private void assertProjectingMovementsAreMaterialized(LedgerEntry entry)
@@ -669,6 +747,29 @@ public class LedgerCorporateActionFluentEndToEndTest
 
         return new Fixture(client, account, secondAccount, portfolio, secondPortfolio, source, target, secondTarget,
                         right, bond, claim);
+    }
+
+    private static Account account(Client client, String name)
+    {
+        return client.getAccounts().stream().filter(account -> name.equals(account.getName())).findFirst()
+                        .orElseThrow();
+    }
+
+    private static Portfolio portfolio(Client client, String name)
+    {
+        return client.getPortfolios().stream().filter(portfolio -> name.equals(portfolio.getName())).findFirst()
+                        .orElseThrow();
+    }
+
+    private static Security security(Client client, String name)
+    {
+        return client.getSecurities().stream().filter(security -> name.equals(security.getName())).findFirst()
+                        .orElseThrow();
+    }
+
+    private interface HandleLookup
+    {
+        LedgerCorporateActionLegHandle find(Client client, LedgerEntry entry);
     }
 
     private interface PostingMutation
