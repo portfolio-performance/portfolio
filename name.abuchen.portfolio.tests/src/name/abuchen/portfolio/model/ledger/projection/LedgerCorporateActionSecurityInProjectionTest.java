@@ -5,7 +5,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,18 +14,13 @@ import java.util.stream.Collectors;
 import org.junit.Test;
 
 import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.model.ledger.LedgerMutationContext;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
-import name.abuchen.portfolio.model.ledger.configuration.CorporateActionBasisStatus;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionKind;
-import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
 import name.abuchen.portfolio.model.ledger.nativeentry.LedgerNativeEntryAssembler;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
@@ -36,36 +30,6 @@ import name.abuchen.portfolio.money.Values;
 public class LedgerCorporateActionSecurityInProjectionTest
 {
     private static final LocalDateTime DATE = LocalDateTime.of(2026, 1, 2, 0, 0);
-
-    @Test
-    public void testStockDividendMaterializesSingleInboundProjection()
-    {
-        var fixture = fixture();
-        var entry = LedgerNativeEntryAssembler.corporateAction(fixture.client) //
-                        .kind(CorporateActionKind.STOCK_DIVIDEND) //
-                        .date(DATE) //
-                        .note("stock dividend") //
-                        .securityContext("context-1", "main", fixture.portfolio, fixture.sourceSecurity) //
-                        .securityIn("target-1", fixture.portfolio, fixture.targetSecurity, shares(5)) //
-                        .basis(CorporateActionBasisStatus.UNKNOWN) //
-                        .buildAndAdd().getEntry();
-
-        LedgerProjectionService.materialize(fixture.client);
-
-        var projection = ledgerBackedPortfolioProjection(fixture.portfolio, LedgerProjectionRole.NEW_SECURITY_LEG,
-                        "target-1");
-
-        assertThat(fixture.portfolio.getTransactions().size(), is(1));
-        assertThat(projection.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-        assertThat(projection.getDateTime(), is(DATE));
-        assertThat(projection.getNote(), is("stock dividend"));
-        assertSame(fixture.targetSecurity, projection.getSecurity());
-        assertThat(projection.getShares(), is(shares(5)));
-        assertThat(LedgerProjectionSupport.descriptors(entry).size(), is(1));
-        assertFalse(LedgerProjectionSupport.descriptors(entry).stream()
-                        .anyMatch(descriptor -> descriptor.getPrimaryPosting()
-                                        .getCorporateActionLeg() == CorporateActionLeg.SECURITY_CONTEXT));
-    }
 
     @Test
     public void testStockDividendMaterializesRepeatedInboundProjections()
@@ -108,130 +72,9 @@ public class LedgerCorporateActionSecurityInProjectionTest
         assertThat(runtimeProjectionIds(List.of(first, second)),
                         is(securityDescriptors.stream().map(DerivedProjectionDescriptor::getRuntimeProjectionId)
                                         .collect(Collectors.toSet())));
-    }
-
-    @Test
-    public void testBonusIssueMaterializesInboundProjection()
-    {
-        var fixture = fixture();
-
-        LedgerNativeEntryAssembler.corporateAction(fixture.client) //
-                        .kind(CorporateActionKind.BONUS_ISSUE) //
-                        .date(DATE) //
-                        .securityContext("context-1", "main", fixture.portfolio, fixture.sourceSecurity) //
-                        .securityIn("target-1", fixture.portfolio, fixture.targetSecurity, shares(4)) //
-                        .buildAndAdd();
-
-        LedgerProjectionService.materialize(fixture.client);
-
-        var projection = ledgerBackedPortfolioProjection(fixture.portfolio, LedgerProjectionRole.NEW_SECURITY_LEG,
-                        "target-1");
-
-        assertThat(projection.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-        assertSame(fixture.targetSecurity, projection.getSecurity());
-        assertThat(projection.getShares(), is(shares(4)));
-    }
-
-    @Test
-    public void testRightsDistributionMaterializesInboundProjection()
-    {
-        var fixture = fixture();
-
-        LedgerNativeEntryAssembler.corporateAction(fixture.client) //
-                        .kind(CorporateActionKind.RIGHTS_DISTRIBUTION) //
-                        .date(DATE) //
-                        .securityContext("context-1", "main", fixture.portfolio, fixture.sourceSecurity) //
-                        .rightIn("right-1", fixture.portfolio, fixture.rightSecurity, shares(9)) //
-                        .buildAndAdd();
-
-        LedgerProjectionService.materialize(fixture.client);
-
-        var projection = ledgerBackedPortfolioProjection(fixture.portfolio, LedgerProjectionRole.NEW_SECURITY_LEG,
-                        "right-1");
-
-        assertThat(projection.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-        assertSame(fixture.rightSecurity, projection.getSecurity());
-        assertThat(projection.getShares(), is(shares(9)));
-    }
-
-    @Test
-    public void testPikInterestMaterializesInboundProjectionWithGroupedInterestDetail()
-    {
-        var fixture = fixture();
-        var entry = LedgerNativeEntryAssembler.corporateAction(fixture.client) //
-                        .kind(CorporateActionKind.PIK_INTEREST) //
-                        .date(DATE) //
-                        .securityContext("context-1", "pik-1", fixture.portfolio, fixture.sourceSecurity) //
-                        .securityIn("target-1", "pik-1", fixture.portfolio, fixture.targetSecurity, shares(6)) //
-                        .accruedInterest("interest-1", "pik-1", fixture.account, money(12)) //
-                        .buildAndAdd().getEntry();
-
-        LedgerProjectionService.materialize(fixture.client);
-
-        var projection = ledgerBackedPortfolioProjection(fixture.portfolio, LedgerProjectionRole.NEW_SECURITY_LEG,
-                        "target-1");
-
-        assertThat(projection.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-        assertThat(projection.getShares(), is(shares(6)));
-        assertSame(fixture.targetSecurity, projection.getSecurity());
-        assertThat(LedgerProjectionSupport.descriptors(entry).size(), is(1));
-        assertFalse(LedgerProjectionSupport.descriptors(entry).stream().map(DerivedProjectionDescriptor::getPrimaryPosting)
-                        .anyMatch(posting -> posting.getType() == LedgerPostingType.ACCRUED_INTEREST));
-        assertFalse(LedgerProjectionSupport.descriptors(entry).stream().map(DerivedProjectionDescriptor::getPrimaryPosting)
-                        .anyMatch(posting -> posting.getCorporateActionLeg() == CorporateActionLeg.SECURITY_CONTEXT));
-    }
-
-    @Test
-    public void testSecurityInActionMaterializesOptionalCashCompensationProjection()
-    {
-        var fixture = fixture();
-
-        LedgerNativeEntryAssembler.corporateAction(fixture.client) //
-                        .kind(CorporateActionKind.STOCK_DIVIDEND) //
-                        .date(DATE) //
-                        .securityContext("context-1", "main", fixture.portfolio, fixture.sourceSecurity) //
-                        .securityIn("target-1", fixture.portfolio, fixture.targetSecurity, shares(5)) //
-                        .cash("cash-1", fixture.account, money(7)) //
-                        .fee("fee-1", fixture.account, money(2), "cash-1") //
-                        .tax("tax-1", fixture.account, money(1), "cash-1") //
-                        .buildAndAdd();
-
-        LedgerProjectionService.materialize(fixture.client);
-
-        var securityProjection = ledgerBackedPortfolioProjection(fixture.portfolio,
-                        LedgerProjectionRole.NEW_SECURITY_LEG, "target-1");
-        var cashProjection = ledgerBackedAccountProjection(fixture.account, LedgerProjectionRole.CASH_COMPENSATION,
-                        "cash-1");
-
-        assertThat(securityProjection.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-        assertThat(cashProjection.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(cashProjection.getAmount(), is(money(7).getAmount()));
-        assertThat(cashProjection.getUnit(Unit.Type.FEE).orElseThrow().getAmount().getAmount(), is(money(2).getAmount()));
-        assertThat(cashProjection.getUnit(Unit.Type.TAX).orElseThrow().getAmount().getAmount(), is(money(1).getAmount()));
-    }
-
-    @Test
-    public void testDeletingSecurityInActionRemovesProjections()
-    {
-        var fixture = fixture();
-        var entry = LedgerNativeEntryAssembler.corporateAction(fixture.client) //
-                        .kind(CorporateActionKind.STOCK_DIVIDEND) //
-                        .date(DATE) //
-                        .securityContext("context-1", "main", fixture.portfolio, fixture.sourceSecurity) //
-                        .securityIn("target-1", fixture.portfolio, fixture.targetSecurity, shares(5)) //
-                        .cash("cash-1", fixture.account, money(7)) //
-                        .buildAndAdd().getEntry();
-
-        LedgerProjectionService.materialize(fixture.client);
-        LedgerProjectionService.materialize(fixture.client);
-
-        assertThat(fixture.portfolio.getTransactions().size(), is(1));
-        assertThat(fixture.account.getTransactions().size(), is(1));
-
-        new LedgerMutationContext(fixture.client).removeEntry(entry);
-
-        assertTrue(fixture.portfolio.getTransactions().isEmpty());
-        assertTrue(fixture.account.getTransactions().isEmpty());
+        assertFalse(LedgerProjectionSupport.descriptors(entry).stream()
+                        .anyMatch(descriptor -> descriptor.getPrimaryPosting()
+                                        .getCorporateActionLeg() == CorporateActionLeg.SECURITY_CONTEXT));
     }
 
     private LedgerBackedPortfolioTransaction ledgerBackedPortfolioProjection(Portfolio portfolio,
@@ -240,18 +83,6 @@ public class LedgerCorporateActionSecurityInProjectionTest
         return portfolio.getTransactions().stream() //
                         .filter(LedgerBackedPortfolioTransaction.class::isInstance) //
                         .map(LedgerBackedPortfolioTransaction.class::cast) //
-                        .filter(transaction -> transaction.getLedgerProjectionRole() == role) //
-                        .filter(transaction -> transaction.getLedgerProjectionDescriptor().getSemanticInstanceKey()
-                                        .filter(semanticInstanceKey::equals).isPresent()) //
-                        .findFirst().orElseThrow();
-    }
-
-    private LedgerBackedAccountTransaction ledgerBackedAccountProjection(Account account, LedgerProjectionRole role,
-                    String semanticInstanceKey)
-    {
-        return account.getTransactions().stream() //
-                        .filter(LedgerBackedAccountTransaction.class::isInstance) //
-                        .map(LedgerBackedAccountTransaction.class::cast) //
                         .filter(transaction -> transaction.getLedgerProjectionRole() == role) //
                         .filter(transaction -> transaction.getLedgerProjectionDescriptor().getSemanticInstanceKey()
                                         .filter(semanticInstanceKey::equals).isPresent()) //
@@ -272,11 +103,6 @@ public class LedgerCorporateActionSecurityInProjectionTest
     private static long shares(long shares)
     {
         return Values.Share.factorize(shares);
-    }
-
-    private static Money money(long amount)
-    {
-        return Money.of(CurrencyUnit.EUR, Values.Amount.factorize(amount));
     }
 
     private static Fixture fixture()

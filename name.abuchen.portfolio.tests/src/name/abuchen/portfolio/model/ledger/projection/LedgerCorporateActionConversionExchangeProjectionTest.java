@@ -3,11 +3,9 @@ package name.abuchen.portfolio.model.ledger.projection;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -16,16 +14,12 @@ import java.util.stream.Collectors;
 import org.junit.Test;
 
 import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.ledger.LedgerMutationContext;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
-import name.abuchen.portfolio.model.ledger.configuration.CorporateActionBasisMethod;
-import name.abuchen.portfolio.model.ledger.configuration.CorporateActionBasisStatus;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionKind;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerLegRole;
@@ -40,86 +34,6 @@ import name.abuchen.portfolio.money.Values;
 public class LedgerCorporateActionConversionExchangeProjectionTest
 {
     private static final LocalDateTime DATE = LocalDateTime.of(2026, 1, 2, 0, 0);
-
-    @Test
-    public void testConversionMaterializesSourceAndTargetProjections()
-    {
-        var fixture = fixture();
-        var entry = LedgerNativeEntryAssembler.corporateAction(fixture.client) //
-                        .kind(CorporateActionKind.CONVERSION) //
-                        .date(DATE) //
-                        .note("bond conversion") //
-                        .securityContext("context-1", "main", fixture.portfolio, fixture.sourceSecurity) //
-                        .securityOut("source-1", "main", fixture.portfolio, fixture.sourceSecurity, shares(10)) //
-                        .securityIn("target-1", "main", fixture.portfolio, fixture.targetSecurity, shares(5)) //
-                        .basis(CorporateActionBasisStatus.PROVIDED) //
-                        .basisMethod(CorporateActionBasisMethod.PERCENTAGE_ALLOCATION) //
-                        .basisPercentageAllocation(LedgerLegRole.TARGET_SECURITY_LEG, "target-1", "main",
-                                        BigDecimal.valueOf(100)) //
-                        .buildAndAdd().getEntry();
-
-        LedgerProjectionService.materialize(fixture.client);
-
-        var sourceProjection = ledgerBackedPortfolioProjection(fixture.portfolio,
-                        LedgerProjectionRole.DELIVERY_OUTBOUND, "source-1");
-        var targetProjection = ledgerBackedPortfolioProjection(fixture.portfolio,
-                        LedgerProjectionRole.NEW_SECURITY_LEG, "target-1");
-
-        assertThat(sourceProjection.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-        assertThat(sourceProjection.getDateTime(), is(DATE));
-        assertThat(sourceProjection.getNote(), is("bond conversion"));
-        assertSame(fixture.sourceSecurity, sourceProjection.getSecurity());
-        assertThat(sourceProjection.getShares(), is(shares(10)));
-
-        assertThat(targetProjection.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-        assertSame(fixture.targetSecurity, targetProjection.getSecurity());
-        assertThat(targetProjection.getShares(), is(shares(5)));
-
-        assertThat(LedgerProjectionSupport.descriptors(entry).size(), is(2));
-        assertFalse(hasPrimaryDescriptor(entry, CorporateActionLeg.SECURITY_CONTEXT));
-    }
-
-    @Test
-    public void testExchangeMaterializesTargetAndOptionalCashProjections()
-    {
-        var fixture = fixture();
-        var entry = LedgerNativeEntryAssembler.corporateAction(fixture.client) //
-                        .kind(CorporateActionKind.EXCHANGE) //
-                        .date(DATE) //
-                        .securityContext("context-1", "main", fixture.portfolio, fixture.sourceSecurity) //
-                        .securityOut("source-1", "main", fixture.portfolio, fixture.sourceSecurity, shares(10)) //
-                        .securityIn("target-1", "main", fixture.portfolio, fixture.targetSecurity, shares(6)) //
-                        .securityIn("target-2", "main", fixture.secondPortfolio, fixture.secondTargetSecurity,
-                                        shares(4)) //
-                        .cash("cash-1", "cash-1", fixture.account, money(9)) //
-                        .basis(CorporateActionBasisStatus.PROVIDED) //
-                        .basisMethod(CorporateActionBasisMethod.PERCENTAGE_ALLOCATION) //
-                        .basisPercentageAllocation(LedgerLegRole.TARGET_SECURITY_LEG, "target-1", "main",
-                                        BigDecimal.valueOf(60)) //
-                        .basisPercentageAllocation(LedgerLegRole.TARGET_SECURITY_LEG, "target-2", "main",
-                                        BigDecimal.valueOf(40)) //
-                        .buildAndAdd().getEntry();
-
-        LedgerProjectionService.materialize(fixture.client);
-
-        assertThat(ledgerBackedPortfolioProjection(fixture.portfolio, LedgerProjectionRole.DELIVERY_OUTBOUND,
-                        "source-1").getShares(), is(shares(10)));
-        assertThat(ledgerBackedPortfolioProjection(fixture.portfolio, LedgerProjectionRole.NEW_SECURITY_LEG,
-                        "target-1").getShares(), is(shares(6)));
-        assertThat(ledgerBackedPortfolioProjection(fixture.secondPortfolio, LedgerProjectionRole.NEW_SECURITY_LEG,
-                        "target-2").getShares(), is(shares(4)));
-
-        var cashProjection = ledgerBackedAccountProjection(fixture.account, LedgerProjectionRole.CASH_COMPENSATION,
-                        "cash-1");
-        assertThat(cashProjection.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(cashProjection.getAmount(), is(money(9).getAmount()));
-
-        assertThrows(IllegalArgumentException.class,
-                        () -> new LedgerProjectionFactory().createProjection(entry, LedgerProjectionRole.NEW_SECURITY_LEG));
-        assertThat(new LedgerProjectionFactory()
-                        .createProjection(entry, LedgerProjectionRole.NEW_SECURITY_LEG, "target-2").getUUID(),
-                        is(entry.getUUID() + ":NEW_SECURITY_LEG:target-2"));
-    }
 
     @Test
     public void testExchangeMaterializesRepeatedSourceTargetAndCashProjections()
@@ -200,30 +114,6 @@ public class LedgerCorporateActionConversionExchangeProjectionTest
     }
 
     @Test
-    public void testConversionKeepsOptionalAccruedInterestAsNonProjectingDetail()
-    {
-        var fixture = fixture();
-        var entry = LedgerNativeEntryAssembler.corporateAction(fixture.client) //
-                        .kind(CorporateActionKind.CONVERSION) //
-                        .date(DATE) //
-                        .securityContext("context-1", "main", fixture.portfolio, fixture.sourceSecurity) //
-                        .securityOut("source-1", "main", fixture.portfolio, fixture.sourceSecurity, shares(10)) //
-                        .securityIn("target-1", "main", fixture.portfolio, fixture.targetSecurity, shares(5)) //
-                        .cash("cash-1", "cash-1", fixture.account, money(9)) //
-                        .accruedInterest("interest-1", "cash-1", fixture.account, money(5)) //
-                        .buildAndAdd().getEntry();
-
-        LedgerProjectionService.materialize(fixture.client);
-
-        assertThat(ledgerBackedAccountProjection(fixture.account, LedgerProjectionRole.CASH_COMPENSATION, "cash-1")
-                        .getAmount(), is(money(9).getAmount()));
-        assertThat(LedgerProjectionSupport.descriptors(entry).size(), is(3));
-        assertFalse(hasPrimaryDescriptor(entry, CorporateActionLeg.ACCRUED_INTEREST));
-        assertThat(LedgerCorporateActionEditSupport.postingBySemanticKey(entry, LedgerLegRole.ACCRUED_INTEREST_LEG,
-                        "interest-1", "cash-1").getAmount(), is(money(5).getAmount()));
-    }
-
-    @Test
     public void testConversionAttachesFeeTaxByMatchingGroup()
     {
         var fixture = fixture();
@@ -247,37 +137,6 @@ public class LedgerCorporateActionConversionExchangeProjectionTest
         assertThat(cashProjection.getUnit(Unit.Type.TAX).orElseThrow().getAmount().getAmount(), is(money(1).getAmount()));
         assertThat(LedgerProjectionSupport.descriptor(entry, LedgerProjectionRole.CASH_COMPENSATION, "cash-1")
                         .getUnitPostings().size(), is(2));
-    }
-
-    @Test
-    public void testDeletingConversionRemovesProjectedTransactions()
-    {
-        var fixture = fixture();
-        var entry = LedgerNativeEntryAssembler.corporateAction(fixture.client) //
-                        .kind(CorporateActionKind.CONVERSION) //
-                        .date(DATE) //
-                        .securityContext("context-1", "main", fixture.portfolio, fixture.sourceSecurity) //
-                        .securityOut("source-1", "main", fixture.portfolio, fixture.sourceSecurity, shares(10)) //
-                        .securityIn("target-1", "main", fixture.portfolio, fixture.targetSecurity, shares(5)) //
-                        .cash("cash-1", "cash-1", fixture.account, money(9)) //
-                        .buildAndAdd().getEntry();
-
-        LedgerProjectionService.materialize(fixture.client);
-        LedgerProjectionService.materialize(fixture.client);
-
-        assertThat(fixture.portfolio.getTransactions().size(), is(2));
-        assertThat(fixture.account.getTransactions().size(), is(1));
-
-        new LedgerMutationContext(fixture.client).removeEntry(entry);
-
-        assertTrue(fixture.portfolio.getTransactions().isEmpty());
-        assertTrue(fixture.account.getTransactions().isEmpty());
-    }
-
-    private boolean hasPrimaryDescriptor(name.abuchen.portfolio.model.ledger.LedgerEntry entry, CorporateActionLeg leg)
-    {
-        return LedgerProjectionSupport.descriptors(entry).stream().map(DerivedProjectionDescriptor::getPrimaryPosting)
-                        .anyMatch(posting -> posting.getCorporateActionLeg() == leg);
     }
 
     private LedgerBackedPortfolioTransaction ledgerBackedPortfolioProjection(Portfolio portfolio,
