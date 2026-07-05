@@ -26,6 +26,7 @@ import name.abuchen.portfolio.model.ledger.configuration.LedgerPerformanceTreatm
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingTypeDefinitionRegistry;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerReportingClass;
+import name.abuchen.portfolio.model.ledger.configuration.rule.LedgerComponentRequirement;
 import name.abuchen.portfolio.model.ledger.configuration.rule.LedgerParameterRule;
 import name.abuchen.portfolio.model.ledger.configuration.rule.LedgerPostingRule;
 import name.abuchen.portfolio.model.ledger.configuration.rule.LedgerPrimaryMovement;
@@ -138,6 +139,7 @@ public class LedgerEntryDefinitionTest
             assertUniqueProjectionRules(definition);
             assertUniquePostingGroupRules(definition);
             assertUniqueAlternativeGroupRules(definition);
+            assertUniqueComponentRequirements(definition);
             assertUniqueLegDefinitions(definition);
         }
     }
@@ -397,12 +399,20 @@ public class LedgerEntryDefinitionTest
         assertLeg(coupon, LedgerLegRole.CASH_LEG, LedgerPostingType.CASH, LedgerLegCardinality.AT_LEAST_ONE);
         assertLeg(coupon, LedgerLegRole.ACCRUED_INTEREST_LEG, LedgerPostingType.ACCRUED_INTEREST,
                         LedgerLegCardinality.OPTIONAL);
+        assertComponentRequirement(coupon, "COUPON_PAYMENT_INTEREST_DETAIL", LedgerLegRole.CASH_LEG, //$NON-NLS-1$
+                        LedgerLegRole.ACCRUED_INTEREST_LEG);
 
         var pikInterest = LedgerEntryDefinitionRegistry
                         .lookup(LedgerEntryType.CORPORATE_ACTION, CorporateActionKind.PIK_INTEREST)
                         .orElseThrow();
         assertLeg(pikInterest, LedgerLegRole.SECURITY_CONTEXT_LEG, LedgerPostingType.SECURITY,
                         LedgerLegCardinality.AT_LEAST_ONE);
+        assertLeg(pikInterest, LedgerLegRole.TARGET_SECURITY_LEG, LedgerPostingType.SECURITY,
+                        LedgerLegCardinality.AT_LEAST_ONE);
+        assertLeg(pikInterest, LedgerLegRole.ACCRUED_INTEREST_LEG, LedgerPostingType.ACCRUED_INTEREST,
+                        LedgerLegCardinality.OPTIONAL);
+        assertComponentRequirement(pikInterest, "PIK_INTEREST_INTEREST_DETAIL", //$NON-NLS-1$
+                        LedgerLegRole.TARGET_SECURITY_LEG, LedgerLegRole.ACCRUED_INTEREST_LEG);
 
         var maturity = LedgerEntryDefinitionRegistry
                         .lookup(LedgerEntryType.CORPORATE_ACTION, CorporateActionKind.MATURITY)
@@ -414,6 +424,7 @@ public class LedgerEntryDefinitionTest
         assertLeg(maturity, LedgerLegRole.CASH_LEG, LedgerPostingType.CASH, LedgerLegCardinality.AT_LEAST_ONE);
         assertLeg(maturity, LedgerLegRole.PRINCIPAL_REDEMPTION_LEG, LedgerPostingType.PRINCIPAL_REDEMPTION,
                         LedgerLegCardinality.AT_LEAST_ONE);
+        assertTrue(maturity.getComponentRequirements().isEmpty());
 
         var conversion = LedgerEntryDefinitionRegistry
                         .lookup(LedgerEntryType.CORPORATE_ACTION, CorporateActionKind.CONVERSION)
@@ -424,6 +435,7 @@ public class LedgerEntryDefinitionTest
                         LedgerLegCardinality.AT_LEAST_ONE);
         assertLeg(conversion, LedgerLegRole.TARGET_SECURITY_LEG, LedgerPostingType.SECURITY,
                         LedgerLegCardinality.AT_LEAST_ONE);
+        assertTrue(conversion.getComponentRequirements().isEmpty());
 
         for (var kind : new CorporateActionKind[] { CorporateActionKind.PARTIAL_REDEMPTION,
                         CorporateActionKind.CALL, CorporateActionKind.PUT, CorporateActionKind.EXCHANGE })
@@ -704,6 +716,24 @@ public class LedgerEntryDefinitionTest
         assertTrue(name, false);
     }
 
+    private void assertComponentRequirement(
+                    name.abuchen.portfolio.model.ledger.configuration.LedgerEntryDefinition definition, String name,
+                    LedgerLegRole primaryLegRole, LedgerLegRole componentLegRole)
+    {
+        for (var requirement : definition.getComponentRequirements())
+        {
+            if (requirement.getName().equals(name))
+            {
+                assertThat(requirement.getPrimaryLegRole(), is(primaryLegRole));
+                assertThat(requirement.getComponentLegRole(), is(componentLegRole));
+                assertThat(requirement.getRelation(), is(LedgerComponentRequirement.Relation.SAME_GROUP_KEY));
+                return;
+            }
+        }
+
+        assertTrue(name, false);
+    }
+
     private boolean hasPostingRule(Iterable<LedgerPostingRule> rules, LedgerPostingType postingType)
     {
         for (var rule : rules)
@@ -768,6 +798,16 @@ public class LedgerEntryDefinitionTest
 
         for (var group : definition.getAlternativeRequirementGroups())
             assertTrue(definition.getEntryType() + ": alternative group " + group.getName(), seen.add(group.getName()));
+    }
+
+    private void assertUniqueComponentRequirements(
+                    name.abuchen.portfolio.model.ledger.configuration.LedgerEntryDefinition definition)
+    {
+        var seen = new HashSet<String>();
+
+        for (var requirement : definition.getComponentRequirements())
+            assertTrue(definition.getEntryType() + ": component requirement " + requirement.getName(), //$NON-NLS-1$
+                            seen.add(requirement.getName()));
     }
 
     private void assertUniqueLegDefinitions(

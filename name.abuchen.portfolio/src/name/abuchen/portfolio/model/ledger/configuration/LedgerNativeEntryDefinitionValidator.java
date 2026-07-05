@@ -37,6 +37,7 @@ public final class LedgerNativeEntryDefinitionValidator
         ENTRY_PARAMETER_NOT_ALLOWED,
         REQUIRED_ALTERNATIVE_GROUP_MISSING,
         REQUIRED_PRIMARY_MOVEMENT_MISSING,
+        REQUIRED_COMPONENT_MISSING,
         POSTING_TYPE_NOT_ALLOWED,
         LEG_CARDINALITY_VIOLATED,
         LEG_POSTING_NOT_ALLOWED,
@@ -94,6 +95,7 @@ public final class LedgerNativeEntryDefinitionValidator
         validatePostingTypes(entry, definition.get(), issues);
         validateAlternativeGroups(entry, definition.get(), issues);
         validateLegs(entry, definition.get(), issues);
+        validateComponentRequirements(entry, definition.get(), issues);
 
         return new ValidationResult(issues);
     }
@@ -208,6 +210,51 @@ public final class LedgerNativeEntryDefinitionValidator
             validateCardinality(entry, leg, match.postings(), issues);
             validateLegParameters(entry, leg, match.postings(), issues);
         }
+    }
+
+    private static void validateComponentRequirements(LedgerEntry entry, LedgerEntryDefinition definition,
+                    List<ValidationIssue> issues)
+    {
+        for (var requirement : definition.getComponentRequirements())
+        {
+            var primaryLeg = definition.getLegDefinition(requirement.getPrimaryLegRole());
+            var componentLeg = definition.getLegDefinition(requirement.getComponentLegRole());
+
+            if (primaryLeg.isEmpty() || componentLeg.isEmpty())
+                continue;
+
+            var primaryPostings = entry.getPostings().stream()
+                            .filter(posting -> postingMatchesLeg(entry.getType(), posting, primaryLeg.get()))
+                            .toList();
+            var componentPostings = entry.getPostings().stream()
+                            .filter(posting -> postingMatchesLeg(entry.getType(), posting, componentLeg.get()))
+                            .toList();
+
+            for (var primaryPosting : primaryPostings)
+            {
+                if (isBlank(primaryPosting.getGroupKey()) || componentPostings.stream()
+                                .noneMatch(componentPosting -> sameNonBlankGroupKey(primaryPosting,
+                                                componentPosting)))
+                    issues.add(issue(IssueCode.REQUIRED_COMPONENT_MISSING,
+                                    LedgerDiagnosticCode.LEDGER_STRUCT_041.message(
+                                                    "Required native component detail is missing: " //$NON-NLS-1$
+                                                                    + requirement.getName()),
+                                    entry)
+                                                    .withPosting(primaryPosting)
+                                                    .withDetail("componentRequirement", requirement.getName()) //$NON-NLS-1$
+                                                    .withDetail("primaryLegRole", requirement.getPrimaryLegRole()) //$NON-NLS-1$
+                                                    .withDetail("componentLegRole", //$NON-NLS-1$
+                                                                    requirement.getComponentLegRole())
+                                                    .withDetail("groupKey", primaryPosting.getGroupKey())); //$NON-NLS-1$
+            }
+        }
+    }
+
+    private static boolean sameNonBlankGroupKey(LedgerPosting primaryPosting, LedgerPosting componentPosting)
+    {
+        var groupKey = primaryPosting.getGroupKey();
+
+        return !isBlank(groupKey) && groupKey.equals(componentPosting.getGroupKey());
     }
 
     private static void validatePostingsMatchConfiguredLegs(LedgerEntry entry, LedgerEntryDefinition definition,

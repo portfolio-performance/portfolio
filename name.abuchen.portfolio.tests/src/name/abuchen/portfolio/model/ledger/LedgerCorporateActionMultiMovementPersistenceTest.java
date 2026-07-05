@@ -159,6 +159,46 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
         assertNativeDefinitionValid(loadedProtoEntry);
     }
 
+    @Test
+    public void testXmlAndProtobufRoundtripPreserveCouponPaymentInterestDetail() throws Exception
+    {
+        var fixture = couponPaymentFixture();
+
+        assertCouponPaymentInterestDetail(fixture.entry());
+        assertValid(fixture.client());
+        assertNativeDefinitionValid(fixture.entry());
+
+        var xml = saveXml(fixture.client());
+
+        assertNoLedgerUuidTruth(xml);
+
+        var loadedFromXml = loadXml(xml);
+        var loadedXmlEntry = onlyLedgerEntry(loadedFromXml);
+
+        assertCouponPaymentInterestDetail(loadedXmlEntry);
+        assertValid(loadedFromXml);
+        assertNativeDefinitionValid(loadedXmlEntry);
+
+        var bytes = ProtobufTestUtilities.save(fixture.client());
+        var proto = parseProto(bytes);
+        var protoEntry = proto.getLedger().getEntries(0);
+
+        assertThat(protoEntry.getTypeCode(), is(LedgerEntryType.CORPORATE_ACTION.getCode()));
+        assertTrue(protoEntry.getParametersList().stream()
+                        .anyMatch(parameter -> LedgerParameterType.CORPORATE_ACTION_KIND.getCode()
+                                        .equals(parameter.getTypeCode())
+                                        && CorporateActionKind.COUPON_PAYMENT.getCode()
+                                                        .equals(parameter.getStringValue())));
+        assertNoCorporateActionSpecificLegacyTransactionType(proto);
+
+        var loadedFromProto = ProtobufTestUtilities.load(bytes);
+        var loadedProtoEntry = onlyLedgerEntry(loadedFromProto);
+
+        assertCouponPaymentInterestDetail(loadedProtoEntry);
+        assertValid(loadedFromProto);
+        assertNativeDefinitionValid(loadedProtoEntry);
+    }
+
     private Fixture spinOffFixture()
     {
         var client = new Client();
@@ -291,6 +331,41 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
         return new Fixture(client, entry);
     }
 
+    private Fixture couponPaymentFixture()
+    {
+        var client = new Client();
+        var account = new Account();
+        var portfolio = new Portfolio();
+        var contextSecurity = new Security("Coupon Bond", CurrencyUnit.EUR);
+
+        account.setName("Cash Account");
+        account.setCurrencyCode(CurrencyUnit.EUR);
+        portfolio.setName("Portfolio");
+        portfolio.setReferenceAccount(account);
+        account.setUpdatedAt(UPDATED_AT);
+        portfolio.setUpdatedAt(UPDATED_AT);
+        contextSecurity.setUpdatedAt(UPDATED_AT);
+
+        client.addAccount(account);
+        client.addPortfolio(portfolio);
+        client.addSecurity(contextSecurity);
+
+        var entry = new LedgerEntry("coupon-payment-interest-detail");
+
+        entry.setType(LedgerEntryType.CORPORATE_ACTION);
+        entry.setDateTime(DATE_TIME);
+        entry.setSource("COUPON_PAYMENT interest detail proof");
+        entry.addParameter(LedgerParameter.ofCode(LedgerParameterType.CORPORATE_ACTION_KIND,
+                        CorporateActionKind.COUPON_PAYMENT));
+        entry.addPosting(securityContextPosting(portfolio, contextSecurity, "main", "context-1"));
+        entry.addPosting(cashPrimaryPosting(account, "cash-1", 55));
+        entry.addPosting(accruedInterestPosting(account, "cash-1", "interest-1", 55));
+
+        client.getLedger().addEntry(entry);
+
+        return new Fixture(client, entry);
+    }
+
     private LedgerPosting securityPosting(Portfolio portfolio, Security security, LedgerPostingDirection direction,
                     CorporateActionLeg leg, String groupKey, String localKey, long shares, long amount)
     {
@@ -383,6 +458,36 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
         posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
         posting.setGroupKey(localKey);
         posting.setLocalKey(localKey);
+
+        return posting;
+    }
+
+    private LedgerPosting accruedInterestPosting(Account account, String groupKey, String localKey, long amount)
+    {
+        var posting = new LedgerPosting("proof-" + localKey);
+
+        posting.setType(LedgerPostingType.ACCRUED_INTEREST);
+        posting.setAccount(account);
+        posting.setAmount(Values.Amount.factorize(amount));
+        posting.setCurrency(CurrencyUnit.EUR);
+        posting.setSemanticRole(LedgerPostingSemanticRole.ACCRUED_INTEREST);
+        posting.setDirection(LedgerPostingDirection.NEUTRAL);
+        posting.setCorporateActionLeg(CorporateActionLeg.ACCRUED_INTEREST);
+        posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
+        posting.setGroupKey(groupKey);
+        posting.setLocalKey(localKey);
+        posting.addParameter(LedgerParameter.ofString(LedgerParameterType.CORPORATE_ACTION_LEG,
+                        CorporateActionLeg.ACCRUED_INTEREST.getCode()));
+        posting.addParameter(LedgerParameter.ofMoney(LedgerParameterType.ACCRUED_INTEREST_AMOUNT,
+                        Money.of(CurrencyUnit.EUR, Values.Amount.factorize(amount))));
+        posting.addParameter(LedgerParameter.ofDecimal(LedgerParameterType.COUPON_RATE,
+                        new BigDecimal("4.25")));
+        posting.addParameter(LedgerParameter.ofLocalDate(LedgerParameterType.INTEREST_PERIOD_START,
+                        DATE_TIME.toLocalDate().minusMonths(6)));
+        posting.addParameter(LedgerParameter.ofLocalDate(LedgerParameterType.INTEREST_PERIOD_END,
+                        DATE_TIME.toLocalDate()));
+        posting.addParameter(LedgerParameter.ofLocalDate(LedgerParameterType.PAYMENT_DATE,
+                        DATE_TIME.toLocalDate()));
 
         return posting;
     }
@@ -487,6 +592,39 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
                         .filter(posting -> "cash-1".equals(posting.getGroupKey())) //$NON-NLS-1$
                         .filter(posting -> posting.getAccount() != null)
                         .count(), is(1L));
+        assertTrue(LedgerDescriptorTestSupport.descriptors(entry).isEmpty());
+    }
+
+    private void assertCouponPaymentInterestDetail(LedgerEntry entry)
+    {
+        assertThat(entry.getType(), is(LedgerEntryType.CORPORATE_ACTION));
+        assertTrue(entry.getParameters().stream()
+                        .anyMatch(parameter -> parameter.getType() == LedgerParameterType.CORPORATE_ACTION_KIND
+                                        && CorporateActionKind.COUPON_PAYMENT.getCode()
+                                                        .equals(parameter.getValue())));
+        assertThat(postings(entry, LedgerPostingType.SECURITY, LedgerPostingDirection.NEUTRAL,
+                        CorporateActionLeg.SECURITY_CONTEXT).size(), is(1));
+
+        var cash = entry.getPostings().stream()
+                        .filter(posting -> posting.getType() == LedgerPostingType.CASH)
+                        .filter(posting -> "cash-1".equals(posting.getLocalKey())) //$NON-NLS-1$
+                        .findFirst().orElseThrow();
+        var interest = entry.getPostings().stream()
+                        .filter(posting -> posting.getType() == LedgerPostingType.ACCRUED_INTEREST)
+                        .filter(posting -> "interest-1".equals(posting.getLocalKey())) //$NON-NLS-1$
+                        .findFirst().orElseThrow();
+
+        assertThat(cash.getGroupKey(), is("cash-1"));
+        assertThat(interest.getGroupKey(), is("cash-1"));
+        assertThat(interest.getCorporateActionLeg(), is(CorporateActionLeg.ACCRUED_INTEREST));
+        assertTrue(interest.getParameters().stream()
+                        .anyMatch(parameter -> parameter.getType() == LedgerParameterType.ACCRUED_INTEREST_AMOUNT));
+        assertTrue(interest.getParameters().stream()
+                        .anyMatch(parameter -> parameter.getType() == LedgerParameterType.COUPON_RATE));
+        assertTrue(interest.getParameters().stream()
+                        .anyMatch(parameter -> parameter.getType() == LedgerParameterType.INTEREST_PERIOD_START));
+        assertTrue(interest.getParameters().stream()
+                        .anyMatch(parameter -> parameter.getType() == LedgerParameterType.INTEREST_PERIOD_END));
         assertTrue(LedgerDescriptorTestSupport.descriptors(entry).isEmpty());
     }
 

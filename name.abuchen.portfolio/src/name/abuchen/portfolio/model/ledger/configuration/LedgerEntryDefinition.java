@@ -9,6 +9,7 @@ import java.util.Set;
 
 import name.abuchen.portfolio.model.LedgerDiagnosticCode;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
+import name.abuchen.portfolio.model.ledger.configuration.rule.LedgerComponentRequirement;
 import name.abuchen.portfolio.model.ledger.configuration.rule.LedgerParameterRule;
 import name.abuchen.portfolio.model.ledger.configuration.rule.LedgerPostingGroupRule;
 import name.abuchen.portfolio.model.ledger.configuration.rule.LedgerPostingRule;
@@ -37,6 +38,7 @@ public final class LedgerEntryDefinition
     private final Set<LedgerProjectionRule> projectionRules;
     private final Set<LedgerPostingGroupRule> postingGroupRules;
     private final Set<LedgerRequirementGroup> alternativeRequirementGroups;
+    private final Set<LedgerComponentRequirement> componentRequirements;
     private final Set<LedgerLegDefinition> legDefinitions;
     private final Set<LedgerPostingType> postingTypes;
     private final Set<LedgerParameterType> entryParameterTypes;
@@ -51,6 +53,7 @@ public final class LedgerEntryDefinition
                     Set<LedgerParameterRule> postingParameterRules, Set<LedgerProjectionRule> projectionRules,
                     Set<LedgerPostingGroupRule> postingGroupRules,
                     Set<LedgerRequirementGroup> alternativeRequirementGroups,
+                    Set<LedgerComponentRequirement> componentRequirements,
                     Set<LedgerLegDefinition> legDefinitions,
                     LedgerReportingClass reportingClass, LedgerPerformanceTreatment performanceTreatment,
                     Set<LedgerDownstreamResult> downstreamResultsNotPersisted)
@@ -63,6 +66,7 @@ public final class LedgerEntryDefinition
         this.projectionRules = copyRuleSet(projectionRules);
         this.postingGroupRules = copyRuleSet(postingGroupRules);
         this.alternativeRequirementGroups = copyRuleSet(alternativeRequirementGroups);
+        this.componentRequirements = copyRuleSet(componentRequirements);
         this.legDefinitions = copyLegDefinitions(legDefinitions);
         this.postingTypes = postingTypesFrom(this.postingRules);
         this.entryParameterTypes = parameterTypesFrom(this.entryParameterRules);
@@ -81,7 +85,7 @@ public final class LedgerEntryDefinition
     {
         return new LedgerEntryDefinition(entryType, nativeShape, optionalPostingRules(postingTypes),
                         optionalParameterRules(entryParameterTypes), optionalParameterRules(postingParameterTypes),
-                        optionalProjectionRules(projectionRoles), Set.of(), Set.of(), Set.of(), reportingClass,
+                        optionalProjectionRules(projectionRoles), Set.of(), Set.of(), Set.of(), Set.of(), reportingClass,
                         performanceTreatment, downstreamResultsNotPersisted);
     }
 
@@ -95,7 +99,7 @@ public final class LedgerEntryDefinition
     {
         return new LedgerEntryDefinition(entryType, nativeShape, postingRules, entryParameterRules,
                         postingParameterRules, projectionRules, postingGroupRules, alternativeRequirementGroups, Set.of(),
-                        reportingClass, performanceTreatment, downstreamResultsNotPersisted);
+                        Set.of(), reportingClass, performanceTreatment, downstreamResultsNotPersisted);
     }
 
     static LedgerEntryDefinition of(LedgerEntryType entryType, LedgerNativeEntryShape nativeShape,
@@ -108,7 +112,22 @@ public final class LedgerEntryDefinition
     {
         return new LedgerEntryDefinition(entryType, nativeShape, postingRules, entryParameterRules,
                         postingParameterRules, projectionRules, postingGroupRules, alternativeRequirementGroups,
-                        legDefinitions, reportingClass, performanceTreatment, downstreamResultsNotPersisted);
+                        Set.of(), legDefinitions, reportingClass, performanceTreatment, downstreamResultsNotPersisted);
+    }
+
+    static LedgerEntryDefinition of(LedgerEntryType entryType, LedgerNativeEntryShape nativeShape,
+                    Set<LedgerPostingRule> postingRules, Set<LedgerParameterRule> entryParameterRules,
+                    Set<LedgerParameterRule> postingParameterRules, Set<LedgerProjectionRule> projectionRules,
+                    Set<LedgerPostingGroupRule> postingGroupRules,
+                    Set<LedgerRequirementGroup> alternativeRequirementGroups,
+                    Set<LedgerComponentRequirement> componentRequirements, Set<LedgerLegDefinition> legDefinitions,
+                    LedgerReportingClass reportingClass, LedgerPerformanceTreatment performanceTreatment,
+                    Set<LedgerDownstreamResult> downstreamResultsNotPersisted)
+    {
+        return new LedgerEntryDefinition(entryType, nativeShape, postingRules, entryParameterRules,
+                        postingParameterRules, projectionRules, postingGroupRules, alternativeRequirementGroups,
+                        componentRequirements, legDefinitions, reportingClass, performanceTreatment,
+                        downstreamResultsNotPersisted);
     }
 
     public LedgerEntryType getEntryType()
@@ -227,6 +246,11 @@ public final class LedgerEntryDefinition
     public Set<LedgerRequirementGroup> getAlternativeRequirementGroups()
     {
         return alternativeRequirementGroups;
+    }
+
+    public Set<LedgerComponentRequirement> getComponentRequirements()
+    {
+        return componentRequirements;
     }
 
     public Set<LedgerLegDefinition> getLegDefinitions()

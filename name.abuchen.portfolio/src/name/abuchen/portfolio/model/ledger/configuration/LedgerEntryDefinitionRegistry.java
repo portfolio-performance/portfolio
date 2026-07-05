@@ -1,10 +1,10 @@
 package name.abuchen.portfolio.model.ledger.configuration;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
@@ -13,6 +13,7 @@ import java.util.Set;
 import name.abuchen.portfolio.model.LedgerDiagnosticCode;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
+import name.abuchen.portfolio.model.ledger.configuration.rule.LedgerComponentRequirement;
 import name.abuchen.portfolio.model.ledger.configuration.rule.LedgerParameterRule;
 import name.abuchen.portfolio.model.ledger.configuration.rule.LedgerPostingGroupRule;
 import name.abuchen.portfolio.model.ledger.configuration.rule.LedgerPostingRule;
@@ -239,22 +240,26 @@ public final class LedgerEntryDefinitionRegistry
 
     private static LedgerEntryDefinition couponPayment()
     {
-        return corporateActionDefinition(
+        return corporateActionDefinitionWithComponents(
                         SETS.legDefinitions(securityContextLeg(LedgerLegCardinality.AT_LEAST_ONE),
                                         cashLeg(LedgerLegCardinality.AT_LEAST_ONE),
                                         accruedInterestLeg(LedgerLegCardinality.OPTIONAL), feeLeg(), taxLeg(),
                                         forexLeg()),
+                        SETS.componentRequirements(interestComponentRequirement(
+                                        "COUPON_PAYMENT_INTEREST_DETAIL", LedgerLegRole.CASH_LEG)), //$NON-NLS-1$
                         LedgerReportingClass.FIXED_INCOME_COUPON,
                         LedgerPerformanceTreatment.INCOME_DISTRIBUTION);
     }
 
     private static LedgerEntryDefinition pikInterest()
     {
-        return corporateActionDefinition(
+        return corporateActionDefinitionWithComponents(
                         SETS.legDefinitions(securityContextLeg(LedgerLegCardinality.AT_LEAST_ONE),
                                         targetSecurityLeg(LedgerLegCardinality.AT_LEAST_ONE), cashCompensationLeg(),
                                         accruedInterestLeg(LedgerLegCardinality.OPTIONAL), feeLeg(), taxLeg(),
                                         forexLeg()),
+                        SETS.componentRequirements(interestComponentRequirement(
+                                        "PIK_INTEREST_INTEREST_DETAIL", LedgerLegRole.TARGET_SECURITY_LEG)), //$NON-NLS-1$
                         LedgerReportingClass.FIXED_INCOME_COUPON,
                         LedgerPerformanceTreatment.INCOME_DISTRIBUTION);
     }
@@ -364,11 +369,28 @@ public final class LedgerEntryDefinitionRegistry
     private static LedgerEntryDefinition corporateActionDefinition(Set<LedgerLegDefinition> legDefinitions,
                     LedgerReportingClass reportingClass, LedgerPerformanceTreatment performanceTreatment)
     {
-        return corporateActionDefinition(legDefinitions, Set.of(), reportingClass, performanceTreatment);
+        return corporateActionDefinition(legDefinitions, Set.of(), Set.of(), reportingClass, performanceTreatment);
+    }
+
+    private static LedgerEntryDefinition corporateActionDefinitionWithComponents(Set<LedgerLegDefinition> legDefinitions,
+                    Set<LedgerComponentRequirement> componentRequirements, LedgerReportingClass reportingClass,
+                    LedgerPerformanceTreatment performanceTreatment)
+    {
+        return corporateActionDefinition(legDefinitions, Set.of(), componentRequirements, reportingClass,
+                        performanceTreatment);
     }
 
     private static LedgerEntryDefinition corporateActionDefinition(Set<LedgerLegDefinition> legDefinitions,
                     Set<LedgerRequirementGroup> alternativeRequirementGroups, LedgerReportingClass reportingClass,
+                    LedgerPerformanceTreatment performanceTreatment)
+    {
+        return corporateActionDefinition(legDefinitions, alternativeRequirementGroups, Set.of(), reportingClass,
+                        performanceTreatment);
+    }
+
+    private static LedgerEntryDefinition corporateActionDefinition(Set<LedgerLegDefinition> legDefinitions,
+                    Set<LedgerRequirementGroup> alternativeRequirementGroups,
+                    Set<LedgerComponentRequirement> componentRequirements, LedgerReportingClass reportingClass,
                     LedgerPerformanceTreatment performanceTreatment)
     {
         return LedgerEntryDefinition.of(LedgerEntryType.CORPORATE_ACTION,
@@ -379,6 +401,7 @@ public final class LedgerEntryDefinitionRegistry
                         Set.of(),
                         Set.of(),
                         alternativeRequirementGroups,
+                        componentRequirements,
                         legDefinitions,
                         reportingClass,
                         performanceTreatment,
@@ -612,6 +635,11 @@ public final class LedgerEntryDefinitionRegistry
                         SETS.primaryMovements(first, rest)));
     }
 
+    private static LedgerComponentRequirement interestComponentRequirement(String name, LedgerLegRole primaryLegRole)
+    {
+        return LedgerComponentRequirement.sameGroupKey(name, primaryLegRole, LedgerLegRole.ACCRUED_INTEREST_LEG);
+    }
+
     private static EnumSet<LedgerParameterType> requiredSecurityLegParameters()
     {
         return SETS.parameterTypes(LedgerParameterType.CORPORATE_ACTION_LEG,
@@ -786,6 +814,12 @@ public final class LedgerEntryDefinitionRegistry
 
         private Set<LedgerRequirementGroup> alternativeGroups(LedgerRequirementGroup first,
                         LedgerRequirementGroup... rest)
+        {
+            return setOf(first, rest);
+        }
+
+        private Set<LedgerComponentRequirement> componentRequirements(LedgerComponentRequirement first,
+                        LedgerComponentRequirement... rest)
         {
             return setOf(first, rest);
         }

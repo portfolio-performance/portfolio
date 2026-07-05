@@ -208,7 +208,7 @@ public class LedgerNativeEntryDefinitionValidatorTest
     }
 
     @Test
-    public void testCouponPaymentDefinitionAcceptsSecurityContextAndCash()
+    public void testCouponPaymentDefinitionRejectsCashWithoutInterestDetail()
     {
         var fixture = fixture();
         var entry = corporateActionEntry(CorporateActionKind.COUPON_PAYMENT);
@@ -216,7 +216,104 @@ public class LedgerNativeEntryDefinitionValidatorTest
         entry.addPosting(securityContextPosting(fixture, "context-1")); //$NON-NLS-1$
         entry.addPosting(cashPosting(fixture, "cash-1")); //$NON-NLS-1$
 
+        assertIssue(entry, IssueCode.REQUIRED_COMPONENT_MISSING);
+    }
+
+    @Test
+    public void testCouponPaymentDefinitionAcceptsCashWithSameGroupInterestDetail()
+    {
+        var fixture = fixture();
+        var entry = corporateActionEntry(CorporateActionKind.COUPON_PAYMENT);
+        var interest = accruedInterestPosting(fixture, "interest-1"); //$NON-NLS-1$
+
+        interest.setGroupKey("cash-1"); //$NON-NLS-1$
+        entry.addPosting(securityContextPosting(fixture, "context-1")); //$NON-NLS-1$
+        entry.addPosting(cashPosting(fixture, "cash-1")); //$NON-NLS-1$
+        entry.addPosting(interest);
+
         assertOK(entry);
+    }
+
+    @Test
+    public void testCouponPaymentDefinitionRejectsDifferentGroupInterestDetail()
+    {
+        var fixture = fixture();
+        var entry = corporateActionEntry(CorporateActionKind.COUPON_PAYMENT);
+
+        entry.addPosting(securityContextPosting(fixture, "context-1")); //$NON-NLS-1$
+        entry.addPosting(cashPosting(fixture, "cash-1")); //$NON-NLS-1$
+        entry.addPosting(accruedInterestPosting(fixture, "interest-1")); //$NON-NLS-1$
+
+        assertIssue(entry, IssueCode.REQUIRED_COMPONENT_MISSING);
+    }
+
+    @Test
+    public void testCouponPaymentDefinitionRejectsCashWithoutGroupKey()
+    {
+        var fixture = fixture();
+        var entry = corporateActionEntry(CorporateActionKind.COUPON_PAYMENT);
+        var cash = cashPosting(fixture, "cash-1"); //$NON-NLS-1$
+        var interest = accruedInterestPosting(fixture, "interest-1"); //$NON-NLS-1$
+
+        cash.setGroupKey(null);
+        interest.setGroupKey("cash-1"); //$NON-NLS-1$
+        entry.addPosting(securityContextPosting(fixture, "context-1")); //$NON-NLS-1$
+        entry.addPosting(cash);
+        entry.addPosting(interest);
+
+        assertIssue(entry, IssueCode.REQUIRED_COMPONENT_MISSING);
+    }
+
+    @Test
+    public void testCouponPaymentDefinitionRejectsInterestWithoutCash()
+    {
+        var fixture = fixture();
+        var entry = corporateActionEntry(CorporateActionKind.COUPON_PAYMENT);
+
+        entry.addPosting(securityContextPosting(fixture, "context-1")); //$NON-NLS-1$
+        entry.addPosting(accruedInterestPosting(fixture, "interest-1")); //$NON-NLS-1$
+
+        assertIssue(entry, IssueCode.LEG_CARDINALITY_VIOLATED);
+    }
+
+    @Test
+    public void testPikInterestDefinitionRejectsTargetSecurityWithoutInterestDetail()
+    {
+        var fixture = fixture();
+        var entry = corporateActionEntry(CorporateActionKind.PIK_INTEREST);
+
+        entry.addPosting(securityContextPosting(fixture, "context-1")); //$NON-NLS-1$
+        entry.addPosting(targetSecurityPosting(fixture, "target-1")); //$NON-NLS-1$
+
+        assertIssue(entry, IssueCode.REQUIRED_COMPONENT_MISSING);
+    }
+
+    @Test
+    public void testPikInterestDefinitionAcceptsTargetSecurityWithSameGroupInterestDetail()
+    {
+        var fixture = fixture();
+        var entry = corporateActionEntry(CorporateActionKind.PIK_INTEREST);
+        var interest = accruedInterestPosting(fixture, "interest-1"); //$NON-NLS-1$
+
+        interest.setGroupKey("main"); //$NON-NLS-1$
+        entry.addPosting(securityContextPosting(fixture, "context-1")); //$NON-NLS-1$
+        entry.addPosting(targetSecurityPosting(fixture, "target-1")); //$NON-NLS-1$
+        entry.addPosting(interest);
+
+        assertOK(entry);
+    }
+
+    @Test
+    public void testPikInterestDefinitionRejectsDifferentGroupInterestDetail()
+    {
+        var fixture = fixture();
+        var entry = corporateActionEntry(CorporateActionKind.PIK_INTEREST);
+
+        entry.addPosting(securityContextPosting(fixture, "context-1")); //$NON-NLS-1$
+        entry.addPosting(targetSecurityPosting(fixture, "target-1")); //$NON-NLS-1$
+        entry.addPosting(accruedInterestPosting(fixture, "interest-1")); //$NON-NLS-1$
+
+        assertIssue(entry, IssueCode.REQUIRED_COMPONENT_MISSING);
     }
 
     @Test
