@@ -1,8 +1,10 @@
 package name.abuchen.portfolio.model.ledger.configuration;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.model.LedgerDiagnosticCode;
+import name.abuchen.portfolio.model.ledger.CorporateActionBasisAllocation;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerParameter;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
@@ -38,6 +41,14 @@ public final class LedgerNativeEntryDefinitionValidator
         REQUIRED_ALTERNATIVE_GROUP_MISSING,
         REQUIRED_PRIMARY_MOVEMENT_MISSING,
         REQUIRED_COMPONENT_MISSING,
+        BASIS_STATUS_REQUIRED,
+        BASIS_ALLOCATION_NOT_ALLOWED,
+        BASIS_ALLOCATION_REQUIRED,
+        BASIS_ALLOCATION_INVALID,
+        BASIS_ALLOCATION_TARGET_NOT_FOUND,
+        BASIS_ALLOCATION_TARGET_DUPLICATE,
+        BASIS_PERCENT_INVALID,
+        BASIS_PERCENT_TOTAL_INVALID,
         POSTING_TYPE_NOT_ALLOWED,
         LEG_CARDINALITY_VIOLATED,
         LEG_POSTING_NOT_ALLOWED,
@@ -96,6 +107,7 @@ public final class LedgerNativeEntryDefinitionValidator
         validateAlternativeGroups(entry, definition.get(), issues);
         validateLegs(entry, definition.get(), issues);
         validateComponentRequirements(entry, definition.get(), issues);
+        validateBasisTreatment(entry, definition.get(), issues);
 
         return new ValidationResult(issues);
     }
@@ -255,6 +267,157 @@ public final class LedgerNativeEntryDefinitionValidator
         var groupKey = primaryPosting.getGroupKey();
 
         return !isBlank(groupKey) && groupKey.equals(componentPosting.getGroupKey());
+    }
+
+    private static void validateBasisTreatment(LedgerEntry entry, LedgerEntryDefinition definition,
+                    List<ValidationIssue> issues)
+    {
+        if (entry.getType() != LedgerEntryType.CORPORATE_ACTION)
+            return;
+
+        var statusValue = parameterValue(entry.getParameters(), LedgerParameterType.CORPORATE_ACTION_BASIS_STATUS);
+        var allocationParameters = parameterValues(entry.getParameters(),
+                        LedgerParameterType.CORPORATE_ACTION_BASIS_ALLOCATION);
+        var method = parameterValue(entry.getParameters(), LedgerParameterType.CORPORATE_ACTION_BASIS_METHOD)
+                        .map(CorporateActionBasisMethod::valueOfCode)
+                        .orElse(CorporateActionBasisMethod.UNSPECIFIED);
+
+        if (statusValue.isEmpty())
+        {
+            if (!allocationParameters.isEmpty())
+                issues.add(issue(IssueCode.BASIS_STATUS_REQUIRED,
+                                LedgerDiagnosticCode.LEDGER_STRUCT_041
+                                                .message("Corporate Action basis status is required"), //$NON-NLS-1$
+                                entry));
+            return;
+        }
+
+        var status = CorporateActionBasisStatus.valueOfCode(statusValue.get());
+        var allocations = parseBasisAllocations(entry, allocationParameters, issues);
+
+        if (status == CorporateActionBasisStatus.NOT_APPLICABLE || status == CorporateActionBasisStatus.UNKNOWN)
+        {
+            if (!allocationParameters.isEmpty())
+                issues.add(issue(IssueCode.BASIS_ALLOCATION_NOT_ALLOWED,
+                                LedgerDiagnosticCode.LEDGER_STRUCT_041.message(
+                                                "Corporate Action basis allocations are not allowed for status " //$NON-NLS-1$
+                                                                + status),
+                                entry));
+            return;
+        }
+
+        if (allocations.isEmpty())
+        {
+            issues.add(issue(IssueCode.BASIS_ALLOCATION_REQUIRED,
+                            LedgerDiagnosticCode.LEDGER_STRUCT_041
+                                            .message("Provided Corporate Action basis requires allocations"), //$NON-NLS-1$
+                            entry));
+            return;
+        }
+
+        validateBasisAllocationTargets(entry, definition, allocations, issues);
+
+        if (method == CorporateActionBasisMethod.PERCENTAGE_ALLOCATION)
+            validateBasisPercentages(entry, allocations, issues);
+    }
+
+    private static List<CorporateActionBasisAllocation> parseBasisAllocations(LedgerEntry entry,
+                    List<String> values, List<ValidationIssue> issues)
+    {
+        var allocations = new ArrayList<CorporateActionBasisAllocation>();
+
+        for (var value : values)
+        {
+            try
+            {
+                allocations.add(CorporateActionBasisAllocation.parse(value));
+            }
+            catch (RuntimeException e)
+            {
+                issues.add(issue(IssueCode.BASIS_ALLOCATION_INVALID,
+                                LedgerDiagnosticCode.LEDGER_STRUCT_041.message(
+                                                "Corporate Action basis allocation is invalid: " + e.getMessage()), //$NON-NLS-1$
+                                entry).withDetail("basisAllocation", value)); //$NON-NLS-1$
+            }
+        }
+
+        return allocations;
+    }
+
+    private static void validateBasisAllocationTargets(LedgerEntry entry, LedgerEntryDefinition definition,
+                    List<CorporateActionBasisAllocation> allocations, List<ValidationIssue> issues)
+    {
+        var keys = new HashSet<BasisAllocationTargetKey>();
+
+        for (var allocation : allocations)
+        {
+            if (!isAllowedBasisTargetRole(allocation.getTargetRole()) || definition
+                            .getLegDefinition(allocation.getTargetRole()).isEmpty())
+            {
+                issues.add(basisTargetIssue(entry, allocation, IssueCode.BASIS_ALLOCATION_TARGET_NOT_FOUND,
+                                "Corporate Action basis allocation target role is not configured")); //$NON-NLS-1$
+                continue;
+            }
+
+            var key = BasisAllocationTargetKey.of(allocation);
+
+            if (!keys.add(key))
+                issues.add(basisTargetIssue(entry, allocation, IssueCode.BASIS_ALLOCATION_TARGET_DUPLICATE,
+                                "Corporate Action basis allocation target is duplicated")); //$NON-NLS-1$
+
+            var leg = definition.getLegDefinition(allocation.getTargetRole()).orElseThrow();
+            var targetFound = entry.getPostings().stream()
+                            .filter(posting -> postingMatchesLeg(entry.getType(), posting, leg))
+                            .filter(posting -> allocation.getTargetLocalKey().equals(posting.getLocalKey()))
+                            .anyMatch(posting -> allocation.getTargetGroupKey().isEmpty()
+                                            || allocation.getTargetGroupKey().get().equals(posting.getGroupKey()));
+
+            if (!targetFound)
+                issues.add(basisTargetIssue(entry, allocation, IssueCode.BASIS_ALLOCATION_TARGET_NOT_FOUND,
+                                "Corporate Action basis allocation target was not found")); //$NON-NLS-1$
+        }
+    }
+
+    private static void validateBasisPercentages(LedgerEntry entry, List<CorporateActionBasisAllocation> allocations,
+                    List<ValidationIssue> issues)
+    {
+        var total = BigDecimal.ZERO;
+
+        for (var allocation : allocations)
+        {
+            var percent = allocation.getPercent();
+
+            if (percent.isEmpty() || percent.get().signum() < 0)
+            {
+                issues.add(basisTargetIssue(entry, allocation, IssueCode.BASIS_PERCENT_INVALID,
+                                "Corporate Action basis allocation percent must be non-negative")); //$NON-NLS-1$
+                continue;
+            }
+
+            total = total.add(percent.get());
+        }
+
+        if (total.compareTo(new BigDecimal("100")) != 0) //$NON-NLS-1$
+            issues.add(issue(IssueCode.BASIS_PERCENT_TOTAL_INVALID,
+                            LedgerDiagnosticCode.LEDGER_STRUCT_041.message(
+                                            "Corporate Action basis percentage allocations must total 100"), //$NON-NLS-1$
+                            entry).withDetail("actualPercentTotal", total)); //$NON-NLS-1$
+    }
+
+    private static boolean isAllowedBasisTargetRole(LedgerLegRole role)
+    {
+        return role == LedgerLegRole.SECURITY_CONTEXT_LEG || role == LedgerLegRole.SOURCE_SECURITY_LEG
+                        || role == LedgerLegRole.TARGET_SECURITY_LEG || role == LedgerLegRole.CASH_LEG
+                        || role == LedgerLegRole.CASH_COMPENSATION_LEG;
+    }
+
+    private static ValidationIssue basisTargetIssue(LedgerEntry entry, CorporateActionBasisAllocation allocation,
+                    IssueCode code, String message)
+    {
+        return issue(code, LedgerDiagnosticCode.LEDGER_STRUCT_041.message(message), entry)
+                        .withDetail("targetRole", allocation.getTargetRole()) //$NON-NLS-1$
+                        .withDetail("targetLocalKey", allocation.getTargetLocalKey()) //$NON-NLS-1$
+                        .withDetail("targetGroupKey", allocation.getTargetGroupKey().orElse(null)); //$NON-NLS-1$
     }
 
     private static void validatePostingsMatchConfiguredLegs(LedgerEntry entry, LedgerEntryDefinition definition,
@@ -659,6 +822,16 @@ public final class LedgerNativeEntryDefinitionValidator
                         .findFirst();
     }
 
+    private static List<String> parameterValues(List<LedgerParameter<?>> parameters, LedgerParameterType type)
+    {
+        return parameters.stream() //
+                        .filter(parameter -> parameter.getType() == type) //
+                        .map(LedgerParameter::getValue) //
+                        .filter(String.class::isInstance) //
+                        .map(String.class::cast) //
+                        .toList();
+    }
+
     private static boolean isBlank(String value)
     {
         return value == null || value.isBlank();
@@ -687,6 +860,15 @@ public final class LedgerNativeEntryDefinitionValidator
         private LegMatch
         {
             postings = List.copyOf(postings);
+        }
+    }
+
+    private record BasisAllocationTargetKey(LedgerLegRole role, String localKey, String groupKey)
+    {
+        private static BasisAllocationTargetKey of(CorporateActionBasisAllocation allocation)
+        {
+            return new BasisAllocationTargetKey(allocation.getTargetRole(), allocation.getTargetLocalKey(),
+                            allocation.getTargetGroupKey().orElse(null));
         }
     }
 

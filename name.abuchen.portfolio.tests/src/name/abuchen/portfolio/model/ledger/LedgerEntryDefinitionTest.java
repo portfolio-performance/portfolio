@@ -11,6 +11,8 @@ import java.util.HashSet;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.model.ledger.configuration.CorporateActionBasisMethod;
+import name.abuchen.portfolio.model.ledger.configuration.CorporateActionBasisStatus;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionKind;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerDownstreamResult;
@@ -223,6 +225,10 @@ public class LedgerEntryDefinitionTest
         assertTrue(definition.getPostingTypes().contains(LedgerPostingType.TAX));
         assertTrue(definition.getPostingTypes().contains(LedgerPostingType.FOREX));
         assertTrue(definition.getEntryParameterTypes().contains(LedgerParameterType.CORPORATE_ACTION_KIND));
+        assertTrue(definition.getEntryParameterTypes().contains(LedgerParameterType.CORPORATE_ACTION_BASIS_STATUS));
+        assertTrue(definition.getEntryParameterTypes().contains(LedgerParameterType.CORPORATE_ACTION_BASIS_METHOD));
+        assertTrue(definition.getEntryParameterTypes()
+                        .contains(LedgerParameterType.CORPORATE_ACTION_BASIS_ALLOCATION));
         assertTrue(definition.getEntryParameterTypes().contains(LedgerParameterType.EX_DATE));
         assertTrue(definition.getPostingParameterTypes().contains(LedgerParameterType.CORPORATE_ACTION_LEG));
         assertTrue(definition.getPostingParameterTypes().contains(LedgerParameterType.SOURCE_SECURITY));
@@ -236,6 +242,9 @@ public class LedgerEntryDefinitionTest
         assertOptionalPosting(definition, LedgerPostingType.TAX);
         assertOptionalPosting(definition, LedgerPostingType.FOREX);
         assertRequiredEntryParameter(definition, LedgerParameterType.CORPORATE_ACTION_KIND);
+        assertOptionalEntryParameter(definition, LedgerParameterType.CORPORATE_ACTION_BASIS_STATUS);
+        assertOptionalEntryParameter(definition, LedgerParameterType.CORPORATE_ACTION_BASIS_METHOD);
+        assertRepeatableParameter(definition, LedgerParameterType.CORPORATE_ACTION_BASIS_ALLOCATION);
         assertOptionalEntryParameter(definition, LedgerParameterType.EX_DATE);
         assertOptionalEntryParameter(definition, LedgerParameterType.EFFECTIVE_DATE);
         assertRequiredPostingParameter(definition, LedgerParameterType.CORPORATE_ACTION_LEG);
@@ -554,6 +563,11 @@ public class LedgerEntryDefinitionTest
         }
 
         assertTrue(allEntryParameters.contains(LedgerParameterType.CORPORATE_ACTION_KIND));
+        assertTrue(allEntryParameters.contains(LedgerParameterType.CORPORATE_ACTION_BASIS_STATUS));
+        assertTrue(allEntryParameters.contains(LedgerParameterType.CORPORATE_ACTION_BASIS_METHOD));
+        assertTrue(allEntryParameters.contains(LedgerParameterType.CORPORATE_ACTION_BASIS_ALLOCATION));
+        assertTrue(allEntryParameters.contains(LedgerParameterType.CORPORATE_ACTION_BASIS_VALUATION_DATE));
+        assertTrue(allEntryParameters.contains(LedgerParameterType.CORPORATE_ACTION_BASIS_MANUAL_OVERRIDE));
         assertTrue(allEntryParameters.contains(LedgerParameterType.EVENT_STAGE));
         assertTrue(allEntryParameters.contains(LedgerParameterType.RECORD_DATE));
         assertTrue(allEntryParameters.contains(LedgerParameterType.PAYMENT_DATE));
@@ -585,6 +599,21 @@ public class LedgerEntryDefinitionTest
         assertTrue(LedgerParameterType.CORPORATE_ACTION_LEG
                         .supportsCode(CorporateActionLeg.TARGET_SECURITY.getCode()));
         assertFalse(LedgerParameterType.CORPORATE_ACTION_LEG.supportsCode("SOURCE"));
+    }
+
+    @Test
+    public void testCorporateActionBasisHasControlledCodeDomains()
+    {
+        assertThat(LedgerParameterType.CORPORATE_ACTION_BASIS_STATUS.getCodeDomain(),
+                        is(LedgerParameterCodeDomain.CORPORATE_ACTION_BASIS_STATUS));
+        assertThat(LedgerParameterType.CORPORATE_ACTION_BASIS_METHOD.getCodeDomain(),
+                        is(LedgerParameterCodeDomain.CORPORATE_ACTION_BASIS_METHOD));
+        assertTrue(LedgerParameterType.CORPORATE_ACTION_BASIS_STATUS
+                        .supportsCode(CorporateActionBasisStatus.PROVIDED.getCode()));
+        assertTrue(LedgerParameterType.CORPORATE_ACTION_BASIS_METHOD
+                        .supportsCode(CorporateActionBasisMethod.PERCENTAGE_ALLOCATION.getCode()));
+        assertFalse(LedgerParameterType.CORPORATE_ACTION_BASIS_STATUS.supportsCode("BROKER_PROVIDED"));
+        assertFalse(LedgerParameterType.CORPORATE_ACTION_BASIS_METHOD.supportsCode("BROKER_PROVIDED"));
     }
 
     /**

@@ -25,9 +25,12 @@ import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.ProtobufTestUtilities;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.ledger.configuration.CorporateActionBasisMethod;
+import name.abuchen.portfolio.model.ledger.configuration.CorporateActionBasisStatus;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionKind;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
+import name.abuchen.portfolio.model.ledger.configuration.LedgerLegRole;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerNativeEntryDefinitionValidator;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerParameterType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
@@ -238,6 +241,17 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
         entry.addParameter(LedgerParameter.ofCode(LedgerParameterType.CORPORATE_ACTION_KIND,
                         CorporateActionKind.SPIN_OFF));
         entry.addParameter(LedgerParameter.ofLocalDate(LedgerParameterType.EFFECTIVE_DATE, DATE_TIME.toLocalDate()));
+        entry.addParameter(LedgerParameter.ofCode(LedgerParameterType.CORPORATE_ACTION_BASIS_STATUS,
+                        CorporateActionBasisStatus.PROVIDED));
+        entry.addParameter(LedgerParameter.ofCode(LedgerParameterType.CORPORATE_ACTION_BASIS_METHOD,
+                        CorporateActionBasisMethod.PERCENTAGE_ALLOCATION));
+        entry.addParameter(LedgerParameter.ofLocalDate(LedgerParameterType.CORPORATE_ACTION_BASIS_VALUATION_DATE,
+                        DATE_TIME.toLocalDate()));
+        entry.addParameter(LedgerParameter.ofBoolean(LedgerParameterType.CORPORATE_ACTION_BASIS_MANUAL_OVERRIDE,
+                        Boolean.TRUE));
+        entry.addParameter(basisAllocation(LedgerLegRole.SECURITY_CONTEXT_LEG, "context-1", "main", "75"));
+        entry.addParameter(basisAllocation(LedgerLegRole.TARGET_SECURITY_LEG, "target-1", "main", "20"));
+        entry.addParameter(basisAllocation(LedgerLegRole.TARGET_SECURITY_LEG, "target-2", "main", "5"));
 
         entry.addPosting(spinOffSecurityPosting(portfolio, sourceSecurity, sourceSecurity, targetSecurityA,
                         LedgerPostingDirection.OUTBOUND, CorporateActionLeg.SOURCE_SECURITY, "main", "source-1",
@@ -512,6 +526,15 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
         return posting;
     }
 
+    private LedgerParameter<String> basisAllocation(LedgerLegRole targetRole, String targetLocalKey,
+                    String targetGroupKey, String percent)
+    {
+        return LedgerParameter.ofString(LedgerParameterType.CORPORATE_ACTION_BASIS_ALLOCATION,
+                        CorporateActionBasisAllocation
+                                        .percentage(targetRole, targetLocalKey, targetGroupKey, new BigDecimal(percent))
+                                        .toParameterValue());
+    }
+
     private void assertRepeatedSpinOff(LedgerEntry entry)
     {
         assertThat(entry.getType(), is(LedgerEntryType.CORPORATE_ACTION));
@@ -559,6 +582,45 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
         assertThat(runtimeProjectionIds.size(), is(2));
         assertTrue(runtimeProjectionIds.stream().anyMatch(id -> id.endsWith(":NEW_SECURITY_LEG:target-1")));
         assertTrue(runtimeProjectionIds.stream().anyMatch(id -> id.endsWith(":NEW_SECURITY_LEG:target-2")));
+        assertBasisTreatment(entry);
+    }
+
+    private void assertBasisTreatment(LedgerEntry entry)
+    {
+        assertTrue(entry.getParameters().stream()
+                        .anyMatch(parameter -> parameter.getType() == LedgerParameterType.CORPORATE_ACTION_BASIS_STATUS
+                                        && CorporateActionBasisStatus.PROVIDED.getCode()
+                                                        .equals(parameter.getValue())));
+        assertTrue(entry.getParameters().stream()
+                        .anyMatch(parameter -> parameter.getType() == LedgerParameterType.CORPORATE_ACTION_BASIS_METHOD
+                                        && CorporateActionBasisMethod.PERCENTAGE_ALLOCATION.getCode()
+                                                        .equals(parameter.getValue())));
+        assertTrue(entry.getParameters().stream()
+                        .anyMatch(parameter -> parameter.getType() == LedgerParameterType.CORPORATE_ACTION_BASIS_VALUATION_DATE));
+        assertTrue(entry.getParameters().stream()
+                        .anyMatch(parameter -> parameter.getType() == LedgerParameterType.CORPORATE_ACTION_BASIS_MANUAL_OVERRIDE
+                                        && Boolean.TRUE.equals(parameter.getValue())));
+
+        var allocations = entry.getParameters().stream()
+                        .filter(parameter -> parameter.getType() == LedgerParameterType.CORPORATE_ACTION_BASIS_ALLOCATION)
+                        .map(LedgerParameter::getValue)
+                        .map(String.class::cast)
+                        .map(CorporateActionBasisAllocation::parse)
+                        .toList();
+
+        assertThat(allocations.size(), is(3));
+        assertTrue(allocations.stream()
+                        .anyMatch(allocation -> allocation.getTargetRole() == LedgerLegRole.SECURITY_CONTEXT_LEG
+                                        && "context-1".equals(allocation.getTargetLocalKey())
+                                        && allocation.getPercent().orElseThrow().compareTo(new BigDecimal("75")) == 0));
+        assertTrue(allocations.stream()
+                        .anyMatch(allocation -> allocation.getTargetRole() == LedgerLegRole.TARGET_SECURITY_LEG
+                                        && "target-1".equals(allocation.getTargetLocalKey())
+                                        && allocation.getPercent().orElseThrow().compareTo(new BigDecimal("20")) == 0));
+        assertTrue(allocations.stream()
+                        .anyMatch(allocation -> allocation.getTargetRole() == LedgerLegRole.TARGET_SECURITY_LEG
+                                        && "target-2".equals(allocation.getTargetLocalKey())
+                                        && allocation.getPercent().orElseThrow().compareTo(new BigDecimal("5")) == 0));
     }
 
     private void assertDefaultedInterestPrimaryMovement(LedgerEntry entry)

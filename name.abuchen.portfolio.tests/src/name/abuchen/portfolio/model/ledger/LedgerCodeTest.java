@@ -16,6 +16,8 @@ import java.util.stream.Stream;
 import org.junit.Test;
 
 import name.abuchen.portfolio.model.ledger.configuration.CashCompensationKind;
+import name.abuchen.portfolio.model.ledger.configuration.CorporateActionBasisMethod;
+import name.abuchen.portfolio.model.ledger.configuration.CorporateActionBasisStatus;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionKind;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionSubtype;
@@ -125,6 +127,8 @@ public class LedgerCodeTest
         return Stream.<LedgerCode[]>of(
                         CorporateActionLeg.values(),
                         CorporateActionKind.values(),
+                        CorporateActionBasisStatus.values(),
+                        CorporateActionBasisMethod.values(),
                         CorporateActionSubtype.values(),
                         EventStage.values(),
                         CashCompensationKind.values(),

@@ -16,6 +16,8 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.ledger.configuration.CashCompensationKind;
+import name.abuchen.portfolio.model.ledger.configuration.CorporateActionBasisMethod;
+import name.abuchen.portfolio.model.ledger.configuration.CorporateActionBasisStatus;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionKind;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionSubtype;
@@ -24,6 +26,7 @@ import name.abuchen.portfolio.model.ledger.configuration.FeeReason;
 import name.abuchen.portfolio.model.ledger.configuration.FractionTreatment;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerNativeEntryDefinitionValidator;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerNativeEntryDefinitionValidator.IssueCode;
+import name.abuchen.portfolio.model.ledger.configuration.LedgerLegRole;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerParameterType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
 import name.abuchen.portfolio.model.ledger.configuration.RoundingModeCode;
@@ -587,6 +590,173 @@ public class LedgerNativeEntryDefinitionValidatorTest
         assertIssue(entry, IssueCode.REQUIRED_PRIMARY_MOVEMENT_MISSING);
     }
 
+    @Test
+    public void testBasisUnknownWithoutAllocationsIsAccepted()
+    {
+        var fixture = fixture();
+        var entry = spinOffWithContextAndTarget(fixture);
+
+        addBasisStatus(entry, CorporateActionBasisStatus.UNKNOWN);
+
+        assertOK(entry);
+    }
+
+    @Test
+    public void testBasisNotApplicableWithoutAllocationsIsAccepted()
+    {
+        var fixture = fixture();
+        var entry = spinOffWithContextAndTarget(fixture);
+
+        addBasisStatus(entry, CorporateActionBasisStatus.NOT_APPLICABLE);
+
+        assertOK(entry);
+    }
+
+    @Test
+    public void testBasisNotApplicableWithAllocationsIsRejected()
+    {
+        var fixture = fixture();
+        var entry = spinOffWithContextAndTarget(fixture);
+
+        addBasisStatus(entry, CorporateActionBasisStatus.NOT_APPLICABLE);
+        addBasisMethod(entry, CorporateActionBasisMethod.PERCENTAGE_ALLOCATION);
+        addBasisAllocation(entry, LedgerLegRole.SECURITY_CONTEXT_LEG, "context-1", "main", "100"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+        assertIssue(entry, IssueCode.BASIS_ALLOCATION_NOT_ALLOWED);
+    }
+
+    @Test
+    public void testBasisProvidedWithoutAllocationsIsRejected()
+    {
+        var fixture = fixture();
+        var entry = spinOffWithContextAndTarget(fixture);
+
+        addBasisStatus(entry, CorporateActionBasisStatus.PROVIDED);
+        addBasisMethod(entry, CorporateActionBasisMethod.PERCENTAGE_ALLOCATION);
+
+        assertIssue(entry, IssueCode.BASIS_ALLOCATION_REQUIRED);
+    }
+
+    @Test
+    public void testBasisPercentageAllocationTotalingOneHundredIsAccepted()
+    {
+        var fixture = fixture();
+        var entry = spinOffWithContextAndTarget(fixture);
+
+        addProvidedPercentageBasis(entry);
+        addBasisAllocation(entry, LedgerLegRole.SECURITY_CONTEXT_LEG, "context-1", "main", "80"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        addBasisAllocation(entry, LedgerLegRole.TARGET_SECURITY_LEG, "target-1", "main", "20"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+        assertOK(entry);
+    }
+
+    @Test
+    public void testBasisPercentageAllocationAcrossTwoTargetsIsAccepted()
+    {
+        var fixture = fixture();
+        var entry = spinOffWithContextAndTarget(fixture);
+
+        entry.addPosting(spinOffTargetSecurityPosting(fixture, "target-2")); //$NON-NLS-1$
+        addProvidedPercentageBasis(entry);
+        addBasisAllocation(entry, LedgerLegRole.SECURITY_CONTEXT_LEG, "context-1", "main", "75"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        addBasisAllocation(entry, LedgerLegRole.TARGET_SECURITY_LEG, "target-1", "main", "20"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        addBasisAllocation(entry, LedgerLegRole.TARGET_SECURITY_LEG, "target-2", "main", "5"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+        assertOK(entry);
+    }
+
+    @Test
+    public void testBasisPercentageAllocationTotalingNinetyIsRejected()
+    {
+        var fixture = fixture();
+        var entry = spinOffWithContextAndTarget(fixture);
+
+        addProvidedPercentageBasis(entry);
+        addBasisAllocation(entry, LedgerLegRole.SECURITY_CONTEXT_LEG, "context-1", "main", "70"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        addBasisAllocation(entry, LedgerLegRole.TARGET_SECURITY_LEG, "target-1", "main", "20"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+        assertIssue(entry, IssueCode.BASIS_PERCENT_TOTAL_INVALID);
+    }
+
+    @Test
+    public void testBasisPercentageAllocationTotalingOneHundredTenIsRejected()
+    {
+        var fixture = fixture();
+        var entry = spinOffWithContextAndTarget(fixture);
+
+        addProvidedPercentageBasis(entry);
+        addBasisAllocation(entry, LedgerLegRole.SECURITY_CONTEXT_LEG, "context-1", "main", "90"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        addBasisAllocation(entry, LedgerLegRole.TARGET_SECURITY_LEG, "target-1", "main", "20"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+        assertIssue(entry, IssueCode.BASIS_PERCENT_TOTAL_INVALID);
+    }
+
+    @Test
+    public void testBasisNegativePercentIsRejected()
+    {
+        var fixture = fixture();
+        var entry = spinOffWithContextAndTarget(fixture);
+
+        addProvidedPercentageBasis(entry);
+        addBasisAllocation(entry, LedgerLegRole.SECURITY_CONTEXT_LEG, "context-1", "main", "110"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        addBasisAllocation(entry, LedgerLegRole.TARGET_SECURITY_LEG, "target-1", "main", "-10"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+        assertIssue(entry, IssueCode.BASIS_PERCENT_INVALID);
+    }
+
+    @Test
+    public void testBasisUnknownAllocationTargetIsRejected()
+    {
+        var fixture = fixture();
+        var entry = spinOffWithContextAndTarget(fixture);
+
+        addProvidedPercentageBasis(entry);
+        addBasisAllocation(entry, LedgerLegRole.SECURITY_CONTEXT_LEG, "missing", "main", "100"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+        assertIssue(entry, IssueCode.BASIS_ALLOCATION_TARGET_NOT_FOUND);
+    }
+
+    @Test
+    public void testBasisDuplicateAllocationTargetIsRejected()
+    {
+        var fixture = fixture();
+        var entry = spinOffWithContextAndTarget(fixture);
+
+        addProvidedPercentageBasis(entry);
+        addBasisAllocation(entry, LedgerLegRole.TARGET_SECURITY_LEG, "target-1", "main", "50"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        addBasisAllocation(entry, LedgerLegRole.TARGET_SECURITY_LEG, "target-1", "main", "50"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+        assertIssue(entry, IssueCode.BASIS_ALLOCATION_TARGET_DUPLICATE);
+    }
+
+    @Test
+    public void testBasisDoesNotSatisfyPrimaryMovement()
+    {
+        var fixture = fixture();
+        var entry = corporateActionEntry(CorporateActionKind.DEFAULT);
+
+        entry.addPosting(securityContextPosting(fixture, "context-1")); //$NON-NLS-1$
+        addProvidedPercentageBasis(entry);
+        addBasisAllocation(entry, LedgerLegRole.SECURITY_CONTEXT_LEG, "context-1", "main", "100"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+        assertIssue(entry, IssueCode.REQUIRED_PRIMARY_MOVEMENT_MISSING);
+    }
+
+    @Test
+    public void testConversionBasisAllocationResolvesSemanticTarget()
+    {
+        var fixture = fixture();
+        var entry = corporateActionEntry(CorporateActionKind.CONVERSION);
+
+        entry.addPosting(securityContextPosting(fixture, "context-1")); //$NON-NLS-1$
+        entry.addPosting(sourceSecurityPosting(fixture, "source-1")); //$NON-NLS-1$
+        entry.addPosting(targetSecurityPosting(fixture, "target-1")); //$NON-NLS-1$
+        addProvidedPercentageBasis(entry);
+        addBasisAllocation(entry, LedgerLegRole.TARGET_SECURITY_LEG, "target-1", "main", "100"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+        assertOK(entry);
+    }
+
     /**
      * Checks that repeated source legs follow the same semantic-key policy as
      * repeated target and cash movement legs.
@@ -1025,6 +1195,16 @@ public class LedgerNativeEntryDefinitionValidatorTest
         return posting;
     }
 
+    private static LedgerPosting spinOffTargetSecurityPosting(Fixture fixture, String localKey)
+    {
+        var posting = targetSecurityPosting(fixture, localKey);
+
+        posting.addParameter(LedgerParameter.ofDecimal(LedgerParameterType.RATIO_NUMERATOR, BigDecimal.ONE));
+        posting.addParameter(LedgerParameter.ofDecimal(LedgerParameterType.RATIO_DENOMINATOR, BigDecimal.TEN));
+
+        return posting;
+    }
+
     private static LedgerPosting sourceSecurityPosting(Fixture fixture, String localKey)
     {
         var posting = securityPosting(fixture, localKey, LedgerPostingDirection.OUTBOUND,
@@ -1112,6 +1292,43 @@ public class LedgerNativeEntryDefinitionValidatorTest
                         CorporateActionLeg.ACCRUED_INTEREST.getCode()));
 
         return posting;
+    }
+
+    private static LedgerEntry spinOffWithContextAndTarget(Fixture fixture)
+    {
+        var entry = corporateActionEntry(CorporateActionKind.SPIN_OFF,
+                        securityContextPosting(fixture, "context-1"), //$NON-NLS-1$
+                        spinOffTargetSecurityPosting(fixture, "target-1")); //$NON-NLS-1$
+
+        entry.addParameter(LedgerParameter.ofLocalDate(LedgerParameterType.EFFECTIVE_DATE,
+                        LocalDate.of(2026, 1, 2)));
+
+        return entry;
+    }
+
+    private static void addProvidedPercentageBasis(LedgerEntry entry)
+    {
+        addBasisStatus(entry, CorporateActionBasisStatus.PROVIDED);
+        addBasisMethod(entry, CorporateActionBasisMethod.PERCENTAGE_ALLOCATION);
+    }
+
+    private static void addBasisStatus(LedgerEntry entry, CorporateActionBasisStatus status)
+    {
+        entry.addParameter(LedgerParameter.ofCode(LedgerParameterType.CORPORATE_ACTION_BASIS_STATUS, status));
+    }
+
+    private static void addBasisMethod(LedgerEntry entry, CorporateActionBasisMethod method)
+    {
+        entry.addParameter(LedgerParameter.ofCode(LedgerParameterType.CORPORATE_ACTION_BASIS_METHOD, method));
+    }
+
+    private static void addBasisAllocation(LedgerEntry entry, LedgerLegRole targetRole, String targetLocalKey,
+                    String targetGroupKey, String percent)
+    {
+        entry.addParameter(LedgerParameter.ofString(LedgerParameterType.CORPORATE_ACTION_BASIS_ALLOCATION,
+                        CorporateActionBasisAllocation
+                                        .percentage(targetRole, targetLocalKey, targetGroupKey, new BigDecimal(percent))
+                                        .toParameterValue()));
     }
 
     private static LedgerPosting feePosting(Fixture fixture, String localKey)

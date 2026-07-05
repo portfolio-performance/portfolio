@@ -19,6 +19,8 @@ public enum LedgerParameterCodeDomain
     CORPORATE_ACTION_LEG,
     CORPORATE_ACTION_KIND,
     CORPORATE_ACTION_SUBTYPE,
+    CORPORATE_ACTION_BASIS_STATUS,
+    CORPORATE_ACTION_BASIS_METHOD,
     EVENT_STAGE,
     CASH_COMPENSATION_KIND,
     FRACTION_TREATMENT,
@@ -35,6 +37,8 @@ public enum LedgerParameterCodeDomain
             case CORPORATE_ACTION_LEG -> codes(CorporateActionLeg.values());
             case CORPORATE_ACTION_KIND -> codes(CorporateActionKind.values());
             case CORPORATE_ACTION_SUBTYPE -> codes(CorporateActionSubtype.values());
+            case CORPORATE_ACTION_BASIS_STATUS -> codes(CorporateActionBasisStatus.values());
+            case CORPORATE_ACTION_BASIS_METHOD -> codes(CorporateActionBasisMethod.values());
             case EVENT_STAGE -> codes(EventStage.values());
             case CASH_COMPENSATION_KIND -> codes(CashCompensationKind.values());
             case FRACTION_TREATMENT -> codes(FractionTreatment.values());

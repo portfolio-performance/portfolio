@@ -19,6 +19,11 @@ public final class LedgerEventParameterDefinition
     private static final Set<LedgerParameterType> PARAMETER_TYPES = Collections
                     .unmodifiableSet(EnumSet.of(LedgerParameterType.CORPORATE_ACTION_KIND,
                                     LedgerParameterType.CORPORATE_ACTION_SUBTYPE,
+                                    LedgerParameterType.CORPORATE_ACTION_BASIS_STATUS,
+                                    LedgerParameterType.CORPORATE_ACTION_BASIS_METHOD,
+                                    LedgerParameterType.CORPORATE_ACTION_BASIS_ALLOCATION,
+                                    LedgerParameterType.CORPORATE_ACTION_BASIS_VALUATION_DATE,
+                                    LedgerParameterType.CORPORATE_ACTION_BASIS_MANUAL_OVERRIDE,
                                     LedgerParameterType.EVENT_REFERENCE, LedgerParameterType.EVENT_STAGE,
                                     LedgerParameterType.EX_DATE, LedgerParameterType.RECORD_DATE,
                                     LedgerParameterType.PAYMENT_DATE, LedgerParameterType.EFFECTIVE_DATE,

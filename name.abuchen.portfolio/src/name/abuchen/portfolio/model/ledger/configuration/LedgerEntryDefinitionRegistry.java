@@ -153,15 +153,7 @@ public final class LedgerEntryDefinitionRegistry
                                                         taxOptionalParameters()),
                                         optionalPosting(LedgerPostingType.FOREX, SETS.parameterTypes(),
                                                         forexOptionalParameters())),
-                        SETS.parameterRules(requiredEntryParameter(LedgerParameterType.CORPORATE_ACTION_KIND),
-                                        optionalEntryParameter(LedgerParameterType.EX_DATE),
-                                        optionalEntryParameter(LedgerParameterType.CORPORATE_ACTION_SUBTYPE),
-                                        optionalEntryParameter(LedgerParameterType.EVENT_REFERENCE),
-                                        optionalEntryParameter(LedgerParameterType.EVENT_STAGE),
-                                        optionalEntryParameter(LedgerParameterType.RECORD_DATE),
-                                        optionalEntryParameter(LedgerParameterType.PAYMENT_DATE),
-                                        optionalEntryParameter(LedgerParameterType.EFFECTIVE_DATE),
-                                        optionalEntryParameter(LedgerParameterType.SETTLEMENT_DATE)),
+                        corporateActionEntryParameterRules(),
                         SETS.parameterRules(repeatableRequiredPostingParameter(LedgerParameterType.CORPORATE_ACTION_LEG),
                                         repeatableRequiredPostingParameter(LedgerParameterType.SOURCE_SECURITY),
                                         repeatableRequiredPostingParameter(LedgerParameterType.TARGET_SECURITY),
@@ -428,6 +420,11 @@ public final class LedgerEntryDefinitionRegistry
         return SETS.parameterRules(requiredEntryParameter(LedgerParameterType.CORPORATE_ACTION_KIND),
                         optionalEntryParameter(LedgerParameterType.EX_DATE),
                         optionalEntryParameter(LedgerParameterType.CORPORATE_ACTION_SUBTYPE),
+                        optionalEntryParameter(LedgerParameterType.CORPORATE_ACTION_BASIS_STATUS),
+                        optionalEntryParameter(LedgerParameterType.CORPORATE_ACTION_BASIS_METHOD),
+                        repeatableOptionalEntryParameter(LedgerParameterType.CORPORATE_ACTION_BASIS_ALLOCATION),
+                        optionalEntryParameter(LedgerParameterType.CORPORATE_ACTION_BASIS_VALUATION_DATE),
+                        optionalEntryParameter(LedgerParameterType.CORPORATE_ACTION_BASIS_MANUAL_OVERRIDE),
                         optionalEntryParameter(LedgerParameterType.EVENT_REFERENCE),
                         optionalEntryParameter(LedgerParameterType.EVENT_STAGE),
                         optionalEntryParameter(LedgerParameterType.RECORD_DATE),
@@ -609,6 +606,11 @@ public final class LedgerEntryDefinitionRegistry
     private static LedgerParameterRule repeatableRequiredPostingParameter(LedgerParameterType parameterType)
     {
         return LedgerParameterRule.repeatable(parameterType, LedgerRequirement.REQUIRED);
+    }
+
+    private static LedgerParameterRule repeatableOptionalEntryParameter(LedgerParameterType parameterType)
+    {
+        return LedgerParameterRule.repeatable(parameterType, LedgerRequirement.OPTIONAL);
     }
 
     private static LedgerParameterRule repeatableOptionalPostingParameter(LedgerParameterType parameterType)
