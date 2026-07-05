@@ -102,7 +102,7 @@ public class LedgerSpinOffScenarioTest
         var client = fixture.client();
         var entry = spinOffEntry(client);
 
-        assertThat(entry.getPostings().size(), is(6));
+        assertThat(entry.getPostings().size(), is(7));
         assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).size(), is(4));
         var oldSiemensOut = securityPosting(entry, fixture.siemens(),
                         CorporateActionLeg.SOURCE_SECURITY.getCode(), fixture.siemensEnergy());
@@ -445,6 +445,14 @@ public class LedgerSpinOffScenarioTest
                                         .targetSecurity(siemensEnergy)
                                         .ratio(Ratio.of(BigDecimal.ONE, BigDecimal.valueOf(2)))
                                         .build())
+                        .securityLeg(NativeSecurityLeg.context()
+                                        .portfolio(portfolio)
+                                        .security(siemens)
+                                        .shares(0L)
+                                        .amount(Money.of(CurrencyUnit.EUR, 0L))
+                                        .groupKey("main")
+                                        .localKey("context-1")
+                                        .build())
                         .securityLeg(NativeSecurityLeg.target()
                                         .portfolio(portfolio)
                                         .security(siemens)
@@ -552,7 +560,9 @@ public class LedgerSpinOffScenarioTest
         assertThat(client.getPortfolios().get(0).getReferenceAccount(), is(client.getAccounts().get(0)));
         assertThat(entry.getType(), is(LedgerEntryType.CORPORATE_ACTION));
         assertThat(entry.getUpdatedAt(), is(UPDATED_AT));
-        assertThat(entry.getPostings().size(), is(6));
+        var hasSecurityContext = entry.getPostings().stream()
+                        .anyMatch(posting -> posting.getCorporateActionLeg() == CorporateActionLeg.SECURITY_CONTEXT);
+        assertThat(entry.getPostings().size(), is(hasSecurityContext ? 7 : 6));
         var oldSecurityLeg = securityPosting(entry, siemens(client), CorporateActionLeg.SOURCE_SECURITY.getCode(),
                         siemensEnergy(client));
         var retainedSecurityLeg = securityPosting(entry, siemens(client), CorporateActionLeg.TARGET_SECURITY.getCode(),

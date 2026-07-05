@@ -141,12 +141,22 @@ public class LedgerNativeEntryDefinitionValidatorTest
     }
 
     @Test
+    public void testSpinOffDefinitionRejectsMissingSecurityContextLeg()
+    {
+        var entry = copyValidSpinOff();
+
+        removePosting(entry, CorporateActionLeg.SECURITY_CONTEXT);
+
+        assertIssue(entry, IssueCode.LEG_CARDINALITY_VIOLATED);
+    }
+
+    @Test
     public void testSpinOffDefinitionAcceptsSecurityContextLeg()
     {
         var fixture = fixture();
         var entry = copyValidSpinOff();
 
-        entry.addPosting(securityContextPosting(fixture, "context-1")); //$NON-NLS-1$
+        entry.addPosting(securityContextPosting(fixture, "context-2")); //$NON-NLS-1$
 
         assertOK(entry);
     }
@@ -161,6 +171,79 @@ public class LedgerNativeEntryDefinitionValidatorTest
         entry.addPosting(securityContextPosting(fixture, "context-1")); //$NON-NLS-1$
 
         assertIssue(entry, IssueCode.LEG_LOCAL_KEY_DUPLICATE);
+    }
+
+    @Test
+    public void testStockDividendDefinitionAcceptsMissingOptionalSecurityContextLeg()
+    {
+        var fixture = fixture();
+        var entry = corporateActionEntry(CorporateActionKind.STOCK_DIVIDEND);
+
+        entry.addPosting(targetSecurityPosting(fixture, "target-1")); //$NON-NLS-1$
+
+        assertOK(entry);
+    }
+
+    @Test
+    public void testStockDividendDefinitionAcceptsSecurityContextLeg()
+    {
+        var fixture = fixture();
+        var entry = corporateActionEntry(CorporateActionKind.STOCK_DIVIDEND);
+
+        entry.addPosting(securityContextPosting(fixture, "context-1")); //$NON-NLS-1$
+        entry.addPosting(targetSecurityPosting(fixture, "target-1")); //$NON-NLS-1$
+
+        assertOK(entry);
+    }
+
+    @Test
+    public void testCouponPaymentDefinitionRequiresSecurityContextLeg()
+    {
+        var fixture = fixture();
+        var entry = corporateActionEntry(CorporateActionKind.COUPON_PAYMENT);
+
+        entry.addPosting(cashPosting(fixture, "cash-1")); //$NON-NLS-1$
+
+        assertIssue(entry, IssueCode.LEG_CARDINALITY_VIOLATED);
+    }
+
+    @Test
+    public void testCouponPaymentDefinitionAcceptsSecurityContextAndCash()
+    {
+        var fixture = fixture();
+        var entry = corporateActionEntry(CorporateActionKind.COUPON_PAYMENT);
+
+        entry.addPosting(securityContextPosting(fixture, "context-1")); //$NON-NLS-1$
+        entry.addPosting(cashPosting(fixture, "cash-1")); //$NON-NLS-1$
+
+        assertOK(entry);
+    }
+
+    @Test
+    public void testMaturityDefinitionRequiresSecurityContextLeg()
+    {
+        var fixture = fixture();
+        var entry = corporateActionEntry(CorporateActionKind.MATURITY);
+
+        entry.addPosting(sourceSecurityPosting(fixture, "source-1")); //$NON-NLS-1$
+        entry.addPosting(cashPosting(fixture, "cash-1")); //$NON-NLS-1$
+        entry.addPosting(principalPosting(fixture, "principal-1")); //$NON-NLS-1$
+
+        assertIssue(entry, IssueCode.LEG_CARDINALITY_VIOLATED);
+    }
+
+    @Test
+    public void testMaturityDefinitionAcceptsSecurityContextSourceCashAndPrincipal()
+    {
+        var fixture = fixture();
+        var entry = corporateActionEntry(CorporateActionKind.MATURITY);
+
+        entry.addPosting(securityContextPosting(fixture, "context-1")); //$NON-NLS-1$
+        entry.addPosting(sourceSecurityPosting(fixture, "source-1")); //$NON-NLS-1$
+        entry.addPosting(cashPosting(fixture, "cash-1")); //$NON-NLS-1$
+        entry.addPosting(principalPosting(fixture, "principal-1")); //$NON-NLS-1$
+
+        assertOK(entry);
     }
 
     /**
@@ -399,10 +482,12 @@ public class LedgerNativeEntryDefinitionValidatorTest
     public void testAssemblerBuildDetachedAcceptsPartialSpinOffEntry()
     {
         var fixture = fixture();
-        var result = baseSpinOff(fixture).securityLeg(targetLeg(fixture).build()).buildDetached();
+        var result = baseSpinOff(fixture) //
+                        .securityLeg(contextLeg(fixture).build()) //
+                        .securityLeg(targetLeg(fixture).build()).buildDetached();
 
         assertTrue(result.getValidationResult().isOK());
-        assertThat(result.getEntry().getPostings().size(), is(1));
+        assertThat(result.getEntry().getPostings().size(), is(2));
     }
 
     /**
@@ -413,7 +498,9 @@ public class LedgerNativeEntryDefinitionValidatorTest
     public void testAssemblerBuildAndAddAcceptsPartialSpinOffEntry()
     {
         var fixture = fixture();
-        var result = baseSpinOff(fixture).securityLeg(targetLeg(fixture).build()).buildAndAdd();
+        var result = baseSpinOff(fixture) //
+                        .securityLeg(contextLeg(fixture).build()) //
+                        .securityLeg(targetLeg(fixture).build()).buildAndAdd();
 
         assertTrue(result.getValidationResult().isOK());
         assertThat(fixture.client.getLedger().getEntries().size(), is(1));
@@ -460,6 +547,7 @@ public class LedgerNativeEntryDefinitionValidatorTest
     {
         return baseSpinOff(fixture) //
                         .securityLeg(sourceLeg(fixture).build()) //
+                        .securityLeg(contextLeg(fixture).build()) //
                         .securityLeg(targetLeg(fixture).build()) //
                         .cashCompensation(NativeCashCompensation.builder() //
                                         .account(fixture.account) //
@@ -531,6 +619,28 @@ public class LedgerNativeEntryDefinitionValidatorTest
                         .ratio(Ratio.of(BigDecimal.ONE, BigDecimal.valueOf(2)));
     }
 
+    private static NativeSecurityLeg.Builder contextLeg(Fixture fixture)
+    {
+        return NativeSecurityLeg.context() //
+                        .portfolio(fixture.portfolio) //
+                        .security(fixture.siemens) //
+                        .amount(Money.of(CurrencyUnit.EUR, 0)) //
+                        .shares(0L) //
+                        .groupKey("main") //
+                        .localKey("context-1");
+    }
+
+    private static LedgerEntry corporateActionEntry(CorporateActionKind kind)
+    {
+        var entry = new LedgerEntry("corporate-action-" + kind.getCode()); //$NON-NLS-1$
+
+        entry.setType(name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType.CORPORATE_ACTION);
+        entry.setDateTime(LocalDateTime.of(2020, 9, 28, 0, 0));
+        entry.addParameter(LedgerParameter.ofCode(LedgerParameterType.CORPORATE_ACTION_KIND, kind));
+
+        return entry;
+    }
+
     private static LedgerPosting securityContextPosting(Fixture fixture, String localKey)
     {
         var posting = new LedgerPosting("security-context-" + localKey); //$NON-NLS-1$
@@ -551,6 +661,92 @@ public class LedgerNativeEntryDefinitionValidatorTest
                         CorporateActionLeg.SECURITY_CONTEXT.getCode()));
 
         return posting;
+    }
+
+    private static LedgerPosting targetSecurityPosting(Fixture fixture, String localKey)
+    {
+        var posting = securityPosting(fixture, localKey, LedgerPostingDirection.INBOUND,
+                        CorporateActionLeg.TARGET_SECURITY, fixture.siemensEnergy);
+
+        posting.addParameter(LedgerParameter.ofSecurity(LedgerParameterType.TARGET_SECURITY,
+                        fixture.siemensEnergy));
+
+        return posting;
+    }
+
+    private static LedgerPosting sourceSecurityPosting(Fixture fixture, String localKey)
+    {
+        var posting = securityPosting(fixture, localKey, LedgerPostingDirection.OUTBOUND,
+                        CorporateActionLeg.SOURCE_SECURITY, fixture.siemens);
+
+        posting.addParameter(LedgerParameter.ofSecurity(LedgerParameterType.SOURCE_SECURITY, fixture.siemens));
+
+        return posting;
+    }
+
+    private static LedgerPosting securityPosting(Fixture fixture, String localKey, LedgerPostingDirection direction,
+                    CorporateActionLeg leg, Security security)
+    {
+        var posting = new LedgerPosting("security-" + localKey); //$NON-NLS-1$
+
+        posting.setType(LedgerPostingType.SECURITY);
+        posting.setPortfolio(fixture.portfolio);
+        posting.setSecurity(security);
+        posting.setAmount(Values.Amount.factorize(1));
+        posting.setShares(Values.Share.factorize(1));
+        posting.setCurrency(CurrencyUnit.EUR);
+        posting.setSemanticRole(LedgerPostingSemanticRole.SECURITY);
+        posting.setDirection(direction);
+        posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
+        posting.setCorporateActionLeg(leg);
+        posting.setGroupKey("main"); //$NON-NLS-1$
+        posting.setLocalKey(localKey);
+        posting.addParameter(LedgerParameter.ofString(LedgerParameterType.CORPORATE_ACTION_LEG, leg.getCode()));
+
+        return posting;
+    }
+
+    private static LedgerPosting cashPosting(Fixture fixture, String localKey)
+    {
+        var posting = new LedgerPosting("cash-" + localKey); //$NON-NLS-1$
+
+        posting.setType(LedgerPostingType.CASH);
+        posting.setAccount(fixture.account);
+        posting.setAmount(Values.Amount.factorize(1));
+        posting.setCurrency(CurrencyUnit.EUR);
+        posting.setSemanticRole(LedgerPostingSemanticRole.CASH);
+        posting.setDirection(LedgerPostingDirection.NEUTRAL);
+        posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
+        posting.setGroupKey(localKey);
+        posting.setLocalKey(localKey);
+
+        return posting;
+    }
+
+    private static LedgerPosting principalPosting(Fixture fixture, String localKey)
+    {
+        var posting = new LedgerPosting("principal-" + localKey); //$NON-NLS-1$
+
+        posting.setType(LedgerPostingType.PRINCIPAL_REDEMPTION);
+        posting.setAccount(fixture.account);
+        posting.setAmount(Values.Amount.factorize(1));
+        posting.setCurrency(CurrencyUnit.EUR);
+        posting.setSemanticRole(LedgerPostingSemanticRole.PRINCIPAL_REDEMPTION);
+        posting.setDirection(LedgerPostingDirection.NEUTRAL);
+        posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
+        posting.setCorporateActionLeg(CorporateActionLeg.PRINCIPAL);
+        posting.setGroupKey(localKey);
+        posting.setLocalKey(localKey);
+        posting.addParameter(LedgerParameter.ofString(LedgerParameterType.CORPORATE_ACTION_LEG,
+                        CorporateActionLeg.PRINCIPAL.getCode()));
+
+        return posting;
+    }
+
+    private static void removePosting(LedgerEntry entry, CorporateActionLeg leg)
+    {
+        entry.getPostings().stream().filter(posting -> posting.getCorporateActionLeg() == leg).findFirst()
+                        .ifPresent(entry::removePosting);
     }
 
     private static Money money(long amount)

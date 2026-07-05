@@ -870,6 +870,14 @@ public class LedgerXmlPersistenceTest
                                         .targetSecurity(targetSecurity) //
                                         .ratio(Ratio.of(BigDecimal.ONE, BigDecimal.valueOf(2))) //
                                         .build()) //
+                        .securityLeg(NativeSecurityLeg.context() //
+                                        .portfolio(portfolio) //
+                                        .security(sourceSecurity) //
+                                        .shares(0L) //
+                                        .amount(money(0)) //
+                                        .groupKey("main") //
+                                        .localKey("context-1") //
+                                        .build()) //
                         .securityLeg(NativeSecurityLeg.target() //
                                         .portfolio(portfolio) //
                                         .security(targetSecurity) //

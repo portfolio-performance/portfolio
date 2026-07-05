@@ -326,7 +326,7 @@ public class LedgerNativeEntryAssemblerTest
         var entry = result.getEntry();
 
         assertThat(entry.getType(), is(LedgerEntryType.CORPORATE_ACTION));
-        assertThat(entry.getPostings().size(), is(5));
+        assertThat(entry.getPostings().size(), is(6));
         assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).size(), is(3));
         assertThat(fixture.client.getLedger().getEntries().size(), is(0));
         assertTrue(result.getValidationResult().isOK());
@@ -660,6 +660,7 @@ public class LedgerNativeEntryAssemblerTest
     {
         return baseSpinOff(fixture) //
                         .securityLeg(sourceLeg(fixture).build()) //
+                        .securityLeg(contextLeg(fixture).build()) //
                         .securityLeg(targetLeg(fixture).build()) //
                         .cashCompensation(NativeCashCompensation.builder() //
                                         .account(fixture.account) //
@@ -694,6 +695,7 @@ public class LedgerNativeEntryAssemblerTest
     {
         return baseSpinOff(fixture) //
                         .securityLeg(sourceLeg(fixture).build()) //
+                        .securityLeg(contextLeg(fixture).build()) //
                         .securityLeg(targetLeg(fixture).projectAs(LedgerProjectionRole.DELIVERY_INBOUND).build()) //
                         .securityLeg(targetLeg(fixture).projectAs(LedgerProjectionRole.NEW_SECURITY_LEG).build()) //
                         .cashCompensation(NativeCashCompensation.builder() //
@@ -713,6 +715,7 @@ public class LedgerNativeEntryAssemblerTest
     {
         return baseSpinOff(fixture) //
                         .securityLeg(sourceLeg(fixture).build()) //
+                        .securityLeg(contextLeg(fixture).build()) //
                         .securityLeg(targetLeg(fixture).groupKey("main").localKey("target-1").build()) //
                         .securityLeg(targetLeg(fixture) //
                                         .security(secondTarget) //
@@ -794,6 +797,17 @@ public class LedgerNativeEntryAssemblerTest
                         .sourceSecurity(fixture.siemens) //
                         .targetSecurity(fixture.siemensEnergy) //
                         .ratio(Ratio.of(BigDecimal.ONE, BigDecimal.valueOf(2)));
+    }
+
+    private static NativeSecurityLeg.Builder contextLeg(Fixture fixture)
+    {
+        return NativeSecurityLeg.context() //
+                        .portfolio(fixture.portfolio) //
+                        .security(fixture.siemens) //
+                        .shares(0L) //
+                        .amount(money(0)) //
+                        .groupKey("main") //
+                        .localKey("context-1");
     }
 
     private static LedgerParameter<?> parameter(Collection<LedgerParameter<?>> parameters, LedgerParameterType type)

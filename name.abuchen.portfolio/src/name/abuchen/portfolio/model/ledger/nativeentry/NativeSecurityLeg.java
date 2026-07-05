@@ -61,6 +61,11 @@ public final class NativeSecurityLeg
                         LedgerProjectionRole.NEW_SECURITY_LEG);
     }
 
+    public static Builder context()
+    {
+        return new Builder(LedgerPostingType.SECURITY, CorporateActionLeg.SECURITY_CONTEXT.getCode(), null);
+    }
+
     static Builder ofType(LedgerPostingType postingType)
     {
         return new Builder(postingType, CorporateActionLeg.SOURCE_SECURITY.getCode(),

@@ -152,6 +152,14 @@ public class LedgerProjectionMaterializerTest
                                         .targetSecurity(siemensEnergy) //
                                         .ratio(Ratio.of(BigDecimal.ONE, BigDecimal.valueOf(2))) //
                                         .build()) //
+                        .securityLeg(NativeSecurityLeg.context() //
+                                        .portfolio(portfolio) //
+                                        .security(siemens) //
+                                        .shares(0L) //
+                                        .amount(money(0)) //
+                                        .groupKey("main") //
+                                        .localKey("context-1") //
+                                        .build()) //
                         .securityLeg(NativeSecurityLeg.target() //
                                         .portfolio(portfolio) //
                                         .security(siemens) //
@@ -801,6 +809,14 @@ public class LedgerProjectionMaterializerTest
                                         .sourceSecurity(fixture.source) //
                                         .targetSecurity(fixture.firstTarget) //
                                         .ratio(Ratio.of(BigDecimal.ONE, BigDecimal.valueOf(2))) //
+                                        .build()) //
+                        .securityLeg(NativeSecurityLeg.context() //
+                                        .portfolio(fixture.portfolio) //
+                                        .security(fixture.source) //
+                                        .shares(0L) //
+                                        .amount(money(0)) //
+                                        .groupKey("main") //
+                                        .localKey("context-1") //
                                         .build()) //
                         .securityLeg(targetLeg(fixture, fixture.firstTarget, Values.Share.factorize(5), 50,
                                         "target-1")) //

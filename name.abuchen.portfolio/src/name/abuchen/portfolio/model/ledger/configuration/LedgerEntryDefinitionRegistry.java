@@ -194,8 +194,9 @@ public final class LedgerEntryDefinitionRegistry
     private static LedgerEntryDefinition stockDividend()
     {
         return corporateActionDefinition(
-                        SETS.legDefinitions(targetSecurityLeg(LedgerLegCardinality.AT_LEAST_ONE),
-                                        cashCompensationLeg(), feeLeg(), taxLeg(), forexLeg()),
+                        SETS.legDefinitions(securityContextLeg(LedgerLegCardinality.OPTIONAL),
+                                        targetSecurityLeg(LedgerLegCardinality.AT_LEAST_ONE), cashCompensationLeg(),
+                                        feeLeg(), taxLeg(), forexLeg()),
                         LedgerReportingClass.SECURITIES_DISTRIBUTION,
                         LedgerPerformanceTreatment.SECURITY_DISTRIBUTION);
     }
@@ -203,8 +204,9 @@ public final class LedgerEntryDefinitionRegistry
     private static LedgerEntryDefinition bonusIssue()
     {
         return corporateActionDefinition(
-                        SETS.legDefinitions(targetSecurityLeg(LedgerLegCardinality.AT_LEAST_ONE),
-                                        cashCompensationLeg(), feeLeg(), taxLeg(), forexLeg()),
+                        SETS.legDefinitions(securityContextLeg(LedgerLegCardinality.OPTIONAL),
+                                        targetSecurityLeg(LedgerLegCardinality.AT_LEAST_ONE), cashCompensationLeg(),
+                                        feeLeg(), taxLeg(), forexLeg()),
                         LedgerReportingClass.SECURITIES_DISTRIBUTION,
                         LedgerPerformanceTreatment.SECURITY_DISTRIBUTION);
     }
@@ -212,7 +214,8 @@ public final class LedgerEntryDefinitionRegistry
     private static LedgerEntryDefinition rightsDistribution()
     {
         return corporateActionDefinition(
-                        SETS.legDefinitions(distributedRightLeg(LedgerLegCardinality.AT_LEAST_ONE),
+                        SETS.legDefinitions(securityContextLeg(LedgerLegCardinality.OPTIONAL),
+                                        distributedRightLeg(LedgerLegCardinality.AT_LEAST_ONE),
                                         cashCompensationLeg(), feeLeg(), taxLeg(), forexLeg()),
                         LedgerReportingClass.RIGHTS_EVENT,
                         LedgerPerformanceTreatment.SECURITY_DISTRIBUTION);
@@ -221,7 +224,8 @@ public final class LedgerEntryDefinitionRegistry
     private static LedgerEntryDefinition couponPayment()
     {
         return corporateActionDefinition(
-                        SETS.legDefinitions(cashLeg(LedgerLegCardinality.AT_LEAST_ONE),
+                        SETS.legDefinitions(securityContextLeg(LedgerLegCardinality.AT_LEAST_ONE),
+                                        cashLeg(LedgerLegCardinality.AT_LEAST_ONE),
                                         accruedInterestLeg(LedgerLegCardinality.OPTIONAL), feeLeg(), taxLeg(),
                                         forexLeg()),
                         LedgerReportingClass.FIXED_INCOME_COUPON,
@@ -231,9 +235,10 @@ public final class LedgerEntryDefinitionRegistry
     private static LedgerEntryDefinition pikInterest()
     {
         return corporateActionDefinition(
-                        SETS.legDefinitions(targetSecurityLeg(LedgerLegCardinality.AT_LEAST_ONE),
-                                        cashCompensationLeg(), accruedInterestLeg(LedgerLegCardinality.OPTIONAL),
-                                        feeLeg(), taxLeg(), forexLeg()),
+                        SETS.legDefinitions(securityContextLeg(LedgerLegCardinality.AT_LEAST_ONE),
+                                        targetSecurityLeg(LedgerLegCardinality.AT_LEAST_ONE), cashCompensationLeg(),
+                                        accruedInterestLeg(LedgerLegCardinality.OPTIONAL), feeLeg(), taxLeg(),
+                                        forexLeg()),
                         LedgerReportingClass.FIXED_INCOME_COUPON,
                         LedgerPerformanceTreatment.INCOME_DISTRIBUTION);
     }
@@ -261,7 +266,8 @@ public final class LedgerEntryDefinitionRegistry
     private static LedgerEntryDefinition fixedIncomeRedemption()
     {
         return corporateActionDefinition(
-                        SETS.legDefinitions(sourceSecurityLeg(LedgerLegCardinality.AT_LEAST_ONE),
+                        SETS.legDefinitions(securityContextLeg(LedgerLegCardinality.AT_LEAST_ONE),
+                                        sourceSecurityLeg(LedgerLegCardinality.AT_LEAST_ONE),
                                         cashLeg(LedgerLegCardinality.AT_LEAST_ONE),
                                         principalRedemptionLeg(LedgerLegCardinality.AT_LEAST_ONE),
                                         accruedInterestLeg(LedgerLegCardinality.OPTIONAL), feeLeg(), taxLeg(),
@@ -283,7 +289,8 @@ public final class LedgerEntryDefinitionRegistry
     private static LedgerEntryDefinition securityReorganization()
     {
         return corporateActionDefinition(
-                        SETS.legDefinitions(sourceSecurityLeg(LedgerLegCardinality.AT_LEAST_ONE),
+                        SETS.legDefinitions(securityContextLeg(LedgerLegCardinality.AT_LEAST_ONE),
+                                        sourceSecurityLeg(LedgerLegCardinality.AT_LEAST_ONE),
                                         targetSecurityLeg(LedgerLegCardinality.AT_LEAST_ONE),
                                         cashCompensationLeg(),
                                         accruedInterestLeg(LedgerLegCardinality.OPTIONAL), feeLeg(), taxLeg(),
@@ -413,6 +420,15 @@ public final class LedgerEntryDefinitionRegistry
                         cardinality)
                         .requiredParameters(SETS.parameterTypes(LedgerParameterType.CORPORATE_ACTION_LEG,
                                         LedgerParameterType.TARGET_SECURITY))
+                        .optionalParameters(corporateActionPostingOptionalParametersFor(LedgerPostingType.SECURITY))
+                        .build();
+    }
+
+    private static LedgerLegDefinition securityContextLeg(LedgerLegCardinality cardinality)
+    {
+        return LedgerLegDefinition.of(LedgerLegRole.SECURITY_CONTEXT_LEG, LedgerPostingType.SECURITY,
+                        cardinality)
+                        .requiredParameters(SETS.parameterTypes(LedgerParameterType.CORPORATE_ACTION_LEG))
                         .optionalParameters(corporateActionPostingOptionalParametersFor(LedgerPostingType.SECURITY))
                         .build();
     }
@@ -549,7 +565,7 @@ public final class LedgerEntryDefinitionRegistry
                                         .optionalParameters(spinOffTargetSecurityLegOptionalParameters())
                                         .projection(LedgerProjectionRole.NEW_SECURITY_LEG, true, false).build(),
                         LedgerLegDefinition.of(LedgerLegRole.SECURITY_CONTEXT_LEG, LedgerPostingType.SECURITY,
-                                        LedgerLegCardinality.REPEATABLE)
+                                        LedgerLegCardinality.AT_LEAST_ONE)
                                         .requiredParameters(SETS.parameterTypes(
                                                         LedgerParameterType.CORPORATE_ACTION_LEG))
                                         .optionalParameters(spinOffSecurityOptionalParameters()).build(),

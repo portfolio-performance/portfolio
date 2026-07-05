@@ -45,6 +45,7 @@ import name.abuchen.portfolio.model.ledger.nativeentry.NativeCashCompensation;
 import name.abuchen.portfolio.model.ledger.nativeentry.NativeCorporateActionEvent;
 import name.abuchen.portfolio.model.ledger.nativeentry.NativeEntryMetadata;
 import name.abuchen.portfolio.model.ledger.nativeentry.NativeFee;
+import name.abuchen.portfolio.model.ledger.nativeentry.NativeSecurityLeg;
 import name.abuchen.portfolio.model.ledger.nativeentry.NativeTax;
 import name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
@@ -337,12 +338,21 @@ public class ClientPerformanceSnapshotTest
     {
         Client client = new Client();
         Account account = account();
-
         client.addAccount(account);
+        Security security = new SecurityBuilder().addTo(client);
+        Portfolio portfolio = new PortfolioBuilder(account).addTo(client);
 
         LedgerNativeEntryAssembler.forClient(client).spinOff()
                         .metadata(nativeMetadata())
                         .event(nativeEvent(LedgerEntryType.CORPORATE_ACTION))
+                        .securityLeg(NativeSecurityLeg.context() //
+                                        .portfolio(portfolio) //
+                                        .security(security) //
+                                        .amount(Money.of(CurrencyUnit.EUR, 0)) //
+                                        .shares(0L) //
+                                        .groupKey("main") //
+                                        .localKey("context-1") //
+                                        .build()) //
                         .cashCompensation(NativeCashCompensation.builder() //
                                         .account(account) //
                                         .amount(Money.of(CurrencyUnit.EUR, 5_00)) //
