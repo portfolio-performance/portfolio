@@ -72,6 +72,16 @@ public final class LedgerNativeEntryAssembler
                         LedgerPostingTypeDefinitionRegistry::lookup);
     }
 
+    public static LedgerCorporateActionBuilder corporateAction(Client client)
+    {
+        return new LedgerCorporateActionBuilder(client);
+    }
+
+    public LedgerCorporateActionBuilder corporateAction()
+    {
+        return new LedgerCorporateActionBuilder(client);
+    }
+
     public EntryBuilder forType(LedgerEntryType entryType)
     {
         Objects.requireNonNull(entryType);
