@@ -95,6 +95,30 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
         assertNativeDefinitionValid(loadedEntry);
     }
 
+    @Test
+    public void testXmlAndProtobufRoundtripPreserveDefaultedInterestPrimaryMovement() throws Exception
+    {
+        var fixture = defaultedInterestFixture();
+
+        assertDefaultedInterestPrimaryMovement(fixture.entry());
+        assertValid(fixture.client());
+        assertNativeDefinitionValid(fixture.entry());
+
+        var loadedFromXml = loadXml(saveXml(fixture.client()));
+        var loadedXmlEntry = onlyLedgerEntry(loadedFromXml);
+
+        assertDefaultedInterestPrimaryMovement(loadedXmlEntry);
+        assertValid(loadedFromXml);
+        assertNativeDefinitionValid(loadedXmlEntry);
+
+        var loadedFromProto = ProtobufTestUtilities.load(ProtobufTestUtilities.save(fixture.client()));
+        var loadedProtoEntry = onlyLedgerEntry(loadedFromProto);
+
+        assertDefaultedInterestPrimaryMovement(loadedProtoEntry);
+        assertValid(loadedFromProto);
+        assertNativeDefinitionValid(loadedProtoEntry);
+    }
+
     private Fixture spinOffFixture()
     {
         var client = new Client();
@@ -154,6 +178,39 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
                         LedgerPostingUnitRole.FEE, CorporateActionLeg.FEE, "cash-1", "fee-1", 2));
         entry.addPosting(unitPosting(LedgerPostingType.TAX, LedgerPostingSemanticRole.TAX,
                         LedgerPostingUnitRole.TAX, CorporateActionLeg.TAX, "cash-1", "tax-1", 4));
+
+        client.getLedger().addEntry(entry);
+
+        return new Fixture(client, entry);
+    }
+
+    private Fixture defaultedInterestFixture()
+    {
+        var client = new Client();
+        var account = new Account();
+        var portfolio = new Portfolio();
+        var contextSecurity = new Security("Defaulted Bond", CurrencyUnit.EUR);
+
+        account.setName("Cash Account");
+        account.setCurrencyCode(CurrencyUnit.EUR);
+        portfolio.setName("Portfolio");
+        portfolio.setReferenceAccount(account);
+        account.setUpdatedAt(UPDATED_AT);
+        portfolio.setUpdatedAt(UPDATED_AT);
+        contextSecurity.setUpdatedAt(UPDATED_AT);
+
+        client.addAccount(account);
+        client.addPortfolio(portfolio);
+        client.addSecurity(contextSecurity);
+
+        var entry = new LedgerEntry("defaulted-interest-primary-movement");
+        entry.setType(LedgerEntryType.CORPORATE_ACTION);
+        entry.setDateTime(DATE_TIME);
+        entry.setSource("DEFAULTED_INTEREST primary movement proof");
+        entry.addParameter(LedgerParameter.ofCode(LedgerParameterType.CORPORATE_ACTION_KIND,
+                        CorporateActionKind.DEFAULTED_INTEREST));
+        entry.addPosting(securityContextPosting(portfolio, contextSecurity, "main", "context-1"));
+        entry.addPosting(cashPrimaryPosting(account, "cash-1", 33));
 
         client.getLedger().addEntry(entry);
 
@@ -239,6 +296,23 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
         return posting;
     }
 
+    private LedgerPosting cashPrimaryPosting(Account account, String localKey, long amount)
+    {
+        var posting = new LedgerPosting("proof-" + localKey);
+
+        posting.setType(LedgerPostingType.CASH);
+        posting.setAccount(account);
+        posting.setAmount(Values.Amount.factorize(amount));
+        posting.setCurrency(CurrencyUnit.EUR);
+        posting.setSemanticRole(LedgerPostingSemanticRole.CASH);
+        posting.setDirection(LedgerPostingDirection.NEUTRAL);
+        posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
+        posting.setGroupKey(localKey);
+        posting.setLocalKey(localKey);
+
+        return posting;
+    }
+
     private LedgerPosting unitPosting(LedgerPostingType type, LedgerPostingSemanticRole semanticRole,
                     LedgerPostingUnitRole unitRole, CorporateActionLeg leg, String groupKey, String localKey,
                     long amount)
@@ -305,6 +379,22 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
         assertThat(runtimeProjectionIds.size(), is(2));
         assertTrue(runtimeProjectionIds.stream().anyMatch(id -> id.endsWith(":NEW_SECURITY_LEG:target-1")));
         assertTrue(runtimeProjectionIds.stream().anyMatch(id -> id.endsWith(":NEW_SECURITY_LEG:target-2")));
+    }
+
+    private void assertDefaultedInterestPrimaryMovement(LedgerEntry entry)
+    {
+        assertThat(entry.getType(), is(LedgerEntryType.CORPORATE_ACTION));
+        assertTrue(entry.getParameters().stream()
+                        .anyMatch(parameter -> parameter.getType() == LedgerParameterType.CORPORATE_ACTION_KIND
+                                        && CorporateActionKind.DEFAULTED_INTEREST.getCode()
+                                                        .equals(parameter.getValue())));
+        assertThat(postings(entry, LedgerPostingType.SECURITY, LedgerPostingDirection.NEUTRAL,
+                        CorporateActionLeg.SECURITY_CONTEXT).size(), is(1));
+        assertThat(entry.getPostings().stream()
+                        .filter(posting -> posting.getType() == LedgerPostingType.CASH)
+                        .filter(posting -> "cash-1".equals(posting.getLocalKey())) //$NON-NLS-1$
+                        .count(), is(1L));
+        assertTrue(LedgerDescriptorTestSupport.descriptors(entry).isEmpty());
     }
 
     private List<LedgerPosting> postings(LedgerEntry entry, LedgerPostingType type, LedgerPostingDirection direction,

@@ -16,6 +16,7 @@ import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.configuration.rule.LedgerParameterRule;
 import name.abuchen.portfolio.model.ledger.configuration.rule.LedgerPostingGroupRule;
 import name.abuchen.portfolio.model.ledger.configuration.rule.LedgerPostingRule;
+import name.abuchen.portfolio.model.ledger.configuration.rule.LedgerPrimaryMovement;
 import name.abuchen.portfolio.model.ledger.configuration.rule.LedgerProjectionRule;
 import name.abuchen.portfolio.model.ledger.configuration.rule.LedgerRequirement;
 import name.abuchen.portfolio.model.ledger.configuration.rule.LedgerRequirementGroup;
@@ -106,12 +107,15 @@ public final class LedgerEntryDefinitionRegistry
         register(definitions, CorporateActionKind.RIGHTS_DISTRIBUTION, rightsDistribution());
         register(definitions, CorporateActionKind.COUPON_PAYMENT, couponPayment());
         register(definitions, CorporateActionKind.PIK_INTEREST, pikInterest());
+        register(definitions, CorporateActionKind.DEFAULTED_INTEREST, defaultedInterest());
         register(definitions, CorporateActionKind.MATURITY, maturity());
         register(definitions, CorporateActionKind.PARTIAL_REDEMPTION, partialRedemption());
         register(definitions, CorporateActionKind.CALL, call());
         register(definitions, CorporateActionKind.PUT, put());
         register(definitions, CorporateActionKind.CONVERSION, conversion());
         register(definitions, CorporateActionKind.EXCHANGE, exchange());
+        register(definitions, CorporateActionKind.RESTRUCTURING, restructuring());
+        register(definitions, CorporateActionKind.DEFAULT, defaultAction());
 
         return Collections.unmodifiableMap(definitions);
     }
@@ -243,6 +247,19 @@ public final class LedgerEntryDefinitionRegistry
                         LedgerPerformanceTreatment.INCOME_DISTRIBUTION);
     }
 
+    private static LedgerEntryDefinition defaultedInterest()
+    {
+        return corporateActionDefinition(
+                        SETS.legDefinitions(securityContextLeg(LedgerLegCardinality.AT_LEAST_ONE),
+                                        targetSecurityLeg(LedgerLegCardinality.REPEATABLE),
+                                        cashLeg(LedgerLegCardinality.REPEATABLE), feeLeg(), taxLeg()),
+                        primaryMovementGroup("DEFAULTED_INTEREST_PRIMARY_MOVEMENT", //$NON-NLS-1$
+                                        LedgerPrimaryMovement.CASH, LedgerPrimaryMovement.TARGET_SECURITY,
+                                        LedgerPrimaryMovement.FEE, LedgerPrimaryMovement.TAX),
+                        LedgerReportingClass.FIXED_INCOME_COUPON,
+                        LedgerPerformanceTreatment.INCOME_DISTRIBUTION);
+    }
+
     private static LedgerEntryDefinition maturity()
     {
         return fixedIncomeRedemption();
@@ -299,8 +316,48 @@ public final class LedgerEntryDefinitionRegistry
                         LedgerPerformanceTreatment.COST_BASIS_REALLOCATION);
     }
 
+    private static LedgerEntryDefinition restructuring()
+    {
+        return corporateActionDefinition(
+                        SETS.legDefinitions(securityContextLeg(LedgerLegCardinality.OPTIONAL),
+                                        sourceSecurityLeg(LedgerLegCardinality.REPEATABLE),
+                                        targetSecurityLeg(LedgerLegCardinality.REPEATABLE),
+                                        cashLeg(LedgerLegCardinality.REPEATABLE),
+                                        principalRedemptionLeg(LedgerLegCardinality.REPEATABLE),
+                                        accruedInterestLeg(LedgerLegCardinality.REPEATABLE),
+                                        feeLeg(), taxLeg(), forexLeg()),
+                        primaryMovementGroup("RESTRUCTURING_PRIMARY_MOVEMENT", //$NON-NLS-1$
+                                        LedgerPrimaryMovement.SOURCE_SECURITY, LedgerPrimaryMovement.TARGET_SECURITY,
+                                        LedgerPrimaryMovement.CASH, LedgerPrimaryMovement.PRINCIPAL_REDEMPTION,
+                                        LedgerPrimaryMovement.ACCRUED_INTEREST),
+                        LedgerReportingClass.SECURITY_REORGANIZATION,
+                        LedgerPerformanceTreatment.COST_BASIS_REALLOCATION);
+    }
+
+    private static LedgerEntryDefinition defaultAction()
+    {
+        return corporateActionDefinition(
+                        SETS.legDefinitions(securityContextLeg(LedgerLegCardinality.AT_LEAST_ONE),
+                                        sourceSecurityLeg(LedgerLegCardinality.REPEATABLE),
+                                        targetSecurityLeg(LedgerLegCardinality.REPEATABLE),
+                                        cashLeg(LedgerLegCardinality.REPEATABLE), feeLeg(), taxLeg()),
+                        primaryMovementGroup("DEFAULT_PRIMARY_MOVEMENT", //$NON-NLS-1$
+                                        LedgerPrimaryMovement.SOURCE_SECURITY, LedgerPrimaryMovement.TARGET_SECURITY,
+                                        LedgerPrimaryMovement.CASH, LedgerPrimaryMovement.FEE,
+                                        LedgerPrimaryMovement.TAX),
+                        LedgerReportingClass.NONE,
+                        LedgerPerformanceTreatment.PERFORMANCE_NEUTRAL);
+    }
+
     private static LedgerEntryDefinition corporateActionDefinition(Set<LedgerLegDefinition> legDefinitions,
                     LedgerReportingClass reportingClass, LedgerPerformanceTreatment performanceTreatment)
+    {
+        return corporateActionDefinition(legDefinitions, Set.of(), reportingClass, performanceTreatment);
+    }
+
+    private static LedgerEntryDefinition corporateActionDefinition(Set<LedgerLegDefinition> legDefinitions,
+                    Set<LedgerRequirementGroup> alternativeRequirementGroups, LedgerReportingClass reportingClass,
+                    LedgerPerformanceTreatment performanceTreatment)
     {
         return LedgerEntryDefinition.of(LedgerEntryType.CORPORATE_ACTION,
                         LedgerNativeEntryShape.DUAL_INSTRUMENT_PLUS_ACCOUNT,
@@ -309,7 +366,7 @@ public final class LedgerEntryDefinitionRegistry
                         corporateActionPostingParameterRulesFor(legDefinitions),
                         Set.of(),
                         Set.of(),
-                        Set.of(),
+                        alternativeRequirementGroups,
                         legDefinitions,
                         reportingClass,
                         performanceTreatment,
@@ -536,6 +593,13 @@ public final class LedgerEntryDefinitionRegistry
                         SETS.parameterTypes(LedgerParameterType.EX_DATE, LedgerParameterType.EFFECTIVE_DATE));
     }
 
+    private static Set<LedgerRequirementGroup> primaryMovementGroup(String name, LedgerPrimaryMovement first,
+                    LedgerPrimaryMovement... rest)
+    {
+        return SETS.alternativeGroups(LedgerRequirementGroup.primaryMovements(name, LedgerRequirement.REQUIRED,
+                        SETS.primaryMovements(first, rest)));
+    }
+
     private static EnumSet<LedgerParameterType> requiredSecurityLegParameters()
     {
         return SETS.parameterTypes(LedgerParameterType.CORPORATE_ACTION_LEG,
@@ -677,6 +741,12 @@ public final class LedgerEntryDefinitionRegistry
         }
 
         private EnumSet<LedgerProjectionRole> projectionRoles(LedgerProjectionRole first, LedgerProjectionRole... rest)
+        {
+            return EnumSet.of(first, rest);
+        }
+
+        private EnumSet<LedgerPrimaryMovement> primaryMovements(LedgerPrimaryMovement first,
+                        LedgerPrimaryMovement... rest)
         {
             return EnumSet.of(first, rest);
         }

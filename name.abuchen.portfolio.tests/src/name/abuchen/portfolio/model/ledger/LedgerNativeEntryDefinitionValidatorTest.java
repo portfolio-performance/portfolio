@@ -246,6 +246,143 @@ public class LedgerNativeEntryDefinitionValidatorTest
         assertOK(entry);
     }
 
+    @Test
+    public void testDefaultedInterestRequiresPrimaryMovementBeyondContext()
+    {
+        var fixture = fixture();
+        var entry = corporateActionEntry(CorporateActionKind.DEFAULTED_INTEREST);
+
+        entry.addPosting(securityContextPosting(fixture, "context-1")); //$NON-NLS-1$
+
+        assertIssue(entry, IssueCode.REQUIRED_PRIMARY_MOVEMENT_MISSING);
+    }
+
+    @Test
+    public void testDefaultedInterestAcceptsCashPrimaryMovement()
+    {
+        var fixture = fixture();
+        var entry = corporateActionEntry(CorporateActionKind.DEFAULTED_INTEREST);
+
+        entry.addPosting(securityContextPosting(fixture, "context-1")); //$NON-NLS-1$
+        entry.addPosting(cashPosting(fixture, "cash-1")); //$NON-NLS-1$
+
+        assertOK(entry);
+    }
+
+    @Test
+    public void testDefaultedInterestAcceptsFeeOrTaxPrimaryMovement()
+    {
+        var fixture = fixture();
+        var feeEntry = corporateActionEntry(CorporateActionKind.DEFAULTED_INTEREST);
+        var taxEntry = corporateActionEntry(CorporateActionKind.DEFAULTED_INTEREST);
+
+        feeEntry.addPosting(securityContextPosting(fixture, "context-1")); //$NON-NLS-1$
+        feeEntry.addPosting(feePosting(fixture, "fee-1")); //$NON-NLS-1$
+        taxEntry.addPosting(securityContextPosting(fixture, "context-1")); //$NON-NLS-1$
+        taxEntry.addPosting(taxPosting(fixture, "tax-1")); //$NON-NLS-1$
+
+        assertOK(feeEntry);
+        assertOK(taxEntry);
+    }
+
+    @Test
+    public void testDefaultedInterestAcceptsClaimSecurityPrimaryMovement()
+    {
+        var fixture = fixture();
+        var entry = corporateActionEntry(CorporateActionKind.DEFAULTED_INTEREST);
+
+        entry.addPosting(securityContextPosting(fixture, "context-1")); //$NON-NLS-1$
+        entry.addPosting(targetSecurityPosting(fixture, "target-1")); //$NON-NLS-1$
+
+        assertOK(entry);
+    }
+
+    @Test
+    public void testDefaultedInterestRejectsBasisLikeMetadataAsPrimaryMovement()
+    {
+        var fixture = fixture();
+        var entry = corporateActionEntry(CorporateActionKind.DEFAULTED_INTEREST);
+        var context = securityContextPosting(fixture, "context-1"); //$NON-NLS-1$
+
+        context.addParameter(LedgerParameter.ofMoney(LedgerParameterType.FAIR_MARKET_VALUE, money(100)));
+        entry.addPosting(context);
+
+        assertIssue(entry, IssueCode.REQUIRED_PRIMARY_MOVEMENT_MISSING);
+    }
+
+    @Test
+    public void testRestructuringRequiresPrimaryMovementBeyondContext()
+    {
+        var fixture = fixture();
+        var entry = corporateActionEntry(CorporateActionKind.RESTRUCTURING);
+
+        entry.addPosting(securityContextPosting(fixture, "context-1")); //$NON-NLS-1$
+
+        assertIssue(entry, IssueCode.REQUIRED_PRIMARY_MOVEMENT_MISSING);
+    }
+
+    @Test
+    public void testRestructuringAcceptsSecurityCashPrincipalOrInterestPrimaryMovement()
+    {
+        var fixture = fixture();
+
+        assertOK(corporateActionEntry(CorporateActionKind.RESTRUCTURING,
+                        sourceSecurityPosting(fixture, "source-1"))); //$NON-NLS-1$
+        assertOK(corporateActionEntry(CorporateActionKind.RESTRUCTURING,
+                        targetSecurityPosting(fixture, "target-1"))); //$NON-NLS-1$
+        assertOK(corporateActionEntry(CorporateActionKind.RESTRUCTURING, cashPosting(fixture, "cash-1"))); //$NON-NLS-1$
+        assertOK(corporateActionEntry(CorporateActionKind.RESTRUCTURING,
+                        principalPosting(fixture, "principal-1"))); //$NON-NLS-1$
+        assertOK(corporateActionEntry(CorporateActionKind.RESTRUCTURING,
+                        accruedInterestPosting(fixture, "interest-1"))); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testRestructuringRejectsFeeOrTaxOnlyPrimaryMovement()
+    {
+        var fixture = fixture();
+
+        assertIssue(corporateActionEntry(CorporateActionKind.RESTRUCTURING, feePosting(fixture, "fee-1")), //$NON-NLS-1$
+                        IssueCode.REQUIRED_PRIMARY_MOVEMENT_MISSING);
+        assertIssue(corporateActionEntry(CorporateActionKind.RESTRUCTURING, taxPosting(fixture, "tax-1")), //$NON-NLS-1$
+                        IssueCode.REQUIRED_PRIMARY_MOVEMENT_MISSING);
+    }
+
+    @Test
+    public void testDefaultRequiresPrimaryMovementBeyondContext()
+    {
+        var fixture = fixture();
+        var entry = corporateActionEntry(CorporateActionKind.DEFAULT);
+
+        entry.addPosting(securityContextPosting(fixture, "context-1")); //$NON-NLS-1$
+
+        assertIssue(entry, IssueCode.REQUIRED_PRIMARY_MOVEMENT_MISSING);
+    }
+
+    @Test
+    public void testDefaultAcceptsOneBookedPrimaryMovement()
+    {
+        var fixture = fixture();
+
+        assertOK(corporateActionEntry(CorporateActionKind.DEFAULT, securityContextPosting(fixture, "context-1"), //$NON-NLS-1$
+                        sourceSecurityPosting(fixture, "source-1"))); //$NON-NLS-1$
+        assertOK(corporateActionEntry(CorporateActionKind.DEFAULT, securityContextPosting(fixture, "context-1"), //$NON-NLS-1$
+                        cashPosting(fixture, "cash-1"))); //$NON-NLS-1$
+        assertOK(corporateActionEntry(CorporateActionKind.DEFAULT, securityContextPosting(fixture, "context-1"), //$NON-NLS-1$
+                        taxPosting(fixture, "tax-1"))); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testForexDoesNotSatisfyPrimaryMovement()
+    {
+        var fixture = fixture();
+        var entry = corporateActionEntry(CorporateActionKind.RESTRUCTURING);
+
+        entry.addPosting(forexPosting(fixture, "forex-1")); //$NON-NLS-1$
+
+        assertIssue(entry, IssueCode.REQUIRED_PRIMARY_MOVEMENT_MISSING);
+    }
+
     /**
      * Checks that repeated source legs follow the same semantic-key policy as
      * repeated target and cash movement legs.
@@ -641,6 +778,16 @@ public class LedgerNativeEntryDefinitionValidatorTest
         return entry;
     }
 
+    private static LedgerEntry corporateActionEntry(CorporateActionKind kind, LedgerPosting... postings)
+    {
+        var entry = corporateActionEntry(kind);
+
+        for (var posting : postings)
+            entry.addPosting(posting);
+
+        return entry;
+    }
+
     private static LedgerPosting securityContextPosting(Fixture fixture, String localKey)
     {
         var posting = new LedgerPosting("security-context-" + localKey); //$NON-NLS-1$
@@ -739,6 +886,84 @@ public class LedgerNativeEntryDefinitionValidatorTest
         posting.setLocalKey(localKey);
         posting.addParameter(LedgerParameter.ofString(LedgerParameterType.CORPORATE_ACTION_LEG,
                         CorporateActionLeg.PRINCIPAL.getCode()));
+
+        return posting;
+    }
+
+    private static LedgerPosting accruedInterestPosting(Fixture fixture, String localKey)
+    {
+        var posting = new LedgerPosting("interest-" + localKey); //$NON-NLS-1$
+
+        posting.setType(LedgerPostingType.ACCRUED_INTEREST);
+        posting.setAccount(fixture.account);
+        posting.setAmount(Values.Amount.factorize(1));
+        posting.setCurrency(CurrencyUnit.EUR);
+        posting.setSemanticRole(LedgerPostingSemanticRole.ACCRUED_INTEREST);
+        posting.setDirection(LedgerPostingDirection.NEUTRAL);
+        posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
+        posting.setCorporateActionLeg(CorporateActionLeg.ACCRUED_INTEREST);
+        posting.setGroupKey(localKey);
+        posting.setLocalKey(localKey);
+        posting.addParameter(LedgerParameter.ofString(LedgerParameterType.CORPORATE_ACTION_LEG,
+                        CorporateActionLeg.ACCRUED_INTEREST.getCode()));
+
+        return posting;
+    }
+
+    private static LedgerPosting feePosting(Fixture fixture, String localKey)
+    {
+        var posting = unitPosting(fixture, localKey, LedgerPostingType.FEE, LedgerPostingSemanticRole.FEE,
+                        LedgerPostingUnitRole.FEE, CorporateActionLeg.FEE);
+
+        posting.addParameter(LedgerParameter.ofCode(LedgerParameterType.FEE_REASON,
+                        FeeReason.CORPORATE_ACTION_FEE));
+
+        return posting;
+    }
+
+    private static LedgerPosting taxPosting(Fixture fixture, String localKey)
+    {
+        var posting = unitPosting(fixture, localKey, LedgerPostingType.TAX, LedgerPostingSemanticRole.TAX,
+                        LedgerPostingUnitRole.TAX, CorporateActionLeg.TAX);
+
+        posting.addParameter(LedgerParameter.ofCode(LedgerParameterType.TAX_REASON,
+                        TaxReason.WITHHOLDING_TAX));
+
+        return posting;
+    }
+
+    private static LedgerPosting unitPosting(Fixture fixture, String localKey, LedgerPostingType type,
+                    LedgerPostingSemanticRole semanticRole, LedgerPostingUnitRole unitRole, CorporateActionLeg leg)
+    {
+        var posting = new LedgerPosting(type.getCode().toLowerCase() + "-" + localKey); //$NON-NLS-1$
+
+        posting.setType(type);
+        posting.setAccount(fixture.account);
+        posting.setAmount(Values.Amount.factorize(1));
+        posting.setCurrency(CurrencyUnit.EUR);
+        posting.setSemanticRole(semanticRole);
+        posting.setDirection(LedgerPostingDirection.NEUTRAL);
+        posting.setUnitRole(unitRole);
+        posting.setCorporateActionLeg(leg);
+        posting.setGroupKey(localKey);
+        posting.setLocalKey(localKey);
+        posting.addParameter(LedgerParameter.ofString(LedgerParameterType.CORPORATE_ACTION_LEG, leg.getCode()));
+
+        return posting;
+    }
+
+    private static LedgerPosting forexPosting(Fixture fixture, String localKey)
+    {
+        var posting = new LedgerPosting("forex-" + localKey); //$NON-NLS-1$
+
+        posting.setType(LedgerPostingType.FOREX);
+        posting.setCurrency(CurrencyUnit.EUR);
+        posting.setSemanticRole(LedgerPostingSemanticRole.FOREX_CONTEXT);
+        posting.setDirection(LedgerPostingDirection.NEUTRAL);
+        posting.setUnitRole(LedgerPostingUnitRole.FOREX_CONTEXT);
+        posting.setGroupKey(localKey);
+        posting.setLocalKey(localKey);
+        posting.addParameter(LedgerParameter.ofMoney(LedgerParameterType.REFERENCE_PRICE, money(1)));
 
         return posting;
     }

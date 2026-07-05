@@ -28,6 +28,7 @@ import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingTypeDefini
 import name.abuchen.portfolio.model.ledger.configuration.LedgerReportingClass;
 import name.abuchen.portfolio.model.ledger.configuration.rule.LedgerParameterRule;
 import name.abuchen.portfolio.model.ledger.configuration.rule.LedgerPostingRule;
+import name.abuchen.portfolio.model.ledger.configuration.rule.LedgerPrimaryMovement;
 import name.abuchen.portfolio.model.ledger.configuration.rule.LedgerProjectionRule;
 import name.abuchen.portfolio.model.ledger.configuration.rule.LedgerRequirement;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -153,11 +154,10 @@ public class LedgerEntryDefinitionTest
         {
             for (var group : definition.getAlternativeRequirementGroups())
             {
-                var numberOfAlternatives = group.getPostingTypes().size() + group.getParameterTypes().size();
+                var numberOfAlternatives = group.getPostingTypes().size() + group.getParameterTypes().size()
+                                + group.getPrimaryMovements().size();
 
                 assertTrue(definition.getEntryType() + ":" + group.getName(), numberOfAlternatives >= 2);
-                assertTrue(definition.getEntryType() + ":" + group.getName(),
-                                group.getPostingTypes().isEmpty() != group.getParameterTypes().isEmpty());
             }
         }
     }
@@ -329,7 +329,7 @@ public class LedgerEntryDefinitionTest
 
         for (var kind : new CorporateActionKind[] { CorporateActionKind.DEFAULTED_INTEREST,
                         CorporateActionKind.RESTRUCTURING, CorporateActionKind.DEFAULT })
-            assertFalse(kind.name(), LedgerEntryDefinitionRegistry
+            assertTrue(kind.name(), LedgerEntryDefinitionRegistry
                             .lookup(LedgerEntryType.CORPORATE_ACTION, kind).isPresent());
 
         assertTrue("CASH_DISTRIBUTION is overview-only in Registry.md",
@@ -415,6 +415,43 @@ public class LedgerEntryDefinitionTest
             assertLeg(definition, LedgerLegRole.SECURITY_CONTEXT_LEG, LedgerPostingType.SECURITY,
                             LedgerLegCardinality.AT_LEAST_ONE);
         }
+
+        var defaultedInterest = LedgerEntryDefinitionRegistry
+                        .lookup(LedgerEntryType.CORPORATE_ACTION, CorporateActionKind.DEFAULTED_INTEREST)
+                        .orElseThrow();
+        assertLeg(defaultedInterest, LedgerLegRole.SECURITY_CONTEXT_LEG, LedgerPostingType.SECURITY,
+                        LedgerLegCardinality.AT_LEAST_ONE);
+        assertLeg(defaultedInterest, LedgerLegRole.TARGET_SECURITY_LEG, LedgerPostingType.SECURITY,
+                        LedgerLegCardinality.REPEATABLE);
+        assertPrimaryMovementGroup(defaultedInterest, "DEFAULTED_INTEREST_PRIMARY_MOVEMENT",
+                        LedgerPrimaryMovement.CASH, LedgerPrimaryMovement.TARGET_SECURITY, LedgerPrimaryMovement.FEE,
+                        LedgerPrimaryMovement.TAX);
+
+        var restructuring = LedgerEntryDefinitionRegistry
+                        .lookup(LedgerEntryType.CORPORATE_ACTION, CorporateActionKind.RESTRUCTURING)
+                        .orElseThrow();
+        assertLeg(restructuring, LedgerLegRole.SECURITY_CONTEXT_LEG, LedgerPostingType.SECURITY,
+                        LedgerLegCardinality.OPTIONAL);
+        assertLeg(restructuring, LedgerLegRole.SOURCE_SECURITY_LEG, LedgerPostingType.SECURITY,
+                        LedgerLegCardinality.REPEATABLE);
+        assertLeg(restructuring, LedgerLegRole.TARGET_SECURITY_LEG, LedgerPostingType.SECURITY,
+                        LedgerLegCardinality.REPEATABLE);
+        assertLeg(restructuring, LedgerLegRole.PRINCIPAL_REDEMPTION_LEG, LedgerPostingType.PRINCIPAL_REDEMPTION,
+                        LedgerLegCardinality.REPEATABLE);
+        assertLeg(restructuring, LedgerLegRole.ACCRUED_INTEREST_LEG, LedgerPostingType.ACCRUED_INTEREST,
+                        LedgerLegCardinality.REPEATABLE);
+        assertPrimaryMovementGroup(restructuring, "RESTRUCTURING_PRIMARY_MOVEMENT",
+                        LedgerPrimaryMovement.SOURCE_SECURITY, LedgerPrimaryMovement.TARGET_SECURITY,
+                        LedgerPrimaryMovement.CASH, LedgerPrimaryMovement.PRINCIPAL_REDEMPTION,
+                        LedgerPrimaryMovement.ACCRUED_INTEREST);
+
+        var defaultAction = LedgerEntryDefinitionRegistry
+                        .lookup(LedgerEntryType.CORPORATE_ACTION, CorporateActionKind.DEFAULT).orElseThrow();
+        assertLeg(defaultAction, LedgerLegRole.SECURITY_CONTEXT_LEG, LedgerPostingType.SECURITY,
+                        LedgerLegCardinality.AT_LEAST_ONE);
+        assertPrimaryMovementGroup(defaultAction, "DEFAULT_PRIMARY_MOVEMENT",
+                        LedgerPrimaryMovement.SOURCE_SECURITY, LedgerPrimaryMovement.TARGET_SECURITY,
+                        LedgerPrimaryMovement.CASH, LedgerPrimaryMovement.FEE, LedgerPrimaryMovement.TAX);
     }
 
     /**
@@ -621,6 +658,27 @@ public class LedgerEntryDefinitionTest
             {
                 assertThat(group.getRequirement(), is(requirement));
                 assertThat(group.getParameterTypes(), is(expected));
+                return;
+            }
+        }
+
+        assertTrue(name, false);
+    }
+
+    private void assertPrimaryMovementGroup(
+                    name.abuchen.portfolio.model.ledger.configuration.LedgerEntryDefinition definition, String name,
+                    LedgerPrimaryMovement first, LedgerPrimaryMovement... rest)
+    {
+        var expected = EnumSet.of(first, rest);
+
+        for (var group : definition.getAlternativeRequirementGroups())
+        {
+            if (group.getName().equals(name))
+            {
+                assertThat(group.getRequirement(), is(LedgerRequirement.REQUIRED));
+                assertThat(group.getPrimaryMovements(), is(expected));
+                assertTrue(group.getPostingTypes().isEmpty());
+                assertTrue(group.getParameterTypes().isEmpty());
                 return;
             }
         }

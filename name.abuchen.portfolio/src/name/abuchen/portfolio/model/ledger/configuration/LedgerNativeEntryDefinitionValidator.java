@@ -36,6 +36,7 @@ public final class LedgerNativeEntryDefinitionValidator
         REQUIRED_ENTRY_PARAMETER_MISSING,
         ENTRY_PARAMETER_NOT_ALLOWED,
         REQUIRED_ALTERNATIVE_GROUP_MISSING,
+        REQUIRED_PRIMARY_MOVEMENT_MISSING,
         POSTING_TYPE_NOT_ALLOWED,
         LEG_CARDINALITY_VIOLATED,
         AMBIGUOUS_LEG_MATCH,
@@ -155,11 +156,15 @@ public final class LedgerNativeEntryDefinitionValidator
         for (var group : definition.getAlternativeRequirementGroups())
         {
             if (group.getRequirement() == LedgerRequirement.REQUIRED && !isSatisfied(entry, group))
-                issues.add(issue(IssueCode.REQUIRED_ALTERNATIVE_GROUP_MISSING,
+            {
+                var issueCode = group.getPrimaryMovements().isEmpty() ? IssueCode.REQUIRED_ALTERNATIVE_GROUP_MISSING
+                                : IssueCode.REQUIRED_PRIMARY_MOVEMENT_MISSING;
+                issues.add(issue(issueCode,
                                 LedgerDiagnosticCode.LEDGER_STRUCT_041.message(
                                                 "Required native alternative group is missing: " + group.getName()), //$NON-NLS-1$
                                 entry)
                                                 .withDetail("groupName", group.getName())); //$NON-NLS-1$
+            }
         }
     }
 
@@ -181,6 +186,11 @@ public final class LedgerNativeEntryDefinitionValidator
         if (!group.getPostingTypes().isEmpty())
             return entry.getPostings().stream().map(LedgerPosting::getType)
                             .anyMatch(group.getPostingTypes()::contains);
+
+        if (!group.getPrimaryMovements().isEmpty())
+            return entry.getPostings().stream()
+                            .anyMatch(posting -> group.getPrimaryMovements().stream()
+                                            .anyMatch(movement -> movement.matches(posting)));
 
         return false;
     }

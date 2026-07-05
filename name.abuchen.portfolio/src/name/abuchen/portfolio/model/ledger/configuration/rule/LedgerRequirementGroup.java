@@ -25,30 +25,41 @@ public final class LedgerRequirementGroup
     private final LedgerRequirement requirement;
     private final Set<LedgerPostingType> postingTypes;
     private final Set<LedgerParameterType> parameterTypes;
+    private final Set<LedgerPrimaryMovement> primaryMovements;
 
     private LedgerRequirementGroup(String name, LedgerRequirement requirement, Set<LedgerPostingType> postingTypes,
-                    Set<LedgerParameterType> parameterTypes)
+                    Set<LedgerParameterType> parameterTypes, Set<LedgerPrimaryMovement> primaryMovements)
     {
         this.name = requireName(name);
         this.requirement = Objects.requireNonNull(requirement);
         this.postingTypes = copyPostingTypes(postingTypes);
         this.parameterTypes = copyParameterTypes(parameterTypes);
+        this.primaryMovements = copyPrimaryMovements(primaryMovements);
 
-        if (this.postingTypes.isEmpty() && this.parameterTypes.isEmpty())
+        if (this.postingTypes.isEmpty() && this.parameterTypes.isEmpty() && this.primaryMovements.isEmpty())
             throw new IllegalArgumentException(LedgerDiagnosticCode.LEDGER_CORE_025
-                            .message("Ledger requirement group must contain postings or parameters")); //$NON-NLS-1$
+                            .message("Ledger requirement group must contain postings, parameters, or movements")); //$NON-NLS-1$
     }
 
     public static LedgerRequirementGroup postingTypes(String name, LedgerRequirement requirement,
                     Set<LedgerPostingType> postingTypes)
     {
-        return new LedgerRequirementGroup(name, requirement, postingTypes, EnumSet.noneOf(LedgerParameterType.class));
+        return new LedgerRequirementGroup(name, requirement, postingTypes, EnumSet.noneOf(LedgerParameterType.class),
+                        EnumSet.noneOf(LedgerPrimaryMovement.class));
     }
 
     public static LedgerRequirementGroup parameterTypes(String name, LedgerRequirement requirement,
                     Set<LedgerParameterType> parameterTypes)
     {
-        return new LedgerRequirementGroup(name, requirement, EnumSet.noneOf(LedgerPostingType.class), parameterTypes);
+        return new LedgerRequirementGroup(name, requirement, EnumSet.noneOf(LedgerPostingType.class), parameterTypes,
+                        EnumSet.noneOf(LedgerPrimaryMovement.class));
+    }
+
+    public static LedgerRequirementGroup primaryMovements(String name, LedgerRequirement requirement,
+                    Set<LedgerPrimaryMovement> primaryMovements)
+    {
+        return new LedgerRequirementGroup(name, requirement, EnumSet.noneOf(LedgerPostingType.class),
+                        EnumSet.noneOf(LedgerParameterType.class), primaryMovements);
     }
 
     public String getName()
@@ -81,6 +92,11 @@ public final class LedgerRequirementGroup
         return parameterTypes;
     }
 
+    public Set<LedgerPrimaryMovement> getPrimaryMovements()
+    {
+        return primaryMovements;
+    }
+
     private static String requireName(String name)
     {
         if (name == null || name.isBlank())
@@ -107,6 +123,18 @@ public final class LedgerRequirementGroup
         Objects.requireNonNull(values);
 
         var copy = EnumSet.noneOf(LedgerParameterType.class);
+
+        for (var value : values)
+            copy.add(Objects.requireNonNull(value));
+
+        return Collections.unmodifiableSet(copy);
+    }
+
+    private static Set<LedgerPrimaryMovement> copyPrimaryMovements(Set<LedgerPrimaryMovement> values)
+    {
+        Objects.requireNonNull(values);
+
+        var copy = EnumSet.noneOf(LedgerPrimaryMovement.class);
 
         for (var value : values)
             copy.add(Objects.requireNonNull(value));
