@@ -220,6 +220,113 @@ public class LedgerNativeEntryDefinitionValidatorTest
     }
 
     @Test
+    public void testCashDistributionAcceptsSecurityContextAndCash()
+    {
+        var fixture = fixture();
+        var entry = corporateActionEntry(CorporateActionKind.CASH_DISTRIBUTION);
+
+        entry.addPosting(securityContextPosting(fixture, "context-1")); //$NON-NLS-1$
+        entry.addPosting(cashPosting(fixture, "cash-1")); //$NON-NLS-1$
+
+        assertOK(entry);
+    }
+
+    @Test
+    public void testCashDistributionRejectsSecurityContextOnly()
+    {
+        var fixture = fixture();
+        var entry = corporateActionEntry(CorporateActionKind.CASH_DISTRIBUTION);
+
+        entry.addPosting(securityContextPosting(fixture, "context-1")); //$NON-NLS-1$
+
+        assertIssue(entry, IssueCode.REQUIRED_PRIMARY_MOVEMENT_MISSING);
+    }
+
+    @Test
+    public void testCashDistributionRejectsCashWithoutSecurityContext()
+    {
+        var fixture = fixture();
+        var entry = corporateActionEntry(CorporateActionKind.CASH_DISTRIBUTION);
+
+        entry.addPosting(cashPosting(fixture, "cash-1")); //$NON-NLS-1$
+
+        assertIssue(entry, IssueCode.LEG_CARDINALITY_VIOLATED);
+    }
+
+    @Test
+    public void testCashDistributionRejectsFeeOrTaxOnly()
+    {
+        var fixture = fixture();
+
+        assertIssue(corporateActionEntry(CorporateActionKind.CASH_DISTRIBUTION,
+                        securityContextPosting(fixture, "context-1"), feePosting(fixture, "fee-1")), //$NON-NLS-1$ //$NON-NLS-2$
+                        IssueCode.REQUIRED_PRIMARY_MOVEMENT_MISSING);
+        assertIssue(corporateActionEntry(CorporateActionKind.CASH_DISTRIBUTION,
+                        securityContextPosting(fixture, "context-1"), taxPosting(fixture, "tax-1")), //$NON-NLS-1$ //$NON-NLS-2$
+                        IssueCode.REQUIRED_PRIMARY_MOVEMENT_MISSING);
+    }
+
+    @Test
+    public void testCashDistributionRejectsSecurityContextWithoutPortfolio()
+    {
+        var fixture = fixture();
+        var entry = corporateActionEntry(CorporateActionKind.CASH_DISTRIBUTION);
+        var context = securityContextPosting(fixture, "context-1"); //$NON-NLS-1$
+
+        context.setPortfolio(null);
+        entry.addPosting(context);
+        entry.addPosting(cashPosting(fixture, "cash-1")); //$NON-NLS-1$
+
+        var ledger = new Ledger();
+
+        ledger.addEntry(entry);
+
+        var result = LedgerStructuralValidator.validate(ledger);
+
+        assertTrue(result.format(), result.hasIssue(
+                        LedgerStructuralValidator.IssueCode.POSTING_PORTFOLIO_REQUIRED_FOR_SECURITY));
+    }
+
+    @Test
+    public void testCashDistributionAcceptsRepeatedCashWithDistinctLocalKeys()
+    {
+        var fixture = fixture();
+        var entry = corporateActionEntry(CorporateActionKind.CASH_DISTRIBUTION);
+
+        entry.addPosting(securityContextPosting(fixture, "context-1")); //$NON-NLS-1$
+        entry.addPosting(cashPosting(fixture, "cash-1")); //$NON-NLS-1$
+        entry.addPosting(cashPosting(fixture, "cash-2")); //$NON-NLS-1$
+
+        assertOK(entry);
+    }
+
+    @Test
+    public void testCashDistributionRejectsDuplicateCashLocalKey()
+    {
+        var fixture = fixture();
+        var entry = corporateActionEntry(CorporateActionKind.CASH_DISTRIBUTION);
+
+        entry.addPosting(securityContextPosting(fixture, "context-1")); //$NON-NLS-1$
+        entry.addPosting(cashPosting(fixture, "cash-1")); //$NON-NLS-1$
+        entry.addPosting(cashPosting(fixture, "cash-1")); //$NON-NLS-1$
+
+        assertIssue(entry, IssueCode.LEG_LOCAL_KEY_DUPLICATE);
+    }
+
+    @Test
+    public void testCashDistributionRejectsSourceOrTargetSecurityMovement()
+    {
+        var fixture = fixture();
+
+        assertIssue(corporateActionEntry(CorporateActionKind.CASH_DISTRIBUTION,
+                        securityContextPosting(fixture, "context-1"), cashPosting(fixture, "cash-1"), //$NON-NLS-1$ //$NON-NLS-2$
+                        sourceSecurityPosting(fixture, "source-1")), IssueCode.LEG_POSTING_NOT_ALLOWED); //$NON-NLS-1$
+        assertIssue(corporateActionEntry(CorporateActionKind.CASH_DISTRIBUTION,
+                        securityContextPosting(fixture, "context-1"), cashPosting(fixture, "cash-1"), //$NON-NLS-1$ //$NON-NLS-2$
+                        targetSecurityPosting(fixture, "target-1")), IssueCode.LEG_POSTING_NOT_ALLOWED); //$NON-NLS-1$
+    }
+
+    @Test
     public void testMaturityDefinitionRequiresSecurityContextLeg()
     {
         var fixture = fixture();

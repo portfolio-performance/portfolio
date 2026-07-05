@@ -101,6 +101,7 @@ public final class LedgerEntryDefinitionRegistry
     {
         var definitions = new EnumMap<CorporateActionKind, LedgerEntryDefinition>(CorporateActionKind.class);
 
+        register(definitions, CorporateActionKind.CASH_DISTRIBUTION, cashDistribution());
         register(definitions, CorporateActionKind.STOCK_DIVIDEND, stockDividend());
         register(definitions, CorporateActionKind.SPIN_OFF, spinOff());
         register(definitions, CorporateActionKind.BONUS_ISSUE, bonusIssue());
@@ -203,6 +204,17 @@ public final class LedgerEntryDefinitionRegistry
                                         feeLeg(), taxLeg(), forexLeg()),
                         LedgerReportingClass.SECURITIES_DISTRIBUTION,
                         LedgerPerformanceTreatment.SECURITY_DISTRIBUTION);
+    }
+
+    private static LedgerEntryDefinition cashDistribution()
+    {
+        return corporateActionDefinition(
+                        SETS.legDefinitions(securityContextLeg(LedgerLegCardinality.AT_LEAST_ONE),
+                                        cashLeg(LedgerLegCardinality.AT_LEAST_ONE), feeLeg(), taxLeg()),
+                        primaryMovementGroup("CASH_DISTRIBUTION_PRIMARY_MOVEMENT", //$NON-NLS-1$
+                                        LedgerPrimaryMovement.CASH),
+                        LedgerReportingClass.CASH_DIVIDEND,
+                        LedgerPerformanceTreatment.INCOME_DISTRIBUTION);
     }
 
     private static LedgerEntryDefinition bonusIssue()

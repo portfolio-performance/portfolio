@@ -96,6 +96,7 @@ public class LedgerCodeTest
     {
         assertTrue(LedgerEntryType.CORPORATE_ACTION.isLedgerNativeTargeted());
         assertThat(List.of(CorporateActionKind.values()), is(List.of(
+                        CorporateActionKind.CASH_DISTRIBUTION,
                         CorporateActionKind.STOCK_DIVIDEND,
                         CorporateActionKind.SPIN_OFF,
                         CorporateActionKind.BONUS_ISSUE,
@@ -111,9 +112,10 @@ public class LedgerCodeTest
                         CorporateActionKind.EXCHANGE,
                         CorporateActionKind.RESTRUCTURING,
                         CorporateActionKind.DEFAULT)));
+        assertThat(CorporateActionKind.fromCode("CASH_DISTRIBUTION").orElseThrow(),
+                        is(CorporateActionKind.CASH_DISTRIBUTION));
         assertThat(CorporateActionKind.fromCode("SPIN_OFF").orElseThrow(), is(CorporateActionKind.SPIN_OFF));
         assertThat(CorporateActionKind.fromCode("MATURITY").orElseThrow(), is(CorporateActionKind.MATURITY));
-        assertTrue(CorporateActionKind.fromCode("CASH_DISTRIBUTION").isEmpty());
         assertTrue(CorporateActionKind.fromCode("CASH_DIVIDEND").isEmpty());
         assertTrue(CorporateActionKind.fromCode("OTHER").isEmpty());
     }

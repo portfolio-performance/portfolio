@@ -18,6 +18,7 @@ import name.abuchen.portfolio.model.ledger.LedgerParameter;
 @SuppressWarnings("nls")
 public enum CorporateActionKind implements LedgerCode
 {
+    CASH_DISTRIBUTION("CASH_DISTRIBUTION"),
     STOCK_DIVIDEND("STOCK_DIVIDEND"),
     SPIN_OFF("SPIN_OFF"),
     BONUS_ISSUE("BONUS_ISSUE"),

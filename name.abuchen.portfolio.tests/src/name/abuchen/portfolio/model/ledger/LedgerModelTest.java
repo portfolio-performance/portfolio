@@ -411,14 +411,13 @@ public class LedgerModelTest
                         CorporateActionLeg.CONVERSION_TARGET, CorporateActionLeg.OTHER);
         assertCodeDomain(LedgerParameterType.CORPORATE_ACTION_KIND,
                         LedgerParameterCodeDomain.CORPORATE_ACTION_KIND,
-                        CorporateActionKind.STOCK_DIVIDEND, CorporateActionKind.SPIN_OFF,
-                        CorporateActionKind.BONUS_ISSUE, CorporateActionKind.RIGHTS_DISTRIBUTION,
-                        CorporateActionKind.COUPON_PAYMENT, CorporateActionKind.PIK_INTEREST,
-                        CorporateActionKind.DEFAULTED_INTEREST, CorporateActionKind.MATURITY,
-                        CorporateActionKind.PARTIAL_REDEMPTION, CorporateActionKind.CALL,
-                        CorporateActionKind.PUT, CorporateActionKind.CONVERSION,
-                        CorporateActionKind.EXCHANGE, CorporateActionKind.RESTRUCTURING,
-                        CorporateActionKind.DEFAULT);
+                        CorporateActionKind.CASH_DISTRIBUTION, CorporateActionKind.STOCK_DIVIDEND,
+                        CorporateActionKind.SPIN_OFF, CorporateActionKind.BONUS_ISSUE,
+                        CorporateActionKind.RIGHTS_DISTRIBUTION, CorporateActionKind.COUPON_PAYMENT,
+                        CorporateActionKind.PIK_INTEREST, CorporateActionKind.DEFAULTED_INTEREST,
+                        CorporateActionKind.MATURITY, CorporateActionKind.PARTIAL_REDEMPTION,
+                        CorporateActionKind.CALL, CorporateActionKind.PUT, CorporateActionKind.CONVERSION,
+                        CorporateActionKind.EXCHANGE, CorporateActionKind.RESTRUCTURING, CorporateActionKind.DEFAULT);
         assertCodeDomain(LedgerParameterType.CORPORATE_ACTION_SUBTYPE,
                         LedgerParameterCodeDomain.CORPORATE_ACTION_SUBTYPE, CorporateActionSubtype.STANDARD,
                         CorporateActionSubtype.OPTIONAL, CorporateActionSubtype.MANDATORY,

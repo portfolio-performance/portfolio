@@ -157,7 +157,10 @@ public class LedgerEntryDefinitionTest
                 var numberOfAlternatives = group.getPostingTypes().size() + group.getParameterTypes().size()
                                 + group.getPrimaryMovements().size();
 
-                assertTrue(definition.getEntryType() + ":" + group.getName(), numberOfAlternatives >= 2);
+                var minimumAlternatives = group.getPrimaryMovements().isEmpty() ? 2 : 1;
+
+                assertTrue(definition.getEntryType() + ":" + group.getName(),
+                                numberOfAlternatives >= minimumAlternatives);
             }
         }
     }
@@ -317,7 +320,8 @@ public class LedgerEntryDefinitionTest
     @Test
     public void testCorporateActionKindDefinitionsRegisterRepresentableProfileSubsets()
     {
-        for (var kind : new CorporateActionKind[] { CorporateActionKind.STOCK_DIVIDEND,
+        for (var kind : new CorporateActionKind[] { CorporateActionKind.CASH_DISTRIBUTION,
+                        CorporateActionKind.STOCK_DIVIDEND,
                         CorporateActionKind.SPIN_OFF, CorporateActionKind.BONUS_ISSUE,
                         CorporateActionKind.RIGHTS_DISTRIBUTION, CorporateActionKind.COUPON_PAYMENT,
                         CorporateActionKind.PIK_INTEREST, CorporateActionKind.MATURITY,
@@ -332,10 +336,24 @@ public class LedgerEntryDefinitionTest
             assertTrue(kind.name(), LedgerEntryDefinitionRegistry
                             .lookup(LedgerEntryType.CORPORATE_ACTION, kind).isPresent());
 
-        assertTrue("CASH_DISTRIBUTION is overview-only in Registry.md",
-                        CorporateActionKind.fromCode("CASH_DISTRIBUTION").isEmpty());
-        assertTrue("CASH_DIVIDEND is overview-only in Registry.md",
+        assertTrue("CASH_DIVIDEND is an unregistered synonym for CASH_DISTRIBUTION in Registry.md",
                         CorporateActionKind.fromCode("CASH_DIVIDEND").isEmpty());
+
+        var cashDistribution = LedgerEntryDefinitionRegistry
+                        .lookup(LedgerEntryType.CORPORATE_ACTION, CorporateActionKind.CASH_DISTRIBUTION)
+                        .orElseThrow();
+        assertLeg(cashDistribution, LedgerLegRole.SECURITY_CONTEXT_LEG, LedgerPostingType.SECURITY,
+                        LedgerLegCardinality.AT_LEAST_ONE);
+        assertLeg(cashDistribution, LedgerLegRole.CASH_LEG, LedgerPostingType.CASH,
+                        LedgerLegCardinality.AT_LEAST_ONE);
+        assertLeg(cashDistribution, LedgerLegRole.FEE_LEG, LedgerPostingType.FEE,
+                        LedgerLegCardinality.REPEATABLE);
+        assertLeg(cashDistribution, LedgerLegRole.TAX_LEG, LedgerPostingType.TAX,
+                        LedgerLegCardinality.REPEATABLE);
+        assertTrue(cashDistribution.getLegDefinition(LedgerLegRole.SOURCE_SECURITY_LEG).isEmpty());
+        assertTrue(cashDistribution.getLegDefinition(LedgerLegRole.TARGET_SECURITY_LEG).isEmpty());
+        assertPrimaryMovementGroup(cashDistribution, "CASH_DISTRIBUTION_PRIMARY_MOVEMENT",
+                        LedgerPrimaryMovement.CASH);
 
         var stockDividend = LedgerEntryDefinitionRegistry
                         .lookup(LedgerEntryType.CORPORATE_ACTION, CorporateActionKind.STOCK_DIVIDEND)

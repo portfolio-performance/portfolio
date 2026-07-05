@@ -119,6 +119,46 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
         assertNativeDefinitionValid(loadedProtoEntry);
     }
 
+    @Test
+    public void testXmlAndProtobufRoundtripPreserveCashDistribution() throws Exception
+    {
+        var fixture = cashDistributionFixture();
+
+        assertCashDistribution(fixture.entry());
+        assertValid(fixture.client());
+        assertNativeDefinitionValid(fixture.entry());
+
+        var xml = saveXml(fixture.client());
+
+        assertNoLedgerUuidTruth(xml);
+
+        var loadedFromXml = loadXml(xml);
+        var loadedXmlEntry = onlyLedgerEntry(loadedFromXml);
+
+        assertCashDistribution(loadedXmlEntry);
+        assertValid(loadedFromXml);
+        assertNativeDefinitionValid(loadedXmlEntry);
+
+        var bytes = ProtobufTestUtilities.save(fixture.client());
+        var proto = parseProto(bytes);
+        var protoEntry = proto.getLedger().getEntries(0);
+
+        assertThat(protoEntry.getTypeCode(), is(LedgerEntryType.CORPORATE_ACTION.getCode()));
+        assertTrue(protoEntry.getParametersList().stream()
+                        .anyMatch(parameter -> LedgerParameterType.CORPORATE_ACTION_KIND.getCode()
+                                        .equals(parameter.getTypeCode())
+                                        && CorporateActionKind.CASH_DISTRIBUTION.getCode()
+                                                        .equals(parameter.getStringValue())));
+        assertNoCorporateActionSpecificLegacyTransactionType(proto);
+
+        var loadedFromProto = ProtobufTestUtilities.load(bytes);
+        var loadedProtoEntry = onlyLedgerEntry(loadedFromProto);
+
+        assertCashDistribution(loadedProtoEntry);
+        assertValid(loadedFromProto);
+        assertNativeDefinitionValid(loadedProtoEntry);
+    }
+
     private Fixture spinOffFixture()
     {
         var client = new Client();
@@ -211,6 +251,40 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
                         CorporateActionKind.DEFAULTED_INTEREST));
         entry.addPosting(securityContextPosting(portfolio, contextSecurity, "main", "context-1"));
         entry.addPosting(cashPrimaryPosting(account, "cash-1", 33));
+
+        client.getLedger().addEntry(entry);
+
+        return new Fixture(client, entry);
+    }
+
+    private Fixture cashDistributionFixture()
+    {
+        var client = new Client();
+        var account = new Account();
+        var portfolio = new Portfolio();
+        var contextSecurity = new Security("Cash Distribution AG", CurrencyUnit.EUR);
+
+        account.setName("Cash Account");
+        account.setCurrencyCode(CurrencyUnit.EUR);
+        portfolio.setName("Portfolio");
+        portfolio.setReferenceAccount(account);
+        account.setUpdatedAt(UPDATED_AT);
+        portfolio.setUpdatedAt(UPDATED_AT);
+        contextSecurity.setUpdatedAt(UPDATED_AT);
+
+        client.addAccount(account);
+        client.addPortfolio(portfolio);
+        client.addSecurity(contextSecurity);
+
+        var entry = new LedgerEntry("cash-distribution");
+
+        entry.setType(LedgerEntryType.CORPORATE_ACTION);
+        entry.setDateTime(DATE_TIME);
+        entry.setSource("CASH_DISTRIBUTION primary movement proof");
+        entry.addParameter(LedgerParameter.ofCode(LedgerParameterType.CORPORATE_ACTION_KIND,
+                        CorporateActionKind.CASH_DISTRIBUTION));
+        entry.addPosting(securityContextPosting(portfolio, contextSecurity, "main", "context-1"));
+        entry.addPosting(cashPrimaryPosting(account, "cash-1", 44));
 
         client.getLedger().addEntry(entry);
 
@@ -328,6 +402,7 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
         posting.setUnitRole(unitRole);
         posting.setGroupKey(groupKey);
         posting.setLocalKey(localKey);
+        posting.addParameter(LedgerParameter.ofString(LedgerParameterType.CORPORATE_ACTION_LEG, leg.getCode()));
 
         return posting;
     }
@@ -393,6 +468,24 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
         assertThat(entry.getPostings().stream()
                         .filter(posting -> posting.getType() == LedgerPostingType.CASH)
                         .filter(posting -> "cash-1".equals(posting.getLocalKey())) //$NON-NLS-1$
+                        .count(), is(1L));
+        assertTrue(LedgerDescriptorTestSupport.descriptors(entry).isEmpty());
+    }
+
+    private void assertCashDistribution(LedgerEntry entry)
+    {
+        assertThat(entry.getType(), is(LedgerEntryType.CORPORATE_ACTION));
+        assertTrue(entry.getParameters().stream()
+                        .anyMatch(parameter -> parameter.getType() == LedgerParameterType.CORPORATE_ACTION_KIND
+                                        && CorporateActionKind.CASH_DISTRIBUTION.getCode()
+                                                        .equals(parameter.getValue())));
+        assertThat(postings(entry, LedgerPostingType.SECURITY, LedgerPostingDirection.NEUTRAL,
+                        CorporateActionLeg.SECURITY_CONTEXT).size(), is(1));
+        assertThat(entry.getPostings().stream()
+                        .filter(posting -> posting.getType() == LedgerPostingType.CASH)
+                        .filter(posting -> "cash-1".equals(posting.getLocalKey())) //$NON-NLS-1$
+                        .filter(posting -> "cash-1".equals(posting.getGroupKey())) //$NON-NLS-1$
+                        .filter(posting -> posting.getAccount() != null)
                         .count(), is(1L));
         assertTrue(LedgerDescriptorTestSupport.descriptors(entry).isEmpty());
     }

@@ -39,6 +39,7 @@ public final class LedgerNativeEntryDefinitionValidator
         REQUIRED_PRIMARY_MOVEMENT_MISSING,
         POSTING_TYPE_NOT_ALLOWED,
         LEG_CARDINALITY_VIOLATED,
+        LEG_POSTING_NOT_ALLOWED,
         AMBIGUOUS_LEG_MATCH,
         REQUIRED_LEG_PARAMETER_MISSING,
         LEG_PARAMETER_NOT_ALLOWED,
@@ -198,12 +199,34 @@ public final class LedgerNativeEntryDefinitionValidator
     private static void validateLegs(LedgerEntry entry, LedgerEntryDefinition definition,
                     List<ValidationIssue> issues)
     {
+        validatePostingsMatchConfiguredLegs(entry, definition, issues);
+
         for (var leg : definition.getLegDefinitions())
         {
             var match = matchLeg(entry, definition, leg, issues);
 
             validateCardinality(entry, leg, match.postings(), issues);
             validateLegParameters(entry, leg, match.postings(), issues);
+        }
+    }
+
+    private static void validatePostingsMatchConfiguredLegs(LedgerEntry entry, LedgerEntryDefinition definition,
+                    List<ValidationIssue> issues)
+    {
+        for (var posting : entry.getPostings())
+        {
+            if (posting.getType() == null || !definition.getPostingTypes().contains(posting.getType()))
+                continue;
+
+            var matchesConfiguredLeg = definition.getLegDefinitions().stream()
+                            .anyMatch(leg -> postingMatchesLeg(entry.getType(), posting, leg));
+
+            if (!matchesConfiguredLeg)
+                issues.add(issue(IssueCode.LEG_POSTING_NOT_ALLOWED,
+                                LedgerDiagnosticCode.LEDGER_STRUCT_040.message(
+                                                "Posting does not match any configured native leg: " //$NON-NLS-1$
+                                                                + posting.getType()),
+                                entry).withPosting(posting));
         }
     }
 
