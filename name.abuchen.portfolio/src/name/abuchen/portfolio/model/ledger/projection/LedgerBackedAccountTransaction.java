@@ -11,6 +11,8 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerEntryMetadataPatchHelper;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
+import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
+import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
@@ -62,7 +64,7 @@ public final class LedgerBackedAccountTransaction extends AccountTransaction imp
     public Type getType()
     {
         if (entry.getType().isLedgerNativeTargeted())
-            return LedgerProjectionSupport.targetedAccountType(descriptor.getRole());
+            return LedgerProjectionSupport.targetedAccountType(descriptor);
 
         return switch (entry.getType())
         {
@@ -128,7 +130,13 @@ public final class LedgerBackedAccountTransaction extends AccountTransaction imp
     @Override
     public Security getSecurity()
     {
-        return primaryPosting.getSecurity();
+        if (primaryPosting.getSecurity() != null)
+            return primaryPosting.getSecurity();
+
+        if (entry.getType() == LedgerEntryType.CORPORATE_ACTION && descriptor.getRole() == LedgerProjectionRole.ACCOUNT)
+            return LedgerProjectionSupport.securityContext(entry).orElse(null);
+
+        return null;
     }
 
     @Override

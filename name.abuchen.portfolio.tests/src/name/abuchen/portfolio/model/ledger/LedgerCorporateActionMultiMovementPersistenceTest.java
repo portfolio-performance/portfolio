@@ -654,7 +654,13 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
                         .filter(posting -> "cash-1".equals(posting.getGroupKey())) //$NON-NLS-1$
                         .filter(posting -> posting.getAccount() != null)
                         .count(), is(1L));
-        assertTrue(LedgerDescriptorTestSupport.descriptors(entry).isEmpty());
+        var descriptors = LedgerDescriptorTestSupport.descriptors(entry);
+        assertThat(descriptors.size(), is(1));
+        assertThat(descriptors.get(0).getRole(), is(LedgerProjectionRole.ACCOUNT));
+        assertThat(descriptors.get(0).getSemanticInstanceKey().orElseThrow(), is("cash-1"));
+        assertThat(descriptors.get(0).getPrimaryPosting().getType(), is(LedgerPostingType.CASH));
+        assertFalse(descriptors.stream().map(DerivedProjectionDescriptor::getPrimaryPosting)
+                        .anyMatch(posting -> posting.getCorporateActionLeg() == CorporateActionLeg.SECURITY_CONTEXT));
     }
 
     private void assertCouponPaymentInterestDetail(LedgerEntry entry)
@@ -687,7 +693,15 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
                         .anyMatch(parameter -> parameter.getType() == LedgerParameterType.INTEREST_PERIOD_START));
         assertTrue(interest.getParameters().stream()
                         .anyMatch(parameter -> parameter.getType() == LedgerParameterType.INTEREST_PERIOD_END));
-        assertTrue(LedgerDescriptorTestSupport.descriptors(entry).isEmpty());
+        var descriptors = LedgerDescriptorTestSupport.descriptors(entry);
+        assertThat(descriptors.size(), is(1));
+        assertThat(descriptors.get(0).getRole(), is(LedgerProjectionRole.ACCOUNT));
+        assertThat(descriptors.get(0).getSemanticInstanceKey().orElseThrow(), is("cash-1"));
+        assertThat(descriptors.get(0).getPrimaryPosting().getType(), is(LedgerPostingType.CASH));
+        assertFalse(descriptors.stream().map(DerivedProjectionDescriptor::getPrimaryPosting)
+                        .anyMatch(posting -> posting.getType() == LedgerPostingType.ACCRUED_INTEREST));
+        assertFalse(descriptors.stream().map(DerivedProjectionDescriptor::getPrimaryPosting)
+                        .anyMatch(posting -> posting.getCorporateActionLeg() == CorporateActionLeg.SECURITY_CONTEXT));
     }
 
     private List<LedgerPosting> postings(LedgerEntry entry, LedgerPostingType type, LedgerPostingDirection direction,

@@ -10,11 +10,14 @@ import java.util.stream.Stream;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.LedgerDiagnosticCode;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerParameter;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
+import name.abuchen.portfolio.model.ledger.configuration.CorporateActionKind;
+import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerParameterType;
 import name.abuchen.portfolio.money.Money;
 
@@ -110,14 +113,41 @@ public final class LedgerProjectionSupport
         return descriptor.getUnitPostings().stream().map(LedgerProjectionSupport::unit);
     }
 
-    static AccountTransaction.Type targetedAccountType(LedgerProjectionRole role)
+    static AccountTransaction.Type targetedAccountType(DerivedProjectionDescriptor descriptor)
     {
-        return switch (role)
+        return switch (descriptor.getRole())
         {
             case CASH_COMPENSATION -> AccountTransaction.Type.DEPOSIT;
+            case ACCOUNT -> corporateActionAccountType(descriptor);
             default -> throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_PROJ_072
-                            .message("Unsupported targeted account role " + role)); //$NON-NLS-1$
+                            .message("Unsupported targeted account role " + descriptor.getRole())); //$NON-NLS-1$
         };
+    }
+
+    private static AccountTransaction.Type corporateActionAccountType(DerivedProjectionDescriptor descriptor)
+    {
+        var kind = CorporateActionKind.fromEntry(descriptor.getEntry()).orElse(null);
+
+        if (kind == null)
+            throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_PROJ_072
+                            .message("Unsupported targeted account kind " + kind)); //$NON-NLS-1$
+
+        return switch (kind)
+        {
+            case CASH_DISTRIBUTION -> AccountTransaction.Type.DIVIDENDS;
+            case COUPON_PAYMENT -> AccountTransaction.Type.INTEREST;
+            default -> throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_PROJ_072
+                            .message("Unsupported targeted account kind " + kind)); //$NON-NLS-1$
+        };
+    }
+
+    static Optional<Security> securityContext(LedgerEntry entry)
+    {
+        return entry.getPostings().stream() //
+                        .filter(posting -> posting.getCorporateActionLeg() == CorporateActionLeg.SECURITY_CONTEXT) //
+                        .filter(posting -> posting.getSecurity() != null) //
+                        .map(LedgerPosting::getSecurity) //
+                        .findFirst();
     }
 
     static PortfolioTransaction.Type targetedPortfolioType(LedgerProjectionRole role)

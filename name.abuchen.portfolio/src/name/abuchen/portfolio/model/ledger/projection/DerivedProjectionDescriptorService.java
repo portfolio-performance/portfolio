@@ -97,9 +97,19 @@ public final class DerivedProjectionDescriptorService
     {
         var kind = CorporateActionKind.fromEntry(entry);
 
-        if (kind.filter(CorporateActionKind.SPIN_OFF::equals).isEmpty())
+        if (kind.filter(CorporateActionKind.SPIN_OFF::equals).isPresent())
+        {
+            spinOff(entry, descriptors, diagnostics);
             return;
+        }
 
+        if (kind.filter(k -> k == CorporateActionKind.CASH_DISTRIBUTION || k == CorporateActionKind.COUPON_PAYMENT)
+                        .isPresent())
+            cashOrientedCorporateAction(entry, descriptors, diagnostics);
+    }
+
+    private void spinOff(LedgerEntry entry, List<DerivedProjectionDescriptor> descriptors, List<Diagnostic> diagnostics)
+    {
         repeatedPortfolio(entry, LedgerProjectionRole.OLD_SECURITY_LEG,
                         primary().and(corporateLeg(CorporateActionLeg.SOURCE_SECURITY))
                                         .and(localKey(LedgerProjectionRole.OLD_SECURITY_LEG))
@@ -126,6 +136,16 @@ public final class DerivedProjectionDescriptorService
                                                         CorporateActionLeg.CASH_COMPENSATION)),
                         primary().and(corporateLeg(CorporateActionLeg.CASH_COMPENSATION)), true, diagnostics)
                         .forEach(descriptors::add);
+    }
+
+    private void cashOrientedCorporateAction(LedgerEntry entry, List<DerivedProjectionDescriptor> descriptors,
+                    List<Diagnostic> diagnostics)
+    {
+        repeatedAccount(entry, LedgerProjectionRole.ACCOUNT,
+                        primary().and(postingType(LedgerPostingType.CASH)).and(localKey(LedgerProjectionRole.ACCOUNT)),
+                        primary().and(postingType(LedgerPostingType.CASH))
+                                        .and(semantic(LedgerPostingSemanticRole.CASH)),
+                        true, diagnostics).forEach(descriptors::add);
     }
 
     private java.util.Optional<DerivedProjectionDescriptor> account(LedgerEntry entry, LedgerProjectionRole role,
@@ -336,6 +356,11 @@ public final class DerivedProjectionDescriptorService
     private Predicate<LedgerPosting> semantic(LedgerPostingSemanticRole role)
     {
         return posting -> posting.getSemanticRole() == role;
+    }
+
+    private Predicate<LedgerPosting> postingType(LedgerPostingType type)
+    {
+        return posting -> posting.getType() == type;
     }
 
     private Predicate<LedgerPosting> direction(LedgerPostingDirection direction)
