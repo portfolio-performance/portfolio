@@ -270,7 +270,7 @@ public class LedgerEntryDefinitionTest
         assertFalse(sourceLeg.isPostingGroupExpected());
 
         var targetLeg = assertLeg(definition, LedgerLegRole.TARGET_SECURITY_LEG, LedgerPostingType.SECURITY,
-                        LedgerLegCardinality.REPEATABLE);
+                        LedgerLegCardinality.AT_LEAST_ONE);
         assertTrue(targetLeg.getRequiredParameterTypes().contains(LedgerParameterType.CORPORATE_ACTION_LEG));
         assertTrue(targetLeg.getRequiredParameterTypes().contains(LedgerParameterType.TARGET_SECURITY));
         assertTrue(targetLeg.getRequiredParameterTypes().contains(LedgerParameterType.RATIO_NUMERATOR));
@@ -332,6 +332,11 @@ public class LedgerEntryDefinitionTest
             assertFalse(kind.name(), LedgerEntryDefinitionRegistry
                             .lookup(LedgerEntryType.CORPORATE_ACTION, kind).isPresent());
 
+        assertTrue("CASH_DISTRIBUTION is overview-only in Registry.md",
+                        CorporateActionKind.fromCode("CASH_DISTRIBUTION").isEmpty());
+        assertTrue("CASH_DIVIDEND is overview-only in Registry.md",
+                        CorporateActionKind.fromCode("CASH_DIVIDEND").isEmpty());
+
         var stockDividend = LedgerEntryDefinitionRegistry
                         .lookup(LedgerEntryType.CORPORATE_ACTION, CorporateActionKind.STOCK_DIVIDEND)
                         .orElseThrow();
@@ -347,6 +352,12 @@ public class LedgerEntryDefinitionTest
                         .lookup(LedgerEntryType.CORPORATE_ACTION, CorporateActionKind.SPIN_OFF).orElseThrow();
         assertLeg(spinOff, LedgerLegRole.SECURITY_CONTEXT_LEG, LedgerPostingType.SECURITY,
                         LedgerLegCardinality.AT_LEAST_ONE);
+        assertLeg(spinOff, LedgerLegRole.SOURCE_SECURITY_LEG, LedgerPostingType.SECURITY,
+                        LedgerLegCardinality.REPEATABLE);
+        assertLeg(spinOff, LedgerLegRole.TARGET_SECURITY_LEG, LedgerPostingType.SECURITY,
+                        LedgerLegCardinality.AT_LEAST_ONE);
+        assertLeg(spinOff, LedgerLegRole.CASH_COMPENSATION_LEG, LedgerPostingType.CASH_COMPENSATION,
+                        LedgerLegCardinality.REPEATABLE);
 
         var bonusIssue = LedgerEntryDefinitionRegistry
                         .lookup(LedgerEntryType.CORPORATE_ACTION, CorporateActionKind.BONUS_ISSUE)

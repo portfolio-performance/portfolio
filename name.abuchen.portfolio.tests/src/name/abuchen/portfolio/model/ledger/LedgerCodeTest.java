@@ -113,6 +113,8 @@ public class LedgerCodeTest
                         CorporateActionKind.DEFAULT)));
         assertThat(CorporateActionKind.fromCode("SPIN_OFF").orElseThrow(), is(CorporateActionKind.SPIN_OFF));
         assertThat(CorporateActionKind.fromCode("MATURITY").orElseThrow(), is(CorporateActionKind.MATURITY));
+        assertTrue(CorporateActionKind.fromCode("CASH_DISTRIBUTION").isEmpty());
+        assertTrue(CorporateActionKind.fromCode("CASH_DIVIDEND").isEmpty());
         assertTrue(CorporateActionKind.fromCode("OTHER").isEmpty());
     }
 

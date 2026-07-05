@@ -47,6 +47,7 @@ import name.abuchen.portfolio.model.ledger.nativeentry.NativeEntryMetadata;
 import name.abuchen.portfolio.model.ledger.nativeentry.NativeFee;
 import name.abuchen.portfolio.model.ledger.nativeentry.NativeSecurityLeg;
 import name.abuchen.portfolio.model.ledger.nativeentry.NativeTax;
+import name.abuchen.portfolio.model.ledger.nativeentry.Ratio;
 import name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
 import name.abuchen.portfolio.model.ledger.projection.LedgerProjectionService;
@@ -352,6 +353,17 @@ public class ClientPerformanceSnapshotTest
                                         .shares(0L) //
                                         .groupKey("main") //
                                         .localKey("context-1") //
+                                        .build()) //
+                        .securityLeg(NativeSecurityLeg.target() //
+                                        .portfolio(portfolio) //
+                                        .security(security) //
+                                        .shares(0L) //
+                                        .amount(Money.of(CurrencyUnit.EUR, 0)) //
+                                        .sourceSecurity(security) //
+                                        .targetSecurity(security) //
+                                        .ratio(Ratio.of(BigDecimal.ONE, BigDecimal.ONE)) //
+                                        .groupKey("main") //
+                                        .localKey("target-1") //
                                         .build()) //
                         .cashCompensation(NativeCashCompensation.builder() //
                                         .account(account) //

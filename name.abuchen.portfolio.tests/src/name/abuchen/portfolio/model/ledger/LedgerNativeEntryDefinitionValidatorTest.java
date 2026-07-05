@@ -126,18 +126,18 @@ public class LedgerNativeEntryDefinitionValidatorTest
     }
 
     /**
-     * Checks that target security legs are optional after the spin-off cardinality cleanup.
-     * Missing movement rows no longer violate the configured native definition.
+     * Checks that Registry.md requires at least one received spin-off security.
+     * Missing target movement rows violate the supported native definition subset.
      */
     @Test
-    public void testMissingTargetSecurityLegIsAccepted()
+    public void testMissingTargetSecurityLegIsRejected()
     {
         var entry = copyValidSpinOff();
         var targetPosting = postingFor(entry, LedgerProjectionRole.NEW_SECURITY_LEG);
 
         entry.removePosting(targetPosting);
 
-        assertOK(entry);
+        assertIssue(entry, IssueCode.LEG_CARDINALITY_VIOLATED);
     }
 
     @Test

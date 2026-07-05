@@ -556,7 +556,7 @@ public final class LedgerEntryDefinitionRegistry
                                         .optionalParameters(spinOffSourceSecurityLegOptionalParameters())
                                         .projection(LedgerProjectionRole.OLD_SECURITY_LEG, true, false).build(),
                         LedgerLegDefinition.of(LedgerLegRole.TARGET_SECURITY_LEG, LedgerPostingType.SECURITY,
-                                        LedgerLegCardinality.REPEATABLE)
+                                        LedgerLegCardinality.AT_LEAST_ONE)
                                         .requiredParameters(SETS.parameterTypes(
                                                         LedgerParameterType.CORPORATE_ACTION_LEG,
                                                         LedgerParameterType.TARGET_SECURITY,
