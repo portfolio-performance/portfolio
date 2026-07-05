@@ -351,6 +351,7 @@ public final class LedgerCorporateActionBuilder
         posting.setSecurity(security);
         posting.setShares(shares);
         posting.setAmount(0L);
+        posting.setCurrency(client.getBaseCurrency());
         posting.addParameter(LedgerParameter.ofString(LedgerParameterType.CORPORATE_ACTION_LEG,
                         CorporateActionLeg.RIGHT_SECURITY.getCode()));
         posting.addParameter(LedgerParameter.ofSecurity(LedgerParameterType.RIGHT_SECURITY, security));
