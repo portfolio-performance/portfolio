@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.model.ledger;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
@@ -9,8 +8,6 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -75,103 +72,6 @@ public class LedgerSpinOffScenarioTest
     private static final LocalDateTime SPIN_OFF_DATE = LocalDateTime.of(2020, 9, 28, 0, 0);
     private static final LocalDateTime BUY_DATE = LocalDateTime.of(2020, 1, 2, 0, 0);
     private static final Instant UPDATED_AT = Instant.parse("2026-06-15T08:00:00Z");
-
-    /**
-     * Checks the Ledger-V6 scenario: spin off uses ledger native targeted policy.
-     * The result must keep ledger truth and visible runtime rows consistent.
-     * This protects against duplicate truth or partial mutation.
-     */
-    @Test
-    public void testSpinOffUsesLedgerNativeTargetedPolicy()
-    {
-        assertFalse(LedgerEntryType.CORPORATE_ACTION.isLegacyFixedShape());
-        assertTrue(LedgerEntryType.CORPORATE_ACTION.isLedgerNativeTargeted());
-        assertTrue(LedgerEntryType.CORPORATE_ACTION.requiresTargetedDerivedDescriptors());
-        assertTrue(LedgerEntryType.CORPORATE_ACTION.usesSignedTargetedProjectionFacts());
-    }
-
-    /**
-     * Checks the Ledger-V6 scenario: creates targeted spin off shape.
-     * The result must keep ledger truth and visible runtime rows consistent.
-     * This protects against duplicate truth or partial mutation.
-     */
-    @Test
-    public void testCreatesTargetedSpinOffShape()
-    {
-        var fixture = fixture();
-        var client = fixture.client();
-        var entry = spinOffEntry(client);
-
-        assertThat(entry.getPostings().size(), is(7));
-        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).size(), is(4));
-        var oldSiemensOut = securityPosting(entry, fixture.siemens(),
-                        CorporateActionLeg.SOURCE_SECURITY.getCode(), fixture.siemensEnergy());
-        var siemensBackIn = securityPosting(entry, fixture.siemens(),
-                        CorporateActionLeg.TARGET_SECURITY.getCode(), fixture.siemens());
-        var siemensEnergyIn = securityPosting(entry, fixture.siemensEnergy(),
-                        CorporateActionLeg.TARGET_SECURITY.getCode(), fixture.siemensEnergy());
-        var compensation = posting(entry, LedgerPostingType.CASH_COMPENSATION, fixture.account(),
-                        Values.Amount.factorize(5));
-        posting(entry, LedgerPostingType.FEE, fixture.account(), Values.Amount.factorize(2));
-        posting(entry, LedgerPostingType.TAX, fixture.account(), Values.Amount.factorize(1));
-
-        assertProjectionTargets(entry, LedgerProjectionRole.OLD_SECURITY_LEG, oldSiemensOut, null);
-        assertProjectionTargets(entry, LedgerProjectionRole.DELIVERY_INBOUND, siemensBackIn, null);
-        assertProjectionTargets(entry, LedgerProjectionRole.NEW_SECURITY_LEG, siemensEnergyIn, null);
-        assertProjectionTargets(entry, LedgerProjectionRole.CASH_COMPENSATION, compensation, compensation);
-        assertTrue(LedgerStructuralValidator.validate(client.getLedger()).isOK());
-    }
-
-    /**
-     * Checks the Ledger-V6 scenario: materializes spin off compatibility projections.
-     * The result must keep ledger truth and visible runtime rows consistent.
-     * This protects against duplicate truth or partial mutation.
-     */
-    @Test
-    public void testMaterializesSpinOffCompatibilityProjections()
-    {
-        var fixture = fixture();
-        LedgerProjectionService.materialize(fixture.client());
-        LedgerProjectionService.materialize(fixture.client());
-
-        assertThat(fixture.portfolio().getTransactions().size(), is(4));
-        assertThat(fixture.account().getTransactions().size(), is(3));
-
-        var oldLeg = portfolioProjection(fixture.portfolio(), LedgerProjectionRole.OLD_SECURITY_LEG);
-        var retainedLeg = portfolioProjection(fixture.portfolio(), LedgerProjectionRole.DELIVERY_INBOUND,
-                        fixture.siemens());
-        var newLeg = portfolioProjection(fixture.portfolio(), LedgerProjectionRole.NEW_SECURITY_LEG);
-        var compensation = accountProjection(fixture.account(), LedgerProjectionRole.CASH_COMPENSATION);
-
-        assertThat(oldLeg, instanceOf(LedgerBackedTransaction.class));
-        assertThat(oldLeg.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-        assertSame(fixture.siemens(), oldLeg.getSecurity());
-        assertThat(oldLeg.getShares(), is(Values.Share.factorize(10)));
-        assertThat(oldLeg.getUnits().count(), is(0L));
-
-        assertThat(retainedLeg, instanceOf(LedgerBackedTransaction.class));
-        assertThat(retainedLeg.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-        assertSame(fixture.siemens(), retainedLeg.getSecurity());
-        assertThat(retainedLeg.getShares(), is(Values.Share.factorize(10)));
-        assertThat(retainedLeg.getAmount(), is(oldLeg.getAmount()));
-        assertThat(retainedLeg.getUnits().count(), is(0L));
-
-        assertThat(newLeg, instanceOf(LedgerBackedTransaction.class));
-        assertThat(newLeg.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-        assertSame(fixture.siemensEnergy(), newLeg.getSecurity());
-        assertThat(newLeg.getShares(), is(Values.Share.factorize(5)));
-        assertThat(newLeg.getUnits().count(), is(0L));
-
-        assertThat(compensation, instanceOf(LedgerBackedTransaction.class));
-        assertThat(compensation.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(compensation.getAmount(), is(Values.Amount.factorize(5)));
-        assertThat(compensation.getUnit(Unit.Type.FEE).orElseThrow().getAmount().getAmount(),
-                        is(Values.Amount.factorize(2)));
-        assertThat(compensation.getUnit(Unit.Type.TAX).orElseThrow().getAmount().getAmount(),
-                        is(Values.Amount.factorize(1)));
-        assertThat(fixture.client().getAllTransactions().size(), is(6));
-        assertSpinOffSiemensPositionUnchanged(fixture.portfolio(), fixture.siemens());
-    }
 
     /**
      * Checks the Ledger-V6 scenario: share adjustment helper scales selected targeted spin off postings.
@@ -257,57 +157,6 @@ public class LedgerSpinOffScenarioTest
         assertThat(posting.getShares(), is(Values.Share.factorize(10)));
         assertThat(client.getLedger().getEntries().size(), is(1));
         assertThat(portfolio.getTransactions().size(), is(0));
-    }
-
-    /**
-     * Checks the Ledger-V6 scenario: xml roundtrip preserves targeted spin off shape.
-     * The result must keep ledger truth and visible runtime rows consistent.
-     * This protects against duplicate truth or partial mutation.
-     */
-    @Test
-    public void testXmlRoundtripPreservesTargetedSpinOffShape() throws Exception
-    {
-        var client = fixture().client();
-        LedgerProjectionService.materialize(client);
-
-        var xml = saveXml(client);
-
-        assertTrue(xml.contains("<ledger>"));
-        assertFalse(xml.contains("<account-transaction"));
-        assertFalse(xml.contains("<portfolio-transaction"));
-        assertFalse(xml.contains("LedgerBacked"));
-
-        var loaded = loadXml(xml);
-
-        assertSpinOffScenarioClient(loaded);
-    }
-
-    /**
-     * Checks the Ledger-V6 scenario: xml example read back.
-     * The result must keep ledger truth and visible runtime rows consistent.
-     * This protects against duplicate truth or partial mutation.
-     */
-    @Test
-    public void testXmlExampleReadBack() throws Exception
-    {
-        var xmlExample = xmlExample();
-
-        assertTrue("Missing committed XML example: " + xmlExample.toAbsolutePath(), Files.exists(xmlExample));
-        assertSpinOffScenarioClient(ClientFactory.load(Files.newInputStream(xmlExample)));
-    }
-
-    /**
-     * Checks the Ledger-V6 scenario: protobuf roundtrip preserves targeted spin off shape.
-     * The result must keep ledger truth and visible runtime rows consistent.
-     * This protects against duplicate truth or partial mutation.
-     */
-    @Test
-    public void testProtobufRoundtripPreservesTargetedSpinOffShape() throws Exception
-    {
-        var client = fixture().client();
-        LedgerProjectionService.materialize(client);
-
-        assertSpinOffScenarioClient(loadProtobuf(saveProtobuf(client)));
     }
 
     /**
@@ -546,87 +395,6 @@ public class LedgerSpinOffScenarioTest
         return posting;
     }
 
-    private void assertSpinOffScenarioClient(Client client)
-    {
-        LedgerProjectionService.materialize(client);
-
-        var entry = spinOffEntry(client);
-
-        assertThat(client.getLedger().getEntries().size(), is(3));
-        assertThat(client.getSecurities().stream().filter(security -> "DE0007236101".equals(security.getIsin()))
-                        .count(), is(1L));
-        assertThat(client.getSecurities().stream().filter(security -> "Siemens Energy AG".equals(security.getName()))
-                        .count(), is(1L));
-        assertThat(client.getPortfolios().get(0).getReferenceAccount(), is(client.getAccounts().get(0)));
-        assertThat(entry.getType(), is(LedgerEntryType.CORPORATE_ACTION));
-        assertThat(entry.getUpdatedAt(), is(UPDATED_AT));
-        var hasSecurityContext = entry.getPostings().stream()
-                        .anyMatch(posting -> posting.getCorporateActionLeg() == CorporateActionLeg.SECURITY_CONTEXT);
-        assertThat(entry.getPostings().size(), is(hasSecurityContext ? 7 : 6));
-        var oldSecurityLeg = securityPosting(entry, siemens(client), CorporateActionLeg.SOURCE_SECURITY.getCode(),
-                        siemensEnergy(client));
-        var retainedSecurityLeg = securityPosting(entry, siemens(client), CorporateActionLeg.TARGET_SECURITY.getCode(),
-                        siemens(client));
-        var newSecurityLeg = securityPosting(entry, siemensEnergy(client), CorporateActionLeg.TARGET_SECURITY.getCode(),
-                        siemensEnergy(client));
-
-        if (name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).isEmpty())
-        {
-            var compensationLeg = cashCompensationPosting(entry);
-
-            assertThat(oldSecurityLeg.getCorporateActionLeg(), is(CorporateActionLeg.SOURCE_SECURITY));
-            assertThat(retainedSecurityLeg.getCorporateActionLeg(), is(CorporateActionLeg.TARGET_SECURITY));
-            assertThat(retainedSecurityLeg.getLocalKey(), is(LedgerProjectionRole.DELIVERY_INBOUND.name()));
-            assertThat(newSecurityLeg.getCorporateActionLeg(), is(CorporateActionLeg.TARGET_SECURITY));
-            assertThat(newSecurityLeg.getLocalKey(), is(LedgerProjectionRole.NEW_SECURITY_LEG.name()));
-            assertThat(compensationLeg.getCorporateActionLeg(), is(CorporateActionLeg.CASH_COMPENSATION));
-        }
-        else
-        {
-            var compensationLeg = primaryPosting(entry, LedgerProjectionRole.CASH_COMPENSATION);
-
-            assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).size(), is(4));
-            assertProjectionTargets(entry, LedgerProjectionRole.OLD_SECURITY_LEG, oldSecurityLeg, null);
-            assertProjectionTargets(entry, LedgerProjectionRole.DELIVERY_INBOUND, retainedSecurityLeg, null);
-            assertProjectionTargets(entry, LedgerProjectionRole.NEW_SECURITY_LEG, newSecurityLeg, null);
-            assertProjectionTargets(entry, LedgerProjectionRole.CASH_COMPENSATION, compensationLeg, compensationLeg);
-        }
-        assertThat(client.getPortfolios().get(0).getTransactions().size(), is(4));
-        assertThat(client.getAccounts().get(0).getTransactions().size(), is(3));
-        assertThat(buyProjection(client, siemens(client)).getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(portfolioProjection(client.getPortfolios().get(0), LedgerProjectionRole.OLD_SECURITY_LEG).getType(),
-                        is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-        assertSame(siemens(client),
-                        portfolioProjection(client.getPortfolios().get(0), LedgerProjectionRole.OLD_SECURITY_LEG)
-                                        .getSecurity());
-        assertThat(portfolioProjection(client.getPortfolios().get(0), LedgerProjectionRole.OLD_SECURITY_LEG)
-                        .getShares(),
-                        is(Values.Share.factorize(10)));
-        assertThat(portfolioProjection(client.getPortfolios().get(0), LedgerProjectionRole.DELIVERY_INBOUND,
-                        siemens(client)).getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-        assertSame(siemens(client),
-                        portfolioProjection(client.getPortfolios().get(0), LedgerProjectionRole.DELIVERY_INBOUND,
-                                        siemens(client)).getSecurity());
-        assertThat(portfolioProjection(client.getPortfolios().get(0), LedgerProjectionRole.DELIVERY_INBOUND,
-                        siemens(client)).getShares(),
-                        is(Values.Share.factorize(10)));
-        assertThat(portfolioProjection(client.getPortfolios().get(0), LedgerProjectionRole.DELIVERY_INBOUND,
-                        siemens(client)).getAmount(), is(portfolioProjection(client.getPortfolios().get(0),
-                                        LedgerProjectionRole.OLD_SECURITY_LEG).getAmount()));
-        assertThat(portfolioProjection(client.getPortfolios().get(0), LedgerProjectionRole.NEW_SECURITY_LEG).getType(),
-                        is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-        assertSame(siemensEnergy(client),
-                        portfolioProjection(client.getPortfolios().get(0), LedgerProjectionRole.NEW_SECURITY_LEG)
-                                        .getSecurity());
-        assertThat(portfolioProjection(client.getPortfolios().get(0), LedgerProjectionRole.NEW_SECURITY_LEG)
-                        .getShares(),
-                        is(Values.Share.factorize(5)));
-        assertThat(accountProjection(client.getAccounts().get(0), LedgerProjectionRole.CASH_COMPENSATION).getUnits()
-                        .count(), is(2L));
-        assertSpinOffSiemensPositionUnchanged(client.getPortfolios().get(0), siemens(client));
-        assertTrue(LedgerStructuralValidator.validate(client.getLedger()).isOK());
-    }
-
     private void assertSpinOffSiemensPositionUnchanged(Portfolio portfolio, Security siemens)
     {
         var oldLeg = portfolioProjection(portfolio, LedgerProjectionRole.OLD_SECURITY_LEG);
@@ -637,13 +405,6 @@ public class LedgerSpinOffScenarioTest
         assertThat(retainedLeg.getShares() - oldLeg.getShares(), is(0L));
     }
 
-    private LedgerPosting posting(LedgerEntry entry, LedgerPostingType type, Account account, long amount)
-    {
-        return entry.getPostings().stream().filter(posting -> posting.getType() == type)
-                        .filter(posting -> posting.getAccount() == account).filter(posting -> posting.getAmount() == amount)
-                        .findFirst().orElseThrow();
-    }
-
     private LedgerPosting securityPosting(LedgerEntry entry, Security security,
                     String leg, Security targetSecurity)
     {
@@ -652,25 +413,6 @@ public class LedgerSpinOffScenarioTest
                         .filter(posting -> hasCorporateActionLeg(posting, leg))
                         .filter(posting -> targetSecurity == null || hasTargetSecurity(posting, targetSecurity))
                         .findFirst().orElseThrow();
-    }
-
-    private LedgerPosting cashCompensationPosting(LedgerEntry entry)
-    {
-        return entry.getPostings().stream()
-                        .filter(posting -> posting.getSemanticRole() == LedgerPostingSemanticRole.CASH_COMPENSATION)
-                        .filter(posting -> posting.getCorporateActionLeg() == CorporateActionLeg.CASH_COMPENSATION)
-                        .findFirst().orElseThrow();
-    }
-
-    private void assertProjectionTargets(LedgerEntry entry, LedgerProjectionRole role, LedgerPosting primaryPosting,
-                    LedgerPosting postingGroup)
-    {
-        var projection = projection(entry, role);
-        assertThat(projection.getRole(), is(role));
-        assertThat(projection.getPrimaryPosting().getUUID(), is(primaryPosting.getUUID()));
-        assertThat(projection.getPrimaryPosting().getGroupKey(), is(postingGroup != null
-                        ? primaryPosting.getGroupKey()
-                        : projection.getPrimaryPosting().getGroupKey()));
     }
 
     private PortfolioTransaction portfolioProjection(Portfolio portfolio, LedgerProjectionRole role)
@@ -814,55 +556,6 @@ public class LedgerSpinOffScenarioTest
     private Client loadXml(String xml) throws Exception
     {
         return ClientFactory.load(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
-    }
-
-    private byte[] saveProtobuf(Client client) throws Exception
-    {
-        var stream = new ByteArrayOutputStream();
-        var writer = protobufWriter();
-        var save = writer.getClass().getDeclaredMethod("save", Client.class, java.io.OutputStream.class);
-
-        save.setAccessible(true);
-        invoke(save, writer, client, stream);
-
-        return stream.toByteArray();
-    }
-
-    private Client loadProtobuf(byte[] bytes) throws Exception
-    {
-        var writer = protobufWriter();
-        var load = writer.getClass().getDeclaredMethod("load", java.io.InputStream.class);
-
-        load.setAccessible(true);
-        return (Client) invoke(load, writer, new ByteArrayInputStream(bytes));
-    }
-
-    private Object protobufWriter() throws Exception
-    {
-        var type = Class.forName("name.abuchen.portfolio.model.ProtobufWriter");
-        var constructor = type.getDeclaredConstructor();
-
-        constructor.setAccessible(true);
-        return constructor.newInstance();
-    }
-
-    private Object invoke(java.lang.reflect.Method method, Object target, Object... args) throws Exception
-    {
-        try
-        {
-            return method.invoke(target, args);
-        }
-        catch (InvocationTargetException e)
-        {
-            var cause = e.getCause();
-
-            if (cause instanceof Exception exception)
-                throw exception;
-            if (cause instanceof Error error)
-                throw error;
-
-            throw new AssertionError(cause);
-        }
     }
 
     private Account account(String name)

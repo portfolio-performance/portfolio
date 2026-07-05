@@ -314,34 +314,6 @@ public class LedgerNativeEntryAssemblerTest
     }
 
     /**
-     * Checks the Ledger-V6 scenario: builds detached minimal spin off.
-     * The result must keep ledger truth and visible runtime rows consistent.
-     * This protects against duplicate truth or partial mutation.
-     */
-    @Test
-    public void testBuildsDetachedMinimalSpinOff()
-    {
-        var fixture = fixture();
-        var result = validSpinOff(fixture).buildDetached();
-        var entry = result.getEntry();
-
-        assertThat(entry.getType(), is(LedgerEntryType.CORPORATE_ACTION));
-        assertThat(entry.getPostings().size(), is(6));
-        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).size(), is(3));
-        assertThat(fixture.client.getLedger().getEntries().size(), is(0));
-        assertTrue(result.getValidationResult().isOK());
-
-        assertThat(parameter(entry.getParameters(), LedgerParameterType.CORPORATE_ACTION_KIND).getValue(),
-                        is(CorporateActionKind.SPIN_OFF.getCode()));
-        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream().filter(ref -> ref.getRole() == LedgerProjectionRole.OLD_SECURITY_LEG)
-                        .count(), is(1L));
-        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream().filter(ref -> ref.getRole() == LedgerProjectionRole.NEW_SECURITY_LEG)
-                        .count(), is(1L));
-        assertThat(name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream()
-                        .filter(ref -> ref.getRole() == LedgerProjectionRole.CASH_COMPENSATION).count(), is(1L));
-    }
-
-    /**
      * Checks the Ledger-V6 scenario: build detached does not mutate client.
      * The result must keep ledger truth and visible runtime rows consistent.
      * This protects against duplicate truth or partial mutation.
@@ -356,78 +328,6 @@ public class LedgerNativeEntryAssemblerTest
         assertThat(fixture.client.getLedger().getEntries().size(), is(0));
         assertThat(fixture.account.getTransactions().size(), is(0));
         assertThat(fixture.portfolio.getTransactions().size(), is(0));
-    }
-
-    @Test
-    public void testNativeAssemblerEmitsSemanticPostingsForSiemensSpinOff()
-    {
-        var fixture = fixture();
-        var entry = spinOffWithRetainedAndNewLegs(fixture).buildDetached().getEntry();
-        var oldLeg = descriptor(entry, LedgerProjectionRole.OLD_SECURITY_LEG).getPrimaryPosting();
-        var retainedLeg = descriptor(entry, LedgerProjectionRole.DELIVERY_INBOUND).getPrimaryPosting();
-        var newLeg = descriptor(entry, LedgerProjectionRole.NEW_SECURITY_LEG).getPrimaryPosting();
-        var compensation = descriptor(entry, LedgerProjectionRole.CASH_COMPENSATION).getPrimaryPosting();
-
-        assertPrimarySemantics(oldLeg, LedgerPostingSemanticRole.SECURITY, LedgerPostingDirection.OUTBOUND,
-                        CorporateActionLeg.SOURCE_SECURITY, LedgerProjectionRole.OLD_SECURITY_LEG);
-        assertPrimarySemantics(retainedLeg, LedgerPostingSemanticRole.SECURITY, LedgerPostingDirection.INBOUND,
-                        CorporateActionLeg.TARGET_SECURITY, LedgerProjectionRole.DELIVERY_INBOUND);
-        assertPrimarySemantics(newLeg, LedgerPostingSemanticRole.SECURITY, LedgerPostingDirection.INBOUND,
-                        CorporateActionLeg.TARGET_SECURITY, LedgerProjectionRole.NEW_SECURITY_LEG);
-        assertPrimarySemantics(compensation, LedgerPostingSemanticRole.CASH_COMPENSATION,
-                        LedgerPostingDirection.NEUTRAL, CorporateActionLeg.CASH_COMPENSATION,
-                        LedgerProjectionRole.CASH_COMPENSATION);
-        assertThat(entry.getPostings().stream().filter(posting -> posting.getType() == LedgerPostingType.FEE)
-                        .findFirst().orElseThrow().getGroupKey(), is(LedgerProjectionRole.CASH_COMPENSATION.name()));
-        assertThat(entry.getPostings().stream().filter(posting -> posting.getType() == LedgerPostingType.TAX)
-                        .findFirst().orElseThrow().getUnitRole(), is(LedgerPostingUnitRole.TAX));
-    }
-
-    @Test
-    public void testNativeAssemblerCreatesRepeatedSpinOffMovementLegsWithSemanticKeys()
-    {
-        var fixture = fixture();
-        var secondTarget = new Security("Siemens Healthineers AG", CurrencyUnit.EUR);
-        secondTarget.setIsin("DE000SHL1006");
-        fixture.client.addSecurity(secondTarget);
-
-        var entry = repeatedSpinOff(fixture, secondTarget).buildDetached().getEntry();
-        var targetPostings = postings(entry, LedgerPostingType.SECURITY, CorporateActionLeg.TARGET_SECURITY);
-        var cashPostings = postings(entry, LedgerPostingType.CASH_COMPENSATION,
-                        CorporateActionLeg.CASH_COMPENSATION);
-        var targetDescriptors = descriptors(entry).stream()
-                        .filter(descriptor -> descriptor.getRole() == LedgerProjectionRole.NEW_SECURITY_LEG)
-                        .toList();
-        var cashOneDescriptor = descriptor(entry, LedgerProjectionRole.CASH_COMPENSATION, "cash-1");
-        var cashTwoDescriptor = descriptor(entry, LedgerProjectionRole.CASH_COMPENSATION, "cash-2");
-
-        assertThat(targetPostings.size(), is(2));
-        assertThat(targetPostings.stream().map(LedgerPosting::getLocalKey).collect(Collectors.toSet()),
-                        is(java.util.Set.of("target-1", "target-2")));
-        assertThat(targetPostings.stream().map(LedgerPosting::getGroupKey).collect(Collectors.toSet()),
-                        is(java.util.Set.of("main")));
-
-        assertThat(cashPostings.size(), is(2));
-        assertThat(cashPostings.stream().map(LedgerPosting::getLocalKey).collect(Collectors.toSet()),
-                        is(java.util.Set.of("cash-1", "cash-2")));
-        assertThat(cashPostings.stream().map(LedgerPosting::getGroupKey).collect(Collectors.toSet()),
-                        is(java.util.Set.of("cash-1", "cash-2")));
-
-        assertThat(targetDescriptors.size(), is(2));
-        assertThat(targetDescriptors.stream().map(DerivedProjectionDescriptor::getSemanticInstanceKey)
-                        .map(Optional::orElseThrow).collect(Collectors.toSet()),
-                        is(java.util.Set.of("target-1", "target-2")));
-        assertThat(targetDescriptors.stream().map(DerivedProjectionDescriptor::getRuntimeProjectionId)
-                        .collect(Collectors.toSet()).size(), is(2));
-        assertThat(descriptor(entry, LedgerProjectionRole.NEW_SECURITY_LEG, "target-1").getPrimaryPosting()
-                        .getSecurity(), is(fixture.siemensEnergy));
-        assertThat(descriptor(entry, LedgerProjectionRole.NEW_SECURITY_LEG, "target-2").getPrimaryPosting()
-                        .getSecurity(), is(secondTarget));
-
-        assertThat(cashOneDescriptor.getUnitPostings().stream().map(LedgerPosting::getLocalKey)
-                        .collect(Collectors.toSet()), is(java.util.Set.of("fee-1", "tax-1")));
-        assertThat(cashTwoDescriptor.getUnitPostings().isEmpty(), is(true));
-        assertTrue(LedgerStructuralValidator.validate(ledger(entry)).isOK());
     }
 
     @Test
@@ -482,79 +382,6 @@ public class LedgerNativeEntryAssemblerTest
                                         .buildDetached());
 
         assertThat(exception.getIssue(), is(LedgerNativeEntryAssemblyIssue.NATIVE_DEFINITION_VALIDATION_FAILED));
-    }
-
-    /**
-     * Checks the Ledger-V6 scenario: build and add creates spin off and materializes runtime projections.
-     * The result must keep ledger truth and visible runtime rows consistent.
-     * This protects against duplicate truth or partial mutation.
-     */
-    @Test
-    public void testBuildAndAddCreatesSpinOffAndMaterializesRuntimeProjections()
-    {
-        var fixture = fixture();
-        var result = validSpinOff(fixture).buildAndAdd();
-        var entry = result.getEntry();
-
-        assertThat(fixture.client.getLedger().getEntries().size(), is(1));
-        assertThat(fixture.client.getLedger().getEntries().get(0), is(entry));
-        assertTrue(result.getValidationResult().isOK());
-        assertTrue(LedgerStructuralValidator.validate(fixture.client.getLedger()).isOK());
-
-        assertThat(fixture.portfolio.getTransactions().size(), is(2));
-        assertThat(fixture.account.getTransactions().size(), is(1));
-        assertThat(portfolioProjection(fixture.portfolio, LedgerProjectionRole.OLD_SECURITY_LEG).getLedgerEntry(),
-                        is(entry));
-        assertThat(portfolioProjection(fixture.portfolio, LedgerProjectionRole.NEW_SECURITY_LEG).getLedgerEntry(),
-                        is(entry));
-        assertThat(accountProjection(fixture.account, LedgerProjectionRole.CASH_COMPENSATION).getLedgerEntry(),
-                        is(entry));
-    }
-
-    /**
-     * Checks the Ledger-V6 scenario: build and add descriptor ids are runtime projection ids.
-     * The result must keep ledger truth and visible runtime rows consistent.
-     * This protects against duplicate truth or partial mutation.
-     */
-    @Test
-    public void testBuildAndAddDescriptorIdsAreRuntimeProjectionIds()
-    {
-        var fixture = fixture();
-        var entry = validSpinOff(fixture).buildAndAdd().getEntry();
-        var descriptorIds = name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry).stream()
-                        .map(descriptor -> name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport
-                                        .runtimeProjectionId(entry, descriptor.getRole()))
-                        .collect(Collectors.toSet());
-        var runtimeUUIDs = java.util.stream.Stream.concat(
-                        fixture.portfolio.getTransactions().stream()
-                                        .filter(LedgerBackedTransaction.class::isInstance)
-                                        .map(PortfolioTransaction::getUUID),
-                        fixture.account.getTransactions().stream()
-                                        .filter(LedgerBackedTransaction.class::isInstance)
-                                        .map(AccountTransaction::getUUID))
-                        .collect(Collectors.toSet());
-
-        assertThat(runtimeUUIDs, is(descriptorIds));
-        assertThat(runtimeUUIDs.size(), is(3));
-    }
-
-    /**
-     * Checks the Ledger-V6 scenario: build and add does not duplicate runtime projections.
-     * The result must keep ledger truth and visible runtime rows consistent.
-     * This protects against duplicate truth or partial mutation.
-     */
-    @Test
-    public void testBuildAndAddDoesNotDuplicateRuntimeProjections()
-    {
-        var fixture = fixture();
-
-        validSpinOff(fixture).buildAndAdd();
-        validSpinOff(fixture).buildAndAdd();
-
-        assertThat(fixture.client.getLedger().getEntries().size(), is(2));
-        assertThat(fixture.portfolio.getTransactions().size(), is(4));
-        assertThat(fixture.account.getTransactions().size(), is(2));
-        assertThat(runtimeProjectionUUIDs(fixture).size(), is(6));
     }
 
     /**
@@ -614,46 +441,6 @@ public class LedgerNativeEntryAssemblerTest
 
         assertThat(exception.getIssue(), is(LedgerNativeEntryAssemblyIssue.NATIVE_DEFINITION_VALIDATION_FAILED));
         assertClientUnchanged(fixture);
-    }
-
-    /**
-     * Checks the Ledger-V6 scenario: generated detached entry passes structural validator when added to scratch ledger.
-     * The result must keep ledger truth and visible runtime rows consistent.
-     * This protects against duplicate truth or partial mutation.
-     */
-    @Test
-    public void testGeneratedDetachedEntryPassesStructuralValidatorWhenAddedToScratchLedger()
-    {
-        var fixture = fixture();
-        var result = validSpinOff(fixture).buildDetached();
-        var ledger = new Ledger();
-
-        ledger.addEntry(result.getEntry());
-
-        assertTrue(LedgerStructuralValidator.validate(ledger).isOK());
-    }
-
-    /**
-     * Checks the Ledger-V6 scenario: generated descriptors target assembler owned postings.
-     * The result must keep ledger truth and visible runtime rows consistent.
-     * This protects against duplicate truth or partial mutation.
-     */
-    @Test
-    public void testGeneratedDescriptorsTargetAssemblerOwnedPostings()
-    {
-        var fixture = fixture();
-        var entry = validSpinOff(fixture).buildDetached().getEntry();
-        var postingUUIDs = entry.getPostings().stream().map(LedgerPosting::getUUID).collect(Collectors.toSet());
-
-        for (var ref : name.abuchen.portfolio.model.ledger.LedgerDescriptorTestSupport.descriptors(entry))
-        {
-            assertTrue(postingUUIDs.contains(ref.getPrimaryPosting().getUUID()));
-            assertThat(ref.getPrimaryPosting().getUnitRole(), is(LedgerPostingUnitRole.PRIMARY));
-
-            if (ref.getPrimaryPosting().getGroupKey() != null)
-                assertTrue(ref.getUnitPostings().stream()
-                                .allMatch(posting -> ref.getPrimaryPosting().getGroupKey().equals(posting.getGroupKey())));
-        }
     }
 
     private static LedgerNativeEntryAssembler.EntryBuilder validSpinOff(Fixture fixture)

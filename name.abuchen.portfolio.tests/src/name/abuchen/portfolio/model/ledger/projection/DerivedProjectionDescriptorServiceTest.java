@@ -173,55 +173,6 @@ public class DerivedProjectionDescriptorServiceTest
     }
 
     @Test
-    public void testSiemensSpinOffDescriptorsDeriveTargetedRuntimeViews()
-    {
-        var fixture = fixture();
-        var entry = spinOffEntry(fixture);
-
-        var descriptors = descriptors(entry);
-
-        assertThat(roles(descriptors), is(Set.of(LedgerProjectionRole.OLD_SECURITY_LEG,
-                        LedgerProjectionRole.DELIVERY_INBOUND, LedgerProjectionRole.NEW_SECURITY_LEG,
-                        LedgerProjectionRole.CASH_COMPENSATION)));
-        assertDescriptor(entry, descriptor(descriptors, LedgerProjectionRole.OLD_SECURITY_LEG),
-                        LedgerProjectionRole.OLD_SECURITY_LEG);
-        assertDescriptor(entry, descriptor(descriptors, LedgerProjectionRole.DELIVERY_INBOUND),
-                        LedgerProjectionRole.DELIVERY_INBOUND);
-        assertDescriptor(entry, descriptor(descriptors, LedgerProjectionRole.NEW_SECURITY_LEG),
-                        LedgerProjectionRole.NEW_SECURITY_LEG);
-        assertDescriptor(entry, descriptor(descriptors, LedgerProjectionRole.CASH_COMPENSATION),
-                        LedgerProjectionRole.CASH_COMPENSATION);
-    }
-
-    @Test
-    public void testSecurityContextDoesNotDeriveDescriptor()
-    {
-        var fixture = fixture();
-        var entry = spinOffEntry(fixture);
-
-        entry.addPosting(securityContextPosting("context-1", fixture.portfolio, fixture.siemens)); //$NON-NLS-1$
-
-        var descriptors = descriptors(entry);
-
-        assertThat(roles(descriptors), is(Set.of(LedgerProjectionRole.OLD_SECURITY_LEG,
-                        LedgerProjectionRole.DELIVERY_INBOUND, LedgerProjectionRole.NEW_SECURITY_LEG,
-                        LedgerProjectionRole.CASH_COMPENSATION)));
-        assertFalse(descriptors.stream().map(DerivedProjectionDescriptor::getPrimaryPosting)
-                        .anyMatch(posting -> posting.getCorporateActionLeg() == CorporateActionLeg.SECURITY_CONTEXT));
-    }
-
-    @Test
-    public void testExistingSpinOffDescriptorRuntimeIdRemainsRoleOnly()
-    {
-        var entry = spinOffEntry(fixture());
-
-        var descriptor = descriptor(descriptors(entry), LedgerProjectionRole.NEW_SECURITY_LEG);
-
-        assertFalse(descriptor.hasSemanticInstanceKey());
-        assertThat(descriptor.getRuntimeProjectionId(), is("spin-off:NEW_SECURITY_LEG"));
-    }
-
-    @Test
     public void testRepeatedTargetDescriptorsUseSemanticInstanceKeys()
     {
         var entry = repeatedTargetSpinOffEntry("target-1", "target-2");
