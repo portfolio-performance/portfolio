@@ -403,9 +403,9 @@ public class LedgerModelTest
     {
         assertCodeDomain(LedgerParameterType.CORPORATE_ACTION_LEG, LedgerParameterCodeDomain.CORPORATE_ACTION_LEG,
                         CorporateActionLeg.SOURCE_SECURITY, CorporateActionLeg.TARGET_SECURITY,
-                        CorporateActionLeg.DISTRIBUTED_SECURITY, CorporateActionLeg.RIGHT_SECURITY,
-                        CorporateActionLeg.CASH_COMPENSATION, CorporateActionLeg.CASH_IN_LIEU,
-                        CorporateActionLeg.FEE, CorporateActionLeg.TAX,
+                        CorporateActionLeg.SECURITY_CONTEXT, CorporateActionLeg.DISTRIBUTED_SECURITY,
+                        CorporateActionLeg.RIGHT_SECURITY, CorporateActionLeg.CASH_COMPENSATION,
+                        CorporateActionLeg.CASH_IN_LIEU, CorporateActionLeg.FEE, CorporateActionLeg.TAX,
                         CorporateActionLeg.ACCRUED_INTEREST, CorporateActionLeg.PRINCIPAL,
                         CorporateActionLeg.REDEMPTION, CorporateActionLeg.CONVERSION_SOURCE,
                         CorporateActionLeg.CONVERSION_TARGET, CorporateActionLeg.OTHER);

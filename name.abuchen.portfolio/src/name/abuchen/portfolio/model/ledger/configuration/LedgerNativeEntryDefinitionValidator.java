@@ -529,6 +529,8 @@ public final class LedgerNativeEntryDefinitionValidator
                 return Optional.of(CorporateActionLeg.SOURCE_SECURITY.getCode());
             if (role == LedgerLegRole.TARGET_SECURITY_LEG)
                 return Optional.of(CorporateActionLeg.TARGET_SECURITY.getCode());
+            if (role == LedgerLegRole.SECURITY_CONTEXT_LEG)
+                return Optional.of(CorporateActionLeg.SECURITY_CONTEXT.getCode());
             if (role == LedgerLegRole.RECEIVED_SECURITY_LEG)
                 return Optional.of(CorporateActionLeg.TARGET_SECURITY.getCode());
             if (role == LedgerLegRole.DISTRIBUTED_SECURITY_LEG)

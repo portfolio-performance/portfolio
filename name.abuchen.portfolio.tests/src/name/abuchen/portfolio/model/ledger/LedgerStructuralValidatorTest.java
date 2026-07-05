@@ -2,6 +2,7 @@ package name.abuchen.portfolio.model.ledger;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDateTime;
@@ -176,6 +177,41 @@ public class LedgerStructuralValidatorTest
                         CorporateActionKind.SPIN_OFF));
         entry.addPosting(cashCompensationPosting("cash-1")); //$NON-NLS-1$
 
+        assertOK(LedgerStructuralValidator.validate(ledger(entry)));
+    }
+
+    @Test
+    public void testNativeCorporateActionAcceptsSecurityContextWithPortfolio()
+    {
+        var entry = corporateActionEntry(CorporateActionKind.SPIN_OFF);
+        entry.addPosting(securityContextPosting("context-1")); //$NON-NLS-1$
+
+        assertOK(LedgerStructuralValidator.validate(ledger(entry)));
+    }
+
+    @Test
+    public void testNativeCorporateActionSecurityContextRequiresPortfolio()
+    {
+        var entry = corporateActionEntry(CorporateActionKind.SPIN_OFF);
+        var context = securityContextPosting("context-1"); //$NON-NLS-1$
+
+        context.setPortfolio(null);
+        entry.addPosting(context);
+
+        assertIssue(entry, IssueCode.POSTING_PORTFOLIO_REQUIRED_FOR_SECURITY);
+    }
+
+    @Test
+    public void testNativeCorporateActionSecurityContextIsNotMovement()
+    {
+        var entry = corporateActionEntry(CorporateActionKind.SPIN_OFF);
+
+        entry.addPosting(securityContextPosting("context-1")); //$NON-NLS-1$
+
+        assertFalse(entry.getPostings().stream()
+                        .anyMatch(posting -> posting.getCorporateActionLeg() == CorporateActionLeg.SOURCE_SECURITY));
+        assertFalse(entry.getPostings().stream()
+                        .anyMatch(posting -> posting.getCorporateActionLeg() == CorporateActionLeg.TARGET_SECURITY));
         assertOK(LedgerStructuralValidator.validate(ledger(entry)));
     }
 
@@ -425,6 +461,16 @@ public class LedgerStructuralValidatorTest
         var posting = securityPosting(localKey, direction);
         posting.setCorporateActionLeg(leg);
         posting.setGroupKey(localKey);
+        return posting;
+    }
+
+    private LedgerPosting securityContextPosting(String localKey)
+    {
+        var posting = securityPosting(localKey, LedgerPostingDirection.NEUTRAL, CorporateActionLeg.SECURITY_CONTEXT);
+
+        posting.setAmount(0L);
+        posting.setShares(0L);
+
         return posting;
     }
 

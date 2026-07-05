@@ -548,6 +548,11 @@ public final class LedgerEntryDefinitionRegistry
                                                         LedgerParameterType.RATIO_DENOMINATOR))
                                         .optionalParameters(spinOffTargetSecurityLegOptionalParameters())
                                         .projection(LedgerProjectionRole.NEW_SECURITY_LEG, true, false).build(),
+                        LedgerLegDefinition.of(LedgerLegRole.SECURITY_CONTEXT_LEG, LedgerPostingType.SECURITY,
+                                        LedgerLegCardinality.REPEATABLE)
+                                        .requiredParameters(SETS.parameterTypes(
+                                                        LedgerParameterType.CORPORATE_ACTION_LEG))
+                                        .optionalParameters(spinOffSecurityOptionalParameters()).build(),
                         LedgerLegDefinition.of(LedgerLegRole.CASH_COMPENSATION_LEG,
                                         LedgerPostingType.CASH_COMPENSATION, LedgerLegCardinality.REPEATABLE)
                                         .optionalParameters(cashCompensationOptionalParameters())

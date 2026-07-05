@@ -194,6 +194,23 @@ public class DerivedProjectionDescriptorServiceTest
     }
 
     @Test
+    public void testSecurityContextDoesNotDeriveDescriptor()
+    {
+        var fixture = fixture();
+        var entry = spinOffEntry(fixture);
+
+        entry.addPosting(securityContextPosting("context-1", fixture.portfolio, fixture.siemens)); //$NON-NLS-1$
+
+        var descriptors = descriptors(entry);
+
+        assertThat(roles(descriptors), is(Set.of(LedgerProjectionRole.OLD_SECURITY_LEG,
+                        LedgerProjectionRole.DELIVERY_INBOUND, LedgerProjectionRole.NEW_SECURITY_LEG,
+                        LedgerProjectionRole.CASH_COMPENSATION)));
+        assertFalse(descriptors.stream().map(DerivedProjectionDescriptor::getPrimaryPosting)
+                        .anyMatch(posting -> posting.getCorporateActionLeg() == CorporateActionLeg.SECURITY_CONTEXT));
+    }
+
+    @Test
     public void testExistingSpinOffDescriptorRuntimeIdRemainsRoleOnly()
     {
         var entry = spinOffEntry(fixture());
@@ -449,6 +466,28 @@ public class DerivedProjectionDescriptorServiceTest
 
         posting.setGroupKey("main");
         posting.setLocalKey(localKey);
+
+        return posting;
+    }
+
+    private LedgerPosting securityContextPosting(String uuid, Portfolio portfolio, Security security)
+    {
+        var posting = new LedgerPosting(uuid);
+
+        posting.setType(LedgerPostingType.SECURITY);
+        posting.setPortfolio(portfolio);
+        posting.setSecurity(security);
+        posting.setShares(0L);
+        posting.setAmount(0L);
+        posting.setCurrency(CurrencyUnit.EUR);
+        posting.setSemanticRole(LedgerPostingSemanticRole.SECURITY);
+        posting.setDirection(LedgerPostingDirection.NEUTRAL);
+        posting.setCorporateActionLeg(CorporateActionLeg.SECURITY_CONTEXT);
+        posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
+        posting.setGroupKey("main"); //$NON-NLS-1$
+        posting.setLocalKey(uuid);
+        posting.addParameter(LedgerParameter.ofString(LedgerParameterType.CORPORATE_ACTION_LEG,
+                        CorporateActionLeg.SECURITY_CONTEXT.getCode()));
 
         return posting;
     }

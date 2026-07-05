@@ -16,6 +16,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.ledger.configuration.CashCompensationKind;
+import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionKind;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionSubtype;
 import name.abuchen.portfolio.model.ledger.configuration.EventStage;
@@ -137,6 +138,29 @@ public class LedgerNativeEntryDefinitionValidatorTest
         entry.removePosting(targetPosting);
 
         assertOK(entry);
+    }
+
+    @Test
+    public void testSpinOffDefinitionAcceptsSecurityContextLeg()
+    {
+        var fixture = fixture();
+        var entry = copyValidSpinOff();
+
+        entry.addPosting(securityContextPosting(fixture, "context-1")); //$NON-NLS-1$
+
+        assertOK(entry);
+    }
+
+    @Test
+    public void testSpinOffDefinitionRejectsDuplicateSecurityContextLocalKey()
+    {
+        var fixture = fixture();
+        var entry = copyValidSpinOff();
+
+        entry.addPosting(securityContextPosting(fixture, "context-1")); //$NON-NLS-1$
+        entry.addPosting(securityContextPosting(fixture, "context-1")); //$NON-NLS-1$
+
+        assertIssue(entry, IssueCode.LEG_LOCAL_KEY_DUPLICATE);
     }
 
     /**
@@ -505,6 +529,28 @@ public class LedgerNativeEntryDefinitionValidatorTest
                         .sourceSecurity(fixture.siemens) //
                         .targetSecurity(fixture.siemensEnergy) //
                         .ratio(Ratio.of(BigDecimal.ONE, BigDecimal.valueOf(2)));
+    }
+
+    private static LedgerPosting securityContextPosting(Fixture fixture, String localKey)
+    {
+        var posting = new LedgerPosting("security-context-" + localKey); //$NON-NLS-1$
+
+        posting.setType(LedgerPostingType.SECURITY);
+        posting.setPortfolio(fixture.portfolio);
+        posting.setSecurity(fixture.siemens);
+        posting.setAmount(0L);
+        posting.setShares(0L);
+        posting.setCurrency(CurrencyUnit.EUR);
+        posting.setSemanticRole(LedgerPostingSemanticRole.SECURITY);
+        posting.setDirection(LedgerPostingDirection.NEUTRAL);
+        posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
+        posting.setCorporateActionLeg(CorporateActionLeg.SECURITY_CONTEXT);
+        posting.setGroupKey("main"); //$NON-NLS-1$
+        posting.setLocalKey(localKey);
+        posting.addParameter(LedgerParameter.ofString(LedgerParameterType.CORPORATE_ACTION_LEG,
+                        CorporateActionLeg.SECURITY_CONTEXT.getCode()));
+
+        return posting;
     }
 
     private static Money money(long amount)

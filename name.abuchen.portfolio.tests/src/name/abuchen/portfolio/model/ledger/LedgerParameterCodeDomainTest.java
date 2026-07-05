@@ -23,10 +23,11 @@ public class LedgerParameterCodeDomainTest
 {
     private static final Map<LedgerParameterCodeDomain, List<String>> EXPECTED_CODES = Map.ofEntries(
                     Map.entry(LedgerParameterCodeDomain.CORPORATE_ACTION_LEG,
-                                    List.of("SOURCE_SECURITY", "TARGET_SECURITY", "DISTRIBUTED_SECURITY",
-                                                    "RIGHT_SECURITY", "CASH_COMPENSATION", "CASH_IN_LIEU", "FEE",
-                                                    "TAX", "ACCRUED_INTEREST", "PRINCIPAL", "REDEMPTION",
-                                                    "CONVERSION_SOURCE", "CONVERSION_TARGET", "OTHER")),
+                                    List.of("SOURCE_SECURITY", "TARGET_SECURITY", "SECURITY_CONTEXT",
+                                                    "DISTRIBUTED_SECURITY", "RIGHT_SECURITY", "CASH_COMPENSATION",
+                                                    "CASH_IN_LIEU", "FEE", "TAX", "ACCRUED_INTEREST", "PRINCIPAL",
+                                                    "REDEMPTION", "CONVERSION_SOURCE", "CONVERSION_TARGET",
+                                                    "OTHER")),
                     Map.entry(LedgerParameterCodeDomain.CORPORATE_ACTION_KIND,
                                     List.of("STOCK_DIVIDEND", "SPIN_OFF", "BONUS_ISSUE",
                                                     "RIGHTS_DISTRIBUTION", "COUPON_PAYMENT", "PIK_INTEREST",

@@ -84,7 +84,7 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
 
         assertThat(proto.getLedger().getEntriesCount(), is(1));
         assertThat(protoEntry.getTypeCode(), is(LedgerEntryType.CORPORATE_ACTION.getCode()));
-        assertThat(protoEntry.getPostingsCount(), is(8));
+        assertThat(protoEntry.getPostingsCount(), is(9));
         assertNoCorporateActionSpecificLegacyTransactionType(proto);
 
         var loaded = ProtobufTestUtilities.load(bytes);
@@ -102,6 +102,7 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
         var portfolio = new Portfolio();
         var sourceSecurity = new Security("Source AG", CurrencyUnit.EUR);
         var sourceSecurityB = new Security("Source B AG", CurrencyUnit.EUR);
+        var contextSecurity = new Security("Context AG", CurrencyUnit.EUR);
         var targetSecurityA = new Security("Target A AG", CurrencyUnit.EUR);
         var targetSecurityB = new Security("Target B AG", CurrencyUnit.EUR);
 
@@ -113,6 +114,7 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
         portfolio.setUpdatedAt(UPDATED_AT);
         sourceSecurity.setUpdatedAt(UPDATED_AT);
         sourceSecurityB.setUpdatedAt(UPDATED_AT);
+        contextSecurity.setUpdatedAt(UPDATED_AT);
         targetSecurityA.setUpdatedAt(UPDATED_AT);
         targetSecurityB.setUpdatedAt(UPDATED_AT);
 
@@ -120,6 +122,7 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
         client.addPortfolio(portfolio);
         client.addSecurity(sourceSecurity);
         client.addSecurity(sourceSecurityB);
+        client.addSecurity(contextSecurity);
         client.addSecurity(targetSecurityA);
         client.addSecurity(targetSecurityB);
 
@@ -138,6 +141,7 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
         entry.addPosting(spinOffSecurityPosting(portfolio, sourceSecurityB, sourceSecurityB, targetSecurityB,
                         LedgerPostingDirection.OUTBOUND, CorporateActionLeg.SOURCE_SECURITY, "main", "source-2",
                         4, 40));
+        entry.addPosting(securityContextPosting(portfolio, contextSecurity, "main", "context-1"));
         entry.addPosting(spinOffSecurityPosting(portfolio, targetSecurityA, sourceSecurity, targetSecurityA,
                         LedgerPostingDirection.INBOUND, CorporateActionLeg.TARGET_SECURITY, "main", "target-1", 3,
                         60));
@@ -173,6 +177,18 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
         posting.setUnitRole(LedgerPostingUnitRole.PRIMARY);
         posting.setGroupKey(groupKey);
         posting.setLocalKey(localKey);
+
+        return posting;
+    }
+
+    private LedgerPosting securityContextPosting(Portfolio portfolio, Security security, String groupKey,
+                    String localKey)
+    {
+        var posting = securityPosting(portfolio, security, LedgerPostingDirection.NEUTRAL,
+                        CorporateActionLeg.SECURITY_CONTEXT, groupKey, localKey, 0, 0);
+
+        posting.addParameter(LedgerParameter.ofString(LedgerParameterType.CORPORATE_ACTION_LEG,
+                        CorporateActionLeg.SECURITY_CONTEXT.getCode()));
 
         return posting;
     }
@@ -245,10 +261,12 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
     private void assertRepeatedSpinOff(LedgerEntry entry)
     {
         assertThat(entry.getType(), is(LedgerEntryType.CORPORATE_ACTION));
-        assertThat(entry.getPostings().size(), is(8));
+        assertThat(entry.getPostings().size(), is(9));
 
         var sourceSecurities = postings(entry, LedgerPostingType.SECURITY, LedgerPostingDirection.OUTBOUND,
                         CorporateActionLeg.SOURCE_SECURITY);
+        var securityContexts = postings(entry, LedgerPostingType.SECURITY, LedgerPostingDirection.NEUTRAL,
+                        CorporateActionLeg.SECURITY_CONTEXT);
         var targetSecurities = postings(entry, LedgerPostingType.SECURITY, LedgerPostingDirection.INBOUND,
                         CorporateActionLeg.TARGET_SECURITY);
         var cashMovements = postings(entry, LedgerPostingType.CASH_COMPENSATION, LedgerPostingDirection.NEUTRAL,
@@ -263,6 +281,11 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
 
         assertThat(sourceSecurities.size(), is(2));
         assertThat(localKeys(sourceSecurities), is(Set.of("source-1", "source-2")));
+        assertThat(securityContexts.size(), is(1));
+        assertThat(localKeys(securityContexts), is(Set.of("context-1")));
+        assertTrue(securityContexts.stream().allMatch(posting -> posting.getPortfolio() != null));
+        assertTrue(securityContexts.stream().allMatch(posting -> posting.getSecurity() != null));
+        assertFalse(securityContexts.stream().anyMatch(posting -> posting.getAccount() != null));
         assertThat(targetSecurities.size(), is(2));
         assertThat(localKeys(targetSecurities), is(Set.of("target-1", "target-2")));
         assertThat(cashMovements.size(), is(2));
@@ -274,6 +297,8 @@ public class LedgerCorporateActionMultiMovementPersistenceTest
         assertThat(targetDescriptors.size(), is(2));
         assertThat(targetDescriptors.stream().map(descriptor -> descriptor.getSemanticInstanceKey().orElseThrow())
                         .collect(Collectors.toSet()), is(Set.of("target-1", "target-2")));
+        assertFalse(descriptors.stream().map(DerivedProjectionDescriptor::getPrimaryPosting)
+                        .anyMatch(posting -> posting.getCorporateActionLeg() == CorporateActionLeg.SECURITY_CONTEXT));
         var runtimeProjectionIds = targetDescriptors.stream().map(DerivedProjectionDescriptor::getRuntimeProjectionId)
                         .collect(Collectors.toSet());
 
