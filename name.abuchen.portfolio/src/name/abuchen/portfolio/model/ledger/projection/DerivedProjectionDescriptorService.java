@@ -109,6 +109,12 @@ public final class DerivedProjectionDescriptorService
             return;
         }
 
+        if (kind.filter(this::isFixedIncomeRedemptionCorporateAction).isPresent())
+        {
+            fixedIncomeRedemptionCorporateAction(entry, descriptors, diagnostics);
+            return;
+        }
+
         if (kind.filter(k -> k == CorporateActionKind.CASH_DISTRIBUTION || k == CorporateActionKind.COUPON_PAYMENT)
                         .isPresent())
             cashOrientedCorporateAction(entry, descriptors, diagnostics);
@@ -119,6 +125,15 @@ public final class DerivedProjectionDescriptorService
         return switch (kind)
         {
             case STOCK_DIVIDEND, BONUS_ISSUE, RIGHTS_DISTRIBUTION, PIK_INTEREST -> true;
+            default -> false;
+        };
+    }
+
+    private boolean isFixedIncomeRedemptionCorporateAction(CorporateActionKind kind)
+    {
+        return switch (kind)
+        {
+            case MATURITY, PARTIAL_REDEMPTION, CALL, PUT -> true;
             default -> false;
         };
     }
@@ -163,11 +178,17 @@ public final class DerivedProjectionDescriptorService
     private void cashOrientedCorporateAction(LedgerEntry entry, List<DerivedProjectionDescriptor> descriptors,
                     List<Diagnostic> diagnostics)
     {
-        repeatedAccount(entry, LedgerProjectionRole.ACCOUNT,
-                        primary().and(postingType(LedgerPostingType.CASH)).and(localKey(LedgerProjectionRole.ACCOUNT)),
-                        primary().and(postingType(LedgerPostingType.CASH))
-                                        .and(semantic(LedgerPostingSemanticRole.CASH)),
-                        true, diagnostics).forEach(descriptors::add);
+        repeatedAccount(entry, LedgerProjectionRole.ACCOUNT, cashPreferredSelector(), cashRepeatedSelector(), true,
+                        diagnostics).forEach(descriptors::add);
+    }
+
+    private void fixedIncomeRedemptionCorporateAction(LedgerEntry entry, List<DerivedProjectionDescriptor> descriptors,
+                    List<Diagnostic> diagnostics)
+    {
+        repeatedPortfolio(entry, LedgerProjectionRole.DELIVERY_OUTBOUND, sourceSecurityPreferredSelector(),
+                        sourceSecurityRepeatedSelector(), true, diagnostics).forEach(descriptors::add);
+        repeatedAccount(entry, LedgerProjectionRole.ACCOUNT, cashPreferredSelector(), cashRepeatedSelector(), true,
+                        diagnostics).forEach(descriptors::add);
     }
 
     private Predicate<LedgerPosting> securityInPreferredSelector()
@@ -194,6 +215,27 @@ public final class DerivedProjectionDescriptorService
     private Predicate<LedgerPosting> cashCompensationRepeatedSelector()
     {
         return primary().and(corporateLeg(CorporateActionLeg.CASH_COMPENSATION));
+    }
+
+    private Predicate<LedgerPosting> sourceSecurityPreferredSelector()
+    {
+        return primary().and(corporateLeg(CorporateActionLeg.SOURCE_SECURITY))
+                        .and(localKey(LedgerProjectionRole.DELIVERY_OUTBOUND));
+    }
+
+    private Predicate<LedgerPosting> sourceSecurityRepeatedSelector()
+    {
+        return primary().and(corporateLeg(CorporateActionLeg.SOURCE_SECURITY));
+    }
+
+    private Predicate<LedgerPosting> cashPreferredSelector()
+    {
+        return primary().and(postingType(LedgerPostingType.CASH)).and(localKey(LedgerProjectionRole.ACCOUNT));
+    }
+
+    private Predicate<LedgerPosting> cashRepeatedSelector()
+    {
+        return primary().and(postingType(LedgerPostingType.CASH)).and(semantic(LedgerPostingSemanticRole.CASH));
     }
 
     private java.util.Optional<DerivedProjectionDescriptor> account(LedgerEntry entry, LedgerProjectionRole role,

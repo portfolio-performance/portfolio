@@ -136,6 +136,7 @@ public final class LedgerProjectionSupport
         {
             case CASH_DISTRIBUTION -> AccountTransaction.Type.DIVIDENDS;
             case COUPON_PAYMENT -> AccountTransaction.Type.INTEREST;
+            case MATURITY, PARTIAL_REDEMPTION, CALL, PUT -> AccountTransaction.Type.DEPOSIT;
             default -> throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_PROJ_072
                             .message("Unsupported targeted account kind " + kind)); //$NON-NLS-1$
         };
