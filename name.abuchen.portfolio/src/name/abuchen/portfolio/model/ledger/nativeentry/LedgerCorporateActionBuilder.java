@@ -145,6 +145,18 @@ public final class LedgerCorporateActionBuilder
         return this;
     }
 
+    public LedgerCorporateActionBuilder rightIn(String localKey, Portfolio portfolio, Security security, long shares)
+    {
+        return rightIn(localKey, localKey, portfolio, security, shares);
+    }
+
+    public LedgerCorporateActionBuilder rightIn(String localKey, String groupKey, Portfolio portfolio, Security security,
+                    long shares)
+    {
+        postingWriters.add(entry -> entry.addPosting(rightPosting(localKey, groupKey, portfolio, security, shares)));
+        return this;
+    }
+
     public LedgerCorporateActionBuilder cash(String localKey, Account account, Money amount)
     {
         return cash(localKey, localKey, account, amount);
@@ -325,6 +337,23 @@ public final class LedgerCorporateActionBuilder
             posting.addParameter(LedgerParameter.ofSecurity(LedgerParameterType.TARGET_SECURITY, security));
             addDefaultRatio(posting);
         }
+
+        return posting;
+    }
+
+    private LedgerPosting rightPosting(String localKey, String groupKey, Portfolio portfolio, Security security,
+                    long shares)
+    {
+        var posting = primaryPosting(LedgerPostingType.RIGHT, LedgerPostingSemanticRole.RIGHT,
+                        CorporateActionLeg.RIGHT_SECURITY, LedgerPostingDirection.INBOUND, localKey, groupKey);
+
+        posting.setPortfolio(portfolio);
+        posting.setSecurity(security);
+        posting.setShares(shares);
+        posting.setAmount(0L);
+        posting.addParameter(LedgerParameter.ofString(LedgerParameterType.CORPORATE_ACTION_LEG,
+                        CorporateActionLeg.RIGHT_SECURITY.getCode()));
+        posting.addParameter(LedgerParameter.ofSecurity(LedgerParameterType.RIGHT_SECURITY, security));
 
         return posting;
     }

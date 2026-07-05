@@ -103,9 +103,24 @@ public final class DerivedProjectionDescriptorService
             return;
         }
 
+        if (kind.filter(this::isSecurityInCorporateAction).isPresent())
+        {
+            securityInCorporateAction(entry, descriptors, diagnostics);
+            return;
+        }
+
         if (kind.filter(k -> k == CorporateActionKind.CASH_DISTRIBUTION || k == CorporateActionKind.COUPON_PAYMENT)
                         .isPresent())
             cashOrientedCorporateAction(entry, descriptors, diagnostics);
+    }
+
+    private boolean isSecurityInCorporateAction(CorporateActionKind kind)
+    {
+        return switch (kind)
+        {
+            case STOCK_DIVIDEND, BONUS_ISSUE, RIGHTS_DISTRIBUTION, PIK_INTEREST -> true;
+            default -> false;
+        };
     }
 
     private void spinOff(LedgerEntry entry, List<DerivedProjectionDescriptor> descriptors, List<Diagnostic> diagnostics)
@@ -130,11 +145,18 @@ public final class DerivedProjectionDescriptorService
                                         .and(localKey(LedgerProjectionRole.DELIVERY_INBOUND).negate()),
                         true, diagnostics).forEach(descriptors::add);
         repeatedAccount(entry, LedgerProjectionRole.CASH_COMPENSATION,
-                        primary().and(corporateLeg(CorporateActionLeg.CASH_COMPENSATION))
-                                        .and(localKey(LedgerProjectionRole.CASH_COMPENSATION))
-                                        .or(legacyCorporateLeg(LedgerPostingType.CASH_COMPENSATION,
-                                                        CorporateActionLeg.CASH_COMPENSATION)),
-                        primary().and(corporateLeg(CorporateActionLeg.CASH_COMPENSATION)), true, diagnostics)
+                        cashCompensationPreferredSelector(), cashCompensationRepeatedSelector(), true, diagnostics)
+                        .forEach(descriptors::add);
+    }
+
+    private void securityInCorporateAction(LedgerEntry entry, List<DerivedProjectionDescriptor> descriptors,
+                    List<Diagnostic> diagnostics)
+    {
+        repeatedPortfolio(entry, LedgerProjectionRole.NEW_SECURITY_LEG,
+                        securityInPreferredSelector(), securityInRepeatedSelector(), false, diagnostics)
+                        .forEach(descriptors::add);
+        repeatedAccount(entry, LedgerProjectionRole.CASH_COMPENSATION,
+                        cashCompensationPreferredSelector(), cashCompensationRepeatedSelector(), true, diagnostics)
                         .forEach(descriptors::add);
     }
 
@@ -146,6 +168,32 @@ public final class DerivedProjectionDescriptorService
                         primary().and(postingType(LedgerPostingType.CASH))
                                         .and(semantic(LedgerPostingSemanticRole.CASH)),
                         true, diagnostics).forEach(descriptors::add);
+    }
+
+    private Predicate<LedgerPosting> securityInPreferredSelector()
+    {
+        return primary().and(corporateLeg(CorporateActionLeg.TARGET_SECURITY)
+                        .or(corporateLeg(CorporateActionLeg.RIGHT_SECURITY)))
+                        .and(localKey(LedgerProjectionRole.NEW_SECURITY_LEG));
+    }
+
+    private Predicate<LedgerPosting> securityInRepeatedSelector()
+    {
+        return primary().and(corporateLeg(CorporateActionLeg.TARGET_SECURITY)
+                        .or(corporateLeg(CorporateActionLeg.RIGHT_SECURITY)));
+    }
+
+    private Predicate<LedgerPosting> cashCompensationPreferredSelector()
+    {
+        return primary().and(corporateLeg(CorporateActionLeg.CASH_COMPENSATION))
+                        .and(localKey(LedgerProjectionRole.CASH_COMPENSATION))
+                        .or(legacyCorporateLeg(LedgerPostingType.CASH_COMPENSATION,
+                                        CorporateActionLeg.CASH_COMPENSATION));
+    }
+
+    private Predicate<LedgerPosting> cashCompensationRepeatedSelector()
+    {
+        return primary().and(corporateLeg(CorporateActionLeg.CASH_COMPENSATION));
     }
 
     private java.util.Optional<DerivedProjectionDescriptor> account(LedgerEntry entry, LedgerProjectionRole role,
