@@ -2692,6 +2692,41 @@ public class WirBankPDFExtractorTest
     }
 
     @Test
+    public void testSteuerrueckerstattung09()
+    {
+        var extractor = new WirBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerrueckerstattung09_English.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0030849613"), hasWkn(null), hasTicker(null), //
+                        hasName("UBS Canada"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2026-05-28T00:00"), hasShares(0.196), //
+                        hasSource("Steuerrueckerstattung09_English.txt"), //
+                        hasNote("Refund Swiss withholding tax"), //
+                        hasAmount("CHF", 0.05), hasGrossValue("CHF", 0.05), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+    }
+
+    @Test
     public void testDividendeStorno01()
     {
         var extractor = new WirBankPDFExtractor(new Client());
