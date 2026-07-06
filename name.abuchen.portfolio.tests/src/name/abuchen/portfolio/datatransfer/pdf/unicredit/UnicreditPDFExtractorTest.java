@@ -40,7 +40,6 @@ import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
-import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
@@ -372,29 +371,18 @@ public class UnicreditPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE000A1T73W9"));
-        assertThat(security.getWkn(), is("A1T73W"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("ACATIS GANÉ VALUE EVENT FONDS INHABER-ANTEILE C"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000A1T73W9"), hasWkn("A1T73W"), hasTicker(null), //
+                        hasName("ACATIS GANÉ VALUE EVENT FONDS INHABER-ANTEILE C"), //
+                        hasCurrencyCode("EUR"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-05-18T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0.066)));
-        assertThat(transaction.getSource(), is("Dividende01.txt"));
-        assertThat(transaction.getNote(), is("Ref.-Nr.: 20210517KUP0123456789"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.99))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.99))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2021-05-18T00:00"), hasShares(0.066), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote("Ref.-Nr.: 20210517KUP0123456789"), //
+                        hasAmount("EUR", 0.99), hasGrossValue("EUR", 0.99), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -405,40 +393,6 @@ public class UnicreditPDFExtractorTest
         List<Exception> errors = new ArrayList<>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
-
-        assertThat(errors, empty());
-        assertThat(countSecurities(results), is(1L));
-        assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, "EUR");
-
-        // check security
-        assertThat(results, hasItem(security( //
-                        hasIsin("DE000A1T73W9"), hasWkn("A1T73W"), hasTicker(null), //
-                        hasName("ACATIS GANÉ VALUE EVENT FONDS INHABER-ANTEILE C"), //
-                        hasCurrencyCode("EUR"))));
-
-        // check dividends transaction
-        assertThat(results, hasItem(dividend( //
-                        hasDate("2021-05-18T00:00"), hasShares(0.066), //
-                        hasSource("Dividende02.txt"), //
-                        hasNote("Ref.-Nr.: 20210517KUP0123456789"), //
-                        hasAmount("EUR", 0.99), hasGrossValue("EUR", 0.99), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-    }
-
-    @Test
-    public void testDividende03()
-    {
-        var extractor = new UnicreditPDFExtractor(new Client());
-
-        List<Exception> errors = new ArrayList<>();
-
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -460,7 +414,7 @@ public class UnicreditPDFExtractorTest
         assertThat(results, hasItem(dividend( //
                         hasDate("2026-07-01T00:00"), hasExDate(null), //
                         hasShares(1178), //
-                        hasSource("Dividende03.txt"), //
+                        hasSource("Dividende02.txt"), //
                         hasNote("Bel.-Nr.: 161815275103001"), //
                         hasAmount("USD", 893.04), hasGrossValue("USD", 1236.90), //
                         hasTaxes("USD", 340.15), hasFees("USD", 3.71))));

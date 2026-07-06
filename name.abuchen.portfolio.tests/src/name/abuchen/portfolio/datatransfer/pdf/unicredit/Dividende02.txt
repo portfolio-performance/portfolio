@@ -1,38 +1,56 @@
-PDFBox Version: 1.8.16
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.84.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
 -----------------------------------------
- UniCredit Bank AG
-Wertpapiermitteilung
-Depotnummer Bankleitzahl Datum
-1234 12345678  123 456 00 17.05.2021
-Depotinhaber
-Max Mustermann
-Kontohinweis
-Herrn
-Max Mustermann Depot
-Muster Str. 1
-01234 Musterhausen
-                              Filiale
-                              Filiale Musterhausen
-                              Ansprechpartner Telefon
-                              HR. Muster 1234 56789-10  
-Wertpapiermitteilung - Ertragszahlung für Depotnummer 1234 0123456789
-ACATIS GANÉ VALUE EVENT FONDS Wertpapierkennnummer  A1T73W / DE000A1T73W9
-INHABER-ANTEILE C
-Geschäftsjahr 2020/2021
--------------------------------------------------------------------------------------
-Stück 0,066
-zahlbar mit EUR  15,00 Bruttobetrag   EUR 0,99
--------------------------------------------
-Valuta 18.05.2021 Gutschrift     EUR 0,99
-auf Konto 1234 0123456789   Die Kaufabrechnung zur Wiederanlage erhalten Sie separat.
--------------------------------------------------------------------------------------
-Erläuterung zur Abrechnung
-Referenz 20210517KUP0123456789
-Bitte beachten Sie den Rechenschaftsbericht der Investmentgesellschaft.
-Diese Abrechnung erfolgt ohne Berücksichtigung der Kapitalertragsteuer sowie
-Solidaritätszuschlag und gegebenenfalls Kirchensteuer. Eine eventuell anfallende
-Kapitalertragsteuer oder Kapitalertragsteuer-Gutschrift wird separat auf Ihrem
-Kontoauszug ausgewiesen.
-Bitte Rückseite beachten 
-BV1234/VK1234/11.2011
-Eingestellt am: 20210518 03:29:390 -F1 03 302 G2L3I4UP 123456789    00000012345678 000000001234
+Donnerstag, 02.07.2026
+geICiYRJ Dr. yFedYib
+Transaction Details
+lW74 5657 9926 6357 2747 USD Dr. JgBsWFO iYlGCGyU
+Bank: UniCredit Bank Austria AG
+Operation date 01.07.2026
+Value Date 01.07.2026
+Booking text Wertpapier-Kuponabrechnung
+Internal Note
+Amount 893,04 USD
+Electronic Record
+                                                                 Wertpapier-Kuponabrechnung
+                                Dr. JgBsWFO iYlGCGyU             Depot-Nr.:   31485 685 427
+                                                                 Bel.Nr.:   161815275103001
+                                            30.06.2026      01/02     USD    38751 547 768
+                                            BIC: BKAUATWW    IBAN: lW74 5657 9926 6357 2747
+ ISIN: US0758871091   Stk.  1.178,00           BECTON, DICKINSON & CO.
+ IKN:  857675                                  Registered Shares DL 1
+                                               mit Kupon  30.06.2026
+ Ertrag                                        Loco NEW YORK             Wertpapierrechnung
+ Ausführung vom 29.05.2026/529257              fällig 30.06.2026
+ Abrechnung vom 30.06.2026/751030
+ Zahlbar mit                    1,05  /Stk.                     USD               1.236,90
+ Eigene Spesen                                                  USD                   3,09-
+ Auslandskest                        12,50 %                    USD                 154,61-
+ US-Tax                              15,00 %                    USD                 185,54-
+ USt aus Spesen                                       20,00 %   USD                   0,62-
+                                                                Wertpapier-Kuponabrechnung
+                                Dr. VFRshYx vsGVvhOv             Depot-Nr.:   19461 037 477
+                                                                 Bel.Nr.:   161815275103001
+                                            30.06.2026      02/02     USD    54369 418 923
+                                            BIC: BKAUATWW    IBAN: Tt12 6256 4977 1454 9470
+                    Wert  01.07.2026           GUTSCHRIFT       USD                 893,04
+ KESt                EUR            135,16-
+ USt                 EUR              0,54-
+Please consider the environment before printing.
+UniCredit Bank Austria AG
+Company location: Vienna, Register of companies: Handelsgericht Wien, FN 150714p, Identification number: ATU51507409, DVR: 0030066, BLZ: 12000, BIC: BKAUATWW
+www.bankaustria.at/en
+Page 1 of 2
+Donnerstag, 02.07.2026
+EYNQZxAa Dr. WYpcuNC
+ Name/Haupt(wohn)Sitz
+          rQHQzDuh jzPMwXe                     KWXAvgxGlGdGZQc 57
+                                               2326 fIgI
+ Allfällige KESt-Beträge werden an das Finanzamt für Großbetriebe abgeführt.
+ 
+Please consider the environment before printing.
+UniCredit Bank Austria AG
+Company location: Vienna, Register of companies: Handelsgericht Wien, FN 150714p, Identification number: ATU51507409, DVR: 0030066, BLZ: 12000, BIC: BKAUATWW
+www.bankaustria.at/en
+Page 2 of 2
