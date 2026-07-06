@@ -1267,7 +1267,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendTransaction()
     {
-        final var type = new DocumentType("(?i)(AUSSCH.TTUNG" //
+        final var type = new DocumentType("(?im)^(AUSSCH.TTUNG" //
                         + "|(STORNIERUNG DER )?DIVIDENDE( EN ESP.CES)?" //
                         + "|REINVESTIERUNG" //
                         + "|STORNO DIVIDENDE" //

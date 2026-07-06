@@ -27,6 +27,7 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
         super(client);
 
         addBankIdentifier("UniCredit Bank AG");
+        addBankIdentifier("UniCredit Bank Austria AG");
         addBankIdentifier("UniCredit Bank GmbH");
         addBankIdentifier("DE 129 273 380");
 
@@ -201,12 +202,13 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendTransaction()
     {
-        DocumentType type = new DocumentType("Wertpapiermitteilung \\- Ertragszahlung");
+        final String dividendMainIdentRegex = "(Wertpapiermitteilung \\- Ertragszahlung|Booking text Wertpapier-Kuponabrechnung)";
+        DocumentType type = new DocumentType(dividendMainIdentRegex);
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^Wertpapiermitteilung \\- Ertragszahlung .*$");
+        Block firstRelevantLine = new Block("^" + dividendMainIdentRegex + ".*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -214,57 +216,121 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
-                        // @formatter:off
-                        // ACATIS GANÉ VALUE EVENT FONDS Wertpapierkennnummer  A1T73W / DE000A1T73W9
-                        // INHABER-ANTEILE C
-                        // Geschäftsjahr 2020/2021
-                        // zahlbar mit EUR  15,00 Bruttobetrag   EUR 0,99
-                        // @formatter:on
-                        .section("name", "wkn", "isin", "name1", "currency") //
-                        .match("^(?<name>.*) Wertpapierkennnummer[\\s]{1,}(?<wkn>[A-Z0-9]{6}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                        .match("^(?<name1>.*)$") //
-                        .match("^zahlbar mit (?<currency>[\\w]{3})[\\s]{1,}[\\.,\\d]+.*$") //
-                        .assign((t, v) -> {
-                            if (!v.get("name1").startsWith("Geschäftsjahr"))
-                                v.put("name", v.get("name") + " " + trim(v.get("name1")));
+                        .oneOf( //
+                                        // @formatter:off
+                                        // ACATIS GANÉ VALUE EVENT FONDS Wertpapierkennnummer  A1T73W / DE000A1T73W9
+                                        // INHABER-ANTEILE C
+                                        // Geschäftsjahr 2020/2021
+                                        // zahlbar mit EUR  15,00 Bruttobetrag   EUR 0,99
+                                        // @formatter:on
+                                        section -> section.attributes("name", "wkn", "isin", "name1", "currency") //
+                                                        .match("^(?<name>.*) Wertpapierkennnummer[\\s]{1,}(?<wkn>[A-Z0-9]{6}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^(?<name1>.*)$") //
+                                                        .match("^zahlbar mit (?<currency>[\\w]{3})[\\s]{1,}[\\.,\\d]+.*$") //
+                                                        .assign((t, v) -> {
+                                                            if (!v.get("name1").startsWith("Geschäftsjahr"))
+                                                                v.put("name", v.get("name") + " "
+                                                                                + trim(v.get("name1")));
 
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }),
+                        
+                                        // @formatter:off
+                                        //  ISIN: US0758871091   Stk.  1.178,00           BECTON, DICKINSON & CO.
+                                        //  IKN:  857675                                  Registered Shares DL 1
+                                        //  Zahlbar mit                    1,05  /Stk.                     USD               1.236,90
+                                        // @formatter:on
+                                        section -> section
+                                                        .attributes("name", "wkn", "isin", "currency", "nameContinued") //
+                                                        .match("^\\s*ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\s+Stk\\.\\s+[\\d,.]+\\s+(?<name>.+)$")
+                                                        .match("^\\s*[WI]KN:\\s+(?<wkn>[A-Z0-9]{6})(?<nameContinued>.*)$")
+                                                        .match("^\\s*(?i)zahlbar mit\\s+[\\d,.]+\\s*\\/Stk\\.\\s+(?<currency>[\\w]{3})[\\s]{1,}[\\.,\\d]+.*$") //
+                                                        .assign((t, v) -> {
+                                                            v.put("nameContinued", trim(v.get("nameContinued")));
 
-                        // @formatter:off
-                        // Stück 0,066
-                        // @formatter:on
-                        .section("shares") //
-                        .match("^St.ck (?<shares>[\\.,\\d]+)$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        })
+                        )
+
+                        .oneOf(
+                                        // @formatter:off
+                                        // Stück 0,066
+                                        // @formatter:on
+                                        section -> section.attributes("shares") //
+                                                        .match("^St.ck (?<shares>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))), //
+                                        
+                                        
+                                        
+                                        // @formatter:off
+                                        // ISIN: US0758871091   Stk.  1.178,00           BECTON, DICKINSON & CO.
+                                        // @formatter:on
+                                        section -> section.attributes("shares") //
+                                                        .match("^\\s*ISIN: [A-Z]{2}[A-Z0-9]{9}[0-9]\\s+Stk\\.\\s+(?<shares>[\\d,.]+).*$")
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))) //
+
+                        )
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Valuta 18.05.2021 Gutschrift     EUR 0,99
+                                        // Value Date 01.07.2026
+                                        // @formatter:on
+                                        section -> section.attributes("date") //
+                                                        .match("^(Valuta|Value Date) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))), //
+                            
+                                        // @formatter:off
+                                        //                     Wert  01.07.2026           GUTSCHRIFT       USD                 893,04
+                                        // @formatter:on
+                                        section -> section.attributes("date") //
+                                                        .match("^\\s*Wert\\s+(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})\\s+GUTSCHRIFT.*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))) //
+                            
+                        )
 
                         // @formatter:off
                         // Valuta 18.05.2021 Gutschrift     EUR 0,99
-                        // @formatter:on
-                        .section("date") //
-                        .match("^Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
-
-                        // @formatter:off
-                        // Valuta 18.05.2021 Gutschrift     EUR 0,99
+                        //                     Wert  01.07.2026           GUTSCHRIFT       USD                 893,04
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Valuta [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Gutschrift[\\s]{1,}(?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                        .match("^(?i)\\s*(Valuta|Wert)\\s+[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}\\s+Gutschrift[\\s]{1,}(?<currency>[\\w]{3})\\s+(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
-                        // @formatter:off
-                        // Referenz 20210517KUP0123456789
-                        // @formatter:on
-                        .section("note").optional()
-                        .match("Referenz (?<note>.*)$")
-                        .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(v.get("note"))))
+                        .optionalOneOf(
 
+                                        // @formatter:off
+                                        // Referenz 20210517KUP0123456789
+                                        // @formatter:on
+                                        section -> section.attributes("note") //
+                                                        .match("Referenz (?<note>.*)$").assign((t, v) -> t
+                                                                        .setNote("Ref.-Nr.: " + trim(v.get("note")))), //
+
+                                        // @formatter:off
+                                        //                                                                  Bel.Nr.:   161815275103001
+                                        // @formatter:on
+                                        section -> section.attributes("note") //
+                                                        .match("^\\s*Bel\\.Nr\\.:\\s+(?<note>.*)$")
+                                                        .assign((t, v) -> t.setNote("Bel.-Nr.: " + trim(v.get("note")))) //
+                        )
                         .wrap(TransactionItem::new);
 
         addFeesSectionsTransaction(pdfTransaction, type);
+        addTaxesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
+    {
+        transaction //
+                        // @formatter:off
+                        //  Auslandskest                        12,50 %                    USD                 154,61-
+                        //  US-Tax                              15,00 %                    USD                 185,54-
+                        // @formatter:on
+                        .section("currency", "tax").optional().multipleTimes() //
+                        .match("^\\s*(Auslandskest|US-Tax)\\s+[\\d,.]+\\s+%\\s+(?<currency>[A-Z]{3})\\s+(?<tax>[\\.,\\d]+)-$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
@@ -297,6 +363,14 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("currency", "fee").optional() //
                         .match("^Wertpapierprovision\\* (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)(\\-)?.*$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        //  Eigene Spesen                                                  USD                   3,09-
+                        //  USt aus Spesen                                       20,00 %   USD                   0,62-
+                        // @formatter:on
+                        .section("currency", "fee").optional().multipleTimes() //
+                        .match("^\\s*(USt aus Spesen\\s+[\\d.,]+\\s+%|Eigene Spesen)\\s+(?<currency>[\\w]{3})\\s+(?<fee>[\\.,\\d]+)(\\-)?.*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 

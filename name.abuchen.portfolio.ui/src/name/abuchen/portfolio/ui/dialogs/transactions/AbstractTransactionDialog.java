@@ -428,10 +428,24 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
      */
     private boolean hasAtLeastOneSuccessfulEdit = false;
 
+    private boolean isModeless = false;
+
     public AbstractTransactionDialog(Shell parentShell)
     {
         super(parentShell);
         setTitleImage(Images.BANNER.image());
+    }
+
+    /**
+     * Opens the dialog without application modality and without blocking the
+     * caller. Used by the manual transaction entry page so that the PDF text
+     * view behind the wizard stays interactive (selectable / copyable) while a
+     * transaction is entered. Must be called before {@link #open()}.
+     */
+    public void setModeless(boolean isModeless)
+    {
+        this.isModeless = isModeless;
+        setBlockOnOpen(!isModeless);
     }
 
     protected void setModel(AbstractModel model)
@@ -460,7 +474,10 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
     @Override
     protected int getShellStyle()
     {
-        return super.getShellStyle() | SWT.RESIZE;
+        int style = super.getShellStyle() | SWT.RESIZE;
+        if (isModeless)
+            style = (style & ~SWT.APPLICATION_MODAL) | SWT.MODELESS;
+        return style;
     }
 
     @Override

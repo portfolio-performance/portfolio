@@ -238,3 +238,7 @@ ColorPalette {
 	font-family: "#systemfont";
 	font-weight: normal;
 }
+
+.code {
+	font-family: "#textfont";
+}

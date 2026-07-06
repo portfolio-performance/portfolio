@@ -4,7 +4,6 @@ import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,51 +11,33 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.StyledCellLabelProvider;
-import org.eclipse.jface.viewers.StyledString;
-import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.window.ToolTip;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Table;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
-import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SkippedItem;
 import name.abuchen.portfolio.datatransfer.ImportAction;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status.Code;
@@ -67,29 +48,13 @@ import name.abuchen.portfolio.datatransfer.actions.CheckTransactionDateAction;
 import name.abuchen.portfolio.datatransfer.actions.CheckValidTypesAction;
 import name.abuchen.portfolio.datatransfer.actions.DetectDuplicatesAction;
 import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
-import name.abuchen.portfolio.model.Annotated;
-import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.PortfolioTransferEntry;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
 import name.abuchen.portfolio.ui.jobs.AbstractClientJob;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
-import name.abuchen.portfolio.ui.util.LabelOnly;
-import name.abuchen.portfolio.ui.util.LogoManager;
-import name.abuchen.portfolio.ui.util.SimpleAction;
-import name.abuchen.portfolio.ui.util.action.MenuContribution;
-import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 import name.abuchen.portfolio.util.Pair;
@@ -126,7 +91,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
      */
     private boolean doExtractBeforeEveryPageDisplay = false;
 
-    private TableViewer tableViewer;
+    private ExtractedItemsTable itemsTable;
     private TableViewer errorTableViewer;
 
     /**
@@ -192,18 +157,6 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     public List<ExtractedEntry> getEntries()
     {
         return allEntries;
-    }
-
-    private Images getStatusImage(Code code)
-    {
-        return switch (code)
-        {
-            case WARNING -> Images.WARNING;
-            case ERROR -> Images.CIRCLE_X_MARK_FILLED;
-            case SKIP -> Images.CIRCLE_SLASH_FILLED;
-            case OK -> Images.CIRCLE_CHECK;
-            default -> throw new IllegalArgumentException();
-        };
     }
 
     @Override
@@ -322,30 +275,17 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         // table & columns
         //
 
+        itemsTable = new ExtractedItemsTable(compositeTable, client, allEntries);
+        itemsTable.setOnEntriesChanged(() -> checkEntriesAndRefresh(allEntries));
+
         TableColumnLayout layout = new TableColumnLayout();
-        compositeTable.setLayout(layout);
-
-        tableViewer = new TableViewer(compositeTable, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
-        tableViewer.setContentProvider(ArrayContentProvider.getInstance());
-
-        ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
-        CopyPasteSupport.enableFor(tableViewer);
-
-        Table table = tableViewer.getTable();
-        table.setHeaderVisible(true);
-        table.setLinesVisible(true);
-
-        addColumns(tableViewer, layout);
-        attachContextMenu(table);
-
-        layout = new TableColumnLayout();
         errorTable.setLayout(layout);
         errorTableViewer = new TableViewer(errorTable, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
         ColumnViewerToolTipSupport.enableFor(errorTableViewer, ToolTip.NO_RECREATE);
         CopyPasteSupport.enableFor(errorTableViewer);
         errorTableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
-        table = errorTableViewer.getTable();
+        var table = errorTableViewer.getTable();
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
         addColumnsExceptionTable(errorTableViewer, layout);
@@ -442,313 +382,6 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         layout.setColumnData(column.getColumn(), new ColumnWeightData(100, true));
     }
 
-    private void addColumns(TableViewer viewer, TableColumnLayout layout)
-    {
-        TableViewerColumn column = new TableViewerColumn(viewer, SWT.NONE);
-        column.getColumn().setText(Messages.ColumnStatus);
-        column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
-        {
-            @Override
-            public Image getImage(ExtractedEntry entry)
-            {
-                return getStatusImage(entry.getMaxCode()).image();
-            }
-
-            @Override
-            public String getToolTipText(Object entry)
-            {
-                String message = ((ExtractedEntry) entry).getStatus() //
-                                .filter(s -> s.getCode() != ImportAction.Status.Code.OK) //
-                                .filter(s -> s.getMessage() != null) //
-                                .map(s -> s.getMessage()) // NOSONAR
-                                .collect(Collectors.joining("\n")); //$NON-NLS-1$
-                return TextUtil.wordwrap(message);
-            }
-
-            @Override
-            public String getText(ExtractedEntry entry)
-            {
-                return ""; //$NON-NLS-1$
-            }
-        });
-        ColumnViewerSorter.create(entry -> ((ExtractedEntry) entry).getMaxCode()).attachTo(viewer, column);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(22, true));
-
-        column = new TableViewerColumn(viewer, SWT.NONE);
-        column.getColumn().setText(Messages.ColumnDate);
-        column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
-        {
-            @Override
-            public String getText(ExtractedEntry entry)
-            {
-                LocalDateTime date = entry.getItem().getDate();
-                return date != null ? Values.DateTime.format(date) : null;
-            }
-        });
-        ColumnViewerSorter.create(entry -> ((ExtractedEntry) entry).getItem().getDate()).attachTo(viewer, column);
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(80, true));
-
-        column = new TableViewerColumn(viewer, SWT.NONE);
-        column.getColumn().setText(Messages.ColumnTransactionType);
-        column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
-        {
-            @Override
-            public String getText(ExtractedEntry entry)
-            {
-                return entry.getItem().getTypeInformation();
-            }
-
-            @Override
-            public String getToolTipText(Object entry)
-            {
-                String message = ((ExtractedEntry) entry).getStatus() //
-                                .filter(s -> s.getCode() != ImportAction.Status.Code.OK) //
-                                .filter(s -> s.getMessage() != null) //
-                                .map(s -> s.getMessage()) // NOSONAR
-                                .collect(Collectors.joining("\n")); //$NON-NLS-1$
-                return TextUtil.wordwrap(message);
-            }
-
-            @Override
-            public Image getImage(ExtractedEntry entry)
-            {
-                Annotated subject = entry.getItem().getSubject();
-                if (subject instanceof AccountTransaction)
-                    return Images.ACCOUNT.image();
-                else if (subject instanceof PortfolioTransaction)
-                    return Images.PORTFOLIO.image();
-                else if (subject instanceof Security)
-                    return Images.SECURITY.image();
-                else if (subject instanceof BuySellEntry)
-                    return Images.PORTFOLIO.image();
-                else if (subject instanceof AccountTransferEntry)
-                    return Images.ACCOUNT.image();
-                else if (subject instanceof PortfolioTransferEntry)
-                    return Images.PORTFOLIO.image();
-                else
-                    return null;
-            }
-        });
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(100, true));
-
-        column = new TableViewerColumn(viewer, SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnAmount);
-        column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
-        {
-            @Override
-            public String getText(ExtractedEntry entry)
-            {
-                Money amount = entry.getItem().getAmount();
-                return amount != null ? Values.Money.format(amount) : null;
-            }
-        });
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(80, true));
-
-        column = new TableViewerColumn(viewer, SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnShares);
-        column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
-        {
-            @Override
-            public String getText(ExtractedEntry entry)
-            {
-                return Values.Share.formatNonZero(entry.getItem().getShares());
-            }
-        });
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(80, true));
-
-        column = new TableViewerColumn(viewer, SWT.NONE);
-        column.getColumn().setText(Messages.ColumnSecurity);
-        var nameConfig = client.getSecurityNameConfig();
-        column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
-        {
-            @Override
-            public String getText(ExtractedEntry entry)
-            {
-                Security security = entry.getItem().getSecurity();
-                if (security == null)
-                    return null;
-                return entry.getSecurityOverride() != null ? entry.getSecurityOverride().getName(nameConfig)
-                                : security.getName(nameConfig);
-            }
-        });
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(250, true));
-
-        column = new TableViewerColumn(viewer, SWT.NONE);
-        column.getColumn().setText(Messages.ColumnAccount);
-        column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
-        {
-            @Override
-            public String getText(ExtractedEntry entry)
-            {
-                Account a = entry.getItem().getAccountPrimary();
-                return a != null ? a.getName() : null;
-            }
-        });
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(100, true));
-
-        column = new TableViewerColumn(viewer, SWT.NONE);
-        column.getColumn().setText(Messages.ColumnOffsetAccount);
-        column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
-        {
-            @Override
-            public String getText(ExtractedEntry entry)
-            {
-                Account a = entry.getItem().getAccountSecondary();
-                return a != null ? a.getName() : null;
-            }
-        });
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(100, true));
-
-        column = new TableViewerColumn(viewer, SWT.NONE);
-        column.getColumn().setText(Messages.ColumnPortfolio);
-        column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
-        {
-            @Override
-            public String getText(ExtractedEntry entry)
-            {
-                Portfolio p = entry.getItem().getPortfolioPrimary();
-                return p != null ? p.getName() : null;
-            }
-        });
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(100, true));
-
-        column = new TableViewerColumn(viewer, SWT.NONE);
-        column.getColumn().setText(Messages.ColumnOffsetPortfolio);
-        column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
-        {
-            @Override
-            public String getText(ExtractedEntry entry)
-            {
-                Portfolio p = entry.getItem().getPortfolioSecondary();
-                return p != null ? p.getName() : null;
-            }
-        });
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(100, true));
-    }
-
-    private void attachContextMenu(final Table table)
-    {
-        MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
-        menuMgr.setRemoveAllWhenShown(true);
-        menuMgr.addMenuListener(this::showContextMenu);
-
-        final Menu contextMenu = menuMgr.createContextMenu(table.getShell());
-        table.setMenu(contextMenu);
-
-        table.addDisposeListener(e -> {
-            if (contextMenu != null && !contextMenu.isDisposed())
-                contextMenu.dispose();
-        });
-    }
-
-    private void showContextMenu(IMenuManager manager)
-    {
-        IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-
-        if (selection.isEmpty())
-            return;
-
-        boolean atLeastOneImported = false;
-        boolean atLeastOneNotImported = false;
-
-        for (Object element : selection.toList())
-        {
-            ExtractedEntry entry = (ExtractedEntry) element;
-
-            // an entry will be imported if has a status code OK *or* if it is
-            // marked as to be imported by the user
-            atLeastOneImported = atLeastOneImported || entry.isImported();
-
-            // show "Do Import" only for entries the user can actually import
-            // (not dependency-blocked, not ERROR/SKIP) that aren't currently
-            // marked for import
-            boolean canImport = entry.getMaxCode() == Code.OK || entry.getMaxCode() == Code.WARNING;
-            boolean notDependencyBlocked = entry.getSecurityDependency() == null
-                            || entry.getSecurityDependency().isImported()
-                            || entry.getSecurityOverride() != null;
-            atLeastOneNotImported = atLeastOneNotImported
-                            || (!entry.isImported() && canImport && notDependencyBlocked);
-        }
-
-        // provide a hint to the user why the entry is struck out
-        if (selection.size() == 1)
-        {
-            ExtractedEntry entry = (ExtractedEntry) selection.getFirstElement();
-            entry.getStatus() //
-                            .filter(s -> s.getCode() != ImportAction.Status.Code.OK) //
-                            .forEach(s -> {
-                                Images image = getStatusImage(s.getCode());
-                                manager.add(new LabelOnly(s.getMessage(), image));
-                            });
-        }
-
-        if (atLeastOneImported)
-        {
-            manager.add(new SimpleAction(Messages.LabelDoNotImport, a -> {
-                for (Object element : ((IStructuredSelection) tableViewer.getSelection()).toList())
-                    ((ExtractedEntry) element).setImported(false);
-
-                tableViewer.refresh();
-            }));
-        }
-
-        if (atLeastOneNotImported)
-        {
-            manager.add(new SimpleAction(Messages.LabelDoImport, a -> {
-                for (Object element : ((IStructuredSelection) tableViewer.getSelection()).toList())
-                {
-                    var entry = (ExtractedEntry) element;
-                    entry.setImported(true);
-
-                    if (entry.getItem() instanceof Extractor.SecurityItem)
-                    {
-                        // if a security item is now explicitly imported, remove
-                        // all security overrides
-                        allEntries.stream().filter(e -> e.getSecurityDependency() == entry)
-                                        .forEach(e -> e.setSecurityOverride(null));
-                    }
-                }
-
-                tableViewer.refresh();
-            }));
-        }
-
-        // if exactly one security is selected, offer to use an alternative
-
-        if (selection.size() == 1 && selection.getFirstElement() instanceof ExtractedEntry entry
-                        && entry.getItem() instanceof Extractor.SecurityItem)
-        {
-            manager.add(new Separator());
-            manager.add(new SimpleAction(Messages.LabelUseExistingSecurity, a -> selectExistingSecurity(entry)));
-        }
-
-        manager.add(new Separator());
-
-        showApplyToAllItemsMenu(manager, Messages.ColumnAccount, client::getAccounts, Item::setAccountPrimary);
-        showApplyToAllItemsMenu(manager, Messages.ColumnOffsetAccount, client::getAccounts, Item::setAccountSecondary);
-
-        showApplyToAllItemsMenu(manager, Messages.ColumnPortfolio, client::getPortfolios, Item::setPortfolioPrimary);
-        showApplyToAllItemsMenu(manager, Messages.ColumnOffsetPortfolio, client::getPortfolios,
-                        Item::setPortfolioSecondary);
-    }
-
-    private <T extends Named> void showApplyToAllItemsMenu(IMenuManager parent, String label, Supplier<List<T>> options,
-                    BiConsumer<Extractor.Item, T> applier)
-    {
-        IMenuManager manager = new MenuManager(label);
-        parent.add(manager);
-
-        for (T subject : options.get())
-        {
-            manager.add(new MenuContribution(subject.getName(), () -> {
-                for (Object element : tableViewer.getStructuredSelection().toList())
-                    applier.accept(((ExtractedEntry) element).getItem(), subject);
-
-                checkEntriesAndRefresh(allEntries);
-            }));
-        }
-    }
-
     @Override
     public void beforePage()
     {
@@ -768,7 +401,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     private void runExtractionJob()
     {
         allEntries.clear();
-        tableViewer.setInput(allEntries);
+        itemsTable.getTableViewer().setInput(allEntries);
         errorTableViewer.setInput(Collections.emptyList());
 
         if (extractor == null)
@@ -867,7 +500,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         populateAccountSelectionContainer(entries);
         checkEntries(entries);
 
-        tableViewer.setInput(allEntries);
+        itemsTable.getTableViewer().setInput(allEntries);
     }
 
     private void populateAccountSelectionContainer(List<ExtractedEntry> entries)
@@ -997,7 +630,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     private void checkEntriesAndRefresh(List<ExtractedEntry> entries)
     {
         checkEntries(entries);
-        tableViewer.refresh();
+        itemsTable.refresh();
     }
 
     /**
@@ -1077,69 +710,4 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         errorTableViewer.setInput(allErrors);
     }
 
-    private void selectExistingSecurity(ExtractedEntry entry)
-    {
-        var labelProvider = LabelProvider.createTextImageProvider(o -> ((Security) o).getName(),
-                        o -> LogoManager.instance().getDefaultColumnImage(o, client.getSettings()));
-        ListSelectionDialog dialog = new ListSelectionDialog(Display.getDefault().getActiveShell(), labelProvider);
-        dialog.setTitle(Messages.LabelSecurities);
-        dialog.setMultiSelection(false);
-
-        // add all securities that can be purchased, i.e. exclude exchange rates
-        // and indices
-        dialog.setElements(client.getSecurities().stream().filter(s -> s.getCurrencyCode() != null)
-                        .filter(s -> !s.isExchangeRate()).sorted(new Security.ByName()).toList());
-
-        if (dialog.open() == Window.OK)
-        {
-            Object[] selected = dialog.getResult();
-            if (selected.length > 0)
-            {
-                entry.setImported(false);
-                allEntries.stream().filter(e -> e.getSecurityDependency() == entry)
-                                .forEach(e -> e.setSecurityOverride((Security) selected[0]));
-                tableViewer.refresh();
-            }
-        }
-    }
-
-    abstract static class FormattedLabelProvider extends StyledCellLabelProvider // NOSONAR
-    {
-        private static Styler strikeoutStyler = new Styler()
-        {
-            @Override
-            public void applyStyles(TextStyle textStyle)
-            {
-                textStyle.strikeout = true;
-            }
-        };
-
-        public String getText(ExtractedEntry element) // NOSONAR
-        {
-            return null;
-        }
-
-        public Image getImage(ExtractedEntry element) // NOSONAR
-        {
-            return null;
-        }
-
-        @Override
-        public void update(ViewerCell cell)
-        {
-            ExtractedEntry entry = (ExtractedEntry) cell.getElement();
-            String text = getText(entry);
-            if (text == null)
-                text = ""; //$NON-NLS-1$
-
-            boolean strikeout = !entry.isImported();
-            StyledString styledString = new StyledString(text, strikeout ? strikeoutStyler : null);
-
-            cell.setText(styledString.toString());
-            cell.setStyleRanges(styledString.getStyleRanges());
-            cell.setImage(getImage(entry));
-
-            super.update(cell);
-        }
-    }
 }

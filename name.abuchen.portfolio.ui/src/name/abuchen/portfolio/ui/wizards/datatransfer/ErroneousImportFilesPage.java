@@ -56,14 +56,15 @@ public class ErroneousImportFilesPage extends AbstractWizardPage
 
     private Map<File, List<Exception>> errors;
 
-    public ErroneousImportFilesPage(Map<File, List<Exception>> errors)
+    public ErroneousImportFilesPage(Map<File, List<Exception>> errors, int manualEntryFileCount)
     {
         super("errors"); //$NON-NLS-1$
 
         this.errors = errors;
 
         setTitle(Messages.LabelError);
-        setDescription(Messages.PDFImportWizardErroneousFiles);
+        setDescription(manualEntryFileCount > 0 ? Messages.PDFImportWizardErroneousFilesWithManualEntry
+                        : Messages.PDFImportWizardErroneousFiles);
     }
 
     @Override

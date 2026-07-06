@@ -6,10 +6,12 @@ import static org.hamcrest.Matchers.nullValue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
+import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
@@ -78,5 +80,25 @@ public class ImportControllerTest
 
         assertThat(changed, is(false));
         assertThat(transaction.getExDate(), is(nullValue()));
+    }
+
+    @Test
+    public void testNewlyImportedSecuritiesReturnsOnlyCandidatesInClient()
+    {
+        var client = new Client();
+        var inClient = new SecurityBuilder().addTo(client);
+        var notImported = new Security();
+
+        var result = ImportController.newlyImportedSecurities(List.of(inClient, notImported), client);
+
+        assertThat(result, is(List.of(inClient)));
+    }
+
+    @Test
+    public void testNewlyImportedSecuritiesIsEmptyForEmptyCandidates()
+    {
+        var result = ImportController.newlyImportedSecurities(List.of(), new Client());
+
+        assertThat(result.isEmpty(), is(true));
     }
 }

@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -10,6 +11,7 @@ import java.util.Scanner;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.pdfbox1.PDFBox1Adapter;
 import name.abuchen.portfolio.pdfbox3.PDFBox3Adapter;
+import name.abuchen.portfolio.pdfbox3.PDFBox3Renderer;
 
 public class PDFInputFile extends Extractor.InputFile
 {
@@ -69,6 +71,46 @@ public class PDFInputFile extends Extractor.InputFile
 
         text = sanitize(adapter.convertToText(getFile()));
         version = adapter.getPDFBoxVersion();
+    }
+
+    /**
+     * Opens a reusable renderer that keeps the underlying PDF document open, so
+     * that paging through the document does not re-parse the file on every page.
+     * The renderer is not thread-safe and must be closed by the caller.
+     */
+    public PageRenderer openRenderer() throws IOException
+    {
+        return new PageRenderer(new PDFBox3Renderer(getFile()));
+    }
+
+    /**
+     * Core-side wrapper around the pdfbox3 renderer so that callers (e.g. the
+     * UI) depend only on this module.
+     */
+    public static final class PageRenderer implements Closeable
+    {
+        private final PDFBox3Renderer delegate;
+
+        private PageRenderer(PDFBox3Renderer delegate)
+        {
+            this.delegate = delegate;
+        }
+
+        public int getPageCount()
+        {
+            return delegate.getPageCount();
+        }
+
+        public byte[] renderPage(int pageIndex, float dpi) throws IOException
+        {
+            return delegate.renderPage(pageIndex, dpi);
+        }
+
+        @Override
+        public void close() throws IOException
+        {
+            delegate.close();
+        }
     }
 
     public void convertLegacyPDFtoText() throws IOException

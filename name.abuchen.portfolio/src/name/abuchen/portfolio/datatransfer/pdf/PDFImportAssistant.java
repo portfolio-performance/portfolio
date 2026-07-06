@@ -23,6 +23,7 @@ public class PDFImportAssistant
     private final Client client;
     private final List<File> files;
     private final List<Extractor> extractors = new ArrayList<>();
+    private final Map<File, PDFInputFile> failedInputFiles = new HashMap<>();
 
     public PDFImportAssistant(Client client, List<File> files)
     {
@@ -227,6 +228,15 @@ public class PDFImportAssistant
                     var meaningfulExceptions = warnings.stream().filter(isNotUnsupportedOperation).toList();
 
                     errors.put(inputFile.getFile(), meaningfulExceptions.isEmpty() ? warnings : meaningfulExceptions);
+
+                    // the legacy PDFBox 1 fallback above may have overwritten
+                    // the text with the version 1 conversion; restore the
+                    // PDFBox 3 text so the manual entry view (and any test
+                    // cases derived from it) use the latest conversion
+                    inputFile.convertPDFtoText();
+
+                    if (inputFile.getText() != null)
+                        failedInputFiles.put(inputFile.getFile(), inputFile);
                 }
             }
             catch (IOException e)
@@ -243,5 +253,10 @@ public class PDFImportAssistant
         securityCache.addMissingSecurityItems(itemsByExtractor);
 
         return itemsByExtractor;
+    }
+
+    public Map<File, PDFInputFile> getFailedInputFiles()
+    {
+        return failedInputFiles;
     }
 }

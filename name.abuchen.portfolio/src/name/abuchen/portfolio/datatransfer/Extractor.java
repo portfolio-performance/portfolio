@@ -191,7 +191,7 @@ public interface Extractor
         }
     }
 
-    static class TransactionItem extends Item
+    public static class TransactionItem extends Item
     {
         private Transaction transaction;
 
@@ -314,7 +314,7 @@ public interface Extractor
         }
     }
 
-    static class BuySellEntryItem extends Item
+    public static class BuySellEntryItem extends Item
     {
         private final BuySellEntry entry;
 
@@ -406,7 +406,7 @@ public interface Extractor
         }
     }
 
-    static class AccountTransferItem extends Item
+    public static class AccountTransferItem extends Item
     {
         private final AccountTransferEntry entry;
         private final boolean isOutbound;
@@ -492,7 +492,7 @@ public interface Extractor
         }
     }
 
-    static class PortfolioTransferItem extends Item
+    public static class PortfolioTransferItem extends Item
     {
         private final PortfolioTransferEntry entry;
 
@@ -576,7 +576,7 @@ public interface Extractor
         }
     }
 
-    static class SecurityItem extends Item
+    public static class SecurityItem extends Item
     {
         private Security security;
 

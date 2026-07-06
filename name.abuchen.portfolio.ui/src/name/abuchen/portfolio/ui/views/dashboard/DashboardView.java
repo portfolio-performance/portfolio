@@ -414,11 +414,22 @@ public class DashboardView extends AbstractHistoricView
                             MessageFormat.format(Messages.ConfigurationDeleteConfirm, board.getName()),
                             a -> deleteDashboard(board)));
 
-            if (index > 0)
-            {
+            long count = getClient().getDashboards().count();
+
+            if (index > 0 || index < count - 1)
                 manager.add(new Separator());
-                manager.add(new SimpleAction(Messages.ChartBringToFront, a -> bringToFrontDashboard(board)));
-            }
+
+            if (index > 0)
+                manager.add(new SimpleAction(Messages.MenuMoveLeft, a -> moveDashboard(board, -1)));
+
+            if (index < count - 1)
+                manager.add(new SimpleAction(Messages.MenuMoveRight, a -> moveDashboard(board, 1)));
+
+            if (index > 0)
+                manager.add(new SimpleAction(Messages.MenuMoveToBeginning, a -> moveDashboardToBeginning(board)));
+
+            if (index < count - 1)
+                manager.add(new SimpleAction(Messages.MenuMoveToEnd, a -> moveDashboardToEnd(board)));
         });
 
         toolItem.setDefaultAction(new SimpleAction(Messages.MenuShow, a -> selectDashboard(board)));
@@ -587,6 +598,18 @@ public class DashboardView extends AbstractHistoricView
                         a -> createNewColumn(column, columnControl, SWT.RIGHT)));
         manager.add(new SimpleAction(Messages.MenuDuplicateDashboardColumn,
                         a -> duplicateColumn(column, columnControl)));
+
+        int columnIndex = dashboard.getColumns().indexOf(column);
+
+        SimpleAction moveLeft = new SimpleAction(Messages.MenuMoveDashboardColumnLeft,
+                        a -> moveColumn(column, columnControl, SWT.LEFT));
+        moveLeft.setEnabled(columnIndex > 0);
+        manager.add(moveLeft);
+
+        SimpleAction moveRight = new SimpleAction(Messages.MenuMoveDashboardColumnRight,
+                        a -> moveColumn(column, columnControl, SWT.RIGHT));
+        moveRight.setEnabled(columnIndex < dashboard.getColumns().size() - 1);
+        manager.add(moveRight);
 
         MenuManager columnWidth = new MenuManager(Messages.MenuDashboardColumnWidth);
         manager.add(columnWidth);
@@ -848,10 +871,35 @@ public class DashboardView extends AbstractHistoricView
         }));
     }
 
-    private void bringToFrontDashboard(Dashboard board)
+    private void moveDashboardToBeginning(Dashboard board)
     {
         getClient().removeDashboard(board);
         getClient().addDashboard(0, board);
+        getClient().touch();
+
+        recreateDashboardToolItems();
+    }
+
+    private void moveDashboardToEnd(Dashboard board)
+    {
+        getClient().removeDashboard(board);
+        getClient().addDashboard(board);
+        getClient().touch();
+
+        recreateDashboardToolItems();
+    }
+
+    private void moveDashboard(Dashboard board, int direction)
+    {
+        List<Dashboard> boards = getClient().getDashboards().toList();
+        int index = boards.indexOf(board);
+        int newIndex = index + direction;
+
+        if (newIndex < 0 || newIndex >= boards.size())
+            return;
+
+        getClient().removeDashboard(board);
+        getClient().addDashboard(newIndex, board);
         getClient().touch();
 
         recreateDashboardToolItems();
@@ -923,6 +971,32 @@ public class DashboardView extends AbstractHistoricView
         updateScrolledCompositeMinSize();
 
         updateWidgets();
+    }
+
+    private void moveColumn(Dashboard.Column column, Composite columnControl, int direction)
+    {
+        List<Dashboard.Column> columns = dashboard.getColumns();
+        int index = columns.indexOf(column);
+        int newIndex = direction == SWT.LEFT ? index - 1 : index + 1;
+
+        if (newIndex < 0 || newIndex >= columns.size())
+            return;
+
+        // the column controls are kept in the same order as the model, hence
+        // the neighbor to swap with can be looked up by its (old) index
+        Control neighbor = container.getChildren()[newIndex];
+
+        columns.remove(index);
+        columns.add(newIndex, column);
+        markDirty();
+
+        if (direction == SWT.LEFT)
+            columnControl.moveAbove(neighbor);
+        else
+            columnControl.moveBelow(neighbor);
+
+        container.layout(true);
+        updateScrolledCompositeMinSize();
     }
 
     private void deleteColumn(Composite columnControl)

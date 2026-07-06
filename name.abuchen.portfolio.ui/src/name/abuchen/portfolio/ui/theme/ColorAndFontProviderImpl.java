@@ -63,6 +63,7 @@ public class ColorAndFontProviderImpl implements IColorAndFontProvider, EventHan
         fonts.put("org.eclipse.ui.workbench.TREE_TABLE_FONT", systemFontData); //$NON-NLS-1$
         fonts.put(JFaceResources.HEADER_FONT, JFaceResources.getFont(JFaceResources.HEADER_FONT).getFontData());
         fonts.put("systemfont", systemFontData); //$NON-NLS-1$
+        fonts.put("textfont", JFaceResources.getFont(JFaceResources.TEXT_FONT).getFontData()); //$NON-NLS-1$
 
         for (String symbolicName : extension.getFonts())
         {

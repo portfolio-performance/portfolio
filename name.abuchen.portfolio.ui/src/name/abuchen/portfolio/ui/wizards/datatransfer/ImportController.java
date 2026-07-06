@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.wizards.datatransfer;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Display;
@@ -33,10 +34,17 @@ public class ImportController
         this.client = client;
     }
 
-    public void perform(List<ReviewExtractedItemsPage> pages)
+    /**
+     * Imports the given review pages and returns the securities that were newly
+     * created during the import. Configuring price feeds for these securities is
+     * left to the caller via {@link #configureNewSecurities(Client, List)} so
+     * that securities from other import paths (e.g. manually created
+     * transactions) can be configured in the same step.
+     */
+    public List<Security> perform(List<ReviewExtractedItemsPage> pages)
     {
         if (pages.isEmpty())
-            return;
+            return List.of();
 
         var newSecurities = new ArrayList<Security>();
 
@@ -58,20 +66,42 @@ public class ImportController
             new ConsistencyChecksJob(client, false).schedule();
         }
 
-        if (!newSecurities.isEmpty())
-        {
-            // updated prices for newly created securities (for example
-            // crypto currencies already have a working configuration)
+        return newSecurities;
+    }
 
-            new UpdatePricesJob(client, newSecurities).schedule();
+    /**
+     * Returns those of the given candidate securities that are now part of the
+     * client. During an import a candidate ends up in the client either because
+     * it was imported directly or because a transaction referencing it was
+     * inserted (see {@code InsertAction}); in both cases it is a newly created
+     * security that needs price-feed configuration.
+     */
+    public static List<Security> newlyImportedSecurities(Collection<Security> candidates, Client client)
+    {
+        return candidates.stream().filter(client.getSecurities()::contains).toList();
+    }
 
-            // run async to allow the other dialog to close
+    /**
+     * Schedules a price update and opens the {@link FindQuoteProviderDialog} to
+     * let the user configure historical prices for securities that were newly
+     * created during an import. No-op if the list is empty.
+     */
+    public static void configureNewSecurities(Client client, List<Security> newSecurities)
+    {
+        if (newSecurities.isEmpty())
+            return;
 
-            Display.getDefault().asyncExec(() -> {
-                FindQuoteProviderDialog dialog = new FindQuoteProviderDialog(ActiveShell.get(), client, newSecurities);
-                dialog.open();
-            });
-        }
+        // updated prices for newly created securities (for example crypto
+        // currencies already have a working configuration)
+
+        new UpdatePricesJob(client, newSecurities).schedule();
+
+        // run async to allow the other dialog to close
+
+        Display.getDefault().asyncExec(() -> {
+            FindQuoteProviderDialog dialog = new FindQuoteProviderDialog(ActiveShell.get(), client, newSecurities);
+            dialog.open();
+        });
     }
 
     private boolean importPage(ReviewExtractedItemsPage page, ArrayList<Security> newSecurities)

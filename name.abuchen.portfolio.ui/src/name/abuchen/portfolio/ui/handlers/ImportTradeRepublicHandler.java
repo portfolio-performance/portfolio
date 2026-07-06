@@ -14,7 +14,6 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
@@ -30,6 +29,7 @@ import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.FilePathHelper;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportExtractedItemsWizard;
+import name.abuchen.portfolio.ui.wizards.datatransfer.ImportWizardDialog;
 
 public class ImportTradeRepublicHandler
 {
@@ -106,8 +106,9 @@ public class ImportTradeRepublicHandler
 
             var preferences = portfolioPart.getPreferenceStore();
 
-            var wizard = new ImportExtractedItemsWizard(client, preferences, result, e);
-            var dialog = new WizardDialog(Display.getDefault().getActiveShell(), wizard);
+            var wizard = new ImportExtractedItemsWizard(client, preferences, result, e, new HashMap<>(), portfolioPart);
+            portfolioPart.inject(wizard);
+            var dialog = new ImportWizardDialog(Display.getDefault().getActiveShell(), wizard);
             dialog.open();
         }
         catch (IllegalArgumentException e)

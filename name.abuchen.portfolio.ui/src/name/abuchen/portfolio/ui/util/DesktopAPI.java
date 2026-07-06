@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.util;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
@@ -31,6 +32,19 @@ public class DesktopAPI
             PortfolioPlugin.log(e);
             MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError,
                             MessageFormat.format(Messages.DesktopAPIIllegalURL, uri));
+        }
+    }
+
+    /**
+     * Opens the given file with the operating system's default application.
+     */
+    public static void open(File file)
+    {
+        boolean launched = Program.launch(file.getAbsolutePath());
+        if (!launched)
+        {
+            MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError,
+                            MessageFormat.format(Messages.MsgErrorOpeningFile, file.getAbsolutePath()));
         }
     }
 
