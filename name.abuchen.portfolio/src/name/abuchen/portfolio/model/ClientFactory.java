@@ -148,6 +148,7 @@ public class ClientFactory
                                     client.getVersion()));
 
                 upgradeModel(client);
+                LedgerXmlPersistenceSupport.initializeAfterLoad(client);
 
                 return client;
             }
@@ -161,9 +162,7 @@ public class ClientFactory
         {
             Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8);
 
-            makeXStream(false).toXML(client, writer);
-
-            writer.flush();
+            LedgerXmlPersistenceSupport.save(client, makeXStream(false), writer);
         }
     }
 
@@ -1875,6 +1874,7 @@ public class ClientFactory
         var xstream = new XStream();
 
         xstream.allowTypesByWildcard(new String[] { "name.abuchen.portfolio.model.**" });
+        LedgerXmlPersistenceSupport.configureXStream(xstream);
 
         xstream.setClassLoader(ClientFactory.class.getClassLoader());
 

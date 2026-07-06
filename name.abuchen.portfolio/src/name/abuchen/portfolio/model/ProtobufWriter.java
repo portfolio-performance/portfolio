@@ -32,6 +32,7 @@ import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.ClientFactory.ClientPersister;
 import name.abuchen.portfolio.model.ConfigurationSet.Configuration;
 import name.abuchen.portfolio.model.SecurityEvent.DividendEvent;
+import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
 import name.abuchen.portfolio.model.proto.v1.PAccount;
 import name.abuchen.portfolio.model.proto.v1.PAnyValue;
 import name.abuchen.portfolio.model.proto.v1.PAttributeType;
@@ -57,7 +58,7 @@ import name.abuchen.portfolio.money.Money;
 
 /* package */ class ProtobufWriter implements ClientPersister
 {
-    private static class Lookup
+    /* package */ static class Lookup
     {
         private Map<String, Security> uuid2security = new HashMap<>();
 
@@ -129,6 +130,7 @@ import name.abuchen.portfolio.money.Money;
         loadAccounts(newClient, client, lookup);
         loadPortfolios(newClient, client, lookup);
         loadTransactions(newClient, lookup);
+        LedgerProtobufPersistenceSupport.loadLedgerTruth(newClient, client, lookup);
 
         client.getProperties().putAll(newClient.getPropertiesMap());
         loadTaxonomies(newClient, client, lookup);
@@ -140,6 +142,7 @@ import name.abuchen.portfolio.money.Money;
         client.getSaveFlags().add(SaveFlag.BINARY);
 
         ClientFactory.upgradeModel(client);
+        LedgerProtobufPersistenceSupport.finalizeAfterLoad(client);
 
         return client;
     }
@@ -867,6 +870,7 @@ import name.abuchen.portfolio.money.Money;
         saveAccounts(client, newClient);
         savePortfolios(client, newClient);
         saveTransactions(client, newClient);
+        LedgerProtobufPersistenceSupport.saveLedger(client, newClient);
 
         newClient.putAllProperties(client.getProperties());
         saveTaxonomies(client, newClient);
@@ -1049,6 +1053,7 @@ import name.abuchen.portfolio.money.Money;
         for (Portfolio portfolio : client.getPortfolios())
         {
             portfolio.getTransactions().stream().filter(t -> t.getType() != PortfolioTransaction.Type.TRANSFER_IN)
+                            .filter(t -> !(t instanceof LedgerBackedTransaction))
                             .forEach(t -> addTransaction(newClient, portfolio, t));
         }
 
@@ -1058,6 +1063,7 @@ import name.abuchen.portfolio.money.Money;
         for (Account account : client.getAccounts())
         {
             account.getTransactions().stream().filter(t -> !exclude.contains(t.getType()))
+                            .filter(t -> !(t instanceof LedgerBackedTransaction))
                             .forEach(t -> addTransaction(newClient, account, t));
         }
 
