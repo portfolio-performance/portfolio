@@ -280,6 +280,9 @@ public class Messages extends NLS
     public static String ColumnPreviousPrice;
     public static String ColumnProfitLoss;
     public static String ColumnProfitLossBaseCurrency;
+    public static String ColumnProfitLossFIFO_Description;
+    public static String ColumnProfitLossGeneric_Description;
+    public static String ColumnProfitLossMovingAverage_Description;
     public static String ColumnPurchasePrice;
     public static String ColumnPurchasePrice_Description;
     public static String ColumnPurchasePrice_MenuLabel;
