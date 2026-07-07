@@ -1,0 +1,53 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.83.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Consorsbank • 90318 Nürnberg
+Depotnummer: 0747384824
+4939439843/00
+Vermerk der Bank: 2000
+2
+Sara FxgeAwHaM
+Musterstr. 3 Datum: 20.01.2020
+88347 Musterstadt Seite: 1 von 2
+Vorabpauschale
+Wertpapierbezeichnung WKN ISIN
+iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile A0H078 DE000A0H0785
+Bestand
+12,47652 Stück
+Vorabpauschale pro Anteil 0,00 EUR Schlusstag 01.01.2020
+Kapitalertrag 0,00 EUR
+Bei unterjährigen Anschaffungen im Vorjahr vermindert sich die Vorabpauschale um ein Zwölftel für jeden Monat.
+Bitte beachten Sie die weiteren Informationen auf Seite 2.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil d‘Administration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
+Depotnummer: 0747384824
+4939439843/00
+Vermerk der Bank: 2000
+2
+Datum: 20.01.2020
+Seite: 2 von 2
+Details zur Abrechnung
+Informationen zum Investmentsteuergesetz
+Vorabpauschale gem. §18 InvStG 0,00 EUR
+abzgl. Teilfreistellung 0,00 % von 0,00 EUR 0,00 EUR
+Vorabpauschale mit Teilfreistellung 0,00 EUR
+Steuerpflichtiger Gesamtertrag 0,00 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet 0,00 EUR
+Mit Sparerpauschbetrag verrechnet 0,00 EUR
+Mit Quellensteuer verrechnet 0,00 EUR
+somit verrechnete Quellensteuer 0,00 EUR
+Bemessungsgrundlage für Kapitalertragsteuer gesamt 0,00 EUR
+Details zu den Verrechnungstöpfen
+Verrechnungstopf "Allgemein" vor der Abrechnung 0,00 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet 0,00 EUR
+Verrechnungstopf "Allgemein" nach der Abrechnung 0,00 EUR
+Sparerpauschbetrag vor der Abrechnung 0,00 EUR
+Mit Sparerpauschbetrag verrechnet 0,00 EUR
+Sparerpauschbetrag nach der Abrechnung 0,00 EUR
+Verrechnungstopf "Quellensteuer" vor der Abrechnung 0,00 EUR
+Änderung Verrechnungstopf "Quellensteuer" 0,00 EUR
+Verrechnungstopf "Quellensteuer" nach der Abrechnung 0,00 EUR

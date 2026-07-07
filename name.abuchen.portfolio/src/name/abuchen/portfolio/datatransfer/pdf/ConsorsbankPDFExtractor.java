@@ -237,6 +237,18 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                         .oneOf( //
                                         // @formatter:off
+                                        // Wert 19.10.2020 USD 118,48
+                                        // umger. zum Devisenkurs USD 1,184800 EUR 100,00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^(?i)Wert [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [A-Z]{3} [\\.,\\d]+$") //
+                                                        .match("^umger\\. zum Devisenkurs [A-Z]{3} [\\.,\\d]+ (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
                                         // Wert 13.05.2020 EUR 525,92
                                         // Wert 19.01.2015 EUR 5.000,00
                                         // WERT 20.05.2008 EUR 3.290,05
@@ -283,6 +295,23 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("fxGross", "gross", "exchangeRate", "baseCurrency", "termCurrency") //
                                                         .match("^Kurswert [A-Z]{3} (?<fxGross>[\\.,\\d]+)$") //
                                                         .match("^[\\s]*(umger\\. zum Devisenkurs|UMGER\\. ZUM DEVISENKURS)[\\s]{1,}(?<termCurrency>[A-Z]{3})[\\s]{1,}(?<exchangeRate>[\\.,\\d]+)[\\s]{1,}(?<baseCurrency>[A-Z]{3})[\\s]{1,}(?<gross>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
+                                        // Nettoinventarwert USD 118,48
+                                        // umger. zum Devisenkurs USD 1,184800 EUR 100,00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("fxGross", "termCurrency", "exchangeRate", "baseCurrency", "gross") //
+                                                        .match("^Nettoinventarwert (?<termCurrency>[A-Z]{3}) (?<fxGross>[\\.,\\d]+)$") //
+                                                        .match("^umger\\. zum Devisenkurs [A-Z]{3} (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[A-Z]{3}) (?<gross>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
@@ -783,23 +812,47 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<shares>[\\.,\\d]+) St.ck$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        // @formatter:off
-                        // Valuta 02.01.2020 BIC CSDBDE71XXX
-                        // @formatter:on
-                        .section("date") //
-                        .match("^Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Valuta 02.01.2020 BIC CSDBDE71XXX
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // Vorabpauschale pro Anteil 0,00 EUR Schlusstag 01.01.2020
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Vorabpauschale pro Anteil [\\.,\\d]+ [A-Z]{3} Schlusstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
-                        // @formatter:off
-                        // Netto zulasten IBAN DE73 7603 0080 0123 4567 89 0,73 EUR
-                        // Valuta 02.01.2020 BIC CSDBDE71XXX
-                        // @formatter:on
-                        .section("currency", "amount") //
-                        .match("^Netto zulasten .* (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Netto zulasten IBAN DE73 7603 0080 0123 4567 89 0,73 EUR
+                                        // Valuta 02.01.2020 BIC CSDBDE71XXX
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^Netto zulasten .* (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        
+                                        // @formatter:off
+                                        // Netto zulasten IBAN DE73 7603 0080 0123 4567 89 0,73 EUR
+                                        // Valuta 02.01.2020 BIC CSDBDE71XXX
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^Kapitalertrag (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        })                                        
+                                        )
 
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
@@ -1062,16 +1115,16 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
     private void addNonImportableTransaction()
     {
-        final var type = new DocumentType("(UEBERTRAG (EINGANG|AUSGANG)|Anschaffungsdaten)");
+        final var type = new DocumentType("((UEBERTRAG|UMTAUSCH) (EINGANG|AUSGANG)|Anschaffungsdaten)");
         this.addDocumentTyp(type);
 
-        var pdfTransaction = new Transaction<PortfolioTransaction>();
+        var uebertragTransaction = new Transaction<PortfolioTransaction>();
 
-        var firstRelevantLine = new Block("^(UEBERTRAG (EINGANG|AUSGANG)|Wir haben für Sie am) .*$");
-        type.addBlock(firstRelevantLine);
-        firstRelevantLine.set(pdfTransaction);
+        var uebertragBlock = new Block("^(UEBERTRAG (EINGANG|AUSGANG)|Wir haben für Sie am) .*$");
+        type.addBlock(uebertragBlock);
+        uebertragBlock.set(uebertragTransaction);
 
-        pdfTransaction //
+        uebertragTransaction //
 
                         .subject(() -> new PortfolioTransaction(PortfolioTransaction.Type.DELIVERY_INBOUND))
 
@@ -1106,10 +1159,11 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                                             t.setShares(asShares(v.get("shares")));
                                                             t.setSecurity(getOrCreateSecurity(v));
 
-                                                            t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
+                                                            t.setCurrencyCode(asCurrencyCode(
+                                                                            t.getSecurity().getCurrencyCode()));
                                                             t.setAmount(0L);
                                                         }),
-                                            // @formatter:off
+                                        // @formatter:off
                                             // Bezeichnung WKN ISIN
                                             // ATOSS SOFTWARE AG 510440 DE0005104400
                                             // Nom/Stk Tax-Box-ID
@@ -1119,22 +1173,73 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                             // Nom./Stk. Anschaffungsdatum Anschaffungsdaten
                                             // 333,00000 22.03.2007 Anschaffungswert EUR 1.261,51
                                             // @formatter:on
-                                            section -> section //
-                                                            .attributes("name", "wkn", "isin", "shares", "date", "currency", "amount") //
-                                                            .find("Bezeichnung WKN ISIN") //
-                                                            .match("^(?<name>.*) (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                                                            .find("Nom\\.\\/Stk\\. Anschaffungsdatum Anschaffungsdaten") //
-                                                            .match("^(?<shares>[\\.,\\d]+) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Anschaffungswert (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
-                                                            .assign((t, v) -> {
-                                                                v.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                                        section -> section //
+                                                        .attributes("name", "wkn", "isin", "shares", "date", "currency",
+                                                                        "amount") //
+                                                        .find("Bezeichnung WKN ISIN") //
+                                                        .match("^(?<name>.*) (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .find("Nom\\.\\/Stk\\. Anschaffungsdatum Anschaffungsdaten") //
+                                                        .match("^(?<shares>[\\.,\\d]+) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Anschaffungswert (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            v.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
-                                                                t.setDateTime(asDate(v.get("date")));
-                                                                t.setShares(asShares(v.get("shares")));
-                                                                t.setSecurity(getOrCreateSecurity(v));
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setShares(asShares(v.get("shares")));
+                                                            t.setSecurity(getOrCreateSecurity(v));
 
-                                                                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                                                t.setAmount(asAmount(v.get("amount")));
-                                                            }))
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }))
+
+                        .wrap(TransactionItem::new);
+
+        var umtauschTransaction = new Transaction<PortfolioTransaction>();
+
+        // @formatter:off
+        // The booking date precedes the "UMTAUSCH EINGANG/AUSGANG" line, so the
+        // block starts at that standalone date line.
+        // @formatter:on
+        var umtauschBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$");
+        type.addBlock(umtauschBlock);
+        umtauschBlock.set(umtauschTransaction);
+
+        umtauschTransaction //
+
+                        .subject(() -> new PortfolioTransaction(PortfolioTransaction.Type.DELIVERY_INBOUND))
+
+                        // @formatter:off
+                        // Is type --> "AUSGANG" change from DELIVERY_INBOUND to DELIVERY_OUTBOUND
+                        // @formatter:on
+                        .section("type").optional() //
+                        .match("^UMTAUSCH (?<type>(EINGANG|AUSGANG))$") //
+                        .assign((t, v) -> {
+                            if ("AUSGANG".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+                        })
+
+                        // @formatter:off
+                        // 26.04.2023
+                        // UMTAUSCH AUSGANG
+                        // Bezeichnung WKN
+                        // Lyxor MSCI World UCITS ETF Inhaber-Anteile I o.N. ETF110
+                        // Einheit Nennwert Verwahrart
+                        // ST 20,37254 Girosammelverwahrung
+                        // @formatter:on
+                        .section("date", "name", "wkn", "shares") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .find("Bezeichnung WKN") //
+                        .match("^(?<name>.*) (?<wkn>[A-Z0-9]{6})$") //
+                        .match("^ST (?<shares>[\\.,\\d]+) .*$") //
+                        .assign((t, v) -> {
+                            v.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setShares(asShares(v.get("shares")));
+                            t.setSecurity(getOrCreateSecurity(v));
+
+                            t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
+                            t.setAmount(0L);
+                        })
 
                         .wrap(TransactionItem::new);
     }

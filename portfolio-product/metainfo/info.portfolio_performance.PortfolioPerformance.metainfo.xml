@@ -37,6 +37,26 @@
 	    <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.85.0" date="2026-07-07">
+      <description>
+        <ul>
+          <li>New: Grouped accounts can now carry an ownership percentage, so a jointly held account or portfolio can be split by member.</li>
+          <li>New: Added Move left/right actions to reorder dashboard views and columns.</li>
+          <li>New: For unrecognized PDFs, the import wizard now shows the document alongside a transaction editor, so you can enter the transaction manually using copy and paste.</li>
+          <li>Improvement: Enhanced PDF importers for Interactive Brokers Flex, PostFinance, Trade Republic, UniCredit, and WirBank.</li>
+          <li>Improvement: Icons for inactive accounts and securities are now consistently marked as inactive, using either a gray or a faded (semi-transparent) icon.</li>
+          <li>Improvement: Added an option to disable value coloring for indicator and ratio widgets.</li>
+          <li>Improvement: Taxonomy pie and donut views are now created on demand for better performance.</li>
+          <li xml:lang="de">Neu: Gruppierte Konten können jetzt mit einem Eigentumsanteil versehen werden, sodass ein gemeinsam gehaltenes Konto oder Depot nach Mitglied aufgeteilt werden kann.</li>
+          <li xml:lang="de">Neu: Aktionen „Nach links/rechts verschieben“ zum Umsortieren von Dashboard-Ansichten und -Spalten hinzugefügt.</li>
+          <li xml:lang="de">Neu: Bei nicht erkannten PDFs zeigt der Import-Assistent das Dokument jetzt neben einem Buchungseditor an, sodass du die Buchung manuell per Kopieren und Einfügen erfassen kannst.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für Interactive Brokers Flex, PostFinance, Trade Republic, UniCredit und WirBank verbessert.</li>
+          <li xml:lang="de">Verbesserung: Symbole inaktiver Konten und Wertpapiere werden jetzt einheitlich als inaktiv gekennzeichnet – entweder durch ein graues oder ein blasses (halbtransparentes) Symbol.</li>
+          <li xml:lang="de">Verbesserung: Option zum Deaktivieren der farblichen Hervorhebung von Werten in Kennzahlen- und Verhältnis-Widgets hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: Taxonomie-Torten- und Ringdiagramme werden jetzt zur besseren Performance bei Bedarf erstellt.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.84.2" date="2026-06-22">
       <description>
         <ul>

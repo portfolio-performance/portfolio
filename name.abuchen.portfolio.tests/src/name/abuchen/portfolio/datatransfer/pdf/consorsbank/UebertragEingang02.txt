@@ -1,0 +1,36 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.83.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Consorsbank • 90318 Nürnberg
+Depotnummer 0747384824
+4939439843/00
+Sara FxgeAwHaM
+Musterstr. 3
+Vermerk der Bank 2000
+88347 Musterstadt
+02
+26.04.2023
+UMTAUSCH EINGANG
+Belegnummer: 43943944
+Folg. Positionen haben wir per o.g.Datum Ihrem Bestand gutgeschrieben.
+Bezeichnung WKN
+Amu.Idx Sol.Amu.MSCI Wld III Act.Nom. U.ETF USD Dis. oN ETF018
+Einheit Nennwert Verwahrart
+ST 20,37254 Girosammelverwahrung
+CBF 2126
+Sparplan
+Komplette Stücke
+STEUERNEUTRAL NACH INVESTMENTSTEUERGESETZ
+HINWEIS: SPARPLAENE WERDEN IN DER NEUEN GATTUNG WEITERGEFUEHRT
+Fondsfusion i.V. 1:1 aus WKN ETF110 per Extag 21.04.2023
+Hinweis für Orderabrechnungen und Depotbuchungsanzeigen:
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der
+Allgemeinen Geschäftsbedingungen (AGB Banken).
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an die Consorsbank oder per Fax oder Mail an die
+unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil d‘Administration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
