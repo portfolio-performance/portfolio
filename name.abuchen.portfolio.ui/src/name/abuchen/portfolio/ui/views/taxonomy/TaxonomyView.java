@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +36,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.TaxonomyJSONExporter;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -46,6 +48,7 @@ import name.abuchen.portfolio.ui.util.JSONExporterDialog;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodListener;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.TimeMachineDropDown;
 import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
 import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
@@ -151,6 +154,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     private Taxonomy taxonomy;
     private ClientFilterDropDown clientFilterDropDown;
     private ReportingPeriodDropDown reportingPeriodDropDown;
+    private TimeMachineDropDown timeMachineDropDown;
 
     private Composite container;
     private List<Action> viewActions = new ArrayList<>();
@@ -191,7 +195,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         if (this.clientFilterDropDown.hasActiveFilter())
             listener.accept(this.clientFilterDropDown.getSelectedFilter());
 
-        this.clientFilterDropDown.getClientFilterMenu().addListener(filter -> updateTitle(getDefaultTitle()));
+        this.clientFilterDropDown.getClientFilterMenu().addListener(filter -> updateViewTitle());
 
         this.identifierView = TaxonomyView.class.getSimpleName() + "-VIEW-" + taxonomy.getId(); //$NON-NLS-1$
         this.identifierUnassigned = TaxonomyView.class.getSimpleName() + "-UNASSIGNED-" + taxonomy.getId(); //$NON-NLS-1$
@@ -225,7 +229,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     @Override
     public void propertyChange(PropertyChangeEvent event)
     {
-        updateTitle(getDefaultTitle());
+        updateViewTitle();
     }
 
     @Override
@@ -271,6 +275,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         toolBar.add(new Separator());
 
         addReportingPeriodDropDown(toolBar);
+        addTimeMachineDropDown(toolBar);
 
         toolBar.add(new FilterDropDown(getPreferenceStore()));
         toolBar.add(clientFilterDropDown);
@@ -282,6 +287,60 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     {
         reportingPeriodDropDown = new ReportingPeriodDropDown(getPart(), this);
         toolBar.add(reportingPeriodDropDown);
+    }
+
+    private void addTimeMachineDropDown(ToolBarManager toolBar)
+    {
+        timeMachineDropDown = new TimeMachineDropDown(date -> applyTimeMachine());
+        toolBar.add(timeMachineDropDown);
+    }
+
+    /**
+     * The time machine only affects the charts without a time axis (pie, donut
+     * and tree map). On all other pages the snapshot is always calculated for
+     * the current date.
+     */
+    private boolean isTimeMachineApplicable(Page page)
+    {
+        return page instanceof PieChartViewer || page instanceof DonutViewer || page instanceof TreeMapViewer;
+    }
+
+    /**
+     * Applies the time machine to the currently active page. The drop-down is
+     * only enabled on the charts without a time axis; for the other pages the
+     * effective snapshot date falls back to the current date. As all pages
+     * share the same {@link TaxonomyModel}, the snapshot is only recalculated
+     * when the effective date actually changes.
+     */
+    private void applyTimeMachine()
+    {
+        boolean applicable = getCurrentPage().map(this::isTimeMachineApplicable).orElse(false);
+        timeMachineDropDown.setEnabled(applicable);
+
+        Optional<LocalDate> effectiveDate = applicable ? timeMachineDropDown.getTimeMachineDate() : Optional.empty();
+        if (!effectiveDate.equals(model.getSnapshotDate()))
+            model.updateSnapshotDate(effectiveDate);
+
+        updateViewTitle();
+    }
+
+    /**
+     * Updates the view title and appends the time machine date when it is
+     * active on the currently shown page.
+     */
+    private void updateViewTitle()
+    {
+        var suffix = "";
+
+        if (timeMachineDropDown != null)
+        {
+            Optional<LocalDate> snapshotDate = timeMachineDropDown.getTimeMachineDate();
+            boolean applicable = getCurrentPage().map(this::isTimeMachineApplicable).orElse(false);
+            if (applicable && snapshotDate.isPresent())
+                suffix = " | " + Values.Date.format(snapshotDate.get());
+        }
+
+        updateTitle(getDefaultTitle() + suffix);
     }
 
     private void addSearchButton(ToolBarManager toolBar)
@@ -462,6 +521,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
                 viewActions.get(ii).setChecked(index == ii);
 
             reportingPeriodDropDown.setEnabled(page instanceof ReportingPeriodListener);
+            applyTimeMachine();
 
             getPart().getPreferenceStore().setValue(identifierView, index);
         }
