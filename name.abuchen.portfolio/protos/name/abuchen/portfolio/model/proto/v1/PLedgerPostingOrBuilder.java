@@ -10,14 +10,14 @@ public interface PLedgerPostingOrBuilder extends
   /**
    * <code>string uuid = 1 [deprecated = true];</code>
    * @deprecated name.abuchen.portfolio.PLedgerPosting.uuid is deprecated.
-   *     See name/abuchen/portfolio/model/client.proto;l=258
+   *     See name/abuchen/portfolio/model/client.proto;l=259
    * @return The uuid.
    */
   @java.lang.Deprecated java.lang.String getUuid();
   /**
    * <code>string uuid = 1 [deprecated = true];</code>
    * @deprecated name.abuchen.portfolio.PLedgerPosting.uuid is deprecated.
-   *     See name/abuchen/portfolio/model/client.proto;l=258
+   *     See name/abuchen/portfolio/model/client.proto;l=259
    * @return The bytes for uuid.
    */
   @java.lang.Deprecated com.google.protobuf.ByteString

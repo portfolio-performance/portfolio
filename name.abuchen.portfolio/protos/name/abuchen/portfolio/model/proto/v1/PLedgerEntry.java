@@ -51,7 +51,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>string uuid = 1 [deprecated = true];</code>
    * @deprecated name.abuchen.portfolio.PLedgerEntry.uuid is deprecated.
-   *     See name/abuchen/portfolio/model/client.proto;l=244
+   *     See name/abuchen/portfolio/model/client.proto;l=245
    * @return The uuid.
    */
   @java.lang.Override
@@ -70,7 +70,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>string uuid = 1 [deprecated = true];</code>
    * @deprecated name.abuchen.portfolio.PLedgerEntry.uuid is deprecated.
-   *     See name/abuchen/portfolio/model/client.proto;l=244
+   *     See name/abuchen/portfolio/model/client.proto;l=245
    * @return The bytes for uuid.
    */
   @java.lang.Override
@@ -963,7 +963,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>string uuid = 1 [deprecated = true];</code>
      * @deprecated name.abuchen.portfolio.PLedgerEntry.uuid is deprecated.
-     *     See name/abuchen/portfolio/model/client.proto;l=244
+     *     See name/abuchen/portfolio/model/client.proto;l=245
      * @return The uuid.
      */
     @java.lang.Deprecated public java.lang.String getUuid() {
@@ -981,7 +981,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>string uuid = 1 [deprecated = true];</code>
      * @deprecated name.abuchen.portfolio.PLedgerEntry.uuid is deprecated.
-     *     See name/abuchen/portfolio/model/client.proto;l=244
+     *     See name/abuchen/portfolio/model/client.proto;l=245
      * @return The bytes for uuid.
      */
     @java.lang.Deprecated public com.google.protobuf.ByteString
@@ -1000,7 +1000,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>string uuid = 1 [deprecated = true];</code>
      * @deprecated name.abuchen.portfolio.PLedgerEntry.uuid is deprecated.
-     *     See name/abuchen/portfolio/model/client.proto;l=244
+     *     See name/abuchen/portfolio/model/client.proto;l=245
      * @param value The uuid to set.
      * @return This builder for chaining.
      */
@@ -1015,7 +1015,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>string uuid = 1 [deprecated = true];</code>
      * @deprecated name.abuchen.portfolio.PLedgerEntry.uuid is deprecated.
-     *     See name/abuchen/portfolio/model/client.proto;l=244
+     *     See name/abuchen/portfolio/model/client.proto;l=245
      * @return This builder for chaining.
      */
     @java.lang.Deprecated public Builder clearUuid() {
@@ -1027,7 +1027,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>string uuid = 1 [deprecated = true];</code>
      * @deprecated name.abuchen.portfolio.PLedgerEntry.uuid is deprecated.
-     *     See name/abuchen/portfolio/model/client.proto;l=244
+     *     See name/abuchen/portfolio/model/client.proto;l=245
      * @param value The bytes for uuid to set.
      * @return This builder for chaining.
      */

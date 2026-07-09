@@ -311,6 +311,15 @@ import name.abuchen.portfolio.money.Money;
     {
         for (PTransaction newTransaction : newClient.getTransactionsList())
         {
+            if (newTransaction.getLedgerProjection())
+            {
+                if (!LedgerProtobufPersistenceSupport.hasLedgerTruth(newClient))
+                    throw new UnsupportedOperationException(
+                                    "Ledger projection transaction exists but no PLedger source exists"); //$NON-NLS-1$
+
+                continue;
+            }
+
             PTransaction.Type type = newTransaction.getType();
 
             switch (type)
@@ -1053,7 +1062,6 @@ import name.abuchen.portfolio.money.Money;
         for (Portfolio portfolio : client.getPortfolios())
         {
             portfolio.getTransactions().stream().filter(t -> t.getType() != PortfolioTransaction.Type.TRANSFER_IN)
-                            .filter(t -> !(t instanceof LedgerBackedTransaction))
                             .forEach(t -> addTransaction(newClient, portfolio, t));
         }
 
@@ -1063,7 +1071,6 @@ import name.abuchen.portfolio.money.Money;
         for (Account account : client.getAccounts())
         {
             account.getTransactions().stream().filter(t -> !exclude.contains(t.getType()))
-                            .filter(t -> !(t instanceof LedgerBackedTransaction))
                             .forEach(t -> addTransaction(newClient, account, t));
         }
 
@@ -1174,6 +1181,9 @@ import name.abuchen.portfolio.money.Money;
 
     private void saveCommonTransaction(Transaction t, PTransaction.Builder newTransaction)
     {
+        if (t instanceof LedgerBackedTransaction)
+            newTransaction.setLedgerProjection(true);
+
         newTransaction.setDate(asTimestamp(t.getDateTime()));
         newTransaction.setCurrencyCode(t.getCurrencyCode());
         newTransaction.setAmount(t.getAmount());

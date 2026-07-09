@@ -73,7 +73,7 @@ final class LedgerProtobufPersistenceSupport
         newClient.setLedger(newLedger);
     }
 
-    private static boolean hasLedgerTruth(PClient newClient)
+    static boolean hasLedgerTruth(PClient newClient)
     {
         return newClient.hasLedger() && newClient.getLedger().getEntriesCount() > 0;
     }

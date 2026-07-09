@@ -5,10 +5,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayOutputStream;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 import org.junit.Test;
 
@@ -17,6 +20,8 @@ import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
 import name.abuchen.portfolio.model.ledger.nativeentry.LedgerNativeEntryAssembler;
 import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
 import name.abuchen.portfolio.model.ledger.projection.LedgerProjectionService;
+import name.abuchen.portfolio.model.proto.v1.PClient;
+import name.abuchen.portfolio.model.proto.v1.PTransaction;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -39,7 +44,14 @@ public class LedgerProtobufPersistenceTest
         account.addTransaction(accountTransaction);
         portfolio.addTransaction(portfolioTransaction);
 
-        var loaded = ProtobufTestUtilities.load(ProtobufTestUtilities.save(client));
+        var bytes = ProtobufTestUtilities.save(client);
+        var persisted = persistedClient(bytes);
+
+        assertThat(persisted.getTransactionsCount(), is(2));
+        assertFalse(persisted.getTransactions(0).getLedgerProjection());
+        assertFalse(persisted.getTransactions(1).getLedgerProjection());
+
+        var loaded = ProtobufTestUtilities.load(bytes);
 
         assertTrue(loaded.getLedger().getEntries().isEmpty());
         assertThat(loaded.getAccounts().get(0).getTransactions().size(), is(1));
@@ -51,7 +63,7 @@ public class LedgerProtobufPersistenceTest
     }
 
     @Test
-    public void testCorporateActionLedgerProtobufRoundtripDoesNotPersistRuntimeProjections() throws Exception
+    public void testCorporateActionLedgerProtobufRoundtripPersistsFlaggedRuntimeProjections() throws Exception
     {
         var client = fixture();
         var account = client.getAccounts().get(0);
@@ -66,7 +78,15 @@ public class LedgerProtobufPersistenceTest
                         .buildAndAdd();
         LedgerProjectionService.materialize(client);
 
-        var loaded = ProtobufTestUtilities.load(ProtobufTestUtilities.save(client));
+        var bytes = ProtobufTestUtilities.save(client);
+        var persisted = persistedClient(bytes);
+
+        assertThat(persisted.getLedger().getEntriesCount(), is(1));
+        assertThat(persisted.getTransactionsCount(), is(1));
+        assertThat(persisted.getTransactions(0).getType(), is(PTransaction.Type.DIVIDEND));
+        assertTrue(persisted.getTransactions(0).getLedgerProjection());
+
+        var loaded = ProtobufTestUtilities.load(bytes);
 
         assertThat(loaded.getLedger().getEntries().size(), is(1));
         assertThat(loaded.getLedger().getEntries().get(0).getType(), is(LedgerEntryType.CORPORATE_ACTION));
@@ -76,6 +96,25 @@ public class LedgerProtobufPersistenceTest
                         ((LedgerBackedTransaction) loaded.getAccounts().get(0).getTransactions().get(0))
                                         .getLedgerEntry());
         assertTrue(loaded.getPortfolios().get(0).getTransactions().isEmpty());
+
+        var secondPersisted = persistedClient(ProtobufTestUtilities.save(loaded));
+        assertThat(secondPersisted.getTransactionsCount(), is(1));
+        assertTrue(secondPersisted.getTransactions(0).getLedgerProjection());
+    }
+
+    @Test
+    public void testLedgerProjectionTransactionWithoutLedgerTruthFails() throws Exception
+    {
+        var transaction = PTransaction.newBuilder() //
+                        .setType(PTransaction.Type.DEPOSIT) //
+                        .setLedgerProjection(true) //
+                        .build();
+        var client = PClient.newBuilder().addTransactions(transaction).build();
+
+        var exception = assertThrows(UnsupportedOperationException.class,
+                        () -> ProtobufTestUtilities.load(wire(client)));
+
+        assertThat(exception.getMessage(), is("Ledger projection transaction exists but no PLedger source exists"));
     }
 
     private static Client fixture()
@@ -128,5 +167,18 @@ public class LedgerProtobufPersistenceTest
     private static Money money(long amount)
     {
         return Money.of(CurrencyUnit.EUR, Values.Amount.factorize(amount));
+    }
+
+    private static PClient persistedClient(byte[] bytes) throws Exception
+    {
+        return PClient.parseFrom(Arrays.copyOfRange(bytes, 6, bytes.length));
+    }
+
+    private static byte[] wire(PClient client) throws Exception
+    {
+        var stream = new ByteArrayOutputStream();
+        stream.write(new byte[] { 'P', 'P', 'P', 'B', 'V', '1' });
+        client.writeTo(stream);
+        return stream.toByteArray();
     }
 }

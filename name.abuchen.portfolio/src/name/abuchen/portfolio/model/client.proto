@@ -190,6 +190,7 @@ message PTransaction {
 
   optional string source = 17;
   optional PLocalDateTime exDate = 18;
+  bool ledgerProjection = 19;
 }
 
 message PInvestmentPlan {
