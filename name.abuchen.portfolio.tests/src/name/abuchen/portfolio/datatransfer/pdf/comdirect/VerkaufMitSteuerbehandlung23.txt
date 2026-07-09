@@ -1,0 +1,94 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.85.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Ihren Auftrag haben wir gemäß unseren produktbezogenen
+Geschäftsbedingungen "Trading" wie nachstehend ausgeführt.
+Die Wertpapiere haben wir der Abrechnung entsprechend gebucht.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und
+Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+25449 Quickborn
+Telefon : 04106-708 25 00
+58571 010
+Depotnr.: 1523700 00
+BLZ: 200 411 77
+Florian CsLVNmfZo MOdctD
+Zur OfpwbawSgLDuw 74
+63998 Bad dKNwUxYmzb
+GESCHÄFTSABRECHNUNG VOM 07.07.2026
+*
+Wertpapierverkauf
+Geschäftsnummer : 91 312076
+511445411424 Rechnungsnummer : 324696388726h801
+Geschäftstag : 07.07.2026 Ausführungsplatz : TRADEGATE
+(Kommissionsgeschäft)
+Wertpapier-Bezeichnung WPKNR/ISIN
+Xtr.BBG Comm.ex-Agr.+Livest.Sw DBX0DZ
+Inhaber-Anteile 2C EUR Hgd oN LU0460391732
+Nennwert Zum Kurs von
+St. 2,799 EUR 46,7491
+Kurswert : EUR 130,85
+IBAN Valuta Zu Ihren Gunsten vor Steuern
+DE04 1308 3274 8933 8130 00 EUR 09.07.2026 EUR 130,85
+Verwahrungs-Art: WERTPAPIERRECHNUNG IRLAND (AKV)
+Informationen zur steuerlichen Behandlung dieses Geschäftsvorgangs und den auf
+Ihrem Konto gebuchten Endbetrag finden Sie auf der separaten Steuermitteilung.
+Ihre comdirect
+Diese Abrechnung wird von der Bank nicht unterschrieben
+Die Leistung ist gemäß §4 Nr.8 UStG umsatzsteuerfrei. USt-Id-Nr.: DE 114 103 514 A113
+DO15DD/16/04/2010
+Kundennr. /BLZ Bezeichnung
+Florian LpGxlJPfX CUIvNs
+7209669
+Zur UJWTXUgZjkLzr 50
+031 254 58 60703 Bad obrwurZlEV
+abweichend wirtschaftlich Berechtigter
+----
+comdirect
+25451 Quickborn
+010 58571
+Telefon: 04106 - 708 25 00
+Herrn Datum: 07.07.2026
+Florian CYChyfhoG EULKOb Depotnummer: 2306475 00
+Zur LZkDwZaPDAdcg 02
+04299 Bad BCyPEWXdrf Referenz-Nummer: 0tsYra6xyu5195BC
+Steuerliche Behandlung: Verkauf Investmentfonds Nr. 91312076 vom 07.07.2026
+Stk. -2,799 XTR.BBG COMM.X-AGR+LST.2C , WKN / ISIN: DBX0DZ / LU0460391732
+Zu Ihren Gunsten vor Steuern: EUR 130,85
+Steuerbemessungsgrundlage nach Verlustverrechnung (8) EUR -4,12
+Kapitalertragsteuer (8) EUR 1,03
+Solidaritätszuschlag EUR 0,05
+Kirchensteuer E_U_R_______________0_,_0_0_
+erstattete Steuern E_U_R_______________1_,_0_8_
+Zu Ihren Gunsten nach Steuern: EUR 131,93
+Die Gutschrift erfolgt mit Valuta 09.07.2026 auf Konto EUR mit der IBAN DE04 5428 0778 5269 2767 00
+(8) Aufgrund des mit diesem Geschäft realisierten Verlustes erstatten wir Ihnen bereits abgeführte Steuern.
+KEINE STEUERBESCHEINIGUNG ...
+Bisher einbehaltene bzw. angerechnete Steuer in EUR (4)
+in 2026 einbehaltene einbehaltener einbehaltene angerechnete
+Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer ausländische Quellensteuer
+vor Ermittlung 339,09 18,62 0,00 323,66
+nach Ermittlung 338,06 18,57 0,00 323,66
+Verrechnungssalden in EUR (4)
+Gewinne / Verluste sonstige anrechenbare verfügbarer
+in 2026 aus Aktien Gewinne / Verluste ausländische Quellensteuer Freistellungsauftrag
+vor Ermittlung -6.783,97 3.553,98 0,00 0,00
+nach Ermittlung -6.783,97 3.549,86 0,00 0,00
+Hinweise zur Ermittlung der Steuerbemessungsgrundlage:
+Veräußerungserlös EUR 130,85
+abzüglich Anschaffungskosten EUR -134,97
+abzüglich besitzzeitanteilige akkumulierte Vorabpauschale E_U_R_________________0_,_0_0
+Veräußerungsergebnis EUR -4,12
+Teilfreistellung (0%) EUR 0,00
+fiktives Veräußerungsergebnis aus Merkposten (nach Teilfreistellung) EUR 0,00
+erhaltene Zwischengewinne (ggf. Ersatzwert) EUR 0,00
+noch nicht dem Steuerabzug unterworfene akkumulierte thesaurierte
+Erträge/Mehrbetrag/Schätzwert EUR 0,00
+fiktives Veräußerungsergebnis aus Übergangsregelung E_U_R_________________0_,_0_0
+Summe Merkposten 31.12.2017 E_U_R__________________0_,_0_0
+Steuerbemessungsgrundlage vor Verlustverrechnung EUR -4,12
+Ihre comdirect
+Diese Abrechnung ist maschinell erstellt und wird nicht unterschrieben.
+(4) Die ausgewiesenen EUR-Beträge spiegeln den Stand zum Abrechnungszeitpunkt wider.
+KEINE STEUERBESCHEINIGUNG
