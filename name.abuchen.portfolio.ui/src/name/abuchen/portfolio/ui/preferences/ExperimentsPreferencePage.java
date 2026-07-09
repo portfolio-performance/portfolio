@@ -3,14 +3,13 @@ package name.abuchen.portfolio.ui.preferences;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
@@ -22,10 +21,17 @@ import name.abuchen.portfolio.ui.util.IniFileManipulator;
 
 public class ExperimentsPreferencePage extends FieldEditorPreferencePage
 {
-    private Label statusLabel;
-    private Button actionButton;
+    private static final String SWT_AUTOSCALE = "swt.autoScale"; //$NON-NLS-1$
+    private static final String SWT_AUTOSCALE_DISABLED = "false"; //$NON-NLS-1$
+    private static final String SWT_AUTOSCALE_75_PERCENT = "75"; //$NON-NLS-1$
+    private static final String SWT_AUTOSCALE_125_PERCENT = "125"; //$NON-NLS-1$
+    private static final String SWT_AUTOSCALE_150_PERCENT = "150"; //$NON-NLS-1$
+    private static final String SWT_AUTOSCALE_175_PERCENT = "175"; //$NON-NLS-1$
+    private static final String SWT_AUTOSCALE_200_PERCENT = "200"; //$NON-NLS-1$
+
+    private Combo autoScaleCombo;
     private IniFileManipulator iniFileManipulator;
-    private boolean hasProperty;
+    private String autoScaleValue;
     private boolean iniFileAvailable;
 
     public ExperimentsPreferencePage()
@@ -43,31 +49,28 @@ public class ExperimentsPreferencePage extends FieldEditorPreferencePage
         addField(new CheckboxGroupFieldEditor(UIConstants.Preferences.EXPERIMENTS,
                         Messages.PrefLabelEnableExperimentalFeatures, features, getFieldEditorParent()));
 
-        var os = Platform.getOS();
-        var showMonitorSpecificScaling = Platform.OS_WIN32.equals(os) || Platform.OS_LINUX.equals(os);
+        loadIniFile();
+        createAutoScaleSection();
+    }
 
-        if (showMonitorSpecificScaling)
-        {
-            var separator = new Label(getFieldEditorParent(), SWT.HORIZONTAL);
-            GridDataFactory.fillDefaults().grab(true, false).applyTo(separator);
+    private void createAutoScaleSection()
+    {
+        var separator = new Label(getFieldEditorParent(), SWT.HORIZONTAL);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(separator);
 
-            var statusComposite = new Composite(getFieldEditorParent(), SWT.NONE);
-            GridLayoutFactory.fillDefaults().numColumns(2).spacing(10, 5).applyTo(statusComposite);
-            GridDataFactory.fillDefaults().grab(true, false).applyTo(statusComposite);
+        var autoScaleComposite = new Composite(getFieldEditorParent(), SWT.NONE);
+        GridLayoutFactory.fillDefaults().numColumns(2).spacing(10, 5).applyTo(autoScaleComposite);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(autoScaleComposite);
 
-            var statusTitleLabel = new Label(statusComposite, SWT.NONE);
-            statusTitleLabel.setText("Monitor-specific scaling:"); //$NON-NLS-1$
+        var autoScaleLabel = new Label(autoScaleComposite, SWT.NONE);
+        autoScaleLabel.setText(Messages.PrefLabelSwtAutoScale);
 
-            statusLabel = new Label(statusComposite, SWT.NONE);
-            GridDataFactory.fillDefaults().grab(true, false).applyTo(statusLabel);
+        autoScaleCombo = new Combo(autoScaleComposite, SWT.READ_ONLY);
+        autoScaleCombo.setItems(getAutoScaleLabels());
+        autoScaleCombo.addSelectionListener(SelectionListener.widgetSelectedAdapter(event -> updateAutoScale()));
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(autoScaleCombo);
 
-            actionButton = new Button(getFieldEditorParent(), SWT.PUSH);
-            GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(actionButton);
-            actionButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(event -> toggleProperty()));
-
-            loadIniFile();
-            updateUI();
-        }
+        updateAutoScaleUI();
     }
 
     private void loadIniFile()
@@ -76,66 +79,48 @@ public class ExperimentsPreferencePage extends FieldEditorPreferencePage
         try
         {
             iniFileManipulator.load();
-            hasProperty = iniFileManipulator.hasMonitorSpecificScaling();
+            autoScaleValue = iniFileManipulator.getVmProperty(SWT_AUTOSCALE);
             iniFileAvailable = true;
         }
         catch (FileNotFoundException e)
         {
             PortfolioPlugin.log(e);
-            hasProperty = false;
+            autoScaleValue = null;
             iniFileAvailable = false;
         }
         catch (IOException e)
         {
             PortfolioPlugin.log(e);
             MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError, e.getMessage());
-            hasProperty = false;
+            autoScaleValue = null;
             iniFileAvailable = false;
         }
     }
 
-    @SuppressWarnings("nls")
-    private void updateUI()
+    private void updateAutoScaleUI()
     {
-        if (!iniFileAvailable)
-        {
-            statusLabel.setText("unknown");
-            actionButton.setText("not available");
-            actionButton.setEnabled(false);
-        }
-        else if (hasProperty)
-        {
-            statusLabel.setText("enabled");
-            actionButton.setText("Disable");
-            actionButton.setEnabled(true);
-        }
+        var autoScaleIndex = getAutoScaleIndex(autoScaleValue);
+        if (autoScaleIndex >= 0)
+            autoScaleCombo.select(autoScaleIndex);
         else
-        {
-            statusLabel.setText("disabled");
-            actionButton.setText("Enable");
-            actionButton.setEnabled(true);
-        }
-        statusLabel.getParent().layout(true, true);
+            autoScaleCombo.deselectAll();
+        autoScaleCombo.setEnabled(iniFileAvailable);
     }
 
-    private void toggleProperty()
+    private void updateAutoScale()
     {
+        var selectedValue = getSelectedAutoScaleValue();
+        if (!iniFileAvailable || java.util.Objects.equals(autoScaleValue, selectedValue))
+            return;
+
         try
         {
-            if (hasProperty)
-            {
-                iniFileManipulator.removeMonitorSpecificScaling();
-            }
-            else
-            {
-                iniFileManipulator.addMonitorSpecificScaling();
-            }
+            iniFileManipulator.setSwtAutoScale(selectedValue);
 
             if (iniFileManipulator.isDirty())
             {
                 iniFileManipulator.save();
-                hasProperty = !hasProperty;
-                updateUI();
+                autoScaleValue = selectedValue;
 
                 MessageDialog.openInformation(Display.getDefault().getActiveShell(), "Success", //$NON-NLS-1$
                                 Messages.MsgThemeRestartRequired);
@@ -145,6 +130,47 @@ public class ExperimentsPreferencePage extends FieldEditorPreferencePage
         {
             PortfolioPlugin.log(e);
             MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError, e.getMessage());
+            updateAutoScaleUI();
         }
+    }
+
+    @SuppressWarnings("nls")
+    private String[] getAutoScaleLabels()
+    {
+        return new String[] { Messages.PrefLabelSwtAutoScaleAutomatic, "75%", "100%", "125%", "150%", "175%", "200%" };
+    }
+
+    private String getSelectedAutoScaleValue()
+    {
+        return switch (autoScaleCombo.getSelectionIndex())
+        {
+            case 1 -> SWT_AUTOSCALE_75_PERCENT;
+            case 2 -> SWT_AUTOSCALE_DISABLED;
+            case 3 -> SWT_AUTOSCALE_125_PERCENT;
+            case 4 -> SWT_AUTOSCALE_150_PERCENT;
+            case 5 -> SWT_AUTOSCALE_175_PERCENT;
+            case 6 -> SWT_AUTOSCALE_200_PERCENT;
+            default -> null;
+        };
+    }
+
+    private int getAutoScaleIndex(String value)
+    {
+        if (value == null)
+            return 0;
+        else if (SWT_AUTOSCALE_75_PERCENT.equals(value))
+            return 1;
+        else if (SWT_AUTOSCALE_DISABLED.equals(value))
+            return 2;
+        else if (SWT_AUTOSCALE_125_PERCENT.equals(value))
+            return 3;
+        else if (SWT_AUTOSCALE_150_PERCENT.equals(value))
+            return 4;
+        else if (SWT_AUTOSCALE_175_PERCENT.equals(value))
+            return 5;
+        else if (SWT_AUTOSCALE_200_PERCENT.equals(value))
+            return 6;
+        else
+            return -1;
     }
 }

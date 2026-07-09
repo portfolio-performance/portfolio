@@ -1262,6 +1262,8 @@ public class Messages extends NLS
     public static String PrefLabelDisplayPA;
     public static String PrefLabelEnableExperimentalFeatures;
     public static String PrefLabelNote;
+    public static String PrefLabelSwtAutoScale;
+    public static String PrefLabelSwtAutoScaleAutomatic;
     public static String PrefLabelProxyHost;
     public static String PrefLabelProxyPort;
     public static String PrefLabelQuoteDigits;
