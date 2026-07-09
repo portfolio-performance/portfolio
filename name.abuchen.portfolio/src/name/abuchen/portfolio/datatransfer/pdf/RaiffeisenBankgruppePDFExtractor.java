@@ -267,7 +267,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^.*(Private Banking|Abrechnungsnr|Gesch.ftsart|Anlageverm.gen).*$", "^(Den Betrag buchen|Der Betrag wird|Dieser Beleg (tr.gt|wurde|wird)).*$");
+        var firstRelevantLine = new Block("^.*(Abrechnungsnr|Gesch.ftsart|Anlageverm.gen).*$", "^(Den Betrag buchen|Der Betrag wird|Dieser Beleg (tr.gt|wurde|wird)).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 

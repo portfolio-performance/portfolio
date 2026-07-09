@@ -1662,6 +1662,44 @@ public class RaiffeisenbankgruppePDFExtractorTest
     }
 
     @Test
+    public void testDividende14()
+    {
+        var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende14.txt"), errors);
+
+        errors.forEach(Exception::printStackTrace);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("AT0000821103"), hasWkn(null), hasTicker(null), //
+                        hasName("UNIQA Insurance Group AG Stamm-Aktien o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-06-22T00:00"), hasExDate("2026-06-18T00:00"), //
+                        hasShares(261.00), //
+                        hasSource("Dividende14.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 136.24), hasGrossValue("EUR", 187.92), //
+                        hasTaxes("EUR", 51.68), hasFees("EUR", 0.00))));
+
+    }
+
+    @Test
     public void testKontoauszug01()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());

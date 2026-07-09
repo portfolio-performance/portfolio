@@ -225,7 +225,8 @@ public class BindingHelper
         IObservableValue<String> statusTarget = WidgetProperties.text().observe(errorLabel);
         IObservableValue<IStatus> statusModel = new AggregateValidationStatus(context,
                         AggregateValidationStatus.MAX_SEVERITY);
-        context.bindValue(statusTarget, statusModel, null,
+        context.bindValue(statusTarget, statusModel,
+                        new UpdateValueStrategy<String, IStatus>(UpdateValueStrategy.POLICY_NEVER),
                         new UpdateValueStrategy<IStatus, String>().setConverter(new StatusTextConverter()));
     }
 
