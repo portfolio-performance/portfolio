@@ -11,6 +11,8 @@ import java.util.HashSet;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionBasisMethod;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionBasisStatus;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionKind;
@@ -323,6 +325,62 @@ public class LedgerEntryDefinitionTest
         assertTrue(forexLeg.getGroupNames().isEmpty());
     }
 
+    @Test
+    public void testCorporateActionLegsConfigureVisibleProjectionTypesDirectly()
+    {
+        var spinOff = LedgerEntryDefinitionRegistry
+                        .lookup(LedgerEntryType.CORPORATE_ACTION, CorporateActionKind.SPIN_OFF).orElseThrow();
+        assertPortfolioProjection(spinOff.getLegDefinition(LedgerLegRole.SOURCE_SECURITY_LEG).orElseThrow(),
+                        LedgerProjectionRole.OLD_SECURITY_LEG, PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+        assertPortfolioProjection(spinOff.getLegDefinition(LedgerLegRole.TARGET_SECURITY_LEG).orElseThrow(),
+                        LedgerProjectionRole.NEW_SECURITY_LEG, PortfolioTransaction.Type.DELIVERY_INBOUND);
+        assertAccountProjection(spinOff.getLegDefinition(LedgerLegRole.CASH_COMPENSATION_LEG).orElseThrow(),
+                        LedgerProjectionRole.CASH_COMPENSATION, AccountTransaction.Type.DEPOSIT);
+        assertNoProjection(spinOff.getLegDefinition(LedgerLegRole.SECURITY_CONTEXT_LEG).orElseThrow());
+        assertNoProjection(spinOff.getLegDefinition(LedgerLegRole.FEE_LEG).orElseThrow());
+        assertNoProjection(spinOff.getLegDefinition(LedgerLegRole.TAX_LEG).orElseThrow());
+
+        var cashDistribution = LedgerEntryDefinitionRegistry
+                        .lookup(LedgerEntryType.CORPORATE_ACTION, CorporateActionKind.CASH_DISTRIBUTION)
+                        .orElseThrow();
+        assertAccountProjection(cashDistribution.getLegDefinition(LedgerLegRole.CASH_LEG).orElseThrow(),
+                        LedgerProjectionRole.ACCOUNT, AccountTransaction.Type.DIVIDENDS);
+        assertNoProjection(cashDistribution.getLegDefinition(LedgerLegRole.SECURITY_CONTEXT_LEG).orElseThrow());
+
+        var couponPayment = LedgerEntryDefinitionRegistry
+                        .lookup(LedgerEntryType.CORPORATE_ACTION, CorporateActionKind.COUPON_PAYMENT)
+                        .orElseThrow();
+        assertAccountProjection(couponPayment.getLegDefinition(LedgerLegRole.CASH_LEG).orElseThrow(),
+                        LedgerProjectionRole.ACCOUNT, AccountTransaction.Type.INTEREST);
+        assertNoProjection(couponPayment.getLegDefinition(LedgerLegRole.ACCRUED_INTEREST_LEG).orElseThrow());
+
+        var defaultedInterest = LedgerEntryDefinitionRegistry
+                        .lookup(LedgerEntryType.CORPORATE_ACTION, CorporateActionKind.DEFAULTED_INTEREST)
+                        .orElseThrow();
+        assertAccountProjection(defaultedInterest.getLegDefinition(LedgerLegRole.FEE_LEG).orElseThrow(),
+                        LedgerProjectionRole.ACCOUNT, AccountTransaction.Type.FEES);
+        assertAccountProjection(defaultedInterest.getLegDefinition(LedgerLegRole.TAX_LEG).orElseThrow(),
+                        LedgerProjectionRole.ACCOUNT, AccountTransaction.Type.TAXES);
+    }
+
+    @Test
+    public void testLegProjectionApiCanRepresentBuyAndSellVisibleTypes()
+    {
+        var buyLeg = LedgerLegDefinition
+                        .of(LedgerLegRole.TARGET_SECURITY_LEG, LedgerPostingType.SECURITY,
+                                        LedgerLegCardinality.EXACTLY_ONE)
+                        .projection(LedgerProjectionRole.NEW_SECURITY_LEG, PortfolioTransaction.Type.BUY, true, false)
+                        .build();
+        var sellLeg = LedgerLegDefinition
+                        .of(LedgerLegRole.SOURCE_SECURITY_LEG, LedgerPostingType.SECURITY,
+                                        LedgerLegCardinality.EXACTLY_ONE)
+                        .projection(LedgerProjectionRole.OLD_SECURITY_LEG, PortfolioTransaction.Type.SELL, true, false)
+                        .build();
+
+        assertPortfolioProjection(buyLeg, LedgerProjectionRole.NEW_SECURITY_LEG, PortfolioTransaction.Type.BUY);
+        assertPortfolioProjection(sellLeg, LedgerProjectionRole.OLD_SECURITY_LEG, PortfolioTransaction.Type.SELL);
+    }
+
     /**
      * Checks the ledger rule scenario: corporate action kinds can be registered as stable
      * identities before all Registry.md profile dimensions are modeled. Definitions only
@@ -375,7 +433,8 @@ public class LedgerEntryDefinitionTest
                         LedgerLegCardinality.OPTIONAL);
         assertLeg(stockDividend, LedgerLegRole.CASH_COMPENSATION_LEG, LedgerPostingType.CASH_COMPENSATION,
                         LedgerLegCardinality.REPEATABLE);
-        assertTrue(stockDividend.getProjectionRoles().isEmpty());
+        assertPortfolioProjection(stockDividend.getLegDefinition(LedgerLegRole.TARGET_SECURITY_LEG).orElseThrow(),
+                        LedgerProjectionRole.NEW_SECURITY_LEG, PortfolioTransaction.Type.DELIVERY_INBOUND);
 
         var spinOff = LedgerEntryDefinitionRegistry
                         .lookup(LedgerEntryType.CORPORATE_ACTION, CorporateActionKind.SPIN_OFF).orElseThrow();
@@ -761,6 +820,31 @@ public class LedgerEntryDefinitionTest
         }
 
         assertTrue(name, false);
+    }
+
+    private void assertAccountProjection(LedgerLegDefinition leg, LedgerProjectionRole role, AccountTransaction.Type type)
+    {
+        assertTrue(leg.getProjection().isAccountProjection());
+        assertThat(leg.getProjectionRole().orElseThrow(), is(role));
+        assertThat(leg.getProjection().getAccountTransactionType().orElseThrow(), is(type));
+        assertTrue(leg.getProjection().getPortfolioTransactionType().isEmpty());
+    }
+
+    private void assertPortfolioProjection(LedgerLegDefinition leg, LedgerProjectionRole role,
+                    PortfolioTransaction.Type type)
+    {
+        assertTrue(leg.getProjection().isPortfolioProjection());
+        assertThat(leg.getProjectionRole().orElseThrow(), is(role));
+        assertThat(leg.getProjection().getPortfolioTransactionType().orElseThrow(), is(type));
+        assertTrue(leg.getProjection().getAccountTransactionType().isEmpty());
+    }
+
+    private void assertNoProjection(LedgerLegDefinition leg)
+    {
+        assertFalse(leg.getProjection().isProjecting());
+        assertTrue(leg.getProjectionRole().isEmpty());
+        assertTrue(leg.getProjection().getAccountTransactionType().isEmpty());
+        assertTrue(leg.getProjection().getPortfolioTransactionType().isEmpty());
     }
 
     private boolean hasPostingRule(Iterable<LedgerPostingRule> rules, LedgerPostingType postingType)

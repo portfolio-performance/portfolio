@@ -7,19 +7,15 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.LedgerDiagnosticCode;
-import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerParameter;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
-import name.abuchen.portfolio.model.ledger.configuration.CorporateActionKind;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerParameterType;
-import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
 import name.abuchen.portfolio.money.Money;
 
 /**
@@ -114,41 +110,6 @@ public final class LedgerProjectionSupport
         return descriptor.getUnitPostings().stream().map(LedgerProjectionSupport::unit);
     }
 
-    static AccountTransaction.Type targetedAccountType(DerivedProjectionDescriptor descriptor)
-    {
-        return switch (descriptor.getRole())
-        {
-            case CASH_COMPENSATION -> AccountTransaction.Type.DEPOSIT;
-            case ACCOUNT -> corporateActionAccountType(descriptor);
-            default -> throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_PROJ_003
-                            .message("Unsupported targeted account role " + descriptor.getRole())); //$NON-NLS-1$
-        };
-    }
-
-    private static AccountTransaction.Type corporateActionAccountType(DerivedProjectionDescriptor descriptor)
-    {
-        if (descriptor.getPrimaryPosting().getType() == LedgerPostingType.FEE)
-            return AccountTransaction.Type.FEES;
-
-        if (descriptor.getPrimaryPosting().getType() == LedgerPostingType.TAX)
-            return AccountTransaction.Type.TAXES;
-
-        var kind = CorporateActionKind.fromEntry(descriptor.getEntry()).orElse(null);
-
-        if (kind == null)
-            throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_PROJ_003
-                            .message("Unsupported targeted account kind " + kind)); //$NON-NLS-1$
-
-        return switch (kind)
-        {
-            case CASH_DISTRIBUTION -> AccountTransaction.Type.DIVIDENDS;
-            case COUPON_PAYMENT, DEFAULTED_INTEREST -> AccountTransaction.Type.INTEREST;
-            case MATURITY, PARTIAL_REDEMPTION, CALL, PUT, RESTRUCTURING, DEFAULT -> AccountTransaction.Type.DEPOSIT;
-            default -> throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_PROJ_003
-                            .message("Unsupported targeted account kind " + kind)); //$NON-NLS-1$
-        };
-    }
-
     static Optional<Security> securityContext(LedgerEntry entry)
     {
         return entry.getPostings().stream() //
@@ -156,19 +117,6 @@ public final class LedgerProjectionSupport
                         .filter(posting -> posting.getSecurity() != null) //
                         .map(LedgerPosting::getSecurity) //
                         .findFirst();
-    }
-
-    static PortfolioTransaction.Type targetedPortfolioType(LedgerProjectionRole role)
-    {
-        return switch (role)
-        {
-            case DELIVERY_OUTBOUND -> PortfolioTransaction.Type.DELIVERY_OUTBOUND;
-            case DELIVERY_INBOUND -> PortfolioTransaction.Type.DELIVERY_INBOUND;
-            case OLD_SECURITY_LEG -> PortfolioTransaction.Type.DELIVERY_OUTBOUND;
-            case NEW_SECURITY_LEG -> PortfolioTransaction.Type.DELIVERY_INBOUND;
-            default -> throw new UnsupportedOperationException(LedgerDiagnosticCode.LEDGER_PROJ_004
-                            .message("Unsupported targeted portfolio role " + role)); //$NON-NLS-1$
-        };
     }
 
     static Optional<LocalDateTime> exDate(LedgerPosting posting)
@@ -185,25 +133,6 @@ public final class LedgerProjectionSupport
     static UnsupportedOperationException unsupportedMutation()
     {
         return new UnsupportedOperationException("Ledger-backed projections are read-only"); //$NON-NLS-1$
-    }
-
-    static boolean isAccountProjection(LedgerProjectionRole role)
-    {
-        return switch (role)
-        {
-            case ACCOUNT, SOURCE_ACCOUNT, TARGET_ACCOUNT, CASH_COMPENSATION -> true;
-            default -> false;
-        };
-    }
-
-    static boolean isPortfolioProjection(LedgerProjectionRole role)
-    {
-        return switch (role)
-        {
-            case PORTFOLIO, SOURCE_PORTFOLIO, TARGET_PORTFOLIO, DELIVERY, DELIVERY_INBOUND, DELIVERY_OUTBOUND,
-                            OLD_SECURITY_LEG, NEW_SECURITY_LEG -> true;
-            default -> false;
-        };
     }
 
     private static Unit unit(LedgerPosting posting)

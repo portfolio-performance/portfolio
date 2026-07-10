@@ -468,12 +468,14 @@ public final class LedgerNativeEntryDefinitionValidator
                     LedgerLegDefinition leg, LedgerProjectionRole projectionRole, List<ValidationIssue> issues)
     {
         var descriptors = Collections.<name.abuchen.portfolio.model.ledger.projection.DerivedProjectionDescriptor>emptyList();
+        var descriptorDerivationFailed = false;
         try
         {
             descriptors = LedgerProjectionSupport.descriptors(entry);
         }
         catch (IllegalArgumentException ignore)
         {
+            descriptorDerivationFailed = true;
             // Malformed semantic descriptors are reported below as native validation issues.
         }
 
@@ -482,7 +484,9 @@ public final class LedgerNativeEntryDefinitionValidator
                         .filter(posting -> postingMatchesLeg(entry.getType(), posting, leg)).toList();
         var matchingPostings = new ArrayList<LedgerPosting>();
 
-        if (refs.isEmpty() && (requiresLeg(leg.getCardinality()) || !matchingLegPostings.isEmpty()))
+        if (refs.isEmpty() && descriptorDerivationFailed)
+            matchingPostings.addAll(matchingLegPostings);
+        else if (refs.isEmpty() && matchingLegPostings.isEmpty() && requiresLeg(leg.getCardinality()))
             issues.add(issue(IssueCode.REQUIRED_PROJECTION_MISSING,
                             LedgerDiagnosticCode.LEDGER_STRUCT_041
                                             .message("Native leg projection is missing: " + projectionRole), //$NON-NLS-1$
@@ -762,6 +766,16 @@ public final class LedgerNativeEntryDefinitionValidator
                                             .withDetail("legRole", leg.getRole()) //$NON-NLS-1$
                                             .withDetail("expectedValue", expected.get()) //$NON-NLS-1$
                                             .withDetail("actualValue", value.get())); //$NON-NLS-1$
+
+        if (posting.getCorporateActionLeg() != null && !expected.get().equals(posting.getCorporateActionLeg().getCode()))
+            issues.add(issue(IssueCode.LEG_PARAMETER_VALUE_MISMATCH,
+                            LedgerDiagnosticCode.LEDGER_STRUCT_054
+                                            .message("Native leg has unexpected CorporateActionLeg value"), //$NON-NLS-1$
+                            entry)
+                                            .withPosting(posting)
+                                            .withDetail("legRole", leg.getRole()) //$NON-NLS-1$
+                                            .withDetail("expectedValue", expected.get()) //$NON-NLS-1$
+                                            .withDetail("actualValue", posting.getCorporateActionLeg().getCode())); //$NON-NLS-1$
     }
 
     private static boolean postingMatchesLeg(LedgerEntryType entryType, LedgerPosting posting,
@@ -772,7 +786,14 @@ public final class LedgerNativeEntryDefinitionValidator
 
         var expectedLegCode = expectedCorporateActionLegCode(entryType, leg.getRole());
 
-        return expectedLegCode.isEmpty() || parameterValue(posting.getParameters(), LedgerParameterType.CORPORATE_ACTION_LEG)
+        if (expectedLegCode.isEmpty())
+            return true;
+
+        if (posting.getCorporateActionLeg() != null
+                        && !expectedLegCode.get().equals(posting.getCorporateActionLeg().getCode()))
+            return false;
+
+        return parameterValue(posting.getParameters(), LedgerParameterType.CORPORATE_ACTION_LEG)
                         .filter(expectedLegCode.get()::equals).isPresent();
     }
 

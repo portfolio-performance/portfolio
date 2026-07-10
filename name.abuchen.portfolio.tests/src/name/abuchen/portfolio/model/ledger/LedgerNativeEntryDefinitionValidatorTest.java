@@ -792,7 +792,7 @@ public class LedgerNativeEntryDefinitionValidatorTest
         sourcePosting.setGroupKey("main");
         entry.addPosting(sourcePosting);
 
-        assertIssue(entry, IssueCode.REQUIRED_PROJECTION_MISSING);
+        assertIssue(entry, IssueCode.LEG_LOCAL_KEY_DUPLICATE);
     }
 
     @Test
@@ -843,7 +843,7 @@ public class LedgerNativeEntryDefinitionValidatorTest
         duplicateCompensation.setGroupKey("cash-2");
         entry.addPosting(duplicateCompensation);
 
-        assertIssue(entry, IssueCode.REQUIRED_PROJECTION_MISSING);
+        assertIssue(entry, IssueCode.LEG_LOCAL_KEY_DUPLICATE);
     }
 
     /**
@@ -858,7 +858,7 @@ public class LedgerNativeEntryDefinitionValidatorTest
 
         postingFor(entry, LedgerProjectionRole.OLD_SECURITY_LEG).setType(LedgerPostingType.FEE);
 
-        assertIssue(entry, IssueCode.PROJECTION_PRIMARY_POSTING_MISMATCH);
+        assertIssue(entry, IssueCode.LEG_POSTING_NOT_ALLOWED);
     }
 
     /**
@@ -870,10 +870,12 @@ public class LedgerNativeEntryDefinitionValidatorTest
     public void testMissingOldSecurityProjectionIsRejected()
     {
         var entry = copyValidSpinOff();
+        var posting = projection(entry, LedgerProjectionRole.OLD_SECURITY_LEG).getPrimaryPosting();
 
-        projection(entry, LedgerProjectionRole.OLD_SECURITY_LEG).getPrimaryPosting().setCorporateActionLeg(null);
+        posting.setCorporateActionLeg(null);
+        removePostingParameters(posting, LedgerParameterType.CORPORATE_ACTION_LEG);
 
-        assertIssue(entry, IssueCode.REQUIRED_PROJECTION_MISSING);
+        assertIssue(entry, IssueCode.LEG_POSTING_NOT_ALLOWED);
     }
 
     /**
@@ -884,26 +886,32 @@ public class LedgerNativeEntryDefinitionValidatorTest
     public void testMissingNewSecurityProjectionIsRejected()
     {
         var entry = copyValidSpinOff();
+        var posting = projection(entry, LedgerProjectionRole.NEW_SECURITY_LEG).getPrimaryPosting();
 
-        projection(entry, LedgerProjectionRole.NEW_SECURITY_LEG).getPrimaryPosting().setCorporateActionLeg(null);
+        posting.setCorporateActionLeg(null);
+        removePostingParameters(posting, LedgerParameterType.CORPORATE_ACTION_LEG);
 
-        assertIssue(entry, IssueCode.REQUIRED_PROJECTION_MISSING);
+        assertIssue(entry, IssueCode.LEG_CARDINALITY_VIOLATED);
     }
 
     /**
-     * Checks that the old security projection must point to the source posting.
-     * Pointing it at the target posting would make the source and target sides
-     * contradict the native leg definitions.
+     * Checks that a source-side posting edited to target semantics is validated
+     * as another target-side posting. There is no separate projection reference
+     * after direct leg projection configuration.
      */
     @Test
-    public void testOldSecurityProjectionPointingToTargetPostingIsRejected()
+    public void testSourcePostingWithTargetSemanticsIsAcceptedAsTargetPosting()
     {
         var entry = copyValidSpinOff();
         var targetPosting = postingFor(entry, LedgerProjectionRole.NEW_SECURITY_LEG);
+        var posting = projection(entry, LedgerProjectionRole.OLD_SECURITY_LEG).getPrimaryPosting();
 
-        projection(entry, LedgerProjectionRole.OLD_SECURITY_LEG).getPrimaryPosting().setCorporateActionLeg(targetPosting.getCorporateActionLeg());
+        posting.setCorporateActionLeg(targetPosting.getCorporateActionLeg());
+        removePostingParameters(posting, LedgerParameterType.CORPORATE_ACTION_LEG);
+        posting.addParameter(LedgerParameter.ofString(LedgerParameterType.CORPORATE_ACTION_LEG,
+                        targetPosting.getCorporateActionLeg().getCode()));
 
-        assertIssue(entry, IssueCode.REQUIRED_PROJECTION_MISSING);
+        assertOK(entry);
     }
 
     /**
@@ -916,10 +924,14 @@ public class LedgerNativeEntryDefinitionValidatorTest
     {
         var entry = copyValidSpinOff();
         var sourcePosting = postingFor(entry, LedgerProjectionRole.OLD_SECURITY_LEG);
+        var posting = projection(entry, LedgerProjectionRole.NEW_SECURITY_LEG).getPrimaryPosting();
 
-        projection(entry, LedgerProjectionRole.NEW_SECURITY_LEG).getPrimaryPosting().setCorporateActionLeg(sourcePosting.getCorporateActionLeg());
+        posting.setCorporateActionLeg(sourcePosting.getCorporateActionLeg());
+        removePostingParameters(posting, LedgerParameterType.CORPORATE_ACTION_LEG);
+        posting.addParameter(LedgerParameter.ofString(LedgerParameterType.CORPORATE_ACTION_LEG,
+                        sourcePosting.getCorporateActionLeg().getCode()));
 
-        assertIssue(entry, IssueCode.REQUIRED_PROJECTION_MISSING);
+        assertIssue(entry, IssueCode.LEG_CARDINALITY_VIOLATED);
     }
 
     /**

@@ -6,10 +6,13 @@ import java.util.Objects;
 import java.util.Optional;
 
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
+import name.abuchen.portfolio.model.ledger.configuration.LedgerLegProjection;
 
 /**
  * Runtime-only description of a compatibility projection derived from Ledger
@@ -20,6 +23,7 @@ public final class DerivedProjectionDescriptor
     private final LedgerEntry entry;
     private final LedgerProjectionRole role;
     private final DerivedProjectionViewKind viewKind;
+    private final LedgerLegProjection projection;
     private final Account account;
     private final Portfolio portfolio;
     private final LedgerPosting primaryPosting;
@@ -29,20 +33,22 @@ public final class DerivedProjectionDescriptor
     private final String unitSelector;
 
     DerivedProjectionDescriptor(LedgerEntry entry, LedgerProjectionRole role, DerivedProjectionViewKind viewKind,
-                    Account account, Portfolio portfolio, LedgerPosting primaryPosting, List<LedgerPosting> unitPostings,
-                    String primarySelector, String unitSelector)
+                    LedgerLegProjection projection, Account account, Portfolio portfolio, LedgerPosting primaryPosting,
+                    List<LedgerPosting> unitPostings, String primarySelector, String unitSelector)
     {
-        this(entry, role, viewKind, account, portfolio, primaryPosting, unitPostings, null, primarySelector,
+        this(entry, role, viewKind, projection, account, portfolio, primaryPosting, unitPostings, null, primarySelector,
                         unitSelector);
     }
 
     DerivedProjectionDescriptor(LedgerEntry entry, LedgerProjectionRole role, DerivedProjectionViewKind viewKind,
-                    Account account, Portfolio portfolio, LedgerPosting primaryPosting, List<LedgerPosting> unitPostings,
-                    String semanticInstanceKey, String primarySelector, String unitSelector)
+                    LedgerLegProjection projection, Account account, Portfolio portfolio, LedgerPosting primaryPosting,
+                    List<LedgerPosting> unitPostings, String semanticInstanceKey, String primarySelector,
+                    String unitSelector)
     {
         this.entry = Objects.requireNonNull(entry);
         this.role = Objects.requireNonNull(role);
         this.viewKind = Objects.requireNonNull(viewKind);
+        this.projection = Objects.requireNonNull(projection);
         this.account = account;
         this.portfolio = portfolio;
         this.primaryPosting = Objects.requireNonNull(primaryPosting);
@@ -75,6 +81,21 @@ public final class DerivedProjectionDescriptor
     public DerivedProjectionViewKind getViewKind()
     {
         return viewKind;
+    }
+
+    public LedgerLegProjection getProjection()
+    {
+        return projection;
+    }
+
+    public AccountTransaction.Type getAccountTransactionType()
+    {
+        return projection.getAccountTransactionType().orElseThrow();
+    }
+
+    public PortfolioTransaction.Type getPortfolioTransactionType()
+    {
+        return projection.getPortfolioTransactionType().orElseThrow();
     }
 
     public Account getAccount()

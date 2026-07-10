@@ -17,6 +17,11 @@ import name.abuchen.portfolio.model.ledger.LedgerPostingUnitRole;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionKind;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
+import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryDefinitionRegistry;
+import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
+import name.abuchen.portfolio.model.ledger.configuration.LedgerLegDefinition;
+import name.abuchen.portfolio.model.ledger.configuration.LedgerLegProjection;
+import name.abuchen.portfolio.model.ledger.configuration.LedgerLegRole;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerParameterType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
 
@@ -354,8 +359,17 @@ public final class DerivedProjectionDescriptorService
             return java.util.Optional.empty();
         }
 
-        return java.util.Optional.of(new DerivedProjectionDescriptor(entry, role, viewKind, account, portfolio,
-                        primary, unitPostings(entry, primary), primarySelector(role), unitSelector(primary)));
+        var projection = projection(entry, role, viewKind, primary);
+
+        if (projection.isEmpty())
+        {
+            diagnostics.add(Diagnostic.missing(entry, role, "Projection definition is missing")); //$NON-NLS-1$
+            return java.util.Optional.empty();
+        }
+
+        return java.util.Optional.of(new DerivedProjectionDescriptor(entry, role, viewKind, projection.get(), account,
+                        portfolio, primary, unitPostings(entry, primary), primarySelector(role),
+                        unitSelector(primary)));
     }
 
     private List<DerivedProjectionDescriptor> repeatedDescriptors(LedgerEntry entry, LedgerProjectionRole role,
@@ -405,8 +419,17 @@ public final class DerivedProjectionDescriptorService
                 continue;
             }
 
-            descriptors.add(new DerivedProjectionDescriptor(entry, role, viewKind, account, portfolio, primary,
-                            unitPostings(entry, primary), primary.getLocalKey(),
+            var projection = projection(entry, role, viewKind, primary);
+
+            if (projection.isEmpty())
+            {
+                diagnostics.add(Diagnostic.missing(entry, role, "Projection definition is missing")); //$NON-NLS-1$
+                invalid = true;
+                continue;
+            }
+
+            descriptors.add(new DerivedProjectionDescriptor(entry, role, viewKind, projection.get(), account,
+                            portfolio, primary, unitPostings(entry, primary), primary.getLocalKey(),
                             primarySelector(role, primary.getLocalKey()), unitSelector(primary)));
         }
 
@@ -419,6 +442,70 @@ public final class DerivedProjectionDescriptorService
     private List<LedgerPosting> matches(LedgerEntry entry, Predicate<LedgerPosting> selector)
     {
         return entry.getPostings().stream().filter(selector).toList();
+    }
+
+    private java.util.Optional<LedgerLegProjection> projection(LedgerEntry entry, LedgerProjectionRole role,
+                    DerivedProjectionViewKind viewKind, LedgerPosting primary)
+    {
+        return LedgerEntryDefinitionRegistry.lookup(entry).stream() //
+                        .flatMap(definition -> definition.getLegDefinitions().stream()) //
+                        .filter(leg -> postingMatchesLeg(entry.getType(), primary, leg)) //
+                        .filter(leg -> leg.getProjection().isProjecting()) //
+                        .filter(leg -> leg.getProjectionRole().filter(role::equals).isPresent()
+                                        || matchesViewKind(leg.getProjection(), viewKind))
+                        .map(LedgerLegDefinition::getProjection) //
+                        .findFirst();
+    }
+
+    private boolean matchesViewKind(LedgerLegProjection projection, DerivedProjectionViewKind viewKind)
+    {
+        return (viewKind == DerivedProjectionViewKind.ACCOUNT && projection.isAccountProjection())
+                        || (viewKind == DerivedProjectionViewKind.PORTFOLIO && projection.isPortfolioProjection());
+    }
+
+    private boolean postingMatchesLeg(LedgerEntryType entryType, LedgerPosting posting, LedgerLegDefinition leg)
+    {
+        if (posting.getType() != leg.getPostingType())
+            return false;
+
+        var expectedLegCode = expectedCorporateActionLegCode(entryType, leg.getRole());
+
+        return expectedLegCode.isEmpty() || corporateActionLeg(posting) == expectedLegCode.get();
+    }
+
+    private java.util.Optional<CorporateActionLeg> expectedCorporateActionLegCode(LedgerEntryType entryType,
+                    LedgerLegRole role)
+    {
+        if (entryType == LedgerEntryType.CORPORATE_ACTION)
+        {
+            if (role == LedgerLegRole.SOURCE_SECURITY_LEG)
+                return java.util.Optional.of(CorporateActionLeg.SOURCE_SECURITY);
+            if (role == LedgerLegRole.TARGET_SECURITY_LEG)
+                return java.util.Optional.of(CorporateActionLeg.TARGET_SECURITY);
+            if (role == LedgerLegRole.SECURITY_CONTEXT_LEG)
+                return java.util.Optional.of(CorporateActionLeg.SECURITY_CONTEXT);
+            if (role == LedgerLegRole.RECEIVED_SECURITY_LEG)
+                return java.util.Optional.of(CorporateActionLeg.TARGET_SECURITY);
+            if (role == LedgerLegRole.DISTRIBUTED_SECURITY_LEG)
+                return java.util.Optional.of(CorporateActionLeg.DISTRIBUTED_SECURITY);
+            if (role == LedgerLegRole.DISTRIBUTED_RIGHT_LEG)
+                return java.util.Optional.of(CorporateActionLeg.RIGHT_SECURITY);
+            if (role == LedgerLegRole.SOURCE_BOND_LEG)
+                return java.util.Optional.of(CorporateActionLeg.SOURCE_SECURITY);
+            if (role == LedgerLegRole.PRINCIPAL_REDEMPTION_LEG)
+                return java.util.Optional.of(CorporateActionLeg.PRINCIPAL);
+        }
+
+        if (role == LedgerLegRole.CASH_COMPENSATION_LEG)
+            return java.util.Optional.of(CorporateActionLeg.CASH_COMPENSATION);
+        if (role == LedgerLegRole.FEE_LEG)
+            return java.util.Optional.of(CorporateActionLeg.FEE);
+        if (role == LedgerLegRole.TAX_LEG)
+            return java.util.Optional.of(CorporateActionLeg.TAX);
+        if (role == LedgerLegRole.ACCRUED_INTEREST_LEG)
+            return java.util.Optional.of(CorporateActionLeg.ACCRUED_INTEREST);
+
+        return java.util.Optional.empty();
     }
 
     private List<LedgerPosting> unitPostings(LedgerEntry entry, LedgerPosting primary)

@@ -7,10 +7,12 @@ import java.util.List;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
 import name.abuchen.portfolio.model.ledger.LedgerPostingDirection;
 import name.abuchen.portfolio.model.ledger.LedgerPostingUnitRole;
+import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerNativeEntryDefinitionValidator.IssueCode;
 
 /**
@@ -87,8 +89,8 @@ public class LedgerNativeEntryDefinitionValidatorPolicyTest
     private LedgerLegDefinition leg(LedgerLegCardinality cardinality)
     {
         return LedgerLegDefinition.of(LedgerLegRole.TARGET_SECURITY_LEG, LedgerPostingType.SECURITY, cardinality)
-                        .projection(name.abuchen.portfolio.model.ledger.LedgerProjectionRole.NEW_SECURITY_LEG, true,
-                                        false)
+                        .projection(LedgerProjectionRole.NEW_SECURITY_LEG,
+                                        PortfolioTransaction.Type.DELIVERY_INBOUND, true, false)
                         .build();
     }
 

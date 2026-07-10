@@ -60,7 +60,7 @@ public final class LedgerBackedPortfolioTransaction extends PortfolioTransaction
     @Override
     public Type getType()
     {
-        return LedgerProjectionSupport.targetedPortfolioType(descriptor.getRole());
+        return descriptor.getPortfolioTransactionType();
     }
 
     @Override

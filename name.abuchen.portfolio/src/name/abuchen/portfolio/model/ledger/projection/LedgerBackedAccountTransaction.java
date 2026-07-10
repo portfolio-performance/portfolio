@@ -62,7 +62,7 @@ public final class LedgerBackedAccountTransaction extends AccountTransaction imp
     @Override
     public Type getType()
     {
-        return LedgerProjectionSupport.targetedAccountType(descriptor);
+        return descriptor.getAccountTransactionType();
     }
 
     @Override

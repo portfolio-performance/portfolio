@@ -7,7 +7,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.LedgerDiagnosticCode;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 
 /**
@@ -23,9 +25,7 @@ public final class LedgerLegDefinition
     private final LedgerLegCardinality cardinality;
     private final Set<LedgerParameterType> requiredParameterTypes;
     private final Set<LedgerParameterType> optionalParameterTypes;
-    private final LedgerProjectionRole projectionRole;
-    private final boolean primaryPostingExpected;
-    private final boolean postingGroupExpected;
+    private final LedgerLegProjection projection;
     private final Set<String> groupNames;
     private final LedgerReportingClass reportingClass;
     private final LedgerPerformanceTreatment performanceTreatment;
@@ -37,9 +37,7 @@ public final class LedgerLegDefinition
         this.cardinality = Objects.requireNonNull(builder.cardinality);
         this.requiredParameterTypes = copyParameterTypes(builder.requiredParameterTypes);
         this.optionalParameterTypes = copyParameterTypes(builder.optionalParameterTypes);
-        this.projectionRole = builder.projectionRole;
-        this.primaryPostingExpected = builder.primaryPostingExpected;
-        this.postingGroupExpected = builder.postingGroupExpected;
+        this.projection = Objects.requireNonNull(builder.projection);
         this.groupNames = copyGroupNames(builder.groupNames);
         this.reportingClass = Objects.requireNonNull(builder.reportingClass);
         this.performanceTreatment = Objects.requireNonNull(builder.performanceTreatment);
@@ -77,17 +75,22 @@ public final class LedgerLegDefinition
 
     public Optional<LedgerProjectionRole> getProjectionRole()
     {
-        return Optional.ofNullable(projectionRole);
+        return projection.getRole();
+    }
+
+    public LedgerLegProjection getProjection()
+    {
+        return projection;
     }
 
     public boolean isPrimaryPostingExpected()
     {
-        return primaryPostingExpected;
+        return projection.isPrimaryPostingExpected();
     }
 
     public boolean isPostingGroupExpected()
     {
-        return postingGroupExpected;
+        return projection.isPostingGroupExpected();
     }
 
     public Set<String> getGroupNames()
@@ -138,9 +141,7 @@ public final class LedgerLegDefinition
         private final LedgerLegCardinality cardinality;
         private final Set<LedgerParameterType> requiredParameterTypes = EnumSet.noneOf(LedgerParameterType.class);
         private final Set<LedgerParameterType> optionalParameterTypes = EnumSet.noneOf(LedgerParameterType.class);
-        private LedgerProjectionRole projectionRole;
-        private boolean primaryPostingExpected;
-        private boolean postingGroupExpected;
+        private LedgerLegProjection projection = LedgerLegProjection.none();
         private final Set<String> groupNames = new LinkedHashSet<String>();
         private LedgerReportingClass reportingClass = LedgerReportingClass.UNDEFINED;
         private LedgerPerformanceTreatment performanceTreatment = LedgerPerformanceTreatment.UNDEFINED;
@@ -164,12 +165,23 @@ public final class LedgerLegDefinition
             return this;
         }
 
-        public Builder projection(LedgerProjectionRole role, boolean primaryPostingExpected,
-                        boolean postingGroupExpected)
+        public Builder projection(LedgerProjectionRole role, AccountTransaction.Type type,
+                        boolean primaryPostingExpected, boolean postingGroupExpected)
         {
-            this.projectionRole = Objects.requireNonNull(role);
-            this.primaryPostingExpected = primaryPostingExpected;
-            this.postingGroupExpected = postingGroupExpected;
+            this.projection = LedgerLegProjection.account(role, type, primaryPostingExpected, postingGroupExpected);
+            return this;
+        }
+
+        public Builder projection(LedgerProjectionRole role, PortfolioTransaction.Type type,
+                        boolean primaryPostingExpected, boolean postingGroupExpected)
+        {
+            this.projection = LedgerLegProjection.portfolio(role, type, primaryPostingExpected, postingGroupExpected);
+            return this;
+        }
+
+        public Builder noProjection()
+        {
+            this.projection = LedgerLegProjection.none();
             return this;
         }
 
