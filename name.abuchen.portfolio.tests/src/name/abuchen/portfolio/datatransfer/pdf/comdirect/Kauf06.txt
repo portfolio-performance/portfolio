@@ -1,0 +1,95 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.84.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Ihren Auftrag haben wir gemäß unseren produktbezogenen
+Geschäftsbedingungen "Trading" wie nachstehend ausgeführt.
+Die Wertpapiere haben wir der Abrechnung entsprechend gebucht.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und
+Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+25449 Quickborn
+Telefon : 04106-708 25 00
+10270 010
+Depotnr.: 1396306 00
+BLZ: 200 411 33
+tkeOJoBTw WrEZp
+Max-Reger-mkt 71
+76046 KPYscHpdg
+GESCHÄFTSABRECHNUNG VOM 09.07.2026
+*
+Wertpapierkauf
+Geschäftsnummer : 92 038507 bis 92 038508
+Ordernummer : 000532542608 Rechnungsnummer : 710725441378D0A5
+Geschäftstag : 09.07.2026 Ausführungsplatz : TRADEGATE
+(Kommissionsgeschäft)
+Wertpapier-Bezeichnung WPKNR/ISIN
+Vanguard S&P 500 UCITS ETF A1JX53
+Registered Shares USD Dis.oN IE00B3XXRP09
+Ihre Order wurde wie folgt ausgeführt:
+Handelszeit Nennwert Zum Kurs von Kurswert
+11:03 St. 96 EUR 124,345 EUR 11.937,12
+11:03 St. 24 EUR 124,345 EUR 2.984,28
+--------------------------------------------------------------------------------
+Summe St. 120 EUR 124,345 EUR 14.921,40
+(ggf. gerundet)
+--------------------------------------------------------------------------------
+Eigene Entgelte
+Abwickl.entgelt Clearstream : EUR 5,80
+Gesamtprovision : EUR 59,90
+Börsenplatzabhäng. Entgelt : EUR 3,85
+Summe Entgelte : EUR 69,55
+--------------------------------------------------------------------------------
+IBAN Valuta Zu Ihren Lasten vor Steuern
+DE61 2004 1133 0705 9999 99 EUR 13.07.2026 EUR 14.990,95
+Verwahrungs-Art: WERTPAPIERRECHNUNG GROSSBRITANNIEN (AKV)
+Ihre Wertpapier-Order wurde über das Online Banking erteilt.
+Teilausführung Ihrer Order
+Informationen zur steuerlichen Behandlung dieses Geschäftsvorgangs und den auf
+Ihrem Konto gebuchten Endbetrag finden Sie auf der separaten Steuermitteilung.
+Bei Fragen geben Sie bitte die Ordernummer an.
+Ihre comdirect
+Diese Abrechnung wird von der Bank nicht unterschrieben
+Die Leistung ist gemäß §4 Nr.8 UStG umsatzsteuerfrei. USt-Id-Nr.: DE 114 103 514
+A113
+DO15DD/16/04/2010
+Kundennr. /BLZ Bezeichnung
+zHFyKvnLJ oBDqA
+7313649
+Max-Reger-aqu 53
+200 411 89 71187 edGxnjjBK
+abweichend wirtschaftlich Berechtigter
+----
+comdirect
+25451 Quickborn
+010 10270
+Telefon: 04106 - 708 25 00
+Herrn Datum: 09.07.2026
+iTTiBZRoc FBMPu Depotnummer: 5984289 00
+Max-Reger-UFO 51
+16683 UHWKPezXp Referenz-Nummer: 13INKOAAYEM0004U
+Steuerliche Behandlung: Wertpapierkauf Nr. 92038507 vom 09.07.2026
+Stk. 120 VANGUARD S+P 500U.ETF DLD , WKN / ISIN: A1JX53 / IE00B3XXRP09
+Zu Ihren Lasten vor Steuern: EUR -14.990,95
+Steuerbemessungsgrundlage EUR 0,00
+Kapitalertragsteuer EUR 0,00
+Solidaritätszuschlag EUR 0,00
+Kirchensteuer E_U_R_______________0_,_0_0_
+abgeführte Steuern E_U_R_______________0_,_0_0_
+Zu Ihren Lasten nach Steuern: EUR -14.990,95
+Die Belastung erfolgt mit Valuta 13.07.2026 auf Konto EUR mit der IBAN DE61 2004 1133 0705 5833 40
+KEINE STEUERBESCHEINIGUNG ...
+Bisher einbehaltene bzw. angerechnete Steuer in EUR (4)
+in 2026 einbehaltene einbehaltener einbehaltene angerechnete
+Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer ausländische Quellensteuer
+vor Ermittlung 6.323,32 347,70 569,02 899,64
+nach Ermittlung 6.323,32 347,70 569,02 899,64
+Verrechnungssalden in EUR (4)
+Gewinne / Verluste sonstige anrechenbare verfügbarer
+in 2026 aus Aktien Gewinne / Verluste ausländische Quellensteuer Freistellungsauftrag
+vor Ermittlung 0,00 29.460,92 0,00 0,00
+nach Ermittlung 0,00 0,00 0,00 0,00
+Ihre comdirect
+Diese Abrechnung ist maschinell erstellt und wird nicht unterschrieben.
+(4) Die ausgewiesenen EUR-Beträge spiegeln den Stand zum Abrechnungszeitpunkt wider.
+KEINE STEUERBESCHEINIGUNG

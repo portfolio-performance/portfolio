@@ -133,10 +133,11 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "wkn", "nameContinued", "isin", "currency") //
+                                                        .prepareLine(TextUtil::trim) //
                                                         .find("Wertpapier\\-Bezeichnung .*") //
-                                                        .match("^(?<name>.*)[\\s]{1,}(?<wkn>[A-Z0-9]{6}).*$") //
-                                                        .match("^(?<nameContinued>.*)[\\s]{1,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
-                                                        .match("^.* Kurswert[\\s]{1,}: (?<currency>[A-Z]{3})[\\s]{1,}[\\.,\\d]+.*$") //
+                                                        .match("^(?<name>.*)\\s+(?<wkn>[A-Z0-9]{6}).*$") //
+                                                        .match("^(?<nameContinued>.*)\\s+(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^.*Kurswert\\s+:\\s+(?<currency>[A-Z]{3})\\s+[\\.,\\d]+.*$") //
                                                         .assign((t, v) -> {
                                                             v.put("name", trim(replaceMultipleBlanks(v.get("name"))));
                                                             v.put("nameContinued", trim(replaceMultipleBlanks(v.get("nameContinued"))));
@@ -148,12 +149,18 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         // Medtronic PLC                                                            A14M2J
                                         // Registered Shares DL -,0001                                        IE00BTN1Y115
                                         //  Summe        St.  20                 EUR  71,00        EUR            1.420,00
+                                        //
+                                        // Wertpapier-Bezeichnung WPKNR/ISIN
+                                        // Vanguard S&P 500 UCITS ETF A1JX53
+                                        // Registered Shares USD Dis.oN IE00B3XXRP09
+                                        // Summe St. 120 EUR 124,345 EUR 14.921,40
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "wkn", "nameContinued", "isin", "currency") //
+                                                        .prepareLine(TextUtil::trim) //
                                                         .find("Wertpapier\\-Bezeichnung .*") //
-                                                        .match("^(?<name>.*)[\\s]{1,}(?<wkn>[A-Z0-9]{6}).*$") //
-                                                        .match("^(?<nameContinued>.*)[\\s]{2,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .match("^(?<name>.*)\\s+(?<wkn>[A-Z0-9]{6}).*$") //
+                                                        .match("^(?<nameContinued>.*)\\s+(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .match("^[\\s]*Summe[\\s]{1,}St\\.[\\s]{1,}[\\.,\\d]+[\\s]{1,}(?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> {
                                                             v.put("name", trim(replaceMultipleBlanks(v.get("name"))));
@@ -169,10 +176,11 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "wkn", "nameContinued", "isin", "currency") //
+                                                        .prepareLine(TextUtil::trim) //
                                                         .find("Wertpapier\\-Bezeichnung .*") //
-                                                        .match("^(?<name>.*)[\\s]{1,}(?<wkn>[A-Z0-9]{6}).*$") //
-                                                        .match("^(?<nameContinued>.*)[\\s]{1,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
-                                                        .match("^[\\s]*St\\.[\\s]{1,}[\\.,\\d]+[\\s]{1,}(?<currency>[A-Z]{3}).*$") //
+                                                        .match("^(?<name>.*)\\s+(?<wkn>[A-Z0-9]{6}).*$") //
+                                                        .match("^(?<nameContinued>.*)\\s+(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^\\s*St\\.\\s+[\\.,\\d]+\\s+(?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> {
                                                             v.put("name", trim(replaceMultipleBlanks(v.get("name"))));
                                                             v.put("nameContinued", trim(replaceMultipleBlanks(v.get("nameContinued"))));
@@ -187,10 +195,11 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "name", "wkn", "nameContinued", "isin") //
-                                                        .match("^zum Kurs von : (?<currency>[A-Z]{3})[\\s]{1,}[\\.,\\d]+ .*$") //
-                                                        .find(".* Wertpapierbezeichnung .* WPK\\-Nr\\. .*") //
+                                                        .prepareLine(TextUtil::trim) //
+                                                        .match("^zum Kurs von : (?<currency>[A-Z]{3})[\\s]{1,}[\\.,\\d]+.*$") //
+                                                        .find("\\s*Wertpapierbezeichnung .* WPK\\-Nr\\..*") //
                                                         .match("^St\\. [\\.,\\d]+ (?<name>.*) (?<wkn>[A-Z0-9]{6}).*$") //
-                                                        .match("^(?<nameContinued>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .match("^(?<nameContinued>.*)\\s+(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         .oneOf( //
