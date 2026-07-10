@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
 import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.CrossEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerEntryMetadataPatchHelper;
@@ -27,7 +26,6 @@ public final class LedgerBackedAccountTransaction extends AccountTransaction imp
     private final LedgerEntry entry;
     private final DerivedProjectionDescriptor descriptor;
     private final LedgerPosting primaryPosting;
-    private CrossEntry crossEntry;
 
     LedgerBackedAccountTransaction(DerivedProjectionDescriptor descriptor)
     {
@@ -46,11 +44,6 @@ public final class LedgerBackedAccountTransaction extends AccountTransaction imp
     public DerivedProjectionDescriptor getLedgerProjectionDescriptor()
     {
         return descriptor;
-    }
-
-    void setLedgerCrossEntry(CrossEntry crossEntry)
-    {
-        this.crossEntry = crossEntry;
     }
 
     @Override
@@ -132,12 +125,6 @@ public final class LedgerBackedAccountTransaction extends AccountTransaction imp
     }
 
     @Override
-    public CrossEntry getCrossEntry()
-    {
-        return crossEntry;
-    }
-
-    @Override
     public Stream<Unit> getUnits()
     {
         return LedgerProjectionSupport.units(descriptor);
@@ -174,9 +161,7 @@ public final class LedgerBackedAccountTransaction extends AccountTransaction imp
                         getCurrencyCode(), //
                         Values.Amount.format(getAmount()), //
                         getSecurity() != null ? getSecurity().getName() : "<no Security>", //$NON-NLS-1$
-                        getCrossEntry() != null && getCrossEntry().getCrossOwner(this) != null
-                                        ? getCrossEntry().getCrossOwner(this).toString()
-                                        : "<no XEntry>" //$NON-NLS-1$
+                        "<no XEntry>" //$NON-NLS-1$
         );
     }
 

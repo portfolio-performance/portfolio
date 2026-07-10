@@ -8,7 +8,6 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerParameter;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
@@ -130,20 +129,16 @@ public final class DerivedProjectionDescriptorService
     {
         repeatedPortfolio(entry, LedgerProjectionRole.OLD_SECURITY_LEG,
                         primary().and(corporateLeg(CorporateActionLeg.SOURCE_SECURITY))
-                                        .and(localKey(LedgerProjectionRole.OLD_SECURITY_LEG))
-                                        .or(legacyCorporateLeg(LedgerPostingType.SECURITY,
-                                                        CorporateActionLeg.SOURCE_SECURITY)),
+                                        .and(localKey(LedgerProjectionRole.OLD_SECURITY_LEG)),
                         primary().and(corporateLeg(CorporateActionLeg.SOURCE_SECURITY)), true, diagnostics)
                                         .forEach(descriptors::add);
         optionalPortfolio(entry, LedgerProjectionRole.DELIVERY_INBOUND,
                         primary().and(corporateLeg(CorporateActionLeg.TARGET_SECURITY))
-                                        .and(localKey(LedgerProjectionRole.DELIVERY_INBOUND))
-                                        .or(legacyRetainedSpinOffTarget()),
+                                        .and(localKey(LedgerProjectionRole.DELIVERY_INBOUND)),
                         diagnostics).ifPresent(descriptors::add);
         repeatedPortfolio(entry, LedgerProjectionRole.NEW_SECURITY_LEG,
                         primary().and(corporateLeg(CorporateActionLeg.TARGET_SECURITY))
-                                        .and(localKey(LedgerProjectionRole.NEW_SECURITY_LEG))
-                                        .or(legacyNewSpinOffTarget()),
+                                        .and(localKey(LedgerProjectionRole.NEW_SECURITY_LEG)),
                         primary().and(corporateLeg(CorporateActionLeg.TARGET_SECURITY))
                                         .and(localKey(LedgerProjectionRole.DELIVERY_INBOUND).negate()),
                         true, diagnostics).forEach(descriptors::add);
@@ -217,9 +212,7 @@ public final class DerivedProjectionDescriptorService
     private Predicate<LedgerPosting> cashCompensationPreferredSelector()
     {
         return primary().and(corporateLeg(CorporateActionLeg.CASH_COMPENSATION))
-                        .and(localKey(LedgerProjectionRole.CASH_COMPENSATION))
-                        .or(legacyCorporateLeg(LedgerPostingType.CASH_COMPENSATION,
-                                        CorporateActionLeg.CASH_COMPENSATION));
+                        .and(localKey(LedgerProjectionRole.CASH_COMPENSATION));
     }
 
     private Predicate<LedgerPosting> cashCompensationRepeatedSelector()
@@ -567,33 +560,6 @@ public final class DerivedProjectionDescriptorService
         return value == null || value.isBlank();
     }
 
-    private Predicate<LedgerPosting> legacyPrimary(LedgerPostingType type)
-    {
-        return posting -> posting.getUnitRole() == null && posting.getType() == type
-                        && (posting.getAccount() != null || posting.getPortfolio() != null);
-    }
-
-    private Predicate<LedgerPosting> legacyCorporateLeg(LedgerPostingType type, CorporateActionLeg leg)
-    {
-        return posting -> legacyPrimary(type).test(posting) && corporateActionLeg(posting) == leg;
-    }
-
-    private Predicate<LedgerPosting> legacyRetainedSpinOffTarget()
-    {
-        return legacyCorporateLeg(LedgerPostingType.SECURITY, CorporateActionLeg.TARGET_SECURITY)
-                        .and(posting -> posting.getSecurity() != null
-                                        && posting.getSecurity() == parameterSecurity(posting,
-                                                        LedgerParameterType.SOURCE_SECURITY));
-    }
-
-    private Predicate<LedgerPosting> legacyNewSpinOffTarget()
-    {
-        return legacyCorporateLeg(LedgerPostingType.SECURITY, CorporateActionLeg.TARGET_SECURITY)
-                        .and(posting -> posting.getSecurity() != null
-                                        && posting.getSecurity() != parameterSecurity(posting,
-                                                        LedgerParameterType.SOURCE_SECURITY));
-    }
-
     private boolean unitPosting(LedgerPosting posting)
     {
         if (posting.getUnitRole() != null)
@@ -629,16 +595,6 @@ public final class DerivedProjectionDescriptorService
                         .filter(parameter -> parameter.getValueKind() == LedgerParameter.ValueKind.STRING) //
                         .map(LedgerParameter::getValue) //
                         .map(String.class::cast) //
-                        .findFirst().orElse(null);
-    }
-
-    private Security parameterSecurity(LedgerPosting posting, LedgerParameterType type)
-    {
-        return posting.getParameters().stream() //
-                        .filter(parameter -> parameter.getType() == type) //
-                        .filter(parameter -> parameter.getValueKind() == LedgerParameter.ValueKind.SECURITY) //
-                        .map(LedgerParameter::getValue) //
-                        .map(Security.class::cast) //
                         .findFirst().orElse(null);
     }
 

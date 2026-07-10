@@ -71,8 +71,6 @@ final class LedgerProjectionFactory
         for (var descriptor : createDescriptors(entry))
             transactions.add(create(descriptor));
 
-        attachCrossEntry(entry, transactions);
-
         return List.copyOf(transactions);
     }
 
@@ -101,19 +99,4 @@ final class LedgerProjectionFactory
                         .message("Unsupported ledger projection role " + descriptor.getRole())); //$NON-NLS-1$
     }
 
-    private void attachCrossEntry(LedgerEntry entry, List<Transaction> transactions)
-    {
-        if (transactions.size() != 2)
-            return;
-
-        var crossEntry = new LedgerBackedCrossEntry(entry, transactions);
-
-        for (var transaction : transactions)
-        {
-            if (transaction instanceof LedgerBackedAccountTransaction accountTransaction)
-                accountTransaction.setLedgerCrossEntry(crossEntry);
-            else if (transaction instanceof LedgerBackedPortfolioTransaction portfolioTransaction)
-                portfolioTransaction.setLedgerCrossEntry(crossEntry);
-        }
-    }
 }

@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
-import name.abuchen.portfolio.model.CrossEntry;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
@@ -25,7 +24,6 @@ public final class LedgerBackedPortfolioTransaction extends PortfolioTransaction
     private final LedgerEntry entry;
     private final DerivedProjectionDescriptor descriptor;
     private final LedgerPosting primaryPosting;
-    private CrossEntry crossEntry;
 
     LedgerBackedPortfolioTransaction(DerivedProjectionDescriptor descriptor)
     {
@@ -44,11 +42,6 @@ public final class LedgerBackedPortfolioTransaction extends PortfolioTransaction
     public DerivedProjectionDescriptor getLedgerProjectionDescriptor()
     {
         return descriptor;
-    }
-
-    void setLedgerCrossEntry(CrossEntry crossEntry)
-    {
-        this.crossEntry = crossEntry;
     }
 
     @Override
@@ -115,12 +108,6 @@ public final class LedgerBackedPortfolioTransaction extends PortfolioTransaction
     public long getShares()
     {
         return primaryPosting.getShares();
-    }
-
-    @Override
-    public CrossEntry getCrossEntry()
-    {
-        return crossEntry;
     }
 
     @Override
