@@ -1169,6 +1169,40 @@ public class ComdirectPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf05()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US02079K3059"), hasWkn("A14Y6F"), hasTicker(null), //
+                        hasName("Alphabet Inc. Reg. Shs Cap.Stk Cl. A DL-,001"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-06-08T21:46"), hasShares(7), //
+                        hasSource("Verkauf05.txt"), //
+                        hasNote("Ord.-Nr.: 000526703524-001 | R.-Nr.: 708040026946D3A5"), //
+                        hasAmount("EUR", 2193.43), hasGrossValue("EUR", 2206.75), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 13.32))));
+    }
+
+    @Test
     public void testWertpapierVerkauf04WithSecurityInEUR()
     {
         // This is a manipulated PDF debug to check if a fee refund works with a
@@ -2230,6 +2264,49 @@ public class ComdirectPDFExtractorTest
                         hasNote("Ord.-Nr.: 000445114393-001 | R.-Nr.: 670602616376D085"), //
                         hasAmount("EUR", 1529.81), hasGrossValue("EUR", 1589.44), //
                         hasTaxes("EUR", 59.63), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkaufMitSteuerbehandlung23()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung23.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0460391732"), hasWkn("DBX0DZ"), hasTicker(null), //
+                        hasName("Xtr.BBG Comm.ex-Agr.+Livest.Sw Inhaber-Anteile 2C EUR Hgd oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-07-07T00:00"), hasShares(2.799), //
+                        hasSource("VerkaufMitSteuerbehandlung23.txt"), //
+                        hasNote("Ord.-Nr.: 511445411424 | R.-Nr.: 324696388726h801"), //
+                        hasAmount("EUR", 130.85), hasGrossValue("EUR", 130.85), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2026-07-07T00:00"), hasShares(2.799), //
+                        hasSource("VerkaufMitSteuerbehandlung23.txt"), //
+                        hasNote("Ref.-Nr.: 0tsYra6xyu5195BC"), //
+                        hasAmount("EUR", 1.08), hasGrossValue("EUR", 1.08), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test

@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -33,6 +34,7 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.Pair;
+import name.abuchen.portfolio.util.TextUtil;
 
 /**
  * @formatter:off
@@ -347,7 +349,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "gross", "baseCurrency") //
-                                                        .match("^.*Kurswert [\\s]*:[\s]{1,}(?<currency>[A-Z]{3})[\\s]{1,}(?<gross>[\\.,\\d]+).*$")
+                                                        .match("^.*Kurswert [\\s]*:[\\s]{1,}(?<currency>[A-Z]{3})[\\s]{1,}(?<gross>[\\.,\\d]+).*$")
                                                         .find(".*Zu Ihren Lasten.*") //
                                                         .match("^.*[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}[\\s]{1,}(?<baseCurrency>[A-Z]{3})[\\s]{1,}[\\.,\\d]+\\-.*$") //
                                                         .assign((t, v) -> {
@@ -545,8 +547,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "wkn", "nameContinued", "isin", "currency") //
                                                         .find("Wertpapier\\-Bezeichnung.*") //
-                                                        .match("^(?<name>.*)[\s]{1,}(?<wkn>[A-Z0-9]{6}).*$") //
-                                                        .match("^(?<nameContinued>.*)[\s]{1,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .match("^(?<name>.*)[\\s]{1,}(?<wkn>[A-Z0-9]{6}).*$") //
+                                                        .match("^(?<nameContinued>.*)[\\s]{1,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .match("^[\\s]*St\\.[\\s]{1,}[\\.,\\d]+[\\s]{1,}(?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> {
                                                             v.put("name", trim(replaceMultipleBlanks(v.get("name"))));
@@ -843,7 +845,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^[\\s]*p[\\s]*e[\\s]*r[\s]{1,}(?<date>[\\.,\\d\\s]+)[\\s]{1,}.*[\\s]{1,}(?:[A-Z0-9][\\s]*){6}$") //
+                                                        .match("^[\\s]*p[\\s]*e[\\s]*r[\\s]{1,}(?<date>[\\.,\\d\\s]+)[\\s]{1,}.*[\\s]{1,}(?:[A-Z0-9][\\s]*){6}$") //
                                                         .match("^[\\s]*S[\\s]*T[\\s]*K[\\s]{1,}[\\.,\\d\\s]+[\\s]{1,}.*[\\s]{1,}[A-Z0-9\\s]+$") //
                                                         .match("^[A-Z]{3} [\\.,\\d]+[\\s]{1,}Thesaurierung pro St.ck.*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(stripBlanks(v.get("date"))))))
@@ -1341,17 +1343,26 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         // S ol id a ri tä t sz u s c hl a g                                                                      E  U   R                                  0 , 0 0
                                         // K irc h e n s te u e r                                                                              _E  _U   R_  _  _  _   _  _  _   _  _  _  _   _  _  _   _  0_ _, 0_ 0_
                                         // e r s ta t te t e S t e ue r n                                                                                                                     _E _U _R _ _ _ _ _ _ _  __  __  _ _ _0_,__0 _3
+                                        //
+                                        // Zu Ihren Gunsten vor Steuern: EUR 130,85
+                                        // Steuerbemessungsgrundlage nach Verlustverrechnung (8) EUR -4,12
+                                        // Kapitalertragsteuer (8) EUR 1,03
+                                        // Solidaritätszuschlag EUR 0,05
+                                        // Kirchensteuer E_U_R_______________0_,_0_0_
+                                        // erstattete Steuern E_U_R_______________1_,_0_8_
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currencyRefundedTaxes", "refundedTaxes") //
-                                                        .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*(G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n|L[\\s]*a[\\s]*s[\\s]*t[\\s]*e[\\s]*n)[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?:[A-Z][\\s]*){3}[\\-\\s]{1,}[\\.,\\d\\s]+.*$") //
-                                                        .match("^[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*b[\\s]*e[\\s]*m[\\s]*e[\\s]*s[\\s]*s[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*g[\\s]*r[\\s]*u[\\s]*n[\\s]*d[\\s]*l[\\s]*a[\\s]*g[\\s]*e[\\s]*n[\\s]*a[\\s]*c[\\s]*h[\\s]*V[\\s]*e[\\s]*r[\\s]*l[\\s]*u[\\s]*s[\\s]*t[\\s]*v[\\s]*e[\\s]*r[\\s]*r[\\s]*e[\\s]*c[\\s]*h[\\s]*n[\\s]*u[\\s]*n[\\s]*g[\\s]{1,}([\\(\\s\\d\\)]+)?[\\s]{1,}(?:[A-Z][\\s]*){3}[\\-\\s]{1,}[\\.,\\d\\s]+.*$") //
-                                                        .match("^[\\s]*e[\\s]*r[\\s]*s[\\s]*t[\\s]*a[\\s]*t[\\s]*t[\\s]*e[\\s]*t[\\s]*e[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n [\\s]{1,}[A-Z_\\s]+[\\-_\\s]{1,}[\\.,\\d_\\s]+[\\s]{1,}(?<currencyRefundedTaxes>[A-Z_\\s]+)[\\-_\\s]{1,}(?<refundedTaxes>[\\.,\\d_\\s]+)$") //
+                                                        .prepareLine(TextUtil::stripBlanksAndUnderscores)
+                                                        .match("^ZuIhren(Gunsten|Lasten)vorSteuern:(?:[A-Z]){3}\\-?[\\.,\\d]+.*$") //
+                                                        .match("^SteuerbemessungsgrundlagenachVerlustverrechnung([\\(\\d\\)]+)?(?:[A-Z]){3}\\-?[\\.,\\d]+.*$") //
+                                                        .match("^erstatteteSteuern(?<currencyRefundedTaxes>[A-Z]+)\\-?(?<refundedTaxes>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.TAX_REFUND);
 
-                                                            t.setCurrencyCode(asCurrencyCode(stripBlanksAndUnderscores(v.get("currencyRefundedTaxes"))));
-                                                            t.setAmount(asAmount(stripBlanksAndUnderscores(v.get("refundedTaxes"))));
+                                                            t.setCurrencyCode(asCurrencyCode(
+                                                                            v.get("currencyRefundedTaxes")));
+                                                            t.setAmount(asAmount(v.get("refundedTaxes")));
                                                         }))
 
                         .optionalOneOf( //
@@ -1421,12 +1432,14 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // 643  R  e  f e  r e  n  z  - N   u mmer:    2 G   I G   7  N   0  V  BSQ00112
                         // 38342 qSrhP                       R   e  f e  r e  n  z  - Nummer:     1   Z  I L  B  M   LW99T00 0
+                        // 04299 Bad BCyPEWXdrf Referenz-Nummer: 0tsYra6xyu5195BC
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^.*R[\\s]*e[\\s]*f[\\s]*e[\\s]*r[\\s]*e[\\s]*n[\\s]*z[\\s]*\\-[\\s]*N[\\s]*u[\\s]*m[\\s]*m[\\s]*e[\\s]*r[\\s]*:[\\s]{1,}(?<note>.*)$")
+                        .prepareLine(TextUtil::stripBlanksAndUnderscores) //
+                        .match("^.*Referenz\\-Nummer:(?<note>.*)$")
                         .assign((t, v) -> {
-                            var note = stripBlanks(v.get("note"));
-                            note = (note != null && note.length() > 16) ? note.substring(0, 16) : (note != null ? note : "");
+                            var note = Objects.toString(stripBlanks(v.get("note")), "");
+                            note = note.length() > 16 ? note.substring(0, 16) : note;
 
                             if (t.getType().isCredit())
                                 t.setNote(concatenate(t.getNote(), "Ref.-Nr.: " + note, " | "));

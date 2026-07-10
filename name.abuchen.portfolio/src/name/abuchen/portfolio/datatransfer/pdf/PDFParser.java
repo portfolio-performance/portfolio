@@ -18,6 +18,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -702,6 +703,7 @@ import name.abuchen.portfolio.model.TypedMap;
 
         private List<Pattern> pattern = new ArrayList<>();
         private BiConsumer<T, ParsedData> assignment;
+        private UnaryOperator<String> linePreparation;
 
         public Section(Transaction<T> transaction, String[] attributes)
         {
@@ -768,6 +770,12 @@ import name.abuchen.portfolio.model.TypedMap;
             return this;
         }
 
+        public Section<T> prepareLine(UnaryOperator<String> function)
+        {
+            this.linePreparation = function;
+            return this;
+        }
+
         public Transaction<T> assign(BiConsumer<T, ParsedData> assignment)
         {
             this.assignment = assignment;
@@ -787,7 +795,11 @@ import name.abuchen.portfolio.model.TypedMap;
             for (var ii = lineNo; ii <= lineNoEnd; ii++)
             {
                 var p = pattern.get(patternNo);
-                var m = p.matcher(lines[ii]);
+                var line = lines[ii];
+                if (linePreparation != null)
+                    line = linePreparation.apply(line);
+                var m = p.matcher(line);
+
                 if (m.matches())
                 {
 

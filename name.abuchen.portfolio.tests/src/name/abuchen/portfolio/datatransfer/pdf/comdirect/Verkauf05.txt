@@ -1,0 +1,57 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.84.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Ihren Auftrag haben wir gemäß unseren produktbezogenen
+Geschäftsbedingungen "Trading" wie nachstehend ausgeführt.
+Die Wertpapiere haben wir der Abrechnung entsprechend gebucht.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und
+Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+25449 Quickborn
+Telefon : 04106-708 25 00
+97762 010
+Depotnr.: xxx
+BLZ: xxx
+xxx
+xxx
+xxx
+GESCHÄFTSABRECHNUNG VOM 08.06.2026
+*
+Wertpapierverkauf
+Geschäftsnummer : 92 211272
+Ordernummer : 000526703524-001 Rechnungsnummer : 708040026946D3A5
+Geschäftstag : 08.06.2026 Abwicklung : Live Trading
+Handelszeit : 21:46 Uhr (MEZ/MESZ)
+Wertpapier-Bezeichnung WPKNR/ISIN
+Alphabet Inc. A14Y6F
+Reg. Shs Cap.Stk Cl. A DL-,001 US02079K3059
+Nennwert Zum Preis von
+St. 7 EUR 315,25
+Kurswert : EUR 2.206,75
+--------------------------------------------------------------------------------
+Eigene Entgelte
+Abwickl.entgelt Clearstream : EUR 2,90-
+Provision : EUR 10,42-
+Summe Entgelte : EUR 13,32-
+--------------------------------------------------------------------------------
+IBAN Valuta Zu Ihren Gunsten vor Steuern
+DE96 2004 1144 0628 7734 00 EUR 10.06.2026 EUR 2.193,43
+Verwahrungs-Art: WERTPAPIERRECHNUNG USA/KANADA (AKV)
+Ihre Wertpapier-Order wurde über das Online Banking erteilt.
+Informationen zur steuerlichen Behandlung dieses Geschäftsvorgangs und den auf
+Ihrem Konto gebuchten Endbetrag finden Sie auf der separaten Steuermitteilung.
+Bei Fragen geben Sie bitte die Ordernummer an.
+Ihre comdirect
+Diese Abrechnung wird von der Bank nicht unterschrieben
+Die Leistung ist gemäß §4 Nr.8 UStG umsatzsteuerfrei. USt-Id-Nr.: DE 114 103 514
+A113
+DO15DD/16/04/2010
+Kundennr. /BLZ Bezeichnung
+xxx
+xxx
+xxx
+xxx
+abweichend wirtschaftlich Berechtigter
+----
+xxx
