@@ -78,12 +78,12 @@ public class LedgerParameterCodeDomainTest
     }
 
     /**
-     * Checks the ledger rule scenario: allows remains compatible.
+     * Checks the ledger rule scenario: allowed-code checks remain enforced.
      * Invalid entry shapes must be rejected before they can be stored.
      * This keeps higher-level Ledger-V6 transaction flows predictable.
      */
     @Test
-    public void testAllowsRemainsCompatible()
+    public void testAllowsRemainEnforced()
     {
         for (var domain : LedgerParameterCodeDomain.values())
         {

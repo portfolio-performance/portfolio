@@ -9,9 +9,7 @@ import name.abuchen.portfolio.model.ledger.Ledger;
 import name.abuchen.portfolio.model.ledger.LedgerEntry;
 import name.abuchen.portfolio.model.ledger.LedgerParameter;
 import name.abuchen.portfolio.model.ledger.LedgerPosting;
-import name.abuchen.portfolio.model.ledger.configuration.CorporateActionKind;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryType;
-import name.abuchen.portfolio.model.ledger.configuration.LedgerParameterType;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
 
 /**
@@ -21,8 +19,6 @@ import name.abuchen.portfolio.model.ledger.configuration.LedgerPostingType;
  */
 final class LedgerModelLoadSupport
 {
-    private static final String LEGACY_SPIN_OFF_TYPE_CODE = "SPIN_OFF"; //$NON-NLS-1$
-
     private LedgerModelLoadSupport()
     {
     }
@@ -39,25 +35,7 @@ final class LedgerModelLoadSupport
 
     static LedgerEntryType entryTypeFromPersistedCode(String code)
     {
-        if (LEGACY_SPIN_OFF_TYPE_CODE.equals(code))
-            return LedgerEntryType.CORPORATE_ACTION;
-
         return LedgerEntryType.fromCode(code);
-    }
-
-    static boolean isLegacySpinOffTypeCode(String code)
-    {
-        return LEGACY_SPIN_OFF_TYPE_CODE.equals(code);
-    }
-
-    static void addLegacySpinOffKindIfMissing(LedgerEntry entry)
-    {
-        if (entry.getParameters().stream()
-                        .anyMatch(parameter -> parameter.getType() == LedgerParameterType.CORPORATE_ACTION_KIND))
-            return;
-
-        entry.addParameter(LedgerParameter.ofCode(LedgerParameterType.CORPORATE_ACTION_KIND,
-                        CorporateActionKind.SPIN_OFF));
     }
 
     static void setEntryNote(LedgerEntry entry, String note)

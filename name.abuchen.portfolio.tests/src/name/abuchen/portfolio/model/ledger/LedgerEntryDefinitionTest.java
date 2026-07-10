@@ -57,9 +57,17 @@ public class LedgerEntryDefinitionTest
         {
             if (type.isLedgerNativeTargeted())
             {
-                var definition = LedgerEntryDefinitionRegistry.lookup(type).orElseThrow();
+                assertTrue(type.name(), LedgerEntryDefinitionRegistry.hasDefinition(type));
 
-                assertThat(definition.getEntryType(), is(type));
+                if (type == LedgerEntryType.CORPORATE_ACTION)
+                {
+                    for (var kind : CorporateActionKind.values())
+                    {
+                        var definition = LedgerEntryDefinitionRegistry.lookup(type, kind).orElseThrow();
+
+                        assertThat(definition.getEntryType(), is(type));
+                    }
+                }
             }
             else
             {
@@ -102,14 +110,9 @@ public class LedgerEntryDefinitionTest
     @Test
     public void testDefinitionRegistriesExposeReadOnlySchemas()
     {
-        for (var entryType : LedgerEntryType.values())
+        for (var definition : LedgerEntryDefinitionRegistry.getDefinitions())
         {
-            if (!entryType.isLedgerNativeTargeted())
-                continue;
-
-            var definition = LedgerEntryDefinitionRegistry.lookup(entryType).orElseThrow();
-
-            assertThat(definition.getEntryType(), is(entryType));
+            assertTrue(definition.getEntryType().isLedgerNativeTargeted());
             assertFalse(definition.getPostingRules().isEmpty());
             assertFalse(definition.getEntryParameterRules().isEmpty());
             assertFalse(definition.getPostingParameterRules().isEmpty());

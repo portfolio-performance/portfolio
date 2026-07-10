@@ -104,9 +104,6 @@ final class LedgerProtobufPersistenceSupport
             for (PLedgerParameter newParameter : newEntry.getParametersList())
                 LedgerModelLoadSupport.addEntryParameter(entry, loadLedgerParameter(newParameter, lookup));
 
-            if (LedgerModelLoadSupport.isLegacySpinOffTypeCode(typeCode))
-                LedgerModelLoadSupport.addLegacySpinOffKindIfMissing(entry);
-
             for (PLedgerPosting newPosting : newEntry.getPostingsList())
                 LedgerModelLoadSupport.addPosting(entry, loadLedgerPosting(newPosting, lookup));
 

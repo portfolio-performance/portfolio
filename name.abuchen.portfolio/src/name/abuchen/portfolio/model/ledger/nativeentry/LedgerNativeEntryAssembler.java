@@ -23,6 +23,7 @@ import name.abuchen.portfolio.model.ledger.LedgerPostingSemanticRole;
 import name.abuchen.portfolio.model.ledger.LedgerPostingUnitRole;
 import name.abuchen.portfolio.model.ledger.LedgerProjectionRole;
 import name.abuchen.portfolio.model.ledger.LedgerStructuralValidator;
+import name.abuchen.portfolio.model.ledger.configuration.CorporateActionKind;
 import name.abuchen.portfolio.model.ledger.configuration.CorporateActionLeg;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryDefinition;
 import name.abuchen.portfolio.model.ledger.configuration.LedgerEntryDefinitionRegistry;
@@ -100,7 +101,14 @@ public final class LedgerNativeEntryAssembler
 
     public EntryBuilder spinOff()
     {
-        return forType(LedgerEntryType.CORPORATE_ACTION);
+        var definition = LedgerEntryDefinitionRegistry.lookup(LedgerEntryType.CORPORATE_ACTION,
+                        CorporateActionKind.SPIN_OFF).orElseThrow(
+                                        () -> issue(LedgerNativeEntryAssemblyIssue.ENTRY_DEFINITION_MISSING,
+                                                        "Missing LedgerEntryDefinition for " //$NON-NLS-1$
+                                                                        + LedgerEntryType.CORPORATE_ACTION + " " //$NON-NLS-1$
+                                                                        + CorporateActionKind.SPIN_OFF));
+
+        return new EntryBuilder(client, definition, postingDefinitionLookup);
     }
 
     static LedgerNativeEntryAssemblyException issue(LedgerNativeEntryAssemblyIssue issue, String message)

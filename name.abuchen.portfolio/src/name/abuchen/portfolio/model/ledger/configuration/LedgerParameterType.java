@@ -6,14 +6,14 @@ import name.abuchen.portfolio.model.LedgerDiagnosticCode;
 import name.abuchen.portfolio.model.ledger.LedgerParameter.ValueKind;
 
 /**
- * Defines stable Ledger parameter codes used by persistence and validation.
- * This is Ledger configuration metadata. Existing persistence codes must stay stable, and
- * normal transaction-editing code should use higher-level write paths.
+ * Defines Ledger parameter codes used by persistence and validation.
+ * This is Ledger configuration metadata. Normal transaction-editing code should use
+ * higher-level write paths.
  *
  * <p>
  * Protobuf stores {@link #getCode()} in {@code PLedgerParameter.typeCode}. The
  * parameter value kind is stored separately, so codes, value kinds, and controlled code
- * domains must stay compatible with already persisted files.
+ * domains define the current native Ledger file shape.
  * </p>
  */
 @SuppressWarnings("nls")

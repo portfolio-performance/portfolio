@@ -49,9 +49,6 @@ public final class LedgerEntryDefinitionRegistry
 
     public static Optional<LedgerEntryDefinition> lookup(LedgerEntryType entryType)
     {
-        if (entryType == LedgerEntryType.CORPORATE_ACTION)
-            return lookup(entryType, CorporateActionKind.SPIN_OFF);
-
         return Optional.ofNullable(DEFINITIONS.get(entryType));
     }
 
