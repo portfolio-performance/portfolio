@@ -1,6 +1,10 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
+import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -10,6 +14,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
@@ -106,7 +111,42 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final var type = new DocumentType("Account Statement");
+        // @formatter:off
+        // The "Account Statement" document type covers two layouts:
+        // - the old Revolut Trading Ltd layout (US date format, "Cash Disbursement - Wallet")
+        // - the Revolut Securities Europe UAB layout (English dates with time, one statement section per currency)
+        //
+        // In the Revolut Securities Europe UAB layout, transaction lines only
+        // contain the ticker symbol. Name and ISIN are taken from the portfolio
+        // breakdown table, which only lists positions still held at the end of
+        // the reporting period. For securities sold before the period end, the
+        // security is created with the ticker symbol only.
+        // @formatter:on
+        final var type = new DocumentType("Account Statement", //
+                        (context, lines) -> {
+                            // @formatter:off
+                            // XDWI Xtrackers MSCI World Industrials UCITS ETF (Acc) IE00BM67HV82 0.27961238 €77.61 €21.70 2.97%
+                            // WELK Amundi S&P Global Financials ESG Acc UCITS ETF IE000KYX7IP4 1.13596698 €19.56 €22.22 3.04%
+                            // @formatter:on
+                            var pSecurity = Pattern.compile("^(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) [\\.,\\d]+ (?:US)?\\p{Sc}[\\.,\\d]+ (?:US)?\\p{Sc}[\\.,\\d]+ [\\.,\\d]+%$");
+
+                            // Create a helper to store the list of security items found in the document
+                            var securityListHelper = new SecurityListHelper();
+                            context.putType(securityListHelper);
+
+                            for (var line : lines)
+                            {
+                                var m = pSecurity.matcher(line);
+                                if (m.matches())
+                                {
+                                    var securityItem = new SecurityItem();
+                                    securityItem.tickerSymbol = m.group("tickerSymbol");
+                                    securityItem.name = m.group("name");
+                                    securityItem.isin = m.group("isin");
+                                    securityListHelper.items.add(securityItem);
+                                }
+                            }
+                        });
         this.addDocumentTyp(type);
 
         // @formatter:off
@@ -128,6 +168,118 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(v.get("date"), Locale.UK));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 12 May 2026 09:00:01 GMT EMBH Trade - Market 0.01925701 €65.95 Buy €1.27 €0 €0
+        // 11 May 2026 13:45:00 GMT LYMS Trade - Market 0.0571061 €101.04 Sell €5.77 €0 €0
+        // @formatter:on
+        var buySellBlock = new Block("^[\\d]{2} [\\w]{3} [\\d]{4} [\\d]{2}\\:[\\d]{2}\\:[\\d]{2} GMT [A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})? Trade \\- Market [\\.,\\d]+ (?:US)?\\p{Sc}[\\.,\\d]+ (Buy|Sell) .*$");
+        type.addBlock(buySellBlock);
+        buySellBlock.set(new Transaction<BuySellEntry>()
+
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
+
+                        .section("date", "time", "tickerSymbol", "shares", "type", "currency", "amount", "fee", "commission") //
+                        .match("^(?<date>[\\d]{2} [\\w]{3} [\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}) GMT (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) Trade \\- Market (?<shares>[\\.,\\d]+) (?:US)?\\p{Sc}[\\.,\\d]+ (?<type>(Buy|Sell)) (?:US)?(?<currency>\\p{Sc})(?<amount>[\\.,\\d]+) (?:US)?\\p{Sc}(?<fee>[\\.,\\d]+) (?:US)?\\p{Sc}(?<commission>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            // @formatter:off
+                            // Is type --> "Sell" change from BUY to SELL
+                            // @formatter:on
+                            if ("Sell".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.SELL);
+
+                            var context = type.getCurrentContext();
+                            var securityItem = context.getType(SecurityListHelper.class).get()
+                                            .findItem(v.get("tickerSymbol"));
+
+                            securityItem.ifPresent(s -> {
+                                v.put("name", s.name);
+                                v.put("isin", s.isin);
+                            });
+
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setDate(asDate(v.get("date"), v.get("time")));
+                            t.setShares(asShares(v.get("shares")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+
+                            var fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
+                            ExtractorUtils.checkAndSetFee(fee, t, context);
+
+                            var commission = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("commission")));
+                            ExtractorUtils.checkAndSetFee(commission, t, context);
+                        })
+
+                        .wrap(BuySellEntryItem::new));
+
+        // @formatter:off
+        // 29 Nov 2024 17:47:56 GMT QDVY Dividend €0.05 €0 €0
+        // @formatter:on
+        var dividendBlock = new Block("^[\\d]{2} [\\w]{3} [\\d]{4} [\\d]{2}\\:[\\d]{2}\\:[\\d]{2} GMT [A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})? Dividend (?:US)?\\p{Sc}[\\.,\\d]+ .*$");
+        type.addBlock(dividendBlock);
+        dividendBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
+
+                        .section("date", "time", "tickerSymbol", "currency", "amount") //
+                        .match("^(?<date>[\\d]{2} [\\w]{3} [\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}) GMT (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) Dividend (?:US)?(?<currency>\\p{Sc})(?<amount>[\\.,\\d]+) (?:US)?\\p{Sc}[\\.,\\d]+ (?:US)?\\p{Sc}[\\.,\\d]+$") //
+                        .assign((t, v) -> {
+                            var context = type.getCurrentContext();
+                            var securityItem = context.getType(SecurityListHelper.class).get()
+                                            .findItem(v.get("tickerSymbol"));
+
+                            securityItem.ifPresent(s -> {
+                                v.put("name", s.name);
+                                v.put("isin", s.isin);
+                            });
+
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setDateTime(asDate(v.get("date"), v.get("time")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 29 Sep 2024 10:03:54 GMT Cash top-up €0.10 €0 €0
+        // 07 May 2026 00:20:41 GMT Cash top-up €1 €0 €0
+        // @formatter:on
+        var topUpBlock = new Block("^[\\d]{2} [\\w]{3} [\\d]{4} [\\d]{2}\\:[\\d]{2}\\:[\\d]{2} GMT Cash top\\-up (?:US)?\\p{Sc}[\\.,\\d]+ .*$");
+        type.addBlock(topUpBlock);
+        topUpBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
+
+                        .section("date", "time", "currency", "amount") //
+                        .match("^(?<date>[\\d]{2} [\\w]{3} [\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}) GMT Cash top\\-up (?:US)?(?<currency>\\p{Sc})(?<amount>[\\.,\\d]+) (?:US)?\\p{Sc}[\\.,\\d]+ (?:US)?\\p{Sc}[\\.,\\d]+$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date"), v.get("time")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 29 Oct 2024 00:54:48 GMT Robo management fee -€0.01 €0 €0
+        // @formatter:on
+        var feeBlock = new Block("^[\\d]{2} [\\w]{3} [\\d]{4} [\\d]{2}\\:[\\d]{2}\\:[\\d]{2} GMT Robo management fee \\-(?:US)?\\p{Sc}[\\.,\\d]+ .*$");
+        type.addBlock(feeBlock);
+        feeBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
+
+                        .section("date", "time", "currency", "amount") //
+                        .match("^(?<date>[\\d]{2} [\\w]{3} [\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}) GMT Robo management fee \\-(?:US)?(?<currency>\\p{Sc})(?<amount>[\\.,\\d]+) (?:US)?\\p{Sc}[\\.,\\d]+ (?:US)?\\p{Sc}[\\.,\\d]+$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date"), v.get("time")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote("Robo management fee");
                         })
 
                         .wrap(TransactionItem::new));
@@ -155,5 +307,40 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
     protected long asShares(String value)
     {
         return ExtractorUtils.convertToNumberLong(value, Values.Share, "en", "UK");
+    }
+
+    private static class SecurityItem
+    {
+        String tickerSymbol;
+        String name;
+        String isin;
+
+        @Override
+        public String toString()
+        {
+            return "SecurityItem [tickerSymbol=" + tickerSymbol + ", name=" + name + ", isin=" + isin + "]";
+        }
+    }
+
+    private static class SecurityListHelper
+    {
+        private final List<SecurityItem> items = new ArrayList<>();
+
+        // Finds a SecurityItem in the list
+        public Optional<SecurityItem> findItem(String tickerSymbol)
+        {
+            if (items.isEmpty())
+                return Optional.empty();
+
+            for (SecurityItem item : items) // NOSONAR
+            {
+                if (!item.tickerSymbol.equals(tickerSymbol))
+                    continue;
+
+                return Optional.of(item);
+            }
+
+            return Optional.empty();
+        }
     }
 }
