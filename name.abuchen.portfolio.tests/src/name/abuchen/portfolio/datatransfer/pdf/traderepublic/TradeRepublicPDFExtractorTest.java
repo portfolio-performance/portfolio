@@ -6549,6 +6549,40 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf17()
+    {
+        var extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf17.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0290358497"), hasWkn(null), hasTicker(null), //
+                        hasName("Euro Overnight Rate Swap EUR (Acc)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-04-23T20:22"), hasShares(6.00), //
+                        hasSource("Verkauf17.txt"), //
+                        hasNote("Auftrag: 1bb1-635c | Ausführung: 66d8-de8d"), //
+                        hasAmount("EUR", 890.81), hasGrossValue("EUR", 893.54), //
+                        hasTaxes("EUR", 1.73), hasFees("EUR", 1.00))));
+    }
+
+    @Test
     public void testSecuritySell01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
