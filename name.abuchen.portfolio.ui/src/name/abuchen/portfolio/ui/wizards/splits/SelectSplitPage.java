@@ -103,6 +103,8 @@ public class SelectSplitPage extends AbstractWizardPage
 
         Text oldShares = new Text(container, SWT.BORDER | SWT.RIGHT);
 
+        Label hint = new Label(container, SWT.NONE);
+
         // form layout data
 
         // measuring the width requires that the font has been applied before
@@ -114,7 +116,8 @@ public class SelectSplitPage extends AbstractWizardPage
         startingWith(comboSecurity.getControl(), labelSecurity) //
                         .thenBelow(boxExDate.getControl()).label(labelExDate) //
                         .thenBelow(newShares).width(amountWidth).label(labelSplit).thenRight(labelColon)
-                        .thenRight(oldShares).width(amountWidth);
+                        .thenRight(oldShares).width(amountWidth) //
+                        .thenBelow(hint).left(labelSplit);
 
         startingWith(labelSecurity).width(labelWidth);
 
@@ -155,6 +158,18 @@ public class SelectSplitPage extends AbstractWizardPage
 
         };
         context.addValidationStatusProvider(validator);
+
+        // live example that spells out which number is old and which is new,
+        // updated on every valid change instead of only in the page description
+        model.addPropertyChangeListener("newShares", event -> updateHint(hint)); //$NON-NLS-1$
+        model.addPropertyChangeListener("oldShares", event -> updateHint(hint)); //$NON-NLS-1$
+        updateHint(hint);
+    }
+
+    private void updateHint(Label hint)
+    {
+        hint.setText(MessageFormat.format(Messages.SplitWizardHintRatio, //
+                        model.getOldShares().toPlainString(), model.getNewShares().toPlainString()));
     }
 
     private IObservableValue<String> setupBinding(DataBindingContext context, Text input, String propertyName,

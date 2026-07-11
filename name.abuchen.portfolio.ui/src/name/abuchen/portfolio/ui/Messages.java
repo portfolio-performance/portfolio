@@ -1443,6 +1443,7 @@ public class Messages extends NLS
     public static String SplitWizardDefinitionDescription;
     public static String SplitWizardDefinitionTitle;
     public static String SplitWizardErrorNewAndOldMustNotBeEqual;
+    public static String SplitWizardHintRatio;
     public static String SplitWizardLabelNewForOld;
     public static String SplitWizardLabelSplit;
     public static String SplitWizardLabelUpdateQuotes;
