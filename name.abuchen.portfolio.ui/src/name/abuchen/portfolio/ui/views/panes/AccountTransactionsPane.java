@@ -75,6 +75,7 @@ import name.abuchen.portfolio.ui.util.viewers.ExDateEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.MoneyColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.TransactionOwnerListEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.TransactionTypeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
@@ -475,6 +476,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
             }
         });
         ColumnViewerSorter.createIgnoreCase(e -> ((AccountTransaction) e).getSource()).attachTo(column);
+        new StringEditingSupport(Transaction.class, "source").addListener(this).attachTo(column); //$NON-NLS-1$
         transactionsColumns.addColumn(column);
 
         transactionsColumns.createColumns(true);

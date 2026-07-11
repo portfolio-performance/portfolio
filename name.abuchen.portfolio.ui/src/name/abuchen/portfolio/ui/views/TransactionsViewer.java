@@ -483,6 +483,7 @@ public final class TransactionsViewer implements ModificationListener
         column.setLabelProvider(new TransactionLabelProvider(Transaction::getSource));
         ColumnViewerSorter.createIgnoreCase(e -> ((TransactionPair<?>) e).getTransaction().getSource())
                         .attachTo(column);
+        new StringEditingSupport(Transaction.class, "source").addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
     }
 
