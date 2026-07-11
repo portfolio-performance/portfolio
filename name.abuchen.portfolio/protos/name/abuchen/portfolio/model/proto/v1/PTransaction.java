@@ -30,6 +30,7 @@ private static final long serialVersionUID = 0L;
     source_ = "";
     targetSecurity_ = "";
     carriedLots_ = java.util.Collections.emptyList();
+    targetCurrencyCode_ = "";
   }
 
   @java.lang.Override
@@ -1053,6 +1054,72 @@ private static final long serialVersionUID = 0L;
     return carriedLots_.get(index);
   }
 
+  public static final int TARGETCURRENCYCODE_FIELD_NUMBER = 22;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object targetCurrencyCode_ = "";
+  /**
+   * <code>optional string targetCurrencyCode = 22;</code>
+   * @return Whether the targetCurrencyCode field is set.
+   */
+  @java.lang.Override
+  public boolean hasTargetCurrencyCode() {
+    return ((bitField0_ & 0x00002000) != 0);
+  }
+  /**
+   * <code>optional string targetCurrencyCode = 22;</code>
+   * @return The targetCurrencyCode.
+   */
+  @java.lang.Override
+  public java.lang.String getTargetCurrencyCode() {
+    java.lang.Object ref = targetCurrencyCode_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs =
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      targetCurrencyCode_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>optional string targetCurrencyCode = 22;</code>
+   * @return The bytes for targetCurrencyCode.
+   */
+  @java.lang.Override
+  public com.google.protobuf.ByteString
+      getTargetCurrencyCodeBytes() {
+    java.lang.Object ref = targetCurrencyCode_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b =
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      targetCurrencyCode_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
+  public static final int TARGETAMOUNT_FIELD_NUMBER = 23;
+  private long targetAmount_ = 0L;
+  /**
+   * <code>optional int64 targetAmount = 23;</code>
+   * @return Whether the targetAmount field is set.
+   */
+  @java.lang.Override
+  public boolean hasTargetAmount() {
+    return ((bitField0_ & 0x00004000) != 0);
+  }
+  /**
+   * <code>optional int64 targetAmount = 23;</code>
+   * @return The targetAmount.
+   */
+  @java.lang.Override
+  public long getTargetAmount() {
+    return targetAmount_;
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -1129,6 +1196,12 @@ private static final long serialVersionUID = 0L;
     }
     for (int i = 0; i < carriedLots_.size(); i++) {
       output.writeMessage(21, carriedLots_.get(i));
+    }
+    if (((bitField0_ & 0x00002000) != 0)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 22, targetCurrencyCode_);
+    }
+    if (((bitField0_ & 0x00004000) != 0)) {
+      output.writeInt64(23, targetAmount_);
     }
     getUnknownFields().writeTo(output);
   }
@@ -1211,6 +1284,13 @@ private static final long serialVersionUID = 0L;
     for (int i = 0; i < carriedLots_.size(); i++) {
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(21, carriedLots_.get(i));
+    }
+    if (((bitField0_ & 0x00002000) != 0)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(22, targetCurrencyCode_);
+    }
+    if (((bitField0_ & 0x00004000) != 0)) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt64Size(23, targetAmount_);
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -1313,6 +1393,16 @@ private static final long serialVersionUID = 0L;
     }
     if (!getCarriedLotsList()
         .equals(other.getCarriedLotsList())) return false;
+    if (hasTargetCurrencyCode() != other.hasTargetCurrencyCode()) return false;
+    if (hasTargetCurrencyCode()) {
+      if (!getTargetCurrencyCode()
+          .equals(other.getTargetCurrencyCode())) return false;
+    }
+    if (hasTargetAmount() != other.hasTargetAmount()) return false;
+    if (hasTargetAmount()) {
+      if (getTargetAmount()
+          != other.getTargetAmount()) return false;
+    }
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -1402,6 +1492,15 @@ private static final long serialVersionUID = 0L;
     if (getCarriedLotsCount() > 0) {
       hash = (37 * hash) + CARRIEDLOTS_FIELD_NUMBER;
       hash = (53 * hash) + getCarriedLotsList().hashCode();
+    }
+    if (hasTargetCurrencyCode()) {
+      hash = (37 * hash) + TARGETCURRENCYCODE_FIELD_NUMBER;
+      hash = (53 * hash) + getTargetCurrencyCode().hashCode();
+    }
+    if (hasTargetAmount()) {
+      hash = (37 * hash) + TARGETAMOUNT_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getTargetAmount());
     }
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
@@ -1592,6 +1691,8 @@ private static final long serialVersionUID = 0L;
         carriedLotsBuilder_.clear();
       }
       bitField0_ = (bitField0_ & ~0x00100000);
+      targetCurrencyCode_ = "";
+      targetAmount_ = 0L;
       return this;
     }
 
@@ -1725,6 +1826,14 @@ private static final long serialVersionUID = 0L;
       if (((from_bitField0_ & 0x00080000) != 0)) {
         result.targetShares_ = targetShares_;
         to_bitField0_ |= 0x00001000;
+      }
+      if (((from_bitField0_ & 0x00200000) != 0)) {
+        result.targetCurrencyCode_ = targetCurrencyCode_;
+        to_bitField0_ |= 0x00002000;
+      }
+      if (((from_bitField0_ & 0x00400000) != 0)) {
+        result.targetAmount_ = targetAmount_;
+        to_bitField0_ |= 0x00004000;
       }
       result.bitField0_ |= to_bitField0_;
     }
@@ -1871,6 +1980,14 @@ private static final long serialVersionUID = 0L;
             carriedLotsBuilder_.addAllMessages(other.carriedLots_);
           }
         }
+      }
+      if (other.hasTargetCurrencyCode()) {
+        targetCurrencyCode_ = other.targetCurrencyCode_;
+        bitField0_ |= 0x00200000;
+        onChanged();
+      }
+      if (other.hasTargetAmount()) {
+        setTargetAmount(other.getTargetAmount());
       }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
@@ -2027,6 +2144,16 @@ private static final long serialVersionUID = 0L;
               }
               break;
             } // case 170
+            case 178: {
+              targetCurrencyCode_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00200000;
+              break;
+            } // case 178
+            case 184: {
+              targetAmount_ = input.readInt64();
+              bitField0_ |= 0x00400000;
+              break;
+            } // case 184
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -4043,6 +4170,125 @@ private static final long serialVersionUID = 0L;
       }
       return carriedLotsBuilder_;
     }
+
+    private java.lang.Object targetCurrencyCode_ = "";
+    /**
+     * <code>optional string targetCurrencyCode = 22;</code>
+     * @return Whether the targetCurrencyCode field is set.
+     */
+    public boolean hasTargetCurrencyCode() {
+      return ((bitField0_ & 0x00200000) != 0);
+    }
+    /**
+     * <code>optional string targetCurrencyCode = 22;</code>
+     * @return The targetCurrencyCode.
+     */
+    public java.lang.String getTargetCurrencyCode() {
+      java.lang.Object ref = targetCurrencyCode_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        targetCurrencyCode_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>optional string targetCurrencyCode = 22;</code>
+     * @return The bytes for targetCurrencyCode.
+     */
+    public com.google.protobuf.ByteString
+        getTargetCurrencyCodeBytes() {
+      java.lang.Object ref = targetCurrencyCode_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        targetCurrencyCode_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>optional string targetCurrencyCode = 22;</code>
+     * @param value The targetCurrencyCode to set.
+     * @return This builder for chaining.
+     */
+    public Builder setTargetCurrencyCode(
+        java.lang.String value) {
+      if (value == null) { throw new NullPointerException(); }
+      targetCurrencyCode_ = value;
+      bitField0_ |= 0x00200000;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string targetCurrencyCode = 22;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearTargetCurrencyCode() {
+      targetCurrencyCode_ = getDefaultInstance().getTargetCurrencyCode();
+      bitField0_ = (bitField0_ & ~0x00200000);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string targetCurrencyCode = 22;</code>
+     * @param value The bytes for targetCurrencyCode to set.
+     * @return This builder for chaining.
+     */
+    public Builder setTargetCurrencyCodeBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
+      targetCurrencyCode_ = value;
+      bitField0_ |= 0x00200000;
+      onChanged();
+      return this;
+    }
+
+    private long targetAmount_ ;
+    /**
+     * <code>optional int64 targetAmount = 23;</code>
+     * @return Whether the targetAmount field is set.
+     */
+    @java.lang.Override
+    public boolean hasTargetAmount() {
+      return ((bitField0_ & 0x00400000) != 0);
+    }
+    /**
+     * <code>optional int64 targetAmount = 23;</code>
+     * @return The targetAmount.
+     */
+    @java.lang.Override
+    public long getTargetAmount() {
+      return targetAmount_;
+    }
+    /**
+     * <code>optional int64 targetAmount = 23;</code>
+     * @param value The targetAmount to set.
+     * @return This builder for chaining.
+     */
+    public Builder setTargetAmount(long value) {
+
+      targetAmount_ = value;
+      bitField0_ |= 0x00400000;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional int64 targetAmount = 23;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearTargetAmount() {
+      bitField0_ = (bitField0_ & ~0x00400000);
+      targetAmount_ = 0L;
+      onChanged();
+      return this;
+    }
     @java.lang.Override
     public final Builder setUnknownFields(
         final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -4106,4 +4352,3 @@ private static final long serialVersionUID = 0L;
   }
 
 }
-

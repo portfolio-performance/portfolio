@@ -18,6 +18,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.FundTransferEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -531,11 +532,14 @@ public class ClientPerformanceSnapshot
                     case SELL:
                     case TRANSFER_IN:
                     case TRANSFER_OUT:
+                        break;
                     case FUND_TRANSFER_IN:
+                        if (!((FundTransferEntry) t.getCrossEntry()).isInternalTo(client))
+                            mDeposits.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
+                        break;
                     case FUND_TRANSFER_OUT:
-                        // Fund transfers keep the money inside the client; a
-                        // one-sided scoped view is represented as a delivery
-                        // by the filters before this snapshot is calculated.
+                        if (!((FundTransferEntry) t.getCrossEntry()).isInternalTo(client))
+                            mRemovals.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
                         break;
                     default:
                         throw new UnsupportedOperationException();

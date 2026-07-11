@@ -3,6 +3,7 @@ package name.abuchen.portfolio.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,6 +20,22 @@ import name.abuchen.portfolio.money.Money;
  */
 public final class FundTransferLotBuilder
 {
+    private static final Comparator<PortfolioTransaction> BY_DATE_AND_HOLDINGS_ORDER = (left, right) -> {
+        var leftDateTime = left.getDateTime();
+        var rightDateTime = right.getDateTime();
+
+        int dateComparison = leftDateTime.toLocalDate().compareTo(rightDateTime.toLocalDate());
+        if (dateComparison != 0)
+            return dateComparison;
+
+        boolean leftHasTime = !leftDateTime.toLocalTime().equals(java.time.LocalTime.MIDNIGHT);
+        boolean rightHasTime = !rightDateTime.toLocalTime().equals(java.time.LocalTime.MIDNIGHT);
+        if (leftHasTime && rightHasTime)
+            return leftDateTime.compareTo(rightDateTime);
+
+        return Integer.compare(holdingsOrder(left), holdingsOrder(right));
+    };
+
     private static final class OpenLot
     {
         private final LocalDate acquisitionDate;
@@ -101,7 +118,10 @@ public final class FundTransferLotBuilder
         List<OpenLot> openLots = new ArrayList<>();
         LocalDate transferLocalDate = transferDate.toLocalDate();
 
-        for (PortfolioTransaction transaction : Transaction.sortByDate(new ArrayList<>(sourcePortfolio.getTransactions())))
+        List<PortfolioTransaction> transactions = new ArrayList<>(sourcePortfolio.getTransactions());
+        transactions.sort(BY_DATE_AND_HOLDINGS_ORDER);
+
+        for (PortfolioTransaction transaction : transactions)
         {
             // When editing an existing transfer, rebuild the preview from the
             // portfolio state as if that transfer had not been recorded yet.
@@ -142,6 +162,17 @@ public final class FundTransferLotBuilder
         }
 
         return openLots;
+    }
+
+    private static int holdingsOrder(PortfolioTransaction transaction)
+    {
+        return switch (transaction.getType())
+        {
+            case BUY, DELIVERY_INBOUND -> 1;
+            case TRANSFER_IN, FUND_TRANSFER_IN -> 2;
+            case TRANSFER_OUT, FUND_TRANSFER_OUT -> 3;
+            case SELL, DELIVERY_OUTBOUND -> 4;
+        };
     }
 
     private static void addCarriedFundTransferLots(List<OpenLot> openLots, PortfolioTransaction transaction,

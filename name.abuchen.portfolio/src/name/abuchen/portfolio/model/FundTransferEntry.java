@@ -38,6 +38,15 @@ public class FundTransferEntry implements CrossEntry, Annotated
             this.sourceTransactionUUID = sourceTransactionUUID;
         }
 
+        /**
+         * Creates an independent copy for editing in transaction dialogs.
+         */
+        public CarriedLot copy()
+        {
+            return new CarriedLot(acquisitionDate, sourceShares, targetShares, acquisitionValue,
+                            sourceTransactionUUID);
+        }
+
         public LocalDate getAcquisitionDate()
         {
             return acquisitionDate;
@@ -224,6 +233,17 @@ public class FundTransferEntry implements CrossEntry, Annotated
     public void addCarriedLot(CarriedLot lot)
     {
         this.carriedLots.add(lot);
+    }
+
+    /**
+     * Returns whether both sides of this transfer belong to the given client.
+     * Filtered clients can intentionally contain only one side; that visible
+     * leg is an external flow for performance reporting while still carrying
+     * its original acquisition lots.
+     */
+    public boolean isInternalTo(Client client)
+    {
+        return client.getPortfolios().contains(sourcePortfolio) && client.getPortfolios().contains(targetPortfolio);
     }
 
     @Override

@@ -213,8 +213,7 @@ public class ClientClassificationFilter implements ClientFilter
             // fund-transfer lots so the filtered client keeps the inherited
             // acquisition basis instead of treating the transfer as a purchase.
             FundTransferEntry copy = ClientFilterHelper.copyFundTransfer(entry, entry.getSourcePortfolio(),
-                            state.asReadOnly(entry.getTargetPortfolio()), Classification.ONE_HUNDRED_PERCENT_BD,
-                            targetWeight);
+                            state.asReadOnly(entry.getTargetPortfolio()), targetWeight, targetWeight);
             state.asReadOnly(entry.getTargetPortfolio()).internalAddTransaction(copy.getTargetTransaction());
         }
     }
@@ -230,7 +229,7 @@ public class ClientClassificationFilter implements ClientFilter
             FundTransferEntry copy = ClientFilterHelper.copyFundTransfer(entry,
                             state.asReadOnly(entry.getSourcePortfolio()), entry.getTargetPortfolio(),
                             state.getWeight(entry.getSourceTransaction().getSecurity()),
-                            Classification.ONE_HUNDRED_PERCENT_BD);
+                            state.getWeight(entry.getSourceTransaction().getSecurity()));
             state.asReadOnly(entry.getSourcePortfolio()).internalAddTransaction(copy.getSourceTransaction());
         }
     }

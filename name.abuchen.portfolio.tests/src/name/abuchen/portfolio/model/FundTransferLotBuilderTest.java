@@ -189,4 +189,29 @@ public class FundTransferLotBuilderTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(400))));
         assertThat(lots.get(0).getSourceTransactionUUID(), is(originalBuy.getUUID()));
     }
+
+    @Test
+    public void testBuildProcessesSameDayPurchasesBeforeLiquidations()
+    {
+        Client client = new Client();
+        Security sourceFund = new SecurityBuilder().addTo(client);
+
+        Portfolio sourcePortfolio = new PortfolioBuilder() //
+                        .buy(sourceFund, "2020-06-01", Values.Share.factorize(10), Values.Amount.factorize(1000)) //
+                        .sell(sourceFund, "2020-06-01", Values.Share.factorize(4), Values.Amount.factorize(100)) //
+                        .addTo(client);
+
+        PortfolioTransaction sourceBuy = sourcePortfolio.getTransactions().get(0);
+
+        List<FundTransferEntry.CarriedLot> lots = FundTransferLotBuilder.build(client, sourcePortfolio, sourceFund,
+                        LocalDateTime.parse("2020-06-01T00:00"), Values.Share.factorize(3),
+                        Values.Share.factorize(6), CurrencyUnit.EUR);
+
+        assertThat(lots.size(), is(1));
+        assertThat(lots.get(0).getSourceTransactionUUID(), is(sourceBuy.getUUID()));
+        assertThat(lots.get(0).getSourceShares(), is(Values.Share.factorize(3)));
+        assertThat(lots.get(0).getTargetShares(), is(Values.Share.factorize(6)));
+        assertThat(lots.get(0).getAcquisitionValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(300))));
+    }
 }

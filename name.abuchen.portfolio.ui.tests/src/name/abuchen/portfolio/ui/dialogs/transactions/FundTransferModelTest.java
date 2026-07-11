@@ -265,4 +265,105 @@ public class FundTransferModelTest
         assertThat(model.getCalculationStatus().getSeverity(), is(IStatus.OK));
         assertThat(model.getCarriedLots().size(), is(1));
     }
+
+    @Test
+    public void testEditingCarriedLotsDoesNotMutateSourceBeforeApply()
+    {
+        Client client = new Client();
+        Security sourceFund = new SecurityBuilder().addTo(client);
+        Security targetFund = new SecurityBuilder().addTo(client);
+
+        Portfolio sourcePortfolio = new PortfolioBuilder() //
+                        .buy(sourceFund, "2020-01-01", Values.Share.factorize(10), Values.Amount.factorize(1000)) //
+                        .addTo(client);
+        Portfolio targetPortfolio = new PortfolioBuilder().addTo(client);
+        PortfolioTransaction sourceBuy = sourcePortfolio.getTransactions().get(0);
+
+        FundTransferEntry entry = new FundTransferEntry(sourcePortfolio, targetPortfolio);
+        entry.setDate(LocalDate.parse("2020-06-01").atStartOfDay());
+        entry.setSourceSecurity(sourceFund);
+        entry.setTargetSecurity(targetFund);
+        entry.setSourceShares(Values.Share.factorize(5));
+        entry.setTargetShares(Values.Share.factorize(8));
+        entry.setSourceMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(750)));
+        entry.setTargetMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(750)));
+        entry.addCarriedLot(new FundTransferEntry.CarriedLot(LocalDate.parse("2020-01-01"),
+                        Values.Share.factorize(5), Values.Share.factorize(8),
+                        Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500)), sourceBuy.getUUID()));
+        entry.insert();
+
+        FundTransferModel model = new FundTransferModel(client);
+        model.setSource(entry);
+        model.setCarriedLotAcquisitionAmount(model.getCarriedLots().get(0), Values.Amount.factorize(600));
+        model.setDate(model.getDate());
+
+        assertThat(entry.getCarriedLots().get(0).getAcquisitionValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500))));
+        assertThat(model.getCarriedLots().get(0).getAcquisitionValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(600))));
+    }
+
+    @Test
+    public void testChangingSourceSecurityRebuildsCarriedLots()
+    {
+        Client client = new Client();
+        Security firstSourceFund = new SecurityBuilder().addTo(client);
+        Security secondSourceFund = new SecurityBuilder().addTo(client);
+        Security targetFund = new SecurityBuilder().addTo(client);
+
+        Portfolio sourcePortfolio = new PortfolioBuilder() //
+                        .buy(firstSourceFund, "2020-01-01", Values.Share.factorize(10),
+                                        Values.Amount.factorize(1000)) //
+                        .buy(secondSourceFund, "2020-02-01", Values.Share.factorize(10),
+                                        Values.Amount.factorize(2000)) //
+                        .addTo(client);
+        Portfolio targetPortfolio = new PortfolioBuilder().addTo(client);
+        PortfolioTransaction firstBuy = sourcePortfolio.getTransactions().get(0);
+        PortfolioTransaction secondBuy = sourcePortfolio.getTransactions().get(1);
+
+        FundTransferEntry entry = new FundTransferEntry(sourcePortfolio, targetPortfolio);
+        entry.setDate(LocalDate.parse("2020-06-01").atStartOfDay());
+        entry.setSourceSecurity(firstSourceFund);
+        entry.setTargetSecurity(targetFund);
+        entry.setSourceShares(Values.Share.factorize(5));
+        entry.setTargetShares(Values.Share.factorize(5));
+        entry.setSourceMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(750)));
+        entry.setTargetMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(750)));
+        entry.addCarriedLot(new FundTransferEntry.CarriedLot(LocalDate.parse("2020-01-01"),
+                        Values.Share.factorize(5), Values.Share.factorize(5),
+                        Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500)), firstBuy.getUUID()));
+        entry.insert();
+
+        FundTransferModel model = new FundTransferModel(client);
+        model.setSource(entry);
+        model.setSourceSecurity(secondSourceFund);
+
+        assertThat(model.getCalculationStatus().getSeverity(), is(IStatus.OK));
+        assertThat(model.getCarriedLots().size(), is(1));
+        assertThat(model.getCarriedLots().get(0).getSourceTransactionUUID(), is(secondBuy.getUUID()));
+        assertThat(model.getCarriedLots().get(0).getAcquisitionValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000))));
+    }
+
+    @Test
+    public void testValidationRejectsNegativeAmounts()
+    {
+        Client client = new Client();
+        Security sourceFund = new SecurityBuilder().addTo(client);
+        Security targetFund = new SecurityBuilder().addTo(client);
+        Portfolio sourcePortfolio = new PortfolioBuilder() //
+                        .buy(sourceFund, "2020-01-01", Values.Share.factorize(10), Values.Amount.factorize(1000)) //
+                        .addTo(client);
+
+        FundTransferModel model = new FundTransferModel(client);
+        model.setSourcePortfolio(sourcePortfolio);
+        model.setTargetSecurity(targetFund);
+        model.setSourceSecurity(sourceFund);
+        model.setSourceShares(Values.Share.factorize(5));
+        model.setTargetShares(Values.Share.factorize(8));
+        model.setSourceAmount(-Values.Amount.factorize(750));
+        model.setTargetAmount(-Values.Amount.factorize(750));
+
+        assertThat(model.getCalculationStatus().getSeverity(), is(IStatus.ERROR));
+    }
 }

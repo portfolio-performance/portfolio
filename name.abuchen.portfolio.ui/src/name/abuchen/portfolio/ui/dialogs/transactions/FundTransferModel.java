@@ -4,8 +4,8 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.eclipse.core.databinding.validation.ValidationStatus;
@@ -102,7 +102,7 @@ public class FundTransferModel extends AbstractModel
         entry.setTargetMonetaryAmount(Money.of(getTargetSecurityCurrencyCode(), targetAmount));
         // Carried lots preserve the historical acquisition basis; the transfer
         // amounts above remain the current market value at conversion time.
-        entry.setCarriedLots(new ArrayList<>(carriedLots));
+        entry.setCarriedLots(copyCarriedLots(carriedLots));
         entry.setNote(note);
     }
 
@@ -148,7 +148,7 @@ public class FundTransferModel extends AbstractModel
         this.sourceAmount = entry.getSourceTransaction().getAmount();
         this.targetAmount = entry.getTargetTransaction().getAmount();
         this.note = entry.getNote();
-        this.carriedLots = new ArrayList<>(entry.getCarriedLots());
+        this.carriedLots = copyCarriedLots(entry.getCarriedLots());
         this.carriedLotsManuallyEdited = true;
         this.targetAmountExplicit = true;
         this.targetPortfolioExplicit = true;
@@ -188,10 +188,10 @@ public class FundTransferModel extends AbstractModel
         if (targetPortfolio == null)
             return ValidationStatus.error(Messages.MsgPortfolioToMissing);
 
-        if (sourceShares == 0L || targetShares == 0L)
+        if (sourceShares <= 0L || targetShares <= 0L)
             return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnShares));
 
-        if (sourceAmount == 0L || targetAmount == 0L)
+        if (sourceAmount <= 0L || targetAmount <= 0L)
             return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnAmount));
 
         // Broker statements may split the destination-fund operation with
@@ -252,6 +252,8 @@ public class FundTransferModel extends AbstractModel
 
     public void setSourceSecurity(Security security)
     {
+        if (!Objects.equals(this.sourceSecurity, security))
+            invalidateCarriedLots();
         String oldCurrencyCode = getSourceSecurityCurrencyCode();
         firePropertyChange(Properties.sourceSecurity.name(), this.sourceSecurity, this.sourceSecurity = security);
         firePropertyChange(Properties.sourceSecurityCurrencyCode.name(), oldCurrencyCode,
@@ -280,6 +282,8 @@ public class FundTransferModel extends AbstractModel
 
     public void setSourcePortfolio(Portfolio portfolio)
     {
+        if (!Objects.equals(this.sourcePortfolio, portfolio))
+            invalidateCarriedLots();
         firePropertyChange(Properties.sourcePortfolio.name(), this.sourcePortfolio, this.sourcePortfolio = portfolio);
         if (!targetPortfolioExplicit)
             firePropertyChange(Properties.targetPortfolio.name(), this.targetPortfolio, this.targetPortfolio = portfolio);
@@ -305,12 +309,16 @@ public class FundTransferModel extends AbstractModel
 
     public void setDate(LocalDate date)
     {
+        if (!Objects.equals(this.date, date))
+            invalidateCarriedLots();
         firePropertyChange(Properties.date.name(), this.date, this.date = date);
         recalculate();
     }
 
     public void setTime(LocalTime time)
     {
+        if (!Objects.equals(this.time, time))
+            invalidateCarriedLots();
         firePropertyChange(Properties.time.name(), this.time, this.time = time);
         recalculate();
     }
@@ -322,6 +330,8 @@ public class FundTransferModel extends AbstractModel
 
     public void setSourceShares(long shares)
     {
+        if (this.sourceShares != shares)
+            invalidateCarriedLots();
         firePropertyChange(Properties.sourceShares.name(), this.sourceShares, this.sourceShares = shares);
         recalculate();
     }
@@ -333,6 +343,8 @@ public class FundTransferModel extends AbstractModel
 
     public void setTargetShares(long shares)
     {
+        if (this.targetShares != shares)
+            invalidateCarriedLots();
         firePropertyChange(Properties.targetShares.name(), this.targetShares, this.targetShares = shares);
         recalculate();
     }
@@ -411,6 +423,16 @@ public class FundTransferModel extends AbstractModel
 
         firePropertyChange(Properties.carriedLots.name(), null, this.carriedLots);
         firePropertyChange(Properties.calculationStatus.name(), oldStatus, this.calculationStatus);
+    }
+
+    private void invalidateCarriedLots()
+    {
+        carriedLotsManuallyEdited = false;
+    }
+
+    private static List<FundTransferEntry.CarriedLot> copyCarriedLots(List<FundTransferEntry.CarriedLot> lots)
+    {
+        return lots.stream().map(FundTransferEntry.CarriedLot::copy).toList();
     }
 
     public String getSourceSecurityCurrencyCode()

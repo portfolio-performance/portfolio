@@ -60,6 +60,7 @@ public class FundTransferSerializationTest
         sourceFund.setName("Source Fund");
         Security targetFund = new SecurityBuilder().addTo(client);
         targetFund.setName("Target Fund");
+        targetFund.setCurrencyCode(CurrencyUnit.USD);
 
         Portfolio sourcePortfolio = new PortfolioBuilder() //
                         .buy(sourceFund, "2020-01-01", Values.Share.factorize(10),
@@ -79,7 +80,7 @@ public class FundTransferSerializationTest
         entry.setSourceShares(Values.Share.factorize(7));
         entry.setTargetShares(Values.Share.factorize(11));
         entry.setSourceMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1050)));
-        entry.setTargetMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1050)));
+        entry.setTargetMonetaryAmount(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1125)));
         entry.addCarriedLot(new FundTransferEntry.CarriedLot(LocalDate.parse("2020-01-01"),
                         Values.Share.factorize(5), Values.Share.factorize(8),
                         Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500)), firstBuy.getUUID()));
@@ -127,6 +128,10 @@ public class FundTransferSerializationTest
         assertThat(entry.getCarriedLots().size(), is(2));
         assertThat(entry.getTargetTransaction().getSecurity().getName(), is("Target Fund"));
         assertThat(entry.getTargetTransaction().getShares(), is(Values.Share.factorize(11)));
+        assertThat(entry.getSourceTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1050))));
+        assertThat(entry.getTargetTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1125))));
         assertThat(entry.getCarriedLots().get(0).getAcquisitionDate(), is(LocalDate.parse("2020-01-01")));
         assertThat(entry.getCarriedLots().get(0).getAcquisitionValue(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500))));

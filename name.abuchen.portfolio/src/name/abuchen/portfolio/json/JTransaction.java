@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.FundTransferEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.TransactionOwner;
@@ -41,6 +42,10 @@ public class JTransaction
     private JSecurity security;
     private JSecurity targetSecurity;
     private Double targetShares;
+    private String targetCurrency;
+    private Double targetAmount;
+
+    private List<JFundTransferLot> carriedLots;
 
     private List<JTransactionUnit> units;
 
@@ -184,6 +189,21 @@ public class JTransaction
         this.targetShares = targetShares;
     }
 
+    public String getTargetCurrency()
+    {
+        return targetCurrency;
+    }
+
+    public double getTargetAmount()
+    {
+        return targetAmount;
+    }
+
+    public Stream<JFundTransferLot> getCarriedLots()
+    {
+        return carriedLots == null ? Stream.empty() : carriedLots.stream();
+    }
+
     public Stream<JTransactionUnit> getUnits()
     {
         return units == null ? Stream.empty() : units.stream();
@@ -231,7 +251,24 @@ public class JTransaction
 
         transaction.getTransaction().getUnits().map(JTransactionUnit::from).forEach(jtx::addUnit);
 
+        if (transaction.getTransaction().getCrossEntry() instanceof FundTransferEntry entry)
+            fillFundTransferDetails(entry, jtx);
+
         return jtx;
+    }
+
+    private static void fillFundTransferDetails(FundTransferEntry entry, JTransaction transaction)
+    {
+        PortfolioTransaction source = entry.getSourceTransaction();
+        PortfolioTransaction target = entry.getTargetTransaction();
+
+        transaction.currency = source.getCurrencyCode();
+        transaction.amount = source.getAmount() / Values.Amount.divider();
+        transaction.targetCurrency = target.getCurrencyCode();
+        transaction.targetAmount = target.getAmount() / Values.Amount.divider();
+        transaction.carriedLots = entry.getCarriedLots().stream().map(JFundTransferLot::from).toList();
+        transaction.units = null;
+        source.getUnits().map(JTransactionUnit::from).forEach(transaction::addUnit);
     }
 
     private static void fillFromAccountTransaction(TransactionPair<AccountTransaction> tx, JTransaction jtx)

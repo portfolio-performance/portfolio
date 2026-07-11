@@ -342,4 +342,32 @@ public interface PTransactionOrBuilder extends
    */
   name.abuchen.portfolio.model.proto.v1.PFundTransferLotOrBuilder getCarriedLotsOrBuilder(
       int index);
+
+  /**
+   * <code>optional string targetCurrencyCode = 22;</code>
+   * @return Whether the targetCurrencyCode field is set.
+   */
+  boolean hasTargetCurrencyCode();
+  /**
+   * <code>optional string targetCurrencyCode = 22;</code>
+   * @return The targetCurrencyCode.
+   */
+  java.lang.String getTargetCurrencyCode();
+  /**
+   * <code>optional string targetCurrencyCode = 22;</code>
+   * @return The bytes for targetCurrencyCode.
+   */
+  com.google.protobuf.ByteString
+      getTargetCurrencyCodeBytes();
+
+  /**
+   * <code>optional int64 targetAmount = 23;</code>
+   * @return Whether the targetAmount field is set.
+   */
+  boolean hasTargetAmount();
+  /**
+   * <code>optional int64 targetAmount = 23;</code>
+   * @return The targetAmount.
+   */
+  long getTargetAmount();
 }

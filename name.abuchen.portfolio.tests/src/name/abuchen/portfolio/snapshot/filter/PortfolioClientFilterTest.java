@@ -324,6 +324,22 @@ public class PortfolioClientFilterTest
                         PortfolioTransaction.Type.FUND_TRANSFER_IN);
 
         assertThat(copiedSourceTransaction.getCrossEntry(), is(copiedTargetTransaction.getCrossEntry()));
+
+        Client weighted = new PortfolioClientFilter(Arrays.asList(sourcePortfolio, targetPortfolio),
+                        Collections.emptyList(), Map.of(sourcePortfolio, HALF)).filter(fundTransferClient);
+
+        List<PortfolioTransaction> weightedSource = weighted.getPortfolios().get(0).getTransactions().stream()
+                        .filter(t -> t.getType() == PortfolioTransaction.Type.FUND_TRANSFER_OUT).toList();
+        List<PortfolioTransaction> weightedTarget = weighted.getPortfolios().get(1).getTransactions().stream()
+                        .filter(t -> t.getType() == PortfolioTransaction.Type.FUND_TRANSFER_IN).toList();
+
+        assertThat(weightedSource.size(), is(1));
+        assertThat(weightedSource.get(0).getShares(), is(Values.Share.factorize(1.5)));
+        assertThat(weightedTarget.size(), is(2));
+        assertThat(weightedTarget.stream().mapToLong(PortfolioTransaction::getShares).sum(),
+                        is(Values.Share.factorize(5)));
+        assertThat(weightedTarget.stream().filter(t -> weighted.getPortfolios()
+                        .contains(t.getCrossEntry().getCrossOwner(t))).count(), is(1L));
     }
 
     @Test

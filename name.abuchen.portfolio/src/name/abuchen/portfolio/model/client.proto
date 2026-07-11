@@ -205,6 +205,8 @@ message PTransaction {
   optional string targetSecurity = 19;
   optional int64 targetShares = 20;
   repeated PFundTransferLot carriedLots = 21;
+  optional string targetCurrencyCode = 22;
+  optional int64 targetAmount = 23;
 }
 
 message PInvestmentPlan {

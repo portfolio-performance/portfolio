@@ -50,14 +50,37 @@ import name.abuchen.portfolio.money.Values;
                         Classification.ONE_HUNDRED_PERCENT_BD);
     }
 
+    /**
+     * Recreates a fund transfer for ownership-weighted portfolios. The common
+     * weight remains a linked internal transfer. Any excess is copied as a
+     * one-sided fund-transfer leg so acquisition lots survive while performance
+     * reporting can recognize the ownership-boundary flow.
+     */
     /* package */ static void recreateFundTransfer(FundTransferEntry transferEntry, ReadOnlyPortfolio sourcePortfolio,
                     ReadOnlyPortfolio targetPortfolio, BigDecimal sourceWeight, BigDecimal targetWeight)
     {
-        FundTransferEntry copy = copyFundTransfer(transferEntry, sourcePortfolio, targetPortfolio, sourceWeight,
-                        targetWeight);
+        BigDecimal commonWeight = sourceWeight.min(targetWeight);
+        FundTransferEntry copy = copyFundTransfer(transferEntry, sourcePortfolio, targetPortfolio, commonWeight,
+                        commonWeight);
 
         sourcePortfolio.internalAddTransaction(copy.getSourceTransaction());
         targetPortfolio.internalAddTransaction(copy.getTargetTransaction());
+
+        if (sourceWeight.compareTo(commonWeight) > 0)
+        {
+            BigDecimal excessWeight = sourceWeight.subtract(commonWeight);
+            FundTransferEntry excess = copyFundTransfer(transferEntry, sourcePortfolio,
+                            transferEntry.getTargetPortfolio(), excessWeight, excessWeight);
+            sourcePortfolio.internalAddTransaction(excess.getSourceTransaction());
+        }
+
+        if (targetWeight.compareTo(commonWeight) > 0)
+        {
+            BigDecimal excessWeight = targetWeight.subtract(commonWeight);
+            FundTransferEntry excess = copyFundTransfer(transferEntry, transferEntry.getSourcePortfolio(),
+                            targetPortfolio, excessWeight, excessWeight);
+            targetPortfolio.internalAddTransaction(excess.getTargetTransaction());
+        }
     }
 
     /* package */ static FundTransferEntry copyFundTransfer(FundTransferEntry transferEntry, Portfolio sourcePortfolio,
@@ -93,7 +116,7 @@ import name.abuchen.portfolio.money.Values;
         // the copied carried lots preserve the inherited acquisition basis.
         for (FundTransferEntry.CarriedLot lot : transferEntry.getCarriedLots())
             copy.addCarriedLot(new FundTransferEntry.CarriedLot(lot.getAcquisitionDate(),
-                            value(lot.getSourceShares(), targetWeight), value(lot.getTargetShares(), targetWeight),
+                            value(lot.getSourceShares(), sourceWeight), value(lot.getTargetShares(), targetWeight),
                             value(lot.getAcquisitionValue(), targetWeight), lot.getSourceTransactionUUID()));
 
         return copy;

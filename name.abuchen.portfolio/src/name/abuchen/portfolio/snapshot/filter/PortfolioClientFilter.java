@@ -264,7 +264,8 @@ public class PortfolioClientFilter implements ClientFilter
                     {
                         ClientFilterHelper.recreateFundTransfer(inboundFundTransfer,
                                         portfolio2pseudo.get(inboundFundTransfer.getSourcePortfolio()),
-                                        pseudoPortfolio);
+                                        pseudoPortfolio, getWeightBD(inboundFundTransfer.getSourcePortfolio()),
+                                        portfolioWeight);
                     }
                     else
                     {
@@ -273,7 +274,7 @@ public class PortfolioClientFilter implements ClientFilter
                         // would lose the tax-neutral carried acquisition lots.
                         pseudoPortfolio.internalAddTransaction(ClientFilterHelper
                                         .copyFundTransfer(inboundFundTransfer, inboundFundTransfer.getSourcePortfolio(),
-                                                        pseudoPortfolio)
+                                                        pseudoPortfolio, portfolioWeight, portfolioWeight)
                                         .getTargetTransaction());
                     }
                     break;
@@ -298,7 +299,8 @@ public class PortfolioClientFilter implements ClientFilter
                     if (!portfolios.contains(outboundFundTransfer.getTargetPortfolio()))
                         pseudoPortfolio.internalAddTransaction(ClientFilterHelper
                                         .copyFundTransfer(outboundFundTransfer, pseudoPortfolio,
-                                                        outboundFundTransfer.getTargetPortfolio())
+                                                        outboundFundTransfer.getTargetPortfolio(), portfolioWeight,
+                                                        portfolioWeight)
                                         .getSourceTransaction());
                     break;
                 case DELIVERY_INBOUND, DELIVERY_OUTBOUND:

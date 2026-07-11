@@ -409,7 +409,11 @@ import name.abuchen.portfolio.money.Money;
                     fundTransfer.setDate(fromTimestamp(newTransaction.getDate()));
                     fundTransfer.setCurrencyCode(newTransaction.getCurrencyCode());
                     fundTransfer.setSourceAmount(newTransaction.getAmount());
-                    fundTransfer.setTargetAmount(newTransaction.getAmount());
+                    fundTransfer.setTargetMonetaryAmount(Money.of(
+                                    newTransaction.hasTargetCurrencyCode() ? newTransaction.getTargetCurrencyCode()
+                                                    : newTransaction.getCurrencyCode(),
+                                    newTransaction.hasTargetAmount() ? newTransaction.getTargetAmount()
+                                                    : newTransaction.getAmount()));
 
                     if (newTransaction.hasNote())
                         fundTransfer.setNote(newTransaction.getNote());
@@ -1162,6 +1166,8 @@ import name.abuchen.portfolio.money.Money;
 
                 newTransaction.setTargetSecurity(targetTransaction.getSecurity().getUUID());
                 newTransaction.setTargetShares(targetTransaction.getShares());
+                newTransaction.setTargetCurrencyCode(targetTransaction.getCurrencyCode());
+                newTransaction.setTargetAmount(targetTransaction.getAmount());
                 fundTransfer.getCarriedLots().forEach(lot -> addCarriedLot(lot, newTransaction));
                 break;
             case DELIVERY_INBOUND:

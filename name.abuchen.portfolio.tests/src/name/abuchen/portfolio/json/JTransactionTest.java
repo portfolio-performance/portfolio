@@ -15,6 +15,7 @@ import name.abuchen.portfolio.model.FundTransferEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
@@ -31,6 +32,7 @@ public class JTransactionTest
         sourceFund.setName("Source Fund");
         Security targetFund = new SecurityBuilder().addTo(client);
         targetFund.setName("Target Fund");
+        targetFund.setCurrencyCode(CurrencyUnit.USD);
 
         Portfolio sourcePortfolio = new PortfolioBuilder() //
                         .buy(sourceFund, "2020-01-01", Values.Share.factorize(10),
@@ -49,14 +51,20 @@ public class JTransactionTest
         entry.setSourceShares(Values.Share.factorize(7));
         entry.setTargetShares(Values.Share.factorize(11));
         entry.setSourceMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1050)));
-        entry.setTargetMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1050)));
+        entry.setTargetMonetaryAmount(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1125)));
+        entry.getSourceTransaction().addUnit(new Transaction.Unit(Transaction.Unit.Type.FEE,
+                        Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5))));
         entry.addCarriedLot(new FundTransferEntry.CarriedLot(LocalDate.parse("2020-01-01"),
                         Values.Share.factorize(7), Values.Share.factorize(11),
                         Money.of(CurrencyUnit.EUR, Values.Amount.factorize(700)), sourceBuy.getUUID()));
         entry.insert();
 
-        assertFundTransfer(JTransaction.from(new TransactionPair<>(sourcePortfolio, entry.getSourceTransaction())));
-        assertFundTransfer(JTransaction.from(new TransactionPair<>(targetPortfolio, entry.getTargetTransaction())));
+        JTransaction source = JTransaction.from(new TransactionPair<>(sourcePortfolio, entry.getSourceTransaction()));
+        JTransaction target = JTransaction.from(new TransactionPair<>(targetPortfolio, entry.getTargetTransaction()));
+
+        assertFundTransfer(source);
+        assertFundTransfer(target);
+        assertThat(target.toJson(), is(source.toJson()));
     }
 
     private void assertFundTransfer(JTransaction transaction)
@@ -68,5 +76,12 @@ public class JTransactionTest
         assertThat(transaction.getTargetSecurity().getName(), is("Target Fund"));
         assertThat(transaction.getShares(), is(7d));
         assertThat(transaction.getTargetShares(), is(11d));
+        assertThat(transaction.getCurrency(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getAmount(), is(1050d));
+        assertThat(transaction.getTargetCurrency(), is(CurrencyUnit.USD));
+        assertThat(transaction.getTargetAmount(), is(1125d));
+        assertThat(transaction.getCarriedLots().count(), is(1L));
+        assertThat(transaction.getCarriedLots().findFirst().orElseThrow().getAcquisitionAmount(), is(700d));
+        assertThat(transaction.getUnits().count(), is(1L));
     }
 }
