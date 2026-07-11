@@ -47,7 +47,7 @@ public class C24BankGmbHPDFExtractor extends AbstractPDFExtractor
                                                         section -> section //
                                                                         .attributes("year", "taxDate", "tax", "taxCurrency") //
                                                                         .match("^(Vorl.ufiger )?Kontoauszug [\\d]{2}\\/(?<year>[\\d]{4}).*$") //
-                                                                        .match("^(?<taxDate>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. Steuern [\\-|\\+] (?<tax>[\\.,\\d]+) (?<taxCurrency>\\p{Sc}).*$") //
+                                                                        .match("^(?<taxDate>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. Steuern [\\-|\\+] ?(?<tax>[\\.,\\d]+) (?<taxCurrency>\\p{Sc}).*$") //
                                                                         .assign((ctx, v) -> {
                                                                             ctx.put("taxDate", v.get("taxDate") + v.get("year"));
                                                                             ctx.put("tax", v.get("tax"));
@@ -61,11 +61,13 @@ public class C24BankGmbHPDFExtractor extends AbstractPDFExtractor
         // 17.05. 17.05. Überweisung + 1.115,22 €
         // 05.08. 05.08. Echtzeitüberweisung - 2.800,00 €
         // 31.01. 31.01. Lastschrift - 3.800,00 €
+        // 29.05. 29.05. Lastschrift -2.469,00 €
+        // 28.05. 28.05. Überweisung +7.522,77 €
         // @formatter:on
         var depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. " //
                         + "(?!(Zinsen|Steuern))" //
                         + ".* " //
-                        + "[\\-|\\+] [\\.,\\d]+ \\p{Sc}.*$");
+                        + "[\\-|\\+] ?[\\.,\\d]+ \\p{Sc}.*$");
         type.addBlock(depositRemovalBlock);
         depositRemovalBlock.set(new Transaction<AccountTransaction>()
 
@@ -76,7 +78,7 @@ public class C24BankGmbHPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. " //
                                         + "(?!(Zinsen|Steuern))" //
                                         + "(?<note>.*) " //
-                                        + "(?<type>[\\-|\\+]) " //
+                                        + "(?<type>[\\-|\\+]) ?" //
                                         + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}).*$") //
                         .assign((t, v) -> {
                             // @formatter:off
@@ -96,7 +98,7 @@ public class C24BankGmbHPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 31.05. 31.05. Zinsen + 1,93 €
         // @formatter:on
-        var interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Zinsen [\\-|\\+] [\\.,\\d]+ \\p{Sc}.*$");
+        var interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Zinsen [\\-|\\+] ?[\\.,\\d]+ \\p{Sc}.*$");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
@@ -107,7 +109,7 @@ public class C24BankGmbHPDFExtractor extends AbstractPDFExtractor
                         .documentContextOptionally("taxDate", "tax", "taxCurrency") //)
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. " //
                                         + "(?<note>Zinsen) " //
-                                        + "(?<type>[\\-|\\+]) " //
+                                        + "(?<type>[\\-|\\+]) ?" //
                                         + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}).*$") //
                         .assign((t, v) -> {
                             // @formatter:off
