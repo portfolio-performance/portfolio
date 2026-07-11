@@ -283,7 +283,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendTransaction()
     {
-        final var type = new DocumentType("(Dividende|Zinszahlung|Dividend|Kapitalr.ckzahlung)", //
+        final var type = new DocumentType("(Dividende|Zinszahlung|Dividend|Kapitalr.ckzahlung|Return of capital)", //
                         "(Kauf|Buy|Kopen|Acquisto|Verkauf|Sell|Sparplan|Sparplanausf.hrung|Laufzeitende|Knock Out)");
         this.addDocumentTyp(type);
 

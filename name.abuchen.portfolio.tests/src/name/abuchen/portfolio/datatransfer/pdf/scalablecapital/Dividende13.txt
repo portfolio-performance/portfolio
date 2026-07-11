@@ -1,0 +1,28 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.83.2
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital Bank GmbH • Seitzstraße 8e • 80538 Munich • Germany
+lmWZg hcaho
+Rue de nAmWMNCDZSIY 40
+59265 uZeAWhv Date 06.05.2026
+France Page 1 / 1
+Return of capital
+Entitled security Engie S.A.
+ISIN FR0010208488
+Entitled quantity 340
+Ex day 30.04.2026
+Clearing account Ee45338942362681039165 (nGOibWCSBWN)
+Clearing account movement
+Booking Value date Type Amount / pcs. Entitled quantity Total amount
+06.05.2026 05.05.2026 Credit 0.32 EUR 340 108.46 EUR
+Total 108.46 EUR
+Please ensure your compliance with the German foreign trade reporting regulations to the German Bundesbank (AWV-Meldung).
+Please note that the income from capital assets are fully subject to income tax in Germany.
+Calculation of tax-relevant income
+Type Amount
+Profit or loss 108.46 EUR
+Taxable amount 0.00 EUR
+Scalable Capital Bank GmbH • Seitzstraße 8e, 80538 Munich, Germany • HRB 217778 • Amtsgericht München • VAT ID: DE300434774 Page
+Managing Directors: Florian Prucker, Martin Krebs, Dirk Franzmeyer, Dr. Andreas Schranzhofer 1 / 1
+Supervisory Board: Patrick Olson (Chairman)

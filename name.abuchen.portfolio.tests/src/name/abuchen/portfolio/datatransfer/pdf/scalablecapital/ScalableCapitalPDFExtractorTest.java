@@ -1916,6 +1916,41 @@ public class ScalableCapitalPDFExtractorTest
     }
 
     @Test
+    public void testDividende13()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende13.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0010208488"), hasWkn(null), hasTicker(null), //
+                        hasName("Engie S.A."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction (return of capital, not taxable)
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-05-05T00:00"), hasExDate("2026-04-30T00:00"), //
+                        hasShares(340), //
+                        hasSource("Dividende13.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 108.46), hasGrossValue("EUR", 108.46), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testRechnungsabschluss01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
