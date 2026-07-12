@@ -8475,6 +8475,50 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testFlatExDeGiroSammelabrechnung11()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroSammelabrechnung11.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(2L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // check securities
+        assertThat(results, hasItem(security( //
+                        hasIsin("US84615Q1031"), hasWkn("A42D4F"), hasTicker(null), //
+                        hasName("SPACE EXPLORATION TECHS."), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-06-12T00:00"), hasShares(10.00), //
+                        hasSource("FlatExDegiroSammelabrechnung11.txt"), //
+                        hasNote("Transaktion-Nr.: 5028417943"), //
+                        hasAmount("EUR", 1166.61), hasGrossValue("EUR", 1166.61), //
+                        hasForexGrossValue("USD", 1350.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-06-12T18:02"), hasShares(10.00), //
+                        hasSource("FlatExDegiroSammelabrechnung11.txt"), //
+                        hasNote("Transaktion-Nr.: 5029322308"), //
+                        hasAmount("EUR", 1319.57), hasGrossValue("EUR", 1386.40), //
+                        hasForexGrossValue("USD", 1604.34), //
+                        hasTaxes("EUR", 51.93 + 2.85 + 4.15), hasFees("EUR", 5.90 + 2.00))));
+    }
+
+    @Test
     public void testFlatExDeGiroDepotServiceGebuehr01()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());

@@ -1,0 +1,94 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.84.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+flatexDEGIRO Bank SE
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 9221 7035898
+E-Mail: info@flatex.de
+flatexDEGIRO Bank SE -  Hammfelddamm 4 - 41460 Neuss, Deutschland
+7004800621499485171658
+ZFfoRNV fnkXswiY
+fnkXswiY. 46
+16032 ZNrQSCic
+          Frankfurt, 13.06.2026
+Sammelabrechnung (Wertpapierkauf/-verkauf)
+Ihre Depotnummer: 123231456564
+Depotinhaber:     opsfkTb bOFtIHzU
+Nr.313138095/1    Kauf          SPACE EXPLORATION TECHS. (US84615Q1031/A42D4F)
+Ordervolumen  : 42,00 St.               Handelsplatz  :              Zeichnung
+davon ausgef. : 10,00 St.               Schlusstag    :  12.06.2026, 00:00 Uhr
+Kurs          : 135,0000 USD            Kurswert      :           1.166,61 EUR
+Devisenkurs   : 1,157200                Provision     :
+Bew-Faktor    : 1,0000                  Eigene Spesen :
+Verwahrart    : GS-Verwahrung          *Fremde Spesen :
+Lagerstelle   : Clearstream Nat.
+Lagerland     : USA                     Bemessungs-
+Gewinn/Verlust: 0,00 EUR                grundlage     :               0,00 EUR
+Valuta        : 15.06.2026            **Einbeh. Steuer:               0,00 EUR
+                                        Endbetrag     :          -1.166,61 EUR
+*   Enthalten sind folgende Gebühren
+                                Courtage                :             0,00 EUR
+                                Tradinggebühr           :             0,00 EUR
+                                Regulierung             :             0,00 EUR
+                                Schlussnoten            :             0,00 EUR
+                                Finanztransaktionssteuer:             0,00 EUR
+                                Sonstige                :             0,00 EUR
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                Kapitalertragsteuer   :               0,00 EUR
+                                Solidaritätszuschlag  :               0,00 EUR
+                                Kirchensteuer         :               0,00 EUR
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    5028417943.
+______________________________________________________________________________
+                                                                     Seite 1/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Societas Europaea, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 141330)
+Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter  -  Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+ Evgeni Kaplun, Jens Möbitz, Christiane Strubel
+2000006013470330 0113303500000101
+Nr.313210686/1    Verkauf       SPACE EXPLORATION TECHS. (US84615Q1031/A42D4F)
+Ordervolumen  : 10,00 St.               Handelsplatz  :              Tradegate
+davon ausgef. : 10,00 St.               Schlusstag    :  12.06.2026, 18:02 Uhr
+Kurs          : 138,6400 EUR            Kurswert      :           1.386,40 EUR
+Devisenkurs   :                         Provision     :               5,90 EUR
+Bew-Faktor    : 1,0000                  Eigene Spesen :
+Verwahrart    : GS-Verwahrung          *Fremde Spesen :               2,00 EUR
+Lagerstelle   : Clearstream Nat.
+Lagerland     : USA                     Bemessungs-
+Gewinn/Verlust: 219,79 EUR              grundlage     :             211,89 EUR
+Valuta        : 16.06.2026            **Einbeh. Steuer:              58,93 EUR
+                                        Endbetrag     :           1.319,57 EUR
+*   Enthalten sind folgende Gebühren
+                                Courtage                :             0,00 EUR
+                                Tradinggebühr           :             0,00 EUR
+                                Regulierung             :             2,00 EUR
+                                Schlussnoten            :             0,00 EUR
+                                Finanztransaktionssteuer:             0,00 EUR
+                                Sonstige                :             0,00 EUR
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                Kapitalertragsteuer   :              51,93 EUR
+                                Solidaritätszuschlag  :               2,85 EUR
+                                Kirchensteuer         :               4,15 EUR
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    5029322308.
+Die Verrechnung der Endbeträge erfolgt über Ihr Konto Nr.: 1009326791
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit
+dem angegebenen Valutatag buchen. Bitte prüfen Sie diese Abrechnung auf
+Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese Abrechnung
+müssen unverzüglich nach Zugang bei der Bank erhoben werden. Die
+Unterlassung rechtzeitiger Einwendung gilt als Genehmigung. Bitte beachten
+Sie mögliche Hinweise des Emittenten hinsichtlich vorzeitiger Fälligstellung,
+beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und
+informieren Sie sich rechtzeitig, welche spezielle Fälligkeitsregelung auf die
+von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge sind ESt-pflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+______________________________________________________________________________
+                                                                     Seite 2/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Societas Europaea, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 141330)
+Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter  -  Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+ Evgeni Kaplun, Jens Möbitz, Christiane Strubel
+2000006013470330

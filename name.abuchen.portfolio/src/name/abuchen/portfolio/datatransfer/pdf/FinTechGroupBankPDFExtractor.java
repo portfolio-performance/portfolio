@@ -687,6 +687,37 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                             var fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
+                                        // If the security is in a foreign currency, but the trade was
+                                        // executed in the booking currency, the exchange rate is missing.
+                                        // In this case we use the exchange rate of a preceding transaction
+                                        // for the same currency pair in the same summary statement.
+                                        //
+                                        // Kurs          : 138,6400 EUR            Kurswert      :           1.386,40 EUR
+                                        // Devisenkurs   :                         Provision     :               5,90 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("gross", "baseCurrency") //
+                                                        .match("^.* Kurswert[:\\s]{1,}(?<gross>[\\.,\\d]+)[\\s]{1,}(?<baseCurrency>[A-Z]{3})$") //
+                                                        .match("^Devisenkurs[:\\s]{1,}[A-Z].*$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = type.getCurrentContext().getType(ExtrExchangeRate.class);
+
+                                                            if (rate.isPresent())
+                                                            {
+                                                                var exchangeRate = rate.get();
+                                                                var securityCurrency = t.getPortfolioTransaction().getSecurity().getCurrencyCode();
+
+                                                                if (exchangeRate.getBaseCurrency().equals(asCurrencyCode(v.get("baseCurrency"))) //
+                                                                                && exchangeRate.getTermCurrency().equals(securityCurrency))
+                                                                {
+                                                                    var gross = Money.of(exchangeRate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                                    var fxGross = exchangeRate.convert(exchangeRate.getTermCurrency(), gross);
+
+                                                                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                                }
+                                                            }
                                                         }))
 
                         // @formatter:off
