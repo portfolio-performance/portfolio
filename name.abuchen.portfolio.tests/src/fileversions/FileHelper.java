@@ -2,6 +2,7 @@ package fileversions;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -10,9 +11,8 @@ import java.util.stream.Stream;
 
 public class FileHelper
 {
-    private static Path testDir = Paths.get(new File(
-                    ReadingHistoricClientFilesTest.class.getProtectionDomain().getCodeSource().getLocation().getFile())
-                                    .toURI());
+    private static Path testDir = Paths.get(URI.create(ReadingHistoricClientFilesTest.class.getProtectionDomain()
+                    .getCodeSource().getLocation().toString()));
 
     private FileHelper()
     {
