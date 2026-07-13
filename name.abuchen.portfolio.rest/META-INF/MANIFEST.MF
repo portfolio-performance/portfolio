@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Portfolio Performance REST API
+Bundle-SymbolicName: name.abuchen.portfolio.rest
+Bundle-Version: 0.85.1.qualifier
+Bundle-Vendor: Andreas Buchen
+Bundle-RequiredExecutionEnvironment: JavaSE-21
+Require-Bundle: name.abuchen.portfolio;bundle-version="0.85.1",
+ com.google.gson,
+ org.eclipse.core.runtime,
+ org.eclipse.equinox.preferences
+Export-Package: name.abuchen.portfolio.rest,
+ name.abuchen.portfolio.rest.spi
+Automatic-Module-Name: name.abuchen.portfolio.rest
+Bundle-ActivationPolicy: lazy
