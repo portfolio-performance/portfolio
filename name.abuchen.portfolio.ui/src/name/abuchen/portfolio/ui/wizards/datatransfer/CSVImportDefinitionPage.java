@@ -676,6 +676,12 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         {
             if (element instanceof CSVImporter)
             {
+                // the table can render an implicit column 0 even when the
+                // importer has no columns (e.g. after rereading a file that has
+                // no data rows left after skipping lines)
+                if (columnIndex >= importer.getColumns().length)
+                    return null;
+
                 Column column = importer.getColumns()[columnIndex];
 
                 if (column.getField() == null)
@@ -703,6 +709,9 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         public Color getBackground(Object element, int columnIndex)
         {
             if (element instanceof CSVImporter)
+                return null;
+
+            if (columnIndex >= importer.getColumns().length)
                 return null;
 
             Column column = importer.getColumns()[columnIndex];

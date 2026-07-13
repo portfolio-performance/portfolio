@@ -260,6 +260,40 @@ public class ComdirectPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf06()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B3XXRP09"), hasWkn("A1JX53"), hasTicker(null), //
+                        hasName("Vanguard S&P 500 UCITS ETF Registered Shares USD Dis.oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-07-09T00:00"), hasShares(120.00), //
+                        hasSource("Kauf06.txt"), //
+                        hasNote("Ord.-Nr.: 000532542608 | R.-Nr.: 710725441378D0A5"), //
+                        hasAmount("EUR", 14990.95), hasGrossValue("EUR", 14921.40), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 69.55))));
+    }
+
+    @Test
     public void testWertpapierKaufMitSteuerbehandlung01()
     {
         var extractor = new ComdirectPDFExtractor(new Client());
