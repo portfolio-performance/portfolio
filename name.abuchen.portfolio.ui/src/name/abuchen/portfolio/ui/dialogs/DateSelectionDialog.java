@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.DatePicker;
 
 public class DateSelectionDialog extends Dialog
 {
@@ -57,14 +58,29 @@ public class DateSelectionDialog extends Dialog
     {
         Composite container = (Composite) super.createDialogArea(parent);
 
-        DateTime dateTime = new DateTime(container, SWT.CALENDAR | SWT.BORDER);
-        dateTime.setDate(selection.getYear(), selection.getMonthValue() - 1, selection.getDayOfMonth());
-        dateTime.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+        var datePicker = new DatePicker(container, false);
+        datePicker.setSelection(selection);
+        GridDataFactory.fillDefaults().grab(true, false).align(SWT.CENTER, SWT.CENTER)
+                        .applyTo(datePicker.getControl());
+
+        var calendar = new DateTime(container, SWT.CALENDAR | SWT.BORDER);
+        calendar.setDate(selection.getYear(), selection.getMonthValue() - 1, selection.getDayOfMonth());
+
+        datePicker.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            selection = datePicker.getSelection();
             // DateTime widget has zero-based months
-            selection = LocalDate.of(dateTime.getYear(), dateTime.getMonth() + 1, dateTime.getDay());
+            calendar.setDate(selection.getYear(), selection.getMonthValue() - 1, selection.getDayOfMonth());
             DateSelectionDialog.this.getButton(OK).setEnabled(validator.test(selection));
         }));
-        GridDataFactory.fillDefaults().grab(true, true).align(SWT.CENTER, SWT.FILL).applyTo(dateTime);
+
+        calendar.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            // DateTime widget has zero-based months
+            selection = LocalDate.of(calendar.getYear(), calendar.getMonth() + 1, calendar.getDay());
+            datePicker.setSelection(selection);
+            DateSelectionDialog.this.getButton(OK).setEnabled(validator.test(selection));
+        }));
+
+        GridDataFactory.fillDefaults().grab(true, true).align(SWT.CENTER, SWT.FILL).applyTo(calendar);
 
         return container;
     }
