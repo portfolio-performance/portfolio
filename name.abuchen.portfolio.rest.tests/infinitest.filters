@@ -1,0 +1,2 @@
+# exclude from infinitest due to dependency on bundle preferences
+exclude .*Test
