@@ -1182,6 +1182,7 @@ public class Messages extends NLS
     public static String MsgPreviousStockSplit;
     public static String MsgRateLimitExceeded;
     public static String MsgRateLimitExceededAndRetrying;
+    public static String MsgRestApiServerStarted;
     public static String MsgRestartRequiredAfterGUIReset;
     public static String MsgRestartRequiredAfterUpdate;
     public static String MsgSecurityHasNoQuotes;
@@ -1295,6 +1296,9 @@ public class Messages extends NLS
     public static String PrefLabelProxyHost;
     public static String PrefLabelProxyPort;
     public static String PrefLabelQuoteDigits;
+    public static String PrefLabelRestApiEnable;
+    public static String PrefLabelRestApiPort;
+    public static String PrefLabelRestApiToken;
     public static String PrefLabelSharesDigits;
     public static String PrefLabelUseIndirectQuotation;
     public static String PrefLabelUseSWTChartLibrary;
@@ -1303,6 +1307,9 @@ public class Messages extends NLS
     public static String PrefMsgCalendar;
     public static String PrefMsgConfigureUpdates;
     public static String PrefMsgLanguageConfig;
+    public static String PrefMsgRestApiInvalidPort;
+    public static String PrefMsgRestApiRegenerateConfirm;
+    public static String PrefMsgRestApiUnsavedFiles;
     public static String PrefMyDividends24APIKey;
     public static String PrefNoteIndirectQuotation;
     public static String PrefNoteStoreSettingsNextToFile;
@@ -1311,6 +1318,9 @@ public class Messages extends NLS
     public static String PrefPrefixSecurityName;
     public static String PrefQuandlAPIKey;
     public static String PrefRelativeBackupDirectoryName;
+    public static String PrefRestApiBtnRegenerate;
+    public static String PrefRestApiColumnAlias;
+    public static String PrefRestApiColumnFile;
     public static String PrefStoreSettingsNextToFile;
     public static String PrefTitle;
     public static String PrefTitleAlphaVantage;
@@ -1332,6 +1342,7 @@ public class Messages extends NLS
     public static String PrefTitlePresentation;
     public static String PrefTitleProxy;
     public static String PrefTitleQuandl;
+    public static String PrefTitleRestApi;
     public static String PrefTitleTwelveData;
     public static String PrefTwelveDataAPIKey;
     public static String PrefUpdateQuotesAfterFileOpen;
