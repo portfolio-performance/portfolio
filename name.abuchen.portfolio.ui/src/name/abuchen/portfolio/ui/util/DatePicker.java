@@ -11,6 +11,7 @@ import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.nebula.widgets.cdatetime.CDateTimeBuilder;
 import org.eclipse.nebula.widgets.cdatetime.Footer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
@@ -30,23 +31,33 @@ public class DatePicker
 
     public DatePicker(Composite parent)
     {
+        this(parent, true);
+    }
+
+    public DatePicker(Composite parent, boolean dropDown)
+    {
         boolean isLinux = Platform.OS_LINUX.equals(Platform.getOS());
 
         if (isLinux)
         {
-            CDateTime boxDate = new CDateTime(parent, CDT.BORDER | CDT.DROP_DOWN);
+            CDateTime boxDate = new CDateTime(parent, dropDown ? CDT.BORDER | CDT.DROP_DOWN : CDT.BORDER);
             boxDate.setFormat(CDT.DATE_MEDIUM);
-            boxDate.setButtonImage(Images.CALENDAR_OFF.image());
 
-            CDateTimeBuilder builder = CDateTimeBuilder.getStandard();
-            builder.setFooter(Footer.Today());
-            boxDate.setBuilder(builder);
+            if (dropDown)
+            {
+                boxDate.setButtonImage(Images.CALENDAR_OFF.image());
+
+                CDateTimeBuilder builder = CDateTimeBuilder.getStandard();
+                builder.setFooter(Footer.Today());
+                boxDate.setBuilder(builder);
+            }
 
             this.control = boxDate;
         }
         else
         {
-            this.control = new DateTime(parent, SWT.DATE | SWT.DROP_DOWN | SWT.BORDER);
+            this.control = new DateTime(parent, dropDown ? SWT.DATE | SWT.DROP_DOWN | SWT.BORDER
+                            : SWT.DATE | SWT.BORDER);
         }
     }
 
@@ -92,6 +103,14 @@ public class DatePicker
             // DateTime widget has zero-based months
             return LocalDate.of(dateTime.getYear(), dateTime.getMonth() + 1, dateTime.getDay());
         }
+    }
+
+    public void addSelectionListener(SelectionListener listener)
+    {
+        if (control instanceof CDateTime cdatetime)
+            cdatetime.addSelectionListener(listener);
+        else
+            ((DateTime) control).addSelectionListener(listener);
     }
 
     public void setLayoutData(Object layoutData)
