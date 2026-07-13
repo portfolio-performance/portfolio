@@ -1,0 +1,26 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.83.2
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital Bank GmbH • Seitzstraße 8e • 80538 Munich • Germany 
+EsMfx XYRqi
+QoB zX OElCjavmfUNE 27 
+81101 yiijEdG Date 06.03.2026
+France Page 1 / 1
+Contract note 
+for client order 
+Type LIMIT Order ID ZmDcb31E0uXxNxm
+Execution 06.03.2026 13:02:41 Exchange ID 99883p52B4B87450
+Trading venue EIX Country of custody Germany
+Securities account 2162940447 Kind of custody Collective safe custody 
+Type Security Quantity Price Amount
+Buy Sanofi 4.00 pc. 76.61 EUR 306.44 EUR
+FR0000120578
+Financial transaction taxes +1.23 EUR 
+Debit 307.67 EUR
+The amount will be settled via the clearing account Mu98142979586886868139 (Value: 10.03.2026). 
+Please check the information for accuracy and report any concerns to us immediately.
+To do so, use the Support menu item in the client area. 
+Scalable Capital Bank GmbH HRB 217778 Managing Directors: Supervisory Board: Page 
+Seitzstraße 8e Registry Court: Munich Local Court Florian Prucker, Martin Krebs, Patrick Olson (Chairman) 
+80538 München Sales tax ID: DE300434774 Dirk Franzmeyer 1 / 1
