@@ -11,6 +11,7 @@ import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.nebula.widgets.cdatetime.CDateTimeBuilder;
 import org.eclipse.nebula.widgets.cdatetime.Footer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
@@ -30,23 +31,49 @@ public class DatePicker
 
     public DatePicker(Composite parent)
     {
+        this(parent, true);
+    }
+
+    /**
+     * Creates a text-only date picker without the drop-down calendar button.
+     * Use this variant if a calendar is already shown next to the field.
+     */
+    public static DatePicker withoutDropDown(Composite parent)
+    {
+        return new DatePicker(parent, false);
+    }
+
+    private DatePicker(Composite parent, boolean dropDown)
+    {
         boolean isLinux = Platform.OS_LINUX.equals(Platform.getOS());
 
         if (isLinux)
         {
-            CDateTime boxDate = new CDateTime(parent, CDT.BORDER | CDT.DROP_DOWN);
-            boxDate.setFormat(CDT.DATE_MEDIUM);
-            boxDate.setButtonImage(Images.CALENDAR_OFF.image());
+            int style = CDT.BORDER;
+            if (dropDown)
+                style |= CDT.DROP_DOWN;
 
-            CDateTimeBuilder builder = CDateTimeBuilder.getStandard();
-            builder.setFooter(Footer.Today());
-            boxDate.setBuilder(builder);
+            CDateTime boxDate = new CDateTime(parent, style);
+            boxDate.setFormat(CDT.DATE_MEDIUM);
+
+            if (dropDown)
+            {
+                boxDate.setButtonImage(Images.CALENDAR_OFF.image());
+
+                CDateTimeBuilder builder = CDateTimeBuilder.getStandard();
+                builder.setFooter(Footer.Today());
+                boxDate.setBuilder(builder);
+            }
 
             this.control = boxDate;
         }
         else
         {
-            this.control = new DateTime(parent, SWT.DATE | SWT.DROP_DOWN | SWT.BORDER);
+            int style = SWT.DATE | SWT.BORDER;
+            if (dropDown)
+                style |= SWT.DROP_DOWN;
+
+            this.control = new DateTime(parent, style);
         }
     }
 
@@ -92,6 +119,14 @@ public class DatePicker
             // DateTime widget has zero-based months
             return LocalDate.of(dateTime.getYear(), dateTime.getMonth() + 1, dateTime.getDay());
         }
+    }
+
+    public void addSelectionListener(SelectionListener listener)
+    {
+        if (control instanceof CDateTime cdatetime)
+            cdatetime.addSelectionListener(listener);
+        else
+            ((DateTime) control).addSelectionListener(listener);
     }
 
     public void setLayoutData(Object layoutData)

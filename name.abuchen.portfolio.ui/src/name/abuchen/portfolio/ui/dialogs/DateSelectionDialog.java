@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.DatePicker;
 
 public class DateSelectionDialog extends Dialog
 {
@@ -57,16 +58,40 @@ public class DateSelectionDialog extends Dialog
     {
         Composite container = (Composite) super.createDialogArea(parent);
 
-        DateTime dateTime = new DateTime(container, SWT.CALENDAR | SWT.BORDER);
-        dateTime.setDate(selection.getYear(), selection.getMonthValue() - 1, selection.getDayOfMonth());
-        dateTime.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
-            // DateTime widget has zero-based months
-            selection = LocalDate.of(dateTime.getYear(), dateTime.getMonth() + 1, dateTime.getDay());
-            DateSelectionDialog.this.getButton(OK).setEnabled(validator.test(selection));
+        var datePicker = DatePicker.withoutDropDown(container);
+        datePicker.setSelection(selection);
+        GridDataFactory.fillDefaults().grab(true, false).align(SWT.CENTER, SWT.CENTER)
+                        .applyTo(datePicker.getControl());
+
+        // DateTime widget has zero-based months
+        var calendar = new DateTime(container, SWT.CALENDAR | SWT.BORDER);
+        calendar.setDate(selection.getYear(), selection.getMonthValue() - 1, selection.getDayOfMonth());
+        GridDataFactory.fillDefaults().grab(true, true).align(SWT.CENTER, SWT.FILL).applyTo(calendar);
+
+        // neither DateTime#setDate nor CDateTime#setSelection fires a selection
+        // event, i.e. keeping the two widgets in sync does not loop back. Each
+        // listener updates only the other widget: writing back into the source
+        // widget would reset the caret while the user is still typing
+
+        datePicker.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            LocalDate date = datePicker.getSelection();
+            calendar.setDate(date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth());
+            select(date);
         }));
-        GridDataFactory.fillDefaults().grab(true, true).align(SWT.CENTER, SWT.FILL).applyTo(dateTime);
+
+        calendar.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            LocalDate date = LocalDate.of(calendar.getYear(), calendar.getMonth() + 1, calendar.getDay());
+            datePicker.setSelection(date);
+            select(date);
+        }));
 
         return container;
+    }
+
+    private void select(LocalDate date)
+    {
+        this.selection = date;
+        getButton(OK).setEnabled(validator.test(date));
     }
 
     @Override
