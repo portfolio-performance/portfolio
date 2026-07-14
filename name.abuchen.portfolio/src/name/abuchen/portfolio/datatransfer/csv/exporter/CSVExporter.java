@@ -64,6 +64,7 @@ public class CSVExporter
     private void writeAccountTransaction(CSVPrinter printer, AccountTransaction accountTransaction) throws IOException
     {
         printer.print(accountTransaction.getDateTime().toString());
+        printer.print(accountTransaction.getExDate() != null ? accountTransaction.getExDate().toString() : ""); //$NON-NLS-1$
         printer.print(accountTransaction.getType().toString());
         printer.print(Values.Amount.format(accountTransaction.getType().isDebit() ? -accountTransaction.getAmount()
                         : accountTransaction.getAmount()));
@@ -107,6 +108,7 @@ public class CSVExporter
     private void writeHeader(CSVPrinter printer) throws IOException
     {
         printer.printRecord(Messages.CSVColumn_Date, //
+                        Messages.CSVColumn_ExDate, //
                         Messages.CSVColumn_Type, //
                         Messages.CSVColumn_Value, //
                         Messages.CSVColumn_TransactionCurrency, //
@@ -133,6 +135,7 @@ public class CSVExporter
     private void writePortfolioTransaction(CSVPrinter printer, PortfolioTransaction transaction) throws IOException
     {
         printer.print(transaction.getDateTime().toString());
+        printer.print(""); //$NON-NLS-1$
         printer.print(transaction.getType().toString());
         printer.print(Values.Amount.format(
                         transaction.getType().isLiquidation() ? -transaction.getAmount() : transaction.getAmount()));

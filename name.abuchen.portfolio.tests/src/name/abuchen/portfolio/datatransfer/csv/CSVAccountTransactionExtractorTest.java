@@ -4,6 +4,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -788,5 +789,30 @@ public class CSVAccountTransactionExtractorTest
 
         var status = new CheckForexGrossValueAction().process(dividendTransaction, new Account());
         assertThat(status.getMessage(), status.getCode(), is(Status.Code.OK));
+    }
+
+    @Test
+    public void testExDateIsImported()
+    {
+        var client = new Client();
+        var extractor = new CSVAccountTransactionExtractor(client);
+
+        var errors = new ArrayList<Exception>();
+        var results = extractor.extract(1,
+                        Arrays.<String[]>asList(new String[] { "2026-03-31", "2026-03-28", "DE0007164600", "SAP.DE",
+                                        "", "100", "EUR", "DIVIDENDS", "SAP SE", "10", "Notiz" }),
+                        buildField2Column(extractor, new String[] { "date", "exDate", "isin", "ticker", "wkn",
+                                        "value", "currency", "type", "name", "shares", "note" }),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-03-31"), //
+                        hasExDate("2026-03-28"), //
+                        hasAmount("EUR", 100.00), //
+                        hasShares(10))));
     }
 }
