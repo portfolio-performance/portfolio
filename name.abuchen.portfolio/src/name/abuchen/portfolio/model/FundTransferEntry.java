@@ -227,7 +227,7 @@ public class FundTransferEntry implements CrossEntry, Annotated
 
     public void setCarriedLots(List<CarriedLot> carriedLots)
     {
-        this.carriedLots = carriedLots;
+        this.carriedLots = new ArrayList<>(carriedLots);
     }
 
     public void addCarriedLot(CarriedLot lot)

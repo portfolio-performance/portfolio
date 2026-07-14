@@ -55,6 +55,24 @@ public class FundTransferSerializationTest
         assertFundTransfer(reloaded);
     }
 
+    @Test
+    public void testXmlRoundTripPreservesUiCarriedLotList() throws IOException
+    {
+        Client client = buildClient();
+        FundTransferEntry entry = (FundTransferEntry) client.getPortfolios().stream() //
+                        .flatMap(p -> p.getTransactions().stream()) //
+                        .filter(t -> t.getType() == PortfolioTransaction.Type.FUND_TRANSFER_OUT) //
+                        .findAny().orElseThrow(IllegalArgumentException::new).getCrossEntry();
+
+        entry.setCarriedLots(entry.getCarriedLots().stream().map(FundTransferEntry.CarriedLot::copy).toList());
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        new ClientFactory.XmlSerialization(false).save(client, stream);
+
+        Client reloaded = ClientFactory.load(new ByteArrayInputStream(stream.toByteArray()));
+        assertFundTransfer(reloaded);
+    }
+
     private Client buildClient()
     {
         Client client = new Client();
