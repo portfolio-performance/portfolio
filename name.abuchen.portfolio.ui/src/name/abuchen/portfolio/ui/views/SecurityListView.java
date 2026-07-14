@@ -66,6 +66,41 @@ import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 
 public class SecurityListView extends AbstractFinanceView
 {
+    /**
+     * Collects all shares held for the given security.
+     *
+     * @param client
+     *            {@link Client}
+     * @param security
+     *            {@link Security}
+     * @return shares held on success, else 0
+     */
+    static long getSharesHeld(Client client, Security security)
+    {
+        // TODO: This calculation is simplistic and may be incorrect.
+        // e.g., if one account has 1 (long) share and another - -1 (short) share,
+        // this calculation returns 0. But it's clear that it's not the case that
+        // we have 0 (i.e. none) shares.
+        return security.getTransactions(client).stream()
+                        .filter(t -> t.getTransaction() instanceof PortfolioTransaction) //
+                        .map(t -> (PortfolioTransaction) t.getTransaction()) //
+                        .mapToLong(t -> {
+                            switch (t.getType())
+                            {
+                                case BUY:
+                                case DELIVERY_INBOUND:
+                                case FUND_TRANSFER_IN:
+                                    return t.getShares();
+                                case SELL:
+                                case DELIVERY_OUTBOUND:
+                                case FUND_TRANSFER_OUT:
+                                    return -t.getShares();
+                                default:
+                                    return 0L;
+                            }
+                        }).sum();
+    }
+
     private class CreateSecurityDropDown extends DropDown implements IMenuListener
     {
         public CreateSecurityDropDown()
@@ -231,39 +266,6 @@ public class SecurityListView extends AbstractFinanceView
                 else
                     preferenceStore.setValue(this.getClass().getSimpleName() + "-filterSettings", savedFilter); //$NON-NLS-1$
             });
-        }
-
-        /**
-         * Collects all shares held for the given security.
-         *
-         * @param client
-         *            {@link Client}
-         * @param security
-         *            {@link Security}
-         * @return shares held on success, else 0
-         */
-        private long getSharesHeld(Client client, Security security)
-        {
-            // TODO: This calculation is simplistic and may be incorrect.
-            // e.g., if one account has 1 (long) share and another - -1 (short) share,
-            // this calculation returns 0. But it's clear that it's not the case that
-            // we have 0 (i.e. none) shares.
-            return security.getTransactions(client).stream()
-                            .filter(t -> t.getTransaction() instanceof PortfolioTransaction) //
-                            .map(t -> (PortfolioTransaction) t.getTransaction()) //
-                            .mapToLong(t -> {
-                                switch (t.getType())
-                                {
-                                    case BUY:
-                                    case DELIVERY_INBOUND:
-                                        return t.getShares();
-                                    case SELL:
-                                    case DELIVERY_OUTBOUND:
-                                        return -t.getShares();
-                                    default:
-                                        return 0L;
-                                }
-                            }).sum();
         }
 
         private boolean isLimitPriceExceeded(Security security)
