@@ -36,6 +36,7 @@ public class FundTransferSerializationTest
 
         Client reloaded = ClientFactory.load(new ByteArrayInputStream(stream.toByteArray()));
 
+        assertThat(reloaded.getFileVersionAfterRead(), is(Client.CURRENT_VERSION));
         assertFundTransfer(reloaded);
     }
 
@@ -50,6 +51,7 @@ public class FundTransferSerializationTest
 
         Client reloaded = protobufWriter.load(new ByteArrayInputStream(stream.toByteArray()));
 
+        assertThat(reloaded.getFileVersionAfterRead(), is(Client.CURRENT_VERSION));
         assertFundTransfer(reloaded);
     }
 

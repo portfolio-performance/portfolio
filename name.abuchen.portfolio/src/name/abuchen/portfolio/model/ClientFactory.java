@@ -963,6 +963,8 @@ public class ClientFactory
                 // added exDate date field
             case 69: // NOSONAR
                 // add (optional) weight to client filter
+            case 70: // NOSONAR
+                // added fund transfers
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
