@@ -113,7 +113,49 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
             case SELL:
             case FUND_TRANSFER_OUT:
             case DELIVERY_OUTBOUND:
-                removeSharesFromCostBasis(item.getOwner(), t.getShares(), t);
+                long sold = t.getShares();
+
+                long remaining = heldShares - sold;
+                if (remaining <= 0)
+                {
+                    movingRelativeCost = 0;
+                    movingRelativeNetCost = 0;
+                    heldShares = 0;
+                }
+                else
+                {
+                    movingRelativeCost = Math.round(movingRelativeCost / (double) heldShares * remaining);
+                    movingRelativeNetCost = Math.round(movingRelativeNetCost / (double) heldShares * remaining);
+                    heldShares = remaining;
+                }
+
+                for (LineItem entry : fifo)
+                {
+                    if (sold <= 0)
+                        break;
+
+                    if (!entry.owner.equals(item.getOwner()))
+                        continue;
+
+                    if (entry.shares == 0)
+                        continue;
+
+                    long n = Math.min(sold, entry.shares);
+
+                    entry.grossAmount -= Math.round(n / (double) entry.shares * entry.grossAmount);
+                    entry.netAmount -= Math.round(n / (double) entry.shares * entry.netAmount);
+                    entry.shares -= n;
+
+                    sold -= n;
+                }
+
+                if (sold > 0)
+                {
+                    // FIXME Oops. More sold than bought.
+                    PortfolioLog.warning(MessageFormat.format(Messages.MsgNegativeHoldingsDuringFIFOCostCalculation,
+                                    Values.Share.format(sold), t.getSecurity().getName(),
+                                    Values.DateTime.format(t.getDateTime())));
+                }
 
                 break;
 
@@ -208,53 +250,6 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                 break;
             default:
                 throw new UnsupportedOperationException();
-        }
-    }
-
-    private void removeSharesFromCostBasis(TransactionOwner<?> owner, long shares, PortfolioTransaction transaction)
-    {
-        long sold = shares;
-
-        long remaining = heldShares - sold;
-        if (remaining <= 0)
-        {
-            movingRelativeCost = 0;
-            movingRelativeNetCost = 0;
-            heldShares = 0;
-        }
-        else
-        {
-            movingRelativeCost = Math.round(movingRelativeCost / (double) heldShares * remaining);
-            movingRelativeNetCost = Math.round(movingRelativeNetCost / (double) heldShares * remaining);
-            heldShares = remaining;
-        }
-
-        for (LineItem entry : fifo)
-        {
-            if (sold <= 0)
-                break;
-
-            if (!entry.owner.equals(owner))
-                continue;
-
-            if (entry.shares == 0)
-                continue;
-
-            long n = Math.min(sold, entry.shares);
-
-            entry.grossAmount -= Math.round(n / (double) entry.shares * entry.grossAmount);
-            entry.netAmount -= Math.round(n / (double) entry.shares * entry.netAmount);
-            entry.shares -= n;
-
-            sold -= n;
-        }
-
-        if (sold > 0)
-        {
-            // FIXME Oops. More sold than bought.
-            PortfolioLog.warning(MessageFormat.format(Messages.MsgNegativeHoldingsDuringFIFOCostCalculation,
-                            Values.Share.format(sold), transaction.getSecurity().getName(),
-                            Values.DateTime.format(transaction.getDateTime())));
         }
     }
 
