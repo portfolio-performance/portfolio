@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views;
 
 import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
 
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -121,6 +122,7 @@ import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.LazyValue;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class StatementOfAssetsViewer
 {
@@ -577,8 +579,29 @@ public class StatementOfAssetsViewer
         support.addColumn(column);
 
         column = new Column("9", Messages.ColumnProfitLoss, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.ColumnProfitLoss);
+        column.setMenuLabel(MessageFormat.format(Messages.LabelWithQualifier, Messages.ColumnProfitLoss,
+                        CostMethod.FIFO.getLabel()));
+        column.setDescription(Messages.ColumnProfitLossFIFO_Description + TextUtil.PARAGRAPH_BREAK
+                        + Messages.ColumnProfitLossGeneric_Description);
         labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
                         record -> record.getCapitalGainsOnHoldings(CostMethod.FIFO), withSum()), true);
+        column.setLabelProvider(labelProvider);
+        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("pl_moving_average", //$NON-NLS-1$
+                        MessageFormat.format(Messages.LabelWithQualifier, Messages.ColumnProfitLoss,
+                                        CostMethod.MOVING_AVERAGE.getAbbreviation()),
+                        SWT.RIGHT, 80);
+        column.setGroupLabel(Messages.ColumnProfitLoss);
+        column.setMenuLabel(MessageFormat.format(Messages.LabelWithQualifier, Messages.ColumnProfitLoss,
+                        CostMethod.MOVING_AVERAGE.getLabel()));
+        column.setDescription(Messages.ColumnProfitLossMovingAverage_Description + TextUtil.PARAGRAPH_BREAK
+                        + Messages.ColumnProfitLossGeneric_Description);
+        labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
+                        record -> record.getCapitalGainsOnHoldings(CostMethod.MOVING_AVERAGE), withSum()), true);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);

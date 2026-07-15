@@ -283,6 +283,9 @@ public class Messages extends NLS
     public static String ColumnPreviousPrice;
     public static String ColumnProfitLoss;
     public static String ColumnProfitLossBaseCurrency;
+    public static String ColumnProfitLossFIFO_Description;
+    public static String ColumnProfitLossGeneric_Description;
+    public static String ColumnProfitLossMovingAverage_Description;
     public static String ColumnPurchasePrice;
     public static String ColumnPurchasePrice_Description;
     public static String ColumnPurchasePrice_MenuLabel;
@@ -662,6 +665,7 @@ public class Messages extends NLS
     public static String LabelConsumerPriceIndex;
     public static String LabelConvertBuySellIntoDeliveryTransactions;
     public static String LabelCopyToClipboard;
+    public static String LabelCostMethod;
     public static String LabelCountry;
     public static String LabelCreateAccountFirst;
     public static String LabelCrosshair;
@@ -1260,7 +1264,6 @@ public class Messages extends NLS
     public static String PortfolioMenuDeleteConfirm;
     public static String PortfolioReportMissingAPIKey;
     public static String PortfolioReportMissingAPIURL;
-    public static String PortfolioReportNotificationMessage;
     public static String PrefAlphaVantageAPIKey;
     public static String PrefAlphaVantageCallFrequencyLimit;
     public static String PrefDoubleClickCellToEdit;
@@ -1440,7 +1443,6 @@ public class Messages extends NLS
     public static String SiteAppLandingpage;
     public static String SiteForum;
     public static String SiteHowTo;
-    public static String SiteInfoPortfolioReportMigration;
     public static String SiteManual;
     public static String SiteNewAndNoteworthy;
     public static String SplitWizardDefinitionDescription;

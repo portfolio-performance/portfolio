@@ -46,13 +46,11 @@ import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.SaveFlag;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
-import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.PasswordDialog;
 import name.abuchen.portfolio.ui.dialogs.PickFileFormatDialog;
-import name.abuchen.portfolio.ui.dialogs.PortfolioReportNotificationPopup;
 import name.abuchen.portfolio.ui.jobs.AutoSaveJob;
 import name.abuchen.portfolio.ui.jobs.CreateInvestmentPlanTxJob;
 import name.abuchen.portfolio.ui.jobs.UpdateDividendsJob;
@@ -60,7 +58,6 @@ import name.abuchen.portfolio.ui.jobs.priceupdate.PeriodicUpdatePricesJob;
 import name.abuchen.portfolio.ui.jobs.priceupdate.PriceUpdateConfig;
 import name.abuchen.portfolio.ui.jobs.priceupdate.UpdatePricesJob;
 import name.abuchen.portfolio.ui.preferences.BackupMode;
-import name.abuchen.portfolio.ui.util.swt.ActiveShell;
 import name.abuchen.portfolio.ui.wizards.client.ClientMigrationDialog;
 
 public class ClientInput
@@ -740,30 +737,6 @@ public class ClientInput
                 dialog.open();
             });
         }
-
-        // Check for PortfolioReport securities and show notification if any
-        // found
-        checkAndShowPortfolioReportNotification();
-    }
-
-    private void checkAndShowPortfolioReportNotification()
-    {
-        var portfolioReportSecurities = client.getSecurities().stream()
-                        .filter(s -> PortfolioReportQuoteFeed.ID.equals(s.getFeed())).toList();
-
-        if (portfolioReportSecurities.isEmpty())
-            return;
-
-        Display.getDefault().asyncExec(() -> {
-            var activeShell = ActiveShell.get();
-            if (activeShell == null)
-                activeShell = Display.getDefault().getActiveShell();
-            if (activeShell == null)
-                return;
-
-            var popup = new PortfolioReportNotificationPopup(activeShell, client, portfolioReportSecurities, context);
-            popup.open();
-        });
     }
 
     private static void upgradePreferences(PreferenceStore preferenceStore, Client client)
