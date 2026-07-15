@@ -265,17 +265,6 @@ public class PaymentsViewModel
         recalculate();
     }
 
-    public CostMethod getCostMethod()
-    {
-        return costMethod;
-    }
-
-    public void setCostMethod(CostMethod costMethod)
-    {
-        this.costMethod = costMethod;
-        recalculate();
-    }
-
     public boolean isHideTotalsAtTheTop()
     {
         return hideTotalsAtTheTop;

@@ -6,7 +6,6 @@ import java.util.Optional;
 import jakarta.inject.Inject;
 
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
@@ -46,7 +45,7 @@ public class EarningsHeatmapWidget extends AbstractMonthlyHeatmapWidget
 
         part.activateView(PaymentsView.class,
                         new PaymentsViewInput(0 /* monthly table */, startYear, Optional.of(clientFilterId), mode,
-                                        grossNetType == GrossNetType.GROSS, false, CostMethod.FIFO));
+                                        grossNetType == GrossNetType.GROSS, false));
     }
 
     @Override

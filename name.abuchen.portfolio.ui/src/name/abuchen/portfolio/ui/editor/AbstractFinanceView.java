@@ -30,6 +30,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ContextMenu;
@@ -407,5 +409,10 @@ public abstract class AbstractFinanceView
     public IStylingEngine getStylingEngine()
     {
         return stylingEngine;
+    }
+
+    public CostMethod getGlobalCostMethod()
+    {
+        return PortfolioPlugin.getDefault().getCostMethod();
     }
 }

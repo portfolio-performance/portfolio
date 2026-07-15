@@ -11,7 +11,6 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IContributionItem;
-import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -22,7 +21,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
@@ -87,7 +85,7 @@ public class PaymentsView extends AbstractFinanceView
         loadSavedFilterIdAndSetFilteredClientToModel();
 
         model.configure(viewInput.getYear(), viewInput.getMode(), viewInput.isUseGrossValue(),
-                        viewInput.isUseConsolidateRetired(), viewInput.getCostMethod());
+                        viewInput.isUseConsolidateRetired(), getGlobalCostMethod());
 
         model.setHideTotalsAtTheTop(preferences.getBoolean(PaymentsViewInput.TOP));
         model.setHideTotalsAtTheBottom(preferences.getBoolean(PaymentsViewInput.BOTTOM));
@@ -97,7 +95,6 @@ public class PaymentsView extends AbstractFinanceView
             viewInput.setMode(model.getMode());
             viewInput.setUseGrossValue(model.usesGrossValue());
             viewInput.setUseConsolidateRetired(model.usesConsolidateRetired());
-            viewInput.setCostMethod(model.getCostMethod());
         });
     }
 
@@ -193,22 +190,6 @@ public class PaymentsView extends AbstractFinanceView
                                 a -> model.setUseGrossValue(!model.usesGrossValue()));
                 action.setChecked(model.usesGrossValue());
                 manager.add(action);
-            }
-
-            if (model.getMode().includesTradeProfitLoss())
-            {
-                var costMethodMenu = new MenuManager(Messages.LabelCostMethod);
-                manager.add(costMethodMenu);
-
-                var action = new SimpleAction(CostMethod.FIFO.getLabel(), //
-                                a -> model.setCostMethod(CostMethod.FIFO));
-                action.setChecked(model.getCostMethod().useFifo());
-                costMethodMenu.add(action);
-
-                action = new SimpleAction(CostMethod.MOVING_AVERAGE.getLabel(),
-                                a -> model.setCostMethod(CostMethod.MOVING_AVERAGE));
-                action.setChecked(!model.getCostMethod().useFifo());
-                costMethodMenu.add(action);
             }
 
             manager.add(new Separator());

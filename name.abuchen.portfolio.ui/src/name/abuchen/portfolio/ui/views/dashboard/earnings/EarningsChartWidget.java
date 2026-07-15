@@ -135,7 +135,7 @@ public class EarningsChartWidget extends WidgetDelegate<PaymentsViewModel>
                 GrossNetType grossNetType = get(GrossNetTypeConfig.class).getValue();
 
                 part.activateView(PaymentsView.class, new PaymentsViewInput(tab, startYear, Optional.of(filterIdent),
-                                mode, grossNetType == GrossNetType.GROSS, false, CostMethod.FIFO));
+                                mode, grossNetType == GrossNetType.GROSS, false));
             }
         });
 
