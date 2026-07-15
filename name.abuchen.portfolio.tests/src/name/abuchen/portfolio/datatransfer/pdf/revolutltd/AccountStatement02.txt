@@ -78,8 +78,8 @@ Date Symbol Type Quantity Price Side Value Fees Commission
 06 May 2026 10:58:56 GMT Cash top-up €0.40 €0 €0
 07 May 2026 00:20:41 GMT Cash top-up €1 €0 €0
 10 May 2026 16:27:07 GMT Cash top-up €0.59 €0 €0
-11 May 2026 13:45:00 GMT LYMS Trade - Market 0.0571061 €101.04 Sell €5.77 €0 €0
-12 May 2026 09:00:01 GMT EMBH Trade - Market 0.01925701 €65.95 Buy €1.27 €0 €0
+11 May 2026 13:45:00 GMT LYMS Trade - Market 0.0571061 €101.04 Sell €5.77 €0.02 €0.01
+12 May 2026 09:00:01 GMT EMBH Trade - Market 0.01925701 €65.95 Buy €1.27 €0.02 €0.01
 12 May 2026 09:01:00 GMT LYP6 Trade - Market 0.01778749 €297.40 Buy €5.29 €0 €0
 Date Symbol Type Quantity Price Side Value Fees Commission
 12 May 2026 09:01:06 GMT PRAR Trade - Market 0.0773731 €17.96 Buy €1.39 €0 €0

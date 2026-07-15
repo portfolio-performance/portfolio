@@ -122,14 +122,50 @@ public class RevolutLtdPDFExtractorTest
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement01.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(countSecurities(results), is(0L));
-        assertThat(countBuySell(results), is(0L));
+        assertThat(countSecurities(results), is(9L));
+        assertThat(countBuySell(results), is(12L));
         assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(2));
+        assertThat(results.size(), is(23));
         new AssertImportActions().check(results, "USD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("V"), //
+                        hasName("VISA INC COM CL A"), //
+                        hasCurrencyCode("USD"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("NIO"), //
+                        hasName("NIO INC SPON ADS"), //
+                        hasCurrencyCode("USD"))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-06T00:00"), hasShares(0.40), //
+                        hasSource("AccountStatement01.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 78.48), hasGrossValue("USD", 78.48), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-06T00:00"), hasShares(7.00), //
+                        hasSource("AccountStatement01.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 81.97), hasGrossValue("USD", 81.97), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-13T00:00"), hasShares(2.00), //
+                        hasSource("AccountStatement01.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 74.35), hasGrossValue("USD", 74.35), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2020-07-08T00:00"), hasAmount("USD", 460.85), //
@@ -176,16 +212,16 @@ public class RevolutLtdPDFExtractorTest
                         hasDate("2026-05-12T09:00:01"), hasShares(0.01925701), //
                         hasSource("AccountStatement02.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", 1.27), hasGrossValue("EUR", 1.27), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+                        hasAmount("EUR", 1.30), hasGrossValue("EUR", 1.27), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", (0.02 + 0.01)))));
 
         // check sale transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2026-05-11T13:45:00"), hasShares(0.0571061), //
                         hasSource("AccountStatement02.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", 5.77), hasGrossValue("EUR", 5.77), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+                        hasAmount("EUR", 5.74), hasGrossValue("EUR", 5.77), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", (0.02 + 0.01)))));
 
         // check deposit transaction
         assertThat(results, hasItem(deposit(hasDate("2026-05-01T10:24:11"), hasAmount("EUR", 0.01), //

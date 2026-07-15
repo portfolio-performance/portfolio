@@ -1,5 +1,8 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.replaceMultipleBlanks;
+import static name.abuchen.portfolio.util.TextUtil.trim;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -173,8 +176,32 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new));
 
         // @formatter:off
-        // 12 May 2026 09:00:01 GMT EMBH Trade - Market 0.01925701 €65.95 Buy €1.27 €0 €0
-        // 11 May 2026 13:45:00 GMT LYMS Trade - Market 0.0571061 €101.04 Sell €5.77 €0 €0
+        // 07/06/2020 07/08/2020 USD BUY V - VISA INC    COM CL A - TRD V B 0.4 at 196.19 Principal. 0.4 196.19 (78.48)
+        // 07/13/2020 07/15/2020 USD BUY NET - CLOUDFLARE INC   CL A COM - TRD NET B 1 at 40.59 Agency. 1 40.59 (41.78)
+        // @formatter:on
+        var blockBuy = new Block("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\w]{3} BUY .* \\- TRD .*$");
+        type.addBlock(blockBuy);
+        blockBuy.set(new Transaction<BuySellEntry>()
+
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
+
+                        .section("date", "currency", "tickerSymbol", "name", "shares", "amount") //
+                        .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} (?<currency>[\\w]{3}) BUY (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) \\- (?<name>.*) \\- TRD .* (?<shares>[\\.,\\d]+) [\\.,\\d]+ \\((?<amount>[\\.,\\d]+)\\)$") //
+                        .assign((t, v) -> {
+                            v.put("name", trim(replaceMultipleBlanks(v.get("name"))));
+
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setDate(asDate(v.get("date"), Locale.UK));
+                            t.setShares(asShares(v.get("shares")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .wrap(BuySellEntryItem::new));
+
+        // @formatter:off
+        // 12 May 2026 09:00:01 GMT EMBH Trade - Market 0.01925701 €65.95 Buy €1.27 €0.02 €0.01
+        // 11 May 2026 13:45:00 GMT LYMS Trade - Market 0.0571061 €101.04 Sell €5.77 €0.02 €0.01
         // @formatter:on
         var buySellBlock = new Block("^[\\d]{2} [\\w]{3} [\\d]{4} [\\d]{2}\\:[\\d]{2}\\:[\\d]{2} GMT [A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})? Trade \\- Market [\\.,\\d]+ (?:US)?\\p{Sc}[\\.,\\d]+ (Buy|Sell) .*$");
         type.addBlock(buySellBlock);
@@ -182,8 +209,8 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
-                        .section("date", "time", "tickerSymbol", "shares", "type", "currency", "amount", "fee", "commission") //
-                        .match("^(?<date>[\\d]{2} [\\w]{3} [\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}) GMT (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) Trade \\- Market (?<shares>[\\.,\\d]+) (?:US)?\\p{Sc}[\\.,\\d]+ (?<type>(Buy|Sell)) (?:US)?(?<currency>\\p{Sc})(?<amount>[\\.,\\d]+) (?:US)?\\p{Sc}(?<fee>[\\.,\\d]+) (?:US)?\\p{Sc}(?<commission>[\\.,\\d]+)$") //
+                        .section("date", "time", "tickerSymbol", "shares", "type", "currency", "gross", "fee", "commission") //
+                        .match("^(?<date>[\\d]{2} [\\w]{3} [\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}) GMT (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) Trade \\- Market (?<shares>[\\.,\\d]+) (?:US)?\\p{Sc}[\\.,\\d]+ (?<type>(Buy|Sell)) (?:US)?(?<currency>\\p{Sc})(?<gross>[\\.,\\d]+) (?:US)?\\p{Sc}(?<fee>[\\.,\\d]+) (?:US)?\\p{Sc}(?<commission>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             // @formatter:off
                             // Is type --> "Sell" change from BUY to SELL
@@ -203,13 +230,21 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setDate(asDate(v.get("date"), v.get("time")));
                             t.setShares(asShares(v.get("shares")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
 
+                            var gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                             var fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-                            ExtractorUtils.checkAndSetFee(fee, t, context);
-
                             var commission = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("commission")));
+
+                            // @formatter:off
+                            // The "Value" column is the gross value (quantity × price).
+                            // The total amount is gross plus fees for purchases and gross minus fees for sales.
+                            // @formatter:on
+                            if (PortfolioTransaction.Type.SELL == t.getPortfolioTransaction().getType())
+                                t.setMonetaryAmount(gross.subtract(fee).subtract(commission));
+                            else
+                                t.setMonetaryAmount(gross.add(fee).add(commission));
+
+                            ExtractorUtils.checkAndSetFee(fee, t, context);
                             ExtractorUtils.checkAndSetFee(commission, t, context);
                         })
 
