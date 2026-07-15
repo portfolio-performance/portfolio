@@ -48,6 +48,7 @@ import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.SaveFlag;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
@@ -67,6 +68,8 @@ public class PortfolioPart implements ClientInputListener
     private ClientInput clientInput;
     private ReportingPeriod selectedPeriod;
     private Navigation.Item selectedItem;
+    private CostMethod observedCostMethod;
+    private boolean costMethodRefreshScheduled;
 
     private Composite container;
     private ProgressBar progressBar;
@@ -387,6 +390,47 @@ public class PortfolioPart implements ClientInputListener
     {
         if (view != null && view.getControl() != null && !view.getControl().isDisposed())
             view.onRecalculationNeeded();
+    }
+
+    @Inject
+    public void setCostMethod(@Preference(value = UIConstants.Preferences.COST_METHOD) String value)
+    {
+        CostMethod newCostMethod = CostMethod.valueOf(value);
+        CostMethod previousCostMethod = observedCostMethod;
+
+        observedCostMethod = newCostMethod;
+
+        if (previousCostMethod == null || previousCostMethod == newCostMethod)
+            return;
+
+        scheduleCostMethodRefresh();
+    }
+
+    private void scheduleCostMethodRefresh()
+    {
+        Navigation.Item item = selectedItem;
+        PageBook currentBook = book;
+
+        if (item == null || currentBook == null || currentBook.isDisposed() || costMethodRefreshScheduled)
+            return;
+
+        var display = currentBook.getDisplay();
+        if (display.isDisposed())
+            return;
+
+        costMethodRefreshScheduled = true;
+
+        display.asyncExec(() -> {
+            costMethodRefreshScheduled = false;
+
+            if (currentBook.isDisposed())
+                return;
+
+            if (!Objects.equals(item, selectedItem))
+                return;
+
+            activateView(item);
+        });
     }
 
     @Inject
