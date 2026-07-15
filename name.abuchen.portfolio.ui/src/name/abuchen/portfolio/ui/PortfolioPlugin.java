@@ -20,6 +20,8 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 
+import name.abuchen.portfolio.model.CostMethod;
+import name.abuchen.portfolio.ui.preferences.PreferencesInitializer;
 import name.abuchen.portfolio.ui.preferences.ScopedPreferenceStore;
 
 public class PortfolioPlugin implements BundleActivator
@@ -46,6 +48,7 @@ public class PortfolioPlugin implements BundleActivator
         setupProxyAuthenticator();
 
         preferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, PortfolioPlugin.PLUGIN_ID);
+        PreferencesInitializer.initializeDefaults(preferenceStore);
     }
 
     @Override
@@ -93,6 +96,11 @@ public class PortfolioPlugin implements BundleActivator
     public IPreferenceStore getPreferenceStore()
     {
         return preferenceStore;
+    }
+
+    public CostMethod getCostMethod()
+    {
+        return CostMethod.valueOf(preferenceStore.getString(UIConstants.Preferences.COST_METHOD));
     }
 
     public IPath getStateLocation()

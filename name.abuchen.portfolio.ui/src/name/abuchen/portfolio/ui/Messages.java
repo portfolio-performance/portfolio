@@ -1268,6 +1268,7 @@ public class Messages extends NLS
     public static String PrefBackupDirectory;
     public static String PrefBackupLocation;
     public static String PrefCheckOnStartup;
+    public static String PrefCostMethod;
     public static String PrefCreateBackupBeforeSaving;
     public static String PrefDescriptionAlphaVantage;
     public static String PrefDescriptionCoingecko;

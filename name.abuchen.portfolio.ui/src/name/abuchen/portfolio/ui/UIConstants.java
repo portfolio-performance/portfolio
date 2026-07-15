@@ -127,6 +127,8 @@ public interface UIConstants
         String UPDATE_SITE = "UPDATE_SITE"; //$NON-NLS-1$
         String AUTO_UPDATE = "AUTO_UPDATE"; //$NON-NLS-1$
 
+        String COST_METHOD = "COST_METHOD"; //$NON-NLS-1$
+
         String PROXY_HOST = "PROXY_HOST"; //$NON-NLS-1$
         String PROXY_PORT = "PROXY_PORT"; //$NON-NLS-1$
 
