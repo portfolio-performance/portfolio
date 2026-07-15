@@ -72,6 +72,7 @@ public class Messages extends NLS
     public static String CSVFormatDDMMYYYY1;
     public static String CSVFormatDDMMYYYY2;
     public static String CSVFormatISO;
+    public static String CSVFormatInvalid;
     public static String CSVFormatMMDDYY;
     public static String CSVFormatMMDDYY1;
     public static String CSVFormatMMDDYYYY;
@@ -87,6 +88,7 @@ public class Messages extends NLS
     public static String CSVImportMissingField;
     public static String CSVImportMissingSecurity;
     public static String CSVLineXwithMsgY;
+    public static String CSVSecurityUpdateConflict;
     public static String FixAssignCurrencyCode;
     public static String FixAssignCurrencyCodeDone;
     public static String FixAssignExistingAccount;
@@ -236,6 +238,7 @@ public class Messages extends NLS
     public static String LabelTrailXofYShares;
     public static String LabelTransferAccount;
     public static String LabelTransferPortfolio;
+    public static String LabelUpdateProperties;
     public static String LabelUSDGBBY10Y;
     public static String LabelUSDLIBOR3M;
     public static String LabelWithoutClassification;

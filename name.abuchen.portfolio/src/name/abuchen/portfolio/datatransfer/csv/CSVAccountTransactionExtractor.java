@@ -33,27 +33,27 @@ import name.abuchen.portfolio.money.Money;
         super(client, Messages.CSVDefAccountTransactions);
 
         var fields = getFields();
-        fields.add(new DateField("date", Messages.CSVColumn_Date)); //$NON-NLS-1$
-        fields.add(new Field("time", Messages.CSVColumn_Time).setOptional(true)); //$NON-NLS-1$
-        fields.add(new ISINField("isin", Messages.CSVColumn_ISIN).setOptional(true)); //$NON-NLS-1$
-        fields.add(new Field("ticker", Messages.CSVColumn_TickerSymbol).setOptional(true)); //$NON-NLS-1$
-        fields.add(new Field("wkn", Messages.CSVColumn_WKN).setOptional(true)); //$NON-NLS-1$
-        fields.add(new AmountField("value", Messages.CSVColumn_Value)); //$NON-NLS-1$
-        fields.add(new Field("currency", Messages.CSVColumn_TransactionCurrency).setOptional(true)); //$NON-NLS-1$
-        fields.add(new EnumField<AccountTransaction.Type>("type", Messages.CSVColumn_Type, Type.class) //$NON-NLS-1$
+        fields.add(new DateField(FieldCode.DATE, Messages.CSVColumn_Date));
+        fields.add(new Field(FieldCode.TIME, Messages.CSVColumn_Time).setOptional(true));
+        fields.add(new ISINField(FieldCode.ISIN, Messages.CSVColumn_ISIN).setOptional(true));
+        fields.add(new Field(FieldCode.TICKER, Messages.CSVColumn_TickerSymbol).setOptional(true));
+        fields.add(new Field(FieldCode.WKN, Messages.CSVColumn_WKN).setOptional(true));
+        fields.add(new AmountField(FieldCode.VALUE, Messages.CSVColumn_Value));
+        fields.add(new Field(FieldCode.CURRENCY, Messages.CSVColumn_TransactionCurrency).setOptional(true));
+        fields.add(new EnumField<AccountTransaction.Type>(FieldCode.TYPE, Messages.CSVColumn_Type, Type.class)
                         .setOptional(true));
-        fields.add(new Field("name", Messages.CSVColumn_SecurityName).setOptional(true)); //$NON-NLS-1$
-        fields.add(new AmountField("shares", Messages.CSVColumn_Shares).setOptional(true)); //$NON-NLS-1$
-        fields.add(new Field("note", Messages.CSVColumn_Note).setOptional(true)); //$NON-NLS-1$
-        fields.add(new AmountField("taxes", Messages.CSVColumn_Taxes).setOptional(true)); //$NON-NLS-1$
-        fields.add(new AmountField("fees", Messages.CSVColumn_Fees).setOptional(true)); //$NON-NLS-1$
-        fields.add(new Field("account", Messages.CSVColumn_AccountName).setOptional(true)); //$NON-NLS-1$
-        fields.add(new Field("account2nd", Messages.CSVColumn_AccountName2nd).setOptional(true)); //$NON-NLS-1$
-        fields.add(new Field("portfolio", Messages.CSVColumn_PortfolioName).setOptional(true)); //$NON-NLS-1$
+        fields.add(new Field(FieldCode.NAME, Messages.CSVColumn_SecurityName).setOptional(true));
+        fields.add(new AmountField(FieldCode.SHARES, Messages.CSVColumn_Shares).setOptional(true));
+        fields.add(new Field(FieldCode.NOTE, Messages.CSVColumn_Note).setOptional(true));
+        fields.add(new AmountField(FieldCode.TAXES, Messages.CSVColumn_Taxes).setOptional(true));
+        fields.add(new AmountField(FieldCode.FEES, Messages.CSVColumn_Fees).setOptional(true));
+        fields.add(new Field(FieldCode.ACCOUNT, Messages.CSVColumn_AccountName).setOptional(true));
+        fields.add(new Field(FieldCode.ACCOUNT_2ND, Messages.CSVColumn_AccountName2nd).setOptional(true));
+        fields.add(new Field(FieldCode.PORTFOLIO, Messages.CSVColumn_PortfolioName).setOptional(true));
 
-        fields.add(new AmountField("gross", Messages.CSVColumn_GrossAmount).setOptional(true)); //$NON-NLS-1$
-        fields.add(new Field("currencyGross", Messages.CSVColumn_CurrencyGrossAmount).setOptional(true)); //$NON-NLS-1$
-        fields.add(new AmountField("exchangeRate", Messages.CSVColumn_ExchangeRate).setOptional(true)); //$NON-NLS-1$
+        fields.add(new AmountField(FieldCode.GROSS, Messages.CSVColumn_GrossAmount).setOptional(true));
+        fields.add(new Field(FieldCode.CURRENCY_GROSS, Messages.CSVColumn_CurrencyGrossAmount).setOptional(true));
+        fields.add(new AmountField(FieldCode.EXCHANGE_RATE, Messages.CSVColumn_ExchangeRate).setOptional(true));
     }
 
     @Override
@@ -67,7 +67,7 @@ import name.abuchen.portfolio.money.Money;
     {
         // check if we have a security
         var security = getSecurity(rawValues, field2column, s -> s.setCurrencyCode(
-                        getCurrencyCode(Messages.CSVColumn_TransactionCurrency, rawValues, field2column)));
+                        getCurrencyCode(FieldCode.CURRENCY, rawValues, field2column)));
 
         // check for the transaction amount
         var amount = getMoney(rawValues, field2column);
@@ -76,13 +76,13 @@ import name.abuchen.portfolio.money.Money;
         var type = inferType(rawValues, field2column, security, amount);
 
         // extract remaining fields
-        var date = getDate(Messages.CSVColumn_Date, Messages.CSVColumn_Time, rawValues, field2column);
+        var date = getDate(FieldCode.DATE, FieldCode.TIME, rawValues, field2column);
         if (date == null)
             throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Date), 0);
-        var note = getText(Messages.CSVColumn_Note, rawValues, field2column);
-        var shares = getShares(Messages.CSVColumn_Shares, rawValues, field2column);
-        var taxes = getAmount(Messages.CSVColumn_Taxes, rawValues, field2column);
-        var fees = getAmount(Messages.CSVColumn_Fees, rawValues, field2column);
+        var note = getText(FieldCode.NOTE, rawValues, field2column);
+        var shares = getShares(FieldCode.SHARES, rawValues, field2column);
+        var taxes = getAmount(FieldCode.TAXES, rawValues, field2column);
+        var fees = getAmount(FieldCode.FEES, rawValues, field2column);
 
         Optional<Unit> grossAmount = extractGrossAmount(rawValues, field2column, amount);
 
@@ -238,7 +238,7 @@ import name.abuchen.portfolio.money.Money;
     private Type inferType(String[] rawValues, Map<String, Column> field2column, Security security, Money amount)
                     throws ParseException
     {
-        var type = getEnum(Messages.CSVColumn_Type, Type.class, rawValues, field2column);
+        var type = getEnum(FieldCode.TYPE, Type.class, rawValues, field2column);
         if (type == null)
         {
             if (security != null)

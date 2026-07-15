@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import name.abuchen.portfolio.datatransfer.ImportAction;
+import name.abuchen.portfolio.datatransfer.SecurityUpdate;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
@@ -57,6 +58,14 @@ public class InsertAction implements ImportAction
     public Status process(Security security, SecurityPrice price)
     {
         security.addPrice(price);
+        return Status.OK_STATUS;
+    }
+
+    @Override
+    public Status process(Security security, List<SecurityUpdate> updates)
+    {
+        for (SecurityUpdate update : updates)
+            update.applyTo(security);
         return Status.OK_STATUS;
     }
 

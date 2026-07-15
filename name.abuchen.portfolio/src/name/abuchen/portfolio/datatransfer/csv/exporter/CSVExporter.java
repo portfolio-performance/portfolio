@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -16,9 +17,11 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.DuplicateHeaderMode;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.datatransfer.csv.SecurityAttributeColumns;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -168,26 +171,35 @@ public class CSVExporter
                             portfolio.getTransactions());
     }
 
-    public void exportSecurityMasterData(File file, List<Security> securities) throws IOException
+    public void exportSecurityMasterData(Client client, File file, List<Security> securities) throws IOException
     {
         try (var printer = new CSVPrinter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8),
                         STRATEGY))
         {
-            printer.printRecord(Messages.CSVColumn_ISIN, //
-                            Messages.CSVColumn_WKN, //
-                            Messages.CSVColumn_TickerSymbol, //
-                            Messages.CSVColumn_SecurityName, //
-                            Messages.CSVColumn_Currency, //
-                            Messages.CSVColumn_Note);
+            var attributes = SecurityAttributeColumns.importable(client).toList();
+
+            var header = new ArrayList<String>(List.of(Messages.CSVColumn_ISIN, Messages.CSVColumn_WKN,
+                            Messages.CSVColumn_TickerSymbol, Messages.CSVColumn_SecurityName,
+                            Messages.CSVColumn_Currency, Messages.CSVColumn_Note));
+            for (var attribute : attributes)
+                header.add(SecurityAttributeColumns.preferredColumnName(attribute));
+            printer.printRecord(header.toArray());
 
             for (var security : securities)
             {
-                printer.printRecord(escapeNull(security.getIsin()), //
-                                escapeNull(security.getWkn()), //
-                                escapeNull(security.getTickerSymbol()), //
-                                escapeNull(security.getName()), //
-                                escapeNull(security.getCurrencyCode()), //
-                                escapeNull(security.getNote()));
+                var record = new ArrayList<String>();
+                record.add(escapeNull(security.getIsin()));
+                record.add(escapeNull(security.getWkn()));
+                record.add(escapeNull(security.getTickerSymbol()));
+                record.add(escapeNull(security.getName()));
+                record.add(escapeNull(security.getCurrencyCode()));
+                record.add(escapeNull(security.getNote()));
+                for (var attribute : attributes)
+                {
+                    Object value = security.getAttributes().get(attribute);
+                    record.add(value == null ? "" : attribute.getConverter().toString(value));
+                }
+                printer.printRecord(record.toArray());
             }
         }
     }

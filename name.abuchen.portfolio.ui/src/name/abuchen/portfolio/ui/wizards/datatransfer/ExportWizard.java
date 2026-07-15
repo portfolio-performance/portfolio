@@ -109,14 +109,14 @@ public class ExportWizard extends Wizard
             // master data
             else if (exportItem == Security.class)
             {
-                new CSVExporter().exportSecurityMasterData(
+                new CSVExporter().exportSecurityMasterData(client,
                                 new File(file, Messages.ExportWizardSecurityMasterData + ".csv"), //$NON-NLS-1$
                                 client.getSecurities());
             }
             else if (exportClass == Security.class)
             {
                 if (Messages.ExportWizardSecurityMasterData.equals(exportItem))
-                    new CSVExporter().exportSecurityMasterData(file, client.getSecurities());
+                    new CSVExporter().exportSecurityMasterData(client, file, client.getSecurities());
                 else if (Messages.ExportWizardMergedSecurityPrices.equals(exportItem))
                     new CSVExporter().exportMergedSecurityPrices(converter, file, client.getSecurities());
                 else if (Messages.ExportWizardVINISApp.equals(exportItem))

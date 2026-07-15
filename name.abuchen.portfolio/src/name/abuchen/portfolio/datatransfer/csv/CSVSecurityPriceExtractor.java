@@ -21,8 +21,8 @@ import name.abuchen.portfolio.model.SecurityPrice;
     /* package */ CSVSecurityPriceExtractor()
     {
         fields = new ArrayList<>();
-        fields.add(new DateField("date", Messages.CSVColumn_Date)); //$NON-NLS-1$
-        fields.add(new AmountField("quote", Messages.CSVColumn_Quote, "Schluss", "Schlusskurs", "Close")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        fields.add(new DateField(FieldCode.DATE, Messages.CSVColumn_Date));
+        fields.add(new AmountField(FieldCode.QUOTE, Messages.CSVColumn_Quote, "Schluss", "Schlusskurs", "Close")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     @Override
@@ -71,11 +71,11 @@ import name.abuchen.portfolio.model.SecurityPrice;
 
     private SecurityPrice extract(String[] rawValues, Map<String, Column> field2column) throws ParseException
     {
-        var date = getDate(Messages.CSVColumn_Date, null, rawValues, field2column);
+        var date = getDate(FieldCode.DATE, null, rawValues, field2column);
         if (date == null)
             throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Date), 0);
 
-        var amount = getQuote(Messages.CSVColumn_Quote, rawValues, field2column);
+        var amount = getQuote(FieldCode.QUOTE, rawValues, field2column);
         if (amount == null)
             throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Quote), 0);
 

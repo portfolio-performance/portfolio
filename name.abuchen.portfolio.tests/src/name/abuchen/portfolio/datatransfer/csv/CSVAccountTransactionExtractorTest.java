@@ -529,7 +529,7 @@ public class CSVAccountTransactionExtractorTest
         // setup custom mapping from string -> type
 
         Map<String, Column> field2column = buildField2Column(extractor);
-        Column typeColumn = field2column.get(Messages.CSVColumn_Type);
+        Column typeColumn = field2column.get("type");
         @SuppressWarnings("unchecked")
         EnumField<AccountTransaction.Type> field = (EnumField<AccountTransaction.Type>) typeColumn.getField();
 
@@ -586,7 +586,7 @@ public class CSVAccountTransactionExtractorTest
         Column column = new Column(9, field.getName());
         column.setField(field);
         column.setFormat(fieldFormat);
-        field2column.put(field.getName(), column);
+        field2column.put(field.getCode(), column);
 
         List<Item> results = extractor.extract(0, Arrays.<String[]>asList(
                         // upper capital

@@ -9,12 +9,14 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.google.common.annotations.VisibleForTesting;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ImportAction.Context;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
+import name.abuchen.portfolio.datatransfer.SecurityUpdate.NoteUpdate;
 import name.abuchen.portfolio.datatransfer.ibflex.IBFlexStatementExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.AbstractPDFExtractor;
 import name.abuchen.portfolio.model.Account;
@@ -625,6 +627,70 @@ public interface Extractor
         public Status apply(ImportAction action, Context context)
         {
             return action.process(security);
+        }
+    }
+
+    public static class SecurityUpdateItem extends Item
+    {
+        private final Security security;
+        private final List<SecurityUpdate> updates;
+
+        public SecurityUpdateItem(Security security, List<SecurityUpdate> updates)
+        {
+            this.security = security;
+            this.updates = updates;
+        }
+
+        public List<SecurityUpdate> getUpdates()
+        {
+            return updates;
+        }
+
+        @Override
+        public Annotated getSubject()
+        {
+            return security;
+        }
+
+        @Override
+        public String getTypeInformation()
+        {
+            return Messages.LabelUpdateProperties + ": "
+                            + updates.stream().map(SecurityUpdate::getLabel).collect(Collectors.joining(", "));
+        }
+
+        @Override
+        public LocalDateTime getDate()
+        {
+            return null;
+        }
+
+        @Override
+        public Security getSecurity()
+        {
+            return security;
+        }
+
+        @Override
+        public void setSecurity(Security security)
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void setNote(String note)
+        {
+            // the "import notes from source" checkbox calls setNote(null) to drop
+            // the imported note; for an update item that means removing the pending
+            // note change, never wiping the target security's existing note
+            if (note == null)
+                updates.removeIf(NoteUpdate.class::isInstance);
+        }
+
+        @Override
+        public Status apply(ImportAction action, Context context)
+        {
+            return action.process(security, updates);
         }
     }
 

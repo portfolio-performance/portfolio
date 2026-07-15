@@ -67,6 +67,11 @@ import name.abuchen.portfolio.money.Money;
         return client;
     }
 
+    protected boolean wasSecurityCreated(Security security)
+    {
+        return securityCache.wasCreated(security);
+    }
+
     @Override
     public List<Item> extract(int skipLines, List<String[]> rawValues, Map<String, Column> field2column,
                     List<Exception> errors)
@@ -110,10 +115,10 @@ import name.abuchen.portfolio.money.Money;
     {
         Security security = null;
 
-        String isin = getISIN(Messages.CSVColumn_ISIN, rawValues, field2column);
-        String tickerSymbol = getText(Messages.CSVColumn_TickerSymbol, rawValues, field2column);
-        String wkn = getText(Messages.CSVColumn_WKN, rawValues, field2column);
-        String name = getText(Messages.CSVColumn_SecurityName, rawValues, field2column);
+        String isin = getISIN(FieldCode.ISIN, rawValues, field2column);
+        String tickerSymbol = getText(FieldCode.TICKER, rawValues, field2column);
+        String wkn = getText(FieldCode.WKN, rawValues, field2column);
+        String name = getText(FieldCode.NAME, rawValues, field2column);
 
         if (isin != null || tickerSymbol != null || wkn != null || name != null)
         {
@@ -155,7 +160,7 @@ import name.abuchen.portfolio.money.Money;
 
     protected Money getMoney(String[] rawValues, Map<String, Column> field2column) throws ParseException
     {
-        return getMoney(Messages.CSVColumn_Value, Messages.CSVColumn_TransactionCurrency, rawValues, field2column);
+        return getMoney(FieldCode.VALUE, FieldCode.CURRENCY, rawValues, field2column);
     }
 
     protected Money getMoney(String value, String currency, String[] rawValues, Map<String, Column> field2column)
@@ -171,7 +176,7 @@ import name.abuchen.portfolio.money.Money;
     protected Optional<SecurityPrice> getSecurityPrice(String dateField, String[] rawValues,
                     Map<String, Column> field2column) throws ParseException
     {
-        Long amount = getQuote(Messages.CSVColumn_Quote, rawValues, field2column);
+        Long amount = getQuote(FieldCode.QUOTE, rawValues, field2column);
         if (amount == null)
             return Optional.empty();
 
@@ -185,9 +190,9 @@ import name.abuchen.portfolio.money.Money;
     protected Optional<Unit> extractGrossAmount(String[] rawValues, Map<String, Column> field2column, Money amount)
                     throws ParseException
     {
-        Long grossAmount = getAmount(Messages.CSVColumn_GrossAmount, rawValues, field2column);
-        String currencyCode = getCurrencyCode(Messages.CSVColumn_CurrencyGrossAmount, rawValues, field2column);
-        BigDecimal exchangeRate = getBigDecimal(Messages.CSVColumn_ExchangeRate, rawValues, field2column);
+        Long grossAmount = getAmount(FieldCode.GROSS, rawValues, field2column);
+        String currencyCode = getCurrencyCode(FieldCode.CURRENCY_GROSS, rawValues, field2column);
+        BigDecimal exchangeRate = getBigDecimal(FieldCode.EXCHANGE_RATE, rawValues, field2column);
 
         // if no currency code is given, let's assume the gross amount is in the
         // same currency as the transaction itself. Either way, if the gross
@@ -228,7 +233,7 @@ import name.abuchen.portfolio.money.Money;
         if (transaction.getSecurity().getCurrencyCode().equals(transaction.getCurrencyCode()))
             return;
 
-        var exchangeRate = getBigDecimal(Messages.CSVColumn_ExchangeRate, rawValues, field2column);
+        var exchangeRate = getBigDecimal(FieldCode.EXCHANGE_RATE, rawValues, field2column);
         if (exchangeRate != null && exchangeRate.compareTo(BigDecimal.ZERO) != 0)
         {
             var grossValue = transaction.getGrossValue();
