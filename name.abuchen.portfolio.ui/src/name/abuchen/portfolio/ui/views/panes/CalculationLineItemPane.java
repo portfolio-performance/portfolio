@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.ui.views.panes;
 
+import java.text.MessageFormat;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import jakarta.inject.Inject;
 
@@ -19,6 +21,7 @@ import org.eclipse.swt.widgets.Control;
 
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionOwner;
@@ -26,8 +29,10 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.snapshot.security.BaseSecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.CalculationLineItem;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -73,7 +78,8 @@ public class CalculationLineItemPane implements InformationPanePage
         support = new ShowHideColumnHelper(CalculationLineItemPane.class.getSimpleName(), preferences, transactions,
                         layout);
 
-        createTransactionColumns(support);
+        CostMethod costMethod = PortfolioPlugin.getDefault().getCostMethod();
+        addTransactionColumns(support, client, () -> record, costMethod);
         support.createColumns(true);
 
         transactions.getTable().setHeaderVisible(true);
@@ -94,16 +100,17 @@ public class CalculationLineItemPane implements InformationPanePage
 
     }
 
-    private void createTransactionColumns(ShowHideColumnHelper support)
+    static void addTransactionColumns(ShowHideColumnHelper support, Client client,
+                    Supplier<BaseSecurityPerformanceRecord> recordSupplier, CostMethod costMethod)
     {
         // date
-        Column column = new Column(Messages.ColumnDate, SWT.None, 80);
+        Column column = new Column("transactionDate", Messages.ColumnDate, SWT.None, 80).addAliasIDs("0"); //$NON-NLS-1$ //$NON-NLS-2$
         column.setLabelProvider(new DateTimeLabelProvider(e -> ((CalculationLineItem) e).getDateTime()));
         column.setSorter(ColumnViewerSorter.create(CalculationLineItem.BY_DATE), SWT.DOWN);
         support.addColumn(column);
 
         // transaction type
-        column = new Column(Messages.ColumnTransactionType, SWT.None, 80);
+        column = new Column("transactionType", Messages.ColumnTransactionType, SWT.None, 80).addAliasIDs("1"); //$NON-NLS-1$ //$NON-NLS-2$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -115,7 +122,7 @@ public class CalculationLineItemPane implements InformationPanePage
         support.addColumn(column);
 
         // shares
-        column = new Column(Messages.ColumnShares, SWT.None, 80);
+        column = new Column("sharesOwned", Messages.ColumnShares, SWT.None, 80).addAliasIDs("2"); //$NON-NLS-1$ //$NON-NLS-2$
         column.setLabelProvider(new SharesLabelProvider() // NOSONAR
         {
             @Override
@@ -137,7 +144,7 @@ public class CalculationLineItemPane implements InformationPanePage
         support.addColumn(column);
 
         // dividend amount
-        column = new Column(Messages.ColumnDividendPayment, SWT.RIGHT, 80);
+        column = new Column("dividendPayment", Messages.ColumnDividendPayment, SWT.RIGHT, 80).addAliasIDs("3"); //$NON-NLS-1$ //$NON-NLS-2$
         column.setDescription(Messages.ColumnGrossDividend);
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -154,7 +161,8 @@ public class CalculationLineItemPane implements InformationPanePage
         support.addColumn(column);
 
         // dividend per share
-        column = new Column(Messages.ColumnDividendPerShare, SWT.RIGHT, 80);
+        column = new Column("dividendPaymentPerShare", Messages.ColumnDividendPerShare, SWT.RIGHT, 80) //$NON-NLS-1$
+                        .addAliasIDs("4"); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -169,34 +177,20 @@ public class CalculationLineItemPane implements InformationPanePage
         });
         support.addColumn(column);
 
-        // dividend per share
-        column = new Column(Messages.ColumnPersonalDividendYield, SWT.RIGHT, 80);
-        column.setDescription(Messages.ColumnPersonalDividendYield_Description);
+        column = new Column("personalDividendYield", Messages.ColumnPersonalDividendYield, SWT.RIGHT, 80) //$NON-NLS-1$
+                        .addAliasIDs("5", "6"); //$NON-NLS-1$ //$NON-NLS-2$
+        column.setDescription(formatCostMethod(Messages.ColumnPersonalDividendYield_Description,
+                        costMethod));
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object e)
             {
                 CalculationLineItem item = (CalculationLineItem) e;
-                if (item instanceof CalculationLineItem.DividendPayment dividend)
-                    return Values.Percent2.formatNonZero(dividend.getPersonalDividendYield());
-                else
-                    return null;
-            }
-        });
-        support.addColumn(column);
-
-        // dividend per share (moving average)
-        column = new Column(Messages.ColumnPersonalDividendYieldMovingAverage, SWT.RIGHT, 80);
-        column.setDescription(Messages.ColumnPersonalDividendYieldMovingAverage_Description);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                CalculationLineItem item = (CalculationLineItem) e;
-                if (item instanceof CalculationLineItem.DividendPayment dividend)
-                    return Values.Percent2.formatNonZero(dividend.getPersonalDividendYieldMovingAverage());
+                BaseSecurityPerformanceRecord currentRecord = recordSupplier.get();
+                if (item instanceof CalculationLineItem.DividendPayment dividend
+                                && currentRecord instanceof LazySecurityPerformanceRecord lazyRecord)
+                    return Values.Percent2.formatNonZero(lazyRecord.getPersonalDividendYield(dividend, costMethod));
                 else
                     return null;
             }
@@ -204,7 +198,7 @@ public class CalculationLineItemPane implements InformationPanePage
         support.addColumn(column);
 
         // einstandskurs / bewertung
-        column = new Column(Messages.ColumnAmount, SWT.RIGHT, 80);
+        column = new Column("transactionAmount", Messages.ColumnAmount, SWT.RIGHT, 80).addAliasIDs("7"); //$NON-NLS-1$ //$NON-NLS-2$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -220,7 +214,7 @@ public class CalculationLineItemPane implements InformationPanePage
         support.addColumn(column);
 
         // purchase quote
-        column = new Column(Messages.ColumnQuote, SWT.RIGHT, 80);
+        column = new Column("transactionQuote", Messages.ColumnQuote, SWT.RIGHT, 80).addAliasIDs("8"); //$NON-NLS-1$ //$NON-NLS-2$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -241,7 +235,7 @@ public class CalculationLineItemPane implements InformationPanePage
         support.addColumn(column);
 
         // gegenkonto
-        column = new Column(Messages.ColumnAccount, SWT.None, 120);
+        column = new Column("transactionOwner", Messages.ColumnAccount, SWT.None, 120).addAliasIDs("9"); //$NON-NLS-1$ //$NON-NLS-2$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -317,5 +311,10 @@ public class CalculationLineItemPane implements InformationPanePage
     {
         if (record != null)
             setInput(record);
+    }
+
+    private static String formatCostMethod(String pattern, CostMethod costMethod)
+    {
+        return MessageFormat.format(pattern, costMethod.getLabel(), costMethod.getAbbreviation());
     }
 }

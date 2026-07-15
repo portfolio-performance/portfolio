@@ -122,7 +122,6 @@ import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.LazyValue;
-import name.abuchen.portfolio.util.TextUtil;
 
 public class StatementOfAssetsViewer
 {
@@ -395,7 +394,58 @@ public class StatementOfAssetsViewer
 
         support = new ShowHideColumnHelper(StatementOfAssetsViewer.class.getName(), client, preference, assets, layout);
 
-        Column column = new Column("0", Messages.ColumnSharesOwned, SWT.RIGHT, 80); //$NON-NLS-1$
+        CostMethod costMethod = owner.getGlobalCostMethod();
+
+        // create a modifiable copy as all menus share the same list of
+        // reporting periods
+        List<ReportingPeriod> options = owner.getPart().getReportingPeriods().stream().collect(toMutableList());
+
+        addAssetAndReportingColumns(support, costMethod, options);
+        addDividendPaymentColumns();
+        addTaxonomyColumns();
+        addAttributeColumns();
+        addCurrencyColumns(support, costMethod);
+
+        Column column = new DistanceFromMovingAverageColumn(() -> model.getDate());
+        column.getSorter().wrap(ElementComparator::new);
+        support.addColumn(column);
+
+        column = new DistanceFromAllTimeHighColumn(() -> model.getDate(), options);
+        column.getSorter().wrap(ElementComparator::new);
+        support.addColumn(column);
+
+        column = new QuoteRangeColumn(LocalDate::now,
+                        owner.getPart().getReportingPeriods().stream().collect(toMutableList()));
+        column.getSorter().wrap(ElementComparator::new);
+        support.addColumn(column);
+
+        support.createColumns(isConfigurable);
+
+        assets.getTable().setHeaderVisible(true);
+        assets.getTable().setLinesVisible(true);
+
+        assets.setContentProvider(ArrayContentProvider.getInstance());
+
+        assets.addDragSupport(DND.DROP_MOVE, //
+                        new Transfer[] { SecurityTransfer.getTransfer() }, //
+                        new SecurityDragListener(assets));
+
+        // make sure to apply the styles (including font information to the
+        // table) before creating the bold font. Otherwise the font does not
+        // match the styles in CSS
+        stylingEngine.style(assets.getTable());
+
+        LocalResourceManager resources = new LocalResourceManager(JFaceResources.getResources(), assets.getTable());
+        boldFont = resources.create(FontDescriptor.createFrom(assets.getTable().getFont()).setStyle(SWT.BOLD));
+
+        return container;
+    }
+
+    /* package */ void addAssetAndReportingColumns(ShowHideColumnHelper columns, CostMethod costMethod,
+                    List<ReportingPeriod> reportingPeriods)
+    {
+        Column column = new Column("sharesOwned", Messages.ColumnSharesOwned, SWT.RIGHT, 80) //$NON-NLS-1$
+                        .addAliasIDs("0"); //$NON-NLS-1$
         column.setLabelProvider(new SharesLabelProvider() // NOSONAR
         {
             @Override
@@ -407,9 +457,10 @@ public class StatementOfAssetsViewer
         });
         column.setComparator(new ElementComparator(new AttributeComparator(
                         e -> ((Element) e).isSecurity() ? ((Element) e).getSecurityPosition().getShares() : null)));
-        support.addColumn(column);
+        columns.addColumn(column);
 
-        column = new NameColumn(client, "1"); //$NON-NLS-1$
+        column = new NameColumn(client, "name") //$NON-NLS-1$
+                        .addAliasIDs("1"); //$NON-NLS-1$
         column.setLabelProvider(new NameColumnLabelProvider(client) // NOSONAR
         {
             @Override
@@ -451,26 +502,27 @@ public class StatementOfAssetsViewer
 
         }.setMandatory(true).addListener(new TouchClientListener(client)));
         column.getSorter().wrap(ElementComparator::new);
-        support.addColumn(column);
+        columns.addColumn(column);
 
-        column = new IsinColumn("3"); //$NON-NLS-1$
+        column = new IsinColumn("isin").addAliasIDs("3"); //$NON-NLS-1$ //$NON-NLS-2$
         column.getEditingSupport().addListener(new TouchClientListener(client));
         column.getSorter().wrap(ElementComparator::new);
         column.setVisible(false);
-        support.addColumn(column);
+        columns.addColumn(column);
 
-        column = new SymbolColumn("2"); //$NON-NLS-1$
+        column = new SymbolColumn("tickerSymbol").addAliasIDs("2"); //$NON-NLS-1$ //$NON-NLS-2$
         column.getEditingSupport().addListener(new TouchClientListener(client));
         column.getSorter().wrap(ElementComparator::new);
-        support.addColumn(column);
+        columns.addColumn(column);
 
-        column = new WknColumn("12"); //$NON-NLS-1$
+        column = new WknColumn("wkn").addAliasIDs("12"); //$NON-NLS-1$ //$NON-NLS-2$
         column.getEditingSupport().addListener(new TouchClientListener(client));
         column.getSorter().wrap(ElementComparator::new);
         column.setVisible(false);
-        support.addColumn(column);
+        columns.addColumn(column);
 
-        column = new Column("4", Messages.ColumnQuote, SWT.RIGHT, 60); //$NON-NLS-1$
+        column = new Column("quote", Messages.ColumnQuote, SWT.RIGHT, 60) //$NON-NLS-1$
+                        .addAliasIDs("4"); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -493,9 +545,10 @@ public class StatementOfAssetsViewer
             return Money.of(element.getSecurity().getCurrencyCode(),
                             element.getSecurityPosition().getPrice().getValue());
         })));
-        support.addColumn(column);
+        columns.addColumn(column);
 
-        column = new Column("qdate", Messages.ColumnDateOfQuote, SWT.LEFT, 80); //$NON-NLS-1$
+        column = new Column("quoteDate", Messages.ColumnDateOfQuote, SWT.LEFT, 80) //$NON-NLS-1$
+                        .addAliasIDs("qdate"); //$NON-NLS-1$
         column.setLabelProvider(new DateLabelProvider(e -> {
             Element element = (Element) e;
             return element.isSecurity() ? element.getSecurityPosition().getPrice().getDate() : null;
@@ -504,9 +557,10 @@ public class StatementOfAssetsViewer
                         e -> ((Element) e).isSecurity() ? ((Element) e).getSecurityPosition().getPrice().getDate()
                                         : null)));
         column.setVisible(false);
-        support.addColumn(column);
+        columns.addColumn(column);
 
-        column = new Column("5", Messages.ColumnMarketValue, SWT.RIGHT, 80); //$NON-NLS-1$
+        column = new Column("marketValue", Messages.ColumnMarketValue, SWT.RIGHT, 80) //$NON-NLS-1$
+                        .addAliasIDs("5"); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -523,9 +577,10 @@ public class StatementOfAssetsViewer
             }
         });
         column.setSorter(ColumnViewerSorter.create(Element.class, "valuation").wrap(ElementComparator::new)); //$NON-NLS-1$
-        support.addColumn(column);
+        columns.addColumn(column);
 
-        column = new Column("6", Messages.ColumnShareInPercent, SWT.RIGHT, 80); //$NON-NLS-1$
+        column = new Column("portfolioSharePercent", Messages.ColumnShareInPercent, SWT.RIGHT, 80) //$NON-NLS-1$
+                        .addAliasIDs("6"); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -547,179 +602,81 @@ public class StatementOfAssetsViewer
             }
         });
         column.setSorter(ColumnViewerSorter.create(Element.class, "valuation").wrap(ElementComparator::new)); //$NON-NLS-1$
-        support.addColumn(column);
+        columns.addColumn(column);
 
-        addPurchaseCostColumns();
+        addPurchaseCostColumns(columns, costMethod);
 
         ReportingPeriodLabelProvider labelProvider;
 
-        // cost value - FIFO
-        column = new Column("8", Messages.ColumnPurchaseValue, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setGroupLabel(Messages.ColumnPurchaseValue);
-        column.setHeading(Messages.LabelTaxesAndFeesIncluded);
-        column.setMenuLabel(Messages.ColumnPurchaseValue_MenuLabel);
-        column.setDescription(Messages.ColumnPurchaseValue_Description);
-        labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
-                        record -> record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED), withSum()), false);
+        column = new Column("purchaseValueIncludingTaxesAndFees", Messages.ColumnPurchaseValue, SWT.RIGHT, 80) //$NON-NLS-1$
+                        .addAliasIDs("purchaseValueGross", "purchaseValue", "8", "pvmvavg"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        column.setDescription(formatCostMethod(Messages.ColumnPurchaseValue_Description, costMethod));
+        labelProvider = new ReportingPeriodLabelProvider(
+                        new ElementValueProvider(record -> record.getCost(costMethod, TaxesAndFees.INCLUDED),
+                                        withSum()),
+                        false);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
-        support.addColumn(column);
+        columns.addColumn(column);
 
-        // cost value - moving average
-        column = new Column("pvmvavg", Messages.ColumnPurchaseValueMovingAverage, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setGroupLabel(Messages.ColumnPurchaseValue);
-        column.setMenuLabel(Messages.ColumnPurchaseValueMovingAverage_MenuLabel);
-        column.setDescription(Messages.ColumnPurchaseValueMovingAverage_Description);
+        column = new Column("profitLossIncludingTaxesAndFees", Messages.ColumnProfitLoss, SWT.RIGHT, 80) //$NON-NLS-1$
+                        .addAliasIDs("9", "pl_moving_average", "profitLossNet", "profitLoss"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
-                        record -> record.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), withSum()), false);
+                        record -> record.getCapitalGainsOnHoldings(costMethod), withSum()), true);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
-        support.addColumn(column);
-
-        column = new Column("9", Messages.ColumnProfitLoss, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setGroupLabel(Messages.ColumnProfitLoss);
-        column.setMenuLabel(MessageFormat.format(Messages.LabelWithQualifier, Messages.ColumnProfitLoss,
-                        CostMethod.FIFO.getLabel()));
-        column.setDescription(Messages.ColumnProfitLossFIFO_Description + TextUtil.PARAGRAPH_BREAK
-                        + Messages.ColumnProfitLossGeneric_Description);
-        labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
-                        record -> record.getCapitalGainsOnHoldings(CostMethod.FIFO), withSum()), true);
-        column.setLabelProvider(labelProvider);
-        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
-        column.setVisible(false);
-        support.addColumn(column);
-
-        column = new Column("pl_moving_average", //$NON-NLS-1$
-                        MessageFormat.format(Messages.LabelWithQualifier, Messages.ColumnProfitLoss,
-                                        CostMethod.MOVING_AVERAGE.getAbbreviation()),
-                        SWT.RIGHT, 80);
-        column.setGroupLabel(Messages.ColumnProfitLoss);
-        column.setMenuLabel(MessageFormat.format(Messages.LabelWithQualifier, Messages.ColumnProfitLoss,
-                        CostMethod.MOVING_AVERAGE.getLabel()));
-        column.setDescription(Messages.ColumnProfitLossMovingAverage_Description + TextUtil.PARAGRAPH_BREAK
-                        + Messages.ColumnProfitLossGeneric_Description);
-        labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
-                        record -> record.getCapitalGainsOnHoldings(CostMethod.MOVING_AVERAGE), withSum()), true);
-        column.setLabelProvider(labelProvider);
-        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
-        column.setVisible(false);
-        support.addColumn(column);
+        columns.addColumn(column);
 
         column = new NoteColumn();
         column.getEditingSupport().addListener(new TouchClientListener(client));
         column.getSorter().wrap(ElementComparator::new);
-        support.addColumn(column);
+        columns.addColumn(column);
 
-        // create a modifiable copy as all menus share the same list of
-        // reporting periods
-        List<ReportingPeriod> options = owner.getPart().getReportingPeriods().stream().collect(toMutableList());
-
-        addPerformanceColumns(options);
-        addDividendColumns(options);
-        addTaxonomyColumns();
-        addAttributeColumns();
-        addCurrencyColumns();
-
-        column = new DistanceFromMovingAverageColumn(() -> model.getDate());
-        column.getSorter().wrap(ElementComparator::new);
-        support.addColumn(column);
-
-        column = new DistanceFromAllTimeHighColumn(() -> model.getDate(), options);
-        column.getSorter().wrap(ElementComparator::new);
-        support.addColumn(column);
-
-        column = new QuoteRangeColumn(LocalDate::now,
-                        owner.getPart().getReportingPeriods().stream().collect(toMutableList()));
-        column.getSorter().wrap(ElementComparator::new);
-        support.addColumn(column);
-
-        support.createColumns(isConfigurable);
-
-        assets.getTable().setHeaderVisible(true);
-        assets.getTable().setLinesVisible(true);
-
-        assets.setContentProvider(ArrayContentProvider.getInstance());
-
-        assets.addDragSupport(DND.DROP_MOVE, //
-                        new Transfer[] { SecurityTransfer.getTransfer() }, //
-                        new SecurityDragListener(assets));
-
-        // make sure to apply the styles (including font information to the
-        // table) before creating the bold font. Otherwise the font does not
-        // match the styles in CSS
-        stylingEngine.style(assets.getTable());
-
-        LocalResourceManager resources = new LocalResourceManager(JFaceResources.getResources(), assets.getTable());
-        boldFont = resources.create(FontDescriptor.createFrom(assets.getTable().getFont()).setStyle(SWT.BOLD));
-
-        return container;
+        addPerformanceColumns(columns, reportingPeriods, costMethod);
+        addDividendColumns(columns, reportingPeriods, costMethod);
     }
 
-    private void addPurchaseCostColumns()
+    private void addPurchaseCostColumns(ShowHideColumnHelper columns, CostMethod costMethod)
     {
         ReportingPeriodLabelProvider labelProvider;
 
-        // cost value per share - FIFO
-        Column column = new Column("7", Messages.ColumnPurchasePrice, SWT.RIGHT, 60); //$NON-NLS-1$
+        Column column = new Column("purchasePriceExcludingTaxesAndFees", Messages.ColumnPurchasePrice, SWT.RIGHT, 60) //$NON-NLS-1$
+                        .addAliasIDs("purchasePriceNet", "purchasePrice", "7", "ppmvavg"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         column.setHeading(Messages.LabelTaxesAndFeesNotIncluded);
         column.setGroupLabel(Messages.LabelPurchasePrice);
-        column.setMenuLabel(Messages.ColumnPurchasePrice_MenuLabel);
-        column.setDescription(Messages.ColumnPurchasePrice_Description);
+        column.setMenuLabel(formatCostMethod(Messages.ColumnPurchasePrice_MenuLabel, costMethod));
+        column.setDescription(formatCostMethod(Messages.ColumnPurchasePrice_Description, costMethod));
         labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
-                        record -> record.getCostPerSharesHeld(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED), null),
+                        record -> record.getCostPerSharesHeld(costMethod, TaxesAndFees.NOT_INCLUDED), null),
                         false);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
-        support.addColumn(column);
+        columns.addColumn(column);
 
-        // cost value per share - moving average
-        column = new Column("ppmvavg", Messages.ColumnPurchasePriceMovingAverage, SWT.RIGHT, 60); //$NON-NLS-1$
-        column.setGroupLabel(Messages.LabelPurchasePrice);
-        column.setMenuLabel(Messages.ColumnPurchasePriceMovingAverage_MenuLabel);
-        column.setDescription(Messages.ColumnPurchasePriceMovingAverage_Description);
-        labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
-                        record -> record.getCostPerSharesHeld(CostMethod.MOVING_AVERAGE, TaxesAndFees.NOT_INCLUDED),
-                        null), false);
-        column.setLabelProvider(labelProvider);
-        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
-        column.setVisible(false);
-        support.addColumn(column);
-
-        // cost value per share including fees and taxes - FIFO
-        column = new Column("grossPurchasePriceFIFO", Messages.ColumnGrossPurchasePriceFIFO, SWT.RIGHT, 60); //$NON-NLS-1$
+        column = new Column("purchasePriceIncludingTaxesAndFees", Messages.ColumnPurchasePrice, SWT.RIGHT, 60) //$NON-NLS-1$
+                        .addAliasIDs("purchasePriceGross", "grossPurchasePrice", "grossPurchasePriceFIFO", "grossPurchasePriceMA"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         column.setHeading(Messages.LabelTaxesAndFeesIncluded);
         column.setGroupLabel(Messages.LabelPurchasePrice);
-        column.setMenuLabel(Messages.ColumnPurchasePrice_MenuLabel);
-        column.setDescription(Messages.ColumnGrossPurchasePriceFIFO_Description);
+        column.setMenuLabel(formatCostMethod(Messages.ColumnPurchasePrice_MenuLabel, costMethod));
+        column.setDescription(formatCostMethod(Messages.ColumnGrossPurchasePrice_Description, costMethod));
         labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
-                        record -> record.getCostPerSharesHeld(CostMethod.FIFO, TaxesAndFees.INCLUDED), null), false);
+                        record -> record.getCostPerSharesHeld(costMethod, TaxesAndFees.INCLUDED), null), false);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
-        support.addColumn(column);
-
-        // cost value per share including fees and taxes - moving average
-        column = new Column("grossPurchasePriceMA", Messages.ColumnGrossPurchasePriceMovingAverage, SWT.RIGHT, 60); //$NON-NLS-1$
-        column.setGroupLabel(Messages.LabelPurchasePrice);
-        column.setMenuLabel(Messages.ColumnPurchasePriceMovingAverage_MenuLabel);
-        column.setDescription(Messages.ColumnGrossPurchasePriceMovingAverage_Description);
-        labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
-                        record -> record.getCostPerSharesHeld(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), null),
-                        false);
-        column.setLabelProvider(labelProvider);
-        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
-        column.setVisible(false);
-        support.addColumn(column);
+        columns.addColumn(column);
     }
 
-    private void addPerformanceColumns(List<ReportingPeriod> options)
+    private void addPerformanceColumns(ShowHideColumnHelper columns, List<ReportingPeriod> options,
+                    CostMethod costMethod)
     {
         ReportingPeriodLabelProvider labelProvider;
 
-        Column column = new Column("ttwror", Messages.ColumnTTWROR, SWT.RIGHT, 80); //$NON-NLS-1$
+        Column column = new Column("trueTimeWeightedRateOfReturn", Messages.ColumnTTWROR, SWT.RIGHT, 80) //$NON-NLS-1$
+                        .addAliasIDs("ttwror"); //$NON-NLS-1$
         labelProvider = new ReportingPeriodLabelProvider(LazySecurityPerformanceRecord::getTrueTimeWeightedRateOfReturn,
                         true, PerformanceIndex::getFinalAccumulatedPercentage);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnTTWROR_Option, options));
@@ -728,9 +685,10 @@ public class StatementOfAssetsViewer
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
-        support.addColumn(column);
+        columns.addColumn(column);
 
-        column = new Column("ttwror_pa", Messages.ColumnTTWRORpa, SWT.RIGHT, 80); //$NON-NLS-1$
+        column = new Column("trueTimeWeightedRateOfReturnAnnualized", Messages.ColumnTTWRORpa, SWT.RIGHT, 80) //$NON-NLS-1$
+                        .addAliasIDs("ttwror_pa"); //$NON-NLS-1$
         labelProvider = new ReportingPeriodLabelProvider(
                         LazySecurityPerformanceRecord::getTrueTimeWeightedRateOfReturnAnnualized, true,
                         PerformanceIndex::getFinalAccumulatedAnnualizedPercentage);
@@ -740,9 +698,10 @@ public class StatementOfAssetsViewer
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
-        support.addColumn(column);
+        columns.addColumn(column);
 
-        column = new Column("irr", Messages.ColumnIRR, SWT.RIGHT, 80); //$NON-NLS-1$
+        column = new Column("internalRateOfReturn", Messages.ColumnIRR, SWT.RIGHT, 80) //$NON-NLS-1$
+                        .addAliasIDs("irr"); //$NON-NLS-1$
         labelProvider = new ReportingPeriodLabelProvider(LazySecurityPerformanceRecord::getIrr, true,
                         PerformanceIndex::getPerformanceIRR);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnIRRPerformanceOption, options));
@@ -751,54 +710,37 @@ public class StatementOfAssetsViewer
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
-        support.addColumn(column);
+        columns.addColumn(column);
 
-        column = new Column("capitalgains", Messages.ColumnCapitalGains, SWT.RIGHT, 80); //$NON-NLS-1$
-        labelProvider = new ReportingPeriodLabelProvider(record -> record.getCapitalGainsOnHoldings(CostMethod.FIFO),
+        column = new Column("capitalGains", formatCostMethod(Messages.ColumnCapitalGains, costMethod), //$NON-NLS-1$
+                        SWT.RIGHT, 80).addAliasIDs("capitalgains", "capitalgainsmvavg"); //$NON-NLS-1$ //$NON-NLS-2$
+        labelProvider = new ReportingPeriodLabelProvider(record -> record.getCapitalGainsOnHoldings(costMethod),
                         withSum(), true);
-        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnCapitalGains_Option, options));
+        column.setOptions(new ReportingPeriodColumnOptions(
+                        formatCostMethodOption(Messages.ColumnCapitalGains_Option, costMethod), options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
-        column.setDescription(Messages.ColumnCapitalGains_Description);
+        column.setDescription(formatCostMethod(Messages.ColumnCapitalGains_Description, costMethod));
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
-        support.addColumn(column);
+        columns.addColumn(column);
 
-        column = new Column("capitalgains%", Messages.ColumnCapitalGainsPercent, SWT.RIGHT, 80); //$NON-NLS-1$
-        labelProvider = new ReportingPeriodLabelProvider(
-                        record -> record.getCapitalGainsOnHoldingsPercent(CostMethod.FIFO));
-        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnCapitalGainsPercent_Option, options));
-        column.setGroupLabel(Messages.GroupLabelPerformance);
-        column.setDescription(Messages.ColumnCapitalGainsPercent_Description);
-        column.setLabelProvider(labelProvider);
-        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
-        column.setVisible(false);
-        support.addColumn(column);
-
-        column = new Column("capitalgainsmvavg", Messages.ColumnCapitalGainsMovingAverage, SWT.RIGHT, 80); //$NON-NLS-1$
-        labelProvider = new ReportingPeriodLabelProvider(
-                        record -> record.getCapitalGainsOnHoldings(CostMethod.MOVING_AVERAGE), withSum(), true);
-        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnCapitalGainsMovingAverage_Option, options));
-        column.setGroupLabel(Messages.GroupLabelPerformance);
-        column.setDescription(Messages.ColumnCapitalGainsMovingAverage_Description);
-        column.setLabelProvider(labelProvider);
-        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
-        column.setVisible(false);
-        support.addColumn(column);
-
-        column = new Column("capitalgainsmvavg%", Messages.ColumnCapitalGainsMovingAveragePercent, SWT.RIGHT, 80); //$NON-NLS-1$
-        labelProvider = new ReportingPeriodLabelProvider(
-                        record -> record.getCapitalGainsOnHoldingsPercent(CostMethod.MOVING_AVERAGE));
-        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnCapitalGainsMovingAveragePercent_Option,
+        column = new Column("capitalGainsPercent", //$NON-NLS-1$
+                        formatCostMethod(Messages.ColumnCapitalGainsPercent, costMethod), SWT.RIGHT, 80)
+                                        .addAliasIDs("capitalgains%", "capitalgainsmvavg%"); //$NON-NLS-1$ //$NON-NLS-2$
+        labelProvider = new ReportingPeriodLabelProvider(record -> record.getCapitalGainsOnHoldingsPercent(costMethod));
+        column.setOptions(new ReportingPeriodColumnOptions(
+                        formatCostMethodOption(Messages.ColumnCapitalGainsPercent_Option, costMethod),
                         options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
-        column.setDescription(Messages.ColumnCapitalGainsMovingAveragePercent_Description);
+        column.setDescription(formatCostMethod(Messages.ColumnCapitalGainsPercent_Description, costMethod));
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
-        support.addColumn(column);
+        columns.addColumn(column);
 
-        column = new Column("delta", Messages.ColumnAbsolutePerformance_MenuLabel, SWT.RIGHT, 80); //$NON-NLS-1$
+        column = new Column("absolutePerformance", Messages.ColumnAbsolutePerformance_MenuLabel, SWT.RIGHT, 80) //$NON-NLS-1$
+                        .addAliasIDs("delta"); //$NON-NLS-1$
         labelProvider = new ReportingPeriodLabelProvider(LazySecurityPerformanceRecord::getDelta, withSum(), true);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnAbsolutePerformance_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
@@ -806,9 +748,10 @@ public class StatementOfAssetsViewer
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
-        support.addColumn(column);
+        columns.addColumn(column);
 
-        column = new Column("delta%", Messages.ColumnAbsolutePerformancePercent_MenuLabel, SWT.RIGHT, 80); //$NON-NLS-1$
+        column = new Column("absolutePerformancePercent", Messages.ColumnAbsolutePerformancePercent_MenuLabel, //$NON-NLS-1$
+                        SWT.RIGHT, 80).addAliasIDs("delta%"); //$NON-NLS-1$
         labelProvider = new ReportingPeriodLabelProvider(LazySecurityPerformanceRecord::getDeltaPercent);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnAbsolutePerformancePercent_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
@@ -816,14 +759,15 @@ public class StatementOfAssetsViewer
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
-        support.addColumn(column);
+        columns.addColumn(column);
     }
 
-    private void addDividendColumns(List<ReportingPeriod> options)
+    private void addDividendColumns(ShowHideColumnHelper columns, List<ReportingPeriod> options, CostMethod costMethod)
     {
         ReportingPeriodLabelProvider labelProvider;
 
-        Column column = new Column("sumdiv", Messages.ColumnDividendSum, SWT.RIGHT, 80); //$NON-NLS-1$
+        Column column = new Column("dividendSum", Messages.ColumnDividendSum, SWT.RIGHT, 80) //$NON-NLS-1$
+                        .addAliasIDs("sumdiv"); //$NON-NLS-1$
 
         labelProvider = new ReportingPeriodLabelProvider(LazySecurityPerformanceRecord::getSumOfDividends, withSum(),
                         false);
@@ -833,32 +777,24 @@ public class StatementOfAssetsViewer
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
-        support.addColumn(column);
+        columns.addColumn(column);
 
-        column = new Column("d%", Messages.ColumnDividendTotalRateOfReturn, SWT.RIGHT, 80); //$NON-NLS-1$
-        labelProvider = new ReportingPeriodLabelProvider(record -> record.getTotalRateOfReturnDiv(CostMethod.FIFO),
-                        null, false);
-        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnDividendTotalRateOfReturn + " {0}", options)); //$NON-NLS-1$
-        column.setGroupLabel(Messages.GroupLabelDividends);
-        column.setDescription(Messages.ColumnDividendTotalRateOfReturn_Description);
-        column.setLabelProvider(labelProvider);
-        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
-        column.setVisible(false);
-        support.addColumn(column);
-
-        column = new Column("d%mvavg", Messages.ColumnDividendMovingAverageTotalRateOfReturn, SWT.RIGHT, 80); //$NON-NLS-1$
-        labelProvider = new ReportingPeriodLabelProvider(
-                        record -> record.getTotalRateOfReturnDiv(CostMethod.MOVING_AVERAGE), null, false);
+        column = new Column("dividendTotalRateOfReturn", //$NON-NLS-1$
+                        formatCostMethod(Messages.ColumnDividendTotalRateOfReturn, costMethod), SWT.RIGHT,
+                        80).addAliasIDs("d%", "d%mvavg"); //$NON-NLS-1$ //$NON-NLS-2$
+        labelProvider = new ReportingPeriodLabelProvider(record -> record.getTotalRateOfReturnDiv(costMethod), null,
+                        false);
         column.setOptions(new ReportingPeriodColumnOptions(
-                        Messages.ColumnDividendMovingAverageTotalRateOfReturn + " {0}", options)); //$NON-NLS-1$
+                        formatCostMethod(Messages.ColumnDividendTotalRateOfReturn, costMethod) + " {0}", //$NON-NLS-1$
+                        options));
         column.setGroupLabel(Messages.GroupLabelDividends);
-        column.setDescription(Messages.ColumnDividendMovingAverageTotalRateOfReturn_Description);
+        column.setDescription(
+                        formatCostMethod(Messages.ColumnDividendTotalRateOfReturn_Description, costMethod));
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
-        support.addColumn(column);
+        columns.addColumn(column);
 
-        addDividendPaymentColumns();
     }
 
     private void addDividendPaymentColumns()
@@ -869,6 +805,16 @@ public class StatementOfAssetsViewer
                                 column.getSorter().wrap(ElementComparator::new);
                             support.addColumn(column);
                         });
+    }
+
+    /* package */ static String formatCostMethod(String pattern, CostMethod costMethod)
+    {
+        return MessageFormat.format(pattern, costMethod.getLabel(), costMethod.getAbbreviation());
+    }
+
+    /* package */ static String formatCostMethodOption(String pattern, CostMethod costMethod)
+    {
+        return MessageFormat.format(pattern, costMethod.getLabel(), costMethod.getAbbreviation(), "{0}"); //$NON-NLS-1$
     }
 
     private void addAttributeColumns()
@@ -894,9 +840,10 @@ public class StatementOfAssetsViewer
         }
     }
 
-    private void addCurrencyColumns() // NOSONAR
+    /* package */ void addCurrencyColumns(ShowHideColumnHelper columns, CostMethod costMethod) // NOSONAR
     {
-        Column column = new Column("baseCurrency", Messages.ColumnCurrency, SWT.LEFT, 80); //$NON-NLS-1$
+        Column column = new Column("currency", Messages.ColumnCurrency, SWT.LEFT, 80) //$NON-NLS-1$
+                        .addAliasIDs("baseCurrency"); //$NON-NLS-1$
         column.setGroupLabel(Messages.ColumnForeignCurrencies);
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -914,7 +861,7 @@ public class StatementOfAssetsViewer
                         ? ((Element) e).getPosition().getInvestmentVehicle().getCurrencyCode()
                         : null)));
         column.setVisible(false);
-        support.addColumn(column);
+        columns.addColumn(column);
 
         column = new Column("exchangeRate", Messages.ColumnExchangeRate, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.ColumnForeignCurrencies);
@@ -951,9 +898,10 @@ public class StatementOfAssetsViewer
             }
         });
         column.setVisible(false);
-        support.addColumn(column);
+        columns.addColumn(column);
 
-        column = new Column("quoteReportingCurrency", Messages.ColumnQuote + Messages.BaseCurrencyCue, SWT.RIGHT, 60); //$NON-NLS-1$
+        column = new Column("quoteBaseCurrency", Messages.ColumnQuote + Messages.BaseCurrencyCue, SWT.RIGHT, 60) //$NON-NLS-1$
+                        .addAliasIDs("quoteReportingCurrency"); //$NON-NLS-1$
         column.setGroupLabel(Messages.ColumnForeignCurrencies);
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -1002,7 +950,7 @@ public class StatementOfAssetsViewer
             }
         })));
         column.setVisible(false);
-        support.addColumn(column);
+        columns.addColumn(column);
 
         column = new Column("marketValueBaseCurrency", //$NON-NLS-1$
                         Messages.ColumnMarketValue + Messages.BaseCurrencyCue, SWT.RIGHT, 80);
@@ -1025,45 +973,47 @@ public class StatementOfAssetsViewer
                         e -> ((Element) e).isPosition() ? ((Element) e).getPosition().getPosition().calculateValue()
                                         : null)));
         column.setVisible(false);
-        support.addColumn(column);
+        columns.addColumn(column);
 
         ReportingPeriodLabelProvider labelProvider;
 
-        column = new Column("purchaseValueBaseCurrency", //$NON-NLS-1$
+        column = new Column("purchaseValueBaseCurrencyIncludingTaxesAndFees", //$NON-NLS-1$
                         Messages.ColumnPurchaseValue + Messages.BaseCurrencyCue, SWT.RIGHT, 80);
+        column.addAliasIDs("purchaseValueBaseCurrencyGross", "purchaseValueBaseCurrency"); //$NON-NLS-1$
         column.setDescription(Messages.ColumnPurchaseValueBaseCurrency);
         column.setGroupLabel(Messages.ColumnForeignCurrencies);
         labelProvider = new ReportingPeriodLabelProvider(
-                        new ElementValueProvider(record -> record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
-                                        null),
+                        new ElementValueProvider(record -> record.getCost(costMethod, TaxesAndFees.INCLUDED), null),
                         e -> e.isSecurity() ? e.getSecurity().getCurrencyCode()
                                         : model.getCurrencyConverter().getTermCurrency(),
                         false);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
-        support.addColumn(column);
+        columns.addColumn(column);
 
-        column = new Column("purchasePriceBaseCurrency", //$NON-NLS-1$
+        column = new Column("purchasePriceBaseCurrencyExcludingTaxesAndFees", //$NON-NLS-1$
                         Messages.ColumnPurchasePrice + Messages.BaseCurrencyCue, SWT.RIGHT, 80);
+        column.addAliasIDs("purchasePriceBaseCurrencyNet", "purchasePriceBaseCurrency"); //$NON-NLS-1$
         column.setDescription(Messages.ColumnPurchasePriceBaseCurrency);
         column.setGroupLabel(Messages.ColumnForeignCurrencies);
         labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
-                        record -> record.getCostPerSharesHeld(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED), null),
+                        record -> record.getCostPerSharesHeld(costMethod, TaxesAndFees.NOT_INCLUDED), null),
                         e -> e.isSecurity() ? e.getSecurity().getCurrencyCode()
                                         : model.getCurrencyConverter().getTermCurrency(),
                         false);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
-        support.addColumn(column);
+        columns.addColumn(column);
 
-        column = new Column("profitLossBaseCurrency", //$NON-NLS-1$
+        column = new Column("profitLossBaseCurrencyIncludingTaxesAndFees", //$NON-NLS-1$
                         Messages.ColumnProfitLoss + Messages.BaseCurrencyCue, SWT.RIGHT, 80);
+        column.addAliasIDs("profitLossBaseCurrencyNet", "profitLossBaseCurrency"); //$NON-NLS-1$
         column.setDescription(Messages.ColumnProfitLossBaseCurrency);
         column.setGroupLabel(Messages.ColumnForeignCurrencies);
         labelProvider = new ReportingPeriodLabelProvider(
-                        new ElementValueProvider(record -> record.getCapitalGainsOnHoldings(CostMethod.FIFO), null),
+                        new ElementValueProvider(record -> record.getCapitalGainsOnHoldings(costMethod), null),
                         e -> e.isSecurity() ? e.getSecurity().getCurrencyCode()
                                         : model.getCurrencyConverter().getTermCurrency(),
                         true);
@@ -1071,7 +1021,7 @@ public class StatementOfAssetsViewer
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
         column.setVisible(false);
-        support.addColumn(column);
+        columns.addColumn(column);
     }
 
     public void setToolBarManager(ToolBarManager toolBar)

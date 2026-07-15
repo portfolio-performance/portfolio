@@ -14,6 +14,8 @@ import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.CostMethod;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -59,7 +61,7 @@ public class TradeCollector4Test
         // because (sale − purchase A) / (owned − purchase A)
         // (0.00636567 − 0.001301 ) / (0.014125 − 0.001301 )
 
-        assertThat(firstTrade.getEntryValue(),
+        assertThat(firstTrade.getEntryValue(CostMethod.FIFO, TaxesAndFees.INCLUDED),
                         is(Money.of(CurrencyUnit.EUR, Values.Money.factorize(10 + 39.49368372))));
 
         // moving average
@@ -67,7 +69,7 @@ public class TradeCollector4Test
         // 110 * (sale / owned)
         // 110 * (0.00636567 / 0.014125) = 49.573359292
 
-        assertThat(firstTrade.getEntryValueMovingAverage(),
+        assertThat(firstTrade.getEntryValue(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED),
                         is(Money.of(CurrencyUnit.EUR, Values.Money.factorize(49.573359292))));
 
         // Note: FIFO and moving average cost differ because each transaction as

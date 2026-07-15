@@ -7,6 +7,8 @@ import java.util.function.Supplier;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
 import name.abuchen.portfolio.util.TextUtil;
@@ -30,13 +32,20 @@ public class TopContributorsReturnWidget extends AbstractTopContributorsWidget<L
 
             var index = getDashboardData().calculate(get(DataSeriesConfig.class).getDataSeries(), interval);
 
-            var snapshot = index.getClientPerformanceSnapshot().orElseThrow(IllegalArgumentException::new);
+            var snapshot = getClientPerformanceSnapshot(index);
             var client = snapshot.getClient();
             var converter = getDashboardData().getCurrencyConverter();
 
             var secSnapshot = LazySecurityPerformanceSnapshot.create(client, converter, interval);
             return new ArrayList<>(secSnapshot.getRecords());
         };
+    }
+
+    /* package */ ClientPerformanceSnapshot getClientPerformanceSnapshot(PerformanceIndex index)
+    {
+        var costMethod = getDashboardData().getGlobalCostMethod();
+
+        return index.getClientPerformanceSnapshot(costMethod).orElseThrow(IllegalArgumentException::new);
     }
 
     @Override

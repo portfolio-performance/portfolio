@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views.trades;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -33,7 +34,9 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
@@ -181,6 +184,7 @@ public final class TradeDetailsView extends AbstractFinanceView
         private final Input preselectedInput;
         private final boolean useSecCurrency;
         private final CurrencyConverter jobConverter;
+        private final CostMethod jobCostMethod;
         private final boolean onlyOpen;
         private final boolean onlyClosed;
         private final boolean onlyProfitable;
@@ -190,14 +194,16 @@ public final class TradeDetailsView extends AbstractFinanceView
         private final boolean hideTotalsAtTheTopJob;
         private final boolean hideTotalsAtTheBottomJob;
 
-        UpdateTradesJob(Input preselectedInput, boolean useSecCurrency, CurrencyConverter converter, boolean onlyOpen,
-                        boolean onlyClosed, boolean onlyProfitable, boolean onlyLossMaking, Pattern filterPattern,
-                        Taxonomy taxonomy, boolean hideTotalsAtTheTop, boolean hideTotalsAtTheBottom)
+        UpdateTradesJob(Input preselectedInput, boolean useSecCurrency, CurrencyConverter converter,
+                        CostMethod costMethod, boolean onlyOpen, boolean onlyClosed, boolean onlyProfitable,
+                        boolean onlyLossMaking, Pattern filterPattern, Taxonomy taxonomy, boolean hideTotalsAtTheTop,
+                        boolean hideTotalsAtTheBottom)
         {
             super(Messages.LabelTrades);
             this.preselectedInput = preselectedInput;
             this.useSecCurrency = useSecCurrency;
             this.jobConverter = converter;
+            this.jobCostMethod = costMethod;
             this.onlyOpen = onlyOpen;
             this.onlyClosed = onlyClosed;
             this.onlyProfitable = onlyProfitable;
@@ -228,10 +234,8 @@ public final class TradeDetailsView extends AbstractFinanceView
                     filteredTrades = filteredTrades.filter(Trade::isClosed);
                 if (onlyOpen)
                     filteredTrades = filteredTrades.filter(t -> !t.isClosed());
-                if (onlyLossMaking)
-                    filteredTrades = filteredTrades.filter(Trade::isLoss);
-                if (onlyProfitable)
-                    filteredTrades = filteredTrades.filter(t -> t.getProfitLoss().isPositive());
+                filteredTrades = filteredTrades
+                                .filter(createProfitabilityFilter(onlyProfitable, onlyLossMaking, jobCostMethod));
                 if (jobFilterPattern != null)
                     filteredTrades = filteredTrades.filter(t -> matchesFilter(t, jobFilterPattern));
 
@@ -287,6 +291,20 @@ public final class TradeDetailsView extends AbstractFinanceView
     private static final String PREF_TAXONOMY_NONE = "@none"; //$NON-NLS-1$
 
     private static final String ID_WARNING_TOOL_ITEM = "warning"; //$NON-NLS-1$
+
+    /* package */ static Predicate<Trade> createProfitabilityFilter(boolean onlyProfitable, boolean onlyLossMaking,
+                    CostMethod costMethod)
+    {
+        return trade -> {
+            if (onlyLossMaking && !trade.isLoss(costMethod))
+                return false;
+
+            if (onlyProfitable && !trade.getProfitLoss(costMethod, TaxesAndFees.INCLUDED).isPositive())
+                return false;
+
+            return true;
+        };
+    }
 
     @Inject
     private SelectionService selectionService;
@@ -675,8 +693,9 @@ public final class TradeDetailsView extends AbstractFinanceView
         control.setCursor(control.getDisplay().getSystemCursor(SWT.CURSOR_WAIT));
 
         Input preselectedInput = usePreselectedTrades.isTrue() ? input : null;
+        CostMethod costMethod = getGlobalCostMethod();
 
-        currentUpdateJob = new UpdateTradesJob(preselectedInput, this.useSecurityCurrency, this.converter,
+        currentUpdateJob = new UpdateTradesJob(preselectedInput, this.useSecurityCurrency, this.converter, costMethod,
                         this.onlyOpen.isTrue(), this.onlyClosed.isTrue(), this.onlyProfitable.isTrue(),
                         this.onlyLossMaking.isTrue(), this.filterPattern, this.taxonomy, this.hideTotalsAtTheTop,
                         this.hideTotalsAtTheBottom);

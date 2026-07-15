@@ -52,11 +52,15 @@ public class PortfolioTaxOrFeeRateWidget extends AbstractIndicatorWidget<Object>
             PerformanceIndex index = getDashboardData().calculate(get(DataSeriesConfig.class).getDataSeries(),
                             get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now()));
 
-            ClientPerformanceSnapshot snapshot = index.getClientPerformanceSnapshot()
-                            .orElseThrow(IllegalArgumentException::new);
-
-            return valueProvider.apply(snapshot);
+            return valueProvider.apply(getClientPerformanceSnapshot(index));
         };
+    }
+
+    /* package */ ClientPerformanceSnapshot getClientPerformanceSnapshot(PerformanceIndex index)
+    {
+        var costMethod = getDashboardData().getGlobalCostMethod();
+
+        return index.getClientPerformanceSnapshot(costMethod).orElseThrow(IllegalArgumentException::new);
     }
 
     @Override

@@ -1,8 +1,12 @@
 package name.abuchen.portfolio.ui.util.viewers;
 
 import java.util.Comparator;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
@@ -59,6 +63,7 @@ public class Column
      * Uniquely identifies a column to store/load a configuration
      */
     private String id;
+    private final Set<String> aliasIds = new LinkedHashSet<>();
 
     private String label;
     private int style;
@@ -136,6 +141,33 @@ public class Column
     /* package */void setId(String id)
     {
         this.id = id;
+    }
+
+    public Column addAliasIDs(String... aliasIds)
+    {
+        Objects.requireNonNull(aliasIds, "Column alias IDs must not be null"); //$NON-NLS-1$
+
+        if (aliasIds.length == 0)
+            throw new IllegalArgumentException("At least one column alias ID is required"); //$NON-NLS-1$
+
+        for (String aliasId : aliasIds)
+        {
+            Objects.requireNonNull(aliasId, "Column alias ID must not be null"); //$NON-NLS-1$
+
+            if (aliasId.isBlank())
+                throw new IllegalArgumentException("Column alias ID must not be blank"); //$NON-NLS-1$
+            if (aliasId.equals(id))
+                throw new IllegalArgumentException("Column alias ID must not equal the canonical column ID: " + id); //$NON-NLS-1$
+
+            this.aliasIds.add(aliasId);
+        }
+
+        return this;
+    }
+
+    /* package */Set<String> getAliasIDs()
+    {
+        return Collections.unmodifiableSet(aliasIds);
     }
 
     public void setVisible(boolean isVisible)

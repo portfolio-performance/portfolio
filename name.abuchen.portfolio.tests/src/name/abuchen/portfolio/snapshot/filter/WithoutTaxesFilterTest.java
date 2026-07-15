@@ -224,8 +224,10 @@ public class WithoutTaxesFilterTest
                         LocalDate.of(2016, Month.MARCH, 31));
         CurrencyConverter converter = new TestCurrencyConverter();
 
-        ClientPerformanceSnapshot originalP = new ClientPerformanceSnapshot(client, converter, period);
-        ClientPerformanceSnapshot filteredP = new ClientPerformanceSnapshot(filtered, converter, period);
+        ClientPerformanceSnapshot originalP = new ClientPerformanceSnapshot(client, converter, period,
+                        name.abuchen.portfolio.model.CostMethod.FIFO);
+        ClientPerformanceSnapshot filteredP = new ClientPerformanceSnapshot(filtered, converter, period,
+                        name.abuchen.portfolio.model.CostMethod.FIFO);
 
         // taxes should be 0 with the filter applied, even though they were originally not
         assertThat(filteredP.getValue(CategoryType.TAXES).isZero(), is(true));

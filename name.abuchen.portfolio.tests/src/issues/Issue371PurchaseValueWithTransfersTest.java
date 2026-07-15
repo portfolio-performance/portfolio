@@ -60,7 +60,7 @@ public class Issue371PurchaseValueWithTransfersTest
         LazySecurityPerformanceRecord record = securitySnapshot.getRecords().get(0);
         assertThat(record.getSecurity(), is(adidas));
 
-        assertThat(securityPosition.getShares(), is(record.getSharesHeld()));
+        assertThat(securityPosition.getShares(), is(record.getSharesHeld(name.abuchen.portfolio.model.CostMethod.FIFO)));
         assertThat(securityPosition.calculateValue(), is(record.getMarketValue()));
 
         assertThat(record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),

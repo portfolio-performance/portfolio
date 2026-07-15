@@ -85,6 +85,11 @@ public abstract class AbstractFinanceView
 
     SashLayout sashLayout;
 
+    public CostMethod getGlobalCostMethod()
+    {
+        return PortfolioPlugin.getDefault().getCostMethod();
+    }
+
     protected String getTitle()
     {
         return titleText;
@@ -411,8 +416,4 @@ public abstract class AbstractFinanceView
         return stylingEngine;
     }
 
-    public CostMethod getGlobalCostMethod()
-    {
-        return PortfolioPlugin.getDefault().getCostMethod();
-    }
 }

@@ -2,6 +2,8 @@ package name.abuchen.portfolio.ui.views.payments;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.util.Objects;
+import java.util.function.Supplier;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -11,6 +13,7 @@ import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.swt.widgets.Display;
 
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -18,11 +21,13 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 /* package */ class StartYearSelectionDropDown extends DropDown implements IMenuListener
 {
     private PaymentsViewModel model;
+    private final Supplier<CostMethod> costMethodSupplier;
 
-    public StartYearSelectionDropDown(PaymentsViewModel model)
+    public StartYearSelectionDropDown(PaymentsViewModel model, Supplier<CostMethod> costMethodSupplier)
     {
         super(createLabelTextForYear(model.getStartYear()));
-        this.model = model;
+        this.model = Objects.requireNonNull(model);
+        this.costMethodSupplier = Objects.requireNonNull(costMethodSupplier);
 
         setMenuListener(this);
     }
@@ -41,7 +46,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
                 @Override
                 public void run()
                 {
-                    model.updateWith(year);
+                    model.updateWith(year, costMethodSupplier.get());
                     setLabel(createLabelTextForYear(year));
                 }
             };
@@ -72,7 +77,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
             if (dialog.open() == InputDialog.OK)
             {
                 int year = Integer.parseInt(dialog.getValue());
-                model.updateWith(year);
+                model.updateWith(year, costMethodSupplier.get());
                 setLabel(createLabelTextForYear(year));
             }
 

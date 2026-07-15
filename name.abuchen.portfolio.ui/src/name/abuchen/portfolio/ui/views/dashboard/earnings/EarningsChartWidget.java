@@ -161,7 +161,7 @@ public class EarningsChartWidget extends WidgetDelegate<PaymentsViewModel>
                 PaymentsViewModel.Mode mode = earningsType.getPaymentsViewModelMode();
                 model.configure(startYear, mode, grossNetType == GrossNetType.GROSS, false, costMethod);
                 model.setFilteredClient(clientFilter.filter(getClient()));
-                model.recalculate();
+                model.recalculate(costMethod);
                 return model;
             });
         };

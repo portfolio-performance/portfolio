@@ -4,7 +4,7 @@ import name.abuchen.portfolio.Messages;
 
 public enum CostMethod
 {
-    FIFO(Messages.LabelCostMethodFIFO, Messages.LabelCostMethodFIFO), //
+    FIFO(Messages.LabelCostMethodFIFO, Messages.LabelCostMethodFIFOAbbr), //
     MOVING_AVERAGE(Messages.LabelCostMethodMovingAverage, Messages.LabelCostMethodMovingAverageAbbr);
 
     private String label;
@@ -32,8 +32,4 @@ public enum CostMethod
         return abbreviation;
     }
 
-    public boolean useFifo()
-    {
-        return this == FIFO;
-    }
 }

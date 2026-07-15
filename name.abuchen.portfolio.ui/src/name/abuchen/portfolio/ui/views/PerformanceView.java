@@ -38,7 +38,6 @@ import org.eclipse.swt.widgets.Control;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.CrossEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -61,7 +60,6 @@ import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
 import name.abuchen.portfolio.ui.util.DropDown;
-import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.MoneyTrailDataSource;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -88,9 +86,6 @@ import name.abuchen.portfolio.util.Interval;
 
 public class PerformanceView extends AbstractHistoricView
 {
-    private static final String CAPITAL_GAIN_USE_FIFO = PerformanceView.class.getSimpleName()
-                    + "-CAPITAL_GAIN_USE_FIFO"; //$NON-NLS-1$
-
     @Inject
     private SelectionService selectionService;
 
@@ -103,7 +98,6 @@ public class PerformanceView extends AbstractHistoricView
     private ClientFilterDropDown clientFilter;
 
     private boolean preTax = false;
-    private boolean useFifo = true;
 
     private TreeViewer calculation;
     private StatementOfAssetsViewer snapshotStart;
@@ -142,25 +136,6 @@ public class PerformanceView extends AbstractHistoricView
             action.setChecked(this.preTax);
             manager.add(action);
 
-            manager.add(new Separator());
-
-            manager.add(new LabelOnly(Messages.LabelCapitalGainsMethod));
-
-            SimpleAction useFifoAction = new SimpleAction(CostMethod.FIFO.getLabel(), a -> {
-                this.useFifo = true;
-                getPreferenceStore().setValue(CAPITAL_GAIN_USE_FIFO, String.valueOf(useFifo));
-                reportingPeriodUpdated();
-            });
-            useFifoAction.setChecked(this.useFifo);
-            manager.add(useFifoAction);
-
-            SimpleAction movingAverageMethod = new SimpleAction(CostMethod.MOVING_AVERAGE.getLabel(), a -> {
-                this.useFifo = false;
-                getPreferenceStore().setValue(CAPITAL_GAIN_USE_FIFO, String.valueOf(useFifo));
-                reportingPeriodUpdated();
-            });
-            movingAverageMethod.setChecked(!this.useFifo);
-            manager.add(movingAverageMethod);
         }));
     }
 
@@ -176,7 +151,8 @@ public class PerformanceView extends AbstractHistoricView
 
         setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
 
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(filteredClient, converter, period, useFifo);
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(filteredClient, converter, period,
+                        getGlobalCostMethod());
 
         try
         {
@@ -230,20 +206,6 @@ public class PerformanceView extends AbstractHistoricView
         fees = createTransactionViewer(folder, Messages.PerformanceTabFees);
 
         folder.setSelection(0);
-        String capitalGainMethod = getPreferenceStore().getString(CAPITAL_GAIN_USE_FIFO);
-        if (capitalGainMethod != null && !capitalGainMethod.isEmpty())
-        {
-            try
-            {
-                this.useFifo = Boolean.valueOf(capitalGainMethod);
-            }
-            catch (IllegalArgumentException e)
-            {
-                // unknown capital gain method type; continue to use the default
-                // one
-            }
-        }
-
         reportingPeriodUpdated();
         updateTitle(getDefaultTitle());
 

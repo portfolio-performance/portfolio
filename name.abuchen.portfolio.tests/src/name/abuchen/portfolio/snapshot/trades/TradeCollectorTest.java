@@ -15,6 +15,8 @@ import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.CostMethod;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -48,7 +50,7 @@ public class TradeCollectorTest
         assertThat(firstTrade.getEnd().orElseThrow(IllegalArgumentException::new),
                         is(LocalDateTime.parse("2012-01-13T00:00")));
         assertThat(firstTrade.getHoldingPeriod(), is(11L));
-        assertThat(firstTrade.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1605 - 737.81))));
+        assertThat(firstTrade.getProfitLoss(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1605 - 737.81))));
 
         Trade secondTrade = trades.get(1);
 
@@ -74,7 +76,7 @@ public class TradeCollectorTest
         assertThat(firstTrade.getEnd().orElseThrow(IllegalArgumentException::new),
                         is(LocalDateTime.parse("2012-01-10T00:00")));
         assertThat(firstTrade.getHoldingPeriod(), is(9L));
-        assertThat(firstTrade.getProfitLoss(),
+        assertThat(firstTrade.getProfitLoss(CostMethod.FIFO, TaxesAndFees.INCLUDED),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(688.36 - 1019.80))));
     }
 

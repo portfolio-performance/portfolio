@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -26,6 +27,7 @@ import org.eclipse.swt.widgets.Event;
 
 import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Named;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.Money;
@@ -36,6 +38,7 @@ import name.abuchen.portfolio.snapshot.trades.TradeCategory;
 import name.abuchen.portfolio.snapshot.trades.TradeTotals;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.LogoManager;
@@ -180,32 +183,20 @@ public class TradesTableViewer
             return null;
     }
 
-    static Double getReturnValue(Object element)
+    /* package */ static Double getReturnValue(Object element, CostMethod costMethod)
     {
+        Objects.requireNonNull(costMethod);
+
         Trade trade = asTrade(element);
         if (trade != null)
-            return trade.getReturn();
+            return trade.getReturn(costMethod);
 
         TradeTotals totals = asTotals(element);
         if (totals != null)
-            return totals.getAverageReturn();
+            return totals.getAverageReturn(costMethod);
 
         TradeCategory category = asCategory(element);
-        return category != null ? category.getAverageReturn() : null;
-    }
-
-    static Double getReturnMovingAverageValue(Object element)
-    {
-        Trade trade = asTrade(element);
-        if (trade != null)
-            return trade.getReturnMovingAverage();
-
-        TradeTotals totals = asTotals(element);
-        if (totals != null)
-            return totals.getAverageReturnMovingAverage();
-
-        TradeCategory category = asCategory(element);
-        return category != null ? category.getAverageReturnMovingAverage() : null;
+        return category != null ? category.getAverageReturn(costMethod) : null;
     }
 
     /**
@@ -249,7 +240,8 @@ public class TradesTableViewer
         support = new ShowHideColumnHelper(
                         SecuritiesPerformanceView.class.getSimpleName() + "@trades@" + viewMode.name(), //$NON-NLS-1$
                         view.getPreferenceStore(), trades, layout);
-        createTradesColumns(support, viewMode);
+        CostMethod costMethod = view.getGlobalCostMethod();
+        createTradesColumns(support, viewMode, costMethod);
         support.createColumns(true);
 
         trades.getTable().setHeaderVisible(true);
@@ -259,7 +251,7 @@ public class TradesTableViewer
         return container;
     }
 
-    private void createTradesColumns(ShowHideColumnHelper support, ViewMode viewMode)
+    void createTradesColumns(ShowHideColumnHelper support, ViewMode viewMode, CostMethod costMethod)
     {
         Column column;
 
@@ -313,13 +305,13 @@ public class TradesTableViewer
             support.addColumn(column);
         }
 
-        column = new Column("start", Messages.ColumnStartDate, SWT.None, 80); //$NON-NLS-1$
+        column = new Column("tradeStartDate", Messages.ColumnStartDate, SWT.None, 80).addAliasIDs("start"); //$NON-NLS-1$ //$NON-NLS-2$
         var startDate = tradeValue(Trade::getStart);
         column.setLabelProvider(withBoldFont(new DateTimeLabelProvider(startDate)));
         column.setSorter(ColumnViewerSorter.create(toComparable(startDate)), SWT.DOWN);
         support.addColumn(column);
 
-        column = new Column("end", Messages.ColumnEndDate, SWT.None, 80); //$NON-NLS-1$
+        column = new Column("tradeEndDate", Messages.ColumnEndDate, SWT.None, 80).addAliasIDs("end"); //$NON-NLS-1$ //$NON-NLS-2$
         var endDate = tradeValue(trade -> trade.getEnd().orElse(null));
         var endSortValue = tradeValue((trade, element) -> trade.getEnd().orElse(LocalDateTime.now().plusYears(1)));
         column.setLabelProvider(withBoldFont(new DateTimeLabelProvider(endDate, Messages.LabelOpenTrade)
@@ -344,7 +336,8 @@ public class TradesTableViewer
         column.setSorter(ColumnViewerSorter.create(toComparable(endSortValue)));
         support.addColumn(column);
 
-        column = new Column("tx", Messages.ColumnNumberOfTransactions, SWT.RIGHT, 80); //$NON-NLS-1$
+        column = new Column("transactionCount", Messages.ColumnNumberOfTransactions, SWT.RIGHT, 80) //$NON-NLS-1$
+                        .addAliasIDs("tx"); //$NON-NLS-1$
         var transactionsSize = tradeValue(trade -> trade.getTransactions().size());
         column.setLabelProvider(withBoldFont(new ColumnLabelProvider()
         {
@@ -412,7 +405,7 @@ public class TradesTableViewer
         column.setSorter(ColumnViewerSorter.create(toComparable(transactionsSize)));
         support.addColumn(column);
 
-        column = new Column("shares", Messages.ColumnShares, SWT.None, 80); //$NON-NLS-1$
+        column = new Column("sharesOwned", Messages.ColumnShares, SWT.None, 80).addAliasIDs("shares"); //$NON-NLS-1$ //$NON-NLS-2$
         var weightedShares = tradeValue((trade, element) -> {
             if (element instanceof TradeElement te)
                 return te.getWeightedShares();
@@ -449,57 +442,42 @@ public class TradesTableViewer
         column.setSorter(ColumnViewerSorter.create(toComparable(weightedShares)));
         support.addColumn(column);
 
-        column = new Column("entryvalue", Messages.ColumnEntryValue, SWT.RIGHT, 80); //$NON-NLS-1$
+        column = new Column("entryValueIncludingTaxesAndFees", Messages.ColumnEntryValue, SWT.RIGHT, 80) //$NON-NLS-1$
+                        .addAliasIDs("entryValueGross", "entryValue", "entryvalue", "entryvalue-mvavg"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         column.setGroupLabel(Messages.ColumnEntryValue);
-        column.setMenuLabel(Messages.ColumnEntryValue + " (" + CostMethod.FIFO.getLabel() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-        var entryValue = tradeAggregateValue(
-                        (trade, element) -> applyWeight(trade.getEntryValue(), getTradeWeight(element)),
-                        TradeCategory::getTotalEntryValue, TradeTotals::getTotalEntryValue);
+        var entryValueGross = tradeAggregateValue(
+                        (trade, element) -> applyWeight(
+                                        trade.getEntryValue(costMethod, TaxesAndFees.INCLUDED),
+                                        getTradeWeight(element)),
+                        category -> category.getTotalEntryValue(costMethod), totals -> totals.getTotalEntryValue(costMethod));
         column.setLabelProvider(withBoldFont(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object e)
             {
-                return formatMoney(entryValue.apply(e));
+                return formatMoney(entryValueGross.apply(e));
             }
         }));
-        column.setSorter(ColumnViewerSorter.create(toComparable(entryValue)));
+        column.setSorter(ColumnViewerSorter.create(toComparable(entryValueGross)));
         support.addColumn(column);
 
-        column = new Column("entryvalue-mvavg", //$NON-NLS-1$
-                        Messages.ColumnEntryValue + " (" + CostMethod.MOVING_AVERAGE.getAbbreviation() + ")", //$NON-NLS-1$ //$NON-NLS-2$
-                        SWT.RIGHT, 80);
-        column.setGroupLabel(Messages.ColumnEntryValue);
-        column.setMenuLabel(Messages.ColumnEntryValue + " (" + CostMethod.MOVING_AVERAGE.getLabel() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-        var entryValueMovingAverage = tradeAggregateValue(
-                        (trade, element) -> applyWeight(trade.getEntryValueMovingAverage(), getTradeWeight(element)),
-                        TradeCategory::getTotalEntryValueMovingAverage, TradeTotals::getTotalEntryValueMovingAverage);
-        column.setLabelProvider(withBoldFont(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                return formatMoney(entryValueMovingAverage.apply(e));
-            }
-        }));
-        column.setSorter(ColumnViewerSorter.create(toComparable(entryValueMovingAverage)));
-        column.setVisible(false);
-        support.addColumn(column);
-
-        Function<Trade, Money> averagePurchasePrice = t -> {
-            if (t.getShares() == 0)
+        Function<Trade, Money> averageEntryPriceGross = trade -> {
+            if (trade.getShares() == 0)
                 return null;
-            Money tradeEntryValue = t.getEntryValue();
-            return Money.of(tradeEntryValue.getCurrencyCode(),
-                            Math.round(tradeEntryValue.getAmount() / (double) t.getShares() * Values.Share.factor()));
+
+            Money value = trade.getEntryValue(costMethod, TaxesAndFees.INCLUDED);
+            if (value == null)
+                return null;
+
+            return Money.of(value.getCurrencyCode(),
+                            Math.round(value.getAmount() / (double) trade.getShares() * Values.Share.factor()));
         };
 
-        column = new Column("entryvalue-pershare", Messages.ColumnEntryValue + " (" + Messages.ColumnPerShare + ")", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                        SWT.RIGHT, 80);
+        column = new Column("entryValuePerShareIncludingTaxesAndFees", //$NON-NLS-1$
+                        Messages.ColumnEntryValue + " (" + Messages.ColumnPerShare + ")", SWT.RIGHT, 80) //$NON-NLS-1$ //$NON-NLS-2$
+                        .addAliasIDs("entryValuePerShareGross", "entryValuePerShare", "entryvalue-pershare", "entryvalue-mvavg-pershare"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         column.setGroupLabel(Messages.ColumnEntryValue);
-        column.setMenuLabel(Messages.ColumnEntryValue + " (" + Messages.ColumnPerShare + ")" + " (" //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$
-                        + CostMethod.FIFO.getLabel() + ")"); //$NON-NLS-1$
-        var averageEntryPerShare = tradeValue(averagePurchasePrice);
+        var averageEntryPerShare = tradeValue(averageEntryPriceGross);
         column.setLabelProvider(withBoldFont(new ColumnLabelProvider()
         {
             @Override
@@ -512,37 +490,7 @@ public class TradesTableViewer
         column.setVisible(false);
         support.addColumn(column);
 
-        Function<Trade, Money> averagePurchasePriceMovingAverage = t -> {
-            if (t.getShares() == 0)
-                return null;
-            Money movingAverageEntry = t.getEntryValueMovingAverage();
-            if (movingAverageEntry == null)
-                return null;
-            return Money.of(movingAverageEntry.getCurrencyCode(), Math
-                            .round(movingAverageEntry.getAmount() / (double) t.getShares() * Values.Share.factor()));
-        };
-
-        column = new Column("entryvalue-mvavg-pershare", //$NON-NLS-1$
-                        Messages.ColumnEntryValue + " (" + Messages.ColumnPerShare + ")" + " (" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                                        + CostMethod.MOVING_AVERAGE.getAbbreviation() + ")", //$NON-NLS-1$
-                        SWT.RIGHT, 80);
-        column.setGroupLabel(Messages.ColumnEntryValue);
-        column.setMenuLabel(Messages.ColumnEntryValue + " (" + Messages.ColumnPerShare + ")" + " (" //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$
-                        + CostMethod.MOVING_AVERAGE.getLabel() + ")"); //$NON-NLS-1$
-        var averageEntryPerShareMovingAverage = tradeValue(averagePurchasePriceMovingAverage);
-        column.setLabelProvider(withBoldFont(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                return formatMoney(averageEntryPerShareMovingAverage.apply(e));
-            }
-        }));
-        column.setSorter(ColumnViewerSorter.create(toComparable(averageEntryPerShareMovingAverage)));
-        column.setVisible(false);
-        support.addColumn(column);
-
-        column = new Column("exitvalue", Messages.ColumnExitValue, SWT.RIGHT, 80); //$NON-NLS-1$
+        column = new Column("exitValue", Messages.ColumnExitValue, SWT.RIGHT, 80).addAliasIDs("exitvalue"); //$NON-NLS-1$ //$NON-NLS-2$
         column.setGroupLabel(Messages.ColumnExitValue);
         var exitValue = tradeAggregateValue(
                         (trade, element) -> applyWeight(trade.getExitValue(), getTradeWeight(element)),
@@ -566,8 +514,9 @@ public class TradesTableViewer
                             Math.round(tradeExitValue.getAmount() / (double) t.getShares() * Values.Share.factor()));
         };
 
-        column = new Column("exitvalue-pershare", Messages.ColumnExitValue + " (" + Messages.ColumnPerShare + ")", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                        SWT.RIGHT, 80);
+        column = new Column("exitValuePerShare", //$NON-NLS-1$
+                        Messages.ColumnExitValue + " (" + Messages.ColumnPerShare + ")", SWT.RIGHT, 80) //$NON-NLS-1$ //$NON-NLS-2$
+                        .addAliasIDs("exitvalue-pershare"); //$NON-NLS-1$
         column.setGroupLabel(Messages.ColumnExitValue);
         var averageExitPerShare = tradeValue(averageSellPrice);
         column.setLabelProvider(withBoldFont(new ColumnLabelProvider()
@@ -582,59 +531,35 @@ public class TradesTableViewer
         column.setVisible(false);
         support.addColumn(column);
 
-        column = new Column("pl", Messages.ColumnProfitLoss, SWT.RIGHT, 80); //$NON-NLS-1$
+        column = new Column("profitLossIncludingTaxesAndFees", Messages.ColumnProfitLoss, SWT.RIGHT, 80) //$NON-NLS-1$
+                        .addAliasIDs("profitLossNet", "profitLoss", "pl", "pl-mvavg"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         column.setGroupLabel(Messages.ColumnProfitLoss);
-        column.setMenuLabel(Messages.ColumnProfitLoss + " (" + CostMethod.FIFO.getLabel() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-        var profitLoss = tradeAggregateValue(
-                        (trade, element) -> applyWeight(trade.getProfitLoss(), getTradeWeight(element)),
-                        TradeCategory::getTotalProfitLoss, TradeTotals::getTotalProfitLoss);
-        column.setLabelProvider(withBoldFont(new MoneyColorLabelProvider(profitLoss, view.getClient())));
-        column.setSorter(ColumnViewerSorter.create(toComparable(profitLoss)));
-        support.addColumn(column);
-
-        column = new Column("gpl", Messages.ColumnGrossProfitLoss, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setGroupLabel(Messages.ColumnProfitLoss);
-        column.setMenuLabel(Messages.ColumnGrossProfitLoss + " (" + CostMethod.FIFO.getLabel() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-        var grossProfitLoss = tradeAggregateValue(
-                        (trade, element) -> applyWeight(trade.getProfitLossWithoutTaxesAndFees(),
+        var profitLossNet = tradeAggregateValue(
+                        (trade, element) -> applyWeight(
+                                        trade.getProfitLoss(costMethod, TaxesAndFees.INCLUDED),
                                         getTradeWeight(element)),
-                        TradeCategory::getTotalProfitLossWithoutTaxesAndFees,
-                        TradeTotals::getTotalProfitLossWithoutTaxesAndFees);
-        column.setLabelProvider(withBoldFont(new MoneyColorLabelProvider(grossProfitLoss, view.getClient())));
-        column.setSorter(ColumnViewerSorter.create(toComparable(grossProfitLoss)));
-        column.setVisible(false);
+                        category -> category.getTotalProfitLoss(costMethod, TaxesAndFees.INCLUDED),
+                        totals -> totals.getTotalProfitLoss(costMethod, TaxesAndFees.INCLUDED));
+        column.setLabelProvider(withBoldFont(new MoneyColorLabelProvider(profitLossNet, view.getClient())));
+        column.setSorter(ColumnViewerSorter.create(toComparable(profitLossNet)));
         support.addColumn(column);
 
-        column = new Column("pl-mvavg", //$NON-NLS-1$
-                        Messages.ColumnProfitLoss + " (" + CostMethod.MOVING_AVERAGE.getAbbreviation() + ")", //$NON-NLS-1$ //$NON-NLS-2$
-                        SWT.RIGHT, 80);
+        column = new Column("profitLossExcludingTaxesAndFees", Messages.ColumnGrossProfitLoss, SWT.RIGHT, 80) //$NON-NLS-1$
+                        .addAliasIDs("profitLossGross", "grossProfitLoss", "gpl", "gpl-mavg"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         column.setGroupLabel(Messages.ColumnProfitLoss);
-        column.setMenuLabel(Messages.ColumnProfitLoss + " (" + CostMethod.MOVING_AVERAGE.getLabel() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-        var profitLossMovingAverage = tradeAggregateValue(
-                        (trade, element) -> applyWeight(trade.getProfitLossMovingAverage(), getTradeWeight(element)),
-                        TradeCategory::getTotalProfitLossMovingAverage, TradeTotals::getTotalProfitLossMovingAverage);
-        column.setLabelProvider(withBoldFont(new MoneyColorLabelProvider(profitLossMovingAverage, view.getClient())));
-        column.setSorter(ColumnViewerSorter.create(toComparable(profitLossMovingAverage)));
-        column.setVisible(false);
-        support.addColumn(column);
-
-        column = new Column("gpl-mavg", //$NON-NLS-1$
-                        Messages.ColumnGrossProfitLoss + " (" + CostMethod.MOVING_AVERAGE.getAbbreviation() + ")", //$NON-NLS-1$ //$NON-NLS-2$
-                        SWT.RIGHT, 80);
-        column.setGroupLabel(Messages.ColumnProfitLoss);
-        column.setMenuLabel(Messages.ColumnGrossProfitLoss + " (" + CostMethod.MOVING_AVERAGE.getLabel() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-        var grossProfitLossMovingAverage = tradeAggregateValue(
-                        (trade, element) -> applyWeight(trade.getProfitLossMovingAverageWithoutTaxesAndFees(),
+        var profitLossGross = tradeAggregateValue(
+                        (trade, element) -> applyWeight(
+                                        trade.getProfitLoss(costMethod, TaxesAndFees.NOT_INCLUDED),
                                         getTradeWeight(element)),
-                        TradeCategory::getTotalProfitLossMovingAverageWithoutTaxesAndFees,
-                        TradeTotals::getTotalProfitLossMovingAverageWithoutTaxesAndFees);
-        column.setLabelProvider(
-                        withBoldFont(new MoneyColorLabelProvider(grossProfitLossMovingAverage, view.getClient())));
-        column.setSorter(ColumnViewerSorter.create(toComparable(grossProfitLossMovingAverage)));
+                        category -> category.getTotalProfitLoss(costMethod, TaxesAndFees.NOT_INCLUDED),
+                        totals -> totals.getTotalProfitLoss(costMethod, TaxesAndFees.NOT_INCLUDED));
+        column.setLabelProvider(withBoldFont(new MoneyColorLabelProvider(profitLossGross, view.getClient())));
+        column.setSorter(ColumnViewerSorter.create(toComparable(profitLossGross)));
         column.setVisible(false);
         support.addColumn(column);
 
-        column = new Column("holdingperiod", Messages.ColumnHoldingPeriod, SWT.RIGHT, 80); //$NON-NLS-1$
+        column = new Column("holdingPeriod", Messages.ColumnHoldingPeriod, SWT.RIGHT, 80) //$NON-NLS-1$
+                        .addAliasIDs("holdingperiod"); //$NON-NLS-1$
         var holdingPeriod = tradeAggregateValue(Trade::getHoldingPeriod, TradeCategory::getAverageHoldingPeriod,
                         TradeTotals::getAverageHoldingPeriod);
         column.setLabelProvider(withBoldFont(new ColumnLabelProvider()
@@ -649,38 +574,26 @@ public class TradesTableViewer
         column.setSorter(ColumnViewerSorter.create(toComparable(holdingPeriod)));
         support.addColumn(column);
 
-        column = new Column("latesttrade", Messages.ColumnLatestTrade, SWT.None, 80); //$NON-NLS-1$
+        column = new Column("latestTradeDate", Messages.ColumnLatestTrade, SWT.None, 80) //$NON-NLS-1$
+                        .addAliasIDs("latesttrade"); //$NON-NLS-1$
         var latestTradeDate = tradeValue(trade -> trade.getLastTransaction().getTransaction().getDateTime());
         column.setLabelProvider(withBoldFont(new DateTimeLabelProvider(latestTradeDate)));
         column.setSorter(ColumnViewerSorter.create(toComparable(latestTradeDate)));
         column.setVisible(false);
         support.addColumn(column);
 
-        column = new Column("irr", Messages.ColumnIRR, SWT.RIGHT, 80); //$NON-NLS-1$
+        column = new Column("internalRateOfReturn", Messages.ColumnIRR, SWT.RIGHT, 80).addAliasIDs("irr"); //$NON-NLS-1$ //$NON-NLS-2$
         column.setMenuLabel(Messages.ColumnIRR_MenuLabel);
         var irrValue = tradeAggregateValue(Trade::getIRR, TradeCategory::getAverageIRR, TradeTotals::getAverageIRR);
         column.setLabelProvider(withBoldFont(new NumberColorLabelProvider<>(Values.Percent2, irrValue)));
         column.setSorter(ColumnViewerSorter.create(toComparable(irrValue)));
         support.addColumn(column);
 
-        column = new Column("return", Messages.ColumnReturn, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setGroupLabel(Messages.ColumnReturn);
-        column.setMenuLabel(Messages.ColumnReturn + " (" + CostMethod.FIFO.getLabel() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-        Function<Object, Double> returnValue = TradesTableViewer::getReturnValue;
+        column = new Column("returnRate", Messages.ColumnReturn, SWT.RIGHT, 80) //$NON-NLS-1$
+                        .addAliasIDs("return", "return-mavg"); //$NON-NLS-1$ //$NON-NLS-2$
+        Function<Object, Double> returnValue = element -> getReturnValue(element, costMethod);
         column.setLabelProvider(withBoldFont(new NumberColorLabelProvider<>(Values.Percent2, returnValue::apply)));
         column.setSorter(ColumnViewerSorter.create(toComparable(returnValue)));
-        column.setVisible(false);
-        support.addColumn(column);
-
-        column = new Column("return-mavg", //$NON-NLS-1$
-                        Messages.ColumnReturn + " (" + CostMethod.MOVING_AVERAGE.getAbbreviation() + ")", //$NON-NLS-1$ //$NON-NLS-2$
-                        SWT.RIGHT, 80);
-        column.setGroupLabel(Messages.ColumnReturn);
-        column.setMenuLabel(Messages.ColumnReturn + " (" + CostMethod.MOVING_AVERAGE.getLabel() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-        Function<Object, Double> returnMovingAverage = TradesTableViewer::getReturnMovingAverageValue;
-        column.setLabelProvider(
-                        withBoldFont(new NumberColorLabelProvider<>(Values.Percent2, returnMovingAverage::apply)));
-        column.setSorter(ColumnViewerSorter.create(toComparable(returnMovingAverage)));
         column.setVisible(false);
         support.addColumn(column);
 
@@ -748,7 +661,7 @@ public class TradesTableViewer
         column.setVisible(false);
         support.addColumn(column);
 
-        column = new SymbolColumn();
+        column = new SymbolColumn("tickerSymbol").addAliasIDs("symbol"); //$NON-NLS-1$ //$NON-NLS-2$
         column.setGroupLabel(Messages.ColumnSecurity);
         column.getEditingSupport().addListener(new TouchClientListener(view.getClient()));
         column.setVisible(false);
@@ -760,7 +673,7 @@ public class TradesTableViewer
         column.setVisible(false);
         support.addColumn(column);
 
-        column = new Column("instrumentCurrency", Messages.ColumnCurrency, SWT.LEFT, 80); //$NON-NLS-1$
+        column = new Column("currency", Messages.ColumnCurrency, SWT.LEFT, 80).addAliasIDs("instrumentCurrency"); //$NON-NLS-1$ //$NON-NLS-2$
         column.setGroupLabel(Messages.ColumnSecurity);
         var instrumentCurrency = tradeValue(trade -> trade.getSecurity().getCurrencyCode());
         column.setLabelProvider(withBoldFont(new ColumnLabelProvider()

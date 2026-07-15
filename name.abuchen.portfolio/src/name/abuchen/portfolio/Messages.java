@@ -132,6 +132,7 @@ public class Messages extends NLS
     public static String LabelCloseBrowserWindowAndGoBackToApplication;
     public static String LabelCommodity;
     public static String LabelCostMethodFIFO;
+    public static String LabelCostMethodFIFOAbbr;
     public static String LabelCostMethodMovingAverage;
     public static String LabelCostMethodMovingAverageAbbr;
     public static String LabelCreditSuisseHTMLTable;

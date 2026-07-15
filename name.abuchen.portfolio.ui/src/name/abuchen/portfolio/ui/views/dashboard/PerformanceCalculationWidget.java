@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Dashboard;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Money;
@@ -178,7 +179,6 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
         addConfig(new ReportingPeriodConfig(this));
         addConfig(new DataSeriesConfig(this, false));
         addConfig(new LayoutConfig(this));
-        addConfig(new CostMethodConfig(this));
     }
 
     @Override
@@ -276,9 +276,15 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
         return () -> {
             PerformanceIndex index = getDashboardData().calculate(get(DataSeriesConfig.class).getDataSeries(),
                             get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now()));
-            boolean useFifo = get(CostMethodConfig.class).getValue().useFifo();
-            return index.getClientPerformanceSnapshot(useFifo).orElseThrow(IllegalArgumentException::new);
+            return getClientPerformanceSnapshot(index);
         };
+    }
+
+    /* package */ ClientPerformanceSnapshot getClientPerformanceSnapshot(PerformanceIndex index)
+    {
+        CostMethod costMethod = getDashboardData().getGlobalCostMethod();
+
+        return index.getClientPerformanceSnapshot(costMethod).orElseThrow(IllegalArgumentException::new);
     }
 
     @Override

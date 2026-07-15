@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
@@ -78,14 +79,14 @@ public class PaymentsView extends AbstractFinanceView
         clientFilterMenu = new ClientFilterMenu(client, preferences, filter -> {
             setFilteredClientToModel(filter);
             viewInput.setClientFilterId(clientFilterMenu.getSelectedItem().getId());
-            model.recalculate();
+            model.recalculate(getCostMethod());
         });
 
         // set initial Filter
         loadSavedFilterIdAndSetFilteredClientToModel();
 
         model.configure(viewInput.getYear(), viewInput.getMode(), viewInput.isUseGrossValue(),
-                        viewInput.isUseConsolidateRetired(), getGlobalCostMethod());
+                        viewInput.isUseConsolidateRetired(), getCostMethod());
 
         model.setHideTotalsAtTheTop(preferences.getBoolean(PaymentsViewInput.TOP));
         model.setHideTotalsAtTheBottom(preferences.getBoolean(PaymentsViewInput.BOTTOM));
@@ -96,6 +97,11 @@ public class PaymentsView extends AbstractFinanceView
             viewInput.setUseGrossValue(model.usesGrossValue());
             viewInput.setUseConsolidateRetired(model.usesConsolidateRetired());
         });
+    }
+
+    /* package */ CostMethod getCostMethod()
+    {
+        return getGlobalCostMethod();
     }
 
     private void setFilteredClientToModel(ClientFilter filter)
@@ -118,7 +124,7 @@ public class PaymentsView extends AbstractFinanceView
         // reload client filter, in case its data is outdated
         loadSavedFilterIdAndSetFilteredClientToModel();
 
-        model.recalculate();
+        model.recalculate(getCostMethod());
     }
 
     @Override
@@ -135,7 +141,7 @@ public class PaymentsView extends AbstractFinanceView
         {
             ActionContributionItem item = new ActionContributionItem( //
                             new SimpleAction(TextUtil.tooltip(mode.getLabel()), a -> {
-                                model.setMode(mode);
+                                model.setMode(mode, getCostMethod());
                                 updateIcons(toolBarManager);
                                 updateTitle(getDefaultTitle());
                             }));
@@ -160,7 +166,7 @@ public class PaymentsView extends AbstractFinanceView
     @Override
     protected void addButtons(ToolBarManager toolBar)
     {
-        toolBar.add(new StartYearSelectionDropDown(model));
+        toolBar.add(new StartYearSelectionDropDown(model, this::getCostMethod));
 
         DropDown dropDown = new DropDown(Messages.MenuChooseClientFilter,
                         clientFilterMenu.hasActiveFilter() ? Images.GROUPEDACCOUNTS_ON : Images.GROUPEDACCOUNTS,
@@ -187,15 +193,13 @@ public class PaymentsView extends AbstractFinanceView
             if (supportGrossValue.contains(model.getMode()))
             {
                 Action action = new SimpleAction(Messages.LabelUseGrossValue,
-                                a -> model.setUseGrossValue(!model.usesGrossValue()));
+                                a -> model.setUseGrossValue(!model.usesGrossValue(), getCostMethod()));
                 action.setChecked(model.usesGrossValue());
                 manager.add(action);
             }
 
-            manager.add(new Separator());
-
             Action action = new SimpleAction(Messages.LabelPaymentsUseConsolidateRetired,
-                            a -> model.setUseConsolidateRetired(!model.usesConsolidateRetired()));
+                            a -> model.setUseConsolidateRetired(!model.usesConsolidateRetired(), getCostMethod()));
             action.setChecked(model.usesConsolidateRetired());
             manager.add(action);
 

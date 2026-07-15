@@ -14,6 +14,8 @@ import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.CostMethod;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -48,7 +50,7 @@ public class TradeCollector5Test
 
         // In this case, FIFO and moving average result in the same entry value.
         // This test case tests other currencies than EUR.
-        assertThat(firstTrade.getEntryValue(), is(Money.of("CAD", Values.Money.factorize(9994.44))));
-        assertThat(firstTrade.getEntryValueMovingAverage(), is(firstTrade.getEntryValue()));
+        assertThat(firstTrade.getEntryValue(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of("CAD", Values.Money.factorize(9994.44))));
+        assertThat(firstTrade.getEntryValue(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), is(firstTrade.getEntryValue(CostMethod.FIFO, TaxesAndFees.INCLUDED)));
     }
 }

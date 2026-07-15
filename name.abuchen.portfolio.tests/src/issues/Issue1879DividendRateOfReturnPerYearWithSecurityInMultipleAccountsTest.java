@@ -43,14 +43,15 @@ public class Issue1879DividendRateOfReturnPerYearWithSecurityInMultipleAccountsT
 
         assertThat(record.getDividendEventCount(), is(2));
 
-        assertThat(record.getRateOfReturnPerYear(), is(IsCloseTo.closeTo(0.096466, 0.000001)));
+        assertThat(record.getRateOfReturnPerYear(name.abuchen.portfolio.model.CostMethod.MOVING_AVERAGE), is(IsCloseTo.closeTo(0.096466, 0.000001)));
 
         record.getLineItems().stream().filter(item -> item instanceof DividendPayment).map(DividendPayment.class::cast)
-                        .forEach(payment -> assertThat(payment.getPersonalDividendYieldMovingAverage(),
+                        .forEach(payment -> assertThat(
+                                        record.getPersonalDividendYield(payment, CostMethod.MOVING_AVERAGE),
                                         is(IsCloseTo.closeTo(0.096466, 0.000001))));
 
         // pinned values previously verified via SecurityPerformanceSnapshotComparator
-        assertThat(record.getSharesHeld(), is(20000000000L));
+        assertThat(record.getSharesHeld(name.abuchen.portfolio.model.CostMethod.FIFO), is(20000000000L));
         assertThat(record.getMarketValue(), is(Money.of("EUR", 80120L))); //$NON-NLS-1$
         assertThat(record.getQuote(), is(Quote.of("EUR", 400600000L))); //$NON-NLS-1$
         assertThat(record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of("EUR", 82930L))); //$NON-NLS-1$

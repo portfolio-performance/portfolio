@@ -15,6 +15,8 @@ import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.CostMethod;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -47,14 +49,14 @@ public class TradeCollector6Test
         assertThat(firstTrade.getEnd().isPresent(), is(false));
 
         // 200*15-520-1000 = 1480
-        assertThat(firstTrade.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1480.00))));
-        assertThat(firstTrade.getProfitLossMovingAverage(), is(firstTrade.getProfitLoss()));
+        assertThat(firstTrade.getProfitLoss(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1480.00))));
+        assertThat(firstTrade.getProfitLoss(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), is(firstTrade.getProfitLoss(CostMethod.FIFO, TaxesAndFees.INCLUDED)));
 
         // 200*15-520-10-10-1000 = 1500
-        assertThat(firstTrade.getProfitLossWithoutTaxesAndFees(),
+        assertThat(firstTrade.getProfitLoss(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1500.00))));
-        assertThat(firstTrade.getProfitLossMovingAverageWithoutTaxesAndFees(),
-                        is(firstTrade.getProfitLossWithoutTaxesAndFees()));
+        assertThat(firstTrade.getProfitLoss(CostMethod.MOVING_AVERAGE, TaxesAndFees.NOT_INCLUDED),
+                        is(firstTrade.getProfitLoss(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED)));
     }
 
     @Test
@@ -85,42 +87,42 @@ public class TradeCollector6Test
         assertThat(firstTrade.getEnd().isPresent(), is(true));
 
         // 1480 - (520 + 1000*5/10) = 460
-        assertThat(firstTrade.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(460.00))));
+        assertThat(firstTrade.getProfitLoss(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(460.00))));
         // 1480 - (520 + 1000)*10/15 = 466.67
-        assertThat(firstTrade.getProfitLossMovingAverage(),
+        assertThat(firstTrade.getProfitLoss(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(466.67))));
 
         // 1480+10+10 - (520-10-10 + 1000*5/10) = 500
-        assertThat(firstTrade.getProfitLossWithoutTaxesAndFees(),
+        assertThat(firstTrade.getProfitLoss(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500.00))));
         // 1480+10+10 - (520-10-10 + 1000)*10/15 = 500
-        assertThat(firstTrade.getProfitLossMovingAverageWithoutTaxesAndFees(),
+        assertThat(firstTrade.getProfitLoss(CostMethod.MOVING_AVERAGE, TaxesAndFees.NOT_INCLUDED),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500.00))));
 
         // return : 1480/(520 + 1000*5/10)-1=0.45098
-        assertThat(firstTrade.getReturn(), closeTo(0.4510, 0.0001));
+        assertThat(firstTrade.getReturn(CostMethod.FIFO), closeTo(0.4510, 0.0001));
         // return : 1480/[(520 + 1000)*10/15]-1=0.46052
-        assertThat(firstTrade.getReturnMovingAverage(), closeTo(0.4605, 0.0001));
+        assertThat(firstTrade.getReturn(CostMethod.MOVING_AVERAGE), closeTo(0.4605, 0.0001));
 
         Trade secondTrade = trades.get(1);
         assertThat(secondTrade.getEnd().isPresent(), is(false));
         // 200*5 - (1000*5/10) = 500
-        assertThat(secondTrade.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500.00))));
+        assertThat(secondTrade.getProfitLoss(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500.00))));
         // 200*5 - (520 + 1000)*5/15 = 493.33
-        assertThat(secondTrade.getProfitLossMovingAverage(),
+        assertThat(secondTrade.getProfitLoss(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(493.33))));
 
         // 200*5 - (500*5/10) = 500
-        assertThat(secondTrade.getProfitLossWithoutTaxesAndFees(),
+        assertThat(secondTrade.getProfitLoss(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500.00))));
         // 200*5 - (520-10-10 + 1000)*5/15 = 500
-        assertThat(secondTrade.getProfitLossMovingAverageWithoutTaxesAndFees(),
+        assertThat(secondTrade.getProfitLoss(CostMethod.MOVING_AVERAGE, TaxesAndFees.NOT_INCLUDED),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500.00))));
 
         // return : 200*5 / (1000*5/10)-1 = 1
-        assertThat(secondTrade.getReturn(), closeTo(1.0000, 0.0001));
+        assertThat(secondTrade.getReturn(CostMethod.FIFO), closeTo(1.0000, 0.0001));
         // return : 200*5 / [(520 + 1000)*5/15]-1 = 0.97368
-        assertThat(secondTrade.getReturnMovingAverage(), closeTo(0.9737, 0.0001));
+        assertThat(secondTrade.getReturn(CostMethod.MOVING_AVERAGE), closeTo(0.9737, 0.0001));
     }
 
 }

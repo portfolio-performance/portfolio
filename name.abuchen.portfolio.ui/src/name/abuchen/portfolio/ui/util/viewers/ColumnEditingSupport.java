@@ -2,7 +2,9 @@ package name.abuchen.portfolio.ui.util.viewers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.ColumnViewerEditor;
@@ -114,6 +116,18 @@ public abstract class ColumnEditingSupport
 
     public static void prepare(EditorActivationState state, ColumnViewer viewer)
     {
+        prepare(state, viewer, PortfolioPlugin.getDefault().getPreferenceStore());
+    }
+
+    public static void prepare(ColumnViewer viewer, IPreferenceStore preferences)
+    {
+        prepare(null, viewer, preferences);
+    }
+
+    public static void prepare(EditorActivationState state, ColumnViewer viewer, IPreferenceStore preferences)
+    {
+        Objects.requireNonNull(preferences);
+
         ColumnViewerEditorActivationStrategy activationStrategy = new ColumnViewerEditorActivationStrategy(viewer)
         {
             @Override
@@ -127,8 +141,7 @@ public abstract class ColumnEditingSupport
                     if (event.sourceEvent instanceof MouseEvent mouseEvent && mouseEvent.stateMask == SWT.MOD3)
                         return false;
 
-                    return PortfolioPlugin.getDefault().getPreferenceStore()
-                                    .getBoolean(UIConstants.Preferences.DOUBLE_CLICK_CELL_TO_EDIT);
+                    return preferences.getBoolean(UIConstants.Preferences.DOUBLE_CLICK_CELL_TO_EDIT);
                 }
 
                 return event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL

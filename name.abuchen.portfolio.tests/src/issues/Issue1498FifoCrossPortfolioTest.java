@@ -56,7 +56,7 @@ public class Issue1498FifoCrossPortfolioTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1150))));
 
         // pinned values previously verified via SecurityPerformanceSnapshotComparator
-        assertThat(record.getSharesHeld(), is(6000000000L));
+        assertThat(record.getSharesHeld(name.abuchen.portfolio.model.CostMethod.FIFO), is(6000000000L));
         assertThat(record.getMarketValue(), is(Money.of("EUR", 60000L))); //$NON-NLS-1$
         assertThat(record.getQuote(), is(Quote.of("EUR", 1000000000L))); //$NON-NLS-1$
         assertThat(record.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), is(Money.of("EUR", 99345L))); //$NON-NLS-1$
@@ -92,7 +92,7 @@ public class Issue1498FifoCrossPortfolioTest
         assertThat(record.getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE).getCapitalGains(),
                         is(Money.of("EUR", -39345L))); //$NON-NLS-1$
 
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, period);
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, period, name.abuchen.portfolio.model.CostMethod.FIFO);
 
         // losses:
         // purchase #1 10 shares à 15 -> 50 EUR loss

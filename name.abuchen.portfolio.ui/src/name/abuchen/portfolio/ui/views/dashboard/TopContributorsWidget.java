@@ -69,8 +69,15 @@ public class TopContributorsWidget extends AbstractTopContributorsWidget<ClientP
         return () -> {
             PerformanceIndex index = getDashboardData().calculate(get(DataSeriesConfig.class).getDataSeries(),
                             get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now()));
-            return index.getClientPerformanceSnapshot(true).orElseThrow(IllegalArgumentException::new);
+            return getClientPerformanceSnapshot(index);
         };
+    }
+
+    /* package */ ClientPerformanceSnapshot getClientPerformanceSnapshot(PerformanceIndex index)
+    {
+        var costMethod = getDashboardData().getGlobalCostMethod();
+
+        return index.getClientPerformanceSnapshot(costMethod).orElseThrow(IllegalArgumentException::new);
     }
 
     @Override

@@ -6,9 +6,12 @@ import java.util.List;
 import org.eclipse.jface.action.IMenuManager;
 
 import name.abuchen.portfolio.model.Dashboard;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Dashboard.Widget;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.snapshot.trades.Trade;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.views.trades.TradeDetailsView;
 import name.abuchen.portfolio.util.TextUtil;
@@ -77,10 +80,23 @@ public class TradesWidget extends AbstractTradesWidget
         this.title.setText(TextUtil.tooltip(getWidget().getLabel()));
 
         List<Trade> trades = input.getTrades();
-        long positive = trades.stream().filter(t -> t.getProfitLoss().isPositive()).count();
+        CostMethod costMethod = getCostMethod();
+        long positive = countPositiveTrades(trades, costMethod);
+
         String text = MessageFormat.format("{0} <positive>↑{1}</positive> <negative>↓{2}</negative>", //$NON-NLS-1$
                         trades.size(), positive, trades.size() - positive);
 
         this.indicator.setText(text);
+    }
+
+    /* package */ CostMethod getCostMethod()
+    {
+        return getDashboardData().getGlobalCostMethod();
+    }
+
+    /* package */ long countPositiveTrades(List<Trade> trades, CostMethod costMethod)
+    {
+        return trades.stream()
+                        .filter(trade -> trade.getProfitLoss(costMethod, TaxesAndFees.INCLUDED).isPositive()).count();
     }
 }

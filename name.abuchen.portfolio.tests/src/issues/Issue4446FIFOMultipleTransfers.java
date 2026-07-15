@@ -44,7 +44,7 @@ public class Issue4446FIFOMultipleTransfers
         Trade t = trades.getFirst();
 
         assertThat(t.getLastTransaction().getTransaction().getNote(), is("buy-in should be 1000")); //$NON-NLS-1$
-        assertThat(t.getEntryValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000))));
+        assertThat(t.getEntryValue(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000))));
     }
 
     @Test
@@ -68,7 +68,7 @@ public class Issue4446FIFOMultipleTransfers
         var trade = trades.stream().filter(t -> t.getEnd().isEmpty()).findFirst().orElseThrow();
 
         assertThat(trade.getEnd().isEmpty(), is(true));
-        assertThat(trade.getEntryValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3916.56))));
+        assertThat(trade.getEntryValue(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3916.56))));
 
         // check FIFO via CostCalculation class
 

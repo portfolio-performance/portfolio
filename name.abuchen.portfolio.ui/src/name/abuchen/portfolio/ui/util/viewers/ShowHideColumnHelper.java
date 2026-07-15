@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.util.viewers;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -55,6 +56,14 @@ import name.abuchen.portfolio.util.TextUtil;
 
 public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOwner
 {
+    /* package */record ResolvedColumnItem(Column column, Object option, ColumnConfiguration.Item item)
+    {
+    }
+
+    private record ColumnInstanceKey(Column column, Object option)
+    {
+    }
+
     @FunctionalInterface
     public interface Listener
     {
@@ -835,12 +844,32 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
     public void addColumn(Column column)
     {
+        registerColumnIds(columns.size(), id2column, column);
+        columns.add(column);
+    }
+
+    /* package */static void registerColumnIds(int index, Map<String, Column> id2column, Column column)
+    {
         // columns used to be identified by index only
         if (column.getId() == null)
-            column.setId(Integer.toString(columns.size()));
+            column.setId(Integer.toString(index));
 
-        columns.add(column);
-        id2column.put(column.getId(), column);
+        if (column.getAliasIDs().contains(column.getId()))
+            throw new IllegalArgumentException("Column alias ID must not equal the canonical column ID: " //$NON-NLS-1$
+                            + column.getId());
+
+        registerColumnId(id2column, column.getId(), column);
+        column.getAliasIDs().forEach(id -> registerColumnId(id2column, id, column));
+    }
+
+    private static void registerColumnId(Map<String, Column> id2column, String id, Column column)
+    {
+        Column existing = id2column.putIfAbsent(id, column);
+
+        if (existing != null && existing != column)
+            throw new IllegalArgumentException("Column ID '" + id + "' is already registered for canonical column '" //$NON-NLS-1$ //$NON-NLS-2$
+                            + existing.getId() + "' and cannot be registered for canonical column '" + column.getId() //$NON-NLS-1$
+                            + "'"); //$NON-NLS-1$
     }
 
     public void createColumns()
@@ -900,23 +929,10 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
             int oldCount = policy.getColumnCount();
 
-            configuration.getItems().forEach(item -> {
-                // index
-                Column col = id2column.get(item.getId());
-                if (col == null)
-                    return;
-
-                // option
-                Object option = null;
-
-                if (col.hasOptions())
-                {
-                    option = col.getOptions().valueOf(item.getOption());
-                    if (option == null)
-                        return;
-                }
-
-                Item viewerColumn = policy.create(col, option, item.getSortDirection(), item.getWidth());
+            resolveConfiguration(configuration, id2column).forEach(resolved -> {
+                ColumnConfiguration.Item item = resolved.item();
+                Item viewerColumn = policy.create(resolved.column(), resolved.option(), item.getSortDirection(),
+                                item.getWidth());
 
                 if (item.getLabel() != null)
                 {
@@ -932,6 +948,46 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         {
             policy.setRedraw(true);
         }
+    }
+
+    /* package */static List<ResolvedColumnItem> resolveConfiguration(ColumnConfiguration configuration,
+                    Map<String, Column> registeredColumns)
+    {
+        if (configuration == null)
+            return List.of();
+
+        Map<ColumnInstanceKey, ResolvedColumnItem> resolved = new LinkedHashMap<>();
+
+        configuration.getItems().forEach(item -> {
+            Column column = registeredColumns.get(item.getId());
+            if (column == null)
+                return;
+
+            Object option = null;
+            if (column.hasOptions())
+            {
+                try
+                {
+                    option = column.getOptions().valueOf(item.getOption());
+                }
+                catch (RuntimeException e)
+                {
+                    return;
+                }
+
+                if (option == null)
+                    return;
+            }
+
+            ColumnInstanceKey key = new ColumnInstanceKey(column, option);
+            ResolvedColumnItem previous = resolved.get(key);
+            if (previous == null)
+                resolved.put(key, new ResolvedColumnItem(column, option, item));
+            else if (previous.item().getSortDirection() == null && item.getSortDirection() != null)
+                previous.item().setSortDirection(item.getSortDirection());
+        });
+
+        return List.copyOf(resolved.values());
     }
 
     private void doResetColumns()

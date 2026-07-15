@@ -59,7 +59,7 @@ public class SecurityTestCase
         assertThat(record.getIrr(), closeTo(-0.0643, 0.0001));
 
         // pinned values previously verified via SecurityPerformanceSnapshotComparator
-        assertThat(record.getSharesHeld(), is(10000000000L));
+        assertThat(record.getSharesHeld(name.abuchen.portfolio.model.CostMethod.FIFO), is(10000000000L));
         assertThat(record.getMarketValue(), is(Money.of("EUR", 728800L)));
         assertThat(record.getQuote(), is(Quote.of("EUR", 7288000000L)));
         assertThat(record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of("EUR", 774800L)));

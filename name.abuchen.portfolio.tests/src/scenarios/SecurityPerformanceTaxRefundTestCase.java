@@ -113,7 +113,7 @@ public class SecurityPerformanceTaxRefundTestCase
         assertThat(accountIndex.getFinalAccumulatedPercentage(), is(0d));
 
         // pinned values previously verified via SecurityPerformanceSnapshotComparator
-        assertThat(record.getSharesHeld(), is(10000000000L));
+        assertThat(record.getSharesHeld(name.abuchen.portfolio.model.CostMethod.FIFO), is(10000000000L));
         assertThat(record.getMarketValue(), is(Money.of("EUR", 743000L)));
         assertThat(record.getQuote(), is(Quote.of("EUR", 7430000000L)));
         assertThat(record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of("EUR", 765800L)));
@@ -165,7 +165,7 @@ public class SecurityPerformanceTaxRefundTestCase
         LazySecurityPerformanceRecord record = snapshot.getRecords().get(0);
 
         assertThat(record.getSecurity().getName(), is("Basf SE"));
-        assertThat(record.getSharesHeld(), is(0L));
+        assertThat(record.getSharesHeld(name.abuchen.portfolio.model.CostMethod.FIFO), is(0L));
 
         // no changes in holdings, ttwror must (without taxes and tax refunds):
         double startValue = (double) delivery.getAmount() - delivery.getUnitSum(Unit.Type.TAX).getAmount();

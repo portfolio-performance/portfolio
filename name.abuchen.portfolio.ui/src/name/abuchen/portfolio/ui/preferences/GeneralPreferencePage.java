@@ -16,7 +16,6 @@ import name.abuchen.portfolio.ui.UIConstants;
 
 public class GeneralPreferencePage extends FieldEditorPreferencePage
 {
-
     public GeneralPreferencePage()
     {
         super(GRID);
