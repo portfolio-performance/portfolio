@@ -6,6 +6,7 @@ import static name.abuchen.portfolio.junit.PortfolioBuilder.sharesOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,7 +17,9 @@ import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 
@@ -55,6 +58,25 @@ public class TradeTest
         assertThat(trade1.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, amountOf(180 - 100) * 5)));
         assertThat(trade1.getReturn(), is(0.8));
         assertEquals(trade1.getIRR(), 0.8, 0.0001);
+
+        assertThat(trade1.getEntryValue(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(trade1.getEntryValue()));
+        assertThat(trade1.getEntryValue(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED),
+                        is(trade1.getEntryValueMovingAverage()));
+        assertThat(trade1.getProfitLoss(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(trade1.getProfitLoss()));
+        assertThat(trade1.getProfitLoss(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED),
+                        is(trade1.getProfitLossWithoutTaxesAndFees()));
+        assertThat(trade1.getProfitLoss(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED),
+                        is(trade1.getProfitLossMovingAverage()));
+        assertThat(trade1.getProfitLoss(CostMethod.MOVING_AVERAGE, TaxesAndFees.NOT_INCLUDED),
+                        is(trade1.getProfitLossMovingAverageWithoutTaxesAndFees()));
+        assertThat(trade1.getReturn(CostMethod.FIFO), is(trade1.getReturn()));
+        assertThat(trade1.getReturn(CostMethod.MOVING_AVERAGE), is(trade1.getReturnMovingAverage()));
+        assertThat(trade1.isLoss(CostMethod.FIFO), is(trade1.getProfitLoss().isNegative()));
+        assertThat(trade1.isGrossLoss(CostMethod.FIFO), is(trade1.getProfitLossWithoutTaxesAndFees().isNegative()));
+        assertThat(trade1.isLoss(CostMethod.MOVING_AVERAGE), is(trade1.getProfitLossMovingAverage().isNegative()));
+        assertThat(trade1.isGrossLoss(CostMethod.MOVING_AVERAGE),
+                        is(trade1.getProfitLossMovingAverageWithoutTaxesAndFees().isNegative()));
+        assertThat(trade1.getCurrencyCode(), is(trade1.getExitValue().getCurrencyCode()));
     }
 
     @Test
@@ -124,6 +146,15 @@ public class TradeTest
         assertThat(trade1.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, amountOf(20 - 5) * 3)));
         assertThat(trade1.getReturn(), is(0.75));
         assertEquals(trade1.getIRR(), 0.75, 0.0001);
+
+        assertThat(trade1.getEntryValue(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(trade1.getEntryValue()));
+        assertThat(trade1.getEntryValue(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED),
+                        is(trade1.getEntryValueMovingAverage()));
+        assertThat(trade1.getProfitLoss(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(trade1.getProfitLoss()));
+        assertThat(trade1.getProfitLoss(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED),
+                        is(trade1.getProfitLossMovingAverage()));
+        assertThat(trade1.getReturn(CostMethod.FIFO), is(trade1.getReturn()));
+        assertThat(trade1.getReturn(CostMethod.MOVING_AVERAGE), is(trade1.getReturnMovingAverage()));
     }
 
     @Test
@@ -144,6 +175,27 @@ public class TradeTest
         Money movingAverageEntryValue = trade.getEntryValueMovingAverage();
 
         assertThat(movingAverageEntryValue, is(Money.of(CurrencyUnit.EUR, 0L)));
+    }
+
+    @Test
+    public void testExplicitCostMethodRejectsNullParameters() throws TradeCollectorException
+    {
+        Client client = new Client();
+        TradeCollector collector = new TradeCollector(client, new TestCurrencyConverter());
+        var portfolio = new PortfolioBuilder();
+        portfolio.addTo(client);
+
+        Security security = new SecurityBuilder().addTo(client);
+        portfolio.buyPrice(security, "2024-01-01", 1.0, 10.0).sellPrice(security, "2024-12-31", 1.0, 12.0);
+        Trade trade = collector.collect(security).get(0);
+
+        assertThrows(NullPointerException.class, () -> trade.getEntryValue(null, TaxesAndFees.INCLUDED));
+        assertThrows(NullPointerException.class, () -> trade.getEntryValue(CostMethod.FIFO, null));
+        assertThrows(NullPointerException.class, () -> trade.getProfitLoss(null, TaxesAndFees.INCLUDED));
+        assertThrows(NullPointerException.class, () -> trade.getProfitLoss(CostMethod.FIFO, null));
+        assertThrows(NullPointerException.class, () -> trade.getReturn(null));
+        assertThrows(NullPointerException.class, () -> trade.isLoss(null));
+        assertThrows(NullPointerException.class, () -> trade.isGrossLoss(null));
     }
 
     @Test

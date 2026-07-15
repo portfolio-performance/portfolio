@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import name.abuchen.portfolio.math.IRR;
@@ -311,6 +312,19 @@ public class Trade implements Adaptable
         return entryValue;
     }
 
+    public Money getEntryValue(CostMethod costMethod, TaxesAndFees taxesAndFees)
+    {
+        Objects.requireNonNull(costMethod);
+        Objects.requireNonNull(taxesAndFees);
+
+        return switch (costMethod)
+        {
+            case FIFO -> taxesAndFees == TaxesAndFees.INCLUDED ? entryValue : entryValueWithoutTaxesAndFees;
+            case MOVING_AVERAGE -> taxesAndFees == TaxesAndFees.INCLUDED ? entryValueMovingAverage.get()
+                            : entryValueMovingAverageWithoutTaxesAndFees.get();
+        };
+    }
+
     public Money getEntryValueMovingAverage()
     {
         return entryValueMovingAverage.get();
@@ -327,6 +341,20 @@ public class Trade implements Adaptable
             return exitValue.subtract(entryValue);
         else
             return entryValue.subtract(exitValue);
+    }
+
+    public Money getProfitLoss(CostMethod costMethod, TaxesAndFees taxesAndFees)
+    {
+        Objects.requireNonNull(costMethod);
+        Objects.requireNonNull(taxesAndFees);
+
+        return switch (costMethod)
+        {
+            case FIFO -> taxesAndFees == TaxesAndFees.INCLUDED ? getProfitLoss()
+                            : getProfitLossWithoutTaxesAndFees();
+            case MOVING_AVERAGE -> taxesAndFees == TaxesAndFees.INCLUDED ? getProfitLossMovingAverage()
+                            : getProfitLossMovingAverageWithoutTaxesAndFees();
+        };
     }
 
     public Money getProfitLossMovingAverage()
@@ -365,6 +393,15 @@ public class Trade implements Adaptable
             return 1 - (exitValue.getAmount() / (double) entryValue.getAmount());
     }
 
+    public double getReturn(CostMethod costMethod)
+    {
+        return switch (Objects.requireNonNull(costMethod))
+        {
+            case FIFO -> getReturn();
+            case MOVING_AVERAGE -> getReturnMovingAverage();
+        };
+    }
+
     public double getReturnMovingAverage()
     {
         return (exitValue.getAmount() / (double) entryValueMovingAverage.get().getAmount()) - 1;
@@ -388,6 +425,11 @@ public class Trade implements Adaptable
         return this.getProfitLoss().isNegative();
     }
 
+    public boolean isLoss(CostMethod costMethod)
+    {
+        return getProfitLoss(Objects.requireNonNull(costMethod), TaxesAndFees.INCLUDED).isNegative();
+    }
+
     /**
      * @brief Check if the trade made a gross gross
      * @return True if the trade result in a gross loss
@@ -395,6 +437,19 @@ public class Trade implements Adaptable
     public boolean isGrossLoss()
     {
         return this.getProfitLossWithoutTaxesAndFees().isNegative();
+    }
+
+    public boolean isGrossLoss(CostMethod costMethod)
+    {
+        return getProfitLoss(Objects.requireNonNull(costMethod), TaxesAndFees.NOT_INCLUDED).isNegative();
+    }
+
+    /**
+     * Returns the reporting currency of this calculated trade.
+     */
+    public String getCurrencyCode()
+    {
+        return getExitValue().getCurrencyCode();
     }
 
     @Override

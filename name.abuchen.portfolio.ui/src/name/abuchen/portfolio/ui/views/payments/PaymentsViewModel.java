@@ -23,6 +23,7 @@ import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.TransactionPair;
@@ -349,9 +350,7 @@ public class PaymentsViewModel
                     continue;
 
                 long value = 0;
-                value = costMethod.useFifo()
-                                ? trade.getProfitLossWithoutTaxesAndFees().getAmount()
-                                : trade.getProfitLossMovingAverageWithoutTaxesAndFees().getAmount();
+                value = trade.getProfitLoss(costMethod, TaxesAndFees.NOT_INCLUDED).getAmount();
 
                 if (value != 0)
                 {
