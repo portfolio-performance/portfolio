@@ -1,10 +1,13 @@
 package name.abuchen.portfolio.ui.preferences;
 
+import java.util.Objects;
+
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.osgi.framework.Version;
 
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.PresetValues;
@@ -16,7 +19,13 @@ public class PreferencesInitializer extends AbstractPreferenceInitializer
     @Override
     public void initializeDefaultPreferences()
     {
-        IPreferenceStore store = PortfolioPlugin.getDefault().getPreferenceStore();
+        initializeDefaults(PortfolioPlugin.getDefault().getPreferenceStore());
+    }
+
+    public static void initializeDefaults(IPreferenceStore store)
+    {
+        Objects.requireNonNull(store);
+
         store.setDefault(UIConstants.Preferences.AUTO_UPDATE, true);
         store.setDefault(UIConstants.Preferences.UPDATE_SITE, "https://updates.portfolio-performance.info/portfolio"); //$NON-NLS-1$
         store.setDefault(UIConstants.Preferences.FORMAT_SHARES_DIGITS, 1);
@@ -29,6 +38,7 @@ public class PreferencesInitializer extends AbstractPreferenceInitializer
         store.setDefault(UIConstants.Preferences.UPDATE_QUOTES_PERIODICALLY, true);
         store.setDefault(UIConstants.Preferences.AUTO_SAVE_FILE, 0);
         store.setDefault(UIConstants.Preferences.STORE_SETTINGS_NEXT_TO_FILE, false);
+        store.setDefault(UIConstants.Preferences.COST_METHOD, CostMethod.FIFO.name());
         store.setDefault(UIConstants.Preferences.DOUBLE_CLICK_CELL_TO_EDIT, true);
         store.setDefault(UIConstants.Preferences.ENABLE_SWTCHART_PIECHARTS,
                         Platform.getOS().equals(Platform.OS_LINUX) || (Platform.getOS().equals(Platform.OS_MACOSX)

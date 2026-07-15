@@ -12,6 +12,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import com.google.common.annotations.VisibleForTesting;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -19,6 +20,7 @@ import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.editor.ReportingPeriods;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
@@ -79,6 +81,11 @@ public class DashboardData
     public IPreferenceStore getPreferences()
     {
         return preferences;
+    }
+
+    public CostMethod getGlobalCostMethod()
+    {
+        return PortfolioPlugin.getDefault().getCostMethod();
     }
 
     public IStylingEngine getStylingEngine()

@@ -135,7 +135,7 @@ public class EarningsChartWidget extends WidgetDelegate<PaymentsViewModel>
                 GrossNetType grossNetType = get(GrossNetTypeConfig.class).getValue();
 
                 part.activateView(PaymentsView.class, new PaymentsViewInput(tab, startYear, Optional.of(filterIdent),
-                                mode, grossNetType == GrossNetType.GROSS, false, CostMethod.FIFO));
+                                mode, grossNetType == GrossNetType.GROSS, false));
             }
         });
 
@@ -150,16 +150,21 @@ public class EarningsChartWidget extends WidgetDelegate<PaymentsViewModel>
         EarningType earningsType = get(EarningTypeConfig.class).getValue();
         GrossNetType grossNetType = get(GrossNetTypeConfig.class).getValue();
 
-        CacheKey key = new CacheKey(PaymentsViewModel.class, clientFilter, startYear, earningsType, grossNetType);
+        return () -> {
+            CostMethod costMethod = getDashboardData().getGlobalCostMethod();
 
-        return () -> (PaymentsViewModel) getDashboardData().getCache().computeIfAbsent(key, k -> {
-            PaymentsViewModel model = new PaymentsViewModel(converter, getClient());
-            PaymentsViewModel.Mode mode = earningsType.getPaymentsViewModelMode();
-            model.configure(startYear, mode, grossNetType == GrossNetType.GROSS, false, CostMethod.FIFO);
-            model.setFilteredClient(clientFilter.filter(getClient()));
-            model.recalculate();
-            return model;
-        });
+            CacheKey key = new CacheKey(PaymentsViewModel.class, clientFilter, startYear, earningsType, grossNetType,
+                            costMethod);
+
+            return (PaymentsViewModel) getDashboardData().getCache().computeIfAbsent(key, k -> {
+                PaymentsViewModel model = new PaymentsViewModel(converter, getClient());
+                PaymentsViewModel.Mode mode = earningsType.getPaymentsViewModelMode();
+                model.configure(startYear, mode, grossNetType == GrossNetType.GROSS, false, costMethod);
+                model.setFilteredClient(clientFilter.filter(getClient()));
+                model.recalculate(costMethod);
+                return model;
+            });
+        };
     }
 
     @Override

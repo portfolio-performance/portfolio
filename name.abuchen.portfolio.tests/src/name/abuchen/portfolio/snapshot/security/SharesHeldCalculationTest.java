@@ -37,7 +37,7 @@ public class SharesHeldCalculationTest
 
         assertThat(snapshot.getRecords().size(), is(1));
 
-        assertThat(snapshot.getRecords().get(0).getSharesHeld(), is(Values.Share.factorize(2)));
+        assertThat(snapshot.getRecords().get(0).getSharesHeld(name.abuchen.portfolio.model.CostMethod.FIFO), is(Values.Share.factorize(2)));
     }
 
 }

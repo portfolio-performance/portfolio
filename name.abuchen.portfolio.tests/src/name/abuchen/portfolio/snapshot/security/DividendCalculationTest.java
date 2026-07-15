@@ -12,6 +12,7 @@ import org.junit.Test;
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
@@ -64,7 +65,12 @@ public class DividendCalculationTest
 
         assertEquals(0, dc.getNumOfEvents());
         assertEquals(Periodicity.NONE, dc.getPeriodicity());
-        assertEquals(0.0, dc.getRateOfReturnPerYear(), 0.0);
+
+        DividendRateOfReturnCalculation rate = Calculation.perform(
+                        () -> new DividendRateOfReturnCalculation(payment -> {
+                            throw new AssertionError("Cost provider must not be accessed without payments");
+                        }), converter, security, transactions);
+        assertEquals(0.0, rate.getRateOfReturnPerYear(), 0.0);
     }
 
     @Test
@@ -190,11 +196,11 @@ public class DividendCalculationTest
         transactions.add(createDividendTransaction(LocalDateTime.of(2019, 01, 15, 12, 00)));
         transactions.add(createDividendTransaction(LocalDateTime.of(2020, 01, 15, 12, 00)));
 
-        // We need to calculate the costs, in order to get the average return
-        @SuppressWarnings("unused")
-        CostCalculation cost = Calculation.perform(CostCalculation.class, converter, security, transactions);
-        DividendCalculation dividends = Calculation.perform(DividendCalculation.class, converter, security,
-                        transactions);
+        CostCalculation cost = Calculation.perform(() -> new CostCalculation(CostMethod.MOVING_AVERAGE), converter,
+                        security, transactions);
+        DividendRateOfReturnCalculation dividends = Calculation.perform(
+                        () -> new DividendRateOfReturnCalculation(cost.getResult()::getDividendCost), converter,
+                        security, transactions);
 
         assertEquals(0.1, dividends.getRateOfReturnPerYear(), 0.0);
     }
@@ -242,10 +248,11 @@ public class DividendCalculationTest
 
         transactions.add(CalculationLineItem.of(new Account(), dividend));
 
-        @SuppressWarnings("unused")
-        CostCalculation cost = Calculation.perform(CostCalculation.class, converter, testSecurity, transactions);
-        DividendCalculation dividends = Calculation.perform(DividendCalculation.class, converter, testSecurity,
-                        transactions);
+        CostCalculation cost = Calculation.perform(() -> new CostCalculation(CostMethod.MOVING_AVERAGE), converter,
+                        testSecurity, transactions);
+        DividendRateOfReturnCalculation dividends = Calculation.perform(
+                        () -> new DividendRateOfReturnCalculation(cost.getResult()::getDividendCost), converter,
+                        testSecurity, transactions);
 
         // Expected: 50 USD / 1000 USD = 0.05 (5%)
         // After currency conversion to EUR: ~58.54 EUR / ~1170.8 EUR = 0.05

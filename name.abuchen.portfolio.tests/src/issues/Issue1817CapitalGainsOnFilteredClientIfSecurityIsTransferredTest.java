@@ -37,7 +37,7 @@ public class Issue1817CapitalGainsOnFilteredClientIfSecurityIsTransferredTest
 
         Client filteredClient = filter.filter(client);
 
-        ClientPerformanceSnapshot clientSnapshot = new ClientPerformanceSnapshot(filteredClient, converter, period);
+        ClientPerformanceSnapshot clientSnapshot = new ClientPerformanceSnapshot(filteredClient, converter, period, name.abuchen.portfolio.model.CostMethod.FIFO);
 
         ClientPerformanceSnapshotTest.assertThatCalculationWorksOut(clientSnapshot, converter);
     }

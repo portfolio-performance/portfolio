@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -23,6 +24,7 @@ import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.TransactionPair;
@@ -72,11 +74,6 @@ public class PaymentsViewModel
         public boolean isAccountTxIncluded(AccountTransaction transaction)
         {
             return this.types.contains(transaction.getType());
-        }
-
-        public boolean includesTradeProfitLoss()
-        {
-            return this == TRADES || this == ALL;
         }
     }
 
@@ -175,7 +172,6 @@ public class PaymentsViewModel
     private Mode mode = Mode.ALL;
     private boolean useGrossValue = true;
     private boolean useConsolidateRetired = true;
-    private CostMethod costMethod = CostMethod.FIFO;
     private boolean hideTotalsAtTheTop = true;
     private boolean hideTotalsAtTheBottom = false;
 
@@ -193,8 +189,8 @@ public class PaymentsViewModel
         this.mode = mode;
         this.useGrossValue = useGrossValue;
         this.useConsolidateRetired = useConsolidateRetired;
-        this.costMethod = costMethod;
-        recalculate();
+
+        recalculate(costMethod);
     }
 
     /* package */Client getClient()
@@ -237,10 +233,10 @@ public class PaymentsViewModel
         return mode;
     }
 
-    public void setMode(Mode mode)
+    public void setMode(Mode mode, CostMethod costMethod)
     {
         this.mode = mode;
-        recalculate();
+        recalculate(costMethod);
     }
 
     public boolean usesGrossValue()
@@ -248,10 +244,10 @@ public class PaymentsViewModel
         return useGrossValue;
     }
 
-    public void setUseGrossValue(boolean useGrossValue)
+    public void setUseGrossValue(boolean useGrossValue, CostMethod costMethod)
     {
         this.useGrossValue = useGrossValue;
-        recalculate();
+        recalculate(costMethod);
     }
 
     public boolean usesConsolidateRetired()
@@ -259,21 +255,10 @@ public class PaymentsViewModel
         return useConsolidateRetired;
     }
 
-    public void setUseConsolidateRetired(boolean useConsolidateRetired)
+    public void setUseConsolidateRetired(boolean useConsolidateRetired, CostMethod costMethod)
     {
         this.useConsolidateRetired = useConsolidateRetired;
-        recalculate();
-    }
-
-    public CostMethod getCostMethod()
-    {
-        return costMethod;
-    }
-
-    public void setCostMethod(CostMethod costMethod)
-    {
-        this.costMethod = costMethod;
-        recalculate();
+        recalculate(costMethod);
     }
 
     public boolean isHideTotalsAtTheTop()
@@ -317,22 +302,24 @@ public class PaymentsViewModel
         return transactions;
     }
 
-    public void updateWith(int year)
+    public void updateWith(int year, CostMethod costMethod)
     {
         this.startYear = year;
-        recalculate();
+        recalculate(costMethod);
     }
 
-    public void recalculate()
+    public void recalculate(CostMethod costMethod)
     {
+        CostMethod method = Objects.requireNonNull(costMethod);
+
         // the base currency might have changed
         this.converter = this.converter.with(client.getBaseCurrency());
 
-        calculate();
+        calculate(method);
         fireUpdateChange();
     }
 
-    private void calculate()
+    private void calculate(CostMethod costMethod)
     {
         // determine the number of full months within period
         LocalDate now = LocalDate.now();
@@ -349,7 +336,8 @@ public class PaymentsViewModel
         this.sum = new Line(null, false, this.noOfmonths);
         this.sumRetired = new Line(null, useConsolidateRetired, this.noOfmonths);
 
-        if (mode.includesTradeProfitLoss())
+        EnumSet<Mode> processGainTx = EnumSet.of(Mode.TRADES, Mode.ALL);
+        if (processGainTx.contains(mode))
         {
             List<Trade> trades = collectTrades(filteredClient);
 
@@ -360,9 +348,7 @@ public class PaymentsViewModel
                     continue;
 
                 long value = 0;
-                value = costMethod.useFifo()
-                                ? trade.getProfitLossWithoutTaxesAndFees().getAmount()
-                                : trade.getProfitLossMovingAverageWithoutTaxesAndFees().getAmount();
+                value = trade.getProfitLoss(costMethod, TaxesAndFees.NOT_INCLUDED).getAmount();
 
                 if (value != 0)
                 {

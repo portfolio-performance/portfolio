@@ -21,7 +21,9 @@ import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
@@ -63,11 +65,11 @@ public class TradesTableViewerTest
         Trade trade = trades.get(0);
         TradeElement element = new TradeElement(trade, 0, 0.5);
 
-        double expected = trade.getReturn();
+        double expected = trade.getReturn(CostMethod.FIFO);
 
         assertThat(expected, closeTo(0.1, 0.0000001));
-        assertThat(TradesTableViewer.getReturnValue(element), closeTo(expected, 0.0000001));
-        assertThat(TradesTableViewer.getReturnValue(trade), closeTo(expected, 0.0000001));
+        assertThat(TradesTableViewer.getReturnValue(element, CostMethod.FIFO), closeTo(expected, 0.0000001));
+        assertThat(TradesTableViewer.getReturnValue(trade, CostMethod.FIFO), closeTo(expected, 0.0000001));
     }
 
     @Test
@@ -155,9 +157,9 @@ public class TradesTableViewerTest
             if (element instanceof TradeElement te)
             {
                 if (te.isTrade())
-                    return te.getTrade().getProfitLoss();
+                    return te.getTrade().getProfitLoss(CostMethod.FIFO, TaxesAndFees.INCLUDED);
                 if (te.isCategory())
-                    return te.getCategory().getTotalProfitLoss();
+                    return te.getCategory().getTotalProfitLoss(CostMethod.FIFO, TaxesAndFees.INCLUDED);
             }
             return null;
         }, client);
@@ -249,4 +251,5 @@ public class TradesTableViewerTest
         assertThat(security.getName(), is("Renamed Security"));
         assertThat(refreshCalled.get(), is(true));
     }
+
 }

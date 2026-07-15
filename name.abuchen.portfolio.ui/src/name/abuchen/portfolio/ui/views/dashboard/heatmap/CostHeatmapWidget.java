@@ -9,7 +9,6 @@ import jakarta.inject.Inject;
 
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -76,8 +75,7 @@ public class CostHeatmapWidget extends AbstractMonthlyHeatmapWidget
         String clientFilterId = get(ClientFilterConfig.class).getSelectedItem().getId();
 
         part.activateView(PaymentsView.class, new PaymentsViewInput(
-                        0 /* monthly table */, startYear, Optional.of(clientFilterId), mode, true, false,
-                        CostMethod.FIFO));
+                        0 /* monthly table */, startYear, Optional.of(clientFilterId), mode, true, false));
     }
 
     @Override

@@ -13,7 +13,9 @@ import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -50,7 +52,7 @@ public class TradeCollector3Test
         assertThat(firstTrade.getEnd().orElseThrow(IllegalArgumentException::new),
                         is(LocalDateTime.parse("2022-01-01T00:00")));
         assertThat(firstTrade.getHoldingPeriod(), is(0L));
-        assertThat(firstTrade.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, 0L)));
+        assertThat(firstTrade.getProfitLoss(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, 0L)));
     }
 
 }

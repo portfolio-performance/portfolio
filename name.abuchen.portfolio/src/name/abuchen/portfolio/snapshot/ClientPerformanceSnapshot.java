@@ -7,6 +7,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -18,6 +19,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -29,7 +31,6 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.snapshot.security.CapitalGainsRecord;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
@@ -168,7 +169,7 @@ public class ClientPerformanceSnapshot
     private final Interval period;
     private ClientSnapshot snapshotStart;
     private ClientSnapshot snapshotEnd;
-    private boolean useFifo = true;
+    private final CostMethod costMethod;
 
     private final EnumMap<CategoryType, Category> categories = new EnumMap<>(CategoryType.class);
     private final List<TransactionPair<?>> earnings = new ArrayList<>();
@@ -176,19 +177,16 @@ public class ClientPerformanceSnapshot
     private final List<TransactionPair<?>> taxes = new ArrayList<>();
     private double irr;
 
-    public ClientPerformanceSnapshot(Client client, CurrencyConverter converter, LocalDate startDate, LocalDate endDate)
+    public ClientPerformanceSnapshot(Client client, CurrencyConverter converter, LocalDate startDate, LocalDate endDate,
+                    CostMethod costMethod)
     {
-        this(client, converter, Interval.of(startDate, endDate), true);
+        this(client, converter, Interval.of(startDate, endDate), costMethod);
     }
 
-    public ClientPerformanceSnapshot(Client client, CurrencyConverter converter, Interval period)
+    public ClientPerformanceSnapshot(Client client, CurrencyConverter converter, Interval period,
+                    CostMethod costMethod)
     {
-        this(client, converter, period, true);
-    }
-
-    public ClientPerformanceSnapshot(Client client, CurrencyConverter converter, Interval period, boolean useFifo)
-    {
-        this.useFifo = useFifo;
+        this.costMethod = Objects.requireNonNull(costMethod);
         this.client = client;
         this.converter = converter;
         this.period = period;
@@ -352,56 +350,30 @@ public class ClientPerformanceSnapshot
 
         irr = ClientIRRYield.create(client, snapshotStart, snapshotEnd).getIrr();
 
-        if (useFifo)
-            addCapitalGainsFifo();
-        else
-            addCapitalGainsMovingAverage();
+        addCapitalGains(costMethod);
 
         addEarnings();
         addCurrencyGains();
     }
 
     /**
-     * Calculates realized and unrealized capital gains using the FIFO method.
-     * If the security is traded in forex then additionally the currency gains
-     * are calculated, i.e. the change in value if the investment would have
-     * been in cash in the foreign currency.
+     * Calculates realized and unrealized capital gains using the selected cost
+     * method. If the security is traded in forex, the corresponding currency
+     * gains are calculated as well.
      */
-    private void addCapitalGainsFifo()
+    private void addCapitalGains(CostMethod costMethod)
     {
         LazySecurityPerformanceSnapshot securityPerformance = LazySecurityPerformanceSnapshot.create(client, converter,
                         period, snapshotStart, snapshotEnd);
 
         Category realizedCapitalGains = categories.get(CategoryType.REALIZED_CAPITAL_GAINS);
         addCapitalGains(realizedCapitalGains, securityPerformance,
-                        record -> record.getRealizedCapitalGains(CostMethod.FIFO));
+                        record -> record.getRealizedCapitalGains(costMethod));
 
         // create position for unrealized capital gains
 
         Category capitalGains = categories.get(CategoryType.CAPITAL_GAINS);
-        addCapitalGains(capitalGains, securityPerformance, record -> record.getUnrealizedCapitalGains(CostMethod.FIFO));
-    }
-
-    /**
-     * Calculates realized and unrealized capital gains using the Moving Average
-     * method. If the security is traded in forex then additionally the currency
-     * gains are calculated, i.e. the change in value if the investment would
-     * have been in cash in the foreign currency.
-     */
-    private void addCapitalGainsMovingAverage()
-    {
-        LazySecurityPerformanceSnapshot securityPerformance = LazySecurityPerformanceSnapshot.create(client, converter,
-                        period, snapshotStart, snapshotEnd);
-
-        Category realizedCapitalGains = categories.get(CategoryType.REALIZED_CAPITAL_GAINS);
-        addCapitalGains(realizedCapitalGains, securityPerformance,
-                        record -> record.getRealizedCapitalGains(CostMethod.MOVING_AVERAGE));
-
-        // create position for unrealized capital gains
-
-        Category capitalGains = categories.get(CategoryType.CAPITAL_GAINS);
-        addCapitalGains(capitalGains, securityPerformance,
-                        record -> record.getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE));
+        addCapitalGains(capitalGains, securityPerformance, record -> record.getUnrealizedCapitalGains(costMethod));
     }
 
     private void addCapitalGains(Category category, LazySecurityPerformanceSnapshot securityPerformance,

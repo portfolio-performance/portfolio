@@ -64,7 +64,7 @@ public class Issue1909FIFOCalculationOfSecurityPositionTest
         // TTWROR / drawdown / volatility / IRR are skipped because the interval
         // starts at LocalDate.MIN, which the lazy PerformanceIndex cannot build
         // (OOM) and which would produce a degenerate IRR anyway.
-        assertThat(record.getSharesHeld(), is(1000000000L));
+        assertThat(record.getSharesHeld(name.abuchen.portfolio.model.CostMethod.FIFO), is(1000000000L));
         assertThat(record.getMarketValue(), is(Money.of("EUR", 280500L))); //$NON-NLS-1$
         assertThat(record.getQuote(), is(Quote.of("EUR", 28050000000L))); //$NON-NLS-1$
         assertThat(record.getFees(), is(Money.of("EUR", 0L))); //$NON-NLS-1$

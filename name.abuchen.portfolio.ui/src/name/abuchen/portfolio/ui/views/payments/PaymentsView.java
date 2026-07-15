@@ -11,7 +11,6 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IContributionItem;
-import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -80,14 +79,14 @@ public class PaymentsView extends AbstractFinanceView
         clientFilterMenu = new ClientFilterMenu(client, preferences, filter -> {
             setFilteredClientToModel(filter);
             viewInput.setClientFilterId(clientFilterMenu.getSelectedItem().getId());
-            model.recalculate();
+            model.recalculate(getCostMethod());
         });
 
         // set initial Filter
         loadSavedFilterIdAndSetFilteredClientToModel();
 
         model.configure(viewInput.getYear(), viewInput.getMode(), viewInput.isUseGrossValue(),
-                        viewInput.isUseConsolidateRetired(), viewInput.getCostMethod());
+                        viewInput.isUseConsolidateRetired(), getCostMethod());
 
         model.setHideTotalsAtTheTop(preferences.getBoolean(PaymentsViewInput.TOP));
         model.setHideTotalsAtTheBottom(preferences.getBoolean(PaymentsViewInput.BOTTOM));
@@ -97,8 +96,12 @@ public class PaymentsView extends AbstractFinanceView
             viewInput.setMode(model.getMode());
             viewInput.setUseGrossValue(model.usesGrossValue());
             viewInput.setUseConsolidateRetired(model.usesConsolidateRetired());
-            viewInput.setCostMethod(model.getCostMethod());
         });
+    }
+
+    /* package */ CostMethod getCostMethod()
+    {
+        return getGlobalCostMethod();
     }
 
     private void setFilteredClientToModel(ClientFilter filter)
@@ -121,7 +124,7 @@ public class PaymentsView extends AbstractFinanceView
         // reload client filter, in case its data is outdated
         loadSavedFilterIdAndSetFilteredClientToModel();
 
-        model.recalculate();
+        model.recalculate(getCostMethod());
     }
 
     @Override
@@ -138,7 +141,7 @@ public class PaymentsView extends AbstractFinanceView
         {
             ActionContributionItem item = new ActionContributionItem( //
                             new SimpleAction(TextUtil.tooltip(mode.getLabel()), a -> {
-                                model.setMode(mode);
+                                model.setMode(mode, getCostMethod());
                                 updateIcons(toolBarManager);
                                 updateTitle(getDefaultTitle());
                             }));
@@ -163,7 +166,7 @@ public class PaymentsView extends AbstractFinanceView
     @Override
     protected void addButtons(ToolBarManager toolBar)
     {
-        toolBar.add(new StartYearSelectionDropDown(model));
+        toolBar.add(new StartYearSelectionDropDown(model, this::getCostMethod));
 
         DropDown dropDown = new DropDown(Messages.MenuChooseClientFilter,
                         clientFilterMenu.hasActiveFilter() ? Images.GROUPEDACCOUNTS_ON : Images.GROUPEDACCOUNTS,
@@ -190,31 +193,13 @@ public class PaymentsView extends AbstractFinanceView
             if (supportGrossValue.contains(model.getMode()))
             {
                 Action action = new SimpleAction(Messages.LabelUseGrossValue,
-                                a -> model.setUseGrossValue(!model.usesGrossValue()));
+                                a -> model.setUseGrossValue(!model.usesGrossValue(), getCostMethod()));
                 action.setChecked(model.usesGrossValue());
                 manager.add(action);
             }
 
-            if (model.getMode().includesTradeProfitLoss())
-            {
-                var costMethodMenu = new MenuManager(Messages.LabelCostMethod);
-                manager.add(costMethodMenu);
-
-                var action = new SimpleAction(CostMethod.FIFO.getLabel(), //
-                                a -> model.setCostMethod(CostMethod.FIFO));
-                action.setChecked(model.getCostMethod().useFifo());
-                costMethodMenu.add(action);
-
-                action = new SimpleAction(CostMethod.MOVING_AVERAGE.getLabel(),
-                                a -> model.setCostMethod(CostMethod.MOVING_AVERAGE));
-                action.setChecked(!model.getCostMethod().useFifo());
-                costMethodMenu.add(action);
-            }
-
-            manager.add(new Separator());
-
             Action action = new SimpleAction(Messages.LabelPaymentsUseConsolidateRetired,
-                            a -> model.setUseConsolidateRetired(!model.usesConsolidateRetired()));
+                            a -> model.setUseConsolidateRetired(!model.usesConsolidateRetired(), getCostMethod()));
             action.setChecked(model.usesConsolidateRetired());
             manager.add(action);
 

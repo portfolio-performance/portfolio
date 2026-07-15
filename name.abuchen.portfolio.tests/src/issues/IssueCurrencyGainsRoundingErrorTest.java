@@ -33,7 +33,7 @@ public class IssueCurrencyGainsRoundingErrorTest
 
         CurrencyConverter converter = new TestCurrencyConverter();
 
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, period);
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, period, name.abuchen.portfolio.model.CostMethod.FIFO);
 
         MutableMoney currencyGains = MutableMoney.of(converter.getTermCurrency());
         currencyGains.subtract(snapshot.getValue(CategoryType.INITIAL_VALUE));

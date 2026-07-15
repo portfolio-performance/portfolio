@@ -98,9 +98,9 @@ public class TradeCollector2Test
                         Interval.of(LocalDate.MIN, LocalDate.now()));
         var securityRecord = snapshot.getRecord(att).get();
 
-        assertThat(secondTrade.getEntryValue(),
+        assertThat(secondTrade.getEntryValue(CostMethod.FIFO, TaxesAndFees.INCLUDED),
                         is(securityRecord.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED)));
-        assertThat(secondTrade.getEntryValueMovingAverage(),
+        assertThat(secondTrade.getEntryValue(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED),
                         is(securityRecord.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED)));
     }
 }

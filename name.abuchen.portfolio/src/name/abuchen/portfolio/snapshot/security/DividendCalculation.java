@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
@@ -13,12 +15,13 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.security.BaseSecurityPerformanceRecord.Periodicity;
+import name.abuchen.portfolio.snapshot.security.CostCalculation.DividendCostContext;
 import name.abuchen.portfolio.util.Dates;
 
 /* package */class DividendCalculation extends Calculation
 {
     public record DividendCalculationResult(Money sum, LocalDate lastDividendPayment, int numOfEvents,
-                    Periodicity periodicity, double rateOfReturnPerYear)
+                    Periodicity periodicity)
     {
     }
 
@@ -40,70 +43,25 @@ import name.abuchen.portfolio.util.Dates;
          */
         public final int year;
         /**
-         * Rate of return for this payment.
-         */
-        public final double rateOfReturn;
-
-        /**
          * Constructs an instance.
          *
          * @param converter
          *            currency converter
          * @param t
          *            {@link DividendTransaction}
-         * @param security
-         *            {@link Security}
          */
-        public Payment(CurrencyConverter converter, CalculationLineItem.DividendPayment t, Security security)
+        public Payment(CurrencyConverter converter, CalculationLineItem.DividendPayment t)
         {
             this.amount = t.getGrossValue().with(converter.at(t.getDateTime()));
             LocalDateTime time = t.getDateTime();
             this.year = time.getYear();
             this.date = time.toLocalDate();
-
-            // try to set rate of return, default is NaN
-            double rr = Double.NaN;
-            if (security != null)
-            {
-                // calculate the rate of return, but do NOT use the method on
-                // the DividendPayment class. Why? The DividendPayment looks
-                // only at the payment, but the payment might only be for a
-                // partial position (for example if the security is held in
-                // multiple accounts). The moving average cost is always the
-                // total costs.
-
-                Money movingAverageCost = t.getMovingAverageCost();
-                if (movingAverageCost != null && !movingAverageCost.isZero())
-                {
-                    // Use converted amount (in term currency) instead of raw amount (in transaction currency)
-                    // to ensure both values are in the same currency for correct calculation
-                    rr = this.amount.getAmount() / (double) movingAverageCost.getAmount();
-                }
-
-                // check if it is valid (non 0)
-                if (rr == 0)
-                {
-                    // else use the security price at that date
-                    SecurityPrice p = security.getSecurityPrice(date);
-                    // getSecurityPrice may return an empty price value, so
-                    // check that
-                    long pValue = p.getValue();
-                    if (pValue != 0)
-                    {
-                        double sharePriceAmount = ((double) pValue) / Values.Quote.factor()
-                                        * Values.AmountFraction.factor();
-                        rr = t.getDividendPerShare() / sharePriceAmount;
-                    }
-                }
-            }
-            this.rateOfReturn = rr;
         }
     }
 
     private final List<Payment> payments = new ArrayList<>();
     private Periodicity periodicity;
     private MutableMoney sum;
-    private double rateOfReturnPerYear;
 
     @Override
     public void finish(CurrencyConverter converter, List<CalculationLineItem> lineItems)
@@ -127,22 +85,17 @@ import name.abuchen.portfolio.util.Dates;
 
         int significantCount = 0;
         int insignificantYears = 0;
-        double sumRateOfReturn = 0;
 
         // first calc total sum of all payments
         for (Payment p : payments)
         {
             // add to total sum
             sum.add(p.amount);
-            sumRateOfReturn += p.rateOfReturn;
         }
-
-        int years = 0;
 
         // now walk through individual years
         for (int year = firstPayment.getYear(); year <= lastPayment.getYear(); year++)
         {
-            years++;
             int countPerYear = 0;
             long sumPerYear = 0;
             LocalDate lastDate = null;
@@ -190,8 +143,6 @@ import name.abuchen.portfolio.util.Dates;
             }
         }
 
-        this.rateOfReturnPerYear = sumRateOfReturn / years;
-
         // determine periodicity?
         if (significantCount > 0)
         {
@@ -224,8 +175,7 @@ import name.abuchen.portfolio.util.Dates;
 
     public DividendCalculationResult getResult()
     {
-        return new DividendCalculationResult(sum.toMoney(), getLastDividendPayment(), payments.size(), periodicity,
-                        rateOfReturnPerYear);
+        return new DividendCalculationResult(sum.toMoney(), getLastDividendPayment(), payments.size(), periodicity);
     }
 
     public LocalDate getLastDividendPayment()
@@ -248,11 +198,6 @@ import name.abuchen.portfolio.util.Dates;
         return periodicity;
     }
 
-    public double getRateOfReturnPerYear()
-    {
-        return rateOfReturnPerYear;
-    }
-
     public Money getSum()
     {
         return sum.toMoney();
@@ -269,6 +214,78 @@ import name.abuchen.portfolio.util.Dates;
     public void visit(CurrencyConverter converter, CalculationLineItem.DividendPayment t)
     {
         // construct new payment and add it to the list
-        payments.add(new Payment(converter, t, getSecurity()));
+        payments.add(new Payment(converter, t));
+    }
+}
+
+/* package */class DividendRateOfReturnCalculation extends Calculation
+{
+    private static final class Payment
+    {
+        private final LocalDate date;
+        private final double rateOfReturn;
+
+        private Payment(CurrencyConverter converter, CalculationLineItem.DividendPayment payment, Security security,
+                        Optional<DividendCostContext> context)
+        {
+            Money amount = payment.getGrossValue().with(converter.at(payment.getDateTime()));
+            this.date = payment.getDateTime().toLocalDate();
+
+            // Keep the existing fallback and NaN behavior unchanged.
+            double rr = Double.NaN;
+            if (security != null)
+            {
+                if (context.isPresent() && !context.get().cost().isZero())
+                    rr = amount.getAmount() / (double) context.get().cost().getAmount();
+
+                if (rr == 0)
+                {
+                    SecurityPrice price = security.getSecurityPrice(date);
+                    long priceValue = price.getValue();
+                    if (priceValue != 0)
+                    {
+                        double sharePriceAmount = ((double) priceValue) / Values.Quote.factor()
+                                        * Values.AmountFraction.factor();
+                        rr = payment.getDividendPerShare() / sharePriceAmount;
+                    }
+                }
+            }
+            this.rateOfReturn = rr;
+        }
+    }
+
+    private final Function<CalculationLineItem.DividendPayment, Optional<DividendCostContext>> costProvider;
+    private final List<Payment> payments = new ArrayList<>();
+    private double rateOfReturnPerYear;
+
+    public DividendRateOfReturnCalculation(
+                    Function<CalculationLineItem.DividendPayment, Optional<DividendCostContext>> costProvider)
+    {
+        this.costProvider = costProvider;
+    }
+
+    @Override
+    public void visit(CurrencyConverter converter, CalculationLineItem.DividendPayment payment)
+    {
+        payments.add(new Payment(converter, payment, getSecurity(), costProvider.apply(payment)));
+    }
+
+    @Override
+    public void finish(CurrencyConverter converter, List<CalculationLineItem> lineItems)
+    {
+        if (payments.isEmpty())
+            return;
+
+        Collections.sort(payments, (r, l) -> r.date.compareTo(l.date));
+        int firstYear = payments.get(0).date.getYear();
+        int lastYear = payments.get(payments.size() - 1).date.getYear();
+        int years = lastYear - firstYear + 1;
+
+        rateOfReturnPerYear = payments.stream().mapToDouble(payment -> payment.rateOfReturn).sum() / years;
+    }
+
+    public double getRateOfReturnPerYear()
+    {
+        return rateOfReturnPerYear;
     }
 }

@@ -7,8 +7,10 @@ import java.util.List;
 import java.util.function.DoubleFunction;
 import java.util.function.Predicate;
 
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.snapshot.trades.Trade;
 import name.abuchen.portfolio.ui.Messages;
@@ -69,17 +71,31 @@ public class TradesAverageHoldingPeriodWidget extends AbstractTradesWidget
         this.title.setText(TextUtil.tooltip(getWidget().getLabel()));
 
         List<Trade> trades = input.getTrades();
+        CostMethod costMethod = getCostMethod();
 
-        double totalPurchasePrice = trades.stream().map(Trade::getEntryValue)
-                        .collect(MoneyCollectors.sum(getDashboardData().getCurrencyConverter().getTermCurrency()))
-                        .getAmount();
-
-        double averageHoldingDays = trades.stream()
-                        .mapToDouble(t -> t.getHoldingPeriod() * t.getEntryValue().getAmount() / totalPurchasePrice)
-                        .sum();
+        double averageHoldingDays = calculateAverageHoldingDays(trades, costMethod);
 
         this.indicator.setText(get(MetricConfig.class).getValue().format(averageHoldingDays));
         this.indicator.setToolTipText(Messages.TooltipAverageHoldingPeriod);
+    }
+
+    /* package */ CostMethod getCostMethod()
+    {
+        return getDashboardData().getGlobalCostMethod();
+    }
+
+    /* package */ double calculateAverageHoldingDays(List<Trade> trades, CostMethod costMethod)
+    {
+        double totalPurchasePrice = trades.stream()
+                        .map(t -> t.getEntryValue(costMethod, TaxesAndFees.INCLUDED))
+                        .collect(MoneyCollectors.sum(getDashboardData().getCurrencyConverter().getTermCurrency()))
+                        .getAmount();
+
+        return trades.stream()
+                        .mapToDouble(t -> t.getHoldingPeriod()
+                                        * t.getEntryValue(costMethod, TaxesAndFees.INCLUDED).getAmount()
+                                        / totalPurchasePrice)
+                        .sum();
     }
 
     /**
