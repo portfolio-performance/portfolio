@@ -32,6 +32,7 @@ import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.ClientFactory.ClientPersister;
 import name.abuchen.portfolio.model.ConfigurationSet.Configuration;
 import name.abuchen.portfolio.model.SecurityEvent.DividendEvent;
+import name.abuchen.portfolio.model.ledger.projection.LedgerBackedTransaction;
 import name.abuchen.portfolio.model.proto.v1.PAccount;
 import name.abuchen.portfolio.model.proto.v1.PAnyValue;
 import name.abuchen.portfolio.model.proto.v1.PAttributeType;
@@ -57,7 +58,7 @@ import name.abuchen.portfolio.money.Money;
 
 /* package */ class ProtobufWriter implements ClientPersister
 {
-    private static class Lookup
+    /* package */ static class Lookup
     {
         private Map<String, Security> uuid2security = new HashMap<>();
 
@@ -129,6 +130,7 @@ import name.abuchen.portfolio.money.Money;
         loadAccounts(newClient, client, lookup);
         loadPortfolios(newClient, client, lookup);
         loadTransactions(newClient, lookup);
+        LedgerProtobufPersistenceSupport.loadLedgerTruth(newClient, client, lookup);
 
         client.getProperties().putAll(newClient.getPropertiesMap());
         loadTaxonomies(newClient, client, lookup);
@@ -140,6 +142,7 @@ import name.abuchen.portfolio.money.Money;
         client.getSaveFlags().add(SaveFlag.BINARY);
 
         ClientFactory.upgradeModel(client);
+        LedgerProtobufPersistenceSupport.finalizeAfterLoad(client);
 
         return client;
     }
@@ -308,6 +311,15 @@ import name.abuchen.portfolio.money.Money;
     {
         for (PTransaction newTransaction : newClient.getTransactionsList())
         {
+            if (newTransaction.getLedgerProjection())
+            {
+                if (!LedgerProtobufPersistenceSupport.hasLedgerTruth(newClient))
+                    throw new UnsupportedOperationException(
+                                    "Ledger projection transaction exists but no PLedger source exists"); //$NON-NLS-1$
+
+                continue;
+            }
+
             PTransaction.Type type = newTransaction.getType();
 
             switch (type)
@@ -867,6 +879,7 @@ import name.abuchen.portfolio.money.Money;
         saveAccounts(client, newClient);
         savePortfolios(client, newClient);
         saveTransactions(client, newClient);
+        LedgerProtobufPersistenceSupport.saveLedger(client, newClient);
 
         newClient.putAllProperties(client.getProperties());
         saveTaxonomies(client, newClient);
@@ -1168,6 +1181,9 @@ import name.abuchen.portfolio.money.Money;
 
     private void saveCommonTransaction(Transaction t, PTransaction.Builder newTransaction)
     {
+        if (t instanceof LedgerBackedTransaction)
+            newTransaction.setLedgerProjection(true);
+
         newTransaction.setDate(asTimestamp(t.getDateTime()));
         newTransaction.setCurrencyCode(t.getCurrencyCode());
         newTransaction.setAmount(t.getAmount());
