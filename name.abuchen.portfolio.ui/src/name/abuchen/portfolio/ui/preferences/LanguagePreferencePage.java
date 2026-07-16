@@ -60,7 +60,7 @@ public class LanguagePreferencePage extends PreferencePage
         CZECH("cs", "čeština"), //$NON-NLS-1$ //$NON-NLS-2$
         RUSSIAN("ru", "русский"), //$NON-NLS-1$ //$NON-NLS-2$
         SLOVAK("sk", "Slovenská"), //$NON-NLS-1$ //$NON-NLS-2$
-        POLISH("pl", "Polskie"), //$NON-NLS-1$ //$NON-NLS-2$
+        POLISH("pl", "Polski"), //$NON-NLS-1$ //$NON-NLS-2$
         CHINESE("zh", "中文"), //$NON-NLS-1$ //$NON-NLS-2$
         DANISH("da", "Dansk"), //$NON-NLS-1$ //$NON-NLS-2$
         TURKISH("tr", "Türk"), //$NON-NLS-1$ //$NON-NLS-2$
