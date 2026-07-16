@@ -111,4 +111,44 @@ public class IRRCalculationAfterTaxTest
         // charge as a real cash outflow
         assertTrue(afterTax.getIRR() < gross.getIRR());
     }
+    @Test
+    public void testStandaloneTaxRefundTransactionIsIncludedAsCashFlow()
+    {
+        // symmetric to testStandaloneTaxTransactionIsIncludedAsCashFlow: a standalone
+        // TAX_REFUND transaction linked to the security must be counted as a real cash
+        // inflow in the after-tax IRR, while the gross IRR calculation ignores it
+
+        List<CalculationLineItem> tx = new ArrayList<>();
+
+        Portfolio portfolio = new Portfolio();
+        Security security = new Security();
+
+        tx.add(CalculationLineItem.of(portfolio,
+                        new PortfolioTransaction(LocalDateTime.of(2020, Month.JANUARY, 1, 0, 0), //
+                                        CurrencyUnit.EUR, Values.Amount.factorize(1000), //
+                                        security, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 0, 0)));
+
+        AccountTransaction standaloneTaxRefund = new AccountTransaction();
+        standaloneTaxRefund.setType(AccountTransaction.Type.TAX_REFUND);
+        standaloneTaxRefund.setDateTime(LocalDateTime.of(2020, Month.JULY, 1, 0, 0));
+        standaloneTaxRefund.setSecurity(security);
+        standaloneTaxRefund.setMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(20)));
+        tx.add(CalculationLineItem.of(new Account(), standaloneTaxRefund));
+
+        tx.add(CalculationLineItem.of(portfolio,
+                        new PortfolioTransaction(LocalDateTime.of(2021, Month.JANUARY, 1, 0, 0), //
+                                        CurrencyUnit.EUR, Values.Amount.factorize(1100), //
+                                        security, Values.Share.factorize(10), PortfolioTransaction.Type.SELL, 0, 0)));
+
+        IRRCalculationAfterTax afterTax = Calculation.perform(IRRCalculationAfterTax.class,
+                        new TestCurrencyConverter(), security, tx);
+        IRRCalculation gross = Calculation.perform(IRRCalculation.class, new TestCurrencyConverter(), security, tx);
+
+        // the gross IRR completely ignores the standalone tax refund
+        assertThat(gross.getIRR(), IsCloseTo.closeTo(0.1d, 0.001d));
+
+        // the after-tax IRR must be higher because it includes the 20 EUR refund
+        // as a real cash inflow
+        assertTrue(afterTax.getIRR() > gross.getIRR());
+    }
 }
