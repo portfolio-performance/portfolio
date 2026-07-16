@@ -1,0 +1,132 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.83.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Account Statement
+Generated on the 02 Jun 2026
+dPhubKty WwJaVf
+wI Vazrazhdane, kE 74, pZ G, lp 38
+Period 01 May 2026 - 31 May 2026
+tmjWK Account name osCYEpbJ KLeeVv
+2031 Account number 03297789
+Fr
+USD Account summary
+Starting Ending
+Positions Value US$0 US$0
+Cash value* US$0 US$0
+Total US$0 US$0
+*Cash value is the amount of cash in your stock trading account that has not been invested
+USD Portfolio breakdown
+Symbol Company ISIN Quantity Price Value % of Portfolio
+Positions Value US$0 0%
+Cash value US$0 0%
+Total US$0
+USD Transactions
+Date Symbol Type Quantity Price Side Value Fees Commission
+This statement is provided by Revolut Securities Europe UAB, represented in Switzerland by Revolut (Switzerland) AG ("Revolut", "we", "our") in respect of the orders you 
+Get help directly In app submitted via the Revolut app which Revolut has transmitted to its third party brokers for execution.
+Scan the QR code
+Given Revolut’s execution-only service, we don’t provide tax or financial planning advice. The tax treatment of your investments will depend on your individual circumstances. 
+The value of your investments can go up as well as down, and you may receive back less than your original investments. In case you need assistance in completing your tax 
+return, please seek independent financial advice.
+Revolut Securities Europe UAB LEI: 9845001DE7E84FF54124
+Revolut Securities Europe UAB is an authorised financial brokerage firm regulated by the Bank of Lithuania and represented in Switzerland by Revolut (Switzerland) AG. Our 
+registered office is Konstitucijos ave. 21B, Vilnius, 08130, the Republic of Lithuania, company number 305799582.
+© 2026 Revolut Securities Europe UAB
+Account Statement
+Generated on the 02 Jun 2026
+rUzqWsdn vpqGtN
+Bv Vazrazhdane, Mc 74, hv G, Oy 52
+Period 01 May 2026 - 31 May 2026
+yMTbm Account name gGnsdTOY pfeBgt
+7113 Account number 67446510
+BG
+EUR Account summary
+Starting Ending
+Positions Value €549.77 €586.30
+Cash value* €6.11 €10.64
+Total €555.88 €596.94
+*Cash value is the amount of cash in your stock trading account that has not been invested
+EUR Portfolio breakdown
+Symbol Company ISIN Quantity Price Value % of Portfolio
+XDWI Xtrackers MSCI World Industrials UCITS ETF (Acc) IE00BM67HV82 0.1794624 €73.44 €13.18 2.21%
+WELK Amundi S&P Global Financials ESG Acc UCITS ETF IE000KYX7IP4 0.72470826 €17.95 €13.01 2.18%
+PRAR Amundi Prime Euro Govies UCITS ETF DR (Acc) LU2089238898 1.98726172 €18.13 €36.03 6.04%
+AMEL Amundi MSCI Emerging Markets Latin America UCITS ETF EUR (Acc) LU1681045024 0.63066719 €20.50 €12.93 2.17%
+79U0 Amundi S&P 500 II EUR Hedged ETF (Acc) LU0959211326 0.38741011 €209.52 €81.17 13.6%
+PRAJ Amundi Prime Japan UCITS ETF DR (Acc) LU2089238385 1.081347 €35.39 €38.27 6.41%
+LEMA Amundi MSCI Emerging Markets ETF (Acc) LU2573967036 0.68749069 €75.43 €51.86 8.69%
+EMBH Amundi USD Emerging Markets Government Bond UCITS ETF EUR Hedged (Dist) LU1686831030 0.48708265 €65.90 €32.10 5.38%
+EBUY Amundi MSCI Digital Economy and Metaverse ESG Screened UCITS ETF (Acc) LU2023678878 0.72109871 €20.29 €14.63 2.45%
+LYMS Amundi Nasdaq-100 II UCITS ETF (Acc) LU1829221024 0.94919308 €105.82 €100.44 16.83%
+TRDE Invesco US Treasury Bond 7-10 Year EUR-hedged Dist ETF IE00BF2FN869 0.42916926 €30.59 €13.13 2.2%
+UBUD UBS Solactive Global Pure Gold Miners UCITS ETF (Dist) IE00B7KMNP07 0.26032831 €44.94 €11.70 1.96%
+2B72 iShares MSCI Europe Mid Cap ETF (Acc) IE00BF20LF40 1.31610019 €9.99 €13.15 2.2%
+LYP6 Amundi Stoxx Europe 600 UCITS ETF (Acc) LU0908500753 0.43076434 €306.13 €131.87 22.09%
+LYP5 Amundi S&P 500 II ETF (Acc) LU1135865084 0.03963052 €471.86 €18.70 3.13%
+LGQK Amundi MSCI Pacific Ex Japan UCITS ETF (Dist) LU1220245556 0.03946552 €104.65 €4.13 0.69%
+Positions Value €586.30 98.22%
+Cash value €10.64 1.78%
+Total €596.94
+EUR Transactions
+Date Symbol Type Quantity Price Side Value Fees Commission
+01 May 2026 10:24:11 GMT Cash top-up €0.01 €0 €0
+01 May 2026 16:03:02 GMT Cash top-up €0.48 €0 €0
+01 May 2026 16:35:32 GMT Cash top-up €0.50 €0 €0
+02 May 2026 10:00:00 GMT Cash top-up €0.35 €0 €0
+04 May 2026 01:12:35 GMT Cash top-up €0.01 €0 €0
+06 May 2026 10:58:56 GMT Cash top-up €0.40 €0 €0
+07 May 2026 00:20:41 GMT Cash top-up €1 €0 €0
+10 May 2026 16:27:07 GMT Cash top-up €0.59 €0 €0
+11 May 2026 13:45:00 GMT LYMS Trade - Market 0.0571061 €101.04 Sell €5.77 €0.02 €0.01
+12 May 2026 09:00:01 GMT EMBH Trade - Market 0.01925701 €65.95 Buy €1.27 €0.02 €0.01
+12 May 2026 09:01:00 GMT LYP6 Trade - Market 0.01778749 €297.40 Buy €5.29 €0 €0
+Date Symbol Type Quantity Price Side Value Fees Commission
+12 May 2026 09:01:06 GMT PRAR Trade - Market 0.0773731 €17.96 Buy €1.39 €0 €0
+12 May 2026 09:01:16 GMT UBUD Trade - Market 0.02376279 €48.39 Buy €1.15 €0 €0
+12 May 2026 09:01:42 GMT AMEL Trade - Market 0.01826698 €21.35 Buy €0.39 €0 €0
+12 May 2026 11:04:33 GMT Cash top-up €0.51 €0 €0
+12 May 2026 13:45:25 GMT Cash top-up €0.01 €0 €0
+12 May 2026 14:18:25 GMT Cash top-up €0.04 €0 €0
+14 May 2026 11:53:44 GMT Cash top-up €0.40 €0 €0
+15 May 2026 06:27:00 GMT Cash top-up €0.30 €0 €0
+15 May 2026 15:14:48 GMT Cash top-up €0.16 €0 €0
+16 May 2026 18:54:07 GMT Cash top-up €1 €0 €0
+17 May 2026 10:42:58 GMT Cash top-up €0.32 €0 €0
+17 May 2026 12:04:08 GMT Cash top-up €1 €0 €0
+18 May 2026 10:54:54 GMT Cash top-up €0.93 €0 €0
+19 May 2026 05:37:56 GMT Cash top-up €0.43 €0 €0
+19 May 2026 05:57:28 GMT Cash top-up €0.50 €0 €0
+19 May 2026 06:01:20 GMT Cash top-up €0.43 €0 €0
+19 May 2026 06:19:48 GMT Cash top-up €0.13 €0 €0
+19 May 2026 13:45:01 GMT EMBH Trade - Market 0.00835784 €64.61 Buy €0.54 €0 €0
+19 May 2026 13:45:02 GMT LYP6 Trade - Market 0.00033328 €300.05 Buy €0.10 €0 €0
+19 May 2026 13:45:02 GMT LYMS Trade - Market 0.00495342 €100.94 Buy €0.50 €0 €0
+19 May 2026 13:45:02 GMT PRAJ Trade - Market 0.0147719 €34.53 Buy €0.51 €0 €0
+19 May 2026 13:45:04 GMT 2B72 Trade - Market 0.0588116 €9.86 Buy €0.58 €0 €0
+19 May 2026 13:45:11 GMT XDWI Trade - Market 0.00891862 €71.76 Buy €0.64 €0 €0
+19 May 2026 13:45:18 GMT UBUD Trade - Market 0.01876303 €43.17 Buy €0.81 €0 €0
+19 May 2026 13:45:34 GMT AMEL Trade - Market 0.05518926 €20.47 Buy €1.13 €0 €0
+19 May 2026 13:45:49 GMT WELK Trade - Market 0.02853626 €17.87 Buy €0.51 €0 €0
+19 May 2026 13:45:59 GMT TRDE Trade - Market 0.02687913 €30.13 Buy €0.81 €0 €0
+21 May 2026 13:02:58 GMT Cash top-up €0.20 €0 €0
+21 May 2026 21:05:16 GMT Cash top-up €0.86 €0 €0
+23 May 2026 11:16:36 GMT Cash top-up €0.57 €0 €0
+24 May 2026 08:30:34 GMT Cash top-up €0.08 €0 €0
+26 May 2026 15:31:53 GMT Cash top-up €0.48 €0 €0
+26 May 2026 16:46:02 GMT Cash top-up €1 €0 €0
+27 May 2026 09:51:32 GMT Cash top-up €0.57 €0 €0
+27 May 2026 16:02:34 GMT Cash top-up €0.51 €0 €0
+28 May 2026 01:20:41 GMT Robo management fee -€0.35 €0 €0
+28 May 2026 10:07:14 GMT Cash top-up €0.86 €0 €0
+29 May 2026 16:17:42 GMT Cash top-up €0.10 €0 €0
+This statement is provided by Revolut Securities Europe UAB, represented in Switzerland by Revolut (Switzerland) AG ("Revolut", "we", "our") in respect of the orders you 
+Get help directly In app submitted via the Revolut app which Revolut has transmitted to its third party brokers for execution.
+Scan the QR code
+Given Revolut’s execution-only service, we don’t provide tax or financial planning advice. The tax treatment of your investments will depend on your individual circumstances. 
+The value of your investments can go up as well as down, and you may receive back less than your original investments. In case you need assistance in completing your tax 
+return, please seek independent financial advice.
+Revolut Securities Europe UAB LEI: 9845001DE7E84FF54124
+Revolut Securities Europe UAB is an authorised financial brokerage firm regulated by the Bank of Lithuania and represented in Switzerland by Revolut (Switzerland) AG. Our 
+registered office is Konstitucijos ave. 21B, Vilnius, 08130, the Republic of Lithuania, company number 305799582.
+© 2026 Revolut Securities Europe UAB

@@ -336,6 +336,13 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
                         // @formatter:off
+                        // Cash Dividend IE00B1XNHC34ex 2026-05-21 pd 2026-05-29
+                        // @formatter:on
+                        .section("exDate") //
+                        .match("^Cash Dividend [A-Z]{2}[A-Z0-9]{9}[0-9]ex (?<exDate>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) .*$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
+                        // @formatter:off
                         // Netto credit 2.862,79 EUR
                         // @formatter:on
                         .section("currency", "amount") //

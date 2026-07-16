@@ -75,6 +75,7 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
 
     protected boolean columnsInReverseOrder = false;
     protected boolean showAverageColumn = false;
+    protected boolean showOnlyFirstYear = false;
 
     protected Font boldFont;
     protected TableColumnLayout tableLayout;
@@ -99,6 +100,13 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
         return this.getClass().getSimpleName() + "-showAverages"; //$NON-NLS-1$
     }
 
+    private String getKeyForShowOnlyFirstYear()
+    {
+        // Separate keys for sub-classes. The suffix is kept as
+        // "-showOnlyOneYear" for backward compatibility with stored preferences.
+        return this.getClass().getSimpleName() + "-showOnlyOneYear"; //$NON-NLS-1$
+    }
+
     protected void addReverseColumnAction(IMenuManager manager)
     {
         Action action = new SimpleAction(Messages.LabelColumnsInReverseOrder, a -> {
@@ -119,6 +127,17 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
             model.fireUpdateChange();
         });
         action.setChecked(showAverageColumn);
+        manager.add(action);
+    }
+
+    protected void addShowOnlyFirstYearAction(IMenuManager manager)
+    {
+        Action action = new SimpleAction(Messages.LabelShowOnlyOneYear, a -> {
+            showOnlyFirstYear = !showOnlyFirstYear;
+            updateColumns(tableViewer, tableLayout);
+            preferences.setValue(getKeyForShowOnlyFirstYear(), showOnlyFirstYear);
+        });
+        action.setChecked(showOnlyFirstYear);
         manager.add(action);
     }
 
@@ -156,6 +175,7 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
 
         columnsInReverseOrder = preferences.getBoolean(getKeyForReverseOrder());
         showAverageColumn = preferences.getBoolean(getKeyForShowAverage());
+        showOnlyFirstYear = preferences.getBoolean(getKeyForShowOnlyFirstYear());
 
         tableLayout = new TableColumnLayout();
         container.setLayout(tableLayout);
@@ -288,24 +308,25 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
         });
     }
 
+    /**
+     * Sums up the payments of the first year (i.e. the first up to twelve
+     * months) of the given line.
+     */
+    protected long sumFirstYear(PaymentsViewModel.Line line)
+    {
+        var noOfMonths = Math.min(12, line.getNoOfMonths());
+
+        var sum = 0L;
+        for (var ii = 0; ii < noOfMonths; ii++)
+            sum += line.getValue(ii);
+
+        return sum;
+    }
+
     protected void createSumColumn(TableViewer records, TableColumnLayout layout, boolean showOnlyFirstYear)
     {
-        ToLongFunction<PaymentsViewModel.Line> valueFunction = line -> {
-            if (showOnlyFirstYear)
-            {
-                int noOfMonths = Math.min(12, line.getNoOfMonths());
-
-                long sum = 0;
-                for (int ii = 0; ii < noOfMonths; ii++)
-                    sum += line.getValue(ii);
-
-                return sum;
-            }
-            else
-            {
-                return line.getSum();
-            }
-        };
+        ToLongFunction<PaymentsViewModel.Line> valueFunction = line -> showOnlyFirstYear ? sumFirstYear(line)
+                        : line.getSum();
 
         TableViewerColumn column;
         column = new TableViewerColumn(records, SWT.RIGHT);

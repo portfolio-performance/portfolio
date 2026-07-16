@@ -350,6 +350,7 @@ public class PortfolioClientFilter implements ClientFilter
             tp.setDateTime(t.getDateTime());
             tp.setCurrencyCode(t.getCurrencyCode());
             tp.setSecurity(t.getSecurity());
+            tp.setNote(t.getNote());
             tp.setShares(ClientFilterHelper.value(t.getShares(), portfolioWeight.subtract(commonWeight)));
             tp.setType(t.getType() == PortfolioTransaction.Type.BUY ? PortfolioTransaction.Type.DELIVERY_INBOUND
                             : PortfolioTransaction.Type.DELIVERY_OUTBOUND);
@@ -572,6 +573,7 @@ public class PortfolioClientFilter implements ClientFilter
         clone.setDateTime(t.getDateTime());
         clone.setCurrencyCode(t.getCurrencyCode());
         clone.setSecurity(t.getSecurity());
+        clone.setNote(t.getNote());
         clone.setAmount(ClientFilterHelper.value(t.getAmount(), weight));
         clone.setShares(ClientFilterHelper.value(t.getShares(), weight));
         t.getUnits().forEach(u -> clone.addUnit(ClientFilterHelper.value(u, weight)));
@@ -585,6 +587,7 @@ public class PortfolioClientFilter implements ClientFilter
         clone.setDateTime(t.getDateTime());
         clone.setCurrencyCode(t.getCurrencyCode());
         clone.setSecurity(t.getSecurity());
+        clone.setNote(t.getNote());
         clone.setAmount(ClientFilterHelper.value(t.getAmount(), weight));
         clone.setShares(ClientFilterHelper.value(t.getShares(), weight));
         t.getUnits().forEach(u -> clone.addUnit(ClientFilterHelper.value(u, weight)));
@@ -598,6 +601,7 @@ public class PortfolioClientFilter implements ClientFilter
         clone.setDateTime(t.getDateTime());
         clone.setCurrencyCode(t.getCurrencyCode());
         clone.setSecurity(null); // no security for REMOVAL or DEPOSIT
+        clone.setNote(t.getNote());
         clone.setAmount(ClientFilterHelper.value(t.getAmount(), weight));
         clone.setShares(ClientFilterHelper.value(t.getShares(), weight));
 

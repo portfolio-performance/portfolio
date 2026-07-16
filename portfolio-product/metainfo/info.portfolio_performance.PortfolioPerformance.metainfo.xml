@@ -37,6 +37,32 @@
 	    <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.86.0" date="2026-07-16">
+      <description>
+        <ul>
+          <li>New: Rebalancing view now lets you enter an additional amount to invest or withdraw, so it can tell you how to allocate an upcoming cash flow.</li>
+          <li>New: Import and export custom security attributes via CSV.</li>
+          <li>New: Added a profit/loss column based on the moving average cost basis.</li>
+          <li>New: Added an option to use moving average as the cost method in the payments view.</li>
+          <li>New: Added a PDF importer for St.Galler Kantonalbank.</li>
+          <li>Improvement: Enhanced PDF importers for KBC/Bolero, flatex, Scalable Capital, comdirect, Raiffeisenbank Gruppe, and Consorsbank.</li>
+          <li>Improvement: The payments-per-quarter matrix can now display the first year only.</li>
+          <li>Improvement: The transaction source field is now inline-editable, like the note field.</li>
+          <li>Improvement: You can now type the date directly in the Time Machine on the statement of assets.</li>
+          <li>Fix: CSV import no longer fails on empty columns when re-reading a file.</li>
+          <li xml:lang="de">Neu: In der Rebalancing-Ansicht kannst du jetzt einen zusätzlichen Betrag zum Investieren oder Entnehmen eingeben, sodass dir angezeigt wird, wie du einen anstehenden Zahlungsstrom aufteilst.</li>
+          <li xml:lang="de">Neu: Import und Export benutzerdefinierter Wertpapier-Attribute per CSV.</li>
+          <li xml:lang="de">Neu: Spalte "Gewinn/Verlust" auf Basis der gleitenden durchschnittlichen Anschaffungskosten hinzugefügt.</li>
+          <li xml:lang="de">Neu: Option hinzugefügt, um den gleitenden Durchschnitt als Kostenmethode in der Zahlungen-Ansicht zu verwenden.</li>
+          <li xml:lang="de">Neu: PDF-Importer für St.Galler Kantonalbank hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für KBC/Bolero, flatex, Scalable Capital, comdirect, Raiffeisenbank Gruppe und Consorsbank verbessert.</li>
+          <li xml:lang="de">Verbesserung: "Quartal/Anlage" in der Zahlungen-Ansicht kann jetzt ebenfalls nur das erste Jahr anzeigen.</li>
+          <li xml:lang="de">Verbesserung: Das Feld "Quelle" einer Buchung ist jetzt direkt bearbeitbar, wie das Notizfeld.</li>
+          <li xml:lang="de">Verbesserung: In der Vermögensaufstellung kannst du das Datum jetzt direkt eingeben.</li>
+          <li xml:lang="de">Fehlerbehebung: Der CSV-Import schlägt beim erneuten Einlesen einer Datei nicht mehr an leeren Spalten fehl.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.85.0" date="2026-07-07">
       <description>
         <ul>

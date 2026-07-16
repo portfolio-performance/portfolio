@@ -869,6 +869,7 @@ public class Messages extends NLS
     public static String LabelQuoteFeedConfiguration;
     public static String LabelQuoteFeedProvider;
     public static String LabelRatio;
+    public static String LabelRebalancingAmountToInvest;
     public static String LabelRefresh;
     public static String LabelRemoveDividends;
     public static String LabelRemoveLogo;
@@ -1089,6 +1090,7 @@ public class Messages extends NLS
     public static String MenuSetCurrentViewAsInitialView;
     public static String MenuSettingsNew;
     public static String MenuShow;
+    public static String MenuShowAmountToInvest;
     public static String MenuShowHideColumns;
     public static String MenuShowInformationPane;
     public static String MenuShowSidebar;

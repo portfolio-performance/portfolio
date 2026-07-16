@@ -225,6 +225,7 @@ public class WithoutTaxesFilter implements ClientFilter
         clone.setDateTime(t.getDateTime());
         clone.setCurrencyCode(t.getCurrencyCode());
         clone.setSecurity(null);
+        clone.setNote(t.getNote());
         clone.setAmount(t.getAmount());
         clone.setShares(t.getShares());
 

@@ -31,6 +31,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -355,6 +356,46 @@ public class PortfolioClientFilterTest
         // => funds 50 - 50 + 5 = 5
         assertThat(AccountSnapshot.create(account, new TestCurrencyConverter(), LocalDate.parse("2016-09-03"))
                         .getFunds(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5))));
+    }
+
+    @Test
+    public void testThatNotesArePreservedOnScaledTransactions()
+    {
+        Portfolio portfolioA = client.getPortfolios().get(0);
+
+        portfolioA.getTransactions().forEach(t -> t.setNote("buy note"));
+        portfolioA.getReferenceAccount().getTransactions().stream()
+                        .filter(t -> t.getType() == AccountTransaction.Type.DIVIDENDS)
+                        .forEach(t -> t.setNote("dividend note"));
+
+        // scale to 50% so that the filter creates copies rather than passing
+        // through the original transactions
+        Client result = new PortfolioClientFilter(Arrays.asList(portfolioA), Collections.emptyList(),
+                        Map.of(portfolioA, HALF)).filter(client);
+
+        Portfolio portfolio = result.getPortfolios().get(0);
+        Account account = result.getAccounts().get(0);
+
+        // the reference account is not included, so the buy is converted to a
+        // delivery - the note survives the conversion
+        assertThat(notesOf(portfolio.getTransactions(), PortfolioTransaction.Type.DELIVERY_INBOUND),
+                        is(Arrays.asList("buy note")));
+
+        assertThat(notesOf(account.getTransactions(), AccountTransaction.Type.DIVIDENDS),
+                        is(Arrays.asList("dividend note")));
+
+        // the balancing entry is created by the filter, not copied from a user
+        // transaction, and therefore must not carry a note
+        assertThat(notesOf(account.getTransactions(), AccountTransaction.Type.REMOVAL),
+                        is(Collections.singletonList(null)));
+    }
+
+    private <T extends Transaction> List<String> notesOf(List<T> transactions, Object type)
+    {
+        return transactions.stream() //
+                        .filter(t -> type.equals(t instanceof AccountTransaction at ? at.getType()
+                                        : ((PortfolioTransaction) t).getType()))
+                        .map(Transaction::getNote).collect(Collectors.toList());
     }
 
     @Test

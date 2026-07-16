@@ -7,6 +7,8 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,8 +20,10 @@ import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
@@ -92,6 +96,35 @@ public class ClientSecurityFilterTest
         // check that USD account is not included
         assertThat(filtered.getAccounts().stream().filter(a -> accountUSD.getName().equals(a.getName()))
                         .collect(Collectors.toList()), empty());
+    }
+
+    @Test
+    public void testThatNotesArePreservedOnCopiedTransactions()
+    {
+        accountEUR.getTransactions().forEach(t -> t.setNote("dividend note"));
+        client.getPortfolios().get(0).getTransactions().stream().filter(t -> t.getSecurity() == securityEUR)
+                        .forEach(t -> t.setNote("delivery note"));
+
+        Client filtered = new ClientSecurityFilter(securityEUR).filter(client);
+
+        Account account = filtered.getAccounts().get(0);
+        List<AccountTransaction> accountTx = account.getTransactions();
+
+        // the delivery is converted to a pseudo transaction, keeping the note
+        assertThat(filtered.getPortfolios().get(0).getTransactions().stream().map(Transaction::getNote)
+                        .collect(Collectors.toList()), is(Arrays.asList("delivery note")));
+
+        assertThat(notesOf(accountTx, AccountTransaction.Type.DIVIDENDS), is(Arrays.asList("dividend note")));
+
+        // the balancing entry is created by the filter, not copied from a user
+        // transaction, and therefore must not carry a note
+        assertThat(notesOf(accountTx, AccountTransaction.Type.REMOVAL), is(Collections.singletonList(null)));
+    }
+
+    private List<String> notesOf(List<AccountTransaction> transactions, AccountTransaction.Type type)
+    {
+        return transactions.stream().filter(t -> t.getType() == type).map(Transaction::getNote)
+                        .collect(Collectors.toList());
     }
 
     @Test

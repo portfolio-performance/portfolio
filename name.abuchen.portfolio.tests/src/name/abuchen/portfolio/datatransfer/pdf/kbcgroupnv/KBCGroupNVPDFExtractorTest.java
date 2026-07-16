@@ -397,7 +397,7 @@ public class KBCGroupNVPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-01-24T02:35:28"), hasExDate(null), //
+                        hasDate("2024-01-24T02:35:28"), hasExDate("2024-01-11"), //
                         hasShares(2065.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Borderel 003308592"), //
@@ -432,7 +432,7 @@ public class KBCGroupNVPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-14T02:39:42"), hasExDate(null), //
+                        hasDate("2025-03-14T02:39:42"), hasExDate("2025-02-28"), //
                         hasShares(2130.00), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Borderel 019817049"), //
@@ -467,7 +467,7 @@ public class KBCGroupNVPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-14T02:39:42"), hasExDate(null), //
+                        hasDate("2025-03-14T02:39:42"), hasExDate("2025-02-28"), //
                         hasShares(2130.00), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Borderel 019817049"), //
@@ -510,7 +510,7 @@ public class KBCGroupNVPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-01-02T02:38:33"), hasExDate(null), //
+                        hasDate("2024-01-02T02:38:33"), hasExDate("2023-12-14"), //
                         hasShares(43.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote("Borderel 000167639"), //
@@ -545,7 +545,7 @@ public class KBCGroupNVPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-01-02T02:38:33"), hasExDate(null), //
+                        hasDate("2024-01-02T02:38:33"), hasExDate("2023-12-14"), //
                         hasShares(43.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote("Borderel 000167639"), //
@@ -588,7 +588,7 @@ public class KBCGroupNVPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-01-29T02:35:19"), hasExDate(null), //
+                        hasDate("2025-01-29T02:35:19"), hasExDate("2025-01-16"), //
                         hasShares(912.00), //
                         hasSource("Dividende04.txt"), //
                         hasNote("Borderel 006631462"), //
@@ -628,7 +628,7 @@ public class KBCGroupNVPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2026-05-29T02:37:36"), hasExDate(null), //
+                        hasDate("2026-05-29T02:37:36"), hasExDate("2026-05-21"), //
                         hasShares(1000.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote("Borderel 067498551"), //
@@ -638,7 +638,7 @@ public class KBCGroupNVPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2026-05-29T09:57:53"), hasExDate(null), //
+                        hasDate("2026-05-29T09:57:53"), hasExDate("2026-05-27"), //
                         hasShares(25.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote("Borderel 067784648"), //
@@ -679,7 +679,7 @@ public class KBCGroupNVPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2026-05-29T02:37:36"), hasExDate(null), //
+                        hasDate("2026-05-29T02:37:36"), hasExDate("2026-05-21"), //
                         hasShares(1000.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote("Borderel 067498551"), //
@@ -695,7 +695,7 @@ public class KBCGroupNVPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2026-05-29T09:57:53"), hasExDate(null), //
+                        hasDate("2026-05-29T09:57:53"), hasExDate("2026-05-27"), //
                         hasShares(25.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote("Borderel 067784648"), //
