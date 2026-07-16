@@ -1516,7 +1516,6 @@ public class Messages extends NLS
     public static String ColumnRealizedCapitalGains_Header;
     public static String ColumnRealizedCurrencyGains_Header;
     public static String ColumnReturnRate_Header;
-    public static String ColumnSharesOwned_Header;
     public static String ColumnUnrealizedCapitalGains_Header;
     public static String ColumnUnrealizedCurrencyGains_Header;
     static

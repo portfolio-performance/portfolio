@@ -444,7 +444,7 @@ public class StatementOfAssetsViewer
     /* package */ void addAssetAndReportingColumns(ShowHideColumnHelper columns, CostMethod costMethod,
                     List<ReportingPeriod> reportingPeriods)
     {
-        Column column = new Column("sharesOwned", formatCostMethod(Messages.ColumnSharesOwned_Header, costMethod), SWT.RIGHT, 80) //$NON-NLS-1$
+        Column column = new Column("sharesOwned", Messages.ColumnSharesOwned, SWT.RIGHT, 80) //$NON-NLS-1$
                         .addAliasIDs("0"); //$NON-NLS-1$
         column.setLabelProvider(new SharesLabelProvider() // NOSONAR
         {

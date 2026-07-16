@@ -952,7 +952,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
     {
         ShowHideColumnHelper recordColumns = columns;
         // shares held
-        Column column = new Column("sharesOwned", formatCostMethod(Messages.ColumnSharesOwned_Header, costMethod), SWT.RIGHT, 80) //$NON-NLS-1$
+        Column column = new Column("sharesOwned", Messages.ColumnSharesOwned, SWT.RIGHT, 80) //$NON-NLS-1$
                         .addAliasIDs("shares"); //$NON-NLS-1$
         column.setLabelProvider(new SharesLabelProvider() // NOSONAR
         {
@@ -1639,7 +1639,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         var suffix = " [{0}]"; //$NON-NLS-1$
 
         // shares held
-        Column column = new Column("filter:sharesOwned", formatCostMethod(Messages.ColumnSharesOwned_Header, costMethod), SWT.RIGHT, 80) //$NON-NLS-1$
+        Column column = new Column("filter:sharesOwned", Messages.ColumnSharesOwned, SWT.RIGHT, 80) //$NON-NLS-1$
                         .addAliasIDs("filter:shares"); //$NON-NLS-1$
         column.setOptions(new ClientFilterColumnOptions(Messages.ColumnSharesOwned + suffix,
                         new ClientFilterMenu(getClient(), getPreferenceStore())));
