@@ -147,6 +147,6 @@ public abstract class ColumnEditingSupport
             TreeViewerEditor.create(treeViewer, activationStrategy, feature);
 
         if (state != null)
-            viewer.getColumnViewerEditor().addEditorActivationListener(state.createListener());
+            viewer.getColumnViewerEditor().addEditorActivationListener(state.createListener(viewer));
     }
 }

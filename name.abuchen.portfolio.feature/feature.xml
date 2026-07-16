@@ -41,6 +41,13 @@ For purposes of the EPL, &quot;Program&quot; will mean the Content.
          unpack="false"/>
 
    <plugin
+         id="name.abuchen.portfolio.rest"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
          id="name.abuchen.portfolio.ui"
          download-size="0"
          install-size="0"
