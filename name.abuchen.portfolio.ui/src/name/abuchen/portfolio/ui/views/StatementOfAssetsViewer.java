@@ -607,6 +607,41 @@ public class StatementOfAssetsViewer
         column.setVisible(false);
         support.addColumn(column);
 
+        column = new Column("profitLossPercent", Messages.ColumnProfitLossPercent, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.ColumnProfitLoss);
+        column.setMenuLabel(MessageFormat.format(Messages.LabelWithQualifier, Messages.ColumnProfitLossPercent,
+                        CostMethod.FIFO.getLabel()));
+        column.setDescription(Messages.ColumnProfitLossPercentFIFO_Description + TextUtil.PARAGRAPH_BREAK
+                        + Messages.ColumnProfitLossGeneric_Description);
+        labelProvider = new ReportingPeriodLabelProvider(record -> {
+            var percent = record.getCapitalGainsOnHoldingsPercent(CostMethod.FIFO);
+            // holdings with a zero cost basis (e.g. free deliveries) produce
+            // an undefined (infinite) percentage; leave the cell blank
+            return Double.isInfinite(percent) ? null : percent;
+        });
+        column.setLabelProvider(labelProvider);
+        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("profitLossPercentMovingAverage", //$NON-NLS-1$
+                        MessageFormat.format(Messages.LabelWithQualifier, Messages.ColumnProfitLossPercent,
+                                        CostMethod.MOVING_AVERAGE.getAbbreviation()),
+                        SWT.RIGHT, 80);
+        column.setGroupLabel(Messages.ColumnProfitLoss);
+        column.setMenuLabel(MessageFormat.format(Messages.LabelWithQualifier, Messages.ColumnProfitLossPercent,
+                        CostMethod.MOVING_AVERAGE.getLabel()));
+        column.setDescription(Messages.ColumnProfitLossPercentMovingAverage_Description + TextUtil.PARAGRAPH_BREAK
+                        + Messages.ColumnProfitLossGeneric_Description);
+        labelProvider = new ReportingPeriodLabelProvider(record -> {
+            var percent = record.getCapitalGainsOnHoldingsPercent(CostMethod.MOVING_AVERAGE);
+            return Double.isInfinite(percent) ? null : percent;
+        });
+        column.setLabelProvider(labelProvider);
+        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
+        column.setVisible(false);
+        support.addColumn(column);
+
         column = new NoteColumn();
         column.getEditingSupport().addListener(new TouchClientListener(client));
         column.getSorter().wrap(ElementComparator::new);
