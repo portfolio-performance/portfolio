@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.snapshot.security;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -108,17 +109,35 @@ import name.abuchen.portfolio.money.CurrencyConverter;
     {
         try
         {
-            T thing = type.getDeclaredConstructor().newInstance();
-            thing.setSecurity(security);
-            thing.setTermCurrency(converter.getTermCurrency());
-            thing.prepare();
-            thing.visitAll(converter, lineItems);
-            thing.finish(converter, lineItems);
-            return thing;
+            return execute(type.getDeclaredConstructor().newInstance(), converter, security, lineItems);
         }
         catch (Exception e)
         {
             throw new UnsupportedOperationException(e);
         }
+    }
+
+    static <T extends Calculation> T perform(Supplier<T> factory, CurrencyConverter converter,
+                    Security security, List<CalculationLineItem> lineItems)
+    {
+        try
+        {
+            return execute(factory.get(), converter, security, lineItems);
+        }
+        catch (Exception e)
+        {
+            throw new UnsupportedOperationException(e);
+        }
+    }
+
+    private static <T extends Calculation> T execute(T calculation, CurrencyConverter converter, Security security,
+                    List<CalculationLineItem> lineItems)
+    {
+        calculation.setSecurity(security);
+        calculation.setTermCurrency(converter.getTermCurrency());
+        calculation.prepare();
+        calculation.visitAll(converter, lineItems);
+        calculation.finish(converter, lineItems);
+        return calculation;
     }
 }

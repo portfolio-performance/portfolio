@@ -15,8 +15,10 @@ import java.util.stream.Collectors;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
@@ -44,7 +46,7 @@ public class TradesGroupedByTaxonomy
             return;
 
         Set<String> distinctCurrencies = allTrades.stream()
-                        .map(t -> t.getProfitLoss() != null ? t.getProfitLoss().getCurrencyCode() : null)
+                        .map(Trade::getCurrencyCode)
                         .filter(Objects::nonNull).collect(Collectors.toSet());
 
         final boolean multiCurrencyMode = distinctCurrencies.size() > 1
@@ -84,10 +86,9 @@ public class TradesGroupedByTaxonomy
                 {
                     if (trade.getSecurity().equals(security))
                     {
-                        if (trade.getProfitLoss() == null || trade.getProfitLoss().getCurrencyCode() == null)
+                        String currencyCode = trade.getCurrencyCode();
+                        if (currencyCode == null)
                             continue;
-
-                        String currencyCode = trade.getProfitLoss().getCurrencyCode();
 
                         Object key = multiCurrencyMode
                                         ? new AbstractMap.SimpleImmutableEntry<>(classification, currencyCode)
@@ -135,10 +136,9 @@ public class TradesGroupedByTaxonomy
 
             if (assignedWeight < Classification.ONE_HUNDRED_PERCENT)
             {
-                if (trade.getProfitLoss() == null || trade.getProfitLoss().getCurrencyCode() == null)
+                String currencyCode = trade.getCurrencyCode();
+                if (currencyCode == null)
                     continue;
-
-                String currencyCode = trade.getProfitLoss().getCurrencyCode();
 
                 TradeCategory unassignedCategory = unassignedCategories.computeIfAbsent(currencyCode,
                                 cc -> multiCurrencyMode ? new TradeCategory(unassignedClassification, converter, cc)
@@ -177,22 +177,13 @@ public class TradesGroupedByTaxonomy
         return Collections.unmodifiableList(allTrades);
     }
 
-    public Money getTotalProfitLoss()
+    public Money getTotalProfitLoss(CostMethod costMethod, TaxesAndFees taxesAndFees)
     {
-        return allTrades.stream().map(trade -> {
-            Money pnl = trade.getProfitLoss();
-            if (pnl == null)
-                return Money.of(converter.getTermCurrency(), 0);
+        Objects.requireNonNull(costMethod);
+        Objects.requireNonNull(taxesAndFees);
 
-            LocalDate date = trade.getEnd().map(LocalDate::from).orElse(LocalDate.now());
-            return pnl.with(converter.at(date));
-        }).collect(MoneyCollectors.sum(converter.getTermCurrency()));
-    }
-
-    public Money getTotalProfitLossWithoutTaxesAndFees()
-    {
         return allTrades.stream().map(trade -> {
-            Money pnl = trade.getProfitLossWithoutTaxesAndFees();
+            Money pnl = trade.getProfitLoss(costMethod, taxesAndFees);
             if (pnl == null)
                 return Money.of(converter.getTermCurrency(), 0);
 

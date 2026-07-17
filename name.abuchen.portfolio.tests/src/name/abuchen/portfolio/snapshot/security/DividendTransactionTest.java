@@ -42,10 +42,7 @@ public class DividendTransactionTest
         if (tax > 0)
             t.addUnit(new Unit(Unit.Type.TAX, Money.of(CurrencyUnit.EUR, tax * -1)));
 
-        CalculationLineItem.DividendPayment answer = (CalculationLineItem.DividendPayment) CalculationLineItem
-                        .of(account, t);
-        answer.setTotalShares(shares);
-        return answer;
+        return (CalculationLineItem.DividendPayment) CalculationLineItem.of(account, t);
     }
 
     @Test
@@ -97,29 +94,17 @@ public class DividendTransactionTest
     @Test
     public void testGetMovingAverageCost()
     {
-        CalculationLineItem.DividendPayment t1 = createDividendTransaction(100L, 10L, 1L,
-                        LocalDateTime.of(2019, 01, 15, 12, 00));
-        Money movingAverageCost = Money.of(CurrencyUnit.EUR, 1000L);
-        t1.setMovingAverageCost(movingAverageCost);
-
-        Money result = t1.getMovingAverageCost();
-        Money expected = Money.of(CurrencyUnit.EUR, 1000L);
-
-        assertEquals(expected, result);
+        CalculationLineItem.DividendPayment payment = createDividendTransaction(100L, 5L, 0L,
+                        LocalDateTime.of(2019, 1, 15, 12, 0));
+        assertEquals(0.1d, payment.getPersonalDividendYield(Money.of(CurrencyUnit.EUR, 2000L), 10L), 0d);
     }
 
     @Test
     public void testGetFifoCosts()
     {
-        CalculationLineItem.DividendPayment t1 = createDividendTransaction(100L, 10L, 0L,
-                        LocalDateTime.of(2019, 01, 15, 12, 00));
-        Money fifoCost = Money.of(CurrencyUnit.EUR, 2000L);
-        t1.setFifoCost(fifoCost);
-
-        Money result = t1.getFifoCost();
-        Money expected = Money.of(CurrencyUnit.EUR, 2000L);
-
-        assertEquals(expected, result);
+        CalculationLineItem.DividendPayment payment = createDividendTransaction(100L, 10L, 0L,
+                        LocalDateTime.of(2019, 1, 15, 12, 0));
+        assertEquals(0.05d, payment.getPersonalDividendYield(Money.of(CurrencyUnit.EUR, 2000L), 10L), 0d);
     }
 
     @Test
@@ -127,11 +112,7 @@ public class DividendTransactionTest
     {
         CalculationLineItem.DividendPayment t1 = createDividendTransaction(100L, 10L, 0L,
                         LocalDateTime.of(2019, 01, 15, 12, 00));
-        Money fifoCost = Money.of(CurrencyUnit.EUR, 2000L);
-        t1.setFifoCost(fifoCost);
-
-        //
-        double result = t1.getPersonalDividendYield(); // hence 5% yield
+        double result = t1.getPersonalDividendYield(Money.of(CurrencyUnit.EUR, 2000L), 10L); // hence 5% yield
 
         assertEquals(0.05d, result, 0.0d);
     }
@@ -141,9 +122,7 @@ public class DividendTransactionTest
     {
         CalculationLineItem.DividendPayment t1 = createDividendTransaction(100L, 10L, 0L,
                         LocalDateTime.of(2019, 01, 15, 12, 00));
-        // Transaction has no movingAverageCosts
-
-        double result = t1.getPersonalDividendYield();
+        double result = t1.getPersonalDividendYield(null, 10L);
 
         assertEquals(0.0, result, 0.001d);
     }
@@ -156,12 +135,7 @@ public class DividendTransactionTest
 
         CalculationLineItem.DividendPayment t1 = createDividendTransaction(100L, 0L, 0L,
                         LocalDateTime.of(2019, 01, 15, 12, 00));
-        Money fifoCost = Money.of(CurrencyUnit.EUR, 2000L); // we paid
-                                                            // originally 2000$
-        t1.setFifoCost(fifoCost);
-
-        //
-        double result = t1.getPersonalDividendYield(); // hence 5% yield
+        double result = t1.getPersonalDividendYield(Money.of(CurrencyUnit.EUR, 2000L), 0L); // hence 5% yield
 
         assertEquals(0.05d, result, 0.0d);
     }
@@ -171,15 +145,7 @@ public class DividendTransactionTest
     {
         CalculationLineItem.DividendPayment t1 = createDividendTransaction(100L, 10L, 0L,
                         LocalDateTime.of(2019, 01, 15, 12, 00));
-        Money movingAverageCost = Money.of(CurrencyUnit.EUR, 1800); // we paid
-                                                                    // originally
-                                                                    // around
-                                                                    // 1800
-        t1.setMovingAverageCost(movingAverageCost);
-
-        double result = t1.getPersonalDividendYieldMovingAverage(); // hence
-                                                                    // 5.5556%
-                                                                    // yield
+        double result = t1.getPersonalDividendYield(Money.of(CurrencyUnit.EUR, 1800), 10L); // hence 5.5556% yield
 
         assertEquals(0.0556d, result, 0.001d);
     }
@@ -189,9 +155,7 @@ public class DividendTransactionTest
     {
         CalculationLineItem.DividendPayment t1 = createDividendTransaction(100L, 10L, 0L,
                         LocalDateTime.of(2019, 01, 15, 12, 00));
-        // Transaction has no movingAverageCosts
-
-        double result = t1.getPersonalDividendYieldMovingAverage();
+        double result = t1.getPersonalDividendYield(Money.of(CurrencyUnit.EUR, 0L), 10L);
 
         assertEquals(0.0, result, 0.001d);
     }
@@ -204,15 +168,7 @@ public class DividendTransactionTest
 
         CalculationLineItem.DividendPayment t1 = createDividendTransaction(100L, 0L, 0L,
                         LocalDateTime.of(2019, 01, 15, 12, 00));
-        Money movingAverageCost = Money.of(CurrencyUnit.EUR, 1500); // we paid
-                                                                    // originally
-                                                                    // around
-                                                                    // 1800
-        t1.setMovingAverageCost(movingAverageCost);
-
-        double result = t1.getPersonalDividendYieldMovingAverage(); // hence
-                                                                    // 6.66666%
-                                                                    // yield
+        double result = t1.getPersonalDividendYield(Money.of(CurrencyUnit.EUR, 1500), 0L); // hence 6.66666% yield
 
         assertEquals(0.06666, result, 0.001d);
     }

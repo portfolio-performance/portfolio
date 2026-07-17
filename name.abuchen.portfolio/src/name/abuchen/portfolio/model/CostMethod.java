@@ -31,9 +31,4 @@ public enum CostMethod
     {
         return abbreviation;
     }
-
-    public boolean useFifo()
-    {
-        return this == FIFO;
-    }
 }

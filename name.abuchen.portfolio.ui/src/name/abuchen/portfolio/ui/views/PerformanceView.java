@@ -14,6 +14,7 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -88,7 +89,7 @@ import name.abuchen.portfolio.util.Interval;
 
 public class PerformanceView extends AbstractHistoricView
 {
-    private static final String CAPITAL_GAIN_USE_FIFO = PerformanceView.class.getSimpleName()
+    private static final String CAPITAL_GAIN_COST_METHOD = PerformanceView.class.getSimpleName()
                     + "-CAPITAL_GAIN_USE_FIFO"; //$NON-NLS-1$
 
     @Inject
@@ -103,7 +104,7 @@ public class PerformanceView extends AbstractHistoricView
     private ClientFilterDropDown clientFilter;
 
     private boolean preTax = false;
-    private boolean useFifo = true;
+    private CostMethod costMethod = CostMethod.FIFO;
 
     private TreeViewer calculation;
     private StatementOfAssetsViewer snapshotStart;
@@ -147,19 +148,19 @@ public class PerformanceView extends AbstractHistoricView
             manager.add(new LabelOnly(Messages.LabelCapitalGainsMethod));
 
             SimpleAction useFifoAction = new SimpleAction(CostMethod.FIFO.getLabel(), a -> {
-                this.useFifo = true;
-                getPreferenceStore().setValue(CAPITAL_GAIN_USE_FIFO, String.valueOf(useFifo));
+                this.costMethod = CostMethod.FIFO;
+                writeCapitalGainCostMethod(getPreferenceStore(), this.costMethod);
                 reportingPeriodUpdated();
             });
-            useFifoAction.setChecked(this.useFifo);
+            useFifoAction.setChecked(this.costMethod == CostMethod.FIFO);
             manager.add(useFifoAction);
 
             SimpleAction movingAverageMethod = new SimpleAction(CostMethod.MOVING_AVERAGE.getLabel(), a -> {
-                this.useFifo = false;
-                getPreferenceStore().setValue(CAPITAL_GAIN_USE_FIFO, String.valueOf(useFifo));
+                this.costMethod = CostMethod.MOVING_AVERAGE;
+                writeCapitalGainCostMethod(getPreferenceStore(), this.costMethod);
                 reportingPeriodUpdated();
             });
-            movingAverageMethod.setChecked(!this.useFifo);
+            movingAverageMethod.setChecked(this.costMethod == CostMethod.MOVING_AVERAGE);
             manager.add(movingAverageMethod);
         }));
     }
@@ -176,7 +177,8 @@ public class PerformanceView extends AbstractHistoricView
 
         setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
 
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(filteredClient, converter, period, useFifo);
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(filteredClient, converter, period,
+                        costMethod);
 
         try
         {
@@ -230,24 +232,43 @@ public class PerformanceView extends AbstractHistoricView
         fees = createTransactionViewer(folder, Messages.PerformanceTabFees);
 
         folder.setSelection(0);
-        String capitalGainMethod = getPreferenceStore().getString(CAPITAL_GAIN_USE_FIFO);
-        if (capitalGainMethod != null && !capitalGainMethod.isEmpty())
-        {
-            try
-            {
-                this.useFifo = Boolean.valueOf(capitalGainMethod);
-            }
-            catch (IllegalArgumentException e)
-            {
-                // unknown capital gain method type; continue to use the default
-                // one
-            }
-        }
+        this.costMethod = readCapitalGainCostMethod(getPreferenceStore());
 
         reportingPeriodUpdated();
         updateTitle(getDefaultTitle());
 
         return folder;
+    }
+
+    static CostMethod readCapitalGainCostMethod(IPreferenceStore preferences)
+    {
+        String value = preferences.getString(CAPITAL_GAIN_COST_METHOD);
+
+        if (Boolean.TRUE.toString().equalsIgnoreCase(value))
+        {
+            writeCapitalGainCostMethod(preferences, CostMethod.FIFO);
+            return CostMethod.FIFO;
+        }
+
+        if (Boolean.FALSE.toString().equalsIgnoreCase(value))
+        {
+            writeCapitalGainCostMethod(preferences, CostMethod.MOVING_AVERAGE);
+            return CostMethod.MOVING_AVERAGE;
+        }
+
+        try
+        {
+            return CostMethod.valueOf(value);
+        }
+        catch (IllegalArgumentException e)
+        {
+            return CostMethod.FIFO;
+        }
+    }
+
+    static void writeCapitalGainCostMethod(IPreferenceStore preferences, CostMethod costMethod)
+    {
+        preferences.setValue(CAPITAL_GAIN_COST_METHOD, costMethod.name());
     }
 
     private StatementOfAssetsViewer createStatementOfAssetsItem(CTabFolder folder, String title)

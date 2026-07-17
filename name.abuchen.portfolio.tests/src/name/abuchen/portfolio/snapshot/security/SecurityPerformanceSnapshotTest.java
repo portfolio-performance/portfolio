@@ -26,7 +26,6 @@ import name.abuchen.portfolio.util.Interval;
 @SuppressWarnings("nls")
 public class SecurityPerformanceSnapshotTest
 {
-
     @Test
     public void testBigPurchases()
     {
@@ -48,7 +47,7 @@ public class SecurityPerformanceSnapshotTest
         LazySecurityPerformanceRecord record = snapshot.getRecords().get(0);
         assertThat(record.getSecurity(), is(security));
 
-        assertThat(record.getSharesHeld(), is(0L));
+        assertThat(record.getSharesHeld(name.abuchen.portfolio.model.CostMethod.FIFO), is(0L));
 
         assertThat(record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, 0)));
         assertThat(record.getCostPerSharesHeld(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED),
@@ -80,7 +79,7 @@ public class SecurityPerformanceSnapshotTest
         LazySecurityPerformanceRecord record = snapshot.getRecords().get(0);
         assertThat(record.getSecurity(), is(security));
 
-        assertThat(record.getSharesHeld(), is(Values.Share.factorize(499999)));
+        assertThat(record.getSharesHeld(name.abuchen.portfolio.model.CostMethod.FIFO), is(Values.Share.factorize(499999)));
 
         assertThat(record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(450000 - 0.9))));
@@ -95,7 +94,8 @@ public class SecurityPerformanceSnapshotTest
         SecurityPosition position = ClientSnapshot.create(client, new TestCurrencyConverter(), reportingPeriod.getEnd())
                         .getPositionsByVehicle().get(security).getPosition();
 
-        assertThat(position.getShares(), is(record.getSharesHeld()));
+        assertThat(position.getShares(), is(record.getSharesHeld(name.abuchen.portfolio.model.CostMethod.FIFO)));
         assertThat(position.calculateValue(), is(record.getMarketValue()));
     }
+
 }

@@ -4,6 +4,7 @@ import java.text.MessageFormat;
 import java.util.List;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.Values;
@@ -25,13 +26,10 @@ public class TradesProfitLossWidget extends AbstractTradesWidget
         this.title.setText(TextUtil.tooltip(getWidget().getLabel()));
 
         List<Trade> trades = input.getTrades();
-        boolean useFifo = get(CostMethodConfig.class).getValue().useFifo();
+        var costMethod = get(CostMethodConfig.class).getValue();
 
-        Money profitLoss = useFifo
-                        ? trades.stream().map(Trade::getProfitLoss)
-                                        .collect(MoneyCollectors.sum(
-                                                        getDashboardData().getCurrencyConverter().getTermCurrency()))
-                        : trades.stream().map(Trade::getProfitLossMovingAverage)
+        Money profitLoss = trades.stream()
+                        .map(trade -> trade.getProfitLoss(costMethod, TaxesAndFees.INCLUDED))
                         .collect(MoneyCollectors.sum(getDashboardData().getCurrencyConverter().getTermCurrency()));
 
         this.indicator.setText(

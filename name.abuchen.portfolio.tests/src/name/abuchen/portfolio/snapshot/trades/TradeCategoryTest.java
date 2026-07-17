@@ -20,8 +20,10 @@ import name.abuchen.portfolio.math.IRR;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -70,16 +72,37 @@ public class TradeCategoryTest
 
         // verify aggregations
         assertThat(category.getTradeCount(), is(1L));
-        assertThat(category.getTotalEntryValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10000))));
+        assertThat(category.getTotalEntryValue(CostMethod.FIFO), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10000))));
         assertThat(category.getTotalExitValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11000))));
-        assertThat(category.getTotalProfitLoss(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000))));
-        assertThat(category.getTotalProfitLossMovingAverage(),
+        assertThat(category.getTotalProfitLoss(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000))));
+        assertThat(category.getTotalProfitLoss(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000))));
-        assertThat(category.getTotalProfitLossMovingAverageWithoutTaxesAndFees(),
+        assertThat(category.getTotalProfitLoss(CostMethod.MOVING_AVERAGE, TaxesAndFees.NOT_INCLUDED),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000))));
-        assertThat(category.getWinningTradesCount(), is(1L));
-        assertThat(category.getLosingTradesCount(), is(0L));
-        assertThat(category.getAverageReturnMovingAverage(), is(closeTo(0.1, 1e-10)));
+        assertThat(category.getWinningTradesCount(CostMethod.FIFO), is(1L));
+        assertThat(category.getLosingTradesCount(CostMethod.FIFO), is(0L));
+        assertThat(category.getAverageReturn(CostMethod.MOVING_AVERAGE), is(closeTo(0.1, 1e-10)));
+
+        TradesGroupedByTaxonomy grouped = new TradesGroupedByTaxonomy(taxonomy, trades,
+                        new TestCurrencyConverter());
+        TradeTotals totals = new TradeTotals(grouped);
+        assertThat(totals.getTotalEntryValue(CostMethod.FIFO, TaxesAndFees.INCLUDED),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10000))));
+        assertThat(totals.getTotalEntryValue(CostMethod.MOVING_AVERAGE, TaxesAndFees.NOT_INCLUDED),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10000))));
+        assertThat(totals.getTotalProfitLoss(CostMethod.FIFO, TaxesAndFees.INCLUDED),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000))));
+        assertThat(totals.getTotalProfitLoss(CostMethod.MOVING_AVERAGE, TaxesAndFees.NOT_INCLUDED),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000))));
+        assertThat(totals.getAverageReturn(CostMethod.FIFO), is(closeTo(0.1, 1e-10)));
+        assertThat(totals.getAverageReturn(CostMethod.MOVING_AVERAGE), is(closeTo(0.1, 1e-10)));
+
+        // Adding another assignment invalidates both method-specific results.
+        category.addTrade(trades.get(0), 0.5);
+        assertThat(category.getTotalEntryValue(CostMethod.FIFO),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15000))));
+        assertThat(category.getTotalEntryValue(CostMethod.MOVING_AVERAGE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15000))));
     }
 
     @Test
@@ -117,14 +140,14 @@ public class TradeCategoryTest
         category.addTrade(trades.get(0), 0.5);
 
         // verify weighted aggregations - profit should be 50% of 1000 = 500
-        assertThat(category.getTotalEntryValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5000))));
+        assertThat(category.getTotalEntryValue(CostMethod.FIFO), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5000))));
         assertThat(category.getTotalExitValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5500))));
-        assertThat(category.getTotalProfitLoss(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500))));
-        assertThat(category.getTotalProfitLossMovingAverage(),
+        assertThat(category.getTotalProfitLoss(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500))));
+        assertThat(category.getTotalProfitLoss(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500))));
-        assertThat(category.getTotalProfitLossMovingAverageWithoutTaxesAndFees(),
+        assertThat(category.getTotalProfitLoss(CostMethod.MOVING_AVERAGE, TaxesAndFees.NOT_INCLUDED),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500))));
-        assertThat(category.getAverageReturnMovingAverage(), is(closeTo(0.1, 1e-10)));
+        assertThat(category.getAverageReturn(CostMethod.MOVING_AVERAGE), is(closeTo(0.1, 1e-10)));
 
         assertThat(category.getTradeAssignments().size(), is(1));
         TradeCategory.TradeAssignment assignment = category.getTradeAssignments().get(0);
@@ -164,8 +187,8 @@ public class TradeCategoryTest
         category.addTrade(trades.get(0), 0.4);
 
         assertThat(category.getTradeCount(), is(1L));
-        assertThat(category.getWinningTradesCount(), is(1L));
-        assertThat(category.getLosingTradesCount(), is(0L));
+        assertThat(category.getWinningTradesCount(CostMethod.FIFO), is(1L));
+        assertThat(category.getLosingTradesCount(CostMethod.FIFO), is(0L));
     }
 
     @Test
@@ -201,12 +224,12 @@ public class TradeCategoryTest
 
         Trade shortTrade = trades.get(0);
         assertThat(shortTrade.isLong(), is(false));
-        assertThat(shortTrade.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000))));
+        assertThat(shortTrade.getProfitLoss(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000))));
 
         TradeCategory category = new TradeCategory(shorts, new TestCurrencyConverter());
         category.addTrade(shortTrade, 1.0);
 
-        assertThat(category.getAverageReturn(), is(closeTo(shortTrade.getReturn(), 1e-10)));
+        assertThat(category.getAverageReturn(CostMethod.FIFO), is(closeTo(shortTrade.getReturn(CostMethod.FIFO), 1e-10)));
     }
 
     @Test
@@ -358,4 +381,5 @@ public class TradeCategoryTest
 
         assertThat(category.getAverageIRR(), is(closeTo(expectedIrr, 1e-10)));
     }
+
 }

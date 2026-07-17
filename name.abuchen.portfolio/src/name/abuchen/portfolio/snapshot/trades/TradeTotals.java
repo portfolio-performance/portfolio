@@ -6,6 +6,8 @@ import java.util.Objects;
 import java.util.function.Function;
 
 import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.CostMethod;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
@@ -13,16 +15,20 @@ import name.abuchen.portfolio.money.Values;
 
 public class TradeTotals
 {
+    private record TradeTotalsCostResult(Money totalEntryValue, Money totalEntryValueWithoutTaxesAndFees,
+                    Money totalProfitLoss,
+                    Money totalProfitLossWithoutTaxesAndFees, double averageReturn)
+    {
+    }
+
     private final CurrencyConverter converter;
     private final List<Trade> trades;
     private final TradeCategory aggregate;
 
-    private final Money totalEntryValue;
-    private final Money totalEntryValueMovingAverage;
     private final Money totalExitValue;
-    private final Money totalProfitLossMovingAverage;
-    private final Money totalProfitLossMovingAverageWithoutTaxesAndFees;
     private final long totalShares;
+    private TradeTotalsCostResult fifoResult;
+    private TradeTotalsCostResult movingAverageResult;
 
     public TradeTotals(TradesGroupedByTaxonomy groupedTrades)
     {
@@ -34,14 +40,64 @@ public class TradeTotals
         this.trades.stream().distinct().forEach(trade -> aggregate.addTrade(trade, 1.0));
 
         this.totalShares = trades.stream().mapToLong(Trade::getShares).sum();
-        this.totalEntryValue = sumMoney(Trade::getEntryValue, Trade::getStart);
-        this.totalEntryValueMovingAverage = sumMoney(Trade::getEntryValueMovingAverage, Trade::getStart);
         this.totalExitValue = sumMoney(Trade::getExitValue, trade -> trade.getEnd().orElse(LocalDateTime.now()));
-        this.totalProfitLossMovingAverage = sumMoney(Trade::getProfitLossMovingAverage,
+    }
+
+    private TradeTotalsCostResult getCostResult(CostMethod costMethod)
+    {
+        return switch (Objects.requireNonNull(costMethod))
+        {
+            case FIFO -> getOrCalculateFifoResult();
+            case MOVING_AVERAGE -> getOrCalculateMovingAverageResult();
+        };
+    }
+
+    private TradeTotalsCostResult getOrCalculateFifoResult()
+    {
+        if (fifoResult == null)
+            fifoResult = calculateFifoResult();
+
+        return fifoResult;
+    }
+
+    private TradeTotalsCostResult getOrCalculateMovingAverageResult()
+    {
+        if (movingAverageResult == null)
+            movingAverageResult = calculateMovingAverageResult();
+
+        return movingAverageResult;
+    }
+
+    private TradeTotalsCostResult calculateFifoResult()
+    {
+        Money totalEntryValue = sumMoney(
+                        trade -> trade.getEntryValue(CostMethod.FIFO, TaxesAndFees.INCLUDED), Trade::getStart);
+        Money totalEntryValueWithoutTaxesAndFees = sumMoney(
+                        trade -> trade.getEntryValue(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED), Trade::getStart);
+        Money totalProfitLoss = aggregate.getTotalProfitLoss(CostMethod.FIFO, TaxesAndFees.INCLUDED);
+        Money totalProfitLossWithoutTaxesAndFees = aggregate.getTotalProfitLoss(CostMethod.FIFO,
+                        TaxesAndFees.NOT_INCLUDED);
+        return new TradeTotalsCostResult(totalEntryValue, totalEntryValueWithoutTaxesAndFees, totalProfitLoss,
+                        totalProfitLossWithoutTaxesAndFees, aggregate.getAverageReturn(CostMethod.FIFO));
+    }
+
+    private TradeTotalsCostResult calculateMovingAverageResult()
+    {
+        Money totalEntryValue = sumMoney(
+                        trade -> trade.getEntryValue(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), Trade::getStart);
+        Money totalEntryValueWithoutTaxesAndFees = sumMoney(
+                        trade -> trade.getEntryValue(CostMethod.MOVING_AVERAGE, TaxesAndFees.NOT_INCLUDED),
+                        Trade::getStart);
+        Money totalProfitLoss = sumMoney(
+                        trade -> trade.getProfitLoss(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED),
                         trade -> trade.getEnd().orElse(LocalDateTime.now()));
-        this.totalProfitLossMovingAverageWithoutTaxesAndFees = sumMoney(
-                        Trade::getProfitLossMovingAverageWithoutTaxesAndFees,
+        Money totalProfitLossWithoutTaxesAndFees = sumMoney(
+                        trade -> trade.getProfitLoss(CostMethod.MOVING_AVERAGE, TaxesAndFees.NOT_INCLUDED),
                         trade -> trade.getEnd().orElse(LocalDateTime.now()));
+        double averageReturn = totalEntryValue.isZero() ? 0
+                        : totalProfitLoss.getAmount() / (double) totalEntryValue.getAmount();
+        return new TradeTotalsCostResult(totalEntryValue, totalEntryValueWithoutTaxesAndFees, totalProfitLoss,
+                        totalProfitLossWithoutTaxesAndFees, averageReturn);
     }
 
     private Money sumMoney(Function<Trade, Money> extractor, Function<Trade, LocalDateTime> dateExtractor)
@@ -71,14 +127,12 @@ public class TradeTotals
         return totalShares;
     }
 
-    public Money getTotalEntryValue()
+    public Money getTotalEntryValue(CostMethod costMethod, TaxesAndFees taxesAndFees)
     {
-        return totalEntryValue;
-    }
-
-    public Money getTotalEntryValueMovingAverage()
-    {
-        return totalEntryValueMovingAverage;
+        Objects.requireNonNull(taxesAndFees);
+        TradeTotalsCostResult result = getCostResult(Objects.requireNonNull(costMethod));
+        return taxesAndFees == TaxesAndFees.INCLUDED ? result.totalEntryValue()
+                        : result.totalEntryValueWithoutTaxesAndFees();
     }
 
     public Money getTotalExitValue()
@@ -86,24 +140,13 @@ public class TradeTotals
         return totalExitValue;
     }
 
-    public Money getTotalProfitLoss()
+    public Money getTotalProfitLoss(CostMethod costMethod, TaxesAndFees taxesAndFees)
     {
-        return aggregate.getTotalProfitLoss();
-    }
-
-    public Money getTotalProfitLossWithoutTaxesAndFees()
-    {
-        return aggregate.getTotalProfitLossWithoutTaxesAndFees();
-    }
-
-    public Money getTotalProfitLossMovingAverage()
-    {
-        return totalProfitLossMovingAverage;
-    }
-
-    public Money getTotalProfitLossMovingAverageWithoutTaxesAndFees()
-    {
-        return totalProfitLossMovingAverageWithoutTaxesAndFees;
+        Objects.requireNonNull(costMethod);
+        Objects.requireNonNull(taxesAndFees);
+        TradeTotalsCostResult result = getCostResult(costMethod);
+        return taxesAndFees == TaxesAndFees.INCLUDED ? result.totalProfitLoss()
+                        : result.totalProfitLossWithoutTaxesAndFees();
     }
 
     public long getAverageHoldingPeriod()
@@ -116,33 +159,18 @@ public class TradeTotals
         return aggregate.getAverageIRR();
     }
 
-    public double getAverageReturn()
+    public double getAverageReturn(CostMethod costMethod)
     {
-        return aggregate.getAverageReturn();
+        return getCostResult(Objects.requireNonNull(costMethod)).averageReturn();
     }
 
-    public double getAverageReturnMovingAverage()
-    {
-        if (totalEntryValueMovingAverage.isZero())
-            return 0;
-        return totalProfitLossMovingAverage.getAmount() / (double) totalEntryValueMovingAverage.getAmount();
-    }
-
-    public Money getAverageEntryPrice()
+    public Money getAverageEntryPrice(CostMethod costMethod, TaxesAndFees taxesAndFees)
     {
         if (totalShares == 0)
             return null;
+        Money totalEntryValue = getTotalEntryValue(costMethod, taxesAndFees);
         long amount = Math.round(totalEntryValue.getAmount() / (double) totalShares * Values.Share.factor());
         return Money.of(totalEntryValue.getCurrencyCode(), amount);
-    }
-
-    public Money getAverageEntryPriceMovingAverage()
-    {
-        if (totalShares == 0)
-            return null;
-        long amount = Math
-                        .round(totalEntryValueMovingAverage.getAmount() / (double) totalShares * Values.Share.factor());
-        return Money.of(totalEntryValueMovingAverage.getCurrencyCode(), amount);
     }
 
     public Money getAverageExitPrice()

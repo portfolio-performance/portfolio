@@ -81,10 +81,6 @@ public interface CalculationLineItem
 
     public static class DividendPayment extends TransactionItem
     {
-        private long totalShares;
-        private Money fifoCost;
-        private Money movingAverageCost;
-
         private DividendPayment(TransactionPair<?> transaction)
         {
             super(transaction);
@@ -95,65 +91,19 @@ public interface CalculationLineItem
             return amountFractionPerShare(getGrossValueAmount(), tx().getShares());
         }
 
-        /**
-         * Returns the FIFO costs. It is the cost of the total position of the
-         * given security. However, a dividend payment may only be about partial
-         * holdings, for example if the security is held in multiple securities
-         * accounts.
-         */
-        /* package */ Money getFifoCost()
+        public double getPersonalDividendYield(Money positionCost, long totalShares)
         {
-            return fifoCost;
-        }
-
-        /* package */ void setFifoCost(Money fifoCost)
-        {
-            this.fifoCost = fifoCost;
-        }
-
-        /**
-         * Returns the costs based on moving average. It is the cost of the
-         * total position of the given security. However, a dividend payment may
-         * only be about partial holdings, for example if the security is held
-         * in multiple securities accounts.
-         */
-        /* package */ Money getMovingAverageCost()
-        {
-            return movingAverageCost;
-        }
-
-        /* package */ void setMovingAverageCost(Money movingAverageCost)
-        {
-            this.movingAverageCost = movingAverageCost;
-        }
-
-        /* package */ void setTotalShares(long totalShares)
-        {
-            this.totalShares = totalShares;
-        }
-
-        public double getPersonalDividendYield()
-        {
-            if ((fifoCost == null) || (fifoCost.getAmount() <= 0))
+            if ((positionCost == null) || (positionCost.getAmount() <= 0))
                 return 0;
 
-            double cost = fifoCost.getAmount();
+            double cost = positionCost.getAmount();
 
             if (tx().getShares() > 0)
-                cost = fifoCost.getAmount() * (tx().getShares() / (double) totalShares);
-
-            return getGrossValueAmount() / cost;
-        }
-
-        public double getPersonalDividendYieldMovingAverage()
-        {
-            if ((movingAverageCost == null) || (movingAverageCost.getAmount() <= 0))
-                return 0;
-
-            double cost = movingAverageCost.getAmount();
-
-            if (tx().getShares() > 0)
-                cost = movingAverageCost.getAmount() * (tx().getShares() / (double) totalShares);
+            {
+                if (totalShares == 0)
+                    return 0;
+                cost = positionCost.getAmount() * (tx().getShares() / (double) totalShares);
+            }
 
             return getGrossValueAmount() / cost;
         }

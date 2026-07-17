@@ -178,7 +178,7 @@ public class CurrencyTestCase
         ReportingPeriod period = new ReportingPeriod.FromXtoY(LocalDate.parse("2015-01-02"),
                         LocalDate.parse("2015-01-14"));
         ClientPerformanceSnapshot performance = new ClientPerformanceSnapshot(client, converter,
-                        period.toInterval(LocalDate.now()));
+                        period.toInterval(LocalDate.now()), name.abuchen.portfolio.model.CostMethod.FIFO);
 
         // calculating the totals is tested with #testClientSnapshot
         assertThat(performance.getValue(CategoryType.INITIAL_VALUE), is(Money.of(CurrencyUnit.EUR, 4131_99)));
@@ -235,7 +235,7 @@ public class CurrencyTestCase
         LazySecurityPerformanceRecord record = performance.getRecords().stream()
                         .filter(r -> r.getSecurity() == securityUSD).findAny()
                         .orElseThrow(IllegalArgumentException::new);
-        assertThat(record.getSharesHeld(), is(Values.Share.factorize(15)));
+        assertThat(record.getSharesHeld(name.abuchen.portfolio.model.CostMethod.FIFO), is(Values.Share.factorize(15)));
         assertThat(record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
                         is(Money.of(CurrencyUnit.EUR, 454_60L + 471_05 + 498_45)));
 

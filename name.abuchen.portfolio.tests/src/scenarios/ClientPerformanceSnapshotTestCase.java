@@ -38,7 +38,7 @@ public class ClientPerformanceSnapshotTestCase
         ReportingPeriod period = new ReportingPeriod.FromXtoY(LocalDate.parse("2015-01-02"),
                         LocalDate.parse("2015-01-14"));
         ClientPerformanceSnapshot performance = new ClientPerformanceSnapshot(client, converter,
-                        period.toInterval(LocalDate.now()));
+                        period.toInterval(LocalDate.now()), name.abuchen.portfolio.model.CostMethod.FIFO);
 
         // calculating the totals is tested with #testClientSnapshot
         assertThat(performance.getValue(CategoryType.INITIAL_VALUE),

@@ -3,6 +3,8 @@ package name.abuchen.portfolio.snapshot;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.number.IsCloseTo.closeTo;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,6 +15,7 @@ import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -107,5 +110,22 @@ public class PerformanceIndexTest
 
         assertThat(investedCapital[0], is(Values.Amount.factorize(1 + 10)));
 
+    }
+
+    @Test
+    public void testClientPerformanceSnapshotsAreCachedPerCostMethod()
+    {
+        LocalDate today = LocalDate.now();
+        PerformanceIndex index = new PerformanceIndexStub(new LocalDate[] { today }, new long[] { 0 },
+                        new double[] { 0 });
+
+        ClientPerformanceSnapshot fifo = index.getClientPerformanceSnapshot(CostMethod.FIFO).orElseThrow();
+        ClientPerformanceSnapshot movingAverage = index.getClientPerformanceSnapshot(CostMethod.MOVING_AVERAGE)
+                        .orElseThrow();
+
+        assertSame(fifo, index.getClientPerformanceSnapshot(CostMethod.FIFO).orElseThrow());
+        assertSame(movingAverage,
+                        index.getClientPerformanceSnapshot(CostMethod.MOVING_AVERAGE).orElseThrow());
+        assertNotSame(fifo, movingAverage);
     }
 }

@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 import org.eclipse.swt.widgets.Composite;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
@@ -52,7 +53,7 @@ public class PortfolioTaxOrFeeRateWidget extends AbstractIndicatorWidget<Object>
             PerformanceIndex index = getDashboardData().calculate(get(DataSeriesConfig.class).getDataSeries(),
                             get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now()));
 
-            ClientPerformanceSnapshot snapshot = index.getClientPerformanceSnapshot()
+            ClientPerformanceSnapshot snapshot = index.getClientPerformanceSnapshot(CostMethod.FIFO)
                             .orElseThrow(IllegalArgumentException::new);
 
             return valueProvider.apply(snapshot);

@@ -276,8 +276,8 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
         return () -> {
             PerformanceIndex index = getDashboardData().calculate(get(DataSeriesConfig.class).getDataSeries(),
                             get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now()));
-            boolean useFifo = get(CostMethodConfig.class).getValue().useFifo();
-            return index.getClientPerformanceSnapshot(useFifo).orElseThrow(IllegalArgumentException::new);
+            var costMethod = get(CostMethodConfig.class).getValue();
+            return index.getClientPerformanceSnapshot(costMethod).orElseThrow(IllegalArgumentException::new);
         };
     }
 

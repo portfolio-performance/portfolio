@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.IntPredicate;
 import java.util.function.ToLongBiFunction;
@@ -25,6 +26,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -35,6 +37,7 @@ import name.abuchen.portfolio.snapshot.filter.ClientClassificationFilter;
 import name.abuchen.portfolio.snapshot.filter.ClientSecurityFilter;
 import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
 import name.abuchen.portfolio.util.Interval;
+import name.abuchen.portfolio.util.LazyValue;
 import name.abuchen.portfolio.util.TradeCalendar;
 import name.abuchen.portfolio.util.TradeCalendarManager;
 
@@ -60,8 +63,9 @@ public class PerformanceIndex
 
     private Drawdown drawdown;
     private Volatility volatility;
-    private ClientPerformanceSnapshot performanceSnapshotFifo;
-    private ClientPerformanceSnapshot performanceSnapshotMovingAverage;
+    private ClientPerformanceSnapshot fifoPerformanceSnapshot;
+    private ClientPerformanceSnapshot movingAveragePerformanceSnapshot;
+    private final LazyValue<Double> performanceIRR = new LazyValue<>(this::calculatePerformanceIRR);
 
     /* package */ PerformanceIndex(Client client, CurrencyConverter converter, Interval reportInterval)
     {
@@ -277,41 +281,52 @@ public class PerformanceIndex
     }
 
     /**
-     * Returns the ClientPerformanceSnapshot if available. The snapshot is not
-     * available for benchmarks and the consumer price indices.
+     * Returns the ClientPerformanceSnapshot for the selected cost method if
+     * available. The snapshot is not available for benchmarks and the consumer
+     * price indices.
      */
-    public Optional<ClientPerformanceSnapshot> getClientPerformanceSnapshot()
+    public Optional<ClientPerformanceSnapshot> getClientPerformanceSnapshot(CostMethod costMethod)
     {
-        return getClientPerformanceSnapshot(true);
+        ClientPerformanceSnapshot snapshot = switch (Objects.requireNonNull(costMethod))
+        {
+            case FIFO -> getOrCreateFifoPerformanceSnapshot();
+            case MOVING_AVERAGE -> getOrCreateMovingAveragePerformanceSnapshot();
+        };
+
+        return Optional.of(snapshot);
     }
 
-    /**
-     * Returns the ClientPerformanceSnapshot if available with a choice between
-     * FIFO (useFifo true) or Moving Average (useFifo = false) CapitalGains. The
-     * snapshot is not available for benchmarks and the consumer price indices.
-     */
-    public Optional<ClientPerformanceSnapshot> getClientPerformanceSnapshot(boolean useFifo)
+    private ClientPerformanceSnapshot getOrCreateFifoPerformanceSnapshot()
     {
-        if (useFifo)
+        if (fifoPerformanceSnapshot == null)
         {
-            if (performanceSnapshotFifo == null)
-                performanceSnapshotFifo = new ClientPerformanceSnapshot(client, converter, reportInterval, true);
+            fifoPerformanceSnapshot = new ClientPerformanceSnapshot(client, converter, reportInterval, CostMethod.FIFO);
+        }
 
-            return Optional.of(performanceSnapshotFifo);
-        }
-        else
+        return fifoPerformanceSnapshot;
+    }
+
+    private ClientPerformanceSnapshot getOrCreateMovingAveragePerformanceSnapshot()
+    {
+        if (movingAveragePerformanceSnapshot == null)
         {
-            if (performanceSnapshotMovingAverage == null)
-                performanceSnapshotMovingAverage = new ClientPerformanceSnapshot(client, converter, reportInterval,
-                                false);
-            return Optional.of(performanceSnapshotMovingAverage);
+            movingAveragePerformanceSnapshot = new ClientPerformanceSnapshot(client, converter, reportInterval,
+                            CostMethod.MOVING_AVERAGE);
         }
+
+        return movingAveragePerformanceSnapshot;
     }
 
     public double getPerformanceIRR()
     {
-        return getClientPerformanceSnapshot().map(ClientPerformanceSnapshot::getPerformanceIRR)
-                        .orElseThrow(IllegalArgumentException::new);
+        return performanceIRR.get();
+    }
+
+    private double calculatePerformanceIRR()
+    {
+        ClientSnapshot snapshotStart = ClientSnapshot.create(client, converter, reportInterval.getStart());
+        ClientSnapshot snapshotEnd = ClientSnapshot.create(client, converter, reportInterval.getEnd());
+        return ClientIRRYield.create(client, snapshotStart, snapshotEnd).getIrr();
     }
 
     public long[] getTaxes()

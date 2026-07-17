@@ -63,7 +63,7 @@ public class Issue1897AddFeesToDividendTransactionsTest
 
         // test that taxes and fees are properly sorted
 
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, period);
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, period, name.abuchen.portfolio.model.CostMethod.FIFO);
         ClientPerformanceSnapshot.Category feesCategory = snapshot.getCategoryByType(CategoryType.FEES);
 
         assertThat(feesCategory.getValuation(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.0 + 5.0))));
@@ -81,7 +81,7 @@ public class Issue1897AddFeesToDividendTransactionsTest
 
         Client clientWithoutTaxes = new WithoutTaxesFilter().filter(client);
         ClientPerformanceSnapshot snapshotWithoutTaxes = new ClientPerformanceSnapshot(clientWithoutTaxes, converter,
-                        period);
+                        period, name.abuchen.portfolio.model.CostMethod.FIFO);
 
         assertSnapshot(snapshotWithoutTaxes);
     }
@@ -115,7 +115,7 @@ public class Issue1897AddFeesToDividendTransactionsTest
 
         Client filteredClient = filter.filter(client);
 
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(filteredClient, converter, period);
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(filteredClient, converter, period, name.abuchen.portfolio.model.CostMethod.FIFO);
 
         assertSnapshot(snapshot);
     }
@@ -131,7 +131,7 @@ public class Issue1897AddFeesToDividendTransactionsTest
 
         Client filteredClient = filter.filter(client);
 
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(filteredClient, converter, period);
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(filteredClient, converter, period, name.abuchen.portfolio.model.CostMethod.FIFO);
 
         assertSnapshot(snapshot);
     }
@@ -144,7 +144,7 @@ public class Issue1897AddFeesToDividendTransactionsTest
 
         Client filteredClient = new ClientSecurityFilter(security).filter(client);
 
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(filteredClient, converter, period);
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(filteredClient, converter, period, name.abuchen.portfolio.model.CostMethod.FIFO);
 
         assertSnapshot(snapshot);
     }

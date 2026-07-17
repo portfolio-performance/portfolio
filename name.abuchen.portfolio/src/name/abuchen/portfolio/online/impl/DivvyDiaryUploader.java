@@ -92,7 +92,7 @@ public class DivvyDiaryUploader
             item.put("isin", security.getIsin());
 
             // fill in current holdings
-            item.put("quantity", performanceRecord.getSharesHeld() / Values.Share.divider());
+            item.put("quantity", performanceRecord.getSharesHeld(CostMethod.FIFO) / Values.Share.divider());
 
             // Add the "buyin" (the FIFO cost). Used if no transactions are
             // transmitted. Add for backward compatibility in case transactions

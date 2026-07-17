@@ -34,6 +34,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -235,9 +237,10 @@ public final class TradeDetailsView extends AbstractFinanceView
                 if (onlyOpen)
                     filteredTrades = filteredTrades.filter(t -> !t.isClosed());
                 if (onlyLossMaking)
-                    filteredTrades = filteredTrades.filter(Trade::isLoss);
+                    filteredTrades = filteredTrades.filter(t -> t.isLoss(CostMethod.FIFO));
                 if (onlyProfitable)
-                    filteredTrades = filteredTrades.filter(t -> t.getProfitLoss().isPositive());
+                    filteredTrades = filteredTrades
+                                    .filter(t -> t.getProfitLoss(CostMethod.FIFO, TaxesAndFees.INCLUDED).isPositive());
                 if (jobFilterPattern != null)
                     filteredTrades = filteredTrades.filter(t -> matchesFilter(t, jobFilterPattern));
 

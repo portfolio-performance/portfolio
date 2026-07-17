@@ -391,7 +391,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         {
             if (performanceRecord == null)
                 return Optional.empty();
-            return performanceRecord.explain(key);
+            return performanceRecord.explain(key, CostMethod.FIFO);
         }
 
         private Security getSecurity()
@@ -606,8 +606,8 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
 
     private class FilterDropDown extends DropDown implements IMenuListener
     {
-        private final Predicate<LazySecurityPerformanceRecord> sharesNotZero = r -> r.getSharesHeld() != 0;
-        private final Predicate<LazySecurityPerformanceRecord> sharesEqualZero = r -> r.getSharesHeld() == 0;
+        private final Predicate<LazySecurityPerformanceRecord> sharesNotZero = r -> r.getSharesHeld(CostMethod.FIFO) != 0;
+        private final Predicate<LazySecurityPerformanceRecord> sharesEqualZero = r -> r.getSharesHeld(CostMethod.FIFO) == 0;
 
         public FilterDropDown(IPreferenceStore preferenceStore)
         {
@@ -948,10 +948,11 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
             public Long getValue(Object e)
             {
                 var row = (RowElement) e;
-                return row.performanceRecord != null ? row.performanceRecord.getSharesHeld() : null;
+                return row.performanceRecord != null ? row.performanceRecord.getSharesHeld(CostMethod.FIFO) : null;
             }
         });
-        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getSharesHeld()));
+        column.setSorter(ColumnViewerSorter
+                        .create(e -> ((LazySecurityPerformanceRecord) e).getSharesHeld(CostMethod.FIFO)));
         recordColumns.addColumn(column);
 
         // security name
@@ -1144,7 +1145,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
                                                                                         TaxesAndFees.INCLUDED)),
                                                         getClient().getBaseCurrency())));
         column.setToolTipProvider(
-                        element -> ((RowElement) element).explain(LazySecurityPerformanceRecord.Trails.FIFO_COST));
+                        element -> ((RowElement) element).explain(LazySecurityPerformanceRecord.Trails.COST));
         column.setSorter(ColumnViewerSorter.create(
                         e -> ((LazySecurityPerformanceRecord) e).getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED)));
         recordColumns.addColumn(column);
@@ -1638,8 +1639,10 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setDescription(Messages.ColumnDividendRateOfReturnPerYear_Description);
         column.setVisible(false);
         column.setLabelProvider(
-                        new RowElementLabelProvider(r -> Values.Percent2.formatNonZero(r.getRateOfReturnPerYear())));
-        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getRateOfReturnPerYear()));
+                        new RowElementLabelProvider(r -> Values.Percent2
+                                        .formatNonZero(r.getRateOfReturnPerYear(CostMethod.MOVING_AVERAGE))));
+        column.setSorter(ColumnViewerSorter.create(
+                        e -> ((LazySecurityPerformanceRecord) e).getRateOfReturnPerYear(CostMethod.MOVING_AVERAGE)));
         recordColumns.addColumn(column);
 
         // Anzahl der Dividendenereignisse
@@ -1788,14 +1791,15 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setOptions(new ClientFilterColumnOptions(Messages.ColumnSharesOwned + suffix,
                         new ClientFilterMenu(getClient(), getPreferenceStore())));
         column.setGroupLabel(Messages.LabelClientFilterMenu);
-        column.setLabelProvider(new RowElementOptionLabelProvider(r -> Values.Share.formatNonZero(r.getSharesHeld())));
+        column.setLabelProvider(new RowElementOptionLabelProvider(
+                        r -> Values.Share.formatNonZero(r.getSharesHeld(CostMethod.FIFO))));
         column.setSorter(ColumnViewerSorter.createWithOption((element, option) -> {
             // important: because we wrap all sorters centrally, we only have
             // the unwrapped record here -> use the model to resolve the correct
             // record
             var dataRecord = model.getRecord(((LazySecurityPerformanceRecord) element).getSecurity(),
                             (ClientFilterMenu.Item) option);
-            return dataRecord == null ? null : dataRecord.getSharesHeld();
+            return dataRecord == null ? null : dataRecord.getSharesHeld(CostMethod.FIFO);
         }));
 
         column.setVisible(false);
@@ -1823,7 +1827,8 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
             if (!row.isRecord())
                 return null;
             var dataRecord = row.model.getRecord(row.performanceRecord.getSecurity(), (ClientFilterMenu.Item) option);
-            return dataRecord == null ? "" : dataRecord.explain(LazySecurityPerformanceRecord.Trails.FIFO_COST); //$NON-NLS-1$
+            return dataRecord == null ? ""
+                            : dataRecord.explain(LazySecurityPerformanceRecord.Trails.COST, CostMethod.FIFO); //$NON-NLS-1$
         });
         column.setSorter(ColumnViewerSorter.createWithOption((element, option) -> {
             var dataRecord = model.getRecord(((LazySecurityPerformanceRecord) element).getSecurity(),

@@ -7,11 +7,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.math.IRR;
 import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
@@ -21,6 +24,15 @@ import name.abuchen.portfolio.util.TextUtil;
 
 public class TradeCategory
 {
+    private record TradeCategoryCostResult(Money totalEntryValue, Money totalProfitLoss,
+                    Money totalProfitLossWithoutTaxesAndFees, double averageReturn, double winRate)
+    {
+    }
+
+    private record TradeCategoryCommonResult(Money totalExitValue, double averageIRR, long averageHoldingPeriod)
+    {
+    }
+
     public static final class ByDescription implements Comparator<TradeCategory>
     {
         @Override
@@ -131,20 +143,9 @@ public class TradeCategory
     private final String currencyKey;
     private final List<WeightedTrade> weightedTrades = new ArrayList<>();
 
-    // lazy calculations
-    private Money totalEntryValue;
-    private Money totalEntryValueMovingAverage;
-    private Money totalExitValue;
-    private Money totalProfitLoss;
-    private Money totalProfitLossWithoutTaxesAndFees;
-    private Money totalProfitLossMovingAverage;
-    private Money totalProfitLossMovingAverageWithoutTaxesAndFees;
-    private double averageReturn;
-    private double averageReturnMovingAverage;
-    private double averageIRR;
-    private long averageHoldingPeriod;
-    private double winRate;
-    private boolean calculated = false;
+    private TradeCategoryCostResult fifoResult;
+    private TradeCategoryCostResult movingAverageResult;
+    private TradeCategoryCommonResult commonResult;
 
     /* package */ TradeCategory(Classification classification, CurrencyConverter converter)
     {
@@ -196,7 +197,9 @@ public class TradeCategory
     /* package */ void addTrade(Trade trade, double weight)
     {
         this.weightedTrades.add(new WeightedTrade(trade, weight));
-        this.calculated = false;
+        this.fifoResult = null;
+        this.movingAverageResult = null;
+        this.commonResult = null;
     }
 
     public List<Trade> getTrades()
@@ -213,7 +216,6 @@ public class TradeCategory
 
     public long getTradeCount()
     {
-        ensureCalculated();
         return weightedTrades.stream().map(wt -> wt.trade).distinct().count();
     }
 
@@ -222,88 +224,57 @@ public class TradeCategory
         return weightedTrades.stream().mapToDouble(wt -> wt.weight).sum();
     }
 
-    public Money getTotalProfitLoss()
+    public Money getTotalEntryValue(CostMethod costMethod)
     {
-        ensureCalculated();
-        return totalProfitLoss;
-    }
-
-    public Money getTotalEntryValue()
-    {
-        ensureCalculated();
-        return totalEntryValue;
-    }
-
-    public Money getTotalEntryValueMovingAverage()
-    {
-        ensureCalculated();
-        return totalEntryValueMovingAverage;
+        return getCostResult(costMethod).totalEntryValue();
     }
 
     public Money getTotalExitValue()
     {
-        ensureCalculated();
-        return totalExitValue;
+        return getCommonResult().totalExitValue();
     }
 
-    public Money getTotalProfitLossWithoutTaxesAndFees()
+    public Money getTotalProfitLoss(CostMethod costMethod, TaxesAndFees taxesAndFees)
     {
-        ensureCalculated();
-        return totalProfitLossWithoutTaxesAndFees;
+        Objects.requireNonNull(taxesAndFees);
+
+        TradeCategoryCostResult result = getCostResult(costMethod);
+        return taxesAndFees == TaxesAndFees.INCLUDED ? result.totalProfitLoss()
+                        : result.totalProfitLossWithoutTaxesAndFees();
     }
 
-    public Money getTotalProfitLossMovingAverage()
+    public double getAverageReturn(CostMethod costMethod)
     {
-        ensureCalculated();
-        return totalProfitLossMovingAverage;
-    }
-
-    public Money getTotalProfitLossMovingAverageWithoutTaxesAndFees()
-    {
-        ensureCalculated();
-        return totalProfitLossMovingAverageWithoutTaxesAndFees;
-    }
-
-    public double getAverageReturn()
-    {
-        ensureCalculated();
-        return averageReturn;
-    }
-
-    public double getAverageReturnMovingAverage()
-    {
-        ensureCalculated();
-        return averageReturnMovingAverage;
+        return getCostResult(costMethod).averageReturn();
     }
 
     public double getAverageIRR()
     {
-        ensureCalculated();
-        return averageIRR;
+        return getCommonResult().averageIRR();
     }
 
     public long getAverageHoldingPeriod()
     {
-        ensureCalculated();
-        return averageHoldingPeriod;
+        return getCommonResult().averageHoldingPeriod();
     }
 
-    public double getWinRate()
+    public double getWinRate(CostMethod costMethod)
     {
-        ensureCalculated();
-        return winRate;
+        return getCostResult(costMethod).winRate();
     }
 
-    public long getWinningTradesCount()
+    public long getWinningTradesCount(CostMethod costMethod)
     {
-        ensureCalculated();
-        return weightedTrades.stream().filter(wt -> !wt.trade.isLoss()).map(wt -> wt.trade).distinct().count();
+        Objects.requireNonNull(costMethod);
+        return weightedTrades.stream().filter(wt -> !wt.trade.isLoss(costMethod)).map(wt -> wt.trade).distinct()
+                        .count();
     }
 
-    public long getLosingTradesCount()
+    public long getLosingTradesCount(CostMethod costMethod)
     {
-        ensureCalculated();
-        return weightedTrades.stream().filter(wt -> wt.trade.isLoss()).map(wt -> wt.trade).distinct().count();
+        Objects.requireNonNull(costMethod);
+        return weightedTrades.stream().filter(wt -> wt.trade.isLoss(costMethod)).map(wt -> wt.trade).distinct()
+                        .count();
     }
 
     /**
@@ -405,126 +376,94 @@ public class TradeCategory
         return Double.isFinite(irr) ? irr : 0;
     }
 
-    private void ensureCalculated()
+    private TradeCategoryCostResult getCostResult(CostMethod costMethod)
     {
-        if (calculated)
-            return;
+        return switch (Objects.requireNonNull(costMethod))
+        {
+            case FIFO -> {
+                if (fifoResult == null)
+                    fifoResult = calculateCostResult(CostMethod.FIFO);
+                yield fifoResult;
+            }
+            case MOVING_AVERAGE -> {
+                if (movingAverageResult == null)
+                    movingAverageResult = calculateCostResult(CostMethod.MOVING_AVERAGE);
+                yield movingAverageResult;
+            }
+        };
+    }
 
+    private TradeCategoryCostResult calculateCostResult(CostMethod costMethod)
+    {
         double totalWeight = getTotalWeight();
-
         if (totalWeight == 0)
         {
-            this.totalEntryValue = Money.of(converter.getTermCurrency(), 0);
-            this.totalEntryValueMovingAverage = Money.of(converter.getTermCurrency(), 0);
-            this.totalExitValue = Money.of(converter.getTermCurrency(), 0);
-            this.totalProfitLoss = Money.of(converter.getTermCurrency(), 0);
-            this.totalProfitLossWithoutTaxesAndFees = Money.of(converter.getTermCurrency(), 0);
-            this.totalProfitLossMovingAverage = Money.of(converter.getTermCurrency(), 0);
-            this.totalProfitLossMovingAverageWithoutTaxesAndFees = Money.of(converter.getTermCurrency(), 0);
-            this.averageReturn = 0;
-            this.averageReturnMovingAverage = 0;
-            this.averageIRR = 0;
-            this.averageHoldingPeriod = 0;
-            this.winRate = 0;
-        }
-        else
-        {
-            this.totalEntryValue = weightedTrades.stream() //
-                            .map(wt -> {
-                                Money value = wt.trade.getEntryValue();
-                                if (value == null)
-                                    return Money.of(converter.getTermCurrency(), 0);
-                                LocalDate date = wt.trade.getStart().toLocalDate();
-                                return value.with(converter.at(date)).multiplyAndRound(wt.weight);
-                            }) //
-                            .collect(MoneyCollectors.sum(converter.getTermCurrency()));
-
-            this.totalEntryValueMovingAverage = weightedTrades.stream() //
-                            .map(wt -> {
-                                Money value = wt.trade.getEntryValueMovingAverage();
-                                if (value == null)
-                                    return Money.of(converter.getTermCurrency(), 0);
-                                LocalDate date = wt.trade.getStart().toLocalDate();
-                                return value.with(converter.at(date)).multiplyAndRound(wt.weight);
-                            }) //
-                            .collect(MoneyCollectors.sum(converter.getTermCurrency()));
-
-            this.totalExitValue = weightedTrades.stream() //
-                            .map(wt -> {
-                                Money value = wt.trade.getExitValue();
-                                if (value == null)
-                                    return Money.of(converter.getTermCurrency(), 0);
-                                LocalDate date = wt.trade.getEnd().map(LocalDate::from).orElse(LocalDate.now());
-                                return value.with(converter.at(date)).multiplyAndRound(wt.weight);
-                            }) //
-                            .collect(MoneyCollectors.sum(converter.getTermCurrency()));
-
-            this.totalProfitLoss = weightedTrades.stream() //
-                            .map(wt -> {
-                                Money pnl = wt.trade.getProfitLoss();
-                                LocalDate date = wt.trade.getEnd().map(LocalDate::from).orElse(LocalDate.now());
-                                return pnl.with(converter.at(date)).multiplyAndRound(wt.weight);
-                            }) //
-                            .collect(MoneyCollectors.sum(converter.getTermCurrency()));
-
-            this.totalProfitLossWithoutTaxesAndFees = weightedTrades.stream() //
-                            .map(wt -> {
-                                Money pnl = wt.trade.getProfitLossWithoutTaxesAndFees();
-                                LocalDate date = wt.trade.getEnd().map(LocalDate::from).orElse(LocalDate.now());
-                                return pnl.with(converter.at(date)).multiplyAndRound(wt.weight);
-                            }) //
-                            .collect(MoneyCollectors.sum(converter.getTermCurrency()));
-
-            this.totalProfitLossMovingAverage = weightedTrades.stream() //
-                            .map(wt -> {
-                                Money pnl = wt.trade.getProfitLossMovingAverage();
-                                LocalDate date = wt.trade.getEnd().map(LocalDate::from).orElse(LocalDate.now());
-                                return pnl.with(converter.at(date)).multiplyAndRound(wt.weight);
-                            }) //
-                            .collect(MoneyCollectors.sum(converter.getTermCurrency()));
-
-            this.totalProfitLossMovingAverageWithoutTaxesAndFees = weightedTrades.stream() //
-                            .map(wt -> {
-                                Money pnl = wt.trade.getProfitLossMovingAverageWithoutTaxesAndFees();
-                                LocalDate date = wt.trade.getEnd().map(LocalDate::from).orElse(LocalDate.now());
-                                return pnl.with(converter.at(date)).multiplyAndRound(wt.weight);
-                            }) //
-                            .collect(MoneyCollectors.sum(converter.getTermCurrency()));
-
-            // Calculate category-level IRR by combining all cash flows
-            this.averageIRR = calculateCategoryIRR();
-
-            // Calculate category-level return from aggregate P&L and entry
-            // value
-            if (totalEntryValue.getAmount() != 0)
-            {
-                this.averageReturn = totalProfitLoss.getAmount() / (double) totalEntryValue.getAmount();
-            }
-            else
-            {
-                this.averageReturn = 0;
-            }
-
-            if (totalEntryValueMovingAverage.getAmount() != 0)
-            {
-                this.averageReturnMovingAverage = totalProfitLossMovingAverage.getAmount()
-                                / (double) totalEntryValueMovingAverage.getAmount();
-            }
-            else
-            {
-                this.averageReturnMovingAverage = 0;
-            }
-
-            this.averageHoldingPeriod = Math.round(
-                            weightedTrades.stream().mapToDouble(wt -> wt.trade.getHoldingPeriod() * wt.weight).sum()
-                                            / totalWeight);
-
-            double winningWeight = weightedTrades.stream().filter(wt -> !wt.trade.isLoss()).mapToDouble(wt -> wt.weight)
-                            .sum();
-            this.winRate = winningWeight / totalWeight;
+            Money zero = Money.of(converter.getTermCurrency(), 0);
+            return new TradeCategoryCostResult(zero, zero, zero, 0, 0);
         }
 
-        this.calculated = true;
+        Money totalEntryValue = weightedTrades.stream() //
+                        .map(wt -> {
+                            Money value = wt.trade.getEntryValue(costMethod, TaxesAndFees.INCLUDED);
+                            if (value == null)
+                                return Money.of(converter.getTermCurrency(), 0);
+                            LocalDate date = wt.trade.getStart().toLocalDate();
+                            return value.with(converter.at(date)).multiplyAndRound(wt.weight);
+                        }) //
+                        .collect(MoneyCollectors.sum(converter.getTermCurrency()));
+
+        Money totalProfitLoss = calculateTotalProfitLoss(costMethod, TaxesAndFees.INCLUDED);
+        Money totalProfitLossWithoutTaxesAndFees = calculateTotalProfitLoss(costMethod,
+                        TaxesAndFees.NOT_INCLUDED);
+        double averageReturn = totalEntryValue.getAmount() != 0
+                        ? totalProfitLoss.getAmount() / (double) totalEntryValue.getAmount()
+                        : 0;
+        double winningWeight = weightedTrades.stream().filter(wt -> !wt.trade.isLoss(costMethod))
+                        .mapToDouble(wt -> wt.weight).sum();
+
+        return new TradeCategoryCostResult(totalEntryValue, totalProfitLoss, totalProfitLossWithoutTaxesAndFees,
+                        averageReturn, winningWeight / totalWeight);
+    }
+
+    private Money calculateTotalProfitLoss(CostMethod costMethod, TaxesAndFees taxesAndFees)
+    {
+        return weightedTrades.stream() //
+                        .map(wt -> {
+                            Money pnl = wt.trade.getProfitLoss(costMethod, taxesAndFees);
+                            LocalDate date = wt.trade.getEnd().map(LocalDate::from).orElse(LocalDate.now());
+                            return pnl.with(converter.at(date)).multiplyAndRound(wt.weight);
+                        }) //
+                        .collect(MoneyCollectors.sum(converter.getTermCurrency()));
+    }
+
+    private TradeCategoryCommonResult getCommonResult()
+    {
+        if (commonResult == null)
+            commonResult = calculateCommonResult();
+        return commonResult;
+    }
+
+    private TradeCategoryCommonResult calculateCommonResult()
+    {
+        double totalWeight = getTotalWeight();
+        if (totalWeight == 0)
+            return new TradeCategoryCommonResult(Money.of(converter.getTermCurrency(), 0), 0, 0);
+
+        Money totalExitValue = weightedTrades.stream() //
+                        .map(wt -> {
+                            Money value = wt.trade.getExitValue();
+                            if (value == null)
+                                return Money.of(converter.getTermCurrency(), 0);
+                            LocalDate date = wt.trade.getEnd().map(LocalDate::from).orElse(LocalDate.now());
+                            return value.with(converter.at(date)).multiplyAndRound(wt.weight);
+                        }) //
+                        .collect(MoneyCollectors.sum(converter.getTermCurrency()));
+
+        long averageHoldingPeriod = Math.round(
+                        weightedTrades.stream().mapToDouble(wt -> wt.trade.getHoldingPeriod() * wt.weight).sum()
+                                        / totalWeight);
+
+        return new TradeCategoryCommonResult(totalExitValue, calculateCategoryIRR(), averageHoldingPeriod);
     }
 
 }

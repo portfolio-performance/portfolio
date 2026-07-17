@@ -57,7 +57,7 @@ public class Issue672CapitalGainsIfSecurityIsTransferredTest
         // pinned values previously verified via SecurityPerformanceSnapshotComparator
         // IRR is omitted because the filtered client produces a degenerate
         // cash-flow series with an absurdly large IRR.
-        assertThat(record.getSharesHeld(), is(1000000000L));
+        assertThat(record.getSharesHeld(name.abuchen.portfolio.model.CostMethod.FIFO), is(1000000000L));
         assertThat(record.getQuote(), is(Quote.of("EUR", 9714100000L))); //$NON-NLS-1$
         assertThat(record.getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED), is(Money.of("EUR", 88310L))); //$NON-NLS-1$
         assertThat(record.getCostPerSharesHeld(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED),

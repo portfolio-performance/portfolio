@@ -202,12 +202,12 @@ public class PaymentsView extends AbstractFinanceView
 
                 var action = new SimpleAction(CostMethod.FIFO.getLabel(), //
                                 a -> model.setCostMethod(CostMethod.FIFO));
-                action.setChecked(model.getCostMethod().useFifo());
+                action.setChecked(model.getCostMethod() == CostMethod.FIFO);
                 costMethodMenu.add(action);
 
                 action = new SimpleAction(CostMethod.MOVING_AVERAGE.getLabel(),
                                 a -> model.setCostMethod(CostMethod.MOVING_AVERAGE));
-                action.setChecked(!model.getCostMethod().useFifo());
+                action.setChecked(model.getCostMethod() == CostMethod.MOVING_AVERAGE);
                 costMethodMenu.add(action);
             }
 

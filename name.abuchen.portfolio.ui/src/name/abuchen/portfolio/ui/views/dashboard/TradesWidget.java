@@ -7,6 +7,8 @@ import org.eclipse.jface.action.IMenuManager;
 
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
+import name.abuchen.portfolio.model.CostMethod;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.snapshot.trades.Trade;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -77,7 +79,8 @@ public class TradesWidget extends AbstractTradesWidget
         this.title.setText(TextUtil.tooltip(getWidget().getLabel()));
 
         List<Trade> trades = input.getTrades();
-        long positive = trades.stream().filter(t -> t.getProfitLoss().isPositive()).count();
+        long positive = trades.stream()
+                        .filter(t -> t.getProfitLoss(CostMethod.FIFO, TaxesAndFees.INCLUDED).isPositive()).count();
         String text = MessageFormat.format("{0} <positive>↑{1}</positive> <negative>↓{2}</negative>", //$NON-NLS-1$
                         trades.size(), positive, trades.size() - positive);
 

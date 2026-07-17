@@ -27,7 +27,7 @@ public class BaseSecurityPerformanceRecord
 
     public interface Trails // NOSONAR
     {
-        String FIFO_COST = "fifoCost"; //$NON-NLS-1$
+        String COST = "cost"; //$NON-NLS-1$
         String REALIZED_CAPITAL_GAINS = "realizedCapitalGains"; //$NON-NLS-1$
         String REALIZED_CAPITAL_GAINS_FOREX = "realizedCapitalGainsForex"; //$NON-NLS-1$
         String UNREALIZED_CAPITAL_GAINS = "unrealizedCapitalGains"; //$NON-NLS-1$

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import name.abuchen.portfolio.math.IRR;
@@ -34,6 +35,10 @@ import name.abuchen.portfolio.util.LazyValue;
 
 public class Trade implements Adaptable
 {
+    private record TradeCostResult(Money entryValue, Money entryValueWithoutTaxesAndFees)
+    {
+    }
+
     private static final class CollateralLot
     {
         private long shares;
@@ -54,15 +59,16 @@ public class Trade implements Adaptable
 
     private List<TransactionPair<PortfolioTransaction>> transactions = new ArrayList<>();
 
-    private Money entryValue;
-    private Money entryValueWithoutTaxesAndFees;
     private Money exitValue;
     private Money exitValueWithoutTaxesAndFees;
     private long holdingPeriod;
     private double irr;
 
-    private LazyValue<Money> entryValueMovingAverage;
-    private LazyValue<Money> entryValueMovingAverageWithoutTaxesAndFees;
+    private final LazyValue<TradeCostResult> fifoCostResult = new LazyValue<>(this::calculateFifoCostResult);
+    private final LazyValue<TradeCostResult> movingAverageCostResult = new LazyValue<>(
+                    this::calculateMovingAverageCostResult);
+    private Client client;
+    private CurrencyConverter converter;
 
     public Trade(Security security, Portfolio portfolio, long shares)
     {
@@ -79,22 +85,8 @@ public class Trade implements Adaptable
     /* package */ void calculate(Client client, CurrencyConverter converter)
     {
         boolean isLong = this.isLong();
-
-        // for purchases, getMonetaryAmount() returns the value including taxes
-        // and fees paid
-        this.entryValue = transactions.stream() //
-                        .filter(t -> t.getTransaction().getType().isPurchase() == isLong)
-                        .map(t -> t.getTransaction().getMonetaryAmount()
-                                        .with(converter.at(t.getTransaction().getDateTime())))
-                        .collect(MoneyCollectors.sum(converter.getTermCurrency()));
-
-        // for purchases, getGrossValue() returns the value without taxes and
-        // fees paid
-        this.entryValueWithoutTaxesAndFees = transactions.stream() //
-                        .filter(t -> t.getTransaction().getType().isPurchase() == isLong)
-                        .map(t -> t.getTransaction().getGrossValue()
-                                        .with(converter.at(t.getTransaction().getDateTime())))
-                        .collect(MoneyCollectors.sum(converter.getTermCurrency()));
+        this.client = client;
+        this.converter = converter;
 
         if (end != null)
         {
@@ -149,10 +141,15 @@ public class Trade implements Adaptable
 
         calculateIRR(converter);
 
-        this.entryValueMovingAverage = new LazyValue<>(
-                        () -> getMovingAverageCost(client, converter, TaxesAndFees.INCLUDED));
-        this.entryValueMovingAverageWithoutTaxesAndFees = new LazyValue<>(
-                        () -> getMovingAverageCost(client, converter, TaxesAndFees.NOT_INCLUDED));
+    }
+
+    private TradeCostResult getCostResult(CostMethod costMethod)
+    {
+        return switch (Objects.requireNonNull(costMethod))
+        {
+            case FIFO -> fifoCostResult.get();
+            case MOVING_AVERAGE -> movingAverageCostResult.get();
+        };
     }
 
     private void calculateIRR(CurrencyConverter converter)
@@ -307,14 +304,12 @@ public class Trade implements Adaptable
         return isClosed() ? Optional.of(transactions.get(transactions.size() - 1)) : Optional.empty();
     }
 
-    public Money getEntryValue()
+    public Money getEntryValue(CostMethod costMethod, TaxesAndFees taxesAndFees)
     {
-        return entryValue;
-    }
+        Objects.requireNonNull(taxesAndFees);
 
-    public Money getEntryValueMovingAverage()
-    {
-        return entryValueMovingAverage.get();
+        TradeCostResult result = getCostResult(costMethod);
+        return taxesAndFees == TaxesAndFees.INCLUDED ? result.entryValue() : result.entryValueWithoutTaxesAndFees();
     }
 
     public Money getExitValue()
@@ -322,30 +317,27 @@ public class Trade implements Adaptable
         return exitValue;
     }
 
-    public Money getProfitLoss()
+    /**
+     * Returns the reporting currency of this calculated trade.
+     */
+    public String getCurrencyCode()
     {
-        if (isLong())
-            return exitValue.subtract(entryValue);
-        else
-            return entryValue.subtract(exitValue);
+        return getExitValue().getCurrencyCode();
     }
 
-    public Money getProfitLossMovingAverage()
+    public Money getProfitLoss(CostMethod costMethod, TaxesAndFees taxesAndFees)
     {
-        return exitValue.subtract(entryValueMovingAverage.get());
-    }
+        Objects.requireNonNull(taxesAndFees);
 
-    public Money getProfitLossWithoutTaxesAndFees()
-    {
-        if (isLong())
-            return exitValueWithoutTaxesAndFees.subtract(entryValueWithoutTaxesAndFees);
-        else
-            return entryValueWithoutTaxesAndFees.subtract(exitValueWithoutTaxesAndFees);
-    }
+        CostMethod method = Objects.requireNonNull(costMethod);
+        Money entry = getEntryValue(method, taxesAndFees);
+        Money exit = taxesAndFees == TaxesAndFees.INCLUDED ? exitValue : exitValueWithoutTaxesAndFees;
 
-    public Money getProfitLossMovingAverageWithoutTaxesAndFees()
-    {
-        return exitValueWithoutTaxesAndFees.subtract(entryValueMovingAverageWithoutTaxesAndFees.get());
+        return switch (method)
+        {
+            case FIFO -> isLong() ? exit.subtract(entry) : entry.subtract(exit);
+            case MOVING_AVERAGE -> exit.subtract(entry);
+        };
     }
 
     public long getHoldingPeriod()
@@ -358,17 +350,17 @@ public class Trade implements Adaptable
         return irr;
     }
 
-    public double getReturn()
+    public double getReturn(CostMethod costMethod)
     {
-        if (isLong())
-            return (exitValue.getAmount() / (double) entryValue.getAmount()) - 1;
-        else
-            return 1 - (exitValue.getAmount() / (double) entryValue.getAmount());
-    }
+        CostMethod method = Objects.requireNonNull(costMethod);
+        long entryAmount = getEntryValue(method, TaxesAndFees.INCLUDED).getAmount();
 
-    public double getReturnMovingAverage()
-    {
-        return (exitValue.getAmount() / (double) entryValueMovingAverage.get().getAmount()) - 1;
+        return switch (method)
+        {
+            case FIFO -> isLong() ? (exitValue.getAmount() / (double) entryAmount) - 1
+                            : 1 - (exitValue.getAmount() / (double) entryAmount);
+            case MOVING_AVERAGE -> (exitValue.getAmount() / (double) entryAmount) - 1;
+        };
     }
 
     /**
@@ -384,18 +376,18 @@ public class Trade implements Adaptable
      * @brief Checks if the trade made a net loss
      * @return True if the trade resulted in a net loss
      */
-    public boolean isLoss()
+    public boolean isLoss(CostMethod costMethod)
     {
-        return this.getProfitLoss().isNegative();
+        return getProfitLoss(Objects.requireNonNull(costMethod), TaxesAndFees.INCLUDED).isNegative();
     }
 
     /**
      * @brief Check if the trade made a gross gross
      * @return True if the trade result in a gross loss
      */
-    public boolean isGrossLoss()
+    public boolean isGrossLoss(CostMethod costMethod)
     {
-        return this.getProfitLossWithoutTaxesAndFees().isNegative();
+        return getProfitLoss(Objects.requireNonNull(costMethod), TaxesAndFees.NOT_INCLUDED).isNegative();
     }
 
     @Override
@@ -410,11 +402,30 @@ public class Trade implements Adaptable
     @Override
     public String toString()
     {
-        return String.format("<Trade sh=%s %s %s -> %s %s>", //$NON-NLS-1$
-                        shares, start, entryValue, end, exitValue);
+        return String.format("<Trade sh=%s %s -> %s %s>", //$NON-NLS-1$
+                        shares, start, end, exitValue);
     }
 
-    private Money getMovingAverageCost(Client client, CurrencyConverter converter, TaxesAndFees taxesAndFees)
+    private TradeCostResult calculateFifoCostResult()
+    {
+        boolean isLong = isLong();
+
+        Money entryValue = transactions.stream() //
+                        .filter(t -> t.getTransaction().getType().isPurchase() == isLong)
+                        .map(t -> t.getTransaction().getMonetaryAmount()
+                                        .with(converter.at(t.getTransaction().getDateTime())))
+                        .collect(MoneyCollectors.sum(converter.getTermCurrency()));
+
+        Money entryValueWithoutTaxesAndFees = transactions.stream() //
+                        .filter(t -> t.getTransaction().getType().isPurchase() == isLong)
+                        .map(t -> t.getTransaction().getGrossValue()
+                                        .with(converter.at(t.getTransaction().getDateTime())))
+                        .collect(MoneyCollectors.sum(converter.getTermCurrency()));
+
+        return new TradeCostResult(entryValue, entryValueWithoutTaxesAndFees);
+    }
+
+    private TradeCostResult calculateMovingAverageCostResult()
     {
         var closingTransaction = transactions.stream() //
                         .filter(t -> t.getTransaction().getType().isLiquidation()) //
@@ -437,22 +448,30 @@ public class Trade implements Adaptable
                                                         : LocalDate.now()));
         var r = snapshot.getRecord(security);
         if (r.isEmpty())
-            return null;
+            return new TradeCostResult(null, null);
 
         // the trade might be a partial liquidation, so we have to calculate
         // the moving average purchase value based on the number of shares
         // sold
 
-        Money totalCosts = r.get().getCost(CostMethod.MOVING_AVERAGE, taxesAndFees);
-        var totalShares = r.get().getSharesHeld();
+        Money totalCosts = r.get().getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED);
+        Money totalCostsWithoutTaxesAndFees = r.get().getCost(CostMethod.MOVING_AVERAGE,
+                        TaxesAndFees.NOT_INCLUDED);
+        var totalShares = r.get().getSharesHeld(CostMethod.MOVING_AVERAGE);
 
         if (totalShares <= 0)
-            return Money.of(totalCosts.getCurrencyCode(), 0);
+            return new TradeCostResult(Money.of(totalCosts.getCurrencyCode(), 0),
+                            Money.of(totalCostsWithoutTaxesAndFees.getCurrencyCode(), 0));
 
-        var cost = BigDecimal.valueOf(shares / (double) totalShares) //
+        BigDecimal shareRatio = BigDecimal.valueOf(shares / (double) totalShares);
+        var cost = shareRatio //
                         .multiply(BigDecimal.valueOf(totalCosts.getAmount())) //
                         .setScale(0, RoundingMode.HALF_DOWN).longValue();
+        var costWithoutTaxesAndFees = shareRatio //
+                        .multiply(BigDecimal.valueOf(totalCostsWithoutTaxesAndFees.getAmount())) //
+                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
 
-        return Money.of(totalCosts.getCurrencyCode(), cost);
+        return new TradeCostResult(Money.of(totalCosts.getCurrencyCode(), cost),
+                        Money.of(totalCostsWithoutTaxesAndFees.getCurrencyCode(), costWithoutTaxesAndFees));
     }
 }
