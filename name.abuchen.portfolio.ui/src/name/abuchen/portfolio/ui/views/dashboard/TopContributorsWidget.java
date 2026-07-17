@@ -10,6 +10,7 @@ import java.util.function.Supplier;
 
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -69,7 +70,7 @@ public class TopContributorsWidget extends AbstractTopContributorsWidget<ClientP
         return () -> {
             PerformanceIndex index = getDashboardData().calculate(get(DataSeriesConfig.class).getDataSeries(),
                             get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now()));
-            return index.getClientPerformanceSnapshot(true).orElseThrow(IllegalArgumentException::new);
+            return index.getClientPerformanceSnapshot(CostMethod.FIFO).orElseThrow(IllegalArgumentException::new);
         };
     }
 

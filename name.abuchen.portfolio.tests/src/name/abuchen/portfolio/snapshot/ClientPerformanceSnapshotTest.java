@@ -55,7 +55,7 @@ public class ClientPerformanceSnapshotTest
         client.addAccount(account);
 
         CurrencyConverter converter = new TestCurrencyConverter();
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate, name.abuchen.portfolio.model.CostMethod.FIFO);
         assertNotNull(snapshot);
 
         assertNotNull(snapshot.getStartClientSnapshot());
@@ -91,7 +91,7 @@ public class ClientPerformanceSnapshotTest
         client.addAccount(account);
 
         CurrencyConverter converter = new TestCurrencyConverter();
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate, name.abuchen.portfolio.model.CostMethod.FIFO);
 
         assertThat(snapshot.getValue(CategoryType.INITIAL_VALUE), is(Money.of(CurrencyUnit.EUR, 1050_00)));
         assertThat(snapshot.getValue(CategoryType.EARNINGS), is(Money.of(CurrencyUnit.EUR, 0)));
@@ -116,7 +116,7 @@ public class ClientPerformanceSnapshotTest
         client.addAccount(account);
 
         CurrencyConverter converter = new TestCurrencyConverter();
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate, name.abuchen.portfolio.model.CostMethod.FIFO);
 
         assertThat(snapshot.getValue(CategoryType.INITIAL_VALUE), is(Money.of(CurrencyUnit.EUR, 1000_00)));
         assertThat(snapshot.getValue(CategoryType.EARNINGS), is(Money.of(CurrencyUnit.EUR, 50_00)));
@@ -156,7 +156,7 @@ public class ClientPerformanceSnapshotTest
                         50_00, security, AccountTransaction.Type.DIVIDENDS));
 
         CurrencyConverter converter = new TestCurrencyConverter();
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate, name.abuchen.portfolio.model.CostMethod.FIFO);
 
         assertThat(snapshot.getValue(CategoryType.EARNINGS), is(Money.of(CurrencyUnit.EUR, 50_00)));
         assertThat(snapshot.getCategoryByType(CategoryType.EARNINGS).getPositions().size(), is(1));
@@ -185,7 +185,7 @@ public class ClientPerformanceSnapshotTest
         client.addPortfolio(portfolio);
 
         CurrencyConverter converter = new TestCurrencyConverter();
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate, name.abuchen.portfolio.model.CostMethod.FIFO);
 
         assertThat(snapshot.getValue(CategoryType.INITIAL_VALUE), is(Money.of(CurrencyUnit.EUR, 1000_00)));
         assertThat(snapshot.getValue(CategoryType.EARNINGS), is(Money.of(CurrencyUnit.EUR, 0)));
@@ -219,7 +219,7 @@ public class ClientPerformanceSnapshotTest
         client.addPortfolio(portfolio);
 
         CurrencyConverter converter = new TestCurrencyConverter();
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate, name.abuchen.portfolio.model.CostMethod.FIFO);
 
         assertThat(snapshot.getValue(CategoryType.INITIAL_VALUE), is(Money.of(CurrencyUnit.EUR, 1000_00)));
         assertThat(snapshot.getValue(CategoryType.EARNINGS), is(Money.of(CurrencyUnit.EUR, 0)));
@@ -254,7 +254,7 @@ public class ClientPerformanceSnapshotTest
                         .addTo(client);
 
         CurrencyConverter converter = new TestCurrencyConverter();
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate, name.abuchen.portfolio.model.CostMethod.FIFO);
 
         assertThat(snapshot.getValue(CategoryType.INITIAL_VALUE), is(Money.of(CurrencyUnit.EUR, 1000_00)));
         assertThat(snapshot.getValue(CategoryType.EARNINGS), is(Money.of(CurrencyUnit.EUR, 0)));
@@ -295,7 +295,7 @@ public class ClientPerformanceSnapshotTest
                         .addTo(client);
 
         CurrencyConverter converter = new TestCurrencyConverter();
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate, name.abuchen.portfolio.model.CostMethod.FIFO);
 
         assertThat(snapshot.getValue(CategoryType.CAPITAL_GAINS),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize((110.0 * 9) - (100.0 * 9)))));
@@ -325,7 +325,7 @@ public class ClientPerformanceSnapshotTest
 
         CurrencyConverter converter = new TestCurrencyConverter();
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, //
-                        LocalDate.parse("2015-01-02"), LocalDate.parse("2015-01-15"));
+                        LocalDate.parse("2015-01-02"), LocalDate.parse("2015-01-15"), name.abuchen.portfolio.model.CostMethod.FIFO);
 
         assertThat(snapshot.getValue(CategoryType.INITIAL_VALUE),
                         is(Money.of(CurrencyUnit.EUR, Math.round(1000_00 * (1 / 1.2043)))));
@@ -372,7 +372,7 @@ public class ClientPerformanceSnapshotTest
 
         CurrencyConverter converter = new TestCurrencyConverter();
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, //
-                        LocalDate.parse("2015-01-01"), LocalDate.parse("2015-01-15"));
+                        LocalDate.parse("2015-01-01"), LocalDate.parse("2015-01-15"), name.abuchen.portfolio.model.CostMethod.FIFO);
 
         MutableMoney currencyGains = MutableMoney.of(converter.getTermCurrency());
         currencyGains.subtract(snapshot.getValue(CategoryType.INITIAL_VALUE));
@@ -407,7 +407,7 @@ public class ClientPerformanceSnapshotTest
         account.addTransaction(dividend);
 
         CurrencyConverter converter = new TestCurrencyConverter();
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate, name.abuchen.portfolio.model.CostMethod.FIFO);
 
         assertThat(snapshot.getValue(CategoryType.EARNINGS), is(Money.of(CurrencyUnit.EUR, 110_00)));
         assertThat(snapshot.getValue(CategoryType.TAXES), is(Money.of(CurrencyUnit.EUR, 10_00)));
@@ -445,7 +445,7 @@ public class ClientPerformanceSnapshotTest
         portfolio.addTransaction(delivery);
 
         CurrencyConverter converter = new TestCurrencyConverter();
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate, name.abuchen.portfolio.model.CostMethod.FIFO);
 
         assertThat(snapshot.getValue(CategoryType.EARNINGS), is(Money.of(CurrencyUnit.EUR, 0)));
         assertThat(snapshot.getValue(CategoryType.FEES), is(Money.of(CurrencyUnit.EUR, 10_00)));
@@ -465,7 +465,7 @@ public class ClientPerformanceSnapshotTest
                         .addTo(client);
 
         CurrencyConverter converter = new TestCurrencyConverter();
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate, name.abuchen.portfolio.model.CostMethod.FIFO);
 
         assertThat(snapshot.getValue(CategoryType.EARNINGS),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(-100))));
@@ -495,7 +495,7 @@ public class ClientPerformanceSnapshotTest
                         .addTo(client);
 
         CurrencyConverter converter = new TestCurrencyConverter();
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate, name.abuchen.portfolio.model.CostMethod.FIFO);
 
         assertThat(snapshot.getValue(CategoryType.FEES), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(-100))));
 
@@ -516,7 +516,7 @@ public class ClientPerformanceSnapshotTest
         // code under test
 
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter,
-                        LocalDate.parse("2015-01-05"), LocalDate.parse("2016-01-01"));
+                        LocalDate.parse("2015-01-05"), LocalDate.parse("2016-01-01"), name.abuchen.portfolio.model.CostMethod.FIFO);
 
         // assertions - unrealized gains
 
@@ -600,7 +600,7 @@ public class ClientPerformanceSnapshotTest
         // code under test
 
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter,
-                        LocalDate.parse("2014-12-31"), LocalDate.parse("2016-01-01"));
+                        LocalDate.parse("2014-12-31"), LocalDate.parse("2016-01-01"), name.abuchen.portfolio.model.CostMethod.FIFO);
 
         // assertions - unrealized gains
 
@@ -697,7 +697,7 @@ public class ClientPerformanceSnapshotTest
         // code under test
 
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter,
-                        LocalDate.parse("2015-01-05"), LocalDate.parse("2016-01-01"));
+                        LocalDate.parse("2015-01-05"), LocalDate.parse("2016-01-01"), name.abuchen.portfolio.model.CostMethod.FIFO);
 
         // calculation does not work out b/c of the short sale!
 

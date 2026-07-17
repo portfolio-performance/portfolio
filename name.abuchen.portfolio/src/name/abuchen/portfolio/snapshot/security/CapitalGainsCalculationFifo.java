@@ -20,7 +20,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 
-/* package */class CapitalGainsCalculation extends AbstractCapitalGainsCalculation
+/* package */class CapitalGainsCalculationFifo extends AbstractCapitalGainsCalculation
 {
     private static class LineItem
     {

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
@@ -30,7 +31,8 @@ public class TopContributorsReturnWidget extends AbstractTopContributorsWidget<L
 
             var index = getDashboardData().calculate(get(DataSeriesConfig.class).getDataSeries(), interval);
 
-            var snapshot = index.getClientPerformanceSnapshot().orElseThrow(IllegalArgumentException::new);
+            var snapshot = index.getClientPerformanceSnapshot(CostMethod.FIFO)
+                            .orElseThrow(IllegalArgumentException::new);
             var client = snapshot.getClient();
             var converter = getDashboardData().getCurrencyConverter();
 

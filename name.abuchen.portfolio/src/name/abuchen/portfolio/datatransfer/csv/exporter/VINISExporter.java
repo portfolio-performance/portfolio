@@ -50,11 +50,11 @@ public class VINISExporter
                         firstYear.with(TemporalAdjusters.firstDayOfYear()), LocalDate.now());
 
         var performanceAllYears = new ClientPerformanceSnapshot(client, converter,
-                        periodAllYears.toInterval(LocalDate.now()));
+                        periodAllYears.toInterval(LocalDate.now()), CostMethod.FIFO);
         var performanceCurrentYear = new ClientPerformanceSnapshot(client, converter,
-                        periodCurrentYear.toInterval(LocalDate.now()));
+                        periodCurrentYear.toInterval(LocalDate.now()), CostMethod.FIFO);
         var performanceLastYear = new ClientPerformanceSnapshot(client, converter,
-                        periodLastYear.toInterval(LocalDate.now()));
+                        periodLastYear.toInterval(LocalDate.now()), CostMethod.FIFO);
 
         var earningsCurrentYear = performanceCurrentYear.getValue(CategoryType.EARNINGS);
         var earningsLastYear = performanceLastYear.getValue(CategoryType.EARNINGS);

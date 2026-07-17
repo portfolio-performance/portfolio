@@ -6,6 +6,7 @@ import static name.abuchen.portfolio.junit.PortfolioBuilder.sharesOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,7 +17,9 @@ import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 
@@ -49,12 +52,22 @@ public class TradeTest
         assertThat(trade1.isLong(), is(true));
         assertThat(trade1.getShares(), is(sharesOf(5)));
         assertThat(trade1.getStart(), is(LocalDateTime.parse("2024-01-01T00:00")));
-        assertThat(trade1.getEntryValue(), is(Money.of(CurrencyUnit.EUR, amountOf(100) * 5)));
+        assertThat(trade1.getEntryValue(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, amountOf(100) * 5)));
         assertThat(trade1.getEnd().get(), is(LocalDateTime.parse("2024-12-31T00:00")));
         assertThat(trade1.getExitValue(), is(Money.of(CurrencyUnit.EUR, amountOf(180) * 5)));
-        assertThat(trade1.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, amountOf(180 - 100) * 5)));
-        assertThat(trade1.getReturn(), is(0.8));
+        assertThat(trade1.getProfitLoss(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, amountOf(180 - 100) * 5)));
+        assertThat(trade1.getReturn(CostMethod.FIFO), is(0.8));
         assertEquals(trade1.getIRR(), 0.8, 0.0001);
+
+        assertThat(trade1.isLoss(CostMethod.FIFO),
+                        is(trade1.getProfitLoss(CostMethod.FIFO, TaxesAndFees.INCLUDED).isNegative()));
+        assertThat(trade1.isGrossLoss(CostMethod.FIFO),
+                        is(trade1.getProfitLoss(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED).isNegative()));
+        assertThat(trade1.isLoss(CostMethod.MOVING_AVERAGE),
+                        is(trade1.getProfitLoss(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED).isNegative()));
+        assertThat(trade1.isGrossLoss(CostMethod.MOVING_AVERAGE),
+                        is(trade1.getProfitLoss(CostMethod.MOVING_AVERAGE, TaxesAndFees.NOT_INCLUDED).isNegative()));
+        assertThat(trade1.getCurrencyCode(), is(trade1.getExitValue().getCurrencyCode()));
     }
 
     @Test
@@ -78,11 +91,11 @@ public class TradeTest
         assertThat(trade1.isLong(), is(true));
         assertThat(trade1.getShares(), is(sharesOf(3)));
         assertThat(trade1.getStart(), is(LocalDateTime.parse("2024-01-01T00:00")));
-        assertThat(trade1.getEntryValue(), is(Money.of(CurrencyUnit.EUR, amountOf(100) * 3)));
+        assertThat(trade1.getEntryValue(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, amountOf(100) * 3)));
         assertThat(trade1.getEnd().get(), is(LocalDateTime.parse("2024-12-31T00:00")));
         assertThat(trade1.getExitValue(), is(Money.of(CurrencyUnit.EUR, amountOf(180) * 3)));
-        assertThat(trade1.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, amountOf(180 - 100) * 3)));
-        assertThat(trade1.getReturn(), is(0.8));
+        assertThat(trade1.getProfitLoss(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, amountOf(180 - 100) * 3)));
+        assertThat(trade1.getReturn(CostMethod.FIFO), is(0.8));
         assertEquals(trade1.getIRR(), 0.8, 0.0001);
 
         Trade trade2 = trades.get(1);
@@ -90,11 +103,11 @@ public class TradeTest
         assertThat(trade2.isLong(), is(true));
         assertThat(trade2.getShares(), is(sharesOf(2)));
         assertThat(trade1.getStart(), is(LocalDateTime.parse("2024-01-01T00:00")));
-        assertThat(trade2.getEntryValue(), is(Money.of(CurrencyUnit.EUR, amountOf(100) * 2)));
+        assertThat(trade2.getEntryValue(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, amountOf(100) * 2)));
         assertThat(trade2.getEnd().isPresent(), is(false));
         assertThat(trade2.getExitValue(), is(Money.of(CurrencyUnit.EUR, amountOf(210) * 2)));
-        assertThat(trade2.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, amountOf(210 - 100) * 2)));
-        assertThat(trade2.getReturn(), is((210 - 100) / 100.0));
+        assertThat(trade2.getProfitLoss(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, amountOf(210 - 100) * 2)));
+        assertThat(trade2.getReturn(CostMethod.FIFO), is((210 - 100) / 100.0));
     }
 
     @Test
@@ -118,12 +131,18 @@ public class TradeTest
         assertThat(trade1.isLong(), is(false));
         assertThat(trade1.getShares(), is(sharesOf(3)));
         assertThat(trade1.getStart(), is(LocalDateTime.parse("2024-01-01T00:00")));
-        assertThat(trade1.getEntryValue(), is(Money.of(CurrencyUnit.EUR, amountOf(20) * 3)));
+        assertThat(trade1.getEntryValue(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, amountOf(20) * 3)));
         assertThat(trade1.getEnd().get(), is(LocalDateTime.parse("2024-12-31T00:00")));
         assertThat(trade1.getExitValue(), is(Money.of(CurrencyUnit.EUR, amountOf(5) * 3)));
-        assertThat(trade1.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, amountOf(20 - 5) * 3)));
-        assertThat(trade1.getReturn(), is(0.75));
+        assertThat(trade1.getProfitLoss(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, amountOf(20 - 5) * 3)));
+        assertThat(trade1.getReturn(CostMethod.FIFO), is(0.75));
         assertEquals(trade1.getIRR(), 0.75, 0.0001);
+
+        assertThat(trade1.getEntryValue(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED),
+                        is(Money.of(CurrencyUnit.EUR, 0L)));
+        assertThat(trade1.getProfitLoss(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED),
+                        is(Money.of(CurrencyUnit.EUR, amountOf(5) * 3)));
+        assertThat(trade1.getReturn(CostMethod.MOVING_AVERAGE), is(Double.POSITIVE_INFINITY));
     }
 
     @Test
@@ -141,9 +160,30 @@ public class TradeTest
         List<Trade> trades = collector.collect(securityShort);
         Trade trade = trades.get(0);
 
-        Money movingAverageEntryValue = trade.getEntryValueMovingAverage();
+        Money movingAverageEntryValue = trade.getEntryValue(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED);
 
         assertThat(movingAverageEntryValue, is(Money.of(CurrencyUnit.EUR, 0L)));
+    }
+
+    @Test
+    public void testExplicitCostMethodRejectsNullParameters() throws TradeCollectorException
+    {
+        Client client = new Client();
+        TradeCollector collector = new TradeCollector(client, new TestCurrencyConverter());
+        var portfolio = new PortfolioBuilder();
+        portfolio.addTo(client);
+
+        Security security = new SecurityBuilder().addTo(client);
+        portfolio.buyPrice(security, "2024-01-01", 1.0, 10.0).sellPrice(security, "2024-12-31", 1.0, 12.0);
+        Trade trade = collector.collect(security).get(0);
+
+        assertThrows(NullPointerException.class, () -> trade.getEntryValue(null, TaxesAndFees.INCLUDED));
+        assertThrows(NullPointerException.class, () -> trade.getEntryValue(CostMethod.FIFO, null));
+        assertThrows(NullPointerException.class, () -> trade.getProfitLoss(null, TaxesAndFees.INCLUDED));
+        assertThrows(NullPointerException.class, () -> trade.getProfitLoss(CostMethod.FIFO, null));
+        assertThrows(NullPointerException.class, () -> trade.getReturn(null));
+        assertThrows(NullPointerException.class, () -> trade.isLoss(null));
+        assertThrows(NullPointerException.class, () -> trade.isGrossLoss(null));
     }
 
     @Test
@@ -169,8 +209,8 @@ public class TradeTest
         assertThat(trade1.getShares(), is(sharesOf(18)));
         var entryAmount = 12 * 10 + 5 * 12 + 1 * 30;
         var exitAmount = 18 * 20;
-        assertThat(trade1.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, amountOf(exitAmount - entryAmount))));
-        assertEquals(trade1.getReturn(), (double) (exitAmount - entryAmount) / entryAmount, 0.00000001);
+        assertThat(trade1.getProfitLoss(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, amountOf(exitAmount - entryAmount))));
+        assertEquals(trade1.getReturn(CostMethod.FIFO), (double) (exitAmount - entryAmount) / entryAmount, 0.00000001);
         assertEquals(trade1.getIRR(), 0.76018, 0.0001);
 
         Trade trade2 = trades.get(1);
@@ -178,7 +218,7 @@ public class TradeTest
         assertThat(trade2.isLong(), is(true));
         assertThat(trade2.getShares(), is(sharesOf(2)));
         assertThat(trade2.getEnd().isPresent(), is(false));
-        assertThat(trade2.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, amountOf(2 * 2 - 2 * 30))));
+        assertThat(trade2.getProfitLoss(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, amountOf(2 * 2 - 2 * 30))));
     }
 
     @Test
@@ -205,10 +245,10 @@ public class TradeTest
         assertThat(trade1.getShares(), is(sharesOf(4)));
         var entryAmount = 2 * 100 + 2 * 120;
         var exitAmount = 4 * 20;
-        assertThat(trade1.getEntryValue(), is(Money.of(CurrencyUnit.EUR, amountOf(entryAmount))));
+        assertThat(trade1.getEntryValue(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, amountOf(entryAmount))));
         assertThat(trade1.getExitValue(), is(Money.of(CurrencyUnit.EUR, amountOf(exitAmount))));
-        assertThat(trade1.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, amountOf(entryAmount - exitAmount))));
-        assertThat(trade1.getReturn(), is(1.0 - (double) exitAmount / entryAmount));
+        assertThat(trade1.getProfitLoss(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, amountOf(entryAmount - exitAmount))));
+        assertThat(trade1.getReturn(CostMethod.FIFO), is(1.0 - (double) exitAmount / entryAmount));
         assertEquals(0.8710, trade1.getIRR(), 0.0001);
 
         Trade trade2 = trades.get(1);
@@ -216,7 +256,7 @@ public class TradeTest
         assertThat(trade2.isLong(), is(false));
         assertThat(trade2.getShares(), is(sharesOf(3)));
         assertThat(trade2.getEnd().isPresent(), is(false));
-        assertThat(trade2.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, amountOf(1 * 120 + 2 * 50 - 0))));
-        assertThat(trade2.getReturn(), is(1.0));
+        assertThat(trade2.getProfitLoss(CostMethod.FIFO, TaxesAndFees.INCLUDED), is(Money.of(CurrencyUnit.EUR, amountOf(1 * 120 + 2 * 50 - 0))));
+        assertThat(trade2.getReturn(CostMethod.FIFO), is(1.0));
     }
 }

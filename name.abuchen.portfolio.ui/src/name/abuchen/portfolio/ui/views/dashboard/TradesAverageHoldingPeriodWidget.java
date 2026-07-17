@@ -9,6 +9,8 @@ import java.util.function.Predicate;
 
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
+import name.abuchen.portfolio.model.CostMethod;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.snapshot.trades.Trade;
 import name.abuchen.portfolio.ui.Messages;
@@ -70,12 +72,15 @@ public class TradesAverageHoldingPeriodWidget extends AbstractTradesWidget
 
         List<Trade> trades = input.getTrades();
 
-        double totalPurchasePrice = trades.stream().map(Trade::getEntryValue)
+        double totalPurchasePrice = trades.stream()
+                        .map(t -> t.getEntryValue(CostMethod.FIFO, TaxesAndFees.INCLUDED))
                         .collect(MoneyCollectors.sum(getDashboardData().getCurrencyConverter().getTermCurrency()))
                         .getAmount();
 
         double averageHoldingDays = trades.stream()
-                        .mapToDouble(t -> t.getHoldingPeriod() * t.getEntryValue().getAmount() / totalPurchasePrice)
+                        .mapToDouble(t -> t.getHoldingPeriod()
+                                        * t.getEntryValue(CostMethod.FIFO, TaxesAndFees.INCLUDED).getAmount()
+                                        / totalPurchasePrice)
                         .sum();
 
         this.indicator.setText(get(MetricConfig.class).getValue().format(averageHoldingDays));

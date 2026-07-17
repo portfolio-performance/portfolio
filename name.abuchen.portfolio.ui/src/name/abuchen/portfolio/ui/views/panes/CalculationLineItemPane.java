@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Control;
 
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionOwner;
@@ -26,6 +27,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.snapshot.security.BaseSecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.CalculationLineItem;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.DropDown;
@@ -178,8 +180,10 @@ public class CalculationLineItemPane implements InformationPanePage
             public String getText(Object e)
             {
                 CalculationLineItem item = (CalculationLineItem) e;
-                if (item instanceof CalculationLineItem.DividendPayment dividend)
-                    return Values.Percent2.formatNonZero(dividend.getPersonalDividendYield());
+                if (item instanceof CalculationLineItem.DividendPayment dividend
+                                && record instanceof LazySecurityPerformanceRecord lazyRecord)
+                    return Values.Percent2
+                                    .formatNonZero(lazyRecord.getPersonalDividendYield(dividend, CostMethod.FIFO));
                 else
                     return null;
             }
@@ -195,8 +199,10 @@ public class CalculationLineItemPane implements InformationPanePage
             public String getText(Object e)
             {
                 CalculationLineItem item = (CalculationLineItem) e;
-                if (item instanceof CalculationLineItem.DividendPayment dividend)
-                    return Values.Percent2.formatNonZero(dividend.getPersonalDividendYieldMovingAverage());
+                if (item instanceof CalculationLineItem.DividendPayment dividend
+                                && record instanceof LazySecurityPerformanceRecord lazyRecord)
+                    return Values.Percent2.formatNonZero(
+                                    lazyRecord.getPersonalDividendYield(dividend, CostMethod.MOVING_AVERAGE));
                 else
                     return null;
             }
