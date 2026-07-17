@@ -858,31 +858,37 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                             .forEach(c -> policy.create(c, null, c.getDefaultSortDirection(), c.getDefaultWidth()));
         }
 
-        if (isEditable)
-        {
-            ContextMenu headerMenu = new ContextMenu(policy.getViewer().getControl(), this::headerMenuAboutToShow);
+        var headerMenu = new ContextMenu(policy.getViewer().getControl(), manager -> {
+            if (isEditable)
+            {
+                headerMenuAboutToShow(manager);
+                if (manager.getItems().length > 0)
+                    manager.add(new Separator());
+            }
+            menuAboutToShow(manager);
+        });
 
-            policy.getViewer().getControl().addListener(SWT.MenuDetect, event -> {
-                Control control = policy.getViewer().getControl();
-                Menu tableMenu = (Menu) control.getData(ContextMenu.DEFAULT_MENU);
-                Point pt = event.display.map(null, control, new Point(event.x, event.y));
-                Rectangle clientArea = ((Composite) control).getClientArea();
-                boolean isHeader = clientArea.y <= pt.y && pt.y < (clientArea.y + policy.getHeaderHeight());
+        policy.getViewer().getControl().addListener(SWT.MenuDetect, event -> {
+            Control control = policy.getViewer().getControl();
+            Menu tableMenu = (Menu) control.getData(ContextMenu.DEFAULT_MENU);
+            Point pt = event.display.map(null, control, new Point(event.x, event.y));
+            Rectangle clientArea = ((Composite) control).getClientArea();
+            boolean isHeader = clientArea.y <= pt.y && pt.y < (clientArea.y + policy.getHeaderHeight());
 
-                if (isHeader)
-                {
-                    // remember the current column in selectedColumnIndex for
-                    // later use in the context menu
+            if (isHeader)
+            {
+                // remember the current column in selectedColumnIndex for
+                // later use in the context menu (only relevant when
+                // isEditable, but harmless otherwise)
 
-                    selectedColumnIndex = policy.getColumnIndex(pt);
-                    control.setMenu(headerMenu.getMenu());
-                }
-                else
-                {
-                    control.setMenu(tableMenu);
-                }
-            });
-        }
+                selectedColumnIndex = policy.getColumnIndex(pt);
+                control.setMenu(headerMenu.getMenu());
+            }
+            else
+            {
+                control.setMenu(tableMenu);
+            }
+        });
     }
 
     private void createFromColumnConfig(String config)
