@@ -265,7 +265,10 @@ public class OAuthClient // NOSONAR
         }
         catch (IOException e)
         {
-            throw new AuthenticationException(Messages.OAuthFailedToRequestAccessToken, e);
+            // plain I/O errors (no internet, DNS failure, firewall, proxy …)
+            // are NOT authentication failures – the user does not need to
+            // re-authenticate, so use a dedicated subclass
+            throw new AuthenticationNetworkException(Messages.OAuthNetworkConnectionFailed, e);
         }
     }
 
