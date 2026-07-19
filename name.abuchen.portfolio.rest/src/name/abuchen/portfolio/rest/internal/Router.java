@@ -47,6 +47,18 @@ public class Router
         throw ApiException.notFound();
     }
 
+    /**
+     * The registered routes as "METHOD /pattern" signatures, e.g.
+     * {@code GET /v1/files/{file}/instruments/{uuid}}. Used by the OpenAPI drift
+     * test to keep the routing table and the specification in lockstep.
+     */
+    public List<String> routeSignatures()
+    {
+        return routes.stream() //
+                        .map(route -> route.method() + " /" + String.join("/", route.segments())) //$NON-NLS-1$ //$NON-NLS-2$
+                        .toList();
+    }
+
     private static Map<String, String> matchSegments(String[] pattern, String[] actual)
     {
         if (pattern.length != actual.length)

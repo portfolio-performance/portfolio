@@ -3,6 +3,9 @@ openapi: 3.1.0
 info:
   title: Portfolio Performance REST API
   version: 1.0.0
+  license:
+    name: Eclipse Public License 1.0
+    identifier: EPL-1.0
   description: |
     A **local** HTTP/JSON API into the running Portfolio Performance desktop
     application, so that scripts and AI agents can read and edit the data of
