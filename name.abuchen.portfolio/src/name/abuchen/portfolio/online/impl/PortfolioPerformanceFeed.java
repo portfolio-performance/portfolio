@@ -83,9 +83,20 @@ public final class PortfolioPerformanceFeed implements QuoteFeed
                     "AS", "AT", "BD", "BE", "BR", "CO", "DE", "DU", "F", "HA", "HE", "HM", "IR", "IS", "L", "LS", "MC",
                     "ME", "MI", "MU", "OL", "PA", "PR", "RG", "SC", "ST", "SW", "SX", "TG", "TL", "VI", "VS", "WA");
 
-    private static final OAuthClient oauthClient = OAuthClient.INSTANCE;
+    private final OAuthClient oauthClient;
 
     private final PageCache<CachedResponse> cache = new PageCache<>();
+
+    public PortfolioPerformanceFeed()
+    {
+        this.oauthClient = OAuthClient.INSTANCE;
+    }
+
+    /** Package-private constructor for unit tests that need to inject a mock OAuthClient. */
+    PortfolioPerformanceFeed(OAuthClient client)
+    {
+        this.oauthClient = client;
+    }
 
     @Override
     public String getId()

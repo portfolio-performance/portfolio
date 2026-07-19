@@ -2,6 +2,7 @@ package name.abuchen.portfolio.oauth;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -263,12 +264,17 @@ public class OAuthClient // NOSONAR
 
             throw new AuthenticationException(Messages.OAuthFailedToRequestAccessToken, e);
         }
+        catch (UnknownHostException e)
+        {
+            // The authentication server cannot be resolved – confirmed network
+            // error. The user does not need to re-authenticate.
+            throw new AuthenticationNetworkException(Messages.OAuthNetworkConnectionFailed, e);
+        }
         catch (IOException e)
         {
-            // plain I/O errors (no internet, DNS failure, firewall, proxy …)
-            // are NOT authentication failures – the user does not need to
-            // re-authenticate, so use a dedicated subclass
-            throw new AuthenticationNetworkException(Messages.OAuthNetworkConnectionFailed, e);
+            // Generic I/O error; cause not further classified – do not assume
+            // this is a network problem without further evidence.
+            throw new AuthenticationException(Messages.OAuthFailedToRequestAccessToken, e);
         }
     }
 
@@ -325,10 +331,19 @@ public class OAuthClient // NOSONAR
         request.setHeader("Content-Type", "application/x-www-form-urlencoded"); //$NON-NLS-1$ //$NON-NLS-2$
         request.setEntity(new StringEntity(payload.toString()));
 
+        String response = executeHttpPost(request);
+        return CodeTokenResponse.fromJson(response);
+    }
+
+    /**
+     * Executes an HTTP POST request and returns the response body as a string.
+     * Extracted so that subclasses (e.g. in tests) can override the HTTP call.
+     */
+    protected String executeHttpPost(HttpPost request) throws IOException
+    {
         try (CloseableHttpClient client = HttpClientBuilder.create().useSystemProperties().build())
         {
-            String response = client.execute(request, new BasicHttpClientResponseHandler());
-            return CodeTokenResponse.fromJson(response);
+            return client.execute(request, new BasicHttpClientResponseHandler());
         }
     }
 }

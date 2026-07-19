@@ -96,7 +96,7 @@ public class UpdatePricesJob extends AbstractClientJob
         List<Security> securities = getClient().getSecurities().stream().filter(filter).collect(toMutableList());
 
         Optional<AccessToken> accessToken = Optional.empty();
-        boolean tokenFailedDueToNetworkError = false;
+        var tokenFailedDueToNetworkError = false;
 
         // try to get the access token
         try
