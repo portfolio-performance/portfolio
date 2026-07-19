@@ -1,0 +1,686 @@
+openapi: 3.1.0
+
+info:
+  title: Portfolio Performance REST API
+  version: 1.0.0
+  description: |
+    A **local** HTTP/JSON API into the running Portfolio Performance desktop
+    application, so that scripts and AI agents can read and edit the data of
+    open portfolio files.
+
+    ## How to reach it
+
+    - Base URL `http://127.0.0.1:{port}` (default port **5712**), **loopback only**.
+    - The server binds `127.0.0.1` and is **off by default**; the user enables it
+      in Preferences → REST API.
+    - Every request needs a **bearer token** (shown in the preferences, revoked by
+      regenerating). See the `bearerAuth` scheme below.
+
+    ## Constraints that are not expressible in this document
+
+    These are enforced by the server but cannot be described as schema or security,
+    so they are stated here. Each violation is reported as a distinct problem type
+    (see the `Problem` schema):
+
+    - **Loopback Host only.** The API must be addressed as `127.0.0.1`, `[::1]` or
+      `localhost`. A request whose `Host` header names any other authority is
+      rejected `403 forbidden-host`. This defeats DNS rebinding — a web page cannot
+      point its own domain at 127.0.0.1 and reach the API.
+    - **No browser origin.** Any request that carries an `Origin` header is rejected
+      `403 browser-origin-forbidden`. A web page therefore cannot reach this API.
+    - **Per-file access.** Only files the user has individually enabled are visible.
+      A file that exists but is not enabled answers exactly like one that does not
+      exist (`404 not-found`) — the token must not let a client enumerate files the
+      user did not share.
+
+    ## Methods
+
+    A path serves only the methods listed for it in this document; v1 has **no
+    create (`POST`) endpoints**. Calling any method that a path does not list
+    returns `405 method-not-allowed`.
+
+    ## Writes are not saved
+
+    A write (`PATCH`, `DELETE`) mutates the **in-memory** file and marks it dirty,
+    exactly as if the user had edited it in the UI. The change is visible
+    immediately, but **there is no save endpoint** — only the user saves the file
+    (or discards the change by closing without saving).
+
+    While the user has a modal dialog open or is editing a table cell, writes are
+    rejected with `423 user-interaction` rather than silently clobbered. This is
+    **normal and temporary**: respect the `Retry-After` header and try again. Reads
+    are unaffected.
+
+servers:
+  - url: http://127.0.0.1:{port}
+    description: Loopback interface of the running application
+    variables:
+      port:
+        default: "5712"
+        description: The port configured in Preferences → REST API
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Files
+    description: The open portfolio files you are allowed to address
+  - name: Instruments
+    description: Securities held in a file (stocks, funds, crypto, …)
+  - name: Cash accounts
+    description: Accounts holding cash in a single currency
+  - name: Investment accounts
+    description: Accounts holding instrument positions
+
+paths:
+  /v1/files:
+    get:
+      operationId: listFiles
+      tags: [Files]
+      summary: List the files you may address
+      description: |
+        Lists only files that are **open and enabled**. Address a file in the
+        `{file}` path segment below by either its `id` or its `alias`.
+      responses:
+        "200":
+          description: The addressable files
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/File"
+              examples:
+                default:
+                  value:
+                    items:
+                      - id: 5f3c1e2a-0b7d-4a1e-9c2f-8d6b3a1e0f42
+                        alias: main
+                        label: portfolio.xml
+                        path: /Users/me/portfolio.xml
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/instruments:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    get:
+      operationId: listInstruments
+      tags: [Instruments]
+      summary: List the instruments in a file
+      responses:
+        "200":
+          description: The instruments in the file
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Instrument"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/instruments/{uuid}:
+    parameters:
+      - $ref: "#/components/parameters/File"
+      - $ref: "#/components/parameters/Uuid"
+    get:
+      operationId: getInstrument
+      tags: [Instruments]
+      summary: Read a single instrument
+      responses:
+        "200":
+          description: The instrument
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Instrument"
+              examples:
+                default:
+                  value:
+                    uuid: 8a1e0c4b-2f5d-4e6a-b1c3-7d9f0a2e4c68
+                    name: Apple Inc.
+                    currencyCode: USD
+                    isin: US0378331005
+                    wkn: "865985"
+                    tickerSymbol: AAPL
+                    note: Core holding
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    patch:
+      operationId: patchInstrument
+      tags: [Instruments]
+      summary: Update an instrument (JSON Merge Patch)
+      description: |
+        A **JSON Merge Patch** (RFC 7386), *not* the full target state: fields you
+        omit stay untouched, and an explicit `null` clears an optional field.
+        Returns the updated instrument.
+
+        Any field that is unknown or not writable is rejected `422`, never a silent
+        no-op — a typo must not look like success. All violations are reported at
+        once so they can be fixed in one round-trip.
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: "#/components/schemas/InstrumentPatch"
+            examples:
+              renameAndClearNote:
+                summary: Rename and clear the note
+                value:
+                  name: Apple
+                  note: null
+      responses:
+        "200":
+          description: The updated instrument
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Instrument"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    delete:
+      operationId: deleteInstrument
+      tags: [Instruments]
+      summary: Delete an instrument
+      description: |
+        Deletes the instrument. **Rejected `409 delete-blocked`** if transactions
+        or investment plans reference it — deleting it in the application would
+        cascade into transaction history, which the API refuses to do on a client's
+        behalf. Watchlist and taxonomy membership do not block the delete.
+      responses:
+        "204":
+          description: Deleted
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/cash-accounts:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    get:
+      operationId: listCashAccounts
+      tags: [Cash accounts]
+      summary: List the cash accounts in a file
+      responses:
+        "200":
+          description: The cash accounts in the file
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/CashAccount"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/cash-accounts/{uuid}:
+    parameters:
+      - $ref: "#/components/parameters/File"
+      - $ref: "#/components/parameters/Uuid"
+    get:
+      operationId: getCashAccount
+      tags: [Cash accounts]
+      summary: Read a single cash account
+      responses:
+        "200":
+          description: The cash account
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CashAccount"
+              examples:
+                default:
+                  value:
+                    uuid: c4b2a1e0-3f6d-4a2e-8b1c-5d7f9a0e2c46
+                    name: Cash Account
+                    currencyCode: EUR
+                    note: Settlement account
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/investment-accounts:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    get:
+      operationId: listInvestmentAccounts
+      tags: [Investment accounts]
+      summary: List the investment accounts in a file
+      responses:
+        "200":
+          description: The investment accounts in the file
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/InvestmentAccount"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/investment-accounts/{uuid}:
+    parameters:
+      - $ref: "#/components/parameters/File"
+      - $ref: "#/components/parameters/Uuid"
+    get:
+      operationId: getInvestmentAccount
+      tags: [Investment accounts]
+      summary: Read a single investment account
+      description: |
+        An investment account holds **only** instrument positions. Its cash side is
+        a separate cash account, named by `referenceCashAccount`.
+      responses:
+        "200":
+          description: The investment account
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvestmentAccount"
+              examples:
+                default:
+                  value:
+                    uuid: d9f0a2e4-1c6b-4e8a-9b2c-3d5f7a1e0c48
+                    name: Broker
+                    referenceCashAccount: c4b2a1e0-3f6d-4a2e-8b1c-5d7f9a0e2c46
+                    note: Main brokerage
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: |
+        The access token shown in Preferences → REST API. Regenerating the token
+        revokes every existing client.
+
+  parameters:
+    File:
+      name: file
+      in: path
+      required: true
+      description: |
+        A file's `id` or `alias`, as returned by `GET /v1/files`. An alias that
+        matches several records is rejected `409 ambiguous-alias`; use the `id`.
+      schema:
+        type: string
+    Uuid:
+      name: uuid
+      in: path
+      required: true
+      description: The `uuid` of the entity within the file
+      schema:
+        type: string
+
+  schemas:
+    File:
+      type: object
+      description: An open, enabled portfolio file you may address.
+      required: [id, label, path]
+      properties:
+        id:
+          type: string
+          description: |
+            Stable identity of the file, keyed by path. Address the file by this or
+            by `alias`.
+        alias:
+          type: string
+          description: Optional human-friendly handle the user assigned to the file.
+        label:
+          type: string
+          description: The file's display label in the application.
+        path:
+          type: string
+          description: |
+            The file's path on disk. Identity is keyed by path, so a *different*
+            file copied over an enabled path inherits that path's access.
+
+    Instrument:
+      type: object
+      description: A security — stock, fund, bond, crypto, …
+      required: [uuid, name, currencyCode]
+      properties:
+        uuid:
+          type: string
+        name:
+          type: string
+        currencyCode:
+          type: [string, "null"]
+          description: |
+            ISO 4217 currency code, or `null` for a currency-less instrument such
+            as an index or a CPI series. The key is **always present** (hence
+            `required`); only its value may be null.
+        isin:
+          type: string
+          description: Omitted when not set.
+        wkn:
+          type: string
+          description: Omitted when not set.
+        tickerSymbol:
+          type: string
+          description: Omitted when not set.
+        note:
+          type: string
+          description: Omitted when not set.
+
+    InstrumentPatch:
+      type: object
+      description: |
+        A JSON Merge Patch (RFC 7386) over an instrument. Every field is optional;
+        an omitted field is left untouched. Fields typed `["string","null"]` accept
+        an explicit `null` to clear them. Everything else — prices, quote feeds,
+        attributes, events, the retired flag — is read-only in v1.
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Non-empty; cannot be cleared.
+        currencyCode:
+          type: string
+          description: |
+            A known ISO 4217 currency. **Rejected while the instrument has
+            transactions** (`422 locked-by-transactions`), matching the UI's rule.
+        isin:
+          type: [string, "null"]
+        wkn:
+          type: [string, "null"]
+        tickerSymbol:
+          type: [string, "null"]
+        note:
+          type: [string, "null"]
+
+    CashAccount:
+      type: object
+      description: An account holding cash in a single currency.
+      required: [uuid, name, currencyCode]
+      properties:
+        uuid:
+          type: string
+        name:
+          type: string
+        currencyCode:
+          type: string
+          description: ISO 4217 currency code.
+        note:
+          type: string
+          description: Omitted when not set.
+
+    InvestmentAccount:
+      type: object
+      description: |
+        An account holding instrument positions. Its cash side is a separate cash
+        account, named by `referenceCashAccount`.
+      required: [uuid, name]
+      properties:
+        uuid:
+          type: string
+        name:
+          type: string
+        referenceCashAccount:
+          type: string
+          description: |
+            The `uuid` of the cash account backing this investment account. Omitted
+            when not set.
+        note:
+          type: string
+          description: Omitted when not set.
+
+    FieldError:
+      type: object
+      description: One field-level violation within a `Problem`.
+      required: [field, code, message]
+      properties:
+        field:
+          type: string
+          description: The offending field (or the resource facet that blocks the operation).
+        code:
+          type: string
+          description: A stable, machine-readable reason.
+          enum:
+            - required
+            - invalid-type
+            - unknown-field
+            - unknown-currency
+            - locked-by-transactions
+            - referenced
+        message:
+          type: string
+          description: Human-readable explanation of this one violation.
+
+    Problem:
+      type: object
+      description: |
+        An error, following RFC 9457 (`application/problem+json`). `title` is
+        invariant for a given `type`; anything specific to the one occurrence is in
+        `detail`. Validation and conflict problems additionally carry `errors`.
+      required: [type, title, status]
+      properties:
+        type:
+          type: string
+          format: uri
+          description: |
+            A URI identifying the problem kind. The distinct values are enumerated
+            below; note especially that a **404 never distinguishes** an unknown
+            file from a file that exists but is not enabled, and that the three
+            **409** kinds each call for a different response:
+            `file-not-open` (a human must open the file), `ambiguous-alias` (retry
+            with the `id`), `delete-blocked` (give up — the instrument is referenced).
+            `method-not-allowed` (405) is returned for any method a path does not
+            list; v1 has no create endpoints.
+          enum:
+            - https://portfolio-performance.info/rest/problems/invalid-request
+            - https://portfolio-performance.info/rest/problems/unauthorized
+            - https://portfolio-performance.info/rest/problems/forbidden-host
+            - https://portfolio-performance.info/rest/problems/browser-origin-forbidden
+            - https://portfolio-performance.info/rest/problems/not-found
+            - https://portfolio-performance.info/rest/problems/method-not-allowed
+            - https://portfolio-performance.info/rest/problems/file-not-open
+            - https://portfolio-performance.info/rest/problems/ambiguous-alias
+            - https://portfolio-performance.info/rest/problems/delete-blocked
+            - https://portfolio-performance.info/rest/problems/validation
+            - https://portfolio-performance.info/rest/problems/user-interaction
+            - https://portfolio-performance.info/rest/problems/internal-error
+        title:
+          type: string
+          description: Short, human-readable summary of the problem kind.
+        status:
+          type: integer
+          description: The HTTP status code, repeated for convenience.
+        detail:
+          type: string
+          description: |
+            Human-readable explanation specific to this occurrence. Present only
+            when there is something occurrence-specific to say.
+        errors:
+          type: array
+          description: |
+            Present on validation (`422`) and some conflict (`409`) problems: all
+            field-level violations, reported at once.
+          items:
+            $ref: "#/components/schemas/FieldError"
+
+  responses:
+    BadRequest:
+      description: The request body is not a JSON object (`invalid-request`).
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+
+    Unauthorized:
+      description: Missing or invalid bearer token (`unauthorized`).
+      headers:
+        WWW-Authenticate:
+          description: Always `Bearer`.
+          schema:
+            type: string
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+
+    Forbidden:
+      description: |
+        The request was not addressed as loopback (`forbidden-host`) or it carried
+        an `Origin` header (`browser-origin-forbidden`).
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+
+    NotFound:
+      description: |
+        Unknown file, **file not enabled**, or unknown entity (`not-found`). A file
+        that is not enabled is deliberately indistinguishable from one that does not
+        exist.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+
+    Conflict:
+      description: |
+        The addressed file or entity cannot serve the request in its current state:
+        `file-not-open` (enabled but not open — a human must open it),
+        `ambiguous-alias` (the alias matches several records — use the `id`), or, on
+        delete, `delete-blocked` (the instrument is referenced by transactions or
+        plans).
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+
+    ValidationFailed:
+      description: |
+        One or more fields were rejected (`validation`). See `errors` for every
+        violation; nothing is applied unless everything validates.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+          examples:
+            unknownCurrency:
+              value:
+                type: https://portfolio-performance.info/rest/problems/validation
+                title: Validation failed
+                status: 422
+                errors:
+                  - field: currencyCode
+                    code: unknown-currency
+                    message: XYZ is not a known currency
+
+    Locked:
+      description: |
+        A modal dialog is open or the user is editing a table cell, so the write was
+        refused rather than clobbered (`user-interaction`). **Normal and
+        temporary** — respect `Retry-After` and try again.
+      headers:
+        Retry-After:
+          description: Seconds to wait before retrying.
+          schema:
+            type: integer
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+
+    InternalError:
+      description: An unexpected error (`internal-error`).
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
