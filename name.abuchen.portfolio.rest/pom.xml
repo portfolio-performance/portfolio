@@ -34,4 +34,45 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<!--
+			openapi-lint: validates openapi.yaml with Redocly during the verify
+			phase. Opt-in (append -Popenapi-lint) because it needs Node/npx on the
+			PATH and network access on first run - which not every contributor has,
+			and which the offline (-o) build cannot provide. CI runs the same check
+			unconditionally (see .github/workflows/main.yml). To always run it
+			locally, add openapi-lint to activeProfiles in your ~/.m2/settings.xml.
+		-->
+		<profile>
+			<id>openapi-lint</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>redocly-lint</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>npx</executable>
+									<!-- repository root, where redocly.yaml lives -->
+									<workingDirectory>${project.basedir}/..</workingDirectory>
+									<arguments>
+										<argument>--yes</argument>
+										<argument>@redocly/cli@2</argument>
+										<argument>lint</argument>
+									</arguments>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
