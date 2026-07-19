@@ -116,6 +116,57 @@ public class PatchSecurityTest
     }
 
     @Test
+    public void testCurrencyClearedToNullMarksIndex()
+    {
+        var client = new Client();
+        var security = new SecurityBuilder().addTo(client); // EUR by default
+
+        SecuritiesHandler.patch(client, security.getUUID(), json("{\"currencyCode\":null}"));
+
+        assertThat(security.getCurrencyCode(), nullValue());
+    }
+
+    @Test
+    public void testClearCurrencyRejectedForExchangeRate()
+    {
+        var client = new Client();
+        var security = new SecurityBuilder().addTo(client);
+        security.setTargetCurrencyCode("USD"); // makes it an exchange rate
+
+        try
+        {
+            SecuritiesHandler.patch(client, security.getUUID(), json("{\"currencyCode\":null}"));
+            Assert.fail("expected ApiException");
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getStatus(), is(422));
+            assertThat(e.getErrors().get(0).code(), is("exchange-rate-requires-currency"));
+            assertThat(security.getCurrencyCode(), is("EUR")); // nothing applied
+        }
+    }
+
+    @Test
+    public void testClearCurrencyBlockedWhenTransactionsExist()
+    {
+        var client = new Client();
+        var security = new SecurityBuilder().addTo(client); // EUR by default
+        new PortfolioBuilder().buy(security, "2024-01-02", 100 * Values.Share.factor(), 1000 * Values.Amount.factor())
+                        .addTo(client);
+
+        try
+        {
+            SecuritiesHandler.patch(client, security.getUUID(), json("{\"currencyCode\":null}"));
+            Assert.fail("expected ApiException");
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getStatus(), is(422));
+            assertThat(e.getErrors().get(0).code(), is("locked-by-transactions"));
+        }
+    }
+
+    @Test
     public void testWriteGateReturns423WhileUserEditing() throws Exception
     {
         var client = new Client();
