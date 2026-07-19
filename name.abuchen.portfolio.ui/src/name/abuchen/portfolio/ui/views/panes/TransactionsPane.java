@@ -1,8 +1,5 @@
 package name.abuchen.portfolio.ui.views.panes;
 
-import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
-
-import java.util.Collections;
 import java.util.List;
 
 import jakarta.inject.Inject;
@@ -16,12 +13,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.InvestmentPlan;
-import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -96,7 +88,7 @@ public class TransactionsPane implements InformationPanePage
         toolBar.add(transactionFilter);
 
         toolBar.add(new SimpleAction(Messages.MenuExportData, Images.EXPORT,
-                        a -> new TableViewerCSVExporter(transactions.getTableViewer()).export(getLabel(), source)));
+                        a -> new TableViewerCSVExporter(transactions.getTableViewer()).export(getLabel(), getExportLabel())));
 
         toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
                         manager -> transactions.getColumnSupport().menuAboutToShow(manager)));
@@ -105,46 +97,9 @@ public class TransactionsPane implements InformationPanePage
     @Override
     public void setInput(Object input)
     {
-        // first check for the investment plan, because a plan can also be
-        // adapted to a security (if it is a regular purchase) or an account (if
-        // it is a regular transfer)
-
-        InvestmentPlan investmentPlan = Adaptor.adapt(InvestmentPlan.class, input);
-        if (investmentPlan != null)
-        {
-            source = investmentPlan;
-            transactions.setInput(investmentPlan.getTransactions(client));
-            return;
-        }
-
-        Security security = Adaptor.adapt(Security.class, input);
-        if (security != null)
-        {
-            source = security;
-            transactions.setInput(security.getTransactions(client));
-            return;
-        }
-
-        Account account = Adaptor.adapt(Account.class, input);
-        if (account != null)
-        {
-            source = account;
-            transactions.setInput(account.getTransactions().stream().map(t -> new TransactionPair<>(account, t))
-                            .collect(toMutableList()));
-            return;
-        }
-
-        Portfolio portfolio = Adaptor.adapt(Portfolio.class, input);
-        if (portfolio != null)
-        {
-            source = portfolio;
-            transactions.setInput(portfolio.getTransactions().stream().map(t -> new TransactionPair<>(portfolio, t))
-                            .collect(toMutableList()));
-            return;
-        }
-
-        source = null;
-        transactions.setInput(Collections.emptyList());
+        var resolved = TransactionPaneInput.resolve(input, client);
+        source = resolved.getSource();
+        transactions.setInput(resolved.getTransactions());
     }
 
     @Override
@@ -152,6 +107,11 @@ public class TransactionsPane implements InformationPanePage
     {
         if (source != null)
             setInput(source);
+    }
+
+    private String getExportLabel()
+    {
+        return TransactionPaneInput.exportLabelFor(source);
     }
 
     public void notifyModelUpdated()
