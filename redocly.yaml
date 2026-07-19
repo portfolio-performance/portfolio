@@ -3,7 +3,8 @@
 # Lint locally with:
 #   npx @redocly/cli@2 lint
 #
-# CI runs the same command (see .github/workflows/main.yml, job "openapi-lint").
+# Maven runs the same command with -Popenapi-lint, which CI activates
+# (see name.abuchen.portfolio.rest/pom.xml and .github/workflows/main.yml).
 apis:
   portfolio-rest@v1:
     root: name.abuchen.portfolio.rest/openapi.yaml
