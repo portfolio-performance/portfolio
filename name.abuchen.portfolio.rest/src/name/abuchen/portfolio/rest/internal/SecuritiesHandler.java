@@ -2,6 +2,7 @@ package name.abuchen.portfolio.rest.internal;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Objects;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -50,8 +51,8 @@ public final class SecuritiesHandler
                                     (security, value) -> security.setTickerSymbol(stringOrNull(value))), //
                     "note", new WritableField(SecuritiesHandler::allowTextOrNull, //$NON-NLS-1$
                                     (security, value) -> security.setNote(stringOrNull(value))), //
-                    "currencyCode", new WritableField(SecuritiesHandler::requireCurrency, //$NON-NLS-1$
-                                    (security, value) -> security.setCurrencyCode(value.getAsString())));
+                    "currencyCode", new WritableField(SecuritiesHandler::allowCurrencyOrNull, //$NON-NLS-1$
+                                    (security, value) -> security.setCurrencyCode(stringOrNull(value))));
 
     private SecuritiesHandler()
     {
@@ -125,18 +126,36 @@ public final class SecuritiesHandler
         return null;
     }
 
-    private static ApiException.FieldError requireCurrency(Client client, Security security, String field,
+    /**
+     * Validates a currency change, mirroring the master-data page's rules.
+     * Clearing the currency (null) marks the instrument as an index; it is
+     * refused for an exchange rate - which needs a currency - and, like any
+     * currency change, while the instrument has transactions.
+     */
+    private static ApiException.FieldError allowCurrencyOrNull(Client client, Security security, String field,
                     JsonElement value)
     {
-        if (value.isJsonNull() || !isString(value))
-            return new ApiException.FieldError(field, "required", field + " must be a string"); //$NON-NLS-1$ //$NON-NLS-2$
+        String code;
 
-        var code = value.getAsString();
+        if (value.isJsonNull())
+        {
+            if (security.isExchangeRate())
+                return new ApiException.FieldError(field, "exchange-rate-requires-currency", //$NON-NLS-1$
+                                "an exchange rate must keep its currency and cannot be cleared"); //$NON-NLS-1$
+            code = null;
+        }
+        else if (isString(value))
+        {
+            code = value.getAsString();
+            if (CurrencyUnit.getInstance(code) == null)
+                return new ApiException.FieldError(field, "unknown-currency", code + " is not a known currency"); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+        else
+        {
+            return new ApiException.FieldError(field, "invalid-type", field + " must be a string or null"); //$NON-NLS-1$ //$NON-NLS-2$
+        }
 
-        if (CurrencyUnit.getInstance(code) == null)
-            return new ApiException.FieldError(field, "unknown-currency", code + " is not a known currency"); //$NON-NLS-1$ //$NON-NLS-2$
-
-        if (!code.equals(security.getCurrencyCode()) && security.hasTransactions(client))
+        if (!Objects.equals(code, security.getCurrencyCode()) && security.hasTransactions(client))
             return new ApiException.FieldError(field, "locked-by-transactions", //$NON-NLS-1$
                             "currency cannot be changed while the instrument has transactions"); //$NON-NLS-1$
 
