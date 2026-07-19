@@ -473,10 +473,13 @@ components:
           minLength: 1
           description: Non-empty; cannot be cleared.
         currencyCode:
-          type: string
+          type: [string, "null"]
           description: |
-            A known ISO 4217 currency. **Rejected while the instrument has
-            transactions** (`422 locked-by-transactions`), matching the UI's rule.
+            A known ISO 4217 currency, or `null` to clear it (marking the
+            instrument an index). Clearing is rejected for an exchange rate
+            (`exchange-rate-requires-currency`). Any currency change — including
+            clearing — is **rejected while the instrument has transactions**
+            (`locked-by-transactions`), matching the UI's rule.
         isin:
           type: [string, "null"]
         wkn:
@@ -539,6 +542,7 @@ components:
             - unknown-field
             - unknown-currency
             - locked-by-transactions
+            - exchange-rate-requires-currency
             - referenced
         message:
           type: string
