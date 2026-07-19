@@ -4,6 +4,8 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
 import org.junit.Test;
@@ -11,8 +13,9 @@ import org.junit.Test;
 /**
  * Regression tests for the AuthenticationNetworkException contract.
  *
- * Verifies that a plain I/O failure (specifically UnknownHostException) is
- * wrapped in an AuthenticationNetworkException that:
+ * Verifies that confirmed transport failures (UnknownHostException,
+ * ConnectException, SocketTimeoutException) are wrapped in an
+ * AuthenticationNetworkException that:
  *   - is a subtype of AuthenticationException (existing callers still compile)
  *   - preserves the original message and cause
  *   - can be caught separately from the broader AuthenticationException so
@@ -22,9 +25,29 @@ import org.junit.Test;
 public class AuthenticationNetworkExceptionTest
 {
     @Test
-    public void preservesMessageAndCause()
+    public void preservesMessageAndCauseForUnknownHost()
     {
         var cause = new UnknownHostException("auth.portfolio-performance.info");
+        var ex = new AuthenticationNetworkException("unable to connect", cause);
+
+        assertThat(ex.getMessage(), is("unable to connect"));
+        assertThat(ex.getCause(), is(cause));
+    }
+
+    @Test
+    public void preservesMessageAndCauseForConnectionRefused()
+    {
+        var cause = new ConnectException("Connection refused");
+        var ex = new AuthenticationNetworkException("unable to connect", cause);
+
+        assertThat(ex.getMessage(), is("unable to connect"));
+        assertThat(ex.getCause(), is(cause));
+    }
+
+    @Test
+    public void preservesMessageAndCauseForTimeout()
+    {
+        var cause = new SocketTimeoutException("Read timed out");
         var ex = new AuthenticationNetworkException("unable to connect", cause);
 
         assertThat(ex.getMessage(), is("unable to connect"));

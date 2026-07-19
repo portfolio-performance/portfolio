@@ -5,6 +5,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
 
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
 import org.junit.Test;
@@ -20,7 +22,7 @@ import name.abuchen.portfolio.online.QuoteFeedException;
 /**
  * Regression tests that verify the downstream exception mapping inside
  * PortfolioPerformanceFeed when the token refresh call fails with a network
- * error (UnknownHostException / AuthenticationNetworkException).
+ * error (UnknownHostException, ConnectException, SocketTimeoutException).
  *
  * Before the fix the feed would silently swallow the real cause and re-throw
  * an AuthenticationExpiredException, misleading the user into thinking they
@@ -37,62 +39,59 @@ public class PortfolioPerformanceFeedNetworkExceptionTest
         return security;
     }
 
-    private static AuthenticationNetworkException networkException()
+    private static PortfolioPerformanceFeed feedWithNetworkException(AuthenticationNetworkException ex)
+                    throws Exception
     {
-        return new AuthenticationNetworkException("Unable to connect to the server. Please check your internet connection.",
-                        new UnknownHostException("auth.portfolio-performance.info"));
-    }
-
-    @Test
-    public void networkAuthFailureMapsToNetworkConnectionException() throws Exception
-    {
-        var networkEx = networkException();
         var mockClient = Mockito.mock(OAuthClient.class);
         Mockito.when(mockClient.isAuthenticated()).thenReturn(true);
-        Mockito.when(mockClient.getAPIAccessToken()).thenThrow(networkEx);
+        Mockito.when(mockClient.getAPIAccessToken()).thenThrow(ex);
+        return new PortfolioPerformanceFeed(mockClient);
+    }
 
-        var feed = new PortfolioPerformanceFeed(mockClient);
+    // ---- UnknownHostException (DNS failure) ----
+
+    @Test
+    public void unknownHostMapsToNetworkConnectionException() throws Exception
+    {
+        var ex = new AuthenticationNetworkException("no route",
+                        new UnknownHostException("auth.portfolio-performance.info"));
 
         var thrown = assertThrows(QuoteFeedException.class,
-                        () -> feed.getHistoricalQuotes(nonSampleSecurity(), false));
+                        () -> feedWithNetworkException(ex).getHistoricalQuotes(nonSampleSecurity(), false));
 
         assertThat(thrown, instanceOf(NetworkConnectionException.class));
+        assertThat(thrown instanceof AuthenticationExpiredException, is(false));
+        assertThat(thrown.getMessage(), is(ex.getMessage()));
     }
 
-    @Test
-    public void networkConnectionExceptionPreservesOriginalMessage() throws Exception
-    {
-        var networkEx = networkException();
-        var mockClient = Mockito.mock(OAuthClient.class);
-        Mockito.when(mockClient.isAuthenticated()).thenReturn(true);
-        Mockito.when(mockClient.getAPIAccessToken()).thenThrow(networkEx);
+    // ---- ConnectException (connection refused / firewall) ----
 
-        var feed = new PortfolioPerformanceFeed(mockClient);
+    @Test
+    public void connectRefusedMapsToNetworkConnectionException() throws Exception
+    {
+        var ex = new AuthenticationNetworkException("no route",
+                        new ConnectException("Connection refused"));
 
         var thrown = assertThrows(QuoteFeedException.class,
-                        () -> feed.getHistoricalQuotes(nonSampleSecurity(), false));
+                        () -> feedWithNetworkException(ex).getHistoricalQuotes(nonSampleSecurity(), false));
 
-        assertThat(thrown.getMessage(), is(networkEx.getMessage()));
+        assertThat(thrown, instanceOf(NetworkConnectionException.class));
+        assertThat(thrown instanceof AuthenticationExpiredException, is(false));
     }
 
-    @Test
-    public void networkAuthFailureDoesNotThrowAuthenticationExpiredException() throws Exception
-    {
-        // AuthenticationExpiredException tells the UI to show "Authentication
-        // expired – login again", which is wrong when the problem is that the
-        // server cannot be reached.
-        var networkEx = networkException();
-        var mockClient = Mockito.mock(OAuthClient.class);
-        Mockito.when(mockClient.isAuthenticated()).thenReturn(true);
-        Mockito.when(mockClient.getAPIAccessToken()).thenThrow(networkEx);
+    // ---- SocketTimeoutException (connection / read timeout) ----
 
-        var feed = new PortfolioPerformanceFeed(mockClient);
+    @Test
+    public void socketTimeoutMapsToNetworkConnectionException() throws Exception
+    {
+        var ex = new AuthenticationNetworkException("no route",
+                        new SocketTimeoutException("Read timed out"));
 
         var thrown = assertThrows(QuoteFeedException.class,
-                        () -> feed.getHistoricalQuotes(nonSampleSecurity(), false));
+                        () -> feedWithNetworkException(ex).getHistoricalQuotes(nonSampleSecurity(), false));
 
-        assertThat("must NOT be AuthenticationExpiredException for a network failure",
-                        thrown instanceof AuthenticationExpiredException, is(false));
+        assertThat(thrown, instanceOf(NetworkConnectionException.class));
+        assertThat(thrown instanceof AuthenticationExpiredException, is(false));
     }
 }
 

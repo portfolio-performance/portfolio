@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.oauth;
 
 import java.io.IOException;
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
@@ -264,10 +266,11 @@ public class OAuthClient // NOSONAR
 
             throw new AuthenticationException(Messages.OAuthFailedToRequestAccessToken, e);
         }
-        catch (UnknownHostException e)
+        catch (UnknownHostException | ConnectException | SocketTimeoutException e)
         {
-            // The authentication server cannot be resolved – confirmed network
-            // error. The user does not need to re-authenticate.
+            // Confirmed network / transport error (DNS failure, connection
+            // refused, connection timeout). The user does not need to
+            // re-authenticate.
             throw new AuthenticationNetworkException(Messages.OAuthNetworkConnectionFailed, e);
         }
         catch (IOException e)
