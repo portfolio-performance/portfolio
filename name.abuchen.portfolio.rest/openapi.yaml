@@ -76,6 +76,8 @@ tags:
     description: Accounts holding instrument positions
   - name: Holdings
     description: The statement of assets — every holding valued at a date
+  - name: Performance
+    description: Return and value-change of the file over an interval
 
 paths:
   /v1/files:
@@ -467,6 +469,118 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
+  /v1/files/{file}/performance:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    get:
+      operationId: getPerformance
+      tags: [Performance]
+      summary: Performance of the file between two valuation dates
+      description: |
+        The portfolio's performance between the opening and closing valuation
+        dates, in the reporting currency: the time-weighted return (TTWROR) and
+        the money-weighted return (IRR), plus the value-change `breakdown` that
+        reconciles the opening to the closing value.
+
+        The breakdown is a signed decomposition — the money fields add up to the
+        closing value:
+        `openingValue + unrealizedCapitalGains + realizedCapitalGains + income +
+        fees + taxes + currencyGains + netDeposits = closingValue`. `fees` and
+        `taxes` are therefore negative. `netDeposits` is the external capital
+        flow (deposits less removals) over the period; it is *not* part of the
+        performance-driven change, but is required for the value reconciliation.
+
+        `costMethod` chooses how a security's gains split into realized and
+        unrealized; it does not affect their sum, nor the returns.
+
+        `openingDate` and `closingDate` are **valuation snapshot dates, not a
+        record range**. The opening balance is measured as of the end of
+        `openingDate`, so an activity dated exactly on `openingDate` belongs to
+        the opening balance, not the period's flows; an activity on
+        `closingDate` is in the period. (A record-selection endpoint such as a
+        future transactions list uses an inclusive `[from, to]` range instead —
+        the two conventions are named differently on purpose.) A cash flow on
+        `closingDate` also weighs on `ttwror` as opening capital does, as the
+        time-weighted return has no sub-period after the final day to neutralise
+        it against.
+      parameters:
+        - name: openingDate
+          in: query
+          required: true
+          description: |
+            The opening valuation date. `openingValue` equals
+            `GET .../holdings?date={openingDate}`'s `totalAssets`.
+          schema:
+            type: string
+            format: date
+        - name: closingDate
+          in: query
+          required: false
+          description: |
+            The closing valuation date (default: today). `closingValue` equals
+            `GET .../holdings?date={closingDate}`'s `totalAssets`. Must be
+            strictly after `openingDate`; an empty or inverted range is rejected
+            `400 invalid-range`.
+          schema:
+            type: string
+            format: date
+        - name: currency
+          in: query
+          required: false
+          description: |
+            The reporting currency (default: the file's base currency). A
+            currency pair without an exchange rate series converts 1:1 — the
+            same silent fallback the application itself applies.
+          schema:
+            type: string
+        - name: costMethod
+          in: query
+          required: false
+          description: |
+            The cost basis method used to split capital gains into realized and
+            unrealized (default: `fifo`).
+          schema:
+            type: string
+            enum: [fifo, moving-average]
+            default: fifo
+      responses:
+        "200":
+          description: The performance over the interval
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Performance"
+              examples:
+                default:
+                  value:
+                    openingDate: "2024-01-01"
+                    closingDate: "2024-12-31"
+                    currency: EUR
+                    ttwror: 0.0723
+                    irr: 0.0685
+                    breakdown:
+                      openingValue: { value: 100000, currency: EUR }
+                      unrealizedCapitalGains: { value: 4200, currency: EUR }
+                      realizedCapitalGains: { value: 1500, currency: EUR }
+                      income: { value: 900, currency: EUR }
+                      fees: { value: -120, currency: EUR }
+                      taxes: { value: -300, currency: EUR }
+                      currencyGains: { value: 210, currency: EUR }
+                      netDeposits: { value: 5000, currency: EUR }
+                      closingValue: { value: 111390, currency: EUR }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
 components:
   securitySchemes:
     bearerAuth:
@@ -681,6 +795,96 @@ components:
             The holding's value in its own currency, before conversion into the
             reporting currency. Present only when the two currencies differ.
 
+    Performance:
+      type: object
+      description: |
+        The return and value-change of the file between two valuation dates.
+      required: [openingDate, closingDate, currency, ttwror, irr, breakdown]
+      properties:
+        openingDate:
+          type: string
+          format: date
+          description: The opening valuation date.
+        closingDate:
+          type: string
+          format: date
+          description: The effective closing valuation date.
+        currency:
+          type: string
+          description: The reporting currency of every amount in the breakdown.
+        ttwror:
+          type: [number, "null"]
+          description: |
+            The true time-weighted rate of return over the interval, as a
+            fraction (0.0723 is 7.23 %) — not a percentage. `null` when the
+            model cannot define it for the interval.
+        irr:
+          type: [number, "null"]
+          description: |
+            The internal (money-weighted) rate of return over the interval, as a
+            fraction — not a percentage. `null` when the model cannot define it
+            for the interval.
+        breakdown:
+          $ref: "#/components/schemas/PerformanceBreakdown"
+
+    PerformanceBreakdown:
+      type: object
+      description: |
+        A signed decomposition of the value change: the fields add up to the
+        closing value —
+        `openingValue + unrealizedCapitalGains + realizedCapitalGains + income +
+        fees + taxes + currencyGains + netDeposits = closingValue`.
+      required:
+        - openingValue
+        - unrealizedCapitalGains
+        - realizedCapitalGains
+        - income
+        - fees
+        - taxes
+        - currencyGains
+        - netDeposits
+        - closingValue
+      properties:
+        openingValue:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: The portfolio's value at `openingDate`.
+        unrealizedCapitalGains:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: The change in value of positions still held; negative for a loss.
+        realizedCapitalGains:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: The gains locked in by sales during the interval; negative for a loss.
+        income:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: Dividends and interest received, net of interest charged.
+        fees:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: Fees paid, as a negative contribution (positive only for a net refund).
+        taxes:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: Taxes paid, as a negative contribution (positive only for a net refund).
+        currencyGains:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: The gain or loss attributable to exchange rate movements.
+        netDeposits:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: |
+            External capital flow over the interval: deposits and inbound
+            deliveries less removals and outbound deliveries. Not part of the
+            performance-driven change, but required for the value reconciliation.
+        closingValue:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: The portfolio's value at `closingDate`.
+
     FieldError:
       type: object
       description: One field-level violation within a `Problem`.
@@ -696,6 +900,7 @@ components:
             - required
             - invalid-type
             - invalid-value
+            - invalid-range
             - unknown-field
             - unknown-currency
             - locked-by-transactions

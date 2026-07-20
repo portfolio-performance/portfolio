@@ -1,11 +1,13 @@
 package name.abuchen.portfolio.rest.internal;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.function.Function;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -17,6 +19,8 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.rest.FileAccessRegistry.FileAccess;
 import name.abuchen.portfolio.rest.spi.OpenFile;
 import name.abuchen.portfolio.snapshot.AssetPosition;
+import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 
 /**
@@ -151,6 +155,56 @@ public final class EntityJson
         json.add("value", decimal(money.getAmount(), Values.Money.precision())); //$NON-NLS-1$
         json.addProperty("currency", money.getCurrencyCode()); //$NON-NLS-1$
         return json;
+    }
+
+    /**
+     * The performance between an opening and a closing valuation date: the
+     * time-weighted (TTWROR) and money-weighted (IRR) return as fractions, plus
+     * the value-change breakdown that reconciles the opening to the closing
+     * value:
+     * <p>
+     * {@code openingValue + unrealizedCapitalGains + realizedCapitalGains +
+     * income + fees + taxes + currencyGains + netDeposits = closingValue}.
+     * <p>
+     * The model stores fees and taxes as positive magnitudes; they are emitted
+     * as signed contributions (negative) so the identity holds by plain
+     * addition. {@code netDeposits} is the external flow (deposits less
+     * removals) that the model excludes from the performance-only delta.
+     */
+    public static JsonObject performance(LocalDate openingDate, LocalDate closingDate, String currency, double ttwror,
+                    double irr, ClientPerformanceSnapshot performance)
+    {
+        var json = new JsonObject();
+        json.addProperty("openingDate", openingDate.toString()); //$NON-NLS-1$
+        json.addProperty("closingDate", closingDate.toString()); //$NON-NLS-1$
+        json.addProperty("currency", currency); //$NON-NLS-1$
+        json.add("ttwror", ratio(ttwror)); //$NON-NLS-1$
+        json.add("irr", ratio(irr)); //$NON-NLS-1$
+
+        var breakdown = new JsonObject();
+        breakdown.add("openingValue", toJson(performance.getValue(CategoryType.INITIAL_VALUE))); //$NON-NLS-1$
+        breakdown.add("unrealizedCapitalGains", toJson(performance.getValue(CategoryType.CAPITAL_GAINS))); //$NON-NLS-1$
+        breakdown.add("realizedCapitalGains", toJson(performance.getValue(CategoryType.REALIZED_CAPITAL_GAINS))); //$NON-NLS-1$
+        breakdown.add("income", toJson(performance.getValue(CategoryType.EARNINGS))); //$NON-NLS-1$
+        breakdown.add("fees", toJson(negate(performance.getValue(CategoryType.FEES)))); //$NON-NLS-1$
+        breakdown.add("taxes", toJson(negate(performance.getValue(CategoryType.TAXES)))); //$NON-NLS-1$
+        breakdown.add("currencyGains", toJson(performance.getValue(CategoryType.CURRENCY_GAINS))); //$NON-NLS-1$
+        breakdown.add("netDeposits", toJson(performance.getValue(CategoryType.TRANSFERS))); //$NON-NLS-1$
+        breakdown.add("closingValue", toJson(performance.getValue(CategoryType.FINAL_VALUE))); //$NON-NLS-1$
+        json.add("breakdown", breakdown); //$NON-NLS-1$
+
+        return json;
+    }
+
+    /** a return ratio, or JSON null when the model cannot define it (NaN/infinite) */
+    private static JsonElement ratio(double value)
+    {
+        return Double.isFinite(value) ? decimal(value) : JsonNull.INSTANCE;
+    }
+
+    private static Money negate(Money money)
+    {
+        return Money.of(money.getCurrencyCode(), -money.getAmount());
     }
 
     /** a fixed-point long, e.g. an amount of money or a number of shares */
