@@ -72,9 +72,25 @@ public class UIThreadMarshallingTest
         call("GET", "/v1/files/" + fileId + "/instruments/" + security.getUUID(), null);
         call("GET", "/v1/files/" + fileId + "/cash-accounts", null);
         call("GET", "/v1/files/" + fileId + "/investment-accounts", null);
+        call("GET", "/v1/files/" + fileId + "/holdings", null);
         call("PATCH", "/v1/files/" + fileId + "/instruments/" + security.getUUID(), "{\"name\":\"New\"}");
         call("DELETE", "/v1/files/" + fileId + "/instruments/" + security.getUUID(), null);
 
         assertThat(host.hasAccessedOutsideUIThread(), is(false));
+    }
+
+    /**
+     * Calculation endpoints resolve the {file} scope on the UI thread but run
+     * the calculation itself on the HTTP worker thread, so an expensive
+     * computation cannot freeze the UI. Hence the response must never be
+     * produced inside syncExec.
+     */
+    @Test
+    public void testHoldingsCalculationRunsOffTheUIThread() throws Exception
+    {
+        call("GET", "/v1/files/" + fileId + "/holdings", null);
+
+        assertThat(host.hasAccessedOutsideUIThread(), is(false));
+        assertThat(host.syncExecResults().stream().anyMatch(Response.class::isInstance), is(false));
     }
 }

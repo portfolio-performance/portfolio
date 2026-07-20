@@ -33,8 +33,14 @@ becomes a later thin adapter over the same service layer. The individual decisio
 - **Writes are in-memory only; there is no save endpoint.** API mutations behave exactly like UI
   edits: mutate the `Client`, mark it dirty, let the UI refresh live. Only the user saves. An agent's
   changes can be reviewed and discarded by closing without saving.
-- **All model access is marshalled to the UI thread** (`Display.syncExec`): one mutator thread, the
-  same guarantee UI code relies on, rather than retrofitting locking onto the model.
+- **Reads and writes that directly inspect or mutate model entities are marshalled to the UI thread**
+  (`Display.syncExec`): one mutator thread, the same guarantee UI code relies on, rather than
+  retrofitting locking onto the model. Calculation endpoints are the deliberate exception: they
+  resolve the open file and capture the per-file calculation context on the UI thread, then run the
+  expensive snapshot calculation on the HTTP worker thread. The calculation is read-only, and the
+  accepted tradeoff is that a concurrent UI edit can rarely produce a transiently inconsistent
+  response or internal error; clients can retry, while the UI must not freeze behind a long-running
+  valuation.
 - **Writes are rejected while an application-modal dialog is open** (423 + `Retry-After`). Modal edit
   dialogs such as `EditSecurityDialog` hold a stale copy of the entity that is written back wholesale
   on OK, and `syncExec` runnables *do* execute during a modal event loop — so an API write landing
@@ -79,10 +85,12 @@ becomes a later thin adapter over the same service layer. The individual decisio
 **Consequences**
 
 The pipeline is built so a new resource costs a handler plus a serializer: authentication, file-scope
-resolution, the modal write gate, UI-thread marshalling and problem+json mapping all live in the
-filter chain and cannot be forgotten per endpoint. The wire conventions that would force a `/v2` if
-changed later — money shape, date format, list responses as an `{items: […]}` envelope rather than a
-bare array, and the problem `code` vocabulary — are fixed from day one.
+resolution, the modal write gate, UI-thread marshalling for entity reads/writes, and problem+json
+mapping all live in the filter chain and cannot be forgotten per endpoint. Calculation endpoints use
+the same file-scope resolution but intentionally run their expensive read-only work off the UI thread.
+The wire conventions that would force a `/v2` if changed later — money shape, date format, list
+responses as an `{items: […]}` envelope rather than a bare array, and the problem `code` vocabulary —
+are fixed from day one.
 
 The port is fixed (default 5712) and never hops on bind failure; a conflict is reported rather than
 silently worked around, because a client that finds the API on an unexpected port cannot know whose

@@ -85,7 +85,8 @@ public class RestApiServer
 
                 var match = router.match(exchange.getRequestMethod(), exchange.getRequestURI().getPath());
                 var request = new Request(exchange.getRequestMethod(), exchange.getRequestURI().getPath(),
-                                match.pathParams(), exchange.getRequestBody().readAllBytes());
+                                match.pathParams(), Request.parseQuery(exchange.getRequestURI().getRawQuery()),
+                                exchange.getRequestBody().readAllBytes());
                 response = match.handler().handle(request);
             }
             catch (ApiException e)
