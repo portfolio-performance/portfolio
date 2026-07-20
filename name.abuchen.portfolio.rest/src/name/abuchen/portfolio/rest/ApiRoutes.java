@@ -8,10 +8,12 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.rest.internal.AccountsHandler;
 import name.abuchen.portfolio.rest.internal.ApiException;
 import name.abuchen.portfolio.rest.internal.FileResolver;
 import name.abuchen.portfolio.rest.internal.FilesHandler;
+import name.abuchen.portfolio.rest.internal.HoldingsHandler;
 import name.abuchen.portfolio.rest.internal.PortfoliosHandler;
 import name.abuchen.portfolio.rest.internal.Request;
 import name.abuchen.portfolio.rest.internal.Response;
@@ -20,9 +22,10 @@ import name.abuchen.portfolio.rest.internal.SecuritiesHandler;
 import name.abuchen.portfolio.rest.spi.HostApplication;
 
 /**
- * Registers all v1 routes. Every route is marshalled to the UI thread; writes
- * are additionally rejected with 423 while an application-modal dialog is open
- * or the user edits a table cell.
+ * Registers all v1 routes. Reads and writes are marshalled to the UI thread;
+ * writes are additionally rejected with 423 while an application-modal dialog
+ * is open or the user edits a table cell. Calculation endpoints only resolve
+ * the {file} scope on the UI thread and compute on the HTTP worker thread.
  */
 public final class ApiRoutes
 {
@@ -61,6 +64,10 @@ public final class ApiRoutes
         router.add("GET", "/v1/files/{file}/investment-accounts/{uuid}", read(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (client, req) -> Response.json(200, PortfoliosHandler.get(client, req.pathParam("uuid"))))); //$NON-NLS-1$
 
+        router.add("GET", "/v1/files/{file}/holdings", calc(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> Response.json(200, HoldingsHandler.list(context.client(), context.factory(),
+                                        req.queryParam("date"), req.queryParam("currency"))))); //$NON-NLS-1$ //$NON-NLS-2$
+
         return router;
     }
 
@@ -81,6 +88,31 @@ public final class ApiRoutes
             var resolved = resolver.resolve(request.pathParam("file")); //$NON-NLS-1$
             return body.apply(resolved.file().getClient(), request);
         });
+    }
+
+    /** what a calculation endpoint needs, fetched from the host on the UI thread */
+    /* package */ record CalcContext(Client client, ExchangeRateProviderFactory factory)
+    {
+    }
+
+    /**
+     * For read-only calculation endpoints: resolves the {file} scope on the UI
+     * thread, but runs the calculation itself on the HTTP worker thread so
+     * that an expensive computation cannot freeze the UI. Deliberately without
+     * a consistency guard: a concurrent user edit may - rarely - yield a
+     * transiently inconsistent response or an internal error; retrying is
+     * cheap for the client, blocking the UI is not.
+     */
+    private static Router.Handler calc(FileResolver resolver, HostApplication host,
+                    BiFunction<CalcContext, Request, Response> body)
+    {
+        return request -> {
+            var context = host.syncExec(() -> {
+                var file = resolver.resolve(request.pathParam("file")).file(); //$NON-NLS-1$
+                return new CalcContext(file.getClient(), file.getExchangeRateProviderFactory());
+            });
+            return body.apply(context, request);
+        };
     }
 
     private static Router.Handler write(FileResolver resolver, HostApplication host,

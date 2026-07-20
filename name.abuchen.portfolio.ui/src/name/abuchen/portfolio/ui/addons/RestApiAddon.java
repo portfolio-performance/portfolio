@@ -19,6 +19,7 @@ import org.osgi.service.event.Event;
 
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.rest.ApiRoutes;
 import name.abuchen.portfolio.rest.RestApiConstants;
 import name.abuchen.portfolio.rest.RestApiServer;
@@ -62,6 +63,14 @@ public class RestApiAddon
         public Client getClient()
         {
             return input.getClient();
+        }
+
+        @Override
+        public ExchangeRateProviderFactory getExchangeRateProviderFactory()
+        {
+            // created eagerly in ClientInput#setClient; listOpenFiles filters
+            // inputs without a client, so this is never null here
+            return input.getExchangeRateProviderFacory();
         }
     }
 
