@@ -36,6 +36,8 @@ public class RestApiServerTest
     {
         var router = new Router();
         router.add("GET", "/v1/ping", request -> Response.json(200, JsonParser.parseString("{\"pong\":true}")));
+        router.add("GET", "/v1/echo", request -> Response.json(200,
+                        JsonParser.parseString("{\"name\":\"" + request.queryParam("name") + "\"}")));
 
         server = new RestApiServer(0, () -> TOKEN, router);
         server.start();
@@ -60,6 +62,19 @@ public class RestApiServerTest
                         HttpResponse.BodyHandlers.ofString());
         assertThat(response.statusCode(), is(200));
         assertThat(response.body(), containsString("pong"));
+    }
+
+    /**
+     * The server must hand the (decoded) query string through to the handler -
+     * the path-only routing must not swallow it.
+     */
+    @Test
+    public void testQueryStringReachesHandlerDecoded() throws Exception
+    {
+        var response = http.send(request("/v1/echo?name=a%20b").header("Authorization", "Bearer " + TOKEN).GET()
+                        .build(), HttpResponse.BodyHandlers.ofString());
+        assertThat(response.statusCode(), is(200));
+        assertThat(response.body(), containsString("a b"));
     }
 
     @Test
