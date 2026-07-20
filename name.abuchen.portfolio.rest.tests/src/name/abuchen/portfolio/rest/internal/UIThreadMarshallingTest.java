@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.is;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
@@ -89,6 +90,18 @@ public class UIThreadMarshallingTest
     public void testHoldingsCalculationRunsOffTheUIThread() throws Exception
     {
         call("GET", "/v1/files/" + fileId + "/holdings", null);
+
+        assertThat(host.hasAccessedOutsideUIThread(), is(false));
+        assertThat(host.syncExecResults().stream().anyMatch(Response.class::isInstance), is(false));
+    }
+
+    @Test
+    public void testPerformanceCalculationRunsOffTheUIThread() throws Exception
+    {
+        var path = "/v1/files/" + fileId + "/performance";
+        var match = router.match("GET", path);
+        var query = Map.of("openingDate", "2024-01-01", "closingDate", "2024-12-31");
+        match.handler().handle(new Request("GET", path, match.pathParams(), query, new byte[0]));
 
         assertThat(host.hasAccessedOutsideUIThread(), is(false));
         assertThat(host.syncExecResults().stream().anyMatch(Response.class::isInstance), is(false));
