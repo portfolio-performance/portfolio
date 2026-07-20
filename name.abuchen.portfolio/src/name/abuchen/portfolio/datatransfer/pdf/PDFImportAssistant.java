@@ -147,6 +147,7 @@ public class PDFImportAssistant
         extractors.add(new TigerBrokersPteLtdPDFExtractor(client));
         extractors.add(new TradegateAGPDFExtractor(client));
         extractors.add(new TradeRepublicPDFExtractor(client));
+        extractors.add(new Trading212PDFExtractor(client));
         extractors.add(new UBSAGBankingAGPDFExtractor(client));
         extractors.add(new UmweltbankAGPDFExtractor(client));
         extractors.add(new UnicreditPDFExtractor(client));
