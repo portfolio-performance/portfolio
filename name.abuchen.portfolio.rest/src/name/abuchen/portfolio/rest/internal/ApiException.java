@@ -64,6 +64,12 @@ public class ApiException extends RuntimeException
         return new ApiException(400, "invalid-request", "Invalid request", detail, List.of(), Map.of()); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
+    /** an invalid query parameter, reported per parameter like a validation error */
+    public static ApiException badRequest(List<FieldError> errors)
+    {
+        return new ApiException(400, "invalid-request", "Invalid request", null, errors, Map.of()); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
     public static ApiException validation(List<FieldError> errors)
     {
         return new ApiException(422, "validation", "Validation failed", null, errors, Map.of()); //$NON-NLS-1$ //$NON-NLS-2$

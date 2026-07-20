@@ -74,6 +74,8 @@ tags:
     description: Accounts holding cash in a single currency
   - name: Investment accounts
     description: Accounts holding instrument positions
+  - name: Holdings
+    description: The statement of assets — every holding valued at a date
 
 paths:
   /v1/files:
@@ -381,6 +383,90 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
+  /v1/files/{file}/holdings:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    get:
+      operationId: listHoldings
+      tags: [Holdings]
+      summary: List the file's holdings, valued at a date
+      description: |
+        Every holding — instrument positions and cash account balances uniformly —
+        valued at the given date in the reporting currency. Instrument positions
+        with zero shares at the date are omitted; cash accounts always appear,
+        even with a zero balance. Items are sorted by name.
+      parameters:
+        - name: date
+          in: query
+          required: false
+          description: |
+            The valuation date (default: today). Each instrument is valued with
+            the latest price on or before this date; the holding's `price.date`
+            makes the staleness visible. Future dates are allowed and value at
+            the last known prices.
+          schema:
+            type: string
+            format: date
+        - name: currency
+          in: query
+          required: false
+          description: |
+            The reporting currency (default: the file's base currency). A
+            currency pair without an exchange rate series converts 1:1 — the
+            same silent fallback the application itself applies.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The holdings at the valuation date
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [date, totalAssets, items]
+                properties:
+                  date:
+                    type: string
+                    format: date
+                    description: The effective valuation date.
+                  totalAssets:
+                    $ref: "#/components/schemas/MonetaryValue"
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Holding"
+              examples:
+                default:
+                  value:
+                    date: "2026-07-20"
+                    totalAssets: { value: 1600, currency: EUR }
+                    items:
+                      - type: instrument
+                        uuid: 8a1e0c4b-2f5d-4e6a-b1c3-7d9f0a2e4c68
+                        name: Apple Inc.
+                        shares: 10
+                        price: { value: 110.5, currency: USD, date: "2026-07-17" }
+                        valuation: { value: 1100, currency: EUR }
+                        localValuation: { value: 1105, currency: USD }
+                        weight: 0.6875
+                      - type: cash-account
+                        uuid: c4b2a1e0-3f6d-4a2e-8b1c-5d7f9a0e2c46
+                        name: Broker Cash
+                        valuation: { value: 500, currency: EUR }
+                        weight: 0.3125
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
 components:
   securitySchemes:
     bearerAuth:
@@ -525,6 +611,76 @@ components:
           type: string
           description: Omitted when not set.
 
+    MonetaryValue:
+      type: object
+      description: |
+        An amount of money: a plain decimal number (never scientific notation on
+        the wire) plus its ISO 4217 currency code.
+      required: [value, currency]
+      properties:
+        value:
+          type: number
+        currency:
+          type: string
+
+    Price:
+      type: object
+      description: |
+        The price per share a valuation is based on: the latest price on or
+        before the valuation date — possibly well before it (stale quote, or the
+        fallback to the price of the position's last transaction).
+      required: [value]
+      properties:
+        value:
+          type: number
+        currency:
+          type: string
+          description: |
+            The instrument's own currency. Omitted for the rare instrument
+            without a currency.
+        date:
+          type: string
+          format: date
+          description: The date the price is from.
+
+    Holding:
+      type: object
+      description: |
+        One line of the statement of assets — an instrument position or a cash
+        account balance.
+      required: [type, uuid, name, valuation, weight]
+      properties:
+        type:
+          type: string
+          enum: [instrument, cash-account]
+        uuid:
+          type: string
+          description: |
+            Joins to `GET .../instruments/{uuid}` (type `instrument`) or
+            `GET .../cash-accounts/{uuid}` (type `cash-account`) for master data.
+        name:
+          type: string
+        shares:
+          type: number
+          description: The number of shares held. Instruments only.
+        price:
+          allOf:
+            - $ref: "#/components/schemas/Price"
+          description: Instruments only.
+        valuation:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: The holding's value in the reporting currency.
+        weight:
+          type: number
+          description: The holding's fraction (0–1) of total assets — not a percentage.
+        localValuation:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: |
+            The holding's value in its own currency, before conversion into the
+            reporting currency. Present only when the two currencies differ.
+
     FieldError:
       type: object
       description: One field-level violation within a `Problem`.
@@ -539,6 +695,7 @@ components:
           enum:
             - required
             - invalid-type
+            - invalid-value
             - unknown-field
             - unknown-currency
             - locked-by-transactions
@@ -595,14 +752,17 @@ components:
         errors:
           type: array
           description: |
-            Present on validation (`422`) and some conflict (`409`) problems: all
-            field-level violations, reported at once.
+            Present on validation (`422`), some conflict (`409`), and invalid
+            query parameter (`400`) problems: all field-level violations,
+            reported at once.
           items:
             $ref: "#/components/schemas/FieldError"
 
   responses:
     BadRequest:
-      description: The request body is not a JSON object (`invalid-request`).
+      description: |
+        The request body is not a JSON object, or a query parameter is invalid
+        (`invalid-request`). Invalid query parameters are itemized in `errors`.
       content:
         application/problem+json:
           schema:
