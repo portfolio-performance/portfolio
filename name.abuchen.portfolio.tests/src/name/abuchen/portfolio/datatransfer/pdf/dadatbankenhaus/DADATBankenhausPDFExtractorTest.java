@@ -22,6 +22,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundCash;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundCash;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
@@ -1618,6 +1619,93 @@ public class DADATBankenhausPDFExtractorTest
                         hasNote("Depotgebührenabrechnung per 31.12.2024"), //
                         hasAmount("EUR", 277.33), hasGrossValue("EUR", 277.33), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testKontoauszug29()
+    {
+        var extractor = new DADATBankenhausPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug29.txt"), errors);
+
+        // This fixture holds two documents in one PDF text extraction: the
+        // KONTOAUSZUG (lines 5-32) and a full "Abrechnung Handel" settlement
+        // note for the same trade (lines 33-76). Only the KONTOAUSZUG is
+        // imported -- addBuySellTransaction() is scoped to
+        // "(Abrechnungsauskunft|Kauf Depot)" and neither token appears here, so
+        // the settlement note is ignored. Whether DADAT always appends it is
+        // unknown; both forms import correctly, because each path has its own
+        // DocumentType. Accepted deliberately in #5896: if countBuySell() below
+        // ever becomes 2, the settlement note has started matching a
+        // DocumentType and this trade is being imported twice.
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("XS1458408561"), hasWkn(null), hasTicker(null), //
+                        hasName("1.625% GOLDM.S.GRP 16/26 MT"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-11-19T00:00"), hasShares(160.00), //
+                        hasSource("Kontoauszug29.txt"), //
+                        hasNote("Stückzinsen 83,34 EUR"), //
+                        hasAmount("EUR", 15812.91), hasGrossValue("EUR", 15794.54), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", (16.27 + 1.00 + 1.10)))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-11-19"), hasAmount("EUR", 16000.00), //
+                        hasSource("Kontoauszug29.txt"), hasNote("Max Mustermann"))));
+    }
+
+    @Test
+    public void testKontoauszug30()
+    {
+        var extractor = new DADATBankenhausPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug30.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("XS1074144871"), hasWkn(null), hasTicker(null), //
+                        hasName("2.875% GOLDM.S.GRP 14/26 MT"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-06-04T00:00"), hasExDate(null), //
+                        hasShares(130.00), //
+                        hasSource("Kontoauszug30.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 270.97), hasGrossValue("EUR", 373.75), //
+                        hasTaxes("EUR", 102.78), hasFees("EUR", 0.00))));
+
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2025-06-04"), hasAmount("EUR", 270.00), //
+                        hasSource("Kontoauszug30.txt"), hasNote("Max Mustermann"))));
     }
 
     @Test
