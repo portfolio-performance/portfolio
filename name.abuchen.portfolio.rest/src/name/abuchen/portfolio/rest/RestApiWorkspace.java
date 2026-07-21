@@ -8,10 +8,12 @@ import org.osgi.framework.FrameworkUtil;
 /**
  * Locates the workspace-scoped state of the API: the preferences holding the
  * global settings and the per-file access records, and the state location
- * holding the bearer token. Nothing of this lives inside the portfolio file.
+ * holding the client tokens. Nothing of this lives inside the portfolio file.
  */
 public final class RestApiWorkspace
 {
+    private static ClientStore clientStore;
+
     private RestApiWorkspace()
     {
     }
@@ -26,9 +28,18 @@ public final class RestApiWorkspace
         return new FileAccessRegistry((IEclipsePreferences) preferences().node(RestApiConstants.PREF_NODE_FILES));
     }
 
-    public static TokenStore createTokenStore()
+    /**
+     * The one client store of the application. A singleton because session
+     * tokens live only in this instance: they must survive a server restart
+     * (e.g. a port change) and be visible to the preference page.
+     */
+    public static synchronized ClientStore getClientStore()
     {
-        var bundle = FrameworkUtil.getBundle(RestApiConstants.class);
-        return new TokenStore(Platform.getStateLocation(bundle).toFile().toPath());
+        if (clientStore == null)
+        {
+            var bundle = FrameworkUtil.getBundle(RestApiConstants.class);
+            clientStore = new ClientStore(Platform.getStateLocation(bundle).toFile().toPath());
+        }
+        return clientStore;
     }
 }

@@ -4,11 +4,10 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.Supplier;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -25,7 +24,8 @@ import name.abuchen.portfolio.rest.internal.Router;
  * Loopback-only HTTP server hosting the REST API. Binds 127.0.0.1 on a fixed
  * port and never hops ports on bind failure. Requests must address the API as
  * loopback (Host header) and must not come from a browser context (Origin
- * header); all must present the bearer token.
+ * header); all must present a bearer token - except the pairing endpoints,
+ * whose purpose is to obtain one.
  */
 public class RestApiServer
 {
@@ -35,16 +35,16 @@ public class RestApiServer
     private static final Set<String> IPV6_LOOPBACK = Set.of("::1", "0:0:0:0:0:0:0:1"); //$NON-NLS-1$ //$NON-NLS-2$
 
     private final int port;
-    private final Supplier<String> tokenSupplier;
+    private final Predicate<String> tokenValidator;
     private final Router router;
 
     private HttpServer server;
     private ExecutorService executor;
 
-    public RestApiServer(int port, Supplier<String> tokenSupplier, Router router)
+    public RestApiServer(int port, Predicate<String> tokenValidator, Router router)
     {
         this.port = port;
-        this.tokenSupplier = tokenSupplier;
+        this.tokenValidator = tokenValidator;
         this.router = router;
     }
 
@@ -162,14 +162,22 @@ public class RestApiServer
 
     private void checkAuthorization(HttpExchange exchange)
     {
+        if (isAuthExempt(exchange.getRequestURI().getPath()))
+            return;
+
         var header = exchange.getRequestHeaders().getFirst("Authorization"); //$NON-NLS-1$
         if (header == null || !header.startsWith("Bearer ")) //$NON-NLS-1$
             throw ApiException.unauthorized();
 
-        var presented = header.substring("Bearer ".length()).getBytes(StandardCharsets.UTF_8); //$NON-NLS-1$
-        var expected = tokenSupplier.get().getBytes(StandardCharsets.UTF_8);
-        if (!MessageDigest.isEqual(presented, expected))
+        if (!tokenValidator.test(header.substring("Bearer ".length()))) //$NON-NLS-1$
             throw ApiException.unauthorized();
+    }
+
+    /** the pairing endpoints exist to obtain a token; Host and Origin checks still apply */
+    private static boolean isAuthExempt(String path)
+    {
+        return path.equals(RestApiConstants.PAIRING_ENDPOINT)
+                        || path.startsWith(RestApiConstants.PAIRING_ENDPOINT + "/"); //$NON-NLS-1$
     }
 
     private static Response problem(ApiException exception)

@@ -6,6 +6,7 @@ import java.util.concurrent.Callable;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.rest.spi.ApiAccessRequest;
 import name.abuchen.portfolio.rest.spi.HostApplication;
 import name.abuchen.portfolio.rest.spi.OpenFile;
 
@@ -46,6 +47,7 @@ public class FakeHost implements HostApplication
 
     private final List<OpenFile> openFiles;
     private boolean userEditing = false;
+    private ApiAccessRequest lastAccessRequest;
 
     private int syncExecDepth = 0;
     private boolean accessedOutsideUIThread = false;
@@ -110,5 +112,17 @@ public class FakeHost implements HostApplication
     public boolean isUserEditing()
     {
         return userEditing;
+    }
+
+    @Override
+    public void requestApiAccessApproval(ApiAccessRequest request)
+    {
+        this.lastAccessRequest = request;
+    }
+
+    /** the most recent access request the service asked the user about */
+    public ApiAccessRequest lastAccessRequest()
+    {
+        return lastAccessRequest;
     }
 }

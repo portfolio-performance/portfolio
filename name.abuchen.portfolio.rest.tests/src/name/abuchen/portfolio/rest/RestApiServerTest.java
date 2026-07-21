@@ -38,8 +38,12 @@ public class RestApiServerTest
         router.add("GET", "/v1/ping", request -> Response.json(200, JsonParser.parseString("{\"pong\":true}")));
         router.add("GET", "/v1/echo", request -> Response.json(200,
                         JsonParser.parseString("{\"name\":\"" + request.queryParam("name") + "\"}")));
+        router.add("POST", "/v1/auth/requests",
+                        request -> Response.json(201, JsonParser.parseString("{\"status\":\"pending\"}")));
+        router.add("GET", "/v1/auth/requests/{id}",
+                        request -> Response.json(200, JsonParser.parseString("{\"status\":\"pending\"}")));
 
-        server = new RestApiServer(0, () -> TOKEN, router);
+        server = new RestApiServer(0, TOKEN::equals, router);
         server.start();
         http = HttpClient.newHttpClient();
     }
@@ -86,6 +90,45 @@ public class RestApiServerTest
         assertThat(response.headers().firstValue("WWW-Authenticate").orElse(""), is("Bearer"));
     }
 
+    /** the 401 tells the client where to pair (self-serve discovery) */
+    @Test
+    public void test401BodyCarriesThePairingEndpoint() throws Exception
+    {
+        var response = http.send(request("/v1/ping").GET().build(), HttpResponse.BodyHandlers.ofString());
+        assertThat(response.statusCode(), is(401));
+        assertThat(response.body(), containsString("\"pairing_endpoint\":\"/v1/auth/requests\""));
+    }
+
+    /** pairing endpoints are reachable without a token - that is their point */
+    @Test
+    public void testPairingEndpointsAreExemptFromBearerAuth() throws Exception
+    {
+        var post = http.send(request("/v1/auth/requests")
+                        .POST(HttpRequest.BodyPublishers.ofString("{\"clientName\":\"x\"}")).build(),
+                        HttpResponse.BodyHandlers.ofString());
+        assertThat(post.statusCode(), is(201));
+
+        var get = http.send(request("/v1/auth/requests/some-id").GET().build(),
+                        HttpResponse.BodyHandlers.ofString());
+        assertThat(get.statusCode(), is(200));
+    }
+
+    /** ...but they remain behind the browser (Origin) and rebinding (Host) checks */
+    @Test
+    public void testPairingEndpointsStillRejectOriginHeader() throws Exception
+    {
+        var response = http.send(request("/v1/auth/requests").header("Origin", "https://evil.example")
+                        .POST(HttpRequest.BodyPublishers.ofString("{}")).build(),
+                        HttpResponse.BodyHandlers.ofString());
+        assertThat(response.statusCode(), is(403));
+    }
+
+    @Test
+    public void testPairingEndpointsStillRejectRebindingHost() throws Exception
+    {
+        assertThat(sendRaw("POST", "/v1/auth/requests", "evil.example:" + server.getPort()), is(403));
+    }
+
     @Test
     public void testWrongTokenIs401() throws Exception
     {
@@ -110,11 +153,17 @@ public class RestApiServerTest
      */
     private int sendWithHost(String hostHeader) throws Exception
     {
+        return sendRaw("GET", "/v1/ping", hostHeader);
+    }
+
+    private int sendRaw(String method, String path, String hostHeader) throws Exception
+    {
         try (var socket = new Socket(InetAddress.getLoopbackAddress(), server.getPort()))
         {
-            var request = "GET /v1/ping HTTP/1.1\r\n" //
+            var request = method + " " + path + " HTTP/1.1\r\n" //
                             + (hostHeader != null ? "Host: " + hostHeader + "\r\n" : "") //
                             + "Authorization: Bearer " + TOKEN + "\r\n" //
+                            + "Content-Length: 0\r\n" //
                             + "Connection: close\r\n\r\n";
             socket.getOutputStream().write(request.getBytes(StandardCharsets.US_ASCII));
             socket.getOutputStream().flush();

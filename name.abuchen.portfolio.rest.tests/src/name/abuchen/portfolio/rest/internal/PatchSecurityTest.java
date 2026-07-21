@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -21,7 +22,9 @@ import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.rest.ApiRoutes;
+import name.abuchen.portfolio.rest.ClientStore;
 import name.abuchen.portfolio.rest.FileAccessRegistry;
+import name.abuchen.portfolio.rest.PairingService;
 import name.abuchen.portfolio.rest.testsupport.FakeHost;
 
 @SuppressWarnings("nls")
@@ -180,7 +183,8 @@ public class PatchSecurityTest
             var host = new FakeHost(List.of(new FakeHost.FakeOpenFile("/tmp/x.portfolio", "x", client)));
             host.setUserEditing(true);
 
-            var router = ApiRoutes.create(registry, host);
+            var router = ApiRoutes.create(registry, host,
+                            new PairingService(new ClientStore(Path.of("target", "unused-client-store")), host));
             var uuid = registry.byPath("/tmp/x.portfolio").orElseThrow().uuid();
             var match = router.match("PATCH", "/v1/files/" + uuid + "/instruments/" + security.getUUID());
 

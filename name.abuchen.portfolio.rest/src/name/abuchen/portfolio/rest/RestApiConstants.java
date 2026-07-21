@@ -13,6 +13,9 @@ public final class RestApiConstants
 
     public static final int DEFAULT_PORT = 5712;
 
+    /** collection path of the interactive pairing requests; exempt from bearer auth */
+    public static final String PAIRING_ENDPOINT = "/v1/auth/requests"; //$NON-NLS-1$
+
     private RestApiConstants()
     {
     }

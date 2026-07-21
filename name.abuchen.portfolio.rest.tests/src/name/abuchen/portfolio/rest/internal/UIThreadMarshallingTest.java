@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -18,7 +19,9 @@ import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.rest.ApiRoutes;
+import name.abuchen.portfolio.rest.ClientStore;
 import name.abuchen.portfolio.rest.FileAccessRegistry;
+import name.abuchen.portfolio.rest.PairingService;
 import name.abuchen.portfolio.rest.testsupport.FakeHost;
 
 /**
@@ -49,7 +52,8 @@ public class UIThreadMarshallingTest
         fileId = registry.byPath(PATH).orElseThrow().uuid();
 
         host = new FakeHost(List.of(new FakeHost.FakeOpenFile(PATH, "x", client)));
-        router = ApiRoutes.create(registry, host);
+        router = ApiRoutes.create(registry, host,
+                        new PairingService(new ClientStore(Path.of("target", "unused-client-store")), host));
     }
 
     @After
