@@ -18,6 +18,8 @@ info:
       in Preferences → REST API.
     - Every request needs a **bearer token** — except the pairing endpoints below,
       whose purpose is to obtain one. See the `bearerAuth` scheme.
+    - The server serves this document at `GET /v1/openapi.yaml`, unauthenticated,
+      so the contract of the running server is discoverable at runtime.
 
     ## How to get a token (interactive pairing)
 
@@ -85,6 +87,8 @@ security:
   - bearerAuth: []
 
 tags:
+  - name: Discovery
+    description: Learn the contract before you hold a token
   - name: Pairing
     description: Obtain a bearer token interactively, approved by the user
   - name: Files
@@ -101,6 +105,32 @@ tags:
     description: Return and value-change of the file over an interval
 
 paths:
+  /v1/openapi.yaml:
+    get:
+      operationId: getOpenApiDocument
+      tags: [Discovery]
+      summary: This API's own OpenAPI description
+      description: |
+        Serves this very document, so a client can discover the full contract at
+        runtime. No bearer token required — the document carries no user data and
+        describes the pairing flow itself, so it is reachable before you hold a
+        token. The `Host` (loopback) and `Origin` (no-browser) checks still apply.
+
+        What you get back is the description of the **running** server, so it can
+        never drift from the endpoints actually served.
+      security: []
+      responses:
+        "200":
+          description: The OpenAPI document, as YAML.
+          content:
+            application/yaml:
+              schema:
+                type: string
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /v1/auth/requests:
     post:
       operationId: createPairingRequest
