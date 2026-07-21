@@ -197,7 +197,7 @@ public class CSVExporter
                 for (var attribute : attributes)
                 {
                     Object value = security.getAttributes().get(attribute);
-                    record.add(value == null ? "" : attribute.getConverter().toString(value));
+                    record.add(value == null ? "" : attribute.getConverter().toString(value)); //$NON-NLS-1$
                 }
                 printer.printRecord(record.toArray());
             }
