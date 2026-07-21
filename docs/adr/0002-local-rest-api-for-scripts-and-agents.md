@@ -25,11 +25,23 @@ becomes a later thin adapter over the same service layer. The individual decisio
   it and each file is enabled individually. Requests for a file that is not enabled return 404 —
   deliberately indistinguishable from an unknown ID, so a token holder cannot enumerate the files
   the user did not share. Consequently 403 is *never* used for file scoping.
-- **Stable bearer token**, generated once per workspace, held owner-only in the plugin state
-  location; "regenerate" is the revocation mechanism. Requests carrying a browser `Origin` header
-  are rejected (403), and — because a DNS-rebinding attacker's page is *same-origin* and therefore
-  sends no `Origin` at all — the `Host` header must also be a literal loopback authority (403
-  `forbidden-host`).
+- **Per-client bearer tokens, granted through interactive pairing.** A client files an
+  unauthenticated `POST /v1/auth/requests` (mandatory self-declared name) and short-polls the
+  request id; the user answers a modal prompt in the application — *allow for this session*
+  (token in memory only, dies with the application), *always allow* (persisted), or *decline*.
+  The token is delivered in the first `approved` poll and the request record deleted — one-shot,
+  never re-displayable. At most one request is pending at a time, a decline starts a cool-down
+  (both 429 + `Retry-After`), and every 401 carries the pairing endpoint as a `pairing_endpoint`
+  extension member, making the flow self-serve discoverable. Persistent clients are stored as
+  SHA-256 token hashes in an owner-only JSON file in the plugin state location; the preference
+  page lists clients (name, created, last used), revokes them individually with immediate effect,
+  and mints tokens manually ("Add client") for headless setups. This supersedes the original
+  single global token whose "regenerate" revoked everyone. Requests carrying a browser `Origin`
+  header are rejected (403) — including on the pairing endpoints — and, because a DNS-rebinding
+  attacker's page is *same-origin* and therefore sends no `Origin` at all, the `Host` header must
+  also be a literal loopback authority (403 `forbidden-host`). No OS-level verification of the
+  requesting process is attempted: the threat model is same-user local processes, which could
+  already read files or key-log; the prompt therefore frames the name as *self-declared*.
 - **Writes are in-memory only; there is no save endpoint.** API mutations behave exactly like UI
   edits: mutate the `Client`, mark it dirty, let the UI refresh live. Only the user saves. An agent's
   changes can be reviewed and discarded by closing without saving.
@@ -81,6 +93,17 @@ becomes a later thin adapter over the same service layer. The individual decisio
 - *MCP as the transport*: deferred, not rejected. Scripts want plain HTTP, and the service layer seam
   lets MCP plug in later without a second model-access path.
 - *A save endpoint*: deferred as too dangerous for v1. May follow.
+- *A single global token, copied by hand from the preferences* (the original decision): superseded.
+  All-or-nothing revocation and no possibility of session-scoped grants; the manual copy step was
+  also the worst part of the agent onboarding. Replaced by pairing before first release, so no
+  compatibility burden.
+- *OAuth device-code flow for pairing*: rejected as the wrong weight for a loopback-only,
+  single-user application; a poll-based request/approve resource achieves the same UX.
+- *Long-polling the pairing status*: rejected; the server runs a deliberately tiny thread pool and
+  one parked pairing request would consume half of it. Short polling every 1–2 s is cheap locally.
+- *Per-client file scoping in the pairing grant*: rejected for now. The grant is authentication
+  only; which files are visible stays governed by the existing per-file opt-in, keeping one
+  authorization concept instead of a client × file matrix.
 
 **Consequences**
 

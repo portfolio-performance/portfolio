@@ -25,6 +25,9 @@ public final class ProblemJson
         if (exception.getDetail() != null)
             json.addProperty("detail", exception.getDetail()); //$NON-NLS-1$
 
+        for (var extension : exception.getExtensions().entrySet())
+            json.addProperty(extension.getKey(), extension.getValue());
+
         if (!exception.getErrors().isEmpty())
         {
             var errors = new JsonArray();
