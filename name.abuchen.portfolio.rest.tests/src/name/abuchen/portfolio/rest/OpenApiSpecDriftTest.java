@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -70,7 +71,9 @@ public class OpenApiSpecDriftTest
     /** The real routes, as "METHOD /pattern" signatures. */
     private Set<String> actualRoutes()
     {
-        var router = ApiRoutes.create(new FileAccessRegistry(node), new FakeHost(List.of()));
+        var host = new FakeHost(List.of());
+        var router = ApiRoutes.create(new FileAccessRegistry(node), host,
+                        new PairingService(new ClientStore(Path.of("target", "unused-client-store")), host));
         return new LinkedHashSet<>(router.routeSignatures());
     }
 
@@ -103,7 +106,7 @@ public class OpenApiSpecDriftTest
             {
                 var key = content.substring(0, content.length() - 1);
                 if (HTTP_METHODS.contains(key))
-                    operations.add(key.toUpperCase() + " " + currentPath);
+                    operations.add(key.toUpperCase(Locale.ROOT) + " " + currentPath);
             }
         }
 

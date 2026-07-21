@@ -14,6 +14,7 @@ import name.abuchen.portfolio.rest.internal.ApiException;
 import name.abuchen.portfolio.rest.internal.FileResolver;
 import name.abuchen.portfolio.rest.internal.FilesHandler;
 import name.abuchen.portfolio.rest.internal.HoldingsHandler;
+import name.abuchen.portfolio.rest.internal.PairingHandler;
 import name.abuchen.portfolio.rest.internal.PerformanceHandler;
 import name.abuchen.portfolio.rest.internal.PortfoliosHandler;
 import name.abuchen.portfolio.rest.internal.Request;
@@ -34,11 +35,18 @@ public final class ApiRoutes
     {
     }
 
-    public static Router create(FileAccessRegistry registry, HostApplication host)
+    public static Router create(FileAccessRegistry registry, HostApplication host, PairingService pairing)
     {
         var router = new Router();
         var resolver = new FileResolver(registry, host);
         var files = new FilesHandler(registry, host);
+
+        // pairing endpoints run on the HTTP worker thread: the service is
+        // thread-safe and prompting the user is asynchronous by contract
+        router.add("POST", "/v1/auth/requests", //$NON-NLS-1$ //$NON-NLS-2$
+                        request -> PairingHandler.create(pairing, parseObject(request)));
+        router.add("GET", "/v1/auth/requests/{id}", //$NON-NLS-1$ //$NON-NLS-2$
+                        request -> PairingHandler.poll(pairing, request.pathParam("id"))); //$NON-NLS-1$
 
         router.add("GET", "/v1/files", onUiThread(host, files::list)); //$NON-NLS-1$ //$NON-NLS-2$
 
