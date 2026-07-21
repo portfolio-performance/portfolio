@@ -16,6 +16,9 @@ public final class RestApiConstants
     /** collection path of the interactive pairing requests; exempt from bearer auth */
     public static final String PAIRING_ENDPOINT = "/v1/auth/requests"; //$NON-NLS-1$
 
+    /** the API's own OpenAPI description; exempt from bearer auth so it is discoverable before pairing */
+    public static final String OPENAPI_ENDPOINT = "/v1/openapi.yaml"; //$NON-NLS-1$
+
     private RestApiConstants()
     {
     }
