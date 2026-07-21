@@ -38,6 +38,8 @@ public class RestApiServerTest
         router.add("GET", "/v1/ping", request -> Response.json(200, JsonParser.parseString("{\"pong\":true}")));
         router.add("GET", "/v1/echo", request -> Response.json(200,
                         JsonParser.parseString("{\"name\":\"" + request.queryParam("name") + "\"}")));
+        router.add("GET", "/v1/openapi.yaml",
+                        request -> Response.of(200, "application/yaml", "openapi: 3.1.0\n".getBytes(StandardCharsets.UTF_8)));
         router.add("POST", "/v1/auth/requests",
                         request -> Response.json(201, JsonParser.parseString("{\"status\":\"pending\"}")));
         router.add("GET", "/v1/auth/requests/{id}",
@@ -97,6 +99,16 @@ public class RestApiServerTest
         var response = http.send(request("/v1/ping").GET().build(), HttpResponse.BodyHandlers.ofString());
         assertThat(response.statusCode(), is(401));
         assertThat(response.body(), containsString("\"pairing_endpoint\":\"/v1/auth/requests\""));
+    }
+
+    /** the OpenAPI document is reachable without a token, so the API is self-describing */
+    @Test
+    public void testOpenApiEndpointIsExemptFromBearerAuth() throws Exception
+    {
+        var response = http.send(request("/v1/openapi.yaml").GET().build(), HttpResponse.BodyHandlers.ofString());
+        assertThat(response.statusCode(), is(200));
+        assertThat(response.headers().firstValue("Content-Type").orElse(""), is("application/yaml"));
+        assertThat(response.body(), containsString("openapi:"));
     }
 
     /** pairing endpoints are reachable without a token - that is their point */
