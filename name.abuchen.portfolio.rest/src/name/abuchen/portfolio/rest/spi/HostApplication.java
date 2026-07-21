@@ -20,4 +20,11 @@ public interface HostApplication
      * must be called on the UI thread
      */
     boolean isUserEditing();
+
+    /**
+     * Asks the user to approve an API access request. Called on an HTTP worker
+     * thread and must not block; the decision is reported asynchronously
+     * through the request object.
+     */
+    void requestApiAccessApproval(ApiAccessRequest request);
 }

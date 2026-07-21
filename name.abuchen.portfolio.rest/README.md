@@ -12,21 +12,43 @@ The design decisions behind the API — and the alternatives that were rejected 
 Preferences → **REST API**:
 
 1. Tick **Enable REST API (localhost only)**. Optionally change the port (default **5712**).
-2. Copy the **access token**.
-3. Enable the individual files you want to expose, and optionally give each an **alias**.
+2. Enable the individual files you want to expose, and optionally give each an **alias**.
 
 Both switches are required: the server only serves a file that is globally enabled *and*
 individually enabled. A file that has never been saved has no path and therefore cannot be enabled —
 save it first.
 
-**Regenerate** issues a new token and thereby revokes access for every existing client.
+## Getting a token (interactive pairing)
+
+Every client holds its **own** bearer token. A program obtains one by asking the user:
+
+```bash
+# 1. file an access request — no token needed for this
+curl -s -X POST -d '{"clientName": "My Script"}' http://127.0.0.1:5712/v1/auth/requests
+# → {"id": "…", "status": "pending"}
+
+# 2. the user approves or declines inside Portfolio Performance; poll every 1–2s
+curl -s http://127.0.0.1:5712/v1/auth/requests/<id>
+# → {"status": "pending"} … then {"status": "approved", "token": "…"}
+```
+
+The approval prompt offers **Allow for this session** (the token dies when the application quits),
+**Always allow** (persistent), and **Decline**. The token is delivered **exactly once** — store it.
+A request expires after 2 minutes; only one may be pending at a time, and a decline imposes a
+cool-down (both reported `429` with `Retry-After`). Every `401` names the pairing endpoint in its
+`pairing_endpoint` field, so the flow is discoverable at runtime.
+
+The preference page lists all authorized clients with their last use, lets the user **revoke** each
+individually (effective immediately), and can mint a token manually via **Add client** — the path
+for headless setups where nobody watches the screen. Tokens are stored hashed; a lost token cannot
+be re-displayed, only replaced.
 
 ## Talking to it
 
 Base URL `http://127.0.0.1:5712/v1`, bearer token on every request:
 
 ```bash
-TOKEN=<paste from preferences>
+TOKEN=<from pairing, or Preferences → REST API → Add client>
 curl -s -H "Authorization: Bearer $TOKEN" http://127.0.0.1:5712/v1/files
 ```
 
@@ -131,7 +153,7 @@ save.
 | Status | `type` | When |
 |---|---|---|
 | 400 | `invalid-request` | body is not a JSON object |
-| 401 | `unauthorized` | missing or wrong bearer token |
+| 401 | `unauthorized` | missing or wrong bearer token; the body's `pairing_endpoint` says where to pair |
 | 403 | `forbidden-host` | not addressed as loopback |
 | 403 | `browser-origin-forbidden` | request carries an `Origin` header |
 | 404 | `not-found` | unknown file, **file not enabled**, or unknown entity |
@@ -140,6 +162,8 @@ save.
 | 409 | `delete-blocked` | instrument is referenced by transactions or plans |
 | 422 | `validation` | one or more fields rejected; see `errors` |
 | 423 | `user-interaction` | a dialog is open in the app — **retry**, see `Retry-After` |
+| 429 | `pairing-pending` | another pairing request awaits the user — retry after `Retry-After` |
+| 429 | `pairing-cooldown` | a pairing request was declined — retry after `Retry-After` |
 
 Two of these regularly surprise clients:
 
@@ -154,8 +178,11 @@ than silently clobbered by whatever the dialog writes back on OK. Reads still wo
 ## For contributors
 
 The plugin depends on the model plugin and **must not depend on the UI plugin**. The UI side is
-reached through the two SPI interfaces in `rest/spi/` (`HostApplication`, `OpenFile`), implemented by
-`name.abuchen.portfolio.ui/…/ui/addons/RestApiAddon.java`, which also starts and stops the server.
+reached through the SPI interfaces in `rest/spi/` (`HostApplication`, `OpenFile`,
+`ApiAccessRequest`), implemented by `name.abuchen.portfolio.ui/…/ui/addons/RestApiAddon.java`, which
+also starts and stops the server and shows the pairing approval dialog. Tokens live in
+`ClientStore` (persistent clients as SHA-256 hashes in an owner-only JSON file in the plugin state
+location, session clients in memory only); the pairing state machine is `PairingService`.
 
 Adding an endpoint means writing a handler and a serializer, and registering the route in
 `ApiRoutes`. The cross-cutting concerns are in the pipeline and cannot be forgotten per endpoint:

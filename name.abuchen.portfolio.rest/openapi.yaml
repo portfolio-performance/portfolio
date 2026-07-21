@@ -16,8 +16,26 @@ info:
     - Base URL `http://127.0.0.1:{port}` (default port **5712**), **loopback only**.
     - The server binds `127.0.0.1` and is **off by default**; the user enables it
       in Preferences → REST API.
-    - Every request needs a **bearer token** (shown in the preferences, revoked by
-      regenerating). See the `bearerAuth` scheme below.
+    - Every request needs a **bearer token** — except the pairing endpoints below,
+      whose purpose is to obtain one. See the `bearerAuth` scheme.
+
+    ## How to get a token (interactive pairing)
+
+    Each client holds its own token. To obtain one:
+
+    1. `POST /v1/auth/requests` with your program's name. The user is asked to
+       approve or decline the request inside Portfolio Performance — tell them
+       to look at the application.
+    2. Poll `GET /v1/auth/requests/{id}` every 1–2 seconds. While the answer is
+       `pending`, keep polling; the request expires after 2 minutes.
+    3. On `approved`, the response carries the token — **exactly once**. Store it;
+       it cannot be retrieved again. The user chooses whether the grant is
+       permanent or expires when the application quits.
+
+    Every `401` response carries the pairing endpoint in its `pairing_endpoint`
+    field, so this flow is discoverable at runtime. Users can also mint a token
+    manually (Preferences → REST API → "Add client") for headless setups, and can
+    revoke any client there at any time.
 
     ## Constraints that are not expressible in this document
 
@@ -38,9 +56,10 @@ info:
 
     ## Methods
 
-    A path serves only the methods listed for it in this document; v1 has **no
-    create (`POST`) endpoints**. Calling any method that a path does not list
-    returns `405 method-not-allowed`.
+    A path serves only the methods listed for it in this document; the only
+    `POST` endpoint is the pairing request — v1 has **no create endpoints for
+    portfolio data**. Calling any method that a path does not list returns
+    `405 method-not-allowed`.
 
     ## Writes are not saved
 
@@ -66,6 +85,8 @@ security:
   - bearerAuth: []
 
 tags:
+  - name: Pairing
+    description: Obtain a bearer token interactively, approved by the user
   - name: Files
     description: The open portfolio files you are allowed to address
   - name: Instruments
@@ -80,6 +101,98 @@ tags:
     description: Return and value-change of the file over an interval
 
 paths:
+  /v1/auth/requests:
+    post:
+      operationId: createPairingRequest
+      tags: [Pairing]
+      summary: Ask the user for API access
+      description: |
+        Files an access request that the user answers inside Portfolio
+        Performance. No bearer token required. At most one request may be
+        pending at a time, and after a decline new requests are rejected for a
+        cool-down period — both are reported `429` with `Retry-After`.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [clientName]
+              properties:
+                clientName:
+                  type: string
+                  maxLength: 64
+                  description: |
+                    The name of your program, shown to the user in the approval
+                    prompt. Control characters are stripped.
+            examples:
+              default:
+                value:
+                  clientName: Claude Code
+      responses:
+        "201":
+          description: The request is filed and awaiting the user's decision.
+          headers:
+            Location:
+              description: The status resource to poll.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PairingRequestCreated"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "429":
+          $ref: "#/components/responses/TooManyPairingRequests"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/auth/requests/{id}:
+    get:
+      operationId: pollPairingRequest
+      tags: [Pairing]
+      summary: Poll the state of an access request
+      description: |
+        Returns the request's state. `pending` can be read any number of times;
+        a terminal state (`approved` with the token, `denied`, `expired`) is
+        delivered **exactly once** — afterwards, and for ids never issued, the
+        answer is `404`. Poll every 1–2 seconds.
+      security: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The request id from `POST /v1/auth/requests`
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The state of the request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PairingRequestStatus"
+              examples:
+                pending:
+                  value:
+                    status: pending
+                approved:
+                  value:
+                    status: approved
+                    token: wZ4mJc9Y3K…
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /v1/files:
     get:
       operationId: listFiles
@@ -587,8 +700,10 @@ components:
       type: http
       scheme: bearer
       description: |
-        The access token shown in Preferences → REST API. Regenerating the token
-        revokes every existing client.
+        A per-client access token, obtained through interactive pairing
+        (`POST /v1/auth/requests`) or minted manually in Preferences → REST API
+        ("Add client"). The user can revoke each client individually; a
+        session-scoped token additionally expires when the application quits.
 
   parameters:
     File:
@@ -630,6 +745,32 @@ components:
           description: |
             The file's path on disk. Identity is keyed by path, so a *different*
             file copied over an enabled path inherits that path's access.
+
+    PairingRequestCreated:
+      type: object
+      description: A filed access request, awaiting the user's decision.
+      required: [id, status]
+      properties:
+        id:
+          type: string
+          description: Poll `GET /v1/auth/requests/{id}` with this.
+        status:
+          type: string
+          const: pending
+
+    PairingRequestStatus:
+      type: object
+      description: The state of an access request.
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [pending, approved, denied, expired]
+        token:
+          type: string
+          description: |
+            The bearer token; present only while `status` is `approved`, and
+            delivered exactly once.
 
     Instrument:
       type: object
@@ -901,6 +1042,7 @@ components:
             - invalid-type
             - invalid-value
             - invalid-range
+            - too-long
             - unknown-field
             - unknown-currency
             - locked-by-transactions
@@ -942,6 +1084,8 @@ components:
             - https://portfolio-performance.info/rest/problems/delete-blocked
             - https://portfolio-performance.info/rest/problems/validation
             - https://portfolio-performance.info/rest/problems/user-interaction
+            - https://portfolio-performance.info/rest/problems/pairing-pending
+            - https://portfolio-performance.info/rest/problems/pairing-cooldown
             - https://portfolio-performance.info/rest/problems/internal-error
         title:
           type: string
@@ -962,6 +1106,11 @@ components:
             reported at once.
           items:
             $ref: "#/components/schemas/FieldError"
+        pairing_endpoint:
+          type: string
+          description: |
+            RFC 9457 extension member, present on `401 unauthorized`: the path
+            where a client requests access interactively (`/v1/auth/requests`).
 
   responses:
     BadRequest:
@@ -974,7 +1123,10 @@ components:
             $ref: "#/components/schemas/Problem"
 
     Unauthorized:
-      description: Missing or invalid bearer token (`unauthorized`).
+      description: |
+        Missing or invalid bearer token (`unauthorized`). The problem body
+        carries a `pairing_endpoint` extension member naming the path where a
+        client can request access interactively.
       headers:
         WWW-Authenticate:
           description: Always `Bearer`.
@@ -984,6 +1136,13 @@ components:
         application/problem+json:
           schema:
             $ref: "#/components/schemas/Problem"
+          examples:
+            default:
+              value:
+                type: https://portfolio-performance.info/rest/problems/unauthorized
+                title: Missing or invalid bearer token
+                status: 401
+                pairing_endpoint: /v1/auth/requests
 
     Forbidden:
       description: |
@@ -1034,6 +1193,21 @@ components:
                   - field: currencyCode
                     code: unknown-currency
                     message: XYZ is not a known currency
+
+    TooManyPairingRequests:
+      description: |
+        Another pairing request is awaiting the user's decision
+        (`pairing-pending`), or a previous request was declined and a cool-down
+        is active (`pairing-cooldown`). Respect `Retry-After`.
+      headers:
+        Retry-After:
+          description: Seconds to wait before retrying.
+          schema:
+            type: integer
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
 
     Locked:
       description: |
