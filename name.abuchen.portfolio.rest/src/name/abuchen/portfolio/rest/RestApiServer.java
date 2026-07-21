@@ -173,11 +173,16 @@ public class RestApiServer
             throw ApiException.unauthorized();
     }
 
-    /** the pairing endpoints exist to obtain a token; Host and Origin checks still apply */
+    /**
+     * The pairing endpoints exist to obtain a token, and the OpenAPI document
+     * describes how; both are reachable without one. Host and Origin checks
+     * still apply.
+     */
     private static boolean isAuthExempt(String path)
     {
         return path.equals(RestApiConstants.PAIRING_ENDPOINT)
-                        || path.startsWith(RestApiConstants.PAIRING_ENDPOINT + "/"); //$NON-NLS-1$
+                        || path.startsWith(RestApiConstants.PAIRING_ENDPOINT + "/") //$NON-NLS-1$
+                        || path.equals(RestApiConstants.OPENAPI_ENDPOINT);
     }
 
     private static Response problem(ApiException exception)

@@ -14,6 +14,7 @@ import name.abuchen.portfolio.rest.internal.ApiException;
 import name.abuchen.portfolio.rest.internal.FileResolver;
 import name.abuchen.portfolio.rest.internal.FilesHandler;
 import name.abuchen.portfolio.rest.internal.HoldingsHandler;
+import name.abuchen.portfolio.rest.internal.OpenApiHandler;
 import name.abuchen.portfolio.rest.internal.PairingHandler;
 import name.abuchen.portfolio.rest.internal.PerformanceHandler;
 import name.abuchen.portfolio.rest.internal.PortfoliosHandler;
@@ -40,6 +41,9 @@ public final class ApiRoutes
         var router = new Router();
         var resolver = new FileResolver(registry, host);
         var files = new FilesHandler(registry, host);
+
+        // the API's own description: a static resource, no UI thread, no auth
+        router.add("GET", RestApiConstants.OPENAPI_ENDPOINT, request -> OpenApiHandler.serve()); //$NON-NLS-1$
 
         // pairing endpoints run on the HTTP worker thread: the service is
         // thread-safe and prompting the user is asynchronous by contract
