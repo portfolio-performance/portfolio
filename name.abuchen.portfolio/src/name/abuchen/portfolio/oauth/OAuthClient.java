@@ -334,7 +334,7 @@ public class OAuthClient // NOSONAR
         request.setHeader("Content-Type", "application/x-www-form-urlencoded"); //$NON-NLS-1$ //$NON-NLS-2$
         request.setEntity(new StringEntity(payload.toString()));
 
-        String response = executeHttpPost(request);
+        var response = executeHttpPost(request);
         return CodeTokenResponse.fromJson(response);
     }
 

@@ -77,6 +77,7 @@ public class PortfolioPerformanceFeedNetworkExceptionTest
 
         assertThat(thrown, instanceOf(NetworkConnectionException.class));
         assertThat(thrown instanceof AuthenticationExpiredException, is(false));
+        assertThat(thrown.getMessage(), is(ex.getMessage()));
     }
 
     // ---- SocketTimeoutException (connection / read timeout) ----
@@ -92,6 +93,7 @@ public class PortfolioPerformanceFeedNetworkExceptionTest
 
         assertThat(thrown, instanceOf(NetworkConnectionException.class));
         assertThat(thrown instanceof AuthenticationExpiredException, is(false));
+        assertThat(thrown.getMessage(), is(ex.getMessage()));
     }
 }
 
