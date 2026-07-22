@@ -12,6 +12,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AttributeFieldType;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Money;
@@ -51,7 +53,7 @@ public final class EntityJson
         return envelope(items);
     }
 
-    public static JsonObject toJson(Security security)
+    public static JsonObject toJson(Client client, Security security)
     {
         var json = new JsonObject();
         json.addProperty("uuid", security.getUUID()); //$NON-NLS-1$
@@ -65,7 +67,51 @@ public final class EntityJson
             json.addProperty("tickerSymbol", security.getTickerSymbol()); //$NON-NLS-1$
         if (security.getNote() != null)
             json.addProperty("note", security.getNote()); //$NON-NLS-1$
+
+        var attributes = attributesJson(client, security);
+        if (attributes.size() > 0)
+            json.add("attributes", attributes); //$NON-NLS-1$
+
         return json;
+    }
+
+    /**
+     * The security's custom attributes, only those that are set and of a
+     * supported scalar type, keyed by attribute id. Iterating the type
+     * definitions (rather than the stored map) gives a stable order and skips
+     * orphaned or unsupported entries.
+     */
+    private static JsonObject attributesJson(Client client, Security security)
+    {
+        var result = new JsonObject();
+        var stored = security.getAttributes().getMap();
+
+        client.getSettings().getAttributeTypes() //
+                        .filter(type -> type.supports(Security.class)) //
+                        .forEach(type -> {
+                            var value = stored.get(type.getId());
+                            if (value == null)
+                                return;
+
+                            var fieldType = AttributeFieldType.of(type);
+                            if (fieldType == null || !AttributeCodec.isSupported(fieldType))
+                                return;
+
+                            // A single attribute whose stored value is inconsistent with its
+                            // declared type (e.g. a field type edited after values were stored, or
+                            // a non-finite double from a corrupted file) must not fail the
+                            // serialization of the whole instruments collection. Skip the offender.
+                            try
+                            {
+                                result.add(type.getId(), AttributeCodec.encode(fieldType, value));
+                            }
+                            catch (RuntimeException e)
+                            {
+                                // skip this attribute
+                            }
+                        });
+
+        return result;
     }
 
     public static JsonObject toJson(Account account)
@@ -208,13 +254,13 @@ public final class EntityJson
     }
 
     /** a fixed-point long, e.g. an amount of money or a number of shares */
-    private static JsonElement decimal(long value, int precision)
+    static JsonElement decimal(long value, int precision)
     {
         return decimal(BigDecimal.valueOf(value, precision));
     }
 
     /** a computed ratio, e.g. the weight of a holding */
-    private static JsonElement decimal(double value)
+    static JsonElement decimal(double value)
     {
         return decimal(BigDecimal.valueOf(value));
     }
