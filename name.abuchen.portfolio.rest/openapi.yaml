@@ -397,6 +397,43 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
+  /v1/files/{file}/instruments/attribute-types:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    get:
+      operationId: listInstrumentAttributeTypes
+      tags: [Instruments]
+      summary: List the custom attribute definitions for instruments
+      description: |
+        The user-defined and built-in attribute types that apply to an
+        instrument. A client uses this to resolve an attribute id to its
+        display name and value `type`. Compound types (`limit-price`,
+        `bookmark`, `image`) are listed with `supported: false`; the API
+        does not read or write them in v1.
+      responses:
+        "200":
+          description: The applicable attribute definitions.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/AttributeDefinition"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /v1/files/{file}/cash-accounts:
     parameters:
       - $ref: "#/components/parameters/File"
@@ -829,14 +866,29 @@ components:
         note:
           type: string
           description: Omitted when not set.
+        attributes:
+          type: object
+          description: |
+            The instrument's set custom attributes, keyed by attribute id.
+            Only attributes that have a value and a supported scalar type
+            appear; the key is omitted entirely when none do. Each value is
+            typed JSON — a string, number, or boolean (dates are ISO-8601
+            strings). Resolve an id to its precise type via
+            `GET /v1/files/{file}/instruments/attribute-types`.
+          additionalProperties:
+            oneOf:
+              - type: string
+              - type: number
+              - type: boolean
 
     InstrumentPatch:
       type: object
       description: |
         A JSON Merge Patch (RFC 7386) over an instrument. Every field is optional;
         an omitted field is left untouched. Fields typed `["string","null"]` accept
-        an explicit `null` to clear them. Everything else — prices, quote feeds,
-        attributes, events, the retired flag — is read-only in v1.
+        an explicit `null` to clear them. Custom attributes are patched through the
+        nested `attributes` object. Everything else — prices, quote feeds, events,
+        the retired flag — is read-only in v1.
       additionalProperties: false
       properties:
         name:
@@ -859,6 +911,59 @@ components:
           type: [string, "null"]
         note:
           type: [string, "null"]
+        attributes:
+          type: object
+          description: |
+            A nested merge patch over the custom attributes, keyed by attribute
+            id: a present value sets the attribute, an explicit `null` clears it,
+            an absent id is left untouched. Values are typed JSON per the
+            attribute's `type` (see the attribute-types endpoint). Writing an
+            unknown id, a non-applicable or compound-typed attribute, or a value
+            of the wrong type is rejected with 422 `validation`.
+          additionalProperties:
+            oneOf:
+              - type: string
+              - type: number
+              - type: boolean
+              - type: "null"
+
+    AttributeDefinition:
+      type: object
+      description: A custom attribute definition applicable to an instrument.
+      required: [id, name, type, supported]
+      properties:
+        id:
+          type: string
+          description: Stable identifier; the key used in an instrument's `attributes` map.
+        name:
+          type: string
+          description: User-facing name (the desktop UI shows this, not the id).
+        columnLabel:
+          type: string
+          description: Short label; omitted when not set.
+        type:
+          type: string
+          description: |
+            The value type. Supported scalars — `string`, `boolean`, `date`
+            (ISO-8601), `amount`, `amount-plain`, `quote`, `shares`, `percent`
+            (a fraction, e.g. 0.007 for 0.7%), `percent-plain`. Compound —
+            `limit-price`, `bookmark`, `image` — appear with `supported: false`.
+          enum:
+            - string
+            - boolean
+            - date
+            - amount
+            - amount-plain
+            - quote
+            - shares
+            - percent
+            - percent-plain
+            - limit-price
+            - bookmark
+            - image
+        supported:
+          type: boolean
+          description: Whether v1 can read and write this attribute.
 
     CashAccount:
       type: object
@@ -1078,6 +1183,9 @@ components:
             - locked-by-transactions
             - exchange-rate-requires-currency
             - referenced
+            - unknown-attribute
+            - attribute-not-applicable
+            - unsupported-attribute-type
         message:
           type: string
           description: Human-readable explanation of this one violation.
