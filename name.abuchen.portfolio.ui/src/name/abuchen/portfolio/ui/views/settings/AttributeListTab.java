@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Attributable;
+import name.abuchen.portfolio.model.AttributeFieldType;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientSettings;
@@ -111,7 +112,7 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
                 if (!fieldType.supports(mode.getType()))
                     continue;
 
-                menuListener.add(new Action(fieldType.toString())
+                menuListener.add(new Action(AttributeFieldTypeLabels.label(fieldType))
                 {
                     @Override
                     public void run()
@@ -218,7 +219,7 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
             @Override
             public String getText(Object element)
             {
-                return AttributeFieldType.of((AttributeType) element).toString();
+                return AttributeFieldTypeLabels.label(AttributeFieldType.of((AttributeType) element));
             }
         });
         support.addColumn(column);
