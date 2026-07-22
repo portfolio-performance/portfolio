@@ -20,7 +20,7 @@ public final class SecurityAttributeColumns
      * {@link AttributeType#getId()}, which remains the persistence key for
      * attribute values.
      */
-    private static final String FIELD_CODE_PREFIX = "attribute:";
+    private static final String FIELD_CODE_PREFIX = "attribute:"; //$NON-NLS-1$
 
     private SecurityAttributeColumns()
     {

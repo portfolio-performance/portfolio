@@ -7,6 +7,7 @@ package name.abuchen.portfolio.datatransfer.csv;
  * shared across the extractors and the shared helpers in {@link BaseCSVExtractor},
  * which is why they live in one place rather than being repeated as literals.
  */
+@SuppressWarnings("nls")
 /* package */ final class FieldCode
 {
     private FieldCode()
