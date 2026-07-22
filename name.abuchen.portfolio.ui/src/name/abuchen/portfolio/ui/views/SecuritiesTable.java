@@ -1246,7 +1246,7 @@ public final class SecuritiesTable implements ModificationListener
             return Double.valueOf(Math.pow(totalGain, 365 / totalDays)) - 1;
         }
 
-        private static Optional<Pair<SecurityPrice, SecurityPrice>> getPrices(Security security,ReportingPeriod period)
+        private static Optional<Pair<SecurityPrice, SecurityPrice>> getPrices(Security security, ReportingPeriod period)
         {
             Interval interval = period.toInterval(LocalDate.now());
 
