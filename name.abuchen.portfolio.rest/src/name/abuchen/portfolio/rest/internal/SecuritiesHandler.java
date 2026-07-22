@@ -1,12 +1,16 @@
 package name.abuchen.portfolio.rest.internal;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import name.abuchen.portfolio.model.AttributeFieldType;
+import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -27,6 +31,10 @@ public final class SecuritiesHandler
     }
 
     private record WritableField(Validator validator, Setter setter)
+    {
+    }
+
+    private record AttributeAssignment(AttributeType type, boolean clear, Object value)
     {
     }
 
@@ -60,12 +68,42 @@ public final class SecuritiesHandler
 
     public static JsonElement list(Client client)
     {
-        return EntityJson.envelope(client.getSecurities(), EntityJson::toJson);
+        return EntityJson.envelope(client.getSecurities(), s -> EntityJson.toJson(client, s));
     }
 
     public static JsonElement get(Client client, String uuid)
     {
-        return EntityJson.toJson(find(client, uuid));
+        return EntityJson.toJson(client, find(client, uuid));
+    }
+
+    /**
+     * The attribute-type definitions that apply to an instrument, so a client
+     * can resolve an id to its name and value type. Compound types are listed
+     * but flagged unsupported; a type whose converter this API does not
+     * recognise is omitted entirely, as it is not part of the contract.
+     */
+    public static JsonElement attributeTypes(Client client)
+    {
+        var items = new JsonArray();
+
+        client.getSettings().getAttributeTypes() //
+                        .filter(type -> type.supports(Security.class)) //
+                        .forEach(type -> {
+                            var fieldType = AttributeFieldType.of(type);
+                            if (fieldType == null)
+                                return;
+
+                            var item = new JsonObject();
+                            item.addProperty("id", type.getId()); //$NON-NLS-1$
+                            item.addProperty("name", type.getName()); //$NON-NLS-1$
+                            if (type.getColumnLabel() != null)
+                                item.addProperty("columnLabel", type.getColumnLabel()); //$NON-NLS-1$
+                            item.addProperty("type", AttributeCodec.wireType(fieldType)); //$NON-NLS-1$
+                            item.addProperty("supported", AttributeCodec.isSupported(fieldType)); //$NON-NLS-1$
+                            items.add(item);
+                        });
+
+        return EntityJson.envelope(items);
     }
 
     /**
@@ -79,11 +117,17 @@ public final class SecuritiesHandler
         var security = find(client, uuid);
 
         var errors = new ArrayList<ApiException.FieldError>();
+        var assignments = new ArrayList<AttributeAssignment>();
 
         for (var entry : body.entrySet())
         {
-            var field = WRITABLE_FIELDS.get(entry.getKey());
+            if ("attributes".equals(entry.getKey())) //$NON-NLS-1$
+            {
+                stageAttributes(client, security, entry.getValue(), errors, assignments);
+                continue;
+            }
 
+            var field = WRITABLE_FIELDS.get(entry.getKey());
             if (field == null)
             {
                 errors.add(new ApiException.FieldError(entry.getKey(), "unknown-field", "field is not writable")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -100,14 +144,86 @@ public final class SecuritiesHandler
 
         // an empty patch changes nothing; do not mark the file dirty and thereby
         // prompt the user to save a file the API did not touch
-        if (body.isEmpty())
-            return EntityJson.toJson(security);
+        var hasWritableField = body.keySet().stream().anyMatch(WRITABLE_FIELDS::containsKey);
+        if (!hasWritableField && assignments.isEmpty())
+            return EntityJson.toJson(client, security);
 
         for (var entry : body.entrySet())
+        {
+            if ("attributes".equals(entry.getKey())) //$NON-NLS-1$
+                continue;
             WRITABLE_FIELDS.get(entry.getKey()).setter().set(security, entry.getValue());
+        }
+
+        for (var assignment : assignments)
+        {
+            if (assignment.clear())
+                security.getAttributes().remove(assignment.type());
+            else
+                security.getAttributes().put(assignment.type(), assignment.value());
+        }
 
         client.markDirty();
-        return EntityJson.toJson(security);
+        return EntityJson.toJson(client, security);
+    }
+
+    /**
+     * Validates and stages the nested attributes merge patch: a present key sets
+     * the attribute, an explicit null clears it. Every violation is collected;
+     * staged assignments are applied only if the whole patch validates.
+     */
+    private static void stageAttributes(Client client, Security security, JsonElement element,
+                    List<ApiException.FieldError> errors, List<AttributeAssignment> assignments)
+    {
+        if (!element.isJsonObject())
+        {
+            errors.add(new ApiException.FieldError("attributes", "invalid-type", "attributes must be a JSON object")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            return;
+        }
+
+        for (var entry : element.getAsJsonObject().entrySet())
+        {
+            var id = entry.getKey();
+            var field = "attributes." + id; //$NON-NLS-1$
+
+            var type = client.getSettings().getAttributeTypes().filter(a -> id.equals(a.getId())).findAny().orElse(null);
+            if (type == null)
+            {
+                errors.add(new ApiException.FieldError(field, "unknown-attribute", "no such attribute")); //$NON-NLS-1$ //$NON-NLS-2$
+                continue;
+            }
+            if (!type.supports(Security.class))
+            {
+                errors.add(new ApiException.FieldError(field, "attribute-not-applicable", //$NON-NLS-1$
+                                "attribute does not apply to instruments")); //$NON-NLS-1$
+                continue;
+            }
+
+            var fieldType = AttributeFieldType.of(type);
+            if (fieldType == null || !AttributeCodec.isSupported(fieldType))
+            {
+                errors.add(new ApiException.FieldError(field, "unsupported-attribute-type", //$NON-NLS-1$
+                                "attribute type is not supported by the API")); //$NON-NLS-1$
+                continue;
+            }
+
+            var value = entry.getValue();
+            if (value.isJsonNull())
+            {
+                if (security.getAttributes().exists(type))
+                    assignments.add(new AttributeAssignment(type, true, null));
+                continue;
+            }
+
+            try
+            {
+                assignments.add(new AttributeAssignment(type, false, AttributeCodec.decode(fieldType, value)));
+            }
+            catch (AttributeCodec.InvalidValueException e)
+            {
+                errors.add(new ApiException.FieldError(field, "invalid-value", e.getMessage())); //$NON-NLS-1$
+            }
+        }
     }
 
     private static ApiException.FieldError requireText(Client client, Security security, String field,
