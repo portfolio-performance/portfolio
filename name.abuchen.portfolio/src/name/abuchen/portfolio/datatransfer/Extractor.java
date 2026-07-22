@@ -655,8 +655,8 @@ public interface Extractor
         @Override
         public String getTypeInformation()
         {
-            return Messages.LabelUpdateProperties + ": "
-                            + updates.stream().map(SecurityUpdate::getLabel).collect(Collectors.joining(", "));
+            return Messages.LabelUpdateProperties + ": " //$NON-NLS-1$
+                            + updates.stream().map(SecurityUpdate::getLabel).collect(Collectors.joining(", ")); //$NON-NLS-1$
         }
 
         @Override
