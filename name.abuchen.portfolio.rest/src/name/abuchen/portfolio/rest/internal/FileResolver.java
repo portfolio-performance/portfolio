@@ -42,7 +42,7 @@ public class FileResolver
 
         if (open.isEmpty())
             throw ApiException.conflict("file-not-open", "File is not open in Portfolio Performance", //$NON-NLS-1$ //$NON-NLS-2$
-                            match.access().path(), List.of());
+                            null, List.of());
 
         return new ResolvedFile(match.access(), open.get());
     }
