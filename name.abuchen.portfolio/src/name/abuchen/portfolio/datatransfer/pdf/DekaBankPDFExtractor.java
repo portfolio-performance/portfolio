@@ -1056,7 +1056,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                 {
                     if (t.getPortfolioTransaction().getShares() != 0)
                     {
-                        item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                        ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
                         return item;
                     }
                     return new SkippedItem(item, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
@@ -1254,7 +1254,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                     {
                         if (t.getShares() != 0)
                         {
-                            item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                            ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
                             return item;
                         }
                         return new SkippedItem(item, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
@@ -1427,7 +1427,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                     {
                         if (t.getShares() != 0)
                         {
-                            item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                            ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
                             return item;
                         }
                         return new SkippedItem(item, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
@@ -1606,7 +1606,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                     {
                         if (t.getShares() != 0)
                         {
-                            item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                            ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
                             return item;
                         }
                         return new SkippedItem(item, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
