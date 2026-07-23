@@ -333,6 +333,7 @@ public final class SecuritiesHandler
                             errors);
 
         client.removeSecurity(security);
+        client.markDirty();
         return security.getName();
     }
 
