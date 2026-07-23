@@ -15,6 +15,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
@@ -37,6 +38,15 @@ public class OpenApiSpecDriftTest
 {
     private static final Set<String> HTTP_METHODS = Set.of("get", "put", "post", "patch", "delete", "head", "options",
                     "trace");
+
+    /**
+     * Captures the {@code code} (second constructor argument) of a
+     * {@code FieldError(field, "code", …)} construction. Every emission site
+     * passes the code as a same-line string literal, so a line-oriented scan is
+     * sufficient; the {@code record FieldError(String field, String code, …)}
+     * declaration does not match because its second argument is not a literal.
+     */
+    private static final Pattern FIELD_ERROR_CODE = Pattern.compile("FieldError\\(\\s*[^,]+,\\s*\"([a-z-]+)\"");
 
     private IEclipsePreferences node;
 
@@ -66,6 +76,24 @@ public class OpenApiSpecDriftTest
 
         assertThat("routes without a matching OpenAPI operation: " + undocumented, undocumented, is(empty()));
         assertThat("OpenAPI operations without a matching route: " + orphaned, orphaned, is(empty()));
+    }
+
+    @Test
+    public void testFieldErrorCodesAndSpecAreInLockstep() throws IOException
+    {
+        var emitted = emittedFieldErrorCodes();
+        var documented = documentedFieldErrorCodes();
+
+        var undocumented = new TreeSet<>(emitted);
+        undocumented.removeAll(documented);
+
+        var orphaned = new TreeSet<>(documented);
+        orphaned.removeAll(emitted);
+
+        assertThat("FieldError codes emitted by handlers but missing from the OpenAPI FieldError.code enum: "
+                        + undocumented, undocumented, is(empty()));
+        assertThat("codes in the OpenAPI FieldError.code enum that no handler emits: " + orphaned, orphaned,
+                        is(empty()));
     }
 
     /** The real routes, as "METHOD /pattern" signatures. */
@@ -114,6 +142,81 @@ public class OpenApiSpecDriftTest
             throw new IllegalStateException("no operations parsed from the OpenAPI document");
 
         return operations;
+    }
+
+    /** Every FieldError code the production handlers actually emit. */
+    private Set<String> emittedFieldErrorCodes() throws IOException
+    {
+        var srcRoot = locateSourceRoot();
+
+        List<Path> javaFiles;
+        try (var stream = Files.walk(srcRoot))
+        {
+            javaFiles = stream.filter(p -> p.toString().endsWith(".java")).toList();
+        }
+
+        var codes = new TreeSet<String>();
+        for (var path : javaFiles)
+        {
+            var matcher = FIELD_ERROR_CODE.matcher(Files.readString(path));
+            while (matcher.find())
+                codes.add(matcher.group(1));
+        }
+
+        if (codes.isEmpty())
+            throw new IllegalStateException("no FieldError codes found under " + srcRoot);
+
+        return codes;
+    }
+
+    /** The FieldError.code enum values documented in the OpenAPI file. */
+    private Set<String> documentedFieldErrorCodes() throws IOException
+    {
+        var codes = new TreeSet<String>();
+
+        var inFieldError = false;
+        var inEnum = false;
+
+        for (var raw : readSpec().split("\n", -1))
+        {
+            if (raw.isBlank())
+                continue;
+
+            var indent = indentOf(raw);
+            var content = raw.strip();
+
+            // schema names live at indent 4 under components/schemas
+            if (indent == 4 && content.endsWith(":"))
+            {
+                inFieldError = "FieldError:".equals(content);
+                inEnum = false;
+            }
+            else if (inFieldError && content.equals("enum:"))
+                inEnum = true;
+            else if (inFieldError && inEnum && content.startsWith("- "))
+                codes.add(content.substring(2).strip());
+            else if (inFieldError && indent <= 8 && !content.startsWith("- "))
+                inEnum = false; // left the code property's enum block
+        }
+
+        if (codes.isEmpty())
+            throw new IllegalStateException("no FieldError.code enum parsed from the OpenAPI document");
+
+        return codes;
+    }
+
+    /** Locates {@code name.abuchen.portfolio.rest/src} by walking up from the working directory. */
+    private Path locateSourceRoot() throws IOException
+    {
+        var dir = Path.of("").toAbsolutePath();
+        for (var d = dir; d != null; d = d.getParent())
+        {
+            var candidate = d.resolve("name.abuchen.portfolio.rest").resolve("src");
+            if (Files.isDirectory(candidate))
+                return candidate;
+        }
+
+        throw new IOException("rest plugin source not found from working directory " + dir);
     }
 
     private static int indentOf(String line)
