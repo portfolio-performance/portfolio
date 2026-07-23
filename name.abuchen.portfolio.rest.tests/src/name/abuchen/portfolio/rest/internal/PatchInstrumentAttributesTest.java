@@ -15,7 +15,6 @@ import com.google.gson.JsonParser;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Security;
 
 @SuppressWarnings("nls")
 public class PatchInstrumentAttributesTest
