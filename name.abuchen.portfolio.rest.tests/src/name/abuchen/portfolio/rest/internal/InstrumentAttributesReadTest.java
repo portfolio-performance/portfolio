@@ -5,8 +5,6 @@ import static org.hamcrest.Matchers.is;
 
 import org.junit.Test;
 
-import com.google.gson.JsonObject;
-
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Client;

@@ -14,6 +14,7 @@ import name.abuchen.portfolio.rest.internal.ApiException;
 import name.abuchen.portfolio.rest.internal.FileResolver;
 import name.abuchen.portfolio.rest.internal.FilesHandler;
 import name.abuchen.portfolio.rest.internal.HoldingsHandler;
+import name.abuchen.portfolio.rest.internal.InstrumentChangeLog;
 import name.abuchen.portfolio.rest.internal.OpenApiHandler;
 import name.abuchen.portfolio.rest.internal.PairingHandler;
 import name.abuchen.portfolio.rest.internal.PerformanceHandler;
@@ -23,6 +24,7 @@ import name.abuchen.portfolio.rest.internal.Response;
 import name.abuchen.portfolio.rest.internal.Router;
 import name.abuchen.portfolio.rest.internal.SecuritiesHandler;
 import name.abuchen.portfolio.rest.spi.HostApplication;
+import name.abuchen.portfolio.rest.spi.OpenFile;
 
 /**
  * Registers all v1 routes. Reads and writes are marshalled to the UI thread;
@@ -62,11 +64,16 @@ public final class ApiRoutes
         router.add("GET", "/v1/files/{file}/instruments/{uuid}", read(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (client, req) -> Response.json(200, SecuritiesHandler.get(client, req.pathParam("uuid"))))); //$NON-NLS-1$
         router.add("PATCH", "/v1/files/{file}/instruments/{uuid}", write(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
-                        (client, req) -> Response.json(200,
-                                        SecuritiesHandler.patch(client, req.pathParam("uuid"), parseObject(req))))); //$NON-NLS-1$
+                        (file, req) -> {
+                            var result = SecuritiesHandler.patch(file.getClient(), req.pathParam("uuid"), //$NON-NLS-1$
+                                            parseObject(req));
+                            InstrumentChangeLog.record(file.getLabel(), result.instrumentName(), result.changes());
+                            return Response.json(200, result.entity());
+                        }));
         router.add("DELETE", "/v1/files/{file}/instruments/{uuid}", write(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
-                        (client, req) -> {
-                            SecuritiesHandler.delete(client, req.pathParam("uuid")); //$NON-NLS-1$
+                        (file, req) -> {
+                            var name = SecuritiesHandler.delete(file.getClient(), req.pathParam("uuid")); //$NON-NLS-1$
+                            InstrumentChangeLog.recordDeletion(file.getLabel(), name);
                             return Response.noContent();
                         }));
 
@@ -138,7 +145,7 @@ public final class ApiRoutes
     }
 
     private static Router.Handler write(FileResolver resolver, HostApplication host,
-                    BiFunction<Client, Request, Response> body)
+                    BiFunction<OpenFile, Request, Response> body)
     {
         return onUiThread(host, request -> {
             // resolve first: an unknown file is a 404 even while the user edits
@@ -147,7 +154,7 @@ public final class ApiRoutes
             if (host.isUserEditing())
                 throw ApiException.locked();
 
-            return body.apply(resolved.file().getClient(), request);
+            return body.apply(resolved.file(), request);
         });
     }
 

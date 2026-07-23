@@ -17,7 +17,9 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 
 public final class SecuritiesHandler
 {
-    /** validates one field of the patch; returns null if the value is acceptable */
+    /**
+     * validates one field of the patch; returns null if the value is acceptable
+     */
     @FunctionalInterface
     private interface Validator
     {
@@ -30,13 +32,20 @@ public final class SecuritiesHandler
         void set(Security security, JsonElement value);
     }
 
-    private record WritableField(Validator validator, Setter setter)
+    @FunctionalInterface
+    private interface Getter
     {
+        String get(Security security);
     }
 
+    private record WritableField(Validator validator, Setter setter, Getter getter)
+    {}
+
     private record AttributeAssignment(AttributeType type, boolean clear, Object value)
-    {
-    }
+    {}
+
+    public record PatchResult(JsonElement entity, String instrumentName, List<InstrumentChangeLog.Change> changes)
+    {}
 
     /**
      * The writable fields of an instrument. Validating and applying a field are
@@ -45,22 +54,24 @@ public final class SecuritiesHandler
      * <p/>
      * The retired flag is deliberately absent: the model calls it "retired"
      * while the UI speaks of activating and deactivating an instrument. The
-     * vocabulary must be settled before it becomes part of the API contract -
-     * a published field name is hard to take back.
+     * vocabulary must be settled before it becomes part of the API contract - a
+     * published field name is hard to take back.
      */
     private static final Map<String, WritableField> WRITABLE_FIELDS = Map.of( //
                     "name", new WritableField(SecuritiesHandler::requireText, //$NON-NLS-1$
-                                    (security, value) -> security.setName(value.getAsString())), //
+                                    (security, value) -> security.setName(value.getAsString()), Security::getName), //
                     "isin", new WritableField(SecuritiesHandler::allowTextOrNull, //$NON-NLS-1$
-                                    (security, value) -> security.setIsin(stringOrNull(value))), //
+                                    (security, value) -> security.setIsin(stringOrNull(value)), Security::getIsin), //
                     "wkn", new WritableField(SecuritiesHandler::allowTextOrNull, //$NON-NLS-1$
-                                    (security, value) -> security.setWkn(stringOrNull(value))), //
+                                    (security, value) -> security.setWkn(stringOrNull(value)), Security::getWkn), //
                     "tickerSymbol", new WritableField(SecuritiesHandler::allowTextOrNull, //$NON-NLS-1$
-                                    (security, value) -> security.setTickerSymbol(stringOrNull(value))), //
+                                    (security, value) -> security.setTickerSymbol(stringOrNull(value)),
+                                    Security::getTickerSymbol), //
                     "note", new WritableField(SecuritiesHandler::allowTextOrNull, //$NON-NLS-1$
-                                    (security, value) -> security.setNote(stringOrNull(value))), //
-                    "currencyCode", new WritableField(SecuritiesHandler::allowCurrencyOrNull, //$NON-NLS-1$
-                                    (security, value) -> security.setCurrencyCode(stringOrNull(value))));
+                                    (security, value) -> security.setNote(stringOrNull(value)), Security::getNote), //
+                    "currencyCode", new WritableField(SecuritiesHandler::allowCurrencyOrNull, // //$NON-NLS-1$
+                                    (security, value) -> security.setCurrencyCode(stringOrNull(value)),
+                                    Security::getCurrencyCode));
 
     private SecuritiesHandler()
     {
@@ -107,12 +118,11 @@ public final class SecuritiesHandler
     }
 
     /**
-     * Applies a JSON Merge Patch (RFC 7386) to the security: absent fields
-     * stay untouched, null clears optional fields. All violations are
-     * collected and reported at once; nothing is applied unless everything
-     * validates.
+     * Applies a JSON Merge Patch (RFC 7386) to the security: absent fields stay
+     * untouched, null clears optional fields. All violations are collected and
+     * reported at once; nothing is applied unless everything validates.
      */
-    public static JsonElement patch(Client client, String uuid, JsonObject body)
+    public static PatchResult patch(Client client, String uuid, JsonObject body)
     {
         var security = find(client, uuid);
 
@@ -142,35 +152,59 @@ public final class SecuritiesHandler
         if (!errors.isEmpty())
             throw ApiException.validation(errors);
 
-        // an empty patch changes nothing; do not mark the file dirty and thereby
-        // prompt the user to save a file the API did not touch
+        // an empty patch changes nothing; do not mark the file dirty and
+        // thereby prompt the user to save a file the API did not touch
         var hasWritableField = body.keySet().stream().anyMatch(WRITABLE_FIELDS::containsKey);
         if (!hasWritableField && assignments.isEmpty())
-            return EntityJson.toJson(client, security);
+            return new PatchResult(EntityJson.toJson(client, security), security.getName(), List.of());
+
+        var changes = new ArrayList<InstrumentChangeLog.Change>();
 
         for (var entry : body.entrySet())
         {
             if ("attributes".equals(entry.getKey())) //$NON-NLS-1$
                 continue;
-            WRITABLE_FIELDS.get(entry.getKey()).setter().set(security, entry.getValue());
+
+            var field = WRITABLE_FIELDS.get(entry.getKey());
+            var before = field.getter().get(security);
+            field.setter().set(security, entry.getValue());
+            var after = field.getter().get(security);
+
+            if (!Objects.equals(before, after))
+                changes.add(new InstrumentChangeLog.Change(entry.getKey(), before, after));
         }
 
         for (var assignment : assignments)
         {
+            var type = assignment.type();
+            var before = security.getAttributes().get(type);
+
             if (assignment.clear())
-                security.getAttributes().remove(assignment.type());
+            {
+                security.getAttributes().remove(type);
+                if (before != null)
+                    changes.add(new InstrumentChangeLog.Change(type.getName(), renderAttribute(type, before), null));
+            }
             else
-                security.getAttributes().put(assignment.type(), assignment.value());
+            {
+                var after = assignment.value();
+                security.getAttributes().put(type, after);
+                if (!Objects.equals(before, after))
+                    changes.add(new InstrumentChangeLog.Change(type.getName(),
+                                    before == null ? null : renderAttribute(type, before),
+                                    renderAttribute(type, after)));
+            }
         }
 
         client.markDirty();
-        return EntityJson.toJson(client, security);
+        return new PatchResult(EntityJson.toJson(client, security), security.getName(), changes);
     }
 
     /**
-     * Validates and stages the nested attributes merge patch: a present key sets
-     * the attribute, an explicit null clears it. Every violation is collected;
-     * staged assignments are applied only if the whole patch validates.
+     * Validates and stages the nested attributes merge patch: a present key
+     * sets the attribute, an explicit null clears it. Every violation is
+     * collected; staged assignments are applied only if the whole patch
+     * validates.
      */
     private static void stageAttributes(Client client, Security security, JsonElement element,
                     List<ApiException.FieldError> errors, List<AttributeAssignment> assignments)
@@ -186,7 +220,8 @@ public final class SecuritiesHandler
             var id = entry.getKey();
             var field = "attributes." + id; //$NON-NLS-1$
 
-            var type = client.getSettings().getAttributeTypes().filter(a -> id.equals(a.getId())).findAny().orElse(null);
+            var type = client.getSettings().getAttributeTypes().filter(a -> id.equals(a.getId())).findAny()
+                            .orElse(null);
             if (type == null)
             {
                 errors.add(new ApiException.FieldError(field, "unknown-attribute", "no such attribute")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -283,7 +318,7 @@ public final class SecuritiesHandler
      * investment plans; Client#removeSecurity would cascade into deleting
      * transaction history the API client may never have seen.
      */
-    public static void delete(Client client, String uuid)
+    public static String delete(Client client, String uuid)
     {
         var security = find(client, uuid);
 
@@ -298,6 +333,7 @@ public final class SecuritiesHandler
                             errors);
 
         client.removeSecurity(security);
+        return security.getName();
     }
 
     /* package */ static Security find(Client client, String uuid)
@@ -313,5 +349,22 @@ public final class SecuritiesHandler
     private static String stringOrNull(JsonElement value)
     {
         return value.isJsonNull() ? null : value.getAsString();
+    }
+
+    /**
+     * Renders a stored attribute value the way the desktop UI shows it. Guarded
+     * against a poisoned stored value (wrong runtime type from a corrupted
+     * file) so that logging can never break a write.
+     */
+    private static String renderAttribute(AttributeType type, Object value)
+    {
+        try
+        {
+            return type.getConverter().toString(value);
+        }
+        catch (RuntimeException e)
+        {
+            return String.valueOf(value);
+        }
     }
 }
