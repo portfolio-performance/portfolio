@@ -3,6 +3,8 @@ package name.abuchen.portfolio.rest.internal;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -23,6 +25,19 @@ public class DeleteSecurityTest
         SecuritiesHandler.delete(client, security.getUUID());
 
         assertThat(client.getSecurities().isEmpty(), is(true));
+    }
+
+    @Test
+    public void testUnreferencedSecurityMarksClientDirty()
+    {
+        var client = new Client();
+        var security = new SecurityBuilder().addTo(client);
+        var dirty = new AtomicBoolean();
+        client.addPropertyChangeListener("dirty", event -> dirty.set(true));
+
+        SecuritiesHandler.delete(client, security.getUUID());
+
+        assertThat(dirty.get(), is(true));
     }
 
     @Test
