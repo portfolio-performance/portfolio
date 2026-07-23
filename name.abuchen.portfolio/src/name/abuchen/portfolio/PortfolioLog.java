@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.osgi.framework.FrameworkUtil;
@@ -114,7 +115,7 @@ public class PortfolioLog
 
     /**
      * Logs an informational message to the application log.
-     * 
+     *
      * @param message
      *            warning message
      */
@@ -124,6 +125,37 @@ public class PortfolioLog
         Class<?> callerClass = walker.getCallerClass();
 
         log(new Status(IStatus.INFO, callerClass.getName(), message));
+    }
+
+    /**
+     * Logs an informational message with a list of detail lines to the
+     * application log. When details are present the entry is a
+     * {@link MultiStatus} whose children render as expandable rows in the
+     * Error Log view; an empty list logs a plain informational status.
+     *
+     * @param message
+     *            summary line
+     * @param details
+     *            detail lines, one child status each
+     */
+    public static void info(String message, List<String> details)
+    {
+        StackWalker walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
+        Class<?> callerClass = walker.getCallerClass();
+
+        log(buildInfoStatus(callerClass.getName(), message, details));
+    }
+
+    /* package */ static IStatus buildInfoStatus(String pluginId, String message, List<String> details)
+    {
+        if (details.isEmpty())
+            return new Status(IStatus.INFO, pluginId, message);
+
+        IStatus[] children = details.stream() //
+                        .map(detail -> (IStatus) new Status(IStatus.INFO, pluginId, detail)) //
+                        .toArray(IStatus[]::new);
+
+        return new MultiStatus(pluginId, IStatus.OK, children, message, null);
     }
 
 }
