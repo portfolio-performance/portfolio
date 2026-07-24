@@ -148,6 +148,10 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
     private final LazyValue<CostCalculationResult> costCalculation = new LazyValue<>(
                     () -> Calculation.perform(CostCalculation.class, converter, security, lineItems).getResult());
 
+    private final LazyValue<Long> sharesHeld = new LazyValue<>(
+                    () -> Calculation.perform(SharesHeldCalculation.class, converter, security, lineItems)
+                                    .getSharesHeld());
+
     /**
      * cost of shares held
      */
@@ -274,15 +278,15 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
 
     public Long getSharesHeld()
     {
-        return costCalculation.get().sharesHeld();
+        return sharesHeld.get();
     }
 
     public Quote getCostPerSharesHeld(CostMethod costMethod, TaxesAndFees taxesAndFees)
     {
-        var sharesHeld = getSharesHeld();
+        var sharesHeldForCostCalculation = costCalculation.get().sharesHeld();
         Money cost = getCostMoney(costMethod, taxesAndFees);
 
-        return Quote.of(cost.getCurrencyCode(), Math.round(cost.getAmount() / (double) sharesHeld
+        return Quote.of(cost.getCurrencyCode(), Math.round(cost.getAmount() / (double) sharesHeldForCostCalculation
                         * Values.Share.factor() * Values.Quote.factorToMoney()));
     }
 
