@@ -981,14 +981,16 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(v.get("note"))))
 
                         // @formatter:off
+                        // zahlbar ab 22.07.2026 Halbjahresdividende
                         // zahlbar ab 15.02.2018                 Quartalsdividende
                         // zahlbar ab 22.04.2013                 Zwischendividende
                         // zahlbar ab 21.03.2023                 Schlussdividende
                         // zahlbar ab 19.10.2017                 monatl. Dividende
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^zahlbar ab [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\s]{2,}" //
+                        .match("^zahlbar ab [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}\\s+" //
                                         + "(?<note>(Quartalsdividende" //
+                                        + "|Halbjahresdividende" //
                                         + "|Zwischendividende" //
                                         + "|Schlussdividende" //
                                         + "|monatl\\. Dividende))" //

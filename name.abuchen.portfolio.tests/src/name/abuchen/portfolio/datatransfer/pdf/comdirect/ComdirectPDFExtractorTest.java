@@ -7433,7 +7433,7 @@ public class ComdirectPDFExtractorTest
                         hasDate("2026-01-19T00:00"), hasExDate(null), //
                         hasShares(50.000), //
                         hasSource("Dividende40.txt"), //
-                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG"), //
+                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG | Halbjahresdividende"), //
                         hasAmount("EUR", 32.16), hasGrossValue("EUR", 32.16), //
                         hasForexGrossValue("USD", 37.50), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -7470,7 +7470,7 @@ public class ComdirectPDFExtractorTest
                         hasDate("2026-01-19T00:00"), hasExDate(null), //
                         hasShares(50.000), //
                         hasSource("Dividende40.txt"), //
-                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG"), //
+                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG | Halbjahresdividende"), //
                         hasAmount("EUR", 32.16), hasGrossValue("EUR", 32.16), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
@@ -7542,7 +7542,7 @@ public class ComdirectPDFExtractorTest
                         hasDate("2026-01-19T00:00"), hasExDate(null), //
                         hasShares(50.000), //
                         hasSource("Dividende40.txt; SteuerbehandlungVonDividende40.txt"), //
-                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG"), //
+                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG | Halbjahresdividende"), //
                         hasAmount("EUR", 23.94), hasGrossValue("EUR", 32.16), //
                         hasForexGrossValue("USD", 37.50), //
                         hasTaxes("EUR", 4.82 + 3.39 + 0.01), hasFees("EUR", 0.00))));
@@ -7582,7 +7582,7 @@ public class ComdirectPDFExtractorTest
                         hasDate("2026-01-19T00:00"), hasExDate(null), //
                         hasShares(50.000), //
                         hasSource("Dividende40.txt; SteuerbehandlungVonDividende40.txt"), //
-                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG"), //
+                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG | Halbjahresdividende"), //
                         hasAmount("EUR", 23.94), hasGrossValue("EUR", 32.16), //
                         hasTaxes("EUR", 4.82 + 3.39 + 0.01), hasFees("EUR", 0.00))));
     }
@@ -7619,7 +7619,7 @@ public class ComdirectPDFExtractorTest
                         hasDate("2026-01-19T00:00"), hasExDate(null), //
                         hasShares(50.000), //
                         hasSource("Dividende40.txt; SteuerbehandlungVonDividende40.txt"), //
-                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG"), //
+                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG | Halbjahresdividende"), //
                         hasAmount("EUR", 23.94), hasGrossValue("EUR", 32.16), //
                         hasTaxes("EUR", 4.82 + 3.39 + 0.01), hasFees("EUR", 0.00))));
     }
@@ -7657,7 +7657,7 @@ public class ComdirectPDFExtractorTest
                         hasDate("2026-01-19T00:00"), hasExDate(null), //
                         hasShares(50.000), //
                         hasSource("Dividende40.txt; SteuerbehandlungVonDividende40.txt"), //
-                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG"), //
+                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG | Halbjahresdividende"), //
                         hasAmount("EUR", 23.94), hasGrossValue("EUR", 32.16), //
                         hasTaxes("EUR", 4.82 + 3.39 + 0.01), hasFees("EUR", 0.00))));
     }
@@ -7692,7 +7692,7 @@ public class ComdirectPDFExtractorTest
                         hasDate("2026-04-02T00:00"), hasExDate(null), //
                         hasShares(220.000), //
                         hasSource("Dividende41.txt"), //
-                        hasNote("Ref.-Nr.: 3cfTL5t0xMT71563"), //
+                        hasNote("Ref.-Nr.: 3cfTL5t0xMT71563 | Quartalsdividende"), //
                         hasAmount("EUR", 187.00), hasGrossValue("EUR", 187.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
@@ -7764,7 +7764,7 @@ public class ComdirectPDFExtractorTest
                         hasDate("2026-04-02T00:00"), hasExDate(null), //
                         hasShares(220.000), //
                         hasSource("Dividende41.txt; SteuerbehandlungVonDividende41.txt"), //
-                        hasNote("Ref.-Nr.: 3cfTL5t0xMT71563"), //
+                        hasNote("Ref.-Nr.: 3cfTL5t0xMT71563 | Quartalsdividende"), //
                         hasAmount("EUR", 116.19), hasGrossValue("EUR", 187.00), //
                         hasTaxes("EUR", (46.75 - 23.94) + 23.94 + 24.06), hasFees("EUR", 0.00))));
     }
@@ -7801,7 +7801,7 @@ public class ComdirectPDFExtractorTest
                         hasDate("2026-04-02T00:00"), hasExDate(null), //
                         hasShares(220.000), //
                         hasSource("Dividende41.txt; SteuerbehandlungVonDividende41.txt"), //
-                        hasNote("Ref.-Nr.: 3cfTL5t0xMT71563"), //
+                        hasNote("Ref.-Nr.: 3cfTL5t0xMT71563 | Quartalsdividende"), //
                         hasAmount("EUR", 116.19), hasGrossValue("EUR", 187.00), //
                         hasTaxes("EUR", (46.75 - 23.94) + 23.94 + 24.06), hasFees("EUR", 0.00))));
     }
@@ -7946,7 +7946,7 @@ public class ComdirectPDFExtractorTest
                         hasExDate(null), //
                         hasShares(9.999), //
                         hasSource("Dividende42.txt; SteuerbehandlungVonDividende42.txt"), //
-                        hasNote("Ref.-Nr.: 1HINLIWN1N8001JK"), //
+                        hasNote("Ref.-Nr.: 1HINLIWN1N8001JK | Halbjahresdividende"), //
                         hasAmount("EUR", 5.57), //
                         hasGrossValue("EUR", 6.56), //
                         hasForexGrossValue("USD", 7.50), //
