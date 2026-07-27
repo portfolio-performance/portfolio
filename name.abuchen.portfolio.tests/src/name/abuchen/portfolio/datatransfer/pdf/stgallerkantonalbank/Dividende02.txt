@@ -1,0 +1,37 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.86.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Max Mustermann
+Privatkonto EUR
+Depot-Nr. 1234.1234.1234
+IBAN CH11 1234 1234 1234 1234 0
+St.Galler Kantonalbank AG
+St. Leonhardstrasse 25
+9001 St. Gallen
+www.sgkb.ch
+BIC KBSGCH22
+Ihr Kontakt:
+Max Mustermann Elektronisch versandt
+Telefon +41 12 345 67 89 Herr
+max.mustermann@sgkb.ch Max-Mustermann
+ Muster 10 A
+St. Gallen, 7. April 2026 43210 Musterhausen
+Referenznummer 1234123419 DEUTSCHLAND
+Barausschüttung
+Ihr Depotbestand per Ex-Datum 20. März 2026:
+10'000 N-Akt Sibanye Stillwater Limited
+Sponsored ADR Repr 4 Shs ADR/ADS
+Übrige Aktien Valoren-Nr.: 52619625, ISIN: US82575P1075
+Wir teilen Ihnen mit, dass wir die folgenden Erträgnisse unter Eingangsvorbehalt abgerechnet haben:
+Ausschüttung: USD 0.310942
+Ertragsart: Ordentliche Dividende
+Betrag USD 6'218.84
+Quellensteuer 20% USD 1'243.77
+Total USD 4'975.07
+Umrechnungskurs EUR/USD 1.175393
+Zu Ihren Gunsten Valuta 02.04.2026 EUR 4'232.69
+CHE-105.845.146 MWST
+Freundliche Grüsse
+St.Galler Kantonalbank AG
+123456 123412345 1234123419
