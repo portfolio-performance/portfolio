@@ -105,7 +105,15 @@ public class ImportPDFHandler
             return;
         }
 
-        FilePathHelper helper = new FilePathHelper(part, UIConstants.Preferences.PDF_IMPORT_PATH);
+        // remember the path for the depot the import was triggered for
+        // (portfolio > account)
+        String qualifier = null;
+        if (portfolio != null)
+            qualifier = portfolio.getUUID();
+        else if (account != null)
+            qualifier = account.getUUID();
+
+        FilePathHelper helper = new FilePathHelper(part, UIConstants.Preferences.PDF_IMPORT_PATH, qualifier);
 
         FileDialog fileDialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
         fileDialog.setText(Messages.PDFImportWizardAssistant);
