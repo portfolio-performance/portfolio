@@ -25,7 +25,7 @@ public class FilePathHelper
 
     private String getKeyWithPostfix()
     {
-        return key + "/" + postfix; //$NON-NLS-1$
+        return key + "." + postfix; //$NON-NLS-1$
     }
 
     public String getPath()
