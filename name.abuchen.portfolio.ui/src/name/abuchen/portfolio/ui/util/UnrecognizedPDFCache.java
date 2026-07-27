@@ -62,7 +62,7 @@ public class UnrecognizedPDFCache
         private static final long serialVersionUID = 1L;
 
         @Override
-        protected boolean removeEldestEntry(Map.Entry<Key, Entry> eldest)
+        protected boolean removeEldestEntry(Map.Entry<Key, UnrecognizedPDFCache.Entry> eldest)
         {
             return size() > MAXIMUM;
         }
