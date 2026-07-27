@@ -945,19 +945,20 @@ components:
           type: string
           description: |
             The value type. Supported scalars — `string`, `boolean`, `date`
-            (ISO-8601), `amount`, `amount-plain`, `quote`, `shares`, `percent`
-            (a fraction, e.g. 0.007 for 0.7%), `percent-plain`. Compound —
-            `limit-price`, `bookmark`, `image` — appear with `supported: false`.
+            (ISO-8601), `amount`, `quote`, `shares`, `percent` (a fraction,
+            e.g. 0.007 for 0.7%), `number` (an unscaled decimal; where the
+            desktop reads such an attribute as a percentage — the expected
+            dividends column — 5 means 5%). Compound — `limit-price`,
+            `bookmark`, `image` — appear with `supported: false`.
           enum:
             - string
             - boolean
             - date
             - amount
-            - amount-plain
             - quote
             - shares
             - percent
-            - percent-plain
+            - number
             - limit-price
             - bookmark
             - image
