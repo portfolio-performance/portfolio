@@ -19,8 +19,8 @@ public class AttributeCodecTest
     @Test
     public void testWireTypeTokens()
     {
-        assertThat(AttributeCodec.wireType(AttributeFieldType.AMOUNTPLAIN), is("amount-plain"));
-        assertThat(AttributeCodec.wireType(AttributeFieldType.PERCENTPLAIN), is("percent-plain"));
+        assertThat(AttributeCodec.wireType(AttributeFieldType.PERCENT), is("percent"));
+        assertThat(AttributeCodec.wireType(AttributeFieldType.PERCENTPLAIN), is("number"));
         assertThat(AttributeCodec.wireType(AttributeFieldType.SHARE), is("shares"));
         assertThat(AttributeCodec.wireType(AttributeFieldType.LIMIT_PRICE), is("limit-price"));
     }
@@ -105,6 +105,13 @@ public class AttributeCodecTest
         assertThat(AttributeCodec.encode(AttributeFieldType.SHARE, Long.valueOf(100000000L)).getAsString(), is("1"));
         var value = JsonParser.parseString("1");
         assertThat(AttributeCodec.decode(AttributeFieldType.SHARE, value), is(Long.valueOf(100000000L)));
+    }
+
+    @Test
+    public void testAmountPlainIsIndistinguishableFromAmount()
+    {
+        assertThat(AttributeCodec.wireType(AttributeFieldType.AMOUNTPLAIN),
+                        is(AttributeCodec.wireType(AttributeFieldType.AMOUNT)));
     }
 
     @Test

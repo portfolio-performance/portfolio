@@ -18,8 +18,8 @@ import name.abuchen.portfolio.money.Values;
  * Deliberately independent of {@link name.abuchen.portfolio.model.AttributeType.Converter},
  * whose string form is locale-dependent (grouping/decimal separators, percent
  * scaling) and therefore unfit for a machine API. Values are encoded from the
- * stored value directly: fixed-point longs as plain decimals, percentages as
- * the stored fraction, dates as ISO-8601.
+ * stored value directly: fixed-point longs as plain decimals, doubles as
+ * stored (a fraction for percent, unscaled for number), dates as ISO-8601.
  */
 @SuppressWarnings("nls")
 public final class AttributeCodec
@@ -54,12 +54,17 @@ public final class AttributeCodec
             case STRING -> "string";
             case BOOLEAN -> "boolean";
             case DATE -> "date";
-            case AMOUNT -> "amount";
-            case AMOUNTPLAIN -> "amount-plain";
+            // AMOUNTPLAIN differs from AMOUNT only in how the desktop UI renders
+            // the value (trailing zeros dropped); storage, precision and wire
+            // form are identical, so the API does not distinguish the two
+            case AMOUNT, AMOUNTPLAIN -> "amount";
             case QUOTE -> "quote";
             case SHARE -> "shares";
             case PERCENT -> "percent";
-            case PERCENTPLAIN -> "percent-plain";
+            // despite its name PERCENTPLAIN neither scales nor formats as a
+            // percentage: it is an unscaled decimal, and calling it a percent
+            // on the wire would invite a factor-100 misreading against PERCENT
+            case PERCENTPLAIN -> "number";
             case LIMIT_PRICE -> "limit-price";
             case BOOKMARK -> "bookmark";
             case IMAGE -> "image";
