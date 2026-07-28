@@ -58,6 +58,6 @@ public final class HoldingsHandler
             throw ApiException.badRequest(errors);
 
         var converter = new CurrencyConverterImpl(factory, currency);
-        return EntityJson.toJson(ClientSnapshot.create(client, converter, date));
+        return EntityJson.toJson(ClientSnapshot.create(client, converter, date), currency);
     }
 }

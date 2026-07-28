@@ -251,6 +251,23 @@ public class HoldingsTest
         assertThat(local.get("currency").getAsString(), is("USD"));
     }
 
+    /**
+     * Every amount has been converted into the reporting currency, so the
+     * report states it: a client must not have to infer it from an arbitrary
+     * nested money object. Without an override it is the file's base currency.
+     */
+    @Test
+    public void testReportingCurrencyDefaultsToBaseCurrency()
+    {
+        var client = new Client();
+        new AccountBuilder("EUR").deposit_("2026-01-01", Values.Amount.factorize(200)).addTo(client);
+
+        var holdings = list(client, "2026-07-20", null).getAsJsonObject();
+
+        assertThat(holdings.get("reportingCurrency").getAsString(), is(client.getBaseCurrency()));
+        assertThat(holdings.get("reportingCurrency").getAsString(), is("EUR"));
+    }
+
     @Test
     public void testCurrencyOverride()
     {
@@ -259,6 +276,7 @@ public class HoldingsTest
 
         var holdings = list(client, "2026-07-20", "USD").getAsJsonObject();
 
+        assertThat(holdings.get("reportingCurrency").getAsString(), is("USD"));
         assertThat(holdings.get("totalAssets").getAsJsonObject().get("currency").getAsString(), is("USD"));
 
         var item = findByUuid(holdings, account.getUUID());

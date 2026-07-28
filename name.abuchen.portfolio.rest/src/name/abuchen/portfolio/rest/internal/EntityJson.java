@@ -14,6 +14,7 @@ import com.google.gson.JsonParser;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AttributeFieldType;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Money;
@@ -140,12 +141,13 @@ public final class EntityJson
      * The statement of assets: every holding - securities and cash accounts
      * uniformly - valued at the snapshot date in the reporting currency.
      */
-    public static JsonObject toJson(ClientSnapshot snapshot)
+    public static JsonObject toJson(ClientSnapshot snapshot, String reportingCurrency)
     {
         var total = snapshot.getMonetaryAssets();
 
         var json = new JsonObject();
         json.addProperty("date", snapshot.getTime().toString()); //$NON-NLS-1$
+        json.addProperty("reportingCurrency", reportingCurrency); //$NON-NLS-1$
         json.add("totalAssets", toJson(total)); //$NON-NLS-1$
 
         var items = new JsonArray();
@@ -216,14 +218,23 @@ public final class EntityJson
      * as signed contributions (negative) so the identity holds by plain
      * addition. {@code netDeposits} is the external flow (deposits less
      * removals) that the model excludes from the performance-only delta.
+     * <p>
+     * The cost method is echoed because it moves the numbers: without it a
+     * stored or forwarded response cannot be interpreted, as the split it shows
+     * depends on a parameter it would not record.
      */
-    public static JsonObject performance(LocalDate openingDate, LocalDate closingDate, String currency, double ttwror,
-                    double irr, ClientPerformanceSnapshot performance)
+    public static JsonObject performance(LocalDate openingDate, LocalDate closingDate, String reportingCurrency,
+                    CostMethod costMethod, double ttwror, double irr, ClientPerformanceSnapshot performance)
     {
         var json = new JsonObject();
         json.addProperty("openingDate", openingDate.toString()); //$NON-NLS-1$
         json.addProperty("closingDate", closingDate.toString()); //$NON-NLS-1$
-        json.addProperty("currency", currency); //$NON-NLS-1$
+        json.addProperty("reportingCurrency", reportingCurrency); //$NON-NLS-1$
+        json.addProperty("costMethod", switch (costMethod)
+        {
+            case FIFO -> "fifo";
+            case MOVING_AVERAGE -> "moving-average";
+        });
         json.add("ttwror", ratio(ttwror)); //$NON-NLS-1$
         json.add("irr", ratio(irr)); //$NON-NLS-1$
 

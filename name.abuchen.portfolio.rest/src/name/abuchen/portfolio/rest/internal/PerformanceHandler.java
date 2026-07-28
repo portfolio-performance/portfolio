@@ -43,13 +43,10 @@ public final class PerformanceHandler
         else
             openingDate = parseDate("openingDate", openingDateParam, errors); //$NON-NLS-1$
 
-        var closingDate = LocalDate.now();
-        if (closingDateParam != null)
-        {
-            var parsed = parseDate("closingDate", closingDateParam, errors); //$NON-NLS-1$
-            if (parsed != null)
-                closingDate = parsed;
-        }
+        // null (not today) when unparseable: the range check below must not
+        // judge a value that never parsed
+        var closingDate = closingDateParam == null ? LocalDate.now()
+                        : parseDate("closingDate", closingDateParam, errors); //$NON-NLS-1$
 
         var currency = client.getBaseCurrency();
         if (currencyParam != null)
@@ -73,13 +70,16 @@ public final class PerformanceHandler
                                 "costMethod must be fifo or moving-average")); //$NON-NLS-1$
         }
 
+        // the range constraint depends on the two dates having parsed and on
+        // nothing else, so it accumulates with the other violations instead of
+        // hiding behind them: a client fixing both in one round-trip needs to
+        // see both
+        if (openingDate != null && closingDate != null && !openingDate.isBefore(closingDate))
+            errors.add(new ApiException.FieldError("closingDate", "invalid-range", //$NON-NLS-1$ //$NON-NLS-2$
+                            "closingDate must be after openingDate")); //$NON-NLS-1$
+
         if (!errors.isEmpty())
             throw ApiException.badRequest(errors);
-
-        // the range constraint can only be judged once both dates parsed
-        if (!openingDate.isBefore(closingDate))
-            throw ApiException.badRequest(List.of(new ApiException.FieldError("closingDate", "invalid-range", //$NON-NLS-1$ //$NON-NLS-2$
-                            "closingDate must be after openingDate"))); //$NON-NLS-1$
 
         var converter = new CurrencyConverterImpl(factory, currency);
         var interval = Interval.of(openingDate, closingDate);
@@ -92,7 +92,7 @@ public final class PerformanceHandler
                         .getFinalAccumulatedPercentage();
         var irr = performance.getPerformanceIRR();
 
-        return EntityJson.performance(openingDate, closingDate, currency, ttwror, irr, performance);
+        return EntityJson.performance(openingDate, closingDate, currency, costMethod, ttwror, irr, performance);
     }
 
     private static LocalDate parseDate(String field, String value, List<ApiException.FieldError> errors)
