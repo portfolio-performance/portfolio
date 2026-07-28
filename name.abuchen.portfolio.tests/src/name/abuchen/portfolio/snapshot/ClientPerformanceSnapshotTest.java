@@ -623,12 +623,34 @@ public class ClientPerformanceSnapshotTest
                                                         // start of period
                                                         - (90.0 * 5)))));
 
+        // exchange rate purchase
+        var ratePurchase = client.getPortfolios().stream().flatMap(p -> p.getTransactions().stream())
+                        .filter(p -> p.getDateTime().equals(LocalDateTime.parse("2015-01-02T00:00"))).findFirst().get()
+                        .getUnit(Transaction.Unit.Type.GROSS_VALUE).get().getExchangeRate();
+
+        var rateSale = client.getPortfolios().stream().flatMap(p -> p.getTransactions().stream())
+                        .filter(p -> p.getDateTime().equals(LocalDateTime.parse("2015-01-09T00:00"))).findFirst().get()
+                        .getUnit(Transaction.Unit.Type.GROSS_VALUE).get().getExchangeRate();
+
         assertThat(snapshot.getCategoryByType(CategoryType.REALIZED_CAPITAL_GAINS).getPositions().get(0).getForexGain(),
                         is(Money.of(CurrencyUnit.EUR,
-                                        // value at start -> to USD with rate at
-                                        // start -> back to EUR with rate at end
-                                        // -> minus start value
-                                        Values.Amount.factorize((90.0 * 5 * 1.2043 / 1.1813) - (90.0 * 5)))));
+                                        // currency gains now use the exchange
+                                        // rate recorded on the transaction
+                                        // (matching the moving-average method):
+                                        // the relieved USD cost basis valued at
+                                        // the sale's exchange rate, less the
+                                        // relieved EUR cost basis. Because the
+                                        // USD basis is carried in minor units
+                                        // it differs from the historic
+                                        // round-trip (EUR 8.76) by one cent of
+                                        // rounding.
+                                        Math.round(Math.round(90.0 * 5 / ratePurchase.doubleValue() * 100) / 100.0
+                                                        * rateSale.doubleValue() * 100)
+                                                        - Values.Amount.factorize(90.0 * 5))));
+
+        // with the explicit monetary amount
+        assertThat(snapshot.getCategoryByType(CategoryType.REALIZED_CAPITAL_GAINS).getPositions().get(0).getForexGain(),
+                        is(Money.of(CurrencyUnit.EUR, 877L)));
 
         assertThat(snapshot.getAbsoluteDelta(),
                         is(snapshot.getValue(CategoryType.FINAL_VALUE)
