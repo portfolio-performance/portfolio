@@ -6,6 +6,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -623,12 +624,43 @@ public class ClientPerformanceSnapshotTest
                                                         // start of period
                                                         - (90.0 * 5)))));
 
+        // exchange rate purchase
+        var ratePurchase = client.getPortfolios().stream().flatMap(p -> p.getTransactions().stream())
+                        .filter(p -> p.getDateTime().equals(LocalDateTime.parse("2015-01-02T00:00"))).findFirst().get()
+                        .getUnit(Transaction.Unit.Type.GROSS_VALUE).get().getExchangeRate();
+
+        var rateSale = client.getPortfolios().stream().flatMap(p -> p.getTransactions().stream())
+                        .filter(p -> p.getDateTime().equals(LocalDateTime.parse("2015-01-09T00:00"))).findFirst().get()
+                        .getUnit(Transaction.Unit.Type.GROSS_VALUE).get().getExchangeRate();
+
+        // relieved USD cost basis in minor units, matching
+        // CapitalGainsCalculation#startForex (Math.round == HALF_UP)
+        var relievedForexBasis = Math.round(90.0 * 5 / ratePurchase.doubleValue() * 100);
+
+        // that basis valued at the sale's exchange rate, rounded like the
+        // production code (CapitalGainsCalculation#relievedForexInTerm), which
+        // uses RoundingMode.HALF_DOWN rather than Math.round's HALF_UP
+        var relievedForexBasisInTerm = BigDecimal.valueOf(relievedForexBasis)
+                        .multiply(BigDecimal.valueOf(rateSale.doubleValue()))
+                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
+
         assertThat(snapshot.getCategoryByType(CategoryType.REALIZED_CAPITAL_GAINS).getPositions().get(0).getForexGain(),
                         is(Money.of(CurrencyUnit.EUR,
-                                        // value at start -> to USD with rate at
-                                        // start -> back to EUR with rate at end
-                                        // -> minus start value
-                                        Values.Amount.factorize((90.0 * 5 * 1.2043 / 1.1813) - (90.0 * 5)))));
+                                        // currency gains now use the exchange
+                                        // rate recorded on the transaction
+                                        // (matching the moving-average method):
+                                        // the relieved USD cost basis valued at
+                                        // the sale's exchange rate, less the
+                                        // relieved EUR cost basis. Because the
+                                        // USD basis is carried in minor units
+                                        // it differs from the historic
+                                        // round-trip (EUR 8.76) by one cent of
+                                        // rounding.
+                                        relievedForexBasisInTerm - Values.Amount.factorize(90.0 * 5))));
+
+        // with the explicit monetary amount
+        assertThat(snapshot.getCategoryByType(CategoryType.REALIZED_CAPITAL_GAINS).getPositions().get(0).getForexGain(),
+                        is(Money.of(CurrencyUnit.EUR, 877L)));
 
         assertThat(snapshot.getAbsoluteDelta(),
                         is(snapshot.getValue(CategoryType.FINAL_VALUE)

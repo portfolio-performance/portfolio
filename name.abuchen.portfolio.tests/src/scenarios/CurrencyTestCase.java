@@ -271,8 +271,11 @@ public class CurrencyTestCase
         assertThat(record.getRealizedCapitalGains(CostMethod.MOVING_AVERAGE).getCapitalGains(),
                         is(Money.of("EUR", 0L)));
         assertThat(record.getUnrealizedCapitalGains(CostMethod.FIFO).getCapitalGains(), is(Money.of("EUR", 8771L)));
+        // FIFO currency gains now use the transaction's exchange rate and thus
+        // match the moving-average figure asserted below (was EUR 43.39 when
+        // derived from the historic round-trip)
         assertThat(record.getUnrealizedCapitalGains(CostMethod.FIFO).getForexCaptialGains(),
-                        is(Money.of("EUR", 4339L)));
+                        is(Money.of("EUR", 4335L)));
         assertThat(record.getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE).getCapitalGains(),
                         is(Money.of("EUR", 8771L)));
         assertThat(record.getUnrealizedCapitalGains(CostMethod.MOVING_AVERAGE).getForexCaptialGains(),
