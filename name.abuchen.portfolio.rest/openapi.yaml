@@ -595,7 +595,8 @@ paths:
           description: |
             The reporting currency (default: the file's base currency). A
             currency pair without an exchange rate series converts 1:1 — the
-            same silent fallback the application itself applies.
+            same silent fallback the application itself applies. Echoed in the
+            response as `reportingCurrency`.
           schema:
             type: string
       responses:
@@ -605,12 +606,20 @@ paths:
             application/json:
               schema:
                 type: object
-                required: [date, totalAssets, items]
+                required: [date, reportingCurrency, totalAssets, items]
                 properties:
                   date:
                     type: string
                     format: date
                     description: The effective valuation date.
+                  reportingCurrency:
+                    type: string
+                    description: |
+                      The currency every amount in this report has been converted
+                      into — the `currency` query parameter, or the file's base
+                      currency. Not to be confused with a `MonetaryValue`'s
+                      `currency` (one amount) or an entity's `currencyCode` (its
+                      own declared currency).
                   totalAssets:
                     $ref: "#/components/schemas/MonetaryValue"
                   items:
@@ -621,6 +630,7 @@ paths:
                 default:
                   value:
                     date: "2026-07-20"
+                    reportingCurrency: EUR
                     totalAssets: { value: 1600, currency: EUR }
                     items:
                       - type: instrument
@@ -710,7 +720,8 @@ paths:
           description: |
             The reporting currency (default: the file's base currency). A
             currency pair without an exchange rate series converts 1:1 — the
-            same silent fallback the application itself applies.
+            same silent fallback the application itself applies. Echoed in the
+            response as `reportingCurrency`.
           schema:
             type: string
         - name: costMethod
@@ -718,7 +729,7 @@ paths:
           required: false
           description: |
             The cost basis method used to split capital gains into realized and
-            unrealized (default: `fifo`).
+            unrealized (default: `fifo`). Echoed in the response.
           schema:
             type: string
             enum: [fifo, moving-average]
@@ -735,7 +746,8 @@ paths:
                   value:
                     openingDate: "2024-01-01"
                     closingDate: "2024-12-31"
-                    currency: EUR
+                    reportingCurrency: EUR
+                    costMethod: fifo
                     ttwror: 0.0723
                     irr: 0.0685
                     breakdown:
@@ -1013,6 +1025,11 @@ components:
           type: number
         currency:
           type: string
+          description: |
+            The currency of *this amount*. The API keeps three currency concepts
+            apart on purpose: `currency` is what one amount is expressed in,
+            `reportingCurrency` is what a whole report has been converted into,
+            and `currencyCode` is an entity's own declared currency.
 
     Price:
       type: object
@@ -1076,7 +1093,14 @@ components:
       type: object
       description: |
         The return and value-change of the file between two valuation dates.
-      required: [openingDate, closingDate, currency, ttwror, irr, breakdown]
+      required:
+        - openingDate
+        - closingDate
+        - reportingCurrency
+        - costMethod
+        - ttwror
+        - irr
+        - breakdown
       properties:
         openingDate:
           type: string
@@ -1086,9 +1110,20 @@ components:
           type: string
           format: date
           description: The effective closing valuation date.
-        currency:
+        reportingCurrency:
           type: string
-          description: The reporting currency of every amount in the breakdown.
+          description: |
+            The currency every amount in the breakdown is expressed in — the
+            `currency` query parameter, or the file's base currency. Not to be
+            confused with a `MonetaryValue`'s `currency` (one amount) or an
+            entity's `currencyCode` (its own declared currency).
+        costMethod:
+          type: string
+          enum: [fifo, moving-average]
+          description: |
+            The cost basis method the realized/unrealized split was computed
+            with — echoed because it moves the numbers, so a stored response
+            stays interpretable.
         ttwror:
           type: [number, "null"]
           description: |
