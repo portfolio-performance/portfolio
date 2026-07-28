@@ -30,8 +30,7 @@ public class FilePathHelper
 
     public String getPath()
     {
-        // postfix-specific preferences (e.g. per-account/portfolio
-        // path)
+        // first, postfix-specific preferences (e.g. per-account/portfolio)
         if (postfix != null)
         {
             String path = part.getPreferenceStore().getString(getKeyWithPostfix());
