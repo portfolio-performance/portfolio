@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.is;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.junit.Assert;
@@ -16,6 +17,7 @@ import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
@@ -46,7 +48,7 @@ public class PerformanceTest
 
         assertThat(result.get("openingDate").getAsString(), is("2024-01-01"));
         assertThat(result.get("closingDate").getAsString(), is("2024-12-31"));
-        assertThat(result.get("currency").getAsString(), is("EUR"));
+        assertThat(result.get("reportingCurrency").getAsString(), is("EUR"));
 
         assertThat(result.get("ttwror").getAsDouble(), closeTo(0.20, 1e-6));
         assertThat(result.get("irr").getAsDouble(), closeTo(0.20, 0.02));
@@ -188,11 +190,17 @@ public class PerformanceTest
         assertThat(result.get("closingDate").getAsString(), is(LocalDate.now().toString()));
     }
 
+    /**
+     * The reporting currency is echoed on the envelope - a stored response must
+     * not force the reader to infer it from an arbitrary nested money object.
+     */
     @Test
     public void testCurrencyOverride()
     {
-        var breakdown = perf(heldPosition(), "2024-01-01", "2024-12-31", "USD", null).get("breakdown")
-                        .getAsJsonObject();
+        var result = perf(heldPosition(), "2024-01-01", "2024-12-31", "USD", null);
+
+        assertThat(result.get("reportingCurrency").getAsString(), is("USD"));
+        var breakdown = result.get("breakdown").getAsJsonObject();
         assertThat(breakdown.get("closingValue").getAsJsonObject().get("currency").getAsString(), is("USD"));
     }
 
@@ -203,6 +211,23 @@ public class PerformanceTest
         var result = perf(heldPosition(), "2024-01-01", "2024-12-31", null, "moving-average");
         var breakdown = result.get("breakdown").getAsJsonObject();
         assertThat(value(breakdown, "realizedCapitalGains") + value(breakdown, "unrealizedCapitalGains"), is(200d));
+    }
+
+    /**
+     * The cost method changes the numbers, so it must appear in the response:
+     * without the echo the split cannot be interpreted from the payload alone.
+     */
+    @Test
+    public void testCostMethodIsEchoed()
+    {
+        assertThat(perf(heldPosition(), "2024-01-01", "2024-12-31", null, "fifo").get("costMethod").getAsString(),
+                        is("fifo"));
+        assertThat(perf(heldPosition(), "2024-01-01", "2024-12-31", null, "moving-average").get("costMethod")
+                        .getAsString(), is("moving-average"));
+
+        // the default is the FIFO the handler applies, not an omitted property
+        assertThat(perf(heldPosition(), "2024-01-01", "2024-12-31", null, null).get("costMethod").getAsString(),
+                        is("fifo"));
     }
 
     /**
@@ -218,7 +243,7 @@ public class PerformanceTest
         var interval = Interval.of(LocalDate.parse("2024-01-01"), LocalDate.parse("2024-12-31"));
         var snapshot = new ClientPerformanceSnapshot(client, converter, interval, true);
 
-        var json = EntityJson.performance(interval.getStart(), interval.getEnd(), "EUR", Double.NaN,
+        var json = EntityJson.performance(interval.getStart(), interval.getEnd(), "EUR", CostMethod.FIFO, Double.NaN,
                         Double.POSITIVE_INFINITY, snapshot);
 
         assertThat(json.get("ttwror").isJsonNull(), is(true));
@@ -263,6 +288,45 @@ public class PerformanceTest
     {
         assertFieldError(() -> perf(heldPosition(), "2024-01-01", "2024-12-31", null, "lifo"), "costMethod",
                         "invalid-value");
+    }
+
+    /**
+     * Every actionable violation is reported at once, so an agent self-corrects
+     * in one round-trip: the range constraint does not hide behind an unrelated
+     * bad parameter.
+     */
+    @Test
+    public void testRangeAndCurrencyErrorsAreReportedTogether()
+    {
+        var errors = errorsOf(() -> perf(heldPosition(), "2024-12-31", "2024-01-01", "ZZZ", null));
+
+        assertThat(errors.size(), is(2));
+        assertThat(codeOf(errors, "currency"), is("unknown-currency"));
+        assertThat(codeOf(errors, "closingDate"), is("invalid-range"));
+    }
+
+    /**
+     * A date that never parsed cannot be judged against the range: reporting
+     * both would put two errors on one field, one of them noise - closingDate
+     * defaults to today, which would look inverted against a later opening date.
+     */
+    @Test
+    public void testUnparseableClosingDateYieldsNoSpuriousRangeError()
+    {
+        var errors = errorsOf(() -> perf(heldPosition(), "2026-01-01", "not-a-date", null, null));
+
+        assertThat(errors.size(), is(1));
+        assertThat(codeOf(errors, "closingDate"), is("invalid-value"));
+    }
+
+    /** Likewise when the opening date is missing altogether. */
+    @Test
+    public void testMissingOpeningDateYieldsNoRangeError()
+    {
+        var errors = errorsOf(() -> perf(heldPosition(), null, "2024-12-31", null, null));
+
+        assertThat(errors.size(), is(1));
+        assertThat(codeOf(errors, "openingDate"), is("required"));
     }
 
     private static Client heldPosition()
@@ -329,5 +393,26 @@ public class PerformanceTest
             assertThat(e.getErrors().get(0).field(), is(field));
             assertThat(e.getErrors().get(0).code(), is(code));
         }
+    }
+
+    /** the 400's field errors, regardless of the order they accumulated in */
+    private static List<ApiException.FieldError> errorsOf(Runnable call)
+    {
+        try
+        {
+            call.run();
+            throw new AssertionError("expected ApiException");
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getStatus(), is(400));
+            return e.getErrors();
+        }
+    }
+
+    private static String codeOf(List<ApiException.FieldError> errors, String field)
+    {
+        return errors.stream().filter(error -> field.equals(error.field())).map(ApiException.FieldError::code)
+                        .findFirst().orElseThrow(() -> new AssertionError("no error on field " + field));
     }
 }
