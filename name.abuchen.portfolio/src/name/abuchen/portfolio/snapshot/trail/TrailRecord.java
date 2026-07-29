@@ -99,6 +99,14 @@ public interface TrailRecord
                         this.getShares(), this.getValue(), this);
     }
 
+    /**
+     * Restates this trail at the given basis. If the basis differs from the
+     * trail's own value, it is rendered as a "without taxes and fees"
+     * derivation step; if it equals the value - as it does when the basis
+     * already includes the taxes and fees embedded in the trade - the trail is
+     * returned unchanged and no such step is added. Hence the label is only ever
+     * emitted for a basis that genuinely has those charges stripped.
+     */
     default TrailRecord asGrossValue(Money grossValue)
     {
         if (grossValue.equals(getValue()))
