@@ -71,15 +71,21 @@ public final class CalcParams
                             "closingDate must be after openingDate")); //$NON-NLS-1$
     }
 
-    /** the reporting currency, defaulting to the file's base currency */
-    public static String currency(Client client, String value, List<ApiException.FieldError> errors)
+    /**
+     * The currency a whole report is expressed in, defaulting to the file's
+     * base currency. Request and response call it by the same name, so that a
+     * client reading {@code reportingCurrency} out of a payload knows what to
+     * send back; the two other currency concepts - one amount's {@code
+     * currency} and an entity's own {@code currencyCode} - keep theirs.
+     */
+    public static String reportingCurrency(Client client, String value, List<ApiException.FieldError> errors)
     {
         if (value == null)
             return client.getBaseCurrency();
 
         if (CurrencyUnit.getInstance(value) == null)
         {
-            errors.add(new ApiException.FieldError("currency", "unknown-currency", //$NON-NLS-1$ //$NON-NLS-2$
+            errors.add(new ApiException.FieldError("reportingCurrency", "unknown-currency", //$NON-NLS-1$ //$NON-NLS-2$
                             value + " is not a known currency")); //$NON-NLS-1$
             return client.getBaseCurrency();
         }

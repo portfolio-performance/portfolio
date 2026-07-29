@@ -90,12 +90,12 @@ public final class ApiRoutes
 
         router.add("GET", "/v1/files/{file}/holdings", calc(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> Response.json(200, HoldingsHandler.list(context.client(), context.factory(),
-                                        req.queryParam("date"), req.queryParam("currency"))))); //$NON-NLS-1$ //$NON-NLS-2$
+                                        req.queryParam("date"), req.queryParam("reportingCurrency"))))); //$NON-NLS-1$ //$NON-NLS-2$
 
         router.add("GET", "/v1/files/{file}/performance", calc(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> Response.json(200, PerformanceHandler.list(context.client(),
                                         context.factory(), req.queryParam("openingDate"), //$NON-NLS-1$
-                                        req.queryParam("closingDate"), req.queryParam("currency"), //$NON-NLS-1$ //$NON-NLS-2$
+                                        req.queryParam("closingDate"), req.queryParam("reportingCurrency"), //$NON-NLS-1$ //$NON-NLS-2$
                                         req.queryParam("costMethod"))))); //$NON-NLS-1$
 
         // the performance report broken down by instrument. Five segments like
@@ -105,13 +105,13 @@ public final class ApiRoutes
         router.add("GET", "/v1/files/{file}/performance/instruments", calc(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> Response.json(200, InstrumentPerformanceHandler.list(context.client(),
                                         context.factory(), req.queryParam("openingDate"), //$NON-NLS-1$
-                                        req.queryParam("closingDate"), req.queryParam("currency"), //$NON-NLS-1$ //$NON-NLS-2$
+                                        req.queryParam("closingDate"), req.queryParam("reportingCurrency"), //$NON-NLS-1$ //$NON-NLS-2$
                                         req.queryParam("costMethod"), req.queryParam("taxesAndFees"), //$NON-NLS-1$ //$NON-NLS-2$
                                         req.queryParam("metrics"))))); //$NON-NLS-1$
         router.add("GET", "/v1/files/{file}/performance/instruments/{uuid}", calc(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> Response.json(200, InstrumentPerformanceHandler.get(context.client(),
                                         context.factory(), req.pathParam("uuid"), req.queryParam("openingDate"), //$NON-NLS-1$ //$NON-NLS-2$
-                                        req.queryParam("closingDate"), req.queryParam("currency"), //$NON-NLS-1$ //$NON-NLS-2$
+                                        req.queryParam("closingDate"), req.queryParam("reportingCurrency"), //$NON-NLS-1$ //$NON-NLS-2$
                                         req.queryParam("costMethod"), req.queryParam("taxesAndFees"), //$NON-NLS-1$ //$NON-NLS-2$
                                         req.queryParam("metrics"))))); //$NON-NLS-1$
 

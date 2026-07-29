@@ -36,7 +36,7 @@ public final class PerformanceHandler
         // value that never parsed
         var openingDate = CalcParams.openingDate(openingDateParam, errors);
         var closingDate = CalcParams.closingDate(closingDateParam, errors);
-        var currency = CalcParams.currency(client, currencyParam, errors);
+        var currency = CalcParams.reportingCurrency(client, currencyParam, errors);
         var costMethod = CalcParams.costMethod(costMethodParam, errors);
         CalcParams.requireRange(openingDate, closingDate, errors);
 
