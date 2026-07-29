@@ -1,14 +1,12 @@
 package name.abuchen.portfolio.rest.internal;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 
 import com.google.gson.JsonElement;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 
@@ -30,29 +28,8 @@ public final class HoldingsHandler
     {
         var errors = new ArrayList<ApiException.FieldError>();
 
-        var date = LocalDate.now();
-        if (dateParam != null)
-        {
-            try
-            {
-                date = LocalDate.parse(dateParam);
-            }
-            catch (DateTimeParseException e)
-            {
-                errors.add(new ApiException.FieldError("date", "invalid-value", //$NON-NLS-1$ //$NON-NLS-2$
-                                "date must be an ISO 8601 date (YYYY-MM-DD)")); //$NON-NLS-1$
-            }
-        }
-
-        var currency = client.getBaseCurrency();
-        if (currencyParam != null)
-        {
-            if (CurrencyUnit.getInstance(currencyParam) == null)
-                errors.add(new ApiException.FieldError("currency", "unknown-currency", //$NON-NLS-1$ //$NON-NLS-2$
-                                currencyParam + " is not a known currency")); //$NON-NLS-1$
-            else
-                currency = currencyParam;
-        }
+        var date = dateParam == null ? LocalDate.now() : CalcParams.date("date", dateParam, errors); //$NON-NLS-1$
+        var currency = CalcParams.reportingCurrency(client, currencyParam, errors);
 
         if (!errors.isEmpty())
             throw ApiException.badRequest(errors);

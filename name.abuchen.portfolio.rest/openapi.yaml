@@ -589,16 +589,7 @@ paths:
           schema:
             type: string
             format: date
-        - name: currency
-          in: query
-          required: false
-          description: |
-            The reporting currency (default: the file's base currency). A
-            currency pair without an exchange rate series converts 1:1 — the
-            same silent fallback the application itself applies. Echoed in the
-            response as `reportingCurrency`.
-          schema:
-            type: string
+        - $ref: "#/components/parameters/ReportingCurrency"
       responses:
         "200":
           description: The holdings at the valuation date
@@ -616,10 +607,10 @@ paths:
                     type: string
                     description: |
                       The currency every amount in this report has been converted
-                      into — the `currency` query parameter, or the file's base
-                      currency. Not to be confused with a `MonetaryValue`'s
-                      `currency` (one amount) or an entity's `currencyCode` (its
-                      own declared currency).
+                      into — the `reportingCurrency` query parameter, or the
+                      file's base currency. Not to be confused with a
+                      `MonetaryValue`'s `currency` (one amount) or an entity's
+                      `currencyCode` (its own declared currency).
                   totalAssets:
                     $ref: "#/components/schemas/MonetaryValue"
                   items:
@@ -714,16 +705,7 @@ paths:
           schema:
             type: string
             format: date
-        - name: currency
-          in: query
-          required: false
-          description: |
-            The reporting currency (default: the file's base currency). A
-            currency pair without an exchange rate series converts 1:1 — the
-            same silent fallback the application itself applies. Echoed in the
-            response as `reportingCurrency`.
-          schema:
-            type: string
+        - $ref: "#/components/parameters/ReportingCurrency"
         - name: costMethod
           in: query
           required: false
@@ -1007,14 +989,18 @@ components:
         type: string
         format: date
     ReportingCurrency:
-      name: currency
+      name: reportingCurrency
       in: query
       required: false
       description: |
-        The reporting currency (default: the file's base currency). A currency
-        pair without an exchange rate series converts 1:1 — the same silent
-        fallback the application itself applies. Echoed in the response as
-        `reportingCurrency`.
+        The currency the whole report is expressed in (default: the file's base
+        currency). A currency pair without an exchange rate series converts 1:1
+        — the same silent fallback the application itself applies.
+
+        Request and response name this concept identically, so a client can send
+        back what it read. The two other currency concepts keep their own names:
+        a `MonetaryValue`'s `currency` is what one amount is expressed in, and an
+        entity's `currencyCode` is its own declared currency.
       schema:
         type: string
     InstrumentCostMethod:
@@ -1382,9 +1368,9 @@ components:
           type: string
           description: |
             The currency every amount in the breakdown is expressed in — the
-            `currency` query parameter, or the file's base currency. Not to be
-            confused with a `MonetaryValue`'s `currency` (one amount) or an
-            entity's `currencyCode` (its own declared currency).
+            `reportingCurrency` query parameter, or the file's base currency.
+            Not to be confused with a `MonetaryValue`'s `currency` (one amount)
+            or an entity's `currencyCode` (its own declared currency).
         costMethod:
           type: string
           enum: [fifo, moving-average]

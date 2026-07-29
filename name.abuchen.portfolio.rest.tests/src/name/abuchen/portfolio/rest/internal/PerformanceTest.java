@@ -279,7 +279,7 @@ public class PerformanceTest
     @Test
     public void testUnknownCurrencyIs400()
     {
-        assertFieldError(() -> perf(heldPosition(), "2024-01-01", "2024-12-31", "ZZZ", null), "currency",
+        assertFieldError(() -> perf(heldPosition(), "2024-01-01", "2024-12-31", "ZZZ", null), "reportingCurrency",
                         "unknown-currency");
     }
 
@@ -301,7 +301,7 @@ public class PerformanceTest
         var errors = errorsOf(() -> perf(heldPosition(), "2024-12-31", "2024-01-01", "ZZZ", null));
 
         assertThat(errors.size(), is(2));
-        assertThat(codeOf(errors, "currency"), is("unknown-currency"));
+        assertThat(codeOf(errors, "reportingCurrency"), is("unknown-currency"));
         assertThat(codeOf(errors, "closingDate"), is("invalid-range"));
     }
 
