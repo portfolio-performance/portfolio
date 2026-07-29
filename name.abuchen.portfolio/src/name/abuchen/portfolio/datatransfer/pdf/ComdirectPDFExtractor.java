@@ -981,14 +981,16 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(v.get("note"))))
 
                         // @formatter:off
+                        // zahlbar ab 22.07.2026 Halbjahresdividende
                         // zahlbar ab 15.02.2018                 Quartalsdividende
                         // zahlbar ab 22.04.2013                 Zwischendividende
                         // zahlbar ab 21.03.2023                 Schlussdividende
                         // zahlbar ab 19.10.2017                 monatl. Dividende
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^zahlbar ab [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\s]{2,}" //
+                        .match("^zahlbar ab [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}\\s+" //
                                         + "(?<note>(Quartalsdividende" //
+                                        + "|Halbjahresdividende" //
                                         + "|Zwischendividende" //
                                         + "|Schlussdividende" //
                                         + "|monatl\\. Dividende))" //
@@ -1222,7 +1224,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currencyBeforeTaxes", "grossBeforeTaxes", "currencyTaxesBaseBeforeLossOffset", "type", "grossTaxesBaseBeforeLossOffset", "currencyDeductedTaxes", "deductedTaxes") //
-                                                        .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*(G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n|L[\\s]*a[\\s]*s[\\s]*t[\\s]*e[\\s]*n)[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*: [\\s]{1,}(?<currencyBeforeTaxes>(?:[A-Z][\\s]*){3})[\\-\\s]{1,}(?<grossBeforeTaxes>[\\.,\\d\\s]+).*$") //
+                                                        .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*(G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n|L[\\s]*a[\\s]*s[\\s]*t[\\s]*e[\\s]*n)[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:\\s+(?<currencyBeforeTaxes>(?:[A-Z][\\s]*){3})[\\-\\s]{1,}(?<grossBeforeTaxes>[\\.,\\d\\s]+).*$") //
                                                         .match("^[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*b[\\s]*e[\\s]*m[\\s]*e[\\s]*s[\\s]*s[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*g[\\s]*r[\\s]*u[\\s]*n[\\s]*d[\\s]*l[\\s]*a[\\s]*g[\\s]*e[\\s]*v[\\s]*o[\\s]*r[\\s]*V[\\s]*e[\\s]*r[\\s]*l[\\s]*u[\\s]*s[\\s]*t[\\s]*v[\\s]*e[\\s]*r[\\s]*r[\\s]*e[\\s]*c[\\s]*h[\\s]*n[\\s]*u[\\s]*n[\\s]*g[\\s]{1,}([\\(\\s\\d\\)]+)?(?<currencyTaxesBaseBeforeLossOffset>(?:[A-Z][\\s]*){3})(?<type>[\\-\\s]{1,})(?<grossTaxesBaseBeforeLossOffset>[\\.,\\d\\s]+).*$") //
                                                         .match("^[\\s]*a[\\s]*b[\\s]*g[\\s]*e[\\s]*f[\\s]*.[\\s]*h[\\s]*r[\\s]*t[\\s]*e[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]{1,}(?<currencyDeductedTaxes>[A-Z_\\s]+)[\\-_\\s]{1,}(?<deductedTaxes>[\\.,\\d_\\s]+).*$") //
                                                         .assign((t, v) -> {
@@ -1338,7 +1340,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("currencyRefundedTaxes", "refundedTaxes") //
                                                         .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?:[A-Z][\\s]*){3}[\\-\\s]{1,}[\\.,\\d\\s]+.*$") //
                                                         .match("^[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*b[\\s]*e[\\s]*m[\\s]*e[\\s]*s[\\s]*s[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*g[\\s]*r[\\s]*u[\\s]*n[\\s]*d[\\s]*l[\\s]*a[\\s]*g[\\s]*e[\\s]{1,}([\\(\\s\\d\\)]+)?(?:[A-Z][\\s]*){3}[\\-\\s]{1,}[\\.,\\d\\s]+.*$") //
-                                                        .match("^[\\s]*e[\\s]*r[\\s]*s[\\s]*t[\\s]*a[\\s]*t[\\s]*t[\\s]*e[\\s]*t[\\s]*e[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n [\\s]{1,}[A-Z_\\s]+[\\-_\\s]{1,}[\\.,\\d_\\s]+[\\s]{1,}(?<currencyRefundedTaxes>[A-Z_\\s]+)[\\-_\\s]{1,}(?<refundedTaxes>[\\.,\\d_\\s]+)$") //
+                                                        .match("^[\\s]*e[\\s]*r[\\s]*s[\\s]*t[\\s]*a[\\s]*t[\\s]*t[\\s]*e[\\s]*t[\\s]*e[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n\\s+[A-Z_\\s]+[\\-_\\s]{1,}[\\.,\\d_\\s]+[\\s]{1,}(?<currencyRefundedTaxes>[A-Z_\\s]+)[\\-_\\s]{1,}(?<refundedTaxes>[\\.,\\d_\\s]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.TAX_REFUND);
 

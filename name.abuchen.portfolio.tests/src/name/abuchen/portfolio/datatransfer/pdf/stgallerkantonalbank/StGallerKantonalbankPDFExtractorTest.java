@@ -6,6 +6,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyC
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
@@ -143,5 +144,44 @@ public class StGallerKantonalbankPDFExtractorTest
                         hasNote("Referenznummer 1746312001"), //
                         hasAmount("EUR", 736.25), hasGrossValue("EUR", 1000.00), //
                         hasTaxes("EUR", 263.75), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende02()
+    {
+        var extractor = new StGallerKantonalbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US82575P1075"), hasWkn("52619625"), hasTicker(null), //
+                        hasName("N-Akt Sibanye Stillwater Limited Sponsored ADR Repr 4 Shs ADR/ADS"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-04-02"), //
+                        hasExDate("2026-03-20"), //
+                        hasShares(10000.00), //
+                        hasSource("Dividende02.txt"), //
+                        hasNote("Referenznummer 1234123419"), //
+                        hasAmount("EUR", 4232.69), //
+                        hasGrossValue("EUR", 5290.86), //
+                        hasForexGrossValue("USD", 6218.84), //
+                        hasTaxes("EUR", 1058.17), //
+                        hasFees("EUR", 0.00))));
     }
 }

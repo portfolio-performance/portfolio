@@ -368,7 +368,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
         final DocumentType type = new DocumentType("Abrechnung Nr\\. [\\d]+", (context, lines) -> {
             Pattern pAccountingNumber = Pattern.compile("^(?<accountingNumber>Abrechnung Nr\\. [\\d]+)$");
             Pattern pBaseCurrency = Pattern.compile("^.* Preis\\/(?<baseCurrency>[\\w]{3}) .*$");
-            Pattern pNameIsin = Pattern.compile("^(Fonds: )?(?<name>((?!MusterFonds).)*) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$");
+            Pattern pNameIsin = Pattern.compile("^(Fonds: )?(?<name>((?!MusterFonds).)*) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])( .*)?$");
 
             // Set end of line of the securities transaction block
             int endOfLineOfSecurityTransactionBlock = lines.length;
@@ -403,6 +403,9 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                     //
                     // Example:
                     // Fonds: PrivatFonds: Kontrolliert pro ISIN: DE000A0RPAN3 Verwaltungsvergütung: 1,55 % p. a.
+                    // Buchungs-/ Umsatzart Betrag/EUR Ausgabe- Preis/EUR Anteile
+                    //
+                    // Fonds: GLS Bank Aktienfonds Inhaber-Anteil ISIN: DE000A1W2CK8
                     // Buchungs-/ Umsatzart Betrag/EUR Ausgabe- Preis/EUR Anteile
                     //
                     // Fonds: UniGlobal ISIN: DE0008491051 Verwaltungsvergütung: 1,20 % p. a.
@@ -509,7 +512,17 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
         // 17.07.2017 Kauf 2.125,00
         // Anlage 2.125,00 0,00 148,75 14,286
         //
+        // 28.01.2026
+        // 27.01.2026 Kauf 200,00
+        //  Anlage 200,00 0,00 78,70 2,541
+        //
         // 19.11.2020 Verkauf *1 18.103,67 63,38 -285,637
+        //
+        // 07.01.2026
+        // 06.01.2026 Verkauf *1 200,00 78,11 -2,560
+        // Kapitalertragsteuer -1,01
+        // inklusive Solidaritätszuschlag
+        // Auszahlung 198,99
         //
         // 27.11.2017
         // 2 4.11.2017 Wiederanlage 94,78 0,00 142,61 0,665
@@ -528,9 +541,35 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                             section -> section
                                     .attributes("date", "amount", "shares")
                                     .match("^(?<date>[\\s\\d]{2,3}\\.[\\d]{2}\\.[\\d]{4}) Kauf (?<amount>[\\.,\\d]+)$")
-                                    .match("^Anlage [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ (?<shares>[\\.,\\d]+)$")
+                                    .match("^([\\s]+)?Anlage [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ (?<shares>[\\.,\\d]+)$")
                                     .assign((t, v) -> {
                                         Map<String, String> context = type.getCurrentContext();
+
+                                        Security securityData = getSecurity(context, v.getStartLineNumber());
+                                        if (securityData != null)
+                                        {
+                                            v.put("name", securityData.getName());
+                                            v.put("isin", securityData.getIsin());
+                                            v.put("currency", asCurrencyCode(securityData.getCurrency()));
+                                        }
+                                        t.setSecurity(getOrCreateSecurity(v));
+
+                                        t.setDate(asDate(stripBlanks(v.get("date"))));
+                                        t.setShares(asShares(v.get("shares")));
+                                        t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));
+                                        t.setAmount(asAmount(v.get("amount")));
+                                    })
+                            ,
+                            section -> section
+                                    .attributes("date", "shares", "amount")
+                                    .match("^(?<date>[\\s\\d]{2,3}\\.[\\d]{2}\\.[\\d]{4}) Verkauf \\*[\\d]+ [\\.,\\d]+ [\\.,\\d]+ \\-(?<shares>[\\.,\\d]+)$")
+                                    .match("^Kapitalertragsteuer \\-[\\.,\\d]+$")
+                                    .match("^Auszahlung (?<amount>[\\.,\\d]+)$")
+                                    .assign((t, v) -> {
+                                        Map<String, String> context = type.getCurrentContext();
+
+                                        // We switch to SELL
+                                        t.setType(PortfolioTransaction.Type.SELL);
 
                                         Security securityData = getSecurity(context, v.getStartLineNumber());
                                         if (securityData != null)
@@ -1095,6 +1134,19 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type))
 
                         // @formatter:off
+                        // Kapitalertragsteuer -1,01
+                        // inklusive Solidaritätszuschlag
+                        // @formatter:on
+                        .section("tax").optional() //
+                        .match("^Kapitalertragsteuer \\-(?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+
+                            v.put("currency", asCurrencyCode(context.get("baseCurrency")));
+                            processTaxEntries(t, v, type);
+                        })
+
+                        // @formatter:off
                         // abgeführte Kapitalertragsteuer 0,00
                         // @formatter:on
                         .section("tax").optional() //
@@ -1160,9 +1212,10 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Anlage 2.125,00 2,00 113,45 18,730
+                        //  Anlage 200,00 0,00 78,70 2,541
                         // @formatter:on
                         .section("amount", "percentageFee").optional() //
-                        .match("^Anlage (?<amount>[\\.,\\d]+) (?<percentageFee>[\\.,\\d]+) [\\.,\\d]+ [\\.,\\d]+") //
+                        .match("^([\\s]+)?Anlage (?<amount>[\\.,\\d]+) (?<percentageFee>[\\.,\\d]+) [\\.,\\d]+ [\\.,\\d]+$") //
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             v.put("currency", asCurrencyCode(context.get("baseCurrency")));
