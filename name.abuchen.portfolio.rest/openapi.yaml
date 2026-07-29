@@ -773,6 +773,189 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
+  /v1/files/{file}/performance/instruments:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    get:
+      operationId: listInstrumentPerformance
+      tags: [Performance]
+      summary: The performance report, broken down by instrument
+      description: |
+        Per-instrument return, valuation, gains, income, expenses and risk over
+        the same interval the aggregate `GET .../performance` covers, in the
+        reporting currency. Items are sorted by name.
+
+        **Which instruments appear.** Every instrument the interval touched:
+        any transaction inside it, or a non-zero position at either end. A
+        position sold during the period therefore stays in, with `shares: 0` and
+        a zero `closingValue` but real `realizedCapitalGains`, dividends and
+        fees — dropping it would silently erase part of the period's
+        performance. An instrument never held and never traded does not appear.
+
+        **Cost.** `timeWeighted` and `risk` are backed by a full daily valuation
+        series per instrument; every other group is a cheap linear pass. Use
+        `?metrics=` to leave that series unbuilt. Asking for `timeWeighted` and
+        `risk` together costs no more than asking for either, as they share one
+        series. A request for all groups over every instrument of a large file
+        with a long interval is slow; there is no pagination.
+
+        **Signs.** Every money field here is a magnitude: `fees` is the sum of
+        the fees charged and is positive. Only fields that are terms of a
+        reconciling sum are signed, which is why the aggregate endpoint's
+        `breakdown.fees` is negative and this one is not — that breakdown has to
+        add up by plain addition, and this resource publishes no such sum.
+
+        `openingDate` and `closingDate` are valuation snapshot dates, not a
+        record range, exactly as on the aggregate endpoint.
+      parameters:
+        - $ref: "#/components/parameters/OpeningDate"
+        - $ref: "#/components/parameters/ClosingDate"
+        - $ref: "#/components/parameters/ReportingCurrency"
+        - $ref: "#/components/parameters/InstrumentCostMethod"
+        - $ref: "#/components/parameters/TaxesAndFees"
+        - $ref: "#/components/parameters/Metrics"
+      responses:
+        "200":
+          description: The per-instrument performance over the interval
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/InstrumentPerformanceContext"
+                  - type: object
+                    required: [items]
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/InstrumentPerformance"
+              examples:
+                default:
+                  value:
+                    openingDate: "2025-01-01"
+                    closingDate: "2025-12-31"
+                    reportingCurrency: EUR
+                    costMethod: fifo
+                    taxesAndFees: included
+                    metrics:
+                      [valuation, gains, income, expenses, moneyWeighted, timeWeighted, risk]
+                    items:
+                      - uuid: 5c1a0b7e-3d4f-4a2b-9c8e-1f0a2b3c4d5e
+                        name: iShares Core MSCI World
+                        currencyCode: USD
+                        valuation:
+                          shares: 152.5
+                          openingValue: { value: 15200, currency: EUR }
+                          closingValue: { value: 18432.1, currency: EUR }
+                          periodCostBasis: { value: 16218.9, currency: EUR }
+                        gains:
+                          realizedCapitalGains: { value: 0, currency: EUR }
+                          realizedCurrencyComponent: { value: 0, currency: EUR }
+                          unrealizedCapitalGains: { value: 2213.2, currency: EUR }
+                          unrealizedCurrencyComponent: { value: 410, currency: EUR }
+                        income:
+                          dividends: { value: 312.4, currency: EUR }
+                          dividendCount: 4
+                          lastDividend: "2025-11-14"
+                        expenses:
+                          fees: { value: 18.9, currency: EUR }
+                          taxes: { value: 74.2, currency: EUR }
+                        moneyWeighted: { irr: 0.0755 }
+                        timeWeighted: { ttwror: 0.0812, ttwrorAnnualized: 0.0395 }
+                        risk:
+                          volatility: 0.142
+                          semiVolatility: 0.098
+                          maxDrawdown: 0.231
+                          longestDrawdownDays: 412
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/performance/instruments/{uuid}:
+    parameters:
+      - $ref: "#/components/parameters/File"
+      - $ref: "#/components/parameters/Uuid"
+    get:
+      operationId: getInstrumentPerformance
+      tags: [Performance]
+      summary: One instrument's performance over the interval
+      description: |
+        A member lookup of `GET .../performance/instruments`: it returns exactly
+        the item the collection would contain, with the item's fields merged
+        into the same context object and no `items` array. If the collection
+        would not contain the instrument, there is nothing to return, hence the
+        two distinct 404s below.
+
+        This route is genuinely cheaper than the collection, but for one reason:
+        the daily series behind `timeWeighted` and `risk` is built per
+        instrument and on demand, so serializing one instrument leaves the other
+        series unbuilt.
+
+        Note that `reportingCurrency` and `currencyCode` sit next to each other
+        here and mean different things — see `MonetaryValue.currency`.
+      parameters:
+        - $ref: "#/components/parameters/OpeningDate"
+        - $ref: "#/components/parameters/ClosingDate"
+        - $ref: "#/components/parameters/ReportingCurrency"
+        - $ref: "#/components/parameters/InstrumentCostMethod"
+        - $ref: "#/components/parameters/TaxesAndFees"
+        - $ref: "#/components/parameters/Metrics"
+      responses:
+        "200":
+          description: The instrument's performance over the interval
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/InstrumentPerformanceContext"
+                  - $ref: "#/components/schemas/InstrumentPerformance"
+              examples:
+                default:
+                  value:
+                    openingDate: "2025-01-01"
+                    closingDate: "2025-12-31"
+                    reportingCurrency: EUR
+                    costMethod: fifo
+                    taxesAndFees: included
+                    metrics: [valuation]
+                    uuid: 5c1a0b7e-3d4f-4a2b-9c8e-1f0a2b3c4d5e
+                    name: iShares Core MSCI World
+                    currencyCode: USD
+                    valuation:
+                      shares: 152.5
+                      openingValue: { value: 15200, currency: EUR }
+                      closingValue: { value: 18432.1, currency: EUR }
+                      periodCostBasis: { value: 16218.9, currency: EUR }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          description: |
+            Either the file or the instrument is unknown (`not-found`), or the
+            instrument exists but the interval contains nothing of it —
+            `no-activity-in-period`. The two call for different client
+            behaviour: correct the id, versus report that nothing was held.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
 components:
   securitySchemes:
     bearerAuth:
@@ -801,6 +984,91 @@ components:
       description: The `uuid` of the entity within the file
       schema:
         type: string
+    OpeningDate:
+      name: openingDate
+      in: query
+      required: true
+      description: |
+        The opening valuation date. An activity dated exactly on it belongs to
+        the opening balance, not to the period.
+      schema:
+        type: string
+        format: date
+    ClosingDate:
+      name: closingDate
+      in: query
+      required: false
+      description: |
+        The closing valuation date (default: today). Must be strictly after
+        `openingDate`; an empty or inverted range is rejected `400
+        invalid-range`. Future dates are accepted and value at the last known
+        prices.
+      schema:
+        type: string
+        format: date
+    ReportingCurrency:
+      name: currency
+      in: query
+      required: false
+      description: |
+        The reporting currency (default: the file's base currency). A currency
+        pair without an exchange rate series converts 1:1 — the same silent
+        fallback the application itself applies. Echoed in the response as
+        `reportingCurrency`.
+      schema:
+        type: string
+    InstrumentCostMethod:
+      name: costMethod
+      in: query
+      required: false
+      description: |
+        The cost basis method (default: `fifo`). It shifts the split between
+        realized and unrealized gains and the `periodCostBasis` that goes with
+        them; it does not affect `closingValue`, `ttwror` or `irr`. Echoed in
+        the response.
+      schema:
+        type: string
+        enum: [fifo, moving-average]
+        default: fifo
+    TaxesAndFees:
+      name: taxesAndFees
+      in: query
+      required: false
+      description: |
+        Whether the taxes and fees embedded in a trade are part of the cost
+        basis (default: `included`). It applies to `periodCostBasis` and to the
+        capital gains figures **together**, so that the two stay comparable.
+
+        It does *not* change `expenses.fees` and `expenses.taxes`, which always
+        report the charges themselves, nor any return ratio. Echoed in the
+        response.
+      schema:
+        type: string
+        enum: [included, excluded]
+        default: included
+    Metrics:
+      name: metrics
+      in: query
+      required: false
+      description: |
+        A comma-separated selection of metric groups (default: all seven). An
+        unselected group is an absent key in each item; a selected group keeps
+        the exact meaning it has when every group is requested — this projects a
+        fixed schema, it does not compose one.
+
+        Selection is by group because the cost boundary is a group boundary:
+        `timeWeighted` and `risk` are backed by a daily valuation series per
+        instrument and dominate the cost of a request, while the other five are
+        cheap linear passes. An unknown group name is rejected `400
+        invalid-value`. Echoed in the response.
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+            [valuation, gains, income, expenses, moneyWeighted, timeWeighted, risk]
+      style: form
+      explode: false
 
   schemas:
     File:
@@ -1197,6 +1465,251 @@ components:
             - $ref: "#/components/schemas/MonetaryValue"
           description: The portfolio's value at `closingDate`.
 
+    InstrumentPerformanceContext:
+      type: object
+      description: |
+        The interval and the parameters a per-instrument report was computed
+        with. All six are echoed, so that a stored or forwarded response stays
+        interpretable — three of them move the numbers.
+      required:
+        - openingDate
+        - closingDate
+        - reportingCurrency
+        - costMethod
+        - taxesAndFees
+        - metrics
+      properties:
+        openingDate:
+          type: string
+          format: date
+          description: The opening valuation date.
+        closingDate:
+          type: string
+          format: date
+          description: The effective closing valuation date.
+        reportingCurrency:
+          type: string
+          description: |
+            The currency every amount in this report has been converted into.
+            Not to be confused with a `MonetaryValue`'s `currency` (one amount)
+            or an instrument's `currencyCode` (its own declared currency) — on
+            the item route the last two sit right next to this one.
+        costMethod:
+          type: string
+          enum: [fifo, moving-average]
+          description: The cost basis method that was applied.
+        taxesAndFees:
+          type: string
+          enum: [included, excluded]
+          description: |
+            Whether the cost basis includes the taxes and fees embedded in a
+            trade.
+        metrics:
+          type: array
+          description: The metric groups present in each item, in schema order.
+          items:
+            type: string
+            enum:
+              [valuation, gains, income, expenses, moneyWeighted, timeWeighted, risk]
+
+    InstrumentPerformance:
+      type: object
+      description: |
+        One instrument's performance over the interval. Only the identity fields
+        are always present; each metric group appears exactly if it was
+        selected.
+      required: [uuid, name]
+      properties:
+        uuid:
+          type: string
+          description: |
+            Joins to `GET .../instruments/{uuid}` for the master data. The ISIN,
+            WKN and ticker are deliberately not repeated here.
+        name:
+          type: string
+        currencyCode:
+          type: string
+          description: |
+            The instrument's *own* declared currency — what explains a non-zero
+            currency component below. Omitted for the rare instrument without
+            one. Distinct from `reportingCurrency`, which every amount in this
+            report is expressed in.
+        valuation:
+          $ref: "#/components/schemas/InstrumentValuation"
+        gains:
+          $ref: "#/components/schemas/InstrumentGains"
+        income:
+          $ref: "#/components/schemas/InstrumentIncome"
+        expenses:
+          $ref: "#/components/schemas/InstrumentExpenses"
+        moneyWeighted:
+          type: object
+          required: [irr]
+          properties:
+            irr:
+              type: [number, "null"]
+              description: |
+                The internal (money-weighted) rate of return on this instrument
+                over the interval, as a fraction — not a percentage. `null` when
+                the model cannot define it.
+        timeWeighted:
+          type: object
+          required: [ttwror, ttwrorAnnualized]
+          properties:
+            ttwror:
+              type: [number, "null"]
+              description: |
+                The true time-weighted rate of return over the interval, as a
+                fraction (0.0812 is 8.12 %). `null` when the model cannot define
+                it.
+            ttwrorAnnualized:
+              type: [number, "null"]
+              description: |
+                The same return expressed as an annual rate. `null` when the
+                model cannot define it.
+        risk:
+          $ref: "#/components/schemas/InstrumentRisk"
+
+    InstrumentValuation:
+      type: object
+      description: |
+        What the position was worth at each end of the interval, and what it
+        stands in the books at.
+      required: [shares, openingValue, closingValue, periodCostBasis]
+      properties:
+        shares:
+          type: number
+          description: The number of shares held at `closingDate`; 0 for a position sold during the period.
+        openingValue:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: |
+            The position's value at `openingDate`; zero for an instrument first
+            acquired during the period.
+        closingValue:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: |
+            The position's value at `closingDate`. Equals this instrument's
+            `valuation` in `GET .../holdings?date={closingDate}`.
+        periodCostBasis:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: |
+            The cost basis of the shares still held, **relative to this
+            period**: a lot carried in from before `openingDate` enters at its
+            valuation on that date, not at what was once paid for it. A position
+            bought years ago therefore shows this period's opening value here,
+            and its lifetime gain is not derivable from this resource. (The
+            unqualified acquisition cost is a separate, period-independent
+            figure this API does not yet publish.)
+
+            Whether the taxes and fees embedded in a purchase are part of it is
+            decided by `taxesAndFees`, which governs the capital gains figures
+            in the same breath — so that
+            `closingValue - periodCostBasis = gains.unrealizedCapitalGains`
+            holds under either setting.
+
+    InstrumentGains:
+      type: object
+      description: |
+        Capital gains, split into the part locked in by sales and the part still
+        on the books. Both are measured against `periodCostBasis`, hence
+        `closingValue - periodCostBasis = unrealizedCapitalGains`.
+      required:
+        - realizedCapitalGains
+        - realizedCurrencyComponent
+        - unrealizedCapitalGains
+        - unrealizedCurrencyComponent
+      properties:
+        realizedCapitalGains:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: The gains locked in by sales during the interval; negative for a loss.
+        realizedCurrencyComponent:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: |
+            The part of `realizedCapitalGains` attributable to exchange rate
+            movements. It is **contained in** that figure, not additional to it
+            — do not add the two. Zero unless the instrument's `currencyCode`
+            differs from `reportingCurrency`.
+        unrealizedCapitalGains:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: The gains on the shares still held; negative for a loss.
+        unrealizedCurrencyComponent:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: |
+            The part of `unrealizedCapitalGains` attributable to exchange rate
+            movements, contained in it exactly as its realized counterpart is.
+
+    InstrumentIncome:
+      type: object
+      description: What the instrument paid out during the interval.
+      required: [dividends, dividendCount]
+      properties:
+        dividends:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: The gross dividends received during the interval.
+        dividendCount:
+          type: integer
+          description: The number of dividend payments during the interval.
+        lastDividend:
+          type: string
+          format: date
+          description: |
+            The date of the most recent payment. Omitted when there was none —
+            never a placeholder date.
+
+    InstrumentExpenses:
+      type: object
+      description: |
+        What the instrument cost during the interval: the charges embedded in
+        its trades and dividends, plus the standalone fee and tax bookings
+        attributed to it, net of refunds.
+      required: [fees, taxes]
+      properties:
+        fees:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: |
+            The fees charged, as a positive magnitude — unlike the aggregate
+            endpoint's `breakdown.fees`, which is negated so that its
+            decomposition adds up.
+        taxes:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: The taxes charged, as a positive magnitude.
+
+    InstrumentRisk:
+      type: object
+      description: |
+        Risk measures derived from the instrument's daily valuation series over
+        the interval. All are fractions, never percentages.
+      required: [volatility, semiVolatility, maxDrawdown, longestDrawdownDays]
+      properties:
+        volatility:
+          type: [number, "null"]
+          description: The standard deviation of the return series.
+        semiVolatility:
+          type: [number, "null"]
+          description: The standard deviation of the negative returns only.
+        maxDrawdown:
+          type: [number, "null"]
+          description: |
+            The deepest peak-to-trough decline, as a **positive** fraction
+            (0.231 is a 23.1 % drawdown), matching the application's own sign
+            convention rather than the negative one charts often use.
+        longestDrawdownDays:
+          type: integer
+          description: |
+            The length in days of the longest stretch spent below a previous
+            peak. This is **not** the duration of the deepest drawdown, which is
+            a different and shorter interval — hence the name.
+
     FieldError:
       type: object
       description: One field-level violation within a `Problem`.
@@ -1240,7 +1753,9 @@ components:
           description: |
             A URI identifying the problem kind. The distinct values are enumerated
             below; note especially that a **404 never distinguishes** an unknown
-            file from a file that exists but is not enabled, and that the three
+            file from a file that exists but is not enabled, that
+            `no-activity-in-period` is the one 404 that says the addressed entity
+            *does* exist, and that the three
             **409** kinds each call for a different response:
             `file-not-open` (a human must open the file), `ambiguous-alias` (retry
             with the `id`), `delete-blocked` (give up — the instrument is referenced).
@@ -1252,6 +1767,7 @@ components:
             - https://portfolio-performance.info/rest/problems/forbidden-host
             - https://portfolio-performance.info/rest/problems/browser-origin-forbidden
             - https://portfolio-performance.info/rest/problems/not-found
+            - https://portfolio-performance.info/rest/problems/no-activity-in-period
             - https://portfolio-performance.info/rest/problems/method-not-allowed
             - https://portfolio-performance.info/rest/problems/file-not-open
             - https://portfolio-performance.info/rest/problems/ambiguous-alias

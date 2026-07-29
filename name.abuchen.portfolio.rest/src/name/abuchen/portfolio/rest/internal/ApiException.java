@@ -71,6 +71,17 @@ public class ApiException extends RuntimeException
         return new ApiException(404, "not-found", "Not found"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
+    /**
+     * The entity exists but the requested interval contains nothing of it - a
+     * different problem from an unknown id, and one that calls for different
+     * client behaviour: report that nothing was held, rather than fix the id.
+     */
+    public static ApiException noActivityInPeriod(String detail)
+    {
+        return new ApiException(404, "no-activity-in-period", "No activity in the period", detail, List.of(), //$NON-NLS-1$ //$NON-NLS-2$
+                        Map.of());
+    }
+
     public static ApiException badRequest(String detail)
     {
         return new ApiException(400, "invalid-request", "Invalid request", detail, List.of(), Map.of()); //$NON-NLS-1$ //$NON-NLS-2$

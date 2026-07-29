@@ -102,12 +102,49 @@ public class UIThreadMarshallingTest
     @Test
     public void testPerformanceCalculationRunsOffTheUIThread() throws Exception
     {
-        var path = "/v1/files/" + fileId + "/performance";
-        var match = router.match("GET", path);
-        var query = Map.of("openingDate", "2024-01-01", "closingDate", "2024-12-31");
-        match.handler().handle(new Request("GET", path, match.pathParams(), query, new byte[0]));
+        callWithInterval("/v1/files/" + fileId + "/performance");
 
         assertThat(host.hasAccessedOutsideUIThread(), is(false));
         assertThat(host.syncExecResults().stream().anyMatch(Response.class::isInstance), is(false));
+    }
+
+    /**
+     * The per-instrument report is the most expensive endpoint of all - one
+     * daily series per instrument - so it above all must not compute inside
+     * syncExec.
+     */
+    @Test
+    public void testInstrumentPerformanceCollectionRunsOffTheUIThread() throws Exception
+    {
+        callWithInterval("/v1/files/" + fileId + "/performance/instruments");
+
+        assertThat(host.hasAccessedOutsideUIThread(), is(false));
+        assertThat(host.syncExecResults().stream().anyMatch(Response.class::isInstance), is(false));
+    }
+
+    @Test
+    public void testInstrumentPerformanceItemRunsOffTheUIThread() throws Exception
+    {
+        // the fixture instrument carries no transactions, so the member lookup
+        // ends in a 404 - raised on the worker thread, which is the point here:
+        // the failure path must not be produced inside syncExec either
+        try
+        {
+            callWithInterval("/v1/files/" + fileId + "/performance/instruments/" + security.getUUID());
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getType(), is("no-activity-in-period"));
+        }
+
+        assertThat(host.hasAccessedOutsideUIThread(), is(false));
+        assertThat(host.syncExecResults().stream().anyMatch(Response.class::isInstance), is(false));
+    }
+
+    private void callWithInterval(String path) throws Exception
+    {
+        var match = router.match("GET", path);
+        var query = Map.of("openingDate", "2024-01-01", "closingDate", "2024-12-31");
+        match.handler().handle(new Request("GET", path, match.pathParams(), query, new byte[0]));
     }
 }
