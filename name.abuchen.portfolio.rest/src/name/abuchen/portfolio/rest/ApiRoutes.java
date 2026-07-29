@@ -15,6 +15,7 @@ import name.abuchen.portfolio.rest.internal.FileResolver;
 import name.abuchen.portfolio.rest.internal.FilesHandler;
 import name.abuchen.portfolio.rest.internal.HoldingsHandler;
 import name.abuchen.portfolio.rest.internal.InstrumentChangeLog;
+import name.abuchen.portfolio.rest.internal.InstrumentPerformanceHandler;
 import name.abuchen.portfolio.rest.internal.OpenApiHandler;
 import name.abuchen.portfolio.rest.internal.PairingHandler;
 import name.abuchen.portfolio.rest.internal.PerformanceHandler;
@@ -96,6 +97,23 @@ public final class ApiRoutes
                                         context.factory(), req.queryParam("openingDate"), //$NON-NLS-1$
                                         req.queryParam("closingDate"), req.queryParam("currency"), //$NON-NLS-1$ //$NON-NLS-2$
                                         req.queryParam("costMethod"))))); //$NON-NLS-1$
+
+        // the performance report broken down by instrument. Five segments like
+        // /files/{file}/instruments/{uuid}, but segment 4 is a literal in both
+        // and they differ, so first-match routing cannot confuse the two and no
+        // registration-order guard is needed
+        router.add("GET", "/v1/files/{file}/performance/instruments", calc(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> Response.json(200, InstrumentPerformanceHandler.list(context.client(),
+                                        context.factory(), req.queryParam("openingDate"), //$NON-NLS-1$
+                                        req.queryParam("closingDate"), req.queryParam("currency"), //$NON-NLS-1$ //$NON-NLS-2$
+                                        req.queryParam("costMethod"), req.queryParam("taxesAndFees"), //$NON-NLS-1$ //$NON-NLS-2$
+                                        req.queryParam("metrics"))))); //$NON-NLS-1$
+        router.add("GET", "/v1/files/{file}/performance/instruments/{uuid}", calc(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> Response.json(200, InstrumentPerformanceHandler.get(context.client(),
+                                        context.factory(), req.pathParam("uuid"), req.queryParam("openingDate"), //$NON-NLS-1$ //$NON-NLS-2$
+                                        req.queryParam("closingDate"), req.queryParam("currency"), //$NON-NLS-1$ //$NON-NLS-2$
+                                        req.queryParam("costMethod"), req.queryParam("taxesAndFees"), //$NON-NLS-1$ //$NON-NLS-2$
+                                        req.queryParam("metrics"))))); //$NON-NLS-1$
 
         return router;
     }
