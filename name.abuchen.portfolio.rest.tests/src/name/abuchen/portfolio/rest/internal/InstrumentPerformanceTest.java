@@ -570,7 +570,7 @@ public class InstrumentPerformanceTest
     @Test
     public void testUnknownCurrencyIs400()
     {
-        assertFieldError(() -> list(heldPosition(), OPENING, CLOSING, "ZZZ", null, null, null), "currency",
+        assertFieldError(() -> list(heldPosition(), OPENING, CLOSING, "ZZZ", null, null, null), "reportingCurrency",
                         "unknown-currency");
     }
 
@@ -626,7 +626,7 @@ public class InstrumentPerformanceTest
         var errors = errorsOf(() -> list(heldPosition(), CLOSING, OPENING, "ZZZ", null, null, "sharpe"));
 
         assertThat(errors.size(), is(3));
-        assertThat(codeOf(errors, "currency"), is("unknown-currency"));
+        assertThat(codeOf(errors, "reportingCurrency"), is("unknown-currency"));
         assertThat(codeOf(errors, "metrics"), is("invalid-value"));
         assertThat(codeOf(errors, "closingDate"), is("invalid-range"));
     }
