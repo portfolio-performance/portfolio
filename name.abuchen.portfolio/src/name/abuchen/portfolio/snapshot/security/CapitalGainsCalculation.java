@@ -14,6 +14,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.ExchangeRate;
@@ -77,6 +78,20 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 
     private List<LineItem> fifo = new ArrayList<>();
 
+    private final TaxesAndFees taxesAndFees;
+
+    /**
+     * Measures gains against the cost basis with or without the taxes and fees
+     * embedded in a trade. {@link TaxesAndFees#NOT_INCLUDED} is the basis
+     * {@link name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot} needs,
+     * because it carries fees and taxes as separate terms of its breakdown and
+     * would otherwise subtract them twice.
+     */
+    public CapitalGainsCalculation(TaxesAndFees taxesAndFees)
+    {
+        this.taxesAndFees = taxesAndFees;
+    }
+
     @Override
     public void visit(CurrencyConverter converter, CalculationLineItem.ValuationAtStart valuation)
     {
@@ -107,22 +122,33 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
         String termCurrency = getTermCurrency();
         String securityCurrency = t.getSecurity().getCurrencyCode();
 
-        Money grossValue = t.getGrossValue();
+        // the lot basis: the gross value leaves out the taxes and fees embedded
+        // in the trade, the monetary amount takes them in. The selection applies
+        // to both legs of a trade - a sale's gross value is the proceeds
+        // *before* the charges are deducted, so relieving a fee-inclusive lot
+        // against it would book the charges as a gain
+        var basis = taxesAndFees.isIncluded() ? t.getMonetaryAmount() : t.getGrossValue();
 
         // prefer the exchange rate recorded on the transaction (via
-        // getGrossValue(converter)) over the historic day rate of the
-        // exchange-rate provider, in both the term and the security currency
-        Money termBasis = t.getGrossValue(converter);
-        Money forexBasis = t.getGrossValue(converter.with(securityCurrency));
+        // getGrossValue/getMonetaryAmount(converter)) over the historic day rate
+        // of the exchange-rate provider, in both the term and the security
+        // currency
+        var termBasis = taxesAndFees.isIncluded() ? t.getMonetaryAmount(converter) : t.getGrossValue(converter);
+        var forexBasis = taxesAndFees.isIncluded() ? t.getMonetaryAmount(converter.with(securityCurrency))
+                        : t.getGrossValue(converter.with(securityCurrency));
 
-        TrailRecord txTrail = TrailRecord.ofTransaction(t).asGrossValue(grossValue);
-        if (!grossValue.getCurrencyCode().equals(termCurrency))
-            txTrail = txTrail.convert(termBasis, impliedRate(grossValue, termBasis, t.getDateTime().toLocalDate()));
+        // asGrossValue adds the "without taxes and fees" step only when the
+        // basis differs from the transaction's own amount, hence it collapses
+        // to nothing under TaxesAndFees.INCLUDED
 
-        TrailRecord forexTxTrail = TrailRecord.ofTransaction(t).asGrossValue(grossValue);
-        if (!grossValue.getCurrencyCode().equals(securityCurrency))
+        TrailRecord txTrail = TrailRecord.ofTransaction(t).asGrossValue(basis);
+        if (!basis.getCurrencyCode().equals(termCurrency))
+            txTrail = txTrail.convert(termBasis, impliedRate(basis, termBasis, t.getDateTime().toLocalDate()));
+
+        TrailRecord forexTxTrail = TrailRecord.ofTransaction(t).asGrossValue(basis);
+        if (!basis.getCurrencyCode().equals(securityCurrency))
             forexTxTrail = forexTxTrail.convert(forexBasis,
-                            impliedRate(grossValue, forexBasis, t.getDateTime().toLocalDate()));
+                            impliedRate(basis, forexBasis, t.getDateTime().toLocalDate()));
 
         switch (t.getType())
         {
@@ -173,10 +199,10 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                         // holding the money as cash in the security's
                         // currency).
 
-                        // derive the exchange rate from netAmount /
-                        // netAmountForex because a) we want the actual exchange
-                        // rate of the transaction and b) the account currency
-                        // might be different than the reporting currency
+                        // derive the exchange rate from value / valueForex
+                        // because a) we want the actual exchange rate of the
+                        // transaction and b) the account currency might be
+                        // different than the reporting currency
 
                         BigDecimal exchangeRate = BigDecimal.valueOf(value).divide(BigDecimal.valueOf(valueForex),
                                         Values.MC);
