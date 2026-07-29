@@ -311,7 +311,7 @@ public class HoldingsTest
         catch (ApiException e)
         {
             assertThat(e.getStatus(), is(400));
-            assertThat(e.getErrors().get(0).field(), is("currency"));
+            assertThat(e.getErrors().get(0).field(), is("reportingCurrency"));
             assertThat(e.getErrors().get(0).code(), is("unknown-currency"));
         }
     }
