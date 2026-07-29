@@ -7,16 +7,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.osgi.framework.Bundle;
+import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.FrameworkUtil;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.proto.v1.PECBData;
 import name.abuchen.portfolio.model.proto.v1.PExchangeRate;
@@ -44,16 +48,32 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
 
     private static final String FILE_STORAGE_PB = "ecb_exchange_rates.pb"; //$NON-NLS-1$
 
-    private ECBData data = new ECBData();
+    private ECBData data;
+
+    /**
+     * Where the cache is kept. A supplier rather than a path so that the
+     * location is resolved on use: the provider is created by a
+     * {@code ServiceLoader} and may well exist before the instance area does.
+     * It doubles as the seam through which tests substitute a directory, or
+     * none at all.
+     */
+    private final Supplier<Path> storageDirectory;
 
     public ECBExchangeRateProvider()
     {
+        this(ECBExchangeRateProvider::platformStateLocation);
+    }
+
+    /* testing */ ECBExchangeRateProvider(Supplier<Path> storageDirectory)
+    {
+        this.data = new ECBData();
+        this.storageDirectory = storageDirectory;
         fillInDefaultData(data);
     }
 
-    /* testing */ ECBExchangeRateProvider(ECBData data)
+    /* testing */ ECBData getData()
     {
-        this.data = data;
+        return data;
     }
 
     @Override
@@ -67,11 +87,21 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
     {
         monitor.beginTask(MessageFormat.format(Messages.MsgLoadingExchangeRates, getName()), 1);
 
-        File file = getStorageFile(FILE_STORAGE_PB);
-        if (file.exists())
+        try
         {
-            PECBData binary = read(file);
-            data = convert(binary);
+            var path = getStorageFile();
+            if (path.isEmpty())
+                return;
+
+            File file = path.get().toFile();
+            if (file.exists())
+            {
+                PECBData binary = read(file);
+                data = convert(binary);
+            }
+        }
+        finally
+        {
             monitor.worked(1);
         }
     }
@@ -116,7 +146,13 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
         if (!data.isDirty())
             return;
 
-        File file = getStorageFile(FILE_STORAGE_PB);
+        var path = getStorageFile();
+        if (path.isEmpty())
+        {
+            // called at shutdown: report, but never fail the shutdown itself
+            PortfolioLog.warning("Cannot store exchange rates: no storage location available"); //$NON-NLS-1$
+            return;
+        }
 
         PECBData.Builder binary = PECBData.newBuilder();
 
@@ -136,7 +172,7 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
             binary.addSeries(series);
         }
 
-        write(binary.build(), file);
+        write(binary.build(), path.get().toFile());
     }
 
     @Override
@@ -145,10 +181,34 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
         return new ArrayList<>(data.getSeries());
     }
 
-    private File getStorageFile(String name)
+    /**
+     * The file holding the cached rates, or empty if no persistent storage is
+     * available at all - outside an OSGi framework, or with no instance area.
+     * <p/>
+     * Deliberately the state location and not the bundle data area used up to
+     * version 0.86.0: the latter is keyed by the bundle install id, which p2
+     * reassigns whenever it replaces the bundle, so every application update
+     * discarded the entire rate history. The state location is keyed by the
+     * symbolic name and survives.
+     */
+    /* testing */ Optional<Path> getStorageFile()
     {
-        Bundle bundle = FrameworkUtil.getBundle(ECBExchangeRateProvider.class);
-        return bundle.getDataFile(name);
+        return Optional.ofNullable(storageDirectory.get()).map(dir -> dir.resolve(FILE_STORAGE_PB));
+    }
+
+    /** null if the platform has nowhere to put the data */
+    private static Path platformStateLocation()
+    {
+        try
+        {
+            var bundle = FrameworkUtil.getBundle(ECBExchangeRateProvider.class);
+            return bundle == null ? null : Platform.getStateLocation(bundle).toFile().toPath();
+        }
+        catch (IllegalStateException e)
+        {
+            // no instance area - the platform has nowhere to put the data
+            return null;
+        }
     }
 
     private void write(PECBData ecbdata, File file) throws IOException
