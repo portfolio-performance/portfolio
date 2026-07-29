@@ -25,6 +25,7 @@ import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 
 /**
  * Maps the model entities to the wire format. The API vocabulary is
@@ -230,11 +231,7 @@ public final class EntityJson
         json.addProperty("openingDate", openingDate.toString()); //$NON-NLS-1$
         json.addProperty("closingDate", closingDate.toString()); //$NON-NLS-1$
         json.addProperty("reportingCurrency", reportingCurrency); //$NON-NLS-1$
-        json.addProperty("costMethod", switch (costMethod)
-        {
-            case FIFO -> "fifo";
-            case MOVING_AVERAGE -> "moving-average";
-        });
+        json.addProperty("costMethod", CalcParams.wireName(costMethod)); //$NON-NLS-1$
         json.add("ttwror", ratio(ttwror)); //$NON-NLS-1$
         json.add("irr", ratio(irr)); //$NON-NLS-1$
 
@@ -253,8 +250,140 @@ public final class EntityJson
         return json;
     }
 
+    /**
+     * The six context fields of a per-instrument performance report: the
+     * interval, the reporting currency and the three parameters that move the
+     * numbers, so that the payload is self-describing.
+     */
+    public static JsonObject instrumentPerformanceContext(InstrumentPerformanceHandler.Params params)
+    {
+        var json = new JsonObject();
+        json.addProperty("openingDate", params.openingDate().toString()); //$NON-NLS-1$
+        json.addProperty("closingDate", params.closingDate().toString()); //$NON-NLS-1$
+        json.addProperty("reportingCurrency", params.currency()); //$NON-NLS-1$
+        json.addProperty("costMethod", CalcParams.wireName(params.costMethod())); //$NON-NLS-1$
+        json.addProperty("taxesAndFees", CalcParams.wireName(params.taxesAndFees())); //$NON-NLS-1$
+
+        var metrics = new JsonArray();
+        // in the enum's declaration order, not the order the client asked for:
+        // the echo states what was selected, not how it was spelled
+        for (var group : MetricGroup.values())
+            if (params.metrics().contains(group))
+                metrics.add(group.getWireName());
+        json.add("metrics", metrics); //$NON-NLS-1$
+
+        return json;
+    }
+
+    /**
+     * One instrument's performance over the interval, as an object per selected
+     * metric group - an unselected group is an absent key, so presence needs no
+     * cross-reference to the envelope.
+     * <p/>
+     * Every money field here is a magnitude, not a signed contribution:
+     * {@code fees} is the sum of the fees charged and is emitted positive. Only
+     * a field that is a term of a reconciling sum is signed, and this resource
+     * publishes no such sum - unlike the aggregate {@code /performance}, whose
+     * breakdown must add up.
+     */
+    public static JsonObject instrumentPerformance(LazySecurityPerformanceRecord record,
+                    InstrumentPerformanceHandler.Params params)
+    {
+        var security = record.getSecurity();
+
+        var json = new JsonObject();
+        json.addProperty("uuid", security.getUUID()); //$NON-NLS-1$
+        json.addProperty("name", security.getName()); //$NON-NLS-1$
+        // the instrument's own currency, which is what explains a non-zero
+        // currency component; omitted for the rare instrument without one
+        if (security.getCurrencyCode() != null)
+            json.addProperty("currencyCode", security.getCurrencyCode()); //$NON-NLS-1$
+
+        var metrics = params.metrics();
+
+        if (metrics.contains(MetricGroup.VALUATION))
+        {
+            var valuation = new JsonObject();
+            valuation.add("shares", decimal(record.getSharesHeld(), Values.Share.precision())); //$NON-NLS-1$
+            valuation.add("openingValue", toJson(record.getOpeningValue())); //$NON-NLS-1$
+            valuation.add("closingValue", toJson(record.getMarketValue())); //$NON-NLS-1$
+            valuation.add("periodCostBasis", //$NON-NLS-1$
+                            toJson(record.getCost(params.costMethod(), params.taxesAndFees())));
+            json.add("valuation", valuation); //$NON-NLS-1$
+        }
+
+        if (metrics.contains(MetricGroup.GAINS))
+        {
+            var realized = record.getRealizedCapitalGains(params.costMethod(), params.taxesAndFees());
+            var unrealized = record.getUnrealizedCapitalGains(params.costMethod(), params.taxesAndFees());
+
+            var gains = new JsonObject();
+            gains.add("realizedCapitalGains", toJson(realized.getCapitalGains())); //$NON-NLS-1$
+            gains.add("realizedCurrencyComponent", toJson(realized.getForexCaptialGains())); //$NON-NLS-1$
+            gains.add("unrealizedCapitalGains", toJson(unrealized.getCapitalGains())); //$NON-NLS-1$
+            gains.add("unrealizedCurrencyComponent", toJson(unrealized.getForexCaptialGains())); //$NON-NLS-1$
+            json.add("gains", gains); //$NON-NLS-1$
+        }
+
+        if (metrics.contains(MetricGroup.INCOME))
+        {
+            var income = new JsonObject();
+            income.add("dividends", toJson(record.getSumOfDividends())); //$NON-NLS-1$
+            income.addProperty("dividendCount", record.getDividendEventCount()); //$NON-NLS-1$
+            if (record.getLastDividendPayment() != null)
+                income.addProperty("lastDividend", record.getLastDividendPayment().toString()); //$NON-NLS-1$
+            json.add("income", income); //$NON-NLS-1$
+        }
+
+        if (metrics.contains(MetricGroup.EXPENSES))
+        {
+            var expenses = new JsonObject();
+            expenses.add("fees", toJson(record.getFees())); //$NON-NLS-1$
+            expenses.add("taxes", toJson(record.getTaxes())); //$NON-NLS-1$
+            json.add("expenses", expenses); //$NON-NLS-1$
+        }
+
+        if (metrics.contains(MetricGroup.MONEY_WEIGHTED))
+        {
+            var moneyWeighted = new JsonObject();
+            moneyWeighted.add("irr", ratio(record.getIrr())); //$NON-NLS-1$
+            json.add("moneyWeighted", moneyWeighted); //$NON-NLS-1$
+        }
+
+        // the two groups below share one PerformanceIndex - a full daily series
+        // for the instrument - so asking for both costs the same as either
+
+        if (metrics.contains(MetricGroup.TIME_WEIGHTED))
+        {
+            var timeWeighted = new JsonObject();
+            timeWeighted.add("ttwror", ratio(record.getTrueTimeWeightedRateOfReturn())); //$NON-NLS-1$
+            timeWeighted.add("ttwrorAnnualized", ratio(record.getTrueTimeWeightedRateOfReturnAnnualized())); //$NON-NLS-1$
+            json.add("timeWeighted", timeWeighted); //$NON-NLS-1$
+        }
+
+        if (metrics.contains(MetricGroup.RISK))
+        {
+            var drawdown = record.getDrawdown();
+            var volatility = record.getVolatility();
+
+            var risk = new JsonObject();
+            risk.add("volatility", ratio(volatility.getStandardDeviation())); //$NON-NLS-1$
+            risk.add("semiVolatility", ratio(volatility.getSemiDeviation())); //$NON-NLS-1$
+            // a positive fraction, as the model reports it - the charts' sign
+            // convention is a presentation choice, not the datum
+            risk.add("maxDrawdown", ratio(drawdown.getMaxDrawdown())); //$NON-NLS-1$
+            // the longest stretch below a peak, which is not necessarily the
+            // stretch containing the deepest drawdown - hence not named
+            // maxDrawdownDuration
+            risk.addProperty("longestDrawdownDays", drawdown.getMaxDrawdownDuration().getDays()); //$NON-NLS-1$
+            json.add("risk", risk); //$NON-NLS-1$
+        }
+
+        return json;
+    }
+
     /** a return ratio, or JSON null when the model cannot define it (NaN/infinite) */
-    private static JsonElement ratio(double value)
+    static JsonElement ratio(double value)
     {
         return Double.isFinite(value) ? decimal(value) : JsonNull.INSTANCE;
     }
