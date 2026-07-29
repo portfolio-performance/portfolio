@@ -1,0 +1,91 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Gern berät Sie:
+GLS Gemeinschaftsbank eG
+Union Investment - Kundenservice
+Telefon: 069 58998-6000
+E-Mail: service@union-investment.de
+Herrn
+Max Mustermann UnionDepot: 11111111
+Musterstr. 12 Depotinhaber: 
+11111 Musterstadt Max Mustermann
+28. Januar 2026
+Abrechnung Nr. 63
+Unterdepot-Nr.: 1111111101
+Fonds: GLS Bank Aktienfonds Inhaber-Anteil ISIN: DE000A1W2CK8
+Buchungs-/ Umsatzart Betrag/EUR Ausgabe- Preis/EUR Anteile
+Preisdatum aufschlag %
+Vortrag vom 02.01.2026 2,819
+07.01.2026
+06.01.2026 Verkauf *1 200,00 78,11 -2,560
+Kapitalertragsteuer -1,01
+inklusive Solidaritätszuschlag
+Auszahlung 198,99
+zu Gunsten IBAN DE86 XXXX XXXX XXXX XXXX XX
+28.01.2026
+27.01.2026 Kauf 200,00
+ Anlage 200,00 0,00 78,70 2,541
+Bestand am 28.01.2026 2,800
+*1 Die steuerpflichtigen Erträge betragen 3,83 Euro.
+Steuerübersicht per 28.01.2026
+Es liegt kein Freistellungsauftrag vor.
+Verlustverrechnungstopf für Kapitalerträge in EUR: 0,00
+gezahlte Kapitalertragsteuer in EUR: 0,96
+gezahlte Kirchensteuer in EUR: 0,00
+gezahlter Solidaritätszuschlag in EUR: 0,05
+Fortsetzung auf Seite 2
+Union Investment Service Bank AG · 60621 Frankfurt am Main
+Tel.: 069 58998-0 · E-Mail: service@union-investment.de · Internet: www.union-investment.de · Registergericht: Amtsgericht Frankfurt am Main HRB 54979
+Vorstand: Christoph Pöhlsen, Bettina Tews · Aufsichtsratsvorsitzende: Sonja Albers · Gläubiger-ID: DE81USB00000002100  
+Einzahlungen: DZ BANK AG Deutsche Zentral-Genossenschaftsbank, Frankfurt am Main, IBAN: DE34 5006 0400 0000 0006 86 (BIC: GENODEFFXXX)
+Seite 2 von 2 Datenschutzfeld
+zum Schreiben vom 28. Januar 2026 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+UnionDepot: 11111111 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Depotinhaber: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Max Mustermann XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Depotübersicht zum 28.01.2026
+Unterdepot- Fondsname/Produktname/Wertpapiername Anteil- Rücknahme-/ Depotwert
+Nr. ISIN/Ertragsverwendung bestand Verkaufspreis Währung
+Verwahrart/Lagerland Währung
+1111111101 GLS Bank Aktienfonds Inhaber-Anteil 2,800 78,70 EUR 220,36 EUR
+DE000A1W2CK8/ausschüttend
+Wertpapierrechnung/CBL - Luxemburg
+Gesamt-Depotwert 220,36 EUR
+Die Bewertung von Fonds (mit Ausnahme von börsengehandelten Investmentfonds, wie "Exchange-Traded-Funds" bzw. "ETC") erfolgt zum 
+jeweils letzten verfügbaren Rücknahmepreis. Bei börsengehandelten Wertpapieren wird auf den jeweiligen zuletzt verfügbaren Börsenpreis 
+abgestellt. In der Depotübersicht sind alle Anteile, bzw. Stücke enthalten, die am Tag der Erstellung dieser Abrechnung in Ihrem Depotbestand 
+sind.
+In manchen Fällen weichen die Werte der Depotübersicht von der Abrechnungsübersicht ab. Das kann dann vorkommen, wenn zum Beispiel 
+Fonds betroffen sind, die nicht taggleich abgerechnet werden. Das ist bei den meisten Drittfonds oder Finanzportfolioverwaltungen der Fall. 
+Hier können Transaktionen zwar bereits für einen der betroffenen Fonds gebucht und abgerechnet sein, für den anderen betroffenen Fonds 
+aber noch nicht. In Ihrer nächsten Depotübersicht ist die ausstehende Buchung berücksichtigt.
+Bitte überprüfen Sie, ob wir Ihre Aufträge weisungsgemäß ausgeführt haben. Bei Differenzen informieren Sie uns bitte schriftlich unverzüglich 
+unter Angabe Ihrer jeweiligen 10-stelligen Unterdepot-Nummer und der Abrechnungsnummer, die Sie auf der ersten Seite der Abrechnung 
+finden. Die Verkaufsunterlagen nach § 297 Abs. 5 KAGB und aktuelle Fondsinformationen erhalten Sie kostenlos bei Ihrer Bank oder im 
+Internet unter www.union-investment.de.
+Ihr Beraterteam vor Ort 
+Auf Wunsch steht Ihnen Ihre Beraterin oder Ihr Berater bei der GLS Gemeinschaftsbank eG für ein Beratungsgespräch gerne zur Verfügung. 
+B ei Fragen sind wir gern für Sie da. Rufen Sie uns einfach an! Sie erreichen uns montags bis freitags zwischen 08:00 und 18:00 Uhr.
+Nutzen Sie jetzt das elektronische Postfach und profitieren Sie 
+von vielen Vorteilen! Sprechen Sie gern Ihren Berater an oder 
+wenden Sie sich direkt an unseren Kundenservice.

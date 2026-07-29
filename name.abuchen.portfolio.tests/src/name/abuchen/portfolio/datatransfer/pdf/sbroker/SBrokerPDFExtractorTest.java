@@ -2426,6 +2426,85 @@ public class SBrokerPDFExtractorTest
     }
 
     @Test
+    public void testDividende18()
+    {
+        var extractor = new SBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende18.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("XS3068771271"), hasWkn("A4AN04"), hasTicker(null), //
+                        hasName("LEVERAGE SHARES PLC ETP 19.06.75 INCOMESHARES 20+"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividende transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-04-10T00:00"), hasExDate(null), //
+                        hasShares(100.00), //
+                        hasSource("Dividende18.txt"), //
+                        hasNote("Abrechnungsnr. 60357534450"), //
+                        hasAmount("EUR", 32.50), hasGrossValue("EUR", 32.50), //
+                        hasForexGrossValue("USD", 38.07), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende18WithSecurityInEUR()
+    {
+        var security = new Security("LEVERAGE SHARES PLC ETP 19.06.75 INCOMESHARES 20+", "EUR");
+        security.setIsin("XS3068771271");
+        security.setWkn("A4AN04");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new SBrokerPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende18.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-04-10T00:00"), hasExDate(null), //
+                        hasShares(100.00), //
+                        hasSource("Dividende18.txt"), //
+                        hasNote("Abrechnungsnr. 60357534450"), //
+                        hasAmount("EUR", 32.50), hasGrossValue("EUR", 32.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
     public void testVorabpauschale01()
     {
         var extractor = new SBrokerPDFExtractor(new Client());
