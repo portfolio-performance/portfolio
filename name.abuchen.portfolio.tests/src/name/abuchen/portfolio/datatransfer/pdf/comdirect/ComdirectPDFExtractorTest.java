@@ -2344,6 +2344,84 @@ public class ComdirectPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkaufMitSteuerbehandlung24()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung24.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IL0010845571"), hasWkn("937092"), hasTicker(null), //
+                        hasName("Nova Ltd. Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-07-29T17:53"), hasShares(10.00), //
+                        hasSource("VerkaufMitSteuerbehandlung24.txt"), //
+                        hasNote("Ord.-Nr.: 000536186167-001 | R.-Nr.: 712432458658DA25"), //
+                        hasAmount("EUR", 3233.08), hasGrossValue("EUR", 3249.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 2.90 + 13.02))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2026-07-29T00:00"), hasShares(10.00), //
+                        hasSource("VerkaufMitSteuerbehandlung24.txt"), //
+                        hasNote("Ref.-Nr.: 0FINLZC5C8Z00012"), //
+                        hasAmount("EUR", 377.26), hasGrossValue("EUR", 377.26), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkaufMitSteuerbehandlung25()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung25.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US29084Q1004"), hasWkn("898814"), hasTicker(null), //
+                        hasName("Emcor Group Inc. Registered Shares DL -,01"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-07-29T15:51"), hasShares(20.00), //
+                        hasSource("VerkaufMitSteuerbehandlung25.txt"), //
+                        hasNote("Ord.-Nr.: 000533403543-001 | R.-Nr.: 712425089536DDC5"), //
+                        hasAmount("EUR", 11789.86), hasGrossValue("EUR", 12160.00), //
+                        hasTaxes("EUR", 329.44), hasFees("EUR", 2.90 + 35.30 + 2.50))));
+    }
+
+    @Test
     public void testWertpapierSteuerbehandlungOhneVerkauf01()
     {
         var extractor = new ComdirectPDFExtractor(new Client());
