@@ -9,6 +9,7 @@ eclipse configuration PortfolioPerformance {
 	feature org.eclipse.nebula.widgets.cdatetime.feature;
 	plugin org.apache.felix.scr;
 	plugin org.apache.aries.spifly.dynamic.bundle;
+	plugin name.abuchen.portfolio.logging autostart startlevel 1;
 	plugin com.twelvemonkeys.imageio.bmp autostart;
 	
 	ignore name.abuchen.portfolio.junit;
