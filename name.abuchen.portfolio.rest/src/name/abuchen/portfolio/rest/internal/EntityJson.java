@@ -610,6 +610,45 @@ public final class EntityJson
         return json;
     }
 
+    /**
+     * Per-security performance over a period. Covers every security with a line
+     * item in the interval, so unlike the holdings snapshot it still reports a
+     * position that was closed before the closing date - {@code heldAtClose}
+     * distinguishes the two cases.
+     */
+    public static JsonObject securityPerformance(String currency, CostMethod costMethod,
+                    List<LazySecurityPerformanceRecord> records)
+    {
+        var items = new JsonArray();
+        for (LazySecurityPerformanceRecord record : records)
+        {
+            var security = record.getSecurity();
+
+            var json = new JsonObject();
+            json.addProperty("uuid", security.getUUID());
+            json.addProperty("name", security.getName());
+            json.add("delta", toJson(record.getDelta()));
+            json.add("deltaPercent", ratio(record.getDeltaPercent()));
+            json.add("ttwror", safeRatio(record::getTrueTimeWeightedRateOfReturn));
+            json.add("irr", ratio(record.getIrr()));
+            json.add("realizedGains", toJson(record.getRealizedCapitalGains(costMethod).getCapitalGains()));
+            json.add("unrealizedGains", toJson(record.getUnrealizedCapitalGains(costMethod).getCapitalGains()));
+            json.add("dividends", toJson(record.getSumOfDividends()));
+            json.add("fees", toJson(negate(record.getFees())));
+            json.add("taxes", toJson(negate(record.getTaxes())));
+
+            var sharesHeld = record.getSharesHeld();
+            json.addProperty("heldAtClose", sharesHeld != null && sharesHeld != 0);
+
+            items.add(json);
+        }
+
+        var json = new JsonObject();
+        json.addProperty("currency", currency);
+        json.add("items", items);
+        return json;
+    }
+
     private static JsonObject risk(PerformanceIndex index, LocalDate[] dates, double[] accumulated,
                     Risk.Drawdown drawdown, double[] drawdownSerie)
     {

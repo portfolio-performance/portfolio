@@ -1027,6 +1027,102 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
+  /v1/files/{file}/performance/securities:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    get:
+      operationId: getSecurityPerformance
+      tags: [Performance]
+      summary: Per-security performance over a period
+      description: |
+        How each security contributed over the period, in the reporting currency.
+
+        This covers **every security with activity in the interval, including
+        positions closed before `closingDate`** — which is what distinguishes it
+        from `GET .../holdings?date={closingDate}`. A holdings snapshot can only
+        report what is still held, so a position sold at a profit mid-period is
+        invisible there while often being one of the largest contributors here.
+        `heldAtClose` tells the two apart.
+
+        `delta` is the cost-method independent absolute gain (it accounts for
+        sells and dividends over the period); `realizedGains` and
+        `unrealizedGains` split the capital gains according to `costMethod` and
+        are the two figures that depend on it.
+      parameters:
+        - name: openingDate
+          in: query
+          required: true
+          description: The opening valuation date.
+          schema:
+            type: string
+            format: date
+        - name: closingDate
+          in: query
+          required: false
+          description: |
+            The closing valuation date (default: today). Must be strictly after
+            `openingDate`; an empty or inverted range is rejected
+            `400 invalid-range`.
+          schema:
+            type: string
+            format: date
+        - name: currency
+          in: query
+          required: false
+          description: |
+            The reporting currency (default: the file's base currency). A
+            currency pair without an exchange rate series converts 1:1 — the
+            same silent fallback the application itself applies.
+          schema:
+            type: string
+        - name: costMethod
+          in: query
+          required: false
+          description: |
+            The cost basis method used to split capital gains into realized and
+            unrealized (default: `fifo`). It does not affect `delta`, `ttwror` or
+            `irr`.
+          schema:
+            type: string
+            enum: [fifo, moving-average]
+            default: fifo
+      responses:
+        "200":
+          description: The per-security performance over the interval
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SecurityPerformanceCollection"
+              examples:
+                default:
+                  value:
+                    currency: EUR
+                    items:
+                      - uuid: 4e0c0f0a-0000-4000-8000-000000000001
+                        name: ACME Corp
+                        delta: { value: 1520, currency: EUR }
+                        deltaPercent: 0.12
+                        ttwror: 0.14
+                        irr: 0.13
+                        realizedGains: { value: 0, currency: EUR }
+                        unrealizedGains: { value: 1450, currency: EUR }
+                        dividends: { value: 70, currency: EUR }
+                        fees: { value: -3, currency: EUR }
+                        taxes: { value: 0, currency: EUR }
+                        heldAtClose: true
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
 components:
   securitySchemes:
     bearerAuth:
@@ -1700,6 +1796,75 @@ components:
             for the interval.
         breakdown:
           $ref: "#/components/schemas/PerformanceBreakdown"
+
+    SecurityPerformanceCollection:
+      type: object
+      required: [currency, items]
+      properties:
+        currency:
+          type: string
+          description: The reporting currency of every amount in `items`.
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/SecurityPerformance"
+
+    SecurityPerformance:
+      type: object
+      description: |
+        One security's contribution over the period. Present whenever the
+        security had any activity in the interval, whether or not it is still
+        held at the end.
+      required:
+        - uuid
+        - name
+        - delta
+        - deltaPercent
+        - ttwror
+        - irr
+        - realizedGains
+        - unrealizedGains
+        - dividends
+        - fees
+        - taxes
+        - heldAtClose
+      properties:
+        uuid:
+          type: string
+        name:
+          type: string
+        delta:
+          $ref: "#/components/schemas/MonetaryValue"
+        deltaPercent:
+          type: [number, "null"]
+          description: |
+            `delta` relative to the capital it was earned on, as a fraction — not
+            a percentage.
+        ttwror:
+          type: [number, "null"]
+          description: |
+            The security's time-weighted return over the period, as a fraction.
+            `null` when the model cannot define it (see the holdings endpoint's
+            note on securities acquired only through an inbound delivery).
+        irr:
+          type: [number, "null"]
+          description: The security's money-weighted return, as a fraction.
+        realizedGains:
+          $ref: "#/components/schemas/MonetaryValue"
+        unrealizedGains:
+          $ref: "#/components/schemas/MonetaryValue"
+        dividends:
+          $ref: "#/components/schemas/MonetaryValue"
+        fees:
+          $ref: "#/components/schemas/MonetaryValue"
+        taxes:
+          $ref: "#/components/schemas/MonetaryValue"
+        heldAtClose:
+          type: boolean
+          description: |
+            Whether any shares were still held at the end of the period. `false`
+            marks a position that was closed inside the period — a case a
+            holdings snapshot at `closingDate` cannot report at all.
 
     PerformanceSeries:
       type: object

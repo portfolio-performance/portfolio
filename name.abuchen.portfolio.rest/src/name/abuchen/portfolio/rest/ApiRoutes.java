@@ -23,6 +23,7 @@ import name.abuchen.portfolio.rest.internal.Request;
 import name.abuchen.portfolio.rest.internal.Response;
 import name.abuchen.portfolio.rest.internal.Router;
 import name.abuchen.portfolio.rest.internal.SecuritiesHandler;
+import name.abuchen.portfolio.rest.internal.SecurityPerformanceHandler;
 import name.abuchen.portfolio.rest.internal.TransactionsHandler;
 import name.abuchen.portfolio.rest.spi.HostApplication;
 import name.abuchen.portfolio.rest.spi.OpenFile;
@@ -110,6 +111,12 @@ public final class ApiRoutes
                         (context, req) -> Response.json(200, PerformanceHandler.series(context.client(),
                                         context.factory(), req.queryParam("openingDate"),
                                         req.queryParam("closingDate"), req.queryParam("currency")))));
+
+        router.add("GET", "/v1/files/{file}/performance/securities", calc(resolver, host,
+                        (context, req) -> Response.json(200, SecurityPerformanceHandler.list(context.client(),
+                                        context.factory(), req.queryParam("openingDate"),
+                                        req.queryParam("closingDate"), req.queryParam("currency"),
+                                        req.queryParam("costMethod")))));
 
         return router;
     }
