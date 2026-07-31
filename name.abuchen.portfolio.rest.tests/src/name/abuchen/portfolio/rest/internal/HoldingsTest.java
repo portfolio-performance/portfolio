@@ -457,6 +457,96 @@ public class HoldingsTest
         assertThat(assignment.get("weight").getAsDouble(), is(1d));
     }
 
+    /**
+     * USD/EUR has a real, bundled exchange rate series (unlike the synthetic
+     * pair in {@code testForeignCurrencyHoldingCarriesLocalValuation}), so the
+     * exact rate on the valuation date isn't pinned down here - only that a
+     * foreign-currency security gets a (positive) exchange rate, a
+     * reporting-currency quote, and cost-basis figures in its own currency;
+     * a same-currency one gets none of these.
+     */
+    @Test
+    public void testForeignCurrencySecurityHasExchangeRateAndLocalFigures()
+    {
+        var client = new Client();
+
+        var foreign = new SecurityBuilder("USD") //
+                        .addPrice("2026-07-01", Values.Quote.factorize(110)) //
+                        .addTo(client);
+        foreign.setName("Foreign");
+
+        var domestic = new SecurityBuilder() //
+                        .addPrice("2026-07-01", Values.Quote.factorize(50)) //
+                        .addTo(client);
+        domestic.setName("Domestic");
+
+        new PortfolioBuilder() //
+                        .buy(foreign, "2026-01-15", Values.Share.factorize(10), Values.Amount.factorize(1000)) //
+                        .addTo(client);
+        new PortfolioBuilder() //
+                        .buy(domestic, "2026-01-15", Values.Share.factorize(10), Values.Amount.factorize(500)) //
+                        .addTo(client);
+
+        var holdings = list(client, "2026-07-20", null).getAsJsonObject();
+
+        var foreignItem = findByUuid(holdings, foreign.getUUID());
+        assertThat(foreignItem.get("exchangeRate").getAsDouble() > 0, is(true));
+
+        var quoteReportingCurrency = foreignItem.get("quoteReportingCurrency").getAsJsonObject();
+        assertThat(quoteReportingCurrency.get("value").getAsDouble() > 0, is(true));
+        assertThat(quoteReportingCurrency.get("currency").getAsString(), is("EUR"));
+
+        assertThat(foreignItem.get("purchasePriceLocal").getAsJsonObject().get("currency").getAsString(), is("USD"));
+        assertThat(foreignItem.get("purchaseValueLocal").getAsJsonObject().get("currency").getAsString(), is("USD"));
+        assertThat(foreignItem.get("profitLossLocal").getAsJsonObject().get("currency").getAsString(), is("USD"));
+
+        var domesticItem = findByUuid(holdings, domestic.getUUID());
+        assertThat(domesticItem.has("exchangeRate"), is(false));
+        assertThat(domesticItem.has("quoteReportingCurrency"), is(false));
+        assertThat(domesticItem.has("purchasePriceLocal"), is(false));
+        assertThat(domesticItem.has("purchaseValueLocal"), is(false));
+        assertThat(domesticItem.has("profitLossLocal"), is(false));
+    }
+
+    /**
+     * distanceFromMovingAverage200 needs 200 prior prices; distanceFromAllTimeHigh
+     * and quoteRange need only one. Exact values depend on the (randomly
+     * generated) price series, so only the invariants that must hold for any
+     * series are checked: the moving-average distance is a finite number, the
+     * all-time-high distance is never positive (the reference price cannot
+     * exceed the maximum used to compute it), and the range's low is at most
+     * its high.
+     */
+    @Test
+    public void testTechnicalMetricsWithEnoughHistory()
+    {
+        var client = new Client();
+
+        var security = new SecurityBuilder() //
+                        .generatePrices(Values.Quote.factorize(100), LocalDate.of(2025, 1, 1),
+                                        LocalDate.of(2026, 7, 20)) //
+                        .addTo(client);
+        security.setName("ACME");
+
+        new PortfolioBuilder() //
+                        .inbound_delivery(security, "2025-01-15", Values.Share.factorize(10),
+                                        Values.Amount.factorize(1000)) //
+                        .addTo(client);
+
+        var holdings = list(client, "2026-07-20", null).getAsJsonObject();
+        var instrument = findByUuid(holdings, security.getUUID());
+
+        assertThat(Double.isFinite(instrument.get("distanceFromMovingAverage200").getAsDouble()), is(true));
+        assertThat(instrument.get("distanceFromAllTimeHigh").getAsDouble() <= 0d, is(true));
+
+        var quoteRange = instrument.get("quoteRange").getAsJsonObject();
+        var low = quoteRange.get("low").getAsJsonObject().get("value").getAsDouble();
+        var high = quoteRange.get("high").getAsJsonObject().get("value").getAsDouble();
+        assertThat(low <= high, is(true));
+        assertThat(LocalDate.parse(quoteRange.get("lowDate").getAsString()) != null, is(true));
+        assertThat(LocalDate.parse(quoteRange.get("highDate").getAsString()) != null, is(true));
+    }
+
     @Test
     public void testOpeningDateMustPrecedeDate()
     {

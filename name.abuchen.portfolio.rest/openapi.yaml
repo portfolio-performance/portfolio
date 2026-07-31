@@ -1411,6 +1411,76 @@ components:
           description: |
             The holding's value in its own currency, before conversion into the
             reporting currency. Present only when the two currencies differ.
+        exchangeRate:
+          type: number
+          description: |
+            The exchange rate used to convert the holding's own currency into
+            the reporting currency, on `date`. Applies to an instrument or a
+            cash account alike. Omitted when the two currencies are the same
+            or the holding has no currency at all.
+        quoteReportingCurrency:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: |
+            Instruments only. `price` converted into the reporting currency -
+            distinct from `price`, which stays in the security's own currency.
+            Omitted when the two currencies are the same (identical to
+            `price`) or the security has no currency at all.
+        purchasePriceLocal:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: |
+            Instruments only. `purchasePrice.gross` at `costMethod`, in the
+            security's own currency instead of the reporting currency (mirrors
+            the desktop's "...BaseCurrency" columns). Omitted when the two
+            currencies are the same, or the security has no line item in the
+            period.
+        purchaseValueLocal:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: |
+            Instruments only. `purchaseValue.gross` at `costMethod`, in the
+            security's own currency. Omitted when the two currencies are the
+            same, or the security has no line item in the period.
+        profitLossLocal:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: |
+            Instruments only. `profitLoss.value` at `costMethod`, in the
+            security's own currency. Omitted when the two currencies are the
+            same, or the security has no line item in the period.
+        distanceFromMovingAverage200:
+          type: number
+          description: |
+            Instruments only. The latest price's relative distance from the
+            200-day simple moving average ending on `date`, as a fraction, not
+            a percentage. Omitted when there are fewer than 200 prices on or
+            before `date`.
+        distanceFromAllTimeHigh:
+          type: number
+          description: |
+            Instruments only. The latest price's relative distance (always
+            ≤ 0) from the highest price reached over `(openingDate, date]`, as
+            a fraction, not a percentage. Omitted when the security has no
+            price in the period.
+        quoteRange:
+          type: object
+          description: |
+            Instruments only. The lowest and highest price reached over
+            `(openingDate, date]`. Omitted when the security has no price in
+            the period.
+          required: [low, lowDate, high, highDate]
+          properties:
+            low:
+              $ref: "#/components/schemas/MonetaryValue"
+            lowDate:
+              type: string
+              format: date
+            high:
+              $ref: "#/components/schemas/MonetaryValue"
+            highDate:
+              type: string
+              format: date
 
     Performance:
       type: object

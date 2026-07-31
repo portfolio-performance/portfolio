@@ -9,6 +9,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 import name.abuchen.portfolio.util.Interval;
 
@@ -16,11 +17,12 @@ import name.abuchen.portfolio.util.Interval;
  * Everything the per-holding JSON mapping needs beyond the {@code AssetPosition}
  * itself: the reporting-period performance record for each security (in the
  * reporting currency, and - only for securities whose own currency differs -
- * in that native currency too), the chosen cost method, and the client's
- * taxonomies. Built once per request by {@link HoldingsHandler}.
+ * in that native currency too), the chosen cost method, the client's
+ * taxonomies, and the currency converter (for the exchange rate and the
+ * reporting-currency quote). Built once per request by {@link HoldingsHandler}.
  */
 /* package */ record HoldingsContext(Client client, LocalDate closingDate, Interval interval, CostMethod costMethod,
-                Map<Security, LazySecurityPerformanceRecord> records,
+                CurrencyConverter converter, Map<Security, LazySecurityPerformanceRecord> records,
                 Map<String, Map<Security, LazySecurityPerformanceRecord>> localRecordsByCurrency,
                 List<Taxonomy> taxonomies)
 {

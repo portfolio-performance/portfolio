@@ -169,7 +169,7 @@ public final class HoldingsHandler
                                                                         LazySecurityPerformanceRecord::getSecurity,
                                                                         r -> r))));
 
-        return new HoldingsContext(client, date, interval, costMethod, records, localRecordsByCurrency,
+        return new HoldingsContext(client, date, interval, costMethod, converter, records, localRecordsByCurrency,
                         client.getTaxonomies());
     }
 }

@@ -15,6 +15,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import name.abuchen.portfolio.math.AllTimeHigh;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AttributeFieldType;
@@ -26,6 +27,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityEvent.DividendEvent;
+import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.Transaction;
@@ -218,9 +220,13 @@ public final class EntityJson
                 addReturns(json, r);
             });
             addDividends(json, context.costMethod(), record, security);
+            addQuoteInReportingCurrency(json, context, security, securityPrice);
+            context.localRecord(security).ifPresent(r -> addLocalCostBasis(json, context.costMethod(), r));
+            addTechnical(json, context, security);
         }
 
         addClassifications(json, context.taxonomies(), vehicle);
+        addExchangeRate(json, context, vehicle);
 
         json.add("valuation", toJson(position.getValuation())); //$NON-NLS-1$
         json.add("weight", decimal(totalAssets.isZero() ? 0d : position.getShare())); //$NON-NLS-1$
@@ -395,12 +401,118 @@ public final class EntityJson
             json.add("classifications", result); //$NON-NLS-1$
     }
 
+    /**
+     * The exchange rate used to convert the holding's own currency into the
+     * reporting currency, on {@code closingDate} - applies to an instrument or
+     * a cash account alike. Omitted when the two currencies are the same (rate
+     * 1, not worth stating) or the vehicle has no currency at all.
+     */
+    private static void addExchangeRate(JsonObject json, HoldingsContext context, InvestmentVehicle vehicle)
+    {
+        var currencyCode = vehicle.getCurrencyCode();
+        if (currencyCode == null || currencyCode.equals(context.converter().getTermCurrency()))
+            return;
+
+        var rate = context.converter().getRate(context.closingDate(), currencyCode);
+        json.add("exchangeRate", decimal(rate.getValue())); //$NON-NLS-1$
+    }
+
+    /**
+     * The valuation price converted into the reporting currency - distinct
+     * from {@code price}, which stays in the security's own currency. Omitted
+     * when the two currencies are the same (identical to {@code price}) or the
+     * security has no currency at all.
+     */
+    private static void addQuoteInReportingCurrency(JsonObject json, HoldingsContext context, Security security,
+                    SecurityPrice securityPrice)
+    {
+        var securityCurrency = security.getCurrencyCode();
+        if (securityCurrency == null || securityCurrency.equals(context.converter().getTermCurrency()))
+            return;
+
+        var converted = context.converter().convert(securityPrice.getDate(),
+                        Quote.of(securityCurrency, securityPrice.getValue()));
+        json.add("quoteReportingCurrency", toJsonQuote(converted)); //$NON-NLS-1$
+    }
+
+    /**
+     * Purchase price/value and profit/loss expressed in the security's own
+     * currency instead of the reporting currency - mirrors the desktop's
+     * "...BaseCurrency" columns, which always use FIFO/gross regardless of the
+     * chosen cost method's other, reporting-currency figures. Only ever called
+     * when the security's own currency differs from the reporting currency
+     * (see {@link HoldingsContext#localRecord}).
+     */
+    private static void addLocalCostBasis(JsonObject json, CostMethod costMethod, LazySecurityPerformanceRecord record)
+    {
+        json.add("purchasePriceLocal", //$NON-NLS-1$
+                        toJsonQuote(record.getCostPerSharesHeld(costMethod, TaxesAndFees.INCLUDED)));
+        json.add("purchaseValueLocal", toJson(record.getCost(costMethod, TaxesAndFees.INCLUDED))); //$NON-NLS-1$
+        json.add("profitLossLocal", toJson(record.getCapitalGainsOnHoldings(costMethod))); //$NON-NLS-1$
+    }
+
+    private static final int SMA_DAYS = 200;
+
+    /**
+     * Distance from the 200-day simple moving average, and the distance from
+     * (plus the low/high range of) the all-time high over the reporting
+     * period - mirrors {@code DistanceFromMovingAverageColumn},
+     * {@code DistanceFromAllTimeHighColumn} and {@code QuoteRangeColumn}. Both
+     * are omitted independently when there is not enough price history.
+     */
+    private static void addTechnical(JsonObject json, HoldingsContext context, Security security)
+    {
+        var smaDistance = distanceFromMovingAverage(security, context.closingDate(), SMA_DAYS);
+        if (smaDistance != null)
+            json.add("distanceFromMovingAverage200", ratio(smaDistance.doubleValue())); //$NON-NLS-1$
+
+        var allTimeHigh = new AllTimeHigh(security, context.interval());
+        if (allTimeHigh.getValue() == null)
+            return;
+
+        json.add("distanceFromAllTimeHigh", ratio(allTimeHigh.getDistance())); //$NON-NLS-1$
+
+        var quoteRange = new JsonObject();
+        quoteRange.add("low", toJsonQuote(allTimeHigh.getLow(), security.getCurrencyCode())); //$NON-NLS-1$
+        quoteRange.addProperty("lowDate", allTimeHigh.getLowDate().toString()); //$NON-NLS-1$
+        quoteRange.add("high", toJsonQuote(allTimeHigh.getHigh(), security.getCurrencyCode())); //$NON-NLS-1$
+        quoteRange.addProperty("highDate", allTimeHigh.getHighDate().toString()); //$NON-NLS-1$
+        json.add("quoteRange", quoteRange); //$NON-NLS-1$
+    }
+
+    /**
+     * The relative distance of the latest price on or before {@code date} from
+     * the simple moving average over the preceding {@code days} prices, or
+     * {@code null} when there is not that much price history yet - mirrors
+     * {@code SimpleMovingAverage.calculateSma}, reimplemented here rather than
+     * depended on since it lives in the UI plugin (which this module - reused
+     * headlessly - does not, and must not, depend on).
+     */
+    private static Double distanceFromMovingAverage(Security security, LocalDate date, int days)
+    {
+        var prices = security.getLatestNPricesOfDate(date, days);
+        if (prices.isEmpty() || prices.size() < days)
+            return null;
+
+        var sum = prices.stream().mapToLong(SecurityPrice::getValue).sum();
+        var sma = sum / Values.Quote.divider() / prices.size();
+        var last = prices.get(prices.size() - 1).getValue();
+        return last / Values.Quote.divider() / sma - 1;
+    }
+
     /** a per-share quote, e.g. a cost basis per share - {value, currency}, like {@link #toJson(Money)} */
     private static JsonObject toJsonQuote(Quote quote)
     {
+        return toJsonQuote(quote.getAmount(), quote.getCurrencyCode());
+    }
+
+    /** a per-share quote value in the given (possibly null, for a currency-less instrument) currency */
+    private static JsonObject toJsonQuote(long value, String currencyCode)
+    {
         var json = new JsonObject();
-        json.add("value", decimal(quote.getAmount(), Values.Quote.precision())); //$NON-NLS-1$
-        json.addProperty("currency", quote.getCurrencyCode()); //$NON-NLS-1$
+        json.add("value", decimal(value, Values.Quote.precision())); //$NON-NLS-1$
+        if (currencyCode != null)
+            json.addProperty("currency", currencyCode); //$NON-NLS-1$
         return json;
     }
 
