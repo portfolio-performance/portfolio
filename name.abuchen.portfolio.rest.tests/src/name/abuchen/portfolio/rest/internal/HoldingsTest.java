@@ -28,7 +28,14 @@ public class HoldingsTest
     /** calls the handler with a factory of its own, as the host would provide it */
     private static JsonElement list(Client client, String date, String currency)
     {
-        return HoldingsHandler.list(client, new ExchangeRateProviderFactory(client), date, currency);
+        return list(client, date, null, currency, null);
+    }
+
+    private static JsonElement list(Client client, String date, String openingDate, String currency,
+                    String costMethod)
+    {
+        return HoldingsHandler.list(client, new ExchangeRateProviderFactory(client), date, openingDate, currency,
+                        costMethod);
     }
 
     @Test
@@ -264,6 +271,94 @@ public class HoldingsTest
         var item = findByUuid(holdings, account.getUUID());
         assertThat(item.get("valuation").getAsJsonObject().get("currency").getAsString(), is("USD"));
         assertThat(item.get("localValuation").getAsJsonObject().get("currency").getAsString(), is("EUR"));
+    }
+
+    /**
+     * The cost basis is enriched only for instruments, over the reporting
+     * period (default: since inception). "gross" includes fees/taxes in the
+     * cost basis (the total economic outlay); "net" excludes them - matching
+     * the desktop's "purchase price"/"gross purchase price" columns.
+     */
+    @Test
+    public void testCostBasisGrossAndNet()
+    {
+        var client = new Client();
+
+        var security = new SecurityBuilder() //
+                        .addPrice("2026-07-01", Values.Quote.factorize(110)) //
+                        .addTo(client);
+        security.setName("ACME");
+
+        // 10 shares, 1050 paid in total, of which 50 is a fee: the pure share
+        // cost (net of fees) is 1000, i.e. 100/share
+        var account = new PortfolioBuilder() //
+                        .buy(security, "2026-01-15", Values.Share.factorize(10), Values.Amount.factorize(1050),
+                                        Values.Amount.factorize(50), 0) //
+                        .addTo(client).getReferenceAccount();
+
+        var holdings = list(client, "2026-07-20", null).getAsJsonObject();
+        var instrument = findByUuid(holdings, security.getUUID());
+
+        var purchasePrice = instrument.get("purchasePrice").getAsJsonObject();
+        assertThat(purchasePrice.get("net").getAsJsonObject().get("value").getAsDouble(), is(100d));
+        assertThat(purchasePrice.get("gross").getAsJsonObject().get("value").getAsDouble(), is(105d));
+
+        var purchaseValue = instrument.get("purchaseValue").getAsJsonObject();
+        assertThat(purchaseValue.get("net").getAsJsonObject().get("value").getAsDouble(), is(1000d));
+        assertThat(purchaseValue.get("gross").getAsJsonObject().get("value").getAsDouble(), is(1050d));
+
+        // a cash account never carries a cost basis
+        var cash = findByUuid(holdings, account.getUUID());
+        assertThat(cash.has("purchasePrice"), is(false));
+        assertThat(cash.has("purchaseValue"), is(false));
+    }
+
+    @Test
+    public void testOpeningDateMustPrecedeDate()
+    {
+        try
+        {
+            list(new Client(), "2026-01-01", "2026-06-01", null, null);
+            Assert.fail("expected ApiException");
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getStatus(), is(400));
+            assertThat(e.getErrors().get(0).field(), is("openingDate"));
+            assertThat(e.getErrors().get(0).code(), is("invalid-range"));
+        }
+    }
+
+    @Test
+    public void testInvalidOpeningDateIs400()
+    {
+        try
+        {
+            list(new Client(), null, "not-a-date", null, null);
+            Assert.fail("expected ApiException");
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getStatus(), is(400));
+            assertThat(e.getErrors().get(0).field(), is("openingDate"));
+            assertThat(e.getErrors().get(0).code(), is("invalid-value"));
+        }
+    }
+
+    @Test
+    public void testInvalidCostMethodIs400()
+    {
+        try
+        {
+            list(new Client(), null, null, null, "not-a-method");
+            Assert.fail("expected ApiException");
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getStatus(), is(400));
+            assertThat(e.getErrors().get(0).field(), is("costMethod"));
+            assertThat(e.getErrors().get(0).code(), is("invalid-value"));
+        }
     }
 
     @Test

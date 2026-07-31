@@ -15,12 +15,15 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AttributeFieldType;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.rest.FileAccessRegistry.FileAccess;
 import name.abuchen.portfolio.rest.spi.OpenFile;
@@ -28,6 +31,7 @@ import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 
 /**
  * Maps the model entities to the wire format. The API vocabulary is
@@ -152,9 +156,11 @@ public final class EntityJson
 
     /**
      * The statement of assets: every holding - securities and cash accounts
-     * uniformly - valued at the snapshot date in the reporting currency.
+     * uniformly - valued at the snapshot date in the reporting currency, each
+     * instrument additionally enriched with the period-dependent metrics
+     * carried in {@code context} (cost basis, returns, dividends, ...).
      */
-    public static JsonObject toJson(Client client, ClientSnapshot snapshot)
+    public static JsonObject toJson(HoldingsContext context, ClientSnapshot snapshot)
     {
         var total = snapshot.getMonetaryAssets();
 
@@ -165,12 +171,12 @@ public final class EntityJson
         var items = new JsonArray();
         snapshot.getAssetPositions() //
                         .sorted(new AssetPosition.ByDescription()) //
-                        .forEach(position -> items.add(toJson(client, position, total)));
+                        .forEach(position -> items.add(toJson(context, position, total)));
         json.add("items", items); //$NON-NLS-1$
         return json;
     }
 
-    private static JsonObject toJson(Client client, AssetPosition position, Money totalAssets)
+    private static JsonObject toJson(HoldingsContext context, AssetPosition position, Money totalAssets)
     {
         var security = position.getSecurity();
         var vehicle = position.getInvestmentVehicle();
@@ -196,7 +202,8 @@ public final class EntityJson
                 price.addProperty("date", securityPrice.getDate().toString()); //$NON-NLS-1$
             json.add("price", price); //$NON-NLS-1$
 
-            addSecurityDetails(json, client, security);
+            addSecurityDetails(json, context.client(), security);
+            context.record(security).ifPresent(record -> addCostBasis(json, context.costMethod(), record));
         }
 
         json.add("valuation", toJson(position.getValuation())); //$NON-NLS-1$
@@ -208,6 +215,36 @@ public final class EntityJson
         if (!local.getCurrencyCode().equals(position.getValuation().getCurrencyCode()))
             json.add("localValuation", toJson(local)); //$NON-NLS-1$
 
+        return json;
+    }
+
+    /**
+     * Purchase price (per share) and purchase value (total), both gross and
+     * net of fees/taxes, at the given cost method - mirrors the desktop's
+     * "purchase price"/"purchase value" columns
+     * ({@code StatementOfAssetsViewer#addPurchaseCostColumns}).
+     */
+    private static void addCostBasis(JsonObject json, CostMethod costMethod, LazySecurityPerformanceRecord record)
+    {
+        var purchasePrice = new JsonObject();
+        purchasePrice.add("gross", //$NON-NLS-1$
+                        toJsonQuote(record.getCostPerSharesHeld(costMethod, TaxesAndFees.INCLUDED)));
+        purchasePrice.add("net", //$NON-NLS-1$
+                        toJsonQuote(record.getCostPerSharesHeld(costMethod, TaxesAndFees.NOT_INCLUDED)));
+        json.add("purchasePrice", purchasePrice); //$NON-NLS-1$
+
+        var purchaseValue = new JsonObject();
+        purchaseValue.add("gross", toJson(record.getCost(costMethod, TaxesAndFees.INCLUDED))); //$NON-NLS-1$
+        purchaseValue.add("net", toJson(record.getCost(costMethod, TaxesAndFees.NOT_INCLUDED))); //$NON-NLS-1$
+        json.add("purchaseValue", purchaseValue); //$NON-NLS-1$
+    }
+
+    /** a per-share quote, e.g. a cost basis per share - {value, currency}, like {@link #toJson(Money)} */
+    private static JsonObject toJsonQuote(Quote quote)
+    {
+        var json = new JsonObject();
+        json.add("value", decimal(quote.getAmount(), Values.Quote.precision())); //$NON-NLS-1$
+        json.addProperty("currency", quote.getCurrencyCode()); //$NON-NLS-1$
         return json;
     }
 

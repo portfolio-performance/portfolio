@@ -176,7 +176,7 @@ public class PerformanceTest
 
     private static double holdingsTotal(Client client, String date)
     {
-        var holdings = HoldingsHandler.list(client, new ExchangeRateProviderFactory(client), date, null)
+        var holdings = HoldingsHandler.list(client, new ExchangeRateProviderFactory(client), date, null, null, null)
                         .getAsJsonObject();
         return holdings.get("totalAssets").getAsJsonObject().get("value").getAsDouble();
     }

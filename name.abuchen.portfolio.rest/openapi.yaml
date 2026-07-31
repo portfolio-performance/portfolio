@@ -638,6 +638,12 @@ paths:
         valued at the given date in the reporting currency. Instrument positions
         with zero shares at the date are omitted; cash accounts always appear,
         even with a zero balance. Items are sorted by name.
+
+        Beyond the point-in-time valuation, each instrument position is also
+        enriched with metrics over `(openingDate, date]` — cost basis, returns,
+        dividends, and more. `openingDate` defaults to "since inception"
+        (the security's first transaction), the same default the desktop
+        application's statement-of-assets view uses for these columns.
       parameters:
         - name: date
           in: query
@@ -646,7 +652,20 @@ paths:
             The valuation date (default: today). Each instrument is valued with
             the latest price on or before this date; the holding's `price.date`
             makes the staleness visible. Future dates are allowed and value at
-            the last known prices.
+            the last known prices. Also the closing date of the
+            `(openingDate, date]` period the enrichment metrics are computed
+            over.
+          schema:
+            type: string
+            format: date
+        - name: openingDate
+          in: query
+          required: false
+          description: |
+            The opening date of the period the enrichment metrics (cost basis,
+            returns, dividends, ...) are computed over (default: since
+            inception). Must be before `date`; an empty or inverted range is
+            rejected `400 invalid-range`.
           schema:
             type: string
             format: date
@@ -659,6 +678,16 @@ paths:
             same silent fallback the application itself applies.
           schema:
             type: string
+        - name: costMethod
+          in: query
+          required: false
+          description: |
+            The cost basis method used for `purchasePrice`, `purchaseValue` and
+            the related returns (default: `fifo`).
+          schema:
+            type: string
+            enum: [fifo, moving-average]
+            default: fifo
       responses:
         "200":
           description: The holdings at the valuation date
@@ -1095,6 +1124,20 @@ components:
           format: date
           description: The date the price is from.
 
+    CostBasis:
+      type: object
+      description: |
+        A cost basis, both gross and net of fees/taxes. "Gross" includes
+        fees/taxes in the cost basis (the total economic outlay); "net"
+        excludes them — matching the desktop's "purchase price"/"gross
+        purchase price" columns.
+      required: [gross, net]
+      properties:
+        gross:
+          $ref: "#/components/schemas/MonetaryValue"
+        net:
+          $ref: "#/components/schemas/MonetaryValue"
+
     Transaction:
       type: object
       description: One entry of the all-transactions list.
@@ -1224,6 +1267,20 @@ components:
               - type: string
               - type: number
               - type: boolean
+        purchasePrice:
+          allOf:
+            - $ref: "#/components/schemas/CostBasis"
+          description: |
+            Instruments only. The per-share cost basis at `costMethod`, over
+            `(openingDate, date]`. Omitted when the security has no line item
+            in the period (e.g. never held during it).
+        purchaseValue:
+          allOf:
+            - $ref: "#/components/schemas/CostBasis"
+          description: |
+            Instruments only. The total cost basis of the shares held at
+            `costMethod`, over `(openingDate, date]`. Omitted when the security
+            has no line item in the period.
         valuation:
           allOf:
             - $ref: "#/components/schemas/MonetaryValue"
