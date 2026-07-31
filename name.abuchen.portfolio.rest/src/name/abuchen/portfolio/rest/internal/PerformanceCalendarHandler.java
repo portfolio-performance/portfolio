@@ -47,10 +47,14 @@ public final class PerformanceCalendarHandler
 
         var converter = new CurrencyConverterImpl(factory, range.currency());
 
-        // Month buckets need whole months. The index therefore runs from the last day
-        // of the month before the opening date (Interval excludes its start) to the
-        // end of the closing month.
-        var alignedStart = range.openingDate().withDayOfMonth(1).minusDays(1);
+        // Month buckets need whole months, so the index runs from the last day of the
+        // month before the period's first month to the end of its closing month.
+        // "First month" is the first one the period actually contains: the period
+        // excludes its opening date, so a period opening on the last day of a month
+        // starts in the next one - reaching back a whole month there would report a
+        // month the caller did not ask for, and would break the property that
+        // compounding these returns reproduces the period's own TTWROR.
+        var alignedStart = YearMonth.from(range.openingDate().plusDays(1)).atDay(1).minusDays(1);
         var alignedEnd = range.closingDate().with(TemporalAdjusters.lastDayOfMonth());
         var aligned = Interval.of(alignedStart, alignedEnd);
 

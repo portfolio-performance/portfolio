@@ -66,6 +66,19 @@ public class PerformanceCalendarTest
         assertThat(result.get("closingDate").getAsString(), is("2024-05-10"));
     }
 
+    /**
+     * A period is half-open, so one opening on the last day of a month contains no
+     * day of that month at all - reporting it would show a month the caller did not
+     * ask for. This is the shape a year-to-date range has: it opens on December 31.
+     */
+    @Test
+    public void testAMonthEndOpeningStartsInTheNextMonth()
+    {
+        var months = monthNames(calendar(heldPosition(), "2023-12-31", "2024-03-31", null));
+
+        assertThat(months, contains("2024-01", "2024-02", "2024-03"));
+    }
+
     /** the period widens to whole months, so a mid-month request still starts at that month */
     @Test
     public void testCoversWholeMonths()
