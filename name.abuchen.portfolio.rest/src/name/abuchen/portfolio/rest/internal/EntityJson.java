@@ -3,6 +3,8 @@ package name.abuchen.portfolio.rest.internal;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -20,6 +22,7 @@ import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityEvent.DividendEvent;
 import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionPair;
@@ -204,11 +207,13 @@ public final class EntityJson
             json.add("price", price); //$NON-NLS-1$
 
             addSecurityDetails(json, context.client(), security);
-            context.record(security).ifPresent(record -> {
-                addCostBasis(json, context.costMethod(), record);
-                addProfitLoss(json, context.costMethod(), record);
-                addReturns(json, record);
+            var record = context.record(security);
+            record.ifPresent(r -> {
+                addCostBasis(json, context.costMethod(), r);
+                addProfitLoss(json, context.costMethod(), r);
+                addReturns(json, r);
             });
+            addDividends(json, context.costMethod(), record, security);
         }
 
         json.add("valuation", toJson(position.getValuation())); //$NON-NLS-1$
@@ -294,6 +299,49 @@ public final class EntityJson
         {
             return JsonNull.INSTANCE;
         }
+    }
+
+    /**
+     * Dividend metrics: the sum received and the total rate of return over the
+     * period (both from {@code record}, hence omitted together with it when
+     * the security has no line item in the period), plus the next upcoming
+     * ex-date/payment-date/amount - independent of the record, always relative
+     * to today regardless of the valuation date, mirroring
+     * {@code DividendPaymentColumns}. The whole {@code dividends} object is
+     * omitted when none of these apply.
+     */
+    private static void addDividends(JsonObject json, CostMethod costMethod,
+                    Optional<LazySecurityPerformanceRecord> record, Security security)
+    {
+        var dividends = new JsonObject();
+
+        record.ifPresent(r -> {
+            dividends.add("sum", toJson(r.getSumOfDividends())); //$NON-NLS-1$
+            dividends.add("totalRateOfReturn", ratio(r.getTotalRateOfReturnDiv(costMethod))); //$NON-NLS-1$
+        });
+
+        var now = LocalDate.now();
+        var events = security.getEvents().stream() //
+                        .filter(DividendEvent.class::isInstance) //
+                        .map(DividendEvent.class::cast) //
+                        .toList();
+
+        events.stream() //
+                        .map(DividendEvent::getDate) //
+                        .filter(d -> !now.isAfter(d)) //
+                        .min(Comparator.naturalOrder()) //
+                        .ifPresent(d -> dividends.addProperty("nextExDate", d.toString())); //$NON-NLS-1$
+
+        events.stream() //
+                        .filter(e -> !now.isAfter(e.getPaymentDate())) //
+                        .min(Comparator.comparing(DividendEvent::getPaymentDate)) //
+                        .ifPresent(e -> {
+                            dividends.addProperty("nextPaymentDate", e.getPaymentDate().toString()); //$NON-NLS-1$
+                            dividends.add("nextPaymentAmount", toJson(e.getAmount())); //$NON-NLS-1$
+                        });
+
+        if (dividends.size() > 0)
+            json.add("dividends", dividends); //$NON-NLS-1$
     }
 
     /** a per-share quote, e.g. a cost basis per share - {value, currency}, like {@link #toJson(Money)} */

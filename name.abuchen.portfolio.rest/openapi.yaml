@@ -1330,6 +1330,43 @@ components:
             over the period, as a fraction. `null` when the model cannot
             define it. Omitted when the security has no line item in the
             period.
+        dividends:
+          type: object
+          description: |
+            Instruments only. Omitted when nothing applies: no dividend was
+            received in the period and no dividend event is scheduled.
+          properties:
+            sum:
+              allOf:
+                - $ref: "#/components/schemas/MonetaryValue"
+              description: |
+                Dividends received over the period. Present only when the
+                security has a line item in the period.
+            totalRateOfReturn:
+              type: number
+              description: |
+                `sum` as a fraction of the (gross) cost basis at `costMethod` -
+                not a percentage. Present only when the security has a line
+                item in the period.
+            nextExDate:
+              type: string
+              format: date
+              description: |
+                The next upcoming ex-dividend date from the security's own
+                dividend calendar, relative to today (regardless of `date`).
+                Omitted when none is scheduled.
+            nextPaymentDate:
+              type: string
+              format: date
+              description: |
+                The next upcoming dividend payment date, relative to today
+                (regardless of `date`). Omitted when none is scheduled.
+            nextPaymentAmount:
+              allOf:
+                - $ref: "#/components/schemas/MonetaryValue"
+              description: |
+                The amount of the next upcoming dividend payment. Omitted when
+                `nextPaymentDate` is omitted.
         valuation:
           allOf:
             - $ref: "#/components/schemas/MonetaryValue"

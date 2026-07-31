@@ -19,7 +19,9 @@ import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.SecurityEvent.DividendEvent;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
@@ -371,6 +373,47 @@ public class HoldingsTest
         assertThat(instrument.get("ttwror").getAsDouble(), closeTo(0.21, 1e-10));
         assertThat(instrument.get("ttwrorAnnualized").getAsDouble() > 0, is(true));
         assertThat(instrument.get("irr").getAsDouble() > 0, is(true));
+    }
+
+    /**
+     * The dividend sum/rate of return come from the record (same period as
+     * cost basis); the next ex-date/payment-date/amount come straight from the
+     * security's own dividend calendar events and are always relative to
+     * today, independent of the valuation date - so they only show up when an
+     * event is still in the future.
+     */
+    @Test
+    public void testDividends()
+    {
+        var client = new Client();
+
+        var security = new SecurityBuilder() //
+                        .addPrice("2026-07-01", Values.Quote.factorize(110)) //
+                        .addTo(client);
+        security.setName("ACME");
+
+        var account = new AccountBuilder() //
+                        .deposit_("2026-01-01", Values.Amount.factorize(1500)) //
+                        .dividend("2026-03-01", Values.Amount.factorize(50), security) //
+                        .addTo(client);
+
+        new PortfolioBuilder(account) //
+                        .buy(security, "2026-01-15", Values.Share.factorize(10), Values.Amount.factorize(1000)) //
+                        .addTo(client);
+
+        var future = LocalDate.now().plusMonths(1);
+        var payDate = future.plusDays(5);
+        security.addEvent(new DividendEvent(future, payDate, Money.of("EUR", Values.Amount.factorize(45)), "test"));
+
+        var holdings = list(client, "2026-07-20", null).getAsJsonObject();
+        var instrument = findByUuid(holdings, security.getUUID());
+
+        var dividends = instrument.get("dividends").getAsJsonObject();
+        assertThat(dividends.get("sum").getAsJsonObject().get("value").getAsDouble(), is(50d));
+        assertThat(dividends.get("totalRateOfReturn").getAsDouble(), closeTo(0.05, 1e-10));
+        assertThat(dividends.get("nextExDate").getAsString(), is(future.toString()));
+        assertThat(dividends.get("nextPaymentDate").getAsString(), is(payDate.toString()));
+        assertThat(dividends.get("nextPaymentAmount").getAsJsonObject().get("value").getAsDouble(), is(45d));
     }
 
     @Test
