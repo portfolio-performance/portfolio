@@ -23,6 +23,7 @@ import name.abuchen.portfolio.rest.internal.Request;
 import name.abuchen.portfolio.rest.internal.Response;
 import name.abuchen.portfolio.rest.internal.Router;
 import name.abuchen.portfolio.rest.internal.SecuritiesHandler;
+import name.abuchen.portfolio.rest.internal.TransactionsHandler;
 import name.abuchen.portfolio.rest.spi.HostApplication;
 import name.abuchen.portfolio.rest.spi.OpenFile;
 
@@ -86,6 +87,9 @@ public final class ApiRoutes
                         (client, req) -> Response.json(200, PortfoliosHandler.list(client))));
         router.add("GET", "/v1/files/{file}/investment-accounts/{uuid}", read(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (client, req) -> Response.json(200, PortfoliosHandler.get(client, req.pathParam("uuid"))))); //$NON-NLS-1$
+
+        router.add("GET", "/v1/files/{file}/transactions", read(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (client, req) -> Response.json(200, TransactionsHandler.list(client))));
 
         router.add("GET", "/v1/files/{file}/holdings", calc(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> Response.json(200, HoldingsHandler.list(context.client(), context.factory(),

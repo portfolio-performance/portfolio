@@ -565,6 +565,67 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
+  /v1/files/{file}/transactions:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    get:
+      operationId: listTransactions
+      tags: [Transactions]
+      summary: List every transaction across every account
+      description: |
+        Every transaction across every cash account and investment account,
+        newest first. A buy/sell pair and a transfer are each recorded on both
+        sides internally, but appear here only once: a buy/sell as its
+        investment-account (portfolio) leg, a transfer as its outbound leg.
+
+        `value` is the signed net cash flow — negative for a debit (a cash
+        account's removal, fee, tax, transfer-out, …) or a liquidation (an
+        investment account's sell, transfer-out, delivery-outbound); positive
+        otherwise. `grossValue`, `fees` and `taxes` are plain (unsigned)
+        magnitudes in the transaction's own currency.
+      responses:
+        "200":
+          description: Every transaction, newest first
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Transaction"
+              examples:
+                default:
+                  value:
+                    items:
+                      - uuid: 1a2b3c4d-5e6f-4a1b-8c2d-3e4f5a6b7c8d
+                        date: "2026-07-20T00:00"
+                        type: dividends
+                        value: { value: 42.5, currency: EUR }
+                        grossValue: { value: 50, currency: EUR }
+                        fees: { value: 0, currency: EUR }
+                        taxes: { value: 7.5, currency: EUR }
+                        shares: 10
+                        security:
+                          uuid: 8a1e0c4b-2f5d-4e6a-b1c3-7d9f0a2e4c68
+                          name: Apple Inc.
+                        owner:
+                          uuid: c4b2a1e0-3f6d-4a2e-8b1c-5d7f9a0e2c46
+                          name: Broker Cash
+                          type: cash-account
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /v1/files/{file}/holdings:
     parameters:
       - $ref: "#/components/parameters/File"
@@ -1033,6 +1094,89 @@ components:
           type: string
           format: date
           description: The date the price is from.
+
+    Transaction:
+      type: object
+      description: One entry of the all-transactions list.
+      required: [uuid, date, type, value, grossValue, fees, taxes, owner]
+      properties:
+        uuid:
+          type: string
+        date:
+          type: string
+          format: date-time
+        type:
+          type: string
+          description: |
+            A stable, machine-readable transaction type — not the (localized)
+            label the desktop application shows.
+          enum:
+            - deposit
+            - removal
+            - interest
+            - interest-charge
+            - dividends
+            - fees
+            - fees-refund
+            - taxes
+            - tax-refund
+            - buy
+            - sell
+            - transfer-in
+            - transfer-out
+            - delivery-inbound
+            - delivery-outbound
+        value:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: |
+            The signed net cash flow: negative for a debit (a cash account's
+            removal, fee, tax, transfer-out, …) or a liquidation (an investment
+            account's sell, transfer-out, delivery-outbound); positive
+            otherwise.
+        grossValue:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: The value before fees and taxes, as a plain (unsigned) magnitude.
+        fees:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: The fees charged, as a plain (unsigned) magnitude.
+        taxes:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: The taxes charged, as a plain (unsigned) magnitude.
+        shares:
+          type: number
+          description: The number of shares. Present only when `security` is present.
+        security:
+          type: object
+          description: Omitted for a transaction without a security (e.g. a deposit).
+          required: [uuid, name]
+          properties:
+            uuid:
+              type: string
+              description: Joins to `GET .../instruments/{uuid}` for master data.
+            name:
+              type: string
+        owner:
+          type: object
+          description: The cash account or investment account the transaction belongs to.
+          required: [uuid, name, type]
+          properties:
+            uuid:
+              type: string
+              description: |
+                Joins to `GET .../cash-accounts/{uuid}` (type `cash-account`) or
+                `GET .../investment-accounts/{uuid}` (type `investment-account`).
+            name:
+              type: string
+            type:
+              type: string
+              enum: [cash-account, investment-account]
+        note:
+          type: string
+          description: Omitted when not set.
 
     Holding:
       type: object

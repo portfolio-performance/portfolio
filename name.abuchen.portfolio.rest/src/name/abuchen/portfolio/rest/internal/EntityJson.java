@@ -12,10 +12,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AttributeFieldType;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.rest.FileAccessRegistry.FileAccess;
@@ -290,5 +294,116 @@ public final class EntityJson
         if (portfolio.getReferenceAccount() != null)
             json.addProperty("referenceCashAccount", portfolio.getReferenceAccount().getUUID()); //$NON-NLS-1$
         return json;
+    }
+
+    /**
+     * One entry of the "all transactions" list: an {@link AccountTransaction}
+     * or {@link PortfolioTransaction}, plus the account or investment account
+     * that owns it. {@code value} is the signed net cash flow (negative for a
+     * debit/liquidation), matching the sign convention {@code CSVExporter}
+     * already uses; {@code grossValue}, {@code fees} and {@code taxes} are
+     * plain (unsigned) magnitudes in the transaction's own currency.
+     */
+    public static JsonObject toJson(TransactionPair<?> pair)
+    {
+        var transaction = pair.getTransaction();
+
+        var json = new JsonObject();
+        json.addProperty("uuid", transaction.getUUID());
+        json.addProperty("date", transaction.getDateTime().toString());
+        json.addProperty("type", wireType(transaction));
+        json.add("value", toJson(Money.of(transaction.getCurrencyCode(), signedAmount(transaction))));
+        json.add("grossValue", toJson(transaction.getGrossValue()));
+        json.add("fees", toJson(transaction.getUnitSum(Transaction.Unit.Type.FEE)));
+        json.add("taxes", toJson(transaction.getUnitSum(Transaction.Unit.Type.TAX)));
+
+        var security = transaction.getSecurity();
+        if (security != null)
+        {
+            json.add("shares", decimal(transaction.getShares(), Values.Share.precision()));
+
+            var securityJson = new JsonObject();
+            securityJson.addProperty("uuid", security.getUUID());
+            securityJson.addProperty("name", security.getName());
+            json.add("security", securityJson);
+        }
+
+        json.add("owner", toJsonOwner(pair));
+
+        if (transaction.getNote() != null)
+            json.addProperty("note", transaction.getNote());
+
+        return json;
+    }
+
+    private static JsonObject toJsonOwner(TransactionPair<?> pair)
+    {
+        var json = new JsonObject();
+        if (pair.isAccountTransaction())
+        {
+            var account = (Account) pair.getOwner();
+            json.addProperty("uuid", account.getUUID());
+            json.addProperty("name", account.getName());
+            json.addProperty("type", "cash-account");
+        }
+        else
+        {
+            var portfolio = (Portfolio) pair.getOwner();
+            json.addProperty("uuid", portfolio.getUUID());
+            json.addProperty("name", portfolio.getName());
+            json.addProperty("type", "investment-account");
+        }
+        return json;
+    }
+
+    /**
+     * A stable, machine-readable transaction type, deliberately independent of
+     * {@code Type#toString()} (locale-dependent, see {@code AttributeCodec}'s
+     * class comment for the same concern with attribute types).
+     */
+    private static String wireType(Transaction transaction)
+    {
+        if (transaction instanceof AccountTransaction t)
+        {
+            return switch (t.getType())
+            {
+                case DEPOSIT -> "deposit";
+                case REMOVAL -> "removal";
+                case INTEREST -> "interest";
+                case INTEREST_CHARGE -> "interest-charge";
+                case DIVIDENDS -> "dividends";
+                case FEES -> "fees";
+                case FEES_REFUND -> "fees-refund";
+                case TAXES -> "taxes";
+                case TAX_REFUND -> "tax-refund";
+                case BUY -> "buy";
+                case SELL -> "sell";
+                case TRANSFER_IN -> "transfer-in";
+                case TRANSFER_OUT -> "transfer-out";
+            };
+        }
+        else if (transaction instanceof PortfolioTransaction t)
+        {
+            return switch (t.getType())
+            {
+                case BUY -> "buy";
+                case SELL -> "sell";
+                case TRANSFER_IN -> "transfer-in";
+                case TRANSFER_OUT -> "transfer-out";
+                case DELIVERY_INBOUND -> "delivery-inbound";
+                case DELIVERY_OUTBOUND -> "delivery-outbound";
+            };
+        }
+        throw new IllegalArgumentException("unsupported transaction type: " + transaction.getClass());
+    }
+
+    /** the net cash flow, signed negative for a debit (account) or liquidation (portfolio) transaction */
+    private static long signedAmount(Transaction transaction)
+    {
+        if (transaction instanceof AccountTransaction t)
+            return t.getType().isDebit() ? -t.getAmount() : t.getAmount();
+        else if (transaction instanceof PortfolioTransaction t)
+            return t.getType().isLiquidation() ? -t.getAmount() : t.getAmount();
+        throw new IllegalArgumentException("unsupported transaction type: " + transaction.getClass());
     }
 }
