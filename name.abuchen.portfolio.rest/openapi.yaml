@@ -1959,6 +1959,30 @@ components:
             for the interval.
         breakdown:
           $ref: "#/components/schemas/PerformanceBreakdown"
+        ratios:
+          $ref: "#/components/schemas/PerformanceRatios"
+
+    PerformanceRatios:
+      type: object
+      description: |
+        Cost ratios for the period, as fractions — not percentages. Reported
+        rather than left to the client to derive: the breakdown alone does not
+        pin down the denominators these use.
+      required: [taxRate, feeRate]
+      properties:
+        taxRate:
+          type: [number, "null"]
+          description: |
+            `taxes / (unrealizedCapitalGains + realizedCapitalGains + income -
+            fees)`, using unsigned magnitudes for taxes and fees. `null` when the
+            denominator is zero, or when either side is negative — the ratio has
+            no meaning for a loss-making period.
+        feeRate:
+          type: [number, "null"]
+          description: |
+            `fees / (unrealizedCapitalGains + realizedCapitalGains + income)`,
+            using an unsigned magnitude for fees. `null` under the same
+            conditions as `taxRate`.
 
     PerformanceCalendar:
       type: object

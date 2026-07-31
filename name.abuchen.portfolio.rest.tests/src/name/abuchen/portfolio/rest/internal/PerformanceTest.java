@@ -265,6 +265,39 @@ public class PerformanceTest
                         "invalid-value");
     }
 
+    /**
+     * The tax and fee rates are reported because the breakdown alone does not pin
+     * down their denominators: both divide by the gains, and the tax rate's
+     * denominator is additionally net of fees.
+     */
+    @Test
+    public void testCostRatios()
+    {
+        var client = heldPosition(account -> account //
+                        .fees____("2024-04-01", Values.Amount.factorize(20)) //
+                        .tax_____("2024-05-01", Values.Amount.factorize(15)));
+
+        var result = perf(client, "2024-01-01", "2024-12-31", null, null);
+        var ratios = result.get("ratios").getAsJsonObject();
+
+        // gains are 200 unrealized; fees 20, taxes 15
+        assertThat(ratios.get("feeRate").getAsDouble(), closeTo(20d / 200d, 1e-6));
+        assertThat(ratios.get("taxRate").getAsDouble(), closeTo(15d / (200d - 20d), 1e-6));
+    }
+
+    /** a period with no gains has no denominator, so the ratios are not defined */
+    @Test
+    public void testCostRatiosAreNullWithoutGains()
+    {
+        var client = new Client();
+        new AccountBuilder().deposit_("2023-06-01", Values.Amount.factorize(1000)).addTo(client);
+
+        var ratios = perf(client, "2024-01-01", "2024-12-31", null, null).get("ratios").getAsJsonObject();
+
+        assertThat(ratios.get("taxRate").isJsonNull(), is(true));
+        assertThat(ratios.get("feeRate").isJsonNull(), is(true));
+    }
+
     private static Client heldPosition()
     {
         return heldPosition(account -> {

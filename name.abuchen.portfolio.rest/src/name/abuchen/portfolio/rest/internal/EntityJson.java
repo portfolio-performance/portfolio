@@ -564,6 +564,13 @@ public final class EntityJson
         breakdown.add("closingValue", toJson(performance.getValue(CategoryType.FINAL_VALUE))); //$NON-NLS-1$
         json.add("breakdown", breakdown); //$NON-NLS-1$
 
+        // the breakdown alone does not pin down these denominators, so the
+        // computed ratios are reported rather than left to the client to guess
+        var ratios = new JsonObject();
+        ratios.add("taxRate", ratio(performance.getPortfolioTaxRate()));
+        ratios.add("feeRate", ratio(performance.getPortfolioFeeRate()));
+        json.add("ratios", ratios);
+
         return json;
     }
 
