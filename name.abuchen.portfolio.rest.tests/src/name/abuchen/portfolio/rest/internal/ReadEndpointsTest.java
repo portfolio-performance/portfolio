@@ -12,6 +12,7 @@ import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 
 @SuppressWarnings("nls")
 public class ReadEndpointsTest
@@ -81,11 +82,16 @@ public class ReadEndpointsTest
         var client = new Client();
         var account = new AccountBuilder().addTo(client);
         new PortfolioBuilder(account).addTo(client);
+        var factory = new ExchangeRateProviderFactory(client);
 
-        assertThat(AccountsHandler.list(client).getAsJsonObject().get("items").getAsJsonArray().size(), is(1));
+        var accounts = AccountsHandler.list(client, factory, null).getAsJsonObject().get("items").getAsJsonArray();
+        assertThat(accounts.size(), is(1));
+        assertThat(accounts.get(0).getAsJsonObject().has("balance"), is(true));
 
-        var portfolios = PortfoliosHandler.list(client).getAsJsonObject().get("items").getAsJsonArray();
+        var portfolios = PortfoliosHandler.list(client, factory, null, null).getAsJsonObject().get("items")
+                        .getAsJsonArray();
         assertThat(portfolios.size(), is(1));
+        assertThat(portfolios.get(0).getAsJsonObject().has("value"), is(true));
         assertThat(portfolios.get(0).getAsJsonObject().get("referenceCashAccount").getAsString(),
                         is(account.getUUID()));
     }

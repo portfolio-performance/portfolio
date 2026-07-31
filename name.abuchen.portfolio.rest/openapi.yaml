@@ -441,6 +441,18 @@ paths:
       operationId: listCashAccounts
       tags: [Cash accounts]
       summary: List the cash accounts in a file
+      description: |
+        Each account's `balance` is a plain running total of its transactions
+        up to `date`, in the account's own currency — never converted, so it
+        is unaffected by exchange rates.
+      parameters:
+        - name: date
+          in: query
+          required: false
+          description: The balance date (default: today).
+          schema:
+            type: string
+            format: date
       responses:
         "200":
           description: The cash accounts in the file
@@ -473,6 +485,14 @@ paths:
       operationId: getCashAccount
       tags: [Cash accounts]
       summary: Read a single cash account
+      parameters:
+        - name: date
+          in: query
+          required: false
+          description: The balance date (default: today).
+          schema:
+            type: string
+            format: date
       responses:
         "200":
           description: The cash account
@@ -487,6 +507,9 @@ paths:
                     name: Cash Account
                     currencyCode: EUR
                     note: Settlement account
+                    balance:
+                      value: "1234.56"
+                      currency: EUR
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -505,6 +528,28 @@ paths:
       operationId: listInvestmentAccounts
       tags: [Investment accounts]
       summary: List the investment accounts in a file
+      description: |
+        Each account's `value` is the sum of every security position it
+        holds, valued at `date`'s quotes and converted into `currency` -
+        the same valuation the holdings endpoint uses.
+      parameters:
+        - name: date
+          in: query
+          required: false
+          description: The valuation date (default: today).
+          schema:
+            type: string
+            format: date
+        - name: currency
+          in: query
+          required: false
+          description: |
+            The reporting currency for `value` (default: the file's base
+            currency). A currency pair without an exchange rate series
+            converts 1:1 - the same silent fallback the application itself
+            applies.
+          schema:
+            type: string
       responses:
         "200":
           description: The investment accounts in the file
@@ -540,6 +585,22 @@ paths:
       description: |
         An investment account holds **only** instrument positions. Its cash side is
         a separate cash account, named by `referenceCashAccount`.
+      parameters:
+        - name: date
+          in: query
+          required: false
+          description: The valuation date (default: today).
+          schema:
+            type: string
+            format: date
+        - name: currency
+          in: query
+          required: false
+          description: |
+            The reporting currency for `value` (default: the file's base
+            currency).
+          schema:
+            type: string
       responses:
         "200":
           description: The investment account
@@ -554,6 +615,9 @@ paths:
                     name: Broker
                     referenceCashAccount: c4b2a1e0-3f6d-4a2e-8b1c-5d7f9a0e2c46
                     note: Main brokerage
+                    value:
+                      value: "10520.75"
+                      currency: EUR
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -1060,7 +1124,7 @@ components:
     CashAccount:
       type: object
       description: An account holding cash in a single currency.
-      required: [uuid, name, currencyCode]
+      required: [uuid, name, currencyCode, balance]
       properties:
         uuid:
           type: string
@@ -1072,13 +1136,19 @@ components:
         note:
           type: string
           description: Omitted when not set.
+        balance:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: |
+            The account's running balance at the request's `date`, always in
+            `currencyCode` - never converted.
 
     InvestmentAccount:
       type: object
       description: |
         An account holding instrument positions. Its cash side is a separate cash
         account, named by `referenceCashAccount`.
-      required: [uuid, name]
+      required: [uuid, name, value]
       properties:
         uuid:
           type: string
@@ -1092,6 +1162,12 @@ components:
         note:
           type: string
           description: Omitted when not set.
+        value:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: |
+            The total value of every security position this account holds at
+            the request's `date`, converted into the request's `currency`.
 
     MonetaryValue:
       type: object
