@@ -1211,6 +1211,81 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
+  /v1/files/{file}/trades:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    get:
+      operationId: getTrades
+      tags: [Performance]
+      summary: Buy/sell activity paired into round trips
+      description: |
+        Each entry is one round trip in a security: when it was entered, when (or
+        whether) it was closed, what went in and came out, and the resulting
+        profit/loss, holding period and IRR.
+
+        Unlike the other performance endpoints this takes **no date range**. A
+        trade is a fact about a holding rather than about a reporting period, so
+        the whole history of each security is paired and the client filters. An
+        **open** trade is valued at today's price and its holding period runs to
+        today, so those fields are not reproducible for a past date — hence the
+        absence of a date parameter that would imply otherwise.
+
+        A security whose transaction history cannot be paired is skipped and named
+        in `skippedInstruments` rather than failing the request, so a caller can
+        tell "no trades" apart from "not all trades".
+      parameters:
+        - name: currency
+          in: query
+          required: false
+          description: |
+            The reporting currency (default: the file's base currency). A
+            currency pair without an exchange rate series converts 1:1 — the
+            same silent fallback the application itself applies.
+          schema:
+            type: string
+        - name: onlyClosed
+          in: query
+          required: false
+          description: Report only completed round trips.
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "200":
+          description: The paired trades
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TradeCollection"
+              examples:
+                default:
+                  value:
+                    currency: EUR
+                    items:
+                      - security: { uuid: 4e0c0f0a-0000-4000-8000-000000000001, name: ACME Corp }
+                        start: "2024-03-01"
+                        end: "2024-09-12"
+                        closed: true
+                        shares: 20
+                        entryValue: { value: 2000, currency: EUR }
+                        exitValue: { value: 2350, currency: EUR }
+                        profitLoss: { value: 350, currency: EUR }
+                        holdingPeriodDays: 195
+                        irr: 0.31
+                        return: 0.175
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
 components:
   securitySchemes:
     bearerAuth:
@@ -1945,6 +2020,73 @@ components:
               type: number
             sellVolume:
               type: number
+
+    TradeCollection:
+      type: object
+      required: [currency, items]
+      properties:
+        currency:
+          type: string
+          description: The reporting currency of every amount in `items`.
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Trade"
+        skippedInstruments:
+          type: array
+          description: |
+            Names of securities whose transaction history could not be paired into
+            trades. Present only when at least one was skipped; its presence means
+            `items` is incomplete.
+          items:
+            type: string
+
+    Trade:
+      type: object
+      description: One round trip in a security.
+      required: [security, start, closed, shares, entryValue, exitValue, profitLoss, holdingPeriodDays, irr, return]
+      properties:
+        security:
+          type: object
+          required: [uuid, name]
+          properties:
+            uuid:
+              type: string
+              description: Joins to `GET .../instruments/{uuid}` for master data.
+            name:
+              type: string
+        start:
+          type: string
+          format: date
+        end:
+          type: string
+          format: date
+          description: Omitted while the trade is still open.
+        closed:
+          type: boolean
+        shares:
+          type: number
+        entryValue:
+          $ref: "#/components/schemas/MonetaryValue"
+          description: What was paid in, including taxes and fees.
+        exitValue:
+          $ref: "#/components/schemas/MonetaryValue"
+          description: |
+            What came out. For an **open** trade this is the position's value at
+            today's price, not at any requested date.
+        profitLoss:
+          $ref: "#/components/schemas/MonetaryValue"
+        holdingPeriodDays:
+          type: integer
+          description: |
+            Share-weighted average holding period in days. For an open trade it
+            runs to today.
+        irr:
+          type: [number, "null"]
+          description: The trade's annualized internal rate of return, as a fraction.
+        return:
+          type: [number, "null"]
+          description: Profit/loss over entry value, as a fraction — not annualized.
 
     SecurityPerformanceCollection:
       type: object

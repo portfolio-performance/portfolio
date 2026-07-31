@@ -44,6 +44,7 @@ import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
+import name.abuchen.portfolio.snapshot.trades.Trade;
 
 /**
  * Maps the model entities to the wire format. The API vocabulary is
@@ -690,6 +691,51 @@ public final class EntityJson
         var json = new JsonObject();
         json.addProperty("currency", currency);
         json.add("months", items);
+        return json;
+    }
+
+    /**
+     * Buy/sell activity paired into round trips. {@code skipped} names the securities
+     * whose history the collector could not pair, so a caller can tell "no trades"
+     * apart from "not all trades".
+     */
+    public static JsonObject trades(String currency, List<Trade> trades, List<String> skipped)
+    {
+        var items = new JsonArray();
+        for (Trade trade : trades)
+        {
+            var json = new JsonObject();
+
+            var security = new JsonObject();
+            security.addProperty("uuid", trade.getSecurity().getUUID());
+            security.addProperty("name", trade.getSecurity().getName());
+            json.add("security", security);
+
+            json.addProperty("start", trade.getStart().toLocalDate().toString());
+            trade.getEnd().ifPresent(end -> json.addProperty("end", end.toLocalDate().toString()));
+            json.addProperty("closed", trade.isClosed());
+            json.add("shares", decimal(trade.getShares(), Values.Share.precision()));
+            json.add("entryValue", toJson(trade.getEntryValue()));
+            json.add("exitValue", toJson(trade.getExitValue()));
+            json.add("profitLoss", toJson(trade.getProfitLoss()));
+            json.addProperty("holdingPeriodDays", trade.getHoldingPeriod());
+            json.add("irr", ratio(trade.getIRR()));
+            json.add("return", ratio(trade.getReturn()));
+
+            items.add(json);
+        }
+
+        var json = new JsonObject();
+        json.addProperty("currency", currency);
+        json.add("items", items);
+
+        if (!skipped.isEmpty())
+        {
+            var names = new JsonArray();
+            skipped.forEach(names::add);
+            json.add("skippedInstruments", names);
+        }
+
         return json;
     }
 
