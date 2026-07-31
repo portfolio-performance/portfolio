@@ -751,6 +751,40 @@ public final class EntityJson
         return json;
     }
 
+    /**
+     * The stored quotes for one instrument, oldest first. The currency is stated
+     * once for the whole series rather than per point - every quote of an instrument
+     * is in the instrument's currency, and a per-point object would triple the size
+     * of a response that is one entry per trading day over a whole history.
+     * <p>
+     * {@code from} and {@code to} echo the range the series actually covers, so a
+     * caller can tell an empty tail of the requested range from an instrument whose
+     * history simply stops earlier. They are absent for an instrument with no prices.
+     */
+    public static JsonObject securityPrices(Security security, List<SecurityPrice> prices)
+    {
+        var items = new JsonArray();
+        for (SecurityPrice price : prices)
+        {
+            var json = new JsonObject();
+            json.addProperty("date", price.getDate().toString());
+            json.add("value", decimal(price.getValue(), Values.Quote.precision()));
+            items.add(json);
+        }
+
+        var json = new JsonObject();
+        json.addProperty("uuid", security.getUUID());
+        if (security.getCurrencyCode() != null)
+            json.addProperty("currency", security.getCurrencyCode());
+        if (!prices.isEmpty())
+        {
+            json.addProperty("from", prices.get(0).getDate().toString());
+            json.addProperty("to", prices.get(prices.size() - 1).getDate().toString());
+        }
+        json.add("items", items);
+        return json;
+    }
+
     private static JsonObject risk(Client client, PerformanceIndex index, LocalDate[] dates, double[] accumulated,
                     Risk.Drawdown drawdown, double[] drawdownSerie)
     {

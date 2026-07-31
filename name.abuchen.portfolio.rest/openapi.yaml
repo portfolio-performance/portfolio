@@ -397,6 +397,73 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
+  /v1/files/{file}/instruments/{uuid}/prices:
+    parameters:
+      - $ref: "#/components/parameters/File"
+      - $ref: "#/components/parameters/Uuid"
+    get:
+      operationId: listInstrumentPrices
+      tags: [Instruments]
+      summary: Read the historical quotes of an instrument
+      description: |
+        The price series stored in the file, oldest first, in the instrument's own
+        currency — the quotes as recorded, not converted and not recomputed, so a
+        chart drawn from them matches the application's own price chart.
+
+        The latest intraday quote is merged in when the history holds no entry for
+        its date, which keeps the last point current between quote updates.
+
+        `from` and `to` are inclusive, and both are optional: an absent bound means
+        the start (or end) of the recorded history. The response echoes the range it
+        actually covers, so an empty tail of the requested range is distinguishable
+        from a history that simply stops earlier.
+      parameters:
+        - name: from
+          in: query
+          description: Earliest date to include, inclusive. Defaults to the first price on record.
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          description: Latest date to include, inclusive. Defaults to the last price on record.
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: The instrument's price history over the requested range.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PriceSeries"
+              examples:
+                default:
+                  value:
+                    uuid: 8a1e0c4b-2f5d-4e6a-b1c3-7d9f0a2e4c68
+                    currency: USD
+                    from: "2024-01-02"
+                    to: "2024-01-04"
+                    items:
+                      - date: "2024-01-02"
+                        value: 185.64
+                      - date: "2024-01-03"
+                        value: 184.25
+                      - date: "2024-01-04"
+                        value: 181.91
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /v1/files/{file}/instruments/attribute-types:
     parameters:
       - $ref: "#/components/parameters/File"
@@ -1576,6 +1643,51 @@ components:
           type: string
           format: date
           description: The date the price is from.
+
+    PriceSeries:
+      type: object
+      description: |
+        An instrument's recorded quotes over a range, oldest first. The currency is
+        stated once for the whole series rather than on every point: every quote of
+        an instrument is in the instrument's currency, and a per-point object would
+        multiply the size of a response that is one entry per trading day.
+      required: [uuid, items]
+      properties:
+        uuid:
+          type: string
+          description: The instrument the series belongs to.
+        currency:
+          type: string
+          description: |
+            The instrument's own currency, which every `value` is in. Omitted for
+            the rare instrument without a currency.
+        from:
+          type: string
+          format: date
+          description: |
+            The date of the first point. Absent when the instrument has no prices
+            in the requested range.
+        to:
+          type: string
+          format: date
+          description: |
+            The date of the last point. Absent when the instrument has no prices
+            in the requested range.
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PricePoint"
+
+    PricePoint:
+      type: object
+      description: One recorded quote, per share, in the series' currency.
+      required: [date, value]
+      properties:
+        date:
+          type: string
+          format: date
+        value:
+          type: number
 
     CostBasis:
       type: object
