@@ -1123,6 +1123,94 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
+  /v1/files/{file}/performance/calendar:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    get:
+      operationId: getPerformanceCalendar
+      tags: [Performance]
+      summary: Per-month returns and activity
+      description: |
+        One entry per calendar month covering the requested period: the month's
+        time-weighted return plus the money that moved through it (dividends,
+        interest, fees, taxes, net transfers, and buy/sell counts and volumes).
+
+        The monthly return is the application's own figure — one performance index
+        over the month-aligned span, sampled per month, exactly as the desktop's
+        monthly-returns heat map does it. It is deliberately **not** a compounding
+        of `.../performance/series`, which would drift from the desktop.
+
+        The period is widened to whole months: the first entry is the month
+        containing `openingDate` and the last is the month containing
+        `closingDate`, each covering the entire month even where the request did
+        not. `ttwror` is `null` for a month the index does not cover (rather than
+        `0`, which would read as a flat month).
+
+        Amounts are plain numbers in the response's `currency`, as in
+        `.../performance/series`. `fees` and `taxes` are signed contributions
+        (negative), matching the value-change breakdown rather than the model's
+        unsigned storage. Each transaction is converted at **its own** date, which
+        is why this is an endpoint rather than a client-side sum over
+        `.../transactions`: transactions carry their own currencies.
+      parameters:
+        - name: openingDate
+          in: query
+          required: true
+          description: Any date in the first month to report.
+          schema:
+            type: string
+            format: date
+        - name: closingDate
+          in: query
+          required: false
+          description: |
+            Any date in the last month to report (default: today). Must be
+            strictly after `openingDate`; an empty or inverted range is rejected
+            `400 invalid-range`.
+          schema:
+            type: string
+            format: date
+        - name: currency
+          in: query
+          required: false
+          description: |
+            The reporting currency (default: the file's base currency). A
+            currency pair without an exchange rate series converts 1:1 — the
+            same silent fallback the application itself applies.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The monthly returns and activity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PerformanceCalendar"
+              examples:
+                default:
+                  value:
+                    currency: EUR
+                    months:
+                      - month: "2024-01"
+                        ttwror: 0.021
+                        earnings: { dividends: 210, interest: 12.5 }
+                        fees: -8
+                        taxes: -55
+                        netTransfers: 1000
+                        trades: { buys: 3, sells: 1, buyVolume: 4500, sellVolume: 900 }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
 components:
   securitySchemes:
     bearerAuth:
@@ -1796,6 +1884,67 @@ components:
             for the interval.
         breakdown:
           $ref: "#/components/schemas/PerformanceBreakdown"
+
+    PerformanceCalendar:
+      type: object
+      required: [currency, months]
+      properties:
+        currency:
+          type: string
+          description: The reporting currency of every amount in `months`.
+        months:
+          type: array
+          description: Ascending, one entry per calendar month, no gaps.
+          items:
+            $ref: "#/components/schemas/PerformanceMonth"
+
+    PerformanceMonth:
+      type: object
+      required: [month, ttwror, earnings, fees, taxes, netTransfers, trades]
+      properties:
+        month:
+          type: string
+          description: The month, as `YYYY-MM`.
+          pattern: "^[0-9]{4}-[0-9]{2}$"
+        ttwror:
+          type: [number, "null"]
+          description: |
+            The month's time-weighted return as a fraction — not a percentage.
+            `null` when the performance index does not cover the month at all,
+            which is different from a flat month (`0`).
+        earnings:
+          type: object
+          required: [dividends, interest]
+          properties:
+            dividends:
+              type: number
+            interest:
+              type: number
+              description: Interest received less interest charged.
+        fees:
+          type: number
+          description: A signed contribution, so never positive unless refunds exceeded fees.
+        taxes:
+          type: number
+          description: A signed contribution, so never positive unless refunds exceeded taxes.
+        netTransfers:
+          type: number
+          description: |
+            External capital flow for the month: deposits less removals, plus
+            inbound less outbound deliveries (a delivery moves assets without a
+            cash leg, so it belongs here rather than with trades).
+        trades:
+          type: object
+          required: [buys, sells, buyVolume, sellVolume]
+          properties:
+            buys:
+              type: integer
+            sells:
+              type: integer
+            buyVolume:
+              type: number
+            sellVolume:
+              type: number
 
     SecurityPerformanceCollection:
       type: object

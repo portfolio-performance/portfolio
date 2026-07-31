@@ -649,6 +649,50 @@ public final class EntityJson
         return json;
     }
 
+    /**
+     * Per-month returns and activity. Amounts are plain numbers in the response's
+     * {@code currency}, as in the daily series - one currency for the whole payload.
+     * Fees and taxes are signed contributions (negative), matching the value-change
+     * breakdown rather than the model's unsigned storage.
+     */
+    public static JsonObject performanceCalendar(String currency,
+                    List<PerformanceCalendarHandler.MonthEntry> months)
+    {
+        var items = new JsonArray();
+        for (PerformanceCalendarHandler.MonthEntry entry : months)
+        {
+            var bucket = entry.bucket();
+            var precision = Values.Money.precision();
+
+            var json = new JsonObject();
+            json.addProperty("month", entry.month().toString());
+            json.add("ttwror", ratio(entry.ttwror()));
+
+            var earnings = new JsonObject();
+            earnings.add("dividends", decimal(bucket.dividends, precision));
+            earnings.add("interest", decimal(bucket.interest, precision));
+            json.add("earnings", earnings);
+
+            json.add("fees", decimal(bucket.fees, precision));
+            json.add("taxes", decimal(bucket.taxes, precision));
+            json.add("netTransfers", decimal(bucket.netTransfers, precision));
+
+            var trades = new JsonObject();
+            trades.addProperty("buys", bucket.buys);
+            trades.addProperty("sells", bucket.sells);
+            trades.add("buyVolume", decimal(bucket.buyVolume, precision));
+            trades.add("sellVolume", decimal(bucket.sellVolume, precision));
+            json.add("trades", trades);
+
+            items.add(json);
+        }
+
+        var json = new JsonObject();
+        json.addProperty("currency", currency);
+        json.add("months", items);
+        return json;
+    }
+
     private static JsonObject risk(PerformanceIndex index, LocalDate[] dates, double[] accumulated,
                     Risk.Drawdown drawdown, double[] drawdownSerie)
     {

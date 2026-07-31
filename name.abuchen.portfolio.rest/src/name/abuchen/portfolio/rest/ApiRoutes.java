@@ -17,6 +17,7 @@ import name.abuchen.portfolio.rest.internal.HoldingsHandler;
 import name.abuchen.portfolio.rest.internal.InstrumentChangeLog;
 import name.abuchen.portfolio.rest.internal.OpenApiHandler;
 import name.abuchen.portfolio.rest.internal.PairingHandler;
+import name.abuchen.portfolio.rest.internal.PerformanceCalendarHandler;
 import name.abuchen.portfolio.rest.internal.PerformanceHandler;
 import name.abuchen.portfolio.rest.internal.PortfoliosHandler;
 import name.abuchen.portfolio.rest.internal.Request;
@@ -109,6 +110,11 @@ public final class ApiRoutes
 
         router.add("GET", "/v1/files/{file}/performance/series", calc(resolver, host,
                         (context, req) -> Response.json(200, PerformanceHandler.series(context.client(),
+                                        context.factory(), req.queryParam("openingDate"),
+                                        req.queryParam("closingDate"), req.queryParam("currency")))));
+
+        router.add("GET", "/v1/files/{file}/performance/calendar", calc(resolver, host,
+                        (context, req) -> Response.json(200, PerformanceCalendarHandler.list(context.client(),
                                         context.factory(), req.queryParam("openingDate"),
                                         req.queryParam("closingDate"), req.queryParam("currency")))));
 
