@@ -203,7 +203,10 @@ public final class EntityJson
             json.add("price", price); //$NON-NLS-1$
 
             addSecurityDetails(json, context.client(), security);
-            context.record(security).ifPresent(record -> addCostBasis(json, context.costMethod(), record));
+            context.record(security).ifPresent(record -> {
+                addCostBasis(json, context.costMethod(), record);
+                addProfitLoss(json, context.costMethod(), record);
+            });
         }
 
         json.add("valuation", toJson(position.getValuation())); //$NON-NLS-1$
@@ -237,6 +240,24 @@ public final class EntityJson
         purchaseValue.add("gross", toJson(record.getCost(costMethod, TaxesAndFees.INCLUDED))); //$NON-NLS-1$
         purchaseValue.add("net", toJson(record.getCost(costMethod, TaxesAndFees.NOT_INCLUDED))); //$NON-NLS-1$
         json.add("purchaseValue", purchaseValue); //$NON-NLS-1$
+    }
+
+    /**
+     * The unrealized profit/loss on the shares still held at the given cost
+     * method, plus {@code delta}/{@code deltaPercent} - a cost-method
+     * independent "absolute performance" that additionally accounts for sells
+     * and dividends over the period (mirrors the desktop's "capital gains" and
+     * "absolute performance" columns).
+     */
+    private static void addProfitLoss(JsonObject json, CostMethod costMethod, LazySecurityPerformanceRecord record)
+    {
+        var profitLoss = new JsonObject();
+        profitLoss.add("value", toJson(record.getCapitalGainsOnHoldings(costMethod))); //$NON-NLS-1$
+        profitLoss.add("percent", ratio(record.getCapitalGainsOnHoldingsPercent(costMethod))); //$NON-NLS-1$
+        json.add("profitLoss", profitLoss); //$NON-NLS-1$
+
+        json.add("delta", toJson(record.getDelta())); //$NON-NLS-1$
+        json.add("deltaPercent", ratio(record.getDeltaPercent())); //$NON-NLS-1$
     }
 
     /** a per-share quote, e.g. a cost basis per share - {value, currency}, like {@link #toJson(Money)} */
@@ -299,6 +320,12 @@ public final class EntityJson
     private static JsonElement ratio(double value)
     {
         return Double.isFinite(value) ? decimal(value) : JsonNull.INSTANCE;
+    }
+
+    /** a return ratio the model may not be able to define at all (null), not only non-finite */
+    private static JsonElement ratio(Double value)
+    {
+        return value == null ? JsonNull.INSTANCE : ratio(value.doubleValue());
     }
 
     private static Money negate(Money money)

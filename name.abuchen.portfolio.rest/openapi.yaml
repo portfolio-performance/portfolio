@@ -1281,6 +1281,35 @@ components:
             Instruments only. The total cost basis of the shares held at
             `costMethod`, over `(openingDate, date]`. Omitted when the security
             has no line item in the period.
+        profitLoss:
+          type: object
+          description: |
+            Instruments only. The unrealized profit/loss against
+            `purchaseValue.gross` at `costMethod`. Omitted when the security
+            has no line item in the period.
+          required: [value, percent]
+          properties:
+            value:
+              $ref: "#/components/schemas/MonetaryValue"
+            percent:
+              type: [number, "null"]
+              description: |
+                A fraction (0.1 is 10%), not a percentage. `null` when the
+                model cannot define it.
+        delta:
+          allOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+          description: |
+            Instruments only. Market value plus sells and dividends over the
+            period, minus purchase costs — a cost-method independent absolute
+            performance figure. Omitted when the security has no line item in
+            the period.
+        deltaPercent:
+          type: [number, "null"]
+          description: |
+            Instruments only. `delta` as a fraction (not a percentage) of
+            capital committed. `null` when the model cannot define it. Omitted
+            when `delta` is omitted.
         valuation:
           allOf:
             - $ref: "#/components/schemas/MonetaryValue"

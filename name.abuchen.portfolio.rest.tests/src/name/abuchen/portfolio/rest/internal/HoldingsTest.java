@@ -313,6 +313,38 @@ public class HoldingsTest
         assertThat(cash.has("purchaseValue"), is(false));
     }
 
+    /**
+     * profitLoss is the unrealized gain against the (gross) cost basis at the
+     * chosen cost method; delta is a cost-method independent "market value +
+     * sells + dividends - purchase costs" figure that, absent any sells or
+     * dividends, coincides with profitLoss here.
+     */
+    @Test
+    public void testProfitLossAndDelta()
+    {
+        var client = new Client();
+
+        var security = new SecurityBuilder() //
+                        .addPrice("2026-07-20", Values.Quote.factorize(110)) //
+                        .addTo(client);
+        security.setName("ACME");
+
+        new PortfolioBuilder() //
+                        .buy(security, "2026-01-15", Values.Share.factorize(10), Values.Amount.factorize(1000)) //
+                        .addTo(client);
+
+        var holdings = list(client, "2026-07-20", null).getAsJsonObject();
+        var instrument = findByUuid(holdings, security.getUUID());
+
+        // valuation 1100, cost basis (no fees here) 1000: profit 100, 10%
+        var profitLoss = instrument.get("profitLoss").getAsJsonObject();
+        assertThat(profitLoss.get("value").getAsJsonObject().get("value").getAsDouble(), is(100d));
+        assertThat(profitLoss.get("percent").getAsDouble(), closeTo(0.1, 1e-10));
+
+        assertThat(instrument.get("delta").getAsJsonObject().get("value").getAsDouble(), is(100d));
+        assertThat(instrument.get("deltaPercent").getAsDouble(), closeTo(0.1, 1e-10));
+    }
+
     @Test
     public void testOpeningDateMustPrecedeDate()
     {
