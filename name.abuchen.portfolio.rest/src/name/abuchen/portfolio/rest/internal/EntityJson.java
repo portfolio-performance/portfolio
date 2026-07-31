@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -206,6 +207,7 @@ public final class EntityJson
             context.record(security).ifPresent(record -> {
                 addCostBasis(json, context.costMethod(), record);
                 addProfitLoss(json, context.costMethod(), record);
+                addReturns(json, record);
             });
         }
 
@@ -258,6 +260,40 @@ public final class EntityJson
 
         json.add("delta", toJson(record.getDelta())); //$NON-NLS-1$
         json.add("deltaPercent", ratio(record.getDeltaPercent())); //$NON-NLS-1$
+    }
+
+    /**
+     * The time-weighted (TTWROR, and its annualized form) and money-weighted
+     * (IRR) return over the period, as fractions - independent of the cost
+     * method (mirrors the desktop's "ttwror"/"ttwror_pa"/"irr" columns).
+     * <p>
+     * TTWROR is computed through {@code PerformanceIndex.forInvestment}, which
+     * filters the client down to a single security via
+     * {@code ClientSecurityFilter} - a filter that assumes every portfolio
+     * transaction for that security has a linked cash account and throws an
+     * NPE for one that does not (e.g. a security acquired only through an
+     * inbound delivery, with no buy/sell ever booked). One security's
+     * unsupported shape must not fail the whole holdings response, so this is
+     * caught and reported as "cannot be computed" - same as the model's own
+     * NaN/infinite convention for a return it cannot define.
+     */
+    private static void addReturns(JsonObject json, LazySecurityPerformanceRecord record)
+    {
+        json.add("ttwror", safeRatio(record::getTrueTimeWeightedRateOfReturn)); //$NON-NLS-1$
+        json.add("ttwrorAnnualized", safeRatio(record::getTrueTimeWeightedRateOfReturnAnnualized)); //$NON-NLS-1$
+        json.add("irr", ratio(record.getIrr())); //$NON-NLS-1$
+    }
+
+    private static JsonElement safeRatio(Supplier<Double> supplier)
+    {
+        try
+        {
+            return ratio(supplier.get());
+        }
+        catch (RuntimeException e)
+        {
+            return JsonNull.INSTANCE;
+        }
     }
 
     /** a per-share quote, e.g. a cost basis per share - {value, currency}, like {@link #toJson(Money)} */

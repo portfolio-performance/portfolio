@@ -3,6 +3,7 @@ package name.abuchen.portfolio.rest.internal;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,8 +40,7 @@ public final class HoldingsHandler
      * Beyond the point-in-time snapshot, each instrument position is also
      * enriched with period-dependent metrics (cost basis, returns, dividends)
      * computed over {@code (openingDate, date]}. {@code openingDate} defaults
-     * to "since inception" ({@link LocalDate#MIN}) - the same default the
-     * desktop application's statement-of-assets view uses for these columns -
+     * to "since inception" - see {@link #inceptionDate(Client, LocalDate)} -
      * and {@code costMethod} defaults to FIFO, matching the performance
      * endpoint.
      */
@@ -109,10 +109,36 @@ public final class HoldingsHandler
         var converter = new CurrencyConverterImpl(factory, currency);
         var snapshot = ClientSnapshot.create(client, converter, date);
 
-        var interval = Interval.of(openingDate != null ? openingDate : LocalDate.MIN, date);
+        var interval = Interval.of(openingDate != null ? openingDate : inceptionDate(client, date), date);
         var context = buildContext(client, converter, currency, interval, costMethod, date, snapshot);
 
         return EntityJson.toJson(context, snapshot);
+    }
+
+    /**
+     * "Since inception" for the whole file: the day before its earliest
+     * transaction date (one day earlier because {@link Interval} is half-open
+     * and excludes its start - the earliest transaction must fall inside the
+     * interval, not on its boundary), or {@code date} itself (an empty
+     * interval) when the file has no transaction yet.
+     * <p>
+     * Deliberately not {@link LocalDate#MIN}: unlike the cost-basis and
+     * dividend metrics (which only ever scan the actual transaction list, so
+     * an arbitrarily distant interval start costs nothing extra), the
+     * TTWROR calculation builds a day-indexed series over the whole interval -
+     * the same "since inception" default the desktop's statement of assets
+     * view uses for its non-period-selectable columns would exhaust the heap
+     * for period-selectable ones such as TTWROR. Bounding "inception" to the
+     * file's actual first activity keeps the one shared interval safe for
+     * every metric.
+     */
+    private static LocalDate inceptionDate(Client client, LocalDate date)
+    {
+        return client.getAllTransactions().stream() //
+                        .map(pair -> pair.getTransaction().getDateTime().toLocalDate()) //
+                        .min(Comparator.naturalOrder()) //
+                        .map(earliest -> earliest.minusDays(1)) //
+                        .orElse(date);
     }
 
     /**

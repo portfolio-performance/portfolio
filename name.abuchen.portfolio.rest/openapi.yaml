@@ -641,9 +641,10 @@ paths:
 
         Beyond the point-in-time valuation, each instrument position is also
         enriched with metrics over `(openingDate, date]` — cost basis, returns,
-        dividends, and more. `openingDate` defaults to "since inception"
-        (the security's first transaction), the same default the desktop
-        application's statement-of-assets view uses for these columns.
+        dividends, and more. `openingDate` defaults to "since inception": the
+        file's earliest transaction (across every account and investment
+        account, not only this instrument's own) — an empty period for a file
+        with none yet.
       parameters:
         - name: date
           in: query
@@ -1310,6 +1311,25 @@ components:
             Instruments only. `delta` as a fraction (not a percentage) of
             capital committed. `null` when the model cannot define it. Omitted
             when `delta` is omitted.
+        ttwror:
+          type: [number, "null"]
+          description: |
+            Instruments only. The true time-weighted rate of return over the
+            period, as a fraction. `null` when the model cannot define it.
+            Omitted when the security has no line item in the period.
+        ttwrorAnnualized:
+          type: [number, "null"]
+          description: |
+            Instruments only. `ttwror` annualized. `null` when the model
+            cannot define it. Omitted when the security has no line item in
+            the period.
+        irr:
+          type: [number, "null"]
+          description: |
+            Instruments only. The internal (money-weighted) rate of return
+            over the period, as a fraction. `null` when the model cannot
+            define it. Omitted when the security has no line item in the
+            period.
         valuation:
           allOf:
             - $ref: "#/components/schemas/MonetaryValue"

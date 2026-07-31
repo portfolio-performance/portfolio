@@ -345,6 +345,34 @@ public class HoldingsTest
         assertThat(instrument.get("deltaPercent").getAsDouble(), closeTo(0.1, 1e-10));
     }
 
+    /**
+     * TTWROR/IRR are cost-method independent and delegate straight to
+     * {@code LazySecurityPerformanceRecord} - this only pins down that they
+     * are wired up and land as finite fractions, not the exact math (already
+     * covered by that class's own tests).
+     */
+    @Test
+    public void testTtwrorAndIrrArePresent()
+    {
+        var client = new Client();
+
+        var security = new SecurityBuilder() //
+                        .addPrice("2026-07-20", Values.Quote.factorize(121)) //
+                        .addTo(client);
+        security.setName("ACME");
+
+        new PortfolioBuilder() //
+                        .buy(security, "2026-01-15", Values.Share.factorize(10), Values.Amount.factorize(1000)) //
+                        .addTo(client);
+
+        var holdings = list(client, "2026-07-20", null).getAsJsonObject();
+        var instrument = findByUuid(holdings, security.getUUID());
+
+        assertThat(instrument.get("ttwror").getAsDouble(), closeTo(0.21, 1e-10));
+        assertThat(instrument.get("ttwrorAnnualized").getAsDouble() > 0, is(true));
+        assertThat(instrument.get("irr").getAsDouble() > 0, is(true));
+    }
+
     @Test
     public void testOpeningDateMustPrecedeDate()
     {
