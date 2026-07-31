@@ -1202,6 +1202,28 @@ components:
           allOf:
             - $ref: "#/components/schemas/Price"
           description: Instruments only.
+        isin:
+          type: string
+          description: Instruments only. Omitted when not set.
+        wkn:
+          type: string
+          description: Instruments only. Omitted when not set.
+        tickerSymbol:
+          type: string
+          description: Instruments only. Omitted when not set.
+        note:
+          type: string
+          description: Instruments only. Omitted when not set.
+        attributes:
+          type: object
+          description: |
+            Instruments only. The instrument's set custom attributes, keyed by
+            attribute id, as in `GET .../instruments`. Omitted when none are set.
+          additionalProperties:
+            oneOf:
+              - type: string
+              - type: number
+              - type: boolean
         valuation:
           allOf:
             - $ref: "#/components/schemas/MonetaryValue"
