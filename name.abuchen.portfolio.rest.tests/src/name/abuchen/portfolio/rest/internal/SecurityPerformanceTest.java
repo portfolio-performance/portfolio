@@ -59,6 +59,16 @@ public class SecurityPerformanceTest
         return item.get(field).getAsJsonObject().get("value").getAsDouble();
     }
 
+    /** every period-scoped response states the period it covers, not just its data */
+    @Test
+    public void testReportsThePeriodItCovers()
+    {
+        var result = securities(heldPosition(), "2024-03-01", "2024-09-30", null, null);
+
+        assertThat(result.get("openingDate").getAsString(), is("2024-03-01"));
+        assertThat(result.get("closingDate").getAsString(), is("2024-09-30"));
+    }
+
     @Test
     public void testReportsTheHeldPosition()
     {

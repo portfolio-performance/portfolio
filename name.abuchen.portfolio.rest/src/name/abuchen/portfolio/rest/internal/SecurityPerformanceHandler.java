@@ -39,7 +39,8 @@ public final class SecurityPerformanceHandler
         var interval = Interval.of(range.openingDate(), range.closingDate());
         var snapshot = LazySecurityPerformanceSnapshot.create(client, converter, interval);
 
-        return EntityJson.securityPerformance(range.currency(), costMethod == null ? CostMethod.FIFO : costMethod,
+        return EntityJson.securityPerformance(range.openingDate(), range.closingDate(), range.currency(),
+                        costMethod == null ? CostMethod.FIFO : costMethod,
                         snapshot.getRecords());
     }
 }

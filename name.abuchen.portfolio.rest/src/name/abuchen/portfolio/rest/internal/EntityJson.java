@@ -625,8 +625,8 @@ public final class EntityJson
      * position that was closed before the closing date - {@code heldAtClose}
      * distinguishes the two cases.
      */
-    public static JsonObject securityPerformance(String currency, CostMethod costMethod,
-                    List<LazySecurityPerformanceRecord> records)
+    public static JsonObject securityPerformance(LocalDate openingDate, LocalDate closingDate, String currency,
+                    CostMethod costMethod, List<LazySecurityPerformanceRecord> records)
     {
         var items = new JsonArray();
         for (LazySecurityPerformanceRecord record : records)
@@ -653,6 +653,8 @@ public final class EntityJson
         }
 
         var json = new JsonObject();
+        json.addProperty("openingDate", openingDate.toString());
+        json.addProperty("closingDate", closingDate.toString());
         json.addProperty("currency", currency);
         json.add("items", items);
         return json;
@@ -664,7 +666,7 @@ public final class EntityJson
      * Fees and taxes are signed contributions (negative), matching the value-change
      * breakdown rather than the model's unsigned storage.
      */
-    public static JsonObject performanceCalendar(String currency,
+    public static JsonObject performanceCalendar(LocalDate openingDate, LocalDate closingDate, String currency,
                     List<PerformanceCalendarHandler.MonthEntry> months)
     {
         var items = new JsonArray();
@@ -697,6 +699,8 @@ public final class EntityJson
         }
 
         var json = new JsonObject();
+        json.addProperty("openingDate", openingDate.toString());
+        json.addProperty("closingDate", closingDate.toString());
         json.addProperty("currency", currency);
         json.add("months", items);
         return json;

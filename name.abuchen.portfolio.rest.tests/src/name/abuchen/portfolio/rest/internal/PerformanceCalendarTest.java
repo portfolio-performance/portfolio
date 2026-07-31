@@ -53,6 +53,19 @@ public class PerformanceCalendarTest
         throw new AssertionError("no entry for " + month);
     }
 
+    /**
+     * A consumer showing several period-scoped sections side by side has to be able
+     * to tell which period each response actually covers, so every one states it.
+     */
+    @Test
+    public void testReportsThePeriodItCovers()
+    {
+        var result = calendar(heldPosition(), "2024-02-15", "2024-05-10", null);
+
+        assertThat(result.get("openingDate").getAsString(), is("2024-02-15"));
+        assertThat(result.get("closingDate").getAsString(), is("2024-05-10"));
+    }
+
     /** the period widens to whole months, so a mid-month request still starts at that month */
     @Test
     public void testCoversWholeMonths()

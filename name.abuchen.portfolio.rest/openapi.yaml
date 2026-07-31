@@ -1098,6 +1098,8 @@ paths:
               examples:
                 default:
                   value:
+                    openingDate: "2024-01-01"
+                    closingDate: "2024-12-31"
                     currency: EUR
                     items:
                       - uuid: 4e0c0f0a-0000-4000-8000-000000000001
@@ -1191,6 +1193,8 @@ paths:
               examples:
                 default:
                   value:
+                    openingDate: "2024-01-01"
+                    closingDate: "2024-12-31"
                     currency: EUR
                     months:
                       - month: "2024-01"
@@ -1988,8 +1992,18 @@ components:
 
     PerformanceCalendar:
       type: object
-      required: [currency, months]
+      required: [openingDate, closingDate, currency, months]
       properties:
+        openingDate:
+          type: string
+          format: date
+          description: |
+            The opening valuation date this response covers, echoed from the
+            request so a response always states its own period.
+        closingDate:
+          type: string
+          format: date
+          description: The closing valuation date this response covers.
         currency:
           type: string
           description: The reporting currency of every amount in `months`.
@@ -2116,8 +2130,18 @@ components:
 
     SecurityPerformanceCollection:
       type: object
-      required: [currency, items]
+      required: [openingDate, closingDate, currency, items]
       properties:
+        openingDate:
+          type: string
+          format: date
+          description: |
+            The opening valuation date this response covers, echoed from the
+            request so a response always states its own period.
+        closingDate:
+          type: string
+          format: date
+          description: The closing valuation date this response covers.
         currency:
           type: string
           description: The reporting currency of every amount in `items`.
