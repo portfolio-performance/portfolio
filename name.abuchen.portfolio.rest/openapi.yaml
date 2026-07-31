@@ -916,6 +916,117 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
+  /v1/files/{file}/performance/series:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    get:
+      operationId: getPerformanceSeries
+      tags: [Performance]
+      summary: Daily performance index and risk metrics for a period
+      description: |
+        The daily index behind `GET .../performance`: one entry per calendar day
+        with the accumulated time-weighted return, total assets, invested
+        capital, that day's external flow and the running drawdown — plus the
+        `risk` metrics derived from the same series (maximum drawdown and its
+        duration, volatility, semi-deviation, and the index's own high water
+        mark).
+
+        Amounts in `days` are plain numbers in the response's `currency`, not
+        `MonetaryValue` objects: the currency is fixed for the whole series and a
+        year is roughly 365 entries.
+
+        `openingDate` and `closingDate` follow the same valuation-snapshot
+        convention as `GET .../performance`. `days[0]` is the `openingDate`
+        baseline: its `ttwror` is 0 by construction, because the accumulated
+        index is rebased to the start of the interval. The series is clamped to
+        today, so it can be **shorter** than the requested range when
+        `closingDate` is in the future — read the effective range off the
+        entries, not off the request.
+
+        The interval must not exceed 20 years (`400 invalid-range`); the
+        response holds one entry per calendar day.
+
+        There is no `costMethod` parameter: none of these figures depend on how
+        gains split into realized and unrealized.
+      parameters:
+        - name: openingDate
+          in: query
+          required: true
+          description: The opening valuation date, and the index's rebase point.
+          schema:
+            type: string
+            format: date
+        - name: closingDate
+          in: query
+          required: false
+          description: |
+            The closing valuation date (default: today). Must be strictly after
+            `openingDate`; an empty or inverted range is rejected
+            `400 invalid-range`.
+          schema:
+            type: string
+            format: date
+        - name: currency
+          in: query
+          required: false
+          description: |
+            The reporting currency (default: the file's base currency). A
+            currency pair without an exchange rate series converts 1:1 — the
+            same silent fallback the application itself applies.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The daily index and its risk metrics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PerformanceSeries"
+              examples:
+                default:
+                  value:
+                    openingDate: "2024-01-01"
+                    closingDate: "2024-12-31"
+                    currency: EUR
+                    risk:
+                      maxDrawdown: -0.183
+                      maxDrawdownPeak: "2024-02-19"
+                      maxDrawdownTrough: "2024-04-07"
+                      maxDrawdownDurationDays: 121
+                      maxDrawdownDurationStart: "2024-02-19"
+                      maxDrawdownDurationEnd: "2024-06-19"
+                      volatility: 0.142
+                      semiDeviation: 0.101
+                      allTimeHigh:
+                        value: 0.31
+                        date: "2024-11-14"
+                        distance: -0.04
+                    days:
+                      - date: "2024-01-01"
+                        ttwror: 0
+                        totalAssets: 100000
+                        investedCapital: 100000
+                        netDeposits: 0
+                        drawdown: 0
+                      - date: "2024-01-02"
+                        ttwror: 0.0031
+                        totalAssets: 100310
+                        investedCapital: 100000
+                        netDeposits: 0
+                        drawdown: 0
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
 components:
   securitySchemes:
     bearerAuth:
@@ -1589,6 +1700,144 @@ components:
             for the interval.
         breakdown:
           $ref: "#/components/schemas/PerformanceBreakdown"
+
+    PerformanceSeries:
+      type: object
+      description: |
+        The daily performance index for a period, plus the risk metrics derived
+        from it.
+      required: [openingDate, closingDate, currency, risk, days]
+      properties:
+        openingDate:
+          type: string
+          format: date
+          description: The opening valuation date, and the index's rebase point.
+        closingDate:
+          type: string
+          format: date
+          description: |
+            The requested closing valuation date. The `days` entries can stop
+            earlier, since the series is clamped to today.
+        currency:
+          type: string
+          description: The reporting currency of every amount in `days`.
+        risk:
+          $ref: "#/components/schemas/RiskMetrics"
+        days:
+          type: array
+          description: |
+            One entry per calendar day, ascending, starting at `openingDate`.
+          items:
+            $ref: "#/components/schemas/PerformanceSeriesDay"
+
+    PerformanceSeriesDay:
+      type: object
+      required: [date, ttwror, totalAssets, investedCapital, netDeposits, drawdown]
+      properties:
+        date:
+          type: string
+          format: date
+        ttwror:
+          type: [number, "null"]
+          description: |
+            The accumulated time-weighted return from `openingDate` to this day,
+            as a fraction — not a percentage. 0 on the first day by construction.
+        totalAssets:
+          type: number
+          description: Total assets on this day, in the response's `currency`.
+        investedCapital:
+          type: number
+          description: |
+            The invested-capital series in the response's `currency`: what has
+            been put into the portfolio, seeded with the opening total assets.
+            The gap to `totalAssets` is the absolute gain.
+        netDeposits:
+          type: number
+          description: |
+            **This day's** external flow (deposits less removals) in the
+            response's `currency` — a per-day amount, not a running total.
+        drawdown:
+          type: [number, "null"]
+          description: |
+            The decline from the index's running high water mark on this day, as
+            a fraction. Zero at a new peak, negative otherwise.
+
+    RiskMetrics:
+      type: object
+      description: |
+        Risk measures for the period, computed from the daily index by the same
+        code the desktop application's risk widgets use.
+      required:
+        - maxDrawdown
+        - maxDrawdownPeak
+        - maxDrawdownTrough
+        - maxDrawdownDurationDays
+        - maxDrawdownDurationStart
+        - maxDrawdownDurationEnd
+        - volatility
+        - semiDeviation
+        - allTimeHigh
+      properties:
+        maxDrawdown:
+          type: [number, "null"]
+          description: |
+            The deepest peak-to-trough decline over the period, as a **negative**
+            fraction, matching the sign of `days[].drawdown`.
+        maxDrawdownPeak:
+          type: string
+          format: date
+          description: The peak the deepest drawdown fell from.
+        maxDrawdownTrough:
+          type: string
+          format: date
+          description: The trough of the deepest drawdown.
+        maxDrawdownDurationDays:
+          type: integer
+          description: |
+            The longest stretch, in days, spent below a previous peak. This is a
+            different interval from `maxDrawdownPeak`/`maxDrawdownTrough`: the
+            deepest drawdown and the longest one need not be the same episode.
+        maxDrawdownDurationStart:
+          type: string
+          format: date
+        maxDrawdownDurationEnd:
+          type: string
+          format: date
+        volatility:
+          type: [number, "null"]
+          description: |
+            The standard deviation of the daily returns, as a fraction. Weekends,
+            public holidays and days with no holdings are excluded. Not
+            annualized.
+        semiDeviation:
+          type: [number, "null"]
+          description: |
+            The standard deviation of the negative daily returns only (downside
+            volatility), on the same basis as `volatility`.
+        allTimeHigh:
+          $ref: "#/components/schemas/IndexHighWaterMark"
+
+    IndexHighWaterMark:
+      type: object
+      description: |
+        The highest point the accumulated index reached within the period. This
+        is the index's own high water mark, not a security's all-time high: the
+        value is an accumulated return, not a price.
+      required: [value, distance]
+      properties:
+        value:
+          type: [number, "null"]
+          description: |
+            The accumulated return at the peak, as a fraction — not a percentage.
+        date:
+          type: string
+          format: date
+          description: The day the peak was reached. Omitted when the series is empty.
+        distance:
+          type: [number, "null"]
+          description: |
+            How far the final day sits below that peak, as a negative fraction
+            (0 when the period ends at its high).
 
     PerformanceBreakdown:
       type: object

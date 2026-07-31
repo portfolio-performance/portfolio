@@ -18,6 +18,8 @@ import name.abuchen.portfolio.util.Interval;
 
 public final class PerformanceHandler
 {
+    private static final int MAX_SERIES_YEARS = 20;
+
     private PerformanceHandler()
     {
     }
@@ -57,6 +59,33 @@ public final class PerformanceHandler
 
         return EntityJson.performance(range.openingDate(), range.closingDate(), range.currency(), ttwror, irr,
                         performance);
+    }
+
+    /**
+     * The daily index behind the same period {@link #list} reports on: one point
+     * per calendar day with the accumulated TTWROR, total assets, invested
+     * capital, that day's external flow and the running drawdown, plus the risk
+     * metrics derived from the series. The cost method is irrelevant here - none
+     * of these figures depend on it.
+     */
+    public static JsonElement series(Client client, ExchangeRateProviderFactory factory, String openingDateParam,
+                    String closingDateParam, String currencyParam)
+    {
+        var errors = new ArrayList<ApiException.FieldError>();
+        var range = parseRange(client, openingDateParam, closingDateParam, currencyParam, errors);
+        checkRange(range, errors);
+
+        // one array slot per calendar day upstream, so an unbounded range is an
+        // unbounded response
+        if (range.openingDate().plusYears(MAX_SERIES_YEARS).isBefore(range.closingDate()))
+            throw ApiException.badRequest(List.of(new ApiException.FieldError("closingDate", "invalid-range",
+                            "the range must not exceed " + MAX_SERIES_YEARS + " years")));
+
+        var converter = new CurrencyConverterImpl(factory, range.currency());
+        var interval = Interval.of(range.openingDate(), range.closingDate());
+        var index = PerformanceIndex.forClient(client, converter, interval, new ArrayList<>());
+
+        return EntityJson.performanceSeries(range.openingDate(), range.closingDate(), range.currency(), index);
     }
 
     /** the requested period; openingDate is null when it could not be parsed */

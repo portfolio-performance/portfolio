@@ -16,6 +16,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import name.abuchen.portfolio.math.AllTimeHigh;
+import name.abuchen.portfolio.math.Risk;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AttributeFieldType;
@@ -41,6 +42,7 @@ import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
+import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 
 /**
@@ -562,6 +564,103 @@ public final class EntityJson
         json.add("breakdown", breakdown); //$NON-NLS-1$
 
         return json;
+    }
+
+    /**
+     * The daily index for a period: one entry per calendar day, plus the risk
+     * metrics derived from it. Amounts are plain numbers in the response's
+     * {@code currency} rather than objects - the currency is fixed for the whole
+     * series, and a year is ~365 entries.
+     */
+    public static JsonObject performanceSeries(LocalDate openingDate, LocalDate closingDate, String currency,
+                    PerformanceIndex index)
+    {
+        var json = new JsonObject();
+        json.addProperty("openingDate", openingDate.toString());
+        json.addProperty("closingDate", closingDate.toString());
+        json.addProperty("currency", currency);
+
+        var dates = index.getDates();
+        var accumulated = index.getAccumulatedPercentage();
+        var totals = index.getTotals();
+        var investedCapital = index.calculateInvestedCapital();
+        var transferals = index.getTransferals();
+        var drawdown = index.getDrawdown();
+        var drawdownSerie = drawdown.getMaxDrawdownSerie();
+
+        json.add("risk", risk(index, dates, accumulated, drawdown, drawdownSerie));
+
+        // upstream clamps the series to today, so it can be shorter than the
+        // requested range - the arrays, not the range, decide how many days there are
+        var length = dates.length;
+        var days = new JsonArray();
+        for (var ii = 0; ii < length; ii++)
+        {
+            var day = new JsonObject();
+            day.addProperty("date", dates[ii].toString());
+            day.add("ttwror", ratio(at(accumulated, ii)));
+            day.add("totalAssets", decimal(at(totals, ii), Values.Money.precision()));
+            day.add("investedCapital", decimal(at(investedCapital, ii), Values.Money.precision()));
+            day.add("netDeposits", decimal(at(transferals, ii), Values.Money.precision()));
+            day.add("drawdown", ratio(at(drawdownSerie, ii)));
+            days.add(day);
+        }
+        json.add("days", days);
+
+        return json;
+    }
+
+    private static JsonObject risk(PerformanceIndex index, LocalDate[] dates, double[] accumulated,
+                    Risk.Drawdown drawdown, double[] drawdownSerie)
+    {
+        var json = new JsonObject();
+
+        // reported as a loss, matching the sign of the per-day drawdown series
+        json.add("maxDrawdown", ratio(-drawdown.getMaxDrawdown()));
+
+        var maxDrawdownInterval = drawdown.getIntervalOfMaxDrawdown();
+        json.addProperty("maxDrawdownPeak", maxDrawdownInterval.getStart().toString());
+        json.addProperty("maxDrawdownTrough", maxDrawdownInterval.getEnd().toString());
+
+        var duration = drawdown.getMaxDrawdownDuration();
+        json.addProperty("maxDrawdownDurationDays", duration.getDays());
+        json.addProperty("maxDrawdownDurationStart", duration.getStart().toString());
+        json.addProperty("maxDrawdownDurationEnd", duration.getEnd().toString());
+
+        var volatility = index.getVolatility();
+        json.add("volatility", ratio(volatility.getStandardDeviation()));
+        json.add("semiDeviation", ratio(volatility.getSemiDeviation()));
+
+        // the index's own high water mark, not a security's: the value is an
+        // accumulated return, and the distance is the drawdown from that peak
+        var peak = 0;
+        for (var ii = 0; ii < accumulated.length; ii++)
+            if (accumulated[ii] > accumulated[peak])
+                peak = ii;
+
+        var allTimeHigh = new JsonObject();
+        allTimeHigh.add("value", ratio(at(accumulated, peak)));
+        if (peak < dates.length)
+            allTimeHigh.addProperty("date", dates[peak].toString());
+        allTimeHigh.add("distance", ratio(at(drawdownSerie, drawdownSerie.length - 1)));
+        json.add("allTimeHigh", allTimeHigh);
+
+        return json;
+    }
+
+    /**
+     * Upstream returns several parallel series that are normally the same length
+     * as the dates array but are computed independently; reading past the end of
+     * a shorter one would be a crash in production for an edge-case client.
+     */
+    private static double at(double[] values, int index)
+    {
+        return values != null && index >= 0 && index < values.length ? values[index] : 0d;
+    }
+
+    private static long at(long[] values, int index)
+    {
+        return values != null && index >= 0 && index < values.length ? values[index] : 0L;
     }
 
     /** a return ratio, or JSON null when the model cannot define it (NaN/infinite) */

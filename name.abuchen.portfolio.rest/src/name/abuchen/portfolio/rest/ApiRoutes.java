@@ -106,6 +106,11 @@ public final class ApiRoutes
                                         req.queryParam("closingDate"), req.queryParam("currency"), //$NON-NLS-1$ //$NON-NLS-2$
                                         req.queryParam("costMethod"))))); //$NON-NLS-1$
 
+        router.add("GET", "/v1/files/{file}/performance/series", calc(resolver, host,
+                        (context, req) -> Response.json(200, PerformanceHandler.series(context.client(),
+                                        context.factory(), req.queryParam("openingDate"),
+                                        req.queryParam("closingDate"), req.queryParam("currency")))));
+
         return router;
     }
 
