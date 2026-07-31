@@ -22,6 +22,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AttributeFieldType;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.ClientProperties;
 import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Portfolio;
@@ -580,8 +581,8 @@ public final class EntityJson
      * {@code currency} rather than objects - the currency is fixed for the whole
      * series, and a year is ~365 entries.
      */
-    public static JsonObject performanceSeries(LocalDate openingDate, LocalDate closingDate, String currency,
-                    PerformanceIndex index)
+    public static JsonObject performanceSeries(Client client, LocalDate openingDate, LocalDate closingDate,
+                    String currency, PerformanceIndex index)
     {
         var json = new JsonObject();
         json.addProperty("openingDate", openingDate.toString());
@@ -596,7 +597,7 @@ public final class EntityJson
         var drawdown = index.getDrawdown();
         var drawdownSerie = drawdown.getMaxDrawdownSerie();
 
-        json.add("risk", risk(index, dates, accumulated, drawdown, drawdownSerie));
+        json.add("risk", risk(client, index, dates, accumulated, drawdown, drawdownSerie));
 
         // upstream clamps the series to today, so it can be shorter than the
         // requested range - the arrays, not the range, decide how many days there are
@@ -746,7 +747,7 @@ public final class EntityJson
         return json;
     }
 
-    private static JsonObject risk(PerformanceIndex index, LocalDate[] dates, double[] accumulated,
+    private static JsonObject risk(Client client, PerformanceIndex index, LocalDate[] dates, double[] accumulated,
                     Risk.Drawdown drawdown, double[] drawdownSerie)
     {
         var json = new JsonObject();
@@ -766,6 +767,25 @@ public final class EntityJson
         var volatility = index.getVolatility();
         json.add("volatility", ratio(volatility.getStandardDeviation()));
         json.add("semiDeviation", ratio(volatility.getSemiDeviation()));
+
+        // Same formula, inputs and configured rate as the desktop's Sharpe ratio
+        // widget: (money-weighted return - risk-free rate) / volatility. The rate
+        // is a property of the file, so it is reported alongside the ratio rather
+        // than left for a client to guess.
+        var riskFreeRate = new ClientProperties(client).getRiskFreeRateOfReturn();
+        json.add("riskFreeRate", ratio(riskFreeRate));
+
+        var standardDeviation = volatility.getStandardDeviation();
+        Double sharpeRatio = null;
+        if (standardDeviation > 0 && !Double.isNaN(riskFreeRate))
+        {
+            // absent for a benchmark or price index rather than a client
+            var irr = index.getClientPerformanceSnapshot().map(ClientPerformanceSnapshot::getPerformanceIRR)
+                            .orElse(Double.NaN);
+            if (!Double.isNaN(irr))
+                sharpeRatio = (irr - riskFreeRate) / standardDeviation;
+        }
+        json.add("sharpeRatio", ratio(sharpeRatio));
 
         // the index's own high water mark, not a security's: the value is an
         // accumulated return, and the distance is the drawdown from that peak

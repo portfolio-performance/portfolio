@@ -19,6 +19,7 @@ import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.ClientProperties;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
 
@@ -165,6 +166,50 @@ public class PerformanceSeriesTest
         assertThat(risk.get("maxDrawdown").getAsDouble(), is(0d));
         assertThat(risk.get("volatility").getAsDouble(), is(0d));
         assertThat(risk.get("semiDeviation").getAsDouble(), is(0d));
+
+        // the ratio divides by the volatility, so it is undefined rather than zero
+        assertThat(risk.get("sharpeRatio").isJsonNull(), is(true));
+    }
+
+    /**
+     * The Sharpe ratio is the excess money-weighted return per unit of risk, and
+     * both of its inputs are reported by the API for the same period - so the
+     * relation between the two endpoints is what this pins down.
+     */
+    @Test
+    public void testSharpeRatioRelatesTheReportedIrrAndVolatility()
+    {
+        var client = dippingPosition();
+
+        var risk = series(client, "2024-01-01", "2024-12-31", null).get("risk").getAsJsonObject();
+        var performance = PerformanceHandler
+                        .list(client, new ExchangeRateProviderFactory(client), "2024-01-01", "2024-12-31", null, null)
+                        .getAsJsonObject();
+
+        var irr = performance.get("irr").getAsDouble();
+        var volatility = risk.get("volatility").getAsDouble();
+
+        assertThat(risk.get("riskFreeRate").getAsDouble(), is(0d));
+        assertThat(risk.get("sharpeRatio").getAsDouble(), closeTo(irr / volatility, 1e-9));
+    }
+
+    /** the rate is a property of the file, the same one the desktop widget reads */
+    @Test
+    public void testSharpeRatioUsesTheFilesRiskFreeRate()
+    {
+        var client = dippingPosition();
+        new ClientProperties(client).setRiskFreeRateOfReturn(0.02);
+
+        var risk = series(client, "2024-01-01", "2024-12-31", null).get("risk").getAsJsonObject();
+        var performance = PerformanceHandler
+                        .list(client, new ExchangeRateProviderFactory(client), "2024-01-01", "2024-12-31", null, null)
+                        .getAsJsonObject();
+
+        var irr = performance.get("irr").getAsDouble();
+        var volatility = risk.get("volatility").getAsDouble();
+
+        assertThat(risk.get("riskFreeRate").getAsDouble(), is(0.02));
+        assertThat(risk.get("sharpeRatio").getAsDouble(), closeTo((irr - 0.02) / volatility, 1e-9));
     }
 
     @Test

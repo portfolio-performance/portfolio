@@ -997,6 +997,8 @@ paths:
                       maxDrawdownDurationEnd: "2024-06-19"
                       volatility: 0.142
                       semiDeviation: 0.101
+                      riskFreeRate: 0.02
+                      sharpeRatio: 1.021
                       allTimeHigh:
                         value: 0.31
                         date: "2024-11-14"
@@ -2256,6 +2258,8 @@ components:
         - maxDrawdownDurationEnd
         - volatility
         - semiDeviation
+        - riskFreeRate
+        - sharpeRatio
         - allTimeHigh
       properties:
         maxDrawdown:
@@ -2294,6 +2298,22 @@ components:
           description: |
             The standard deviation of the negative daily returns only (downside
             volatility), on the same basis as `volatility`.
+        riskFreeRate:
+          type: [number, "null"]
+          description: |
+            The risk-free rate of return configured for this file, as a fraction
+            (0 unless set). It is a property of the file, not a request
+            parameter: the desktop application stores it per client and uses it
+            for the same Sharpe ratio reported here.
+        sharpeRatio:
+          type: [number, "null"]
+          description: |
+            `(irr - riskFreeRate) / volatility`: the excess money-weighted
+            return per unit of risk, a plain number rather than a fraction of
+            anything. Computed exactly as the desktop application's Sharpe ratio
+            widget computes it, from the same inputs. Null when the volatility is
+            zero (a single valuation day, or no holdings at all), since the ratio
+            is then undefined.
         allTimeHigh:
           $ref: "#/components/schemas/IndexHighWaterMark"
 

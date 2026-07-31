@@ -85,7 +85,8 @@ public final class PerformanceHandler
         var interval = Interval.of(range.openingDate(), range.closingDate());
         var index = PerformanceIndex.forClient(client, converter, interval, new ArrayList<>());
 
-        return EntityJson.performanceSeries(range.openingDate(), range.closingDate(), range.currency(), index);
+        return EntityJson.performanceSeries(client, range.openingDate(), range.closingDate(), range.currency(),
+                        index);
     }
 
     /** the requested period; openingDate is null when it could not be parsed */
