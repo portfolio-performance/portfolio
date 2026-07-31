@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -17,13 +18,16 @@ import com.google.gson.JsonParser;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AttributeFieldType;
+import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.CostMethod;
+import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityEvent.DividendEvent;
 import name.abuchen.portfolio.model.TaxesAndFees;
+import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.Money;
@@ -216,6 +220,8 @@ public final class EntityJson
             addDividends(json, context.costMethod(), record, security);
         }
 
+        addClassifications(json, context.taxonomies(), vehicle);
+
         json.add("valuation", toJson(position.getValuation())); //$NON-NLS-1$
         json.add("weight", decimal(totalAssets.isZero() ? 0d : position.getShare())); //$NON-NLS-1$
 
@@ -342,6 +348,51 @@ public final class EntityJson
 
         if (dividends.size() > 0)
             json.add("dividends", dividends); //$NON-NLS-1$
+    }
+
+    /**
+     * The vehicle's classification in every taxonomy the client defines, keyed
+     * by taxonomy id - an instrument or a cash account can each be classified
+     * (e.g. an asset-allocation taxonomy commonly classifies cash accounts
+     * too), possibly split across several categories with a partial weight.
+     * Mirrors {@code TaxonomyColumn}, one dynamically generated column per
+     * taxonomy. The root node is never part of {@code path} - it is the
+     * taxonomy itself, not a category. Omitted entirely when the client
+     * defines no taxonomies, or the vehicle is unclassified in all of them.
+     */
+    private static void addClassifications(JsonObject json, List<Taxonomy> taxonomies, InvestmentVehicle vehicle)
+    {
+        var result = new JsonObject();
+
+        for (Taxonomy taxonomy : taxonomies)
+        {
+            var assignments = new JsonArray();
+
+            for (Classification classification : taxonomy.getClassifications(vehicle))
+            {
+                classification.getAssignments().stream() //
+                                .filter(a -> vehicle.equals(a.getInvestmentVehicle())) //
+                                .findFirst() //
+                                .ifPresent(assignment -> {
+                                    var path = new JsonArray();
+                                    classification.getPathToRoot().stream().skip(1)
+                                                    .forEach(c -> path.add(c.getName()));
+
+                                    var entry = new JsonObject();
+                                    entry.add("path", path); //$NON-NLS-1$
+                                    entry.add("weight", //$NON-NLS-1$
+                                                    decimal((double) assignment.getWeight()
+                                                                    / Classification.ONE_HUNDRED_PERCENT));
+                                    assignments.add(entry);
+                                });
+            }
+
+            if (assignments.size() > 0)
+                result.add(taxonomy.getId(), assignments);
+        }
+
+        if (result.size() > 0)
+            json.add("classifications", result); //$NON-NLS-1$
     }
 
     /** a per-share quote, e.g. a cost basis per share - {value, currency}, like {@link #toJson(Money)} */

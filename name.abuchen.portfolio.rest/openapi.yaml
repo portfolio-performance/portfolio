@@ -1367,6 +1367,37 @@ components:
               description: |
                 The amount of the next upcoming dividend payment. Omitted when
                 `nextPaymentDate` is omitted.
+        classifications:
+          type: object
+          description: |
+            The holding's classification in every taxonomy the client defines,
+            keyed by taxonomy id — an instrument or a cash account can each be
+            classified (an asset-allocation taxonomy, for one, commonly
+            classifies cash accounts too). Omitted when the client defines no
+            taxonomies, or the holding is unclassified in all of them.
+          additionalProperties:
+            type: array
+            description: |
+              The holding's assignment(s) within one taxonomy - more than one
+              when the holding is split across categories.
+            items:
+              type: object
+              required: [path, weight]
+              properties:
+                path:
+                  type: array
+                  description: |
+                    The classification's path from just below the taxonomy's
+                    root to the leaf, as category names. The root itself is
+                    never included - it names the taxonomy, not a category.
+                  items:
+                    type: string
+                weight:
+                  type: number
+                  description: |
+                    This assignment's fraction (0–1) of the holding - not a
+                    percentage. 1 unless the holding is split across several
+                    categories.
         valuation:
           allOf:
             - $ref: "#/components/schemas/MonetaryValue"

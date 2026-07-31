@@ -18,8 +18,10 @@ import com.google.gson.JsonElement;
 import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
+import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.SecurityEvent.DividendEvent;
+import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -414,6 +416,45 @@ public class HoldingsTest
         assertThat(dividends.get("nextExDate").getAsString(), is(future.toString()));
         assertThat(dividends.get("nextPaymentDate").getAsString(), is(payDate.toString()));
         assertThat(dividends.get("nextPaymentAmount").getAsJsonObject().get("value").getAsDouble(), is(45d));
+    }
+
+    /**
+     * A taxonomy classifies an instrument or a cash account alike (e.g. an
+     * asset-allocation taxonomy commonly classifies cash accounts too); the
+     * root node itself never appears in {@code path}.
+     */
+    @Test
+    public void testClassifications()
+    {
+        var client = new Client();
+
+        var security = new SecurityBuilder() //
+                        .addPrice("2026-07-01", Values.Quote.factorize(110)) //
+                        .addTo(client);
+        security.setName("ACME");
+
+        var taxonomy = new Taxonomy("Asset Allocation");
+        var root = new Classification("root", "Root");
+        taxonomy.setRootNode(root);
+        var equities = new Classification(root, "equities", "Equities");
+        root.addChild(equities);
+        equities.addAssignment(new Classification.Assignment(security));
+        client.addTaxonomy(taxonomy);
+
+        new PortfolioBuilder() //
+                        .inbound_delivery(security, "2026-01-15", Values.Share.factorize(10),
+                                        Values.Amount.factorize(1000)) //
+                        .addTo(client);
+
+        var holdings = list(client, "2026-07-20", null).getAsJsonObject();
+        var instrument = findByUuid(holdings, security.getUUID());
+
+        var classifications = instrument.get("classifications").getAsJsonObject();
+        var assignment = classifications.get(taxonomy.getId()).getAsJsonArray().get(0).getAsJsonObject();
+        var path = assignment.get("path").getAsJsonArray();
+        assertThat(path.size(), is(1));
+        assertThat(path.get(0).getAsString(), is("Equities"));
+        assertThat(assignment.get("weight").getAsDouble(), is(1d));
     }
 
     @Test
