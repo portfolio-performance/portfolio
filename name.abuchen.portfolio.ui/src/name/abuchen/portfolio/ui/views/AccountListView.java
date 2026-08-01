@@ -60,6 +60,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.views.panes.AccountBalancePane;
 import name.abuchen.portfolio.ui.views.panes.AccountTransactionsPane;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
+import name.abuchen.portfolio.ui.views.panes.AbsolutePerformancePane;
 
 public class AccountListView extends AbstractFinanceView implements ModificationListener
 {
@@ -354,6 +355,7 @@ public class AccountListView extends AbstractFinanceView implements Modification
         super.addPanePages(pages);
         pages.add(make(AccountTransactionsPane.class));
         pages.add(make(AccountBalancePane.class));
+        pages.add(make(AbsolutePerformancePane.class));
     }
 
     private void updateBalance(Account account)
