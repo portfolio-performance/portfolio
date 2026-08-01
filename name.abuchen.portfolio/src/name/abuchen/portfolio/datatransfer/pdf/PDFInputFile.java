@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
@@ -41,7 +42,8 @@ public class PDFInputFile extends Extractor.InputFile
 
     public static PDFInputFile loadSingleTestCase(Class<?> testCase, String filename)
     {
-        try (Scanner scanner = new Scanner(testCase.getResourceAsStream(filename), StandardCharsets.UTF_8.name()))
+        try (Scanner scanner = new Scanner(Objects.requireNonNull(testCase.getResourceAsStream(filename), filename),
+                        StandardCharsets.UTF_8.name()))
         {
             String extractedText = scanner.useDelimiter("\\A").next(); //$NON-NLS-1$
             return new PDFInputFile(new File(filename), extractedText);

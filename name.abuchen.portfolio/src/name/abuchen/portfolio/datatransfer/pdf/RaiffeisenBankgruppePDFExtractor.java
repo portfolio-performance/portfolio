@@ -207,7 +207,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("termCurrency", "fxGross", "exchangeRate", "baseCurrency").optional() //
                         .match("^Kurswert: (\\-)?(?<fxGross>[\\.,\\d]+) (?<termCurrency>[A-Z]{3}).*$") //
-                        .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}\\) (\\-)?[\\.,\\d]+ (?<baseCurrency>[A-Z]{3}).*$") //
+                        .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}\\)\\s+(\\-)?[\\.,\\d]+ (?<baseCurrency>[A-Z]{3}).*$") //
                         .assign((t, v) -> {
                             var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
@@ -476,8 +476,8 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("fxGross", "termCurrency", "exchangeRate", "baseCurrency") //
-                                                        .match("^Bruttoertrag: (?<fxGross>[\\.,\\d]+) (?<termCurrency>[A-Z]{3}).*$") //
-                                                        .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}\\) [\\.,\\d]+ (?<baseCurrency>[A-Z]{3}).*$") //
+                                                        .match("^Brutto(betrag|ertrag): (?<fxGross>[\\.,\\d]+) (?<termCurrency>[A-Z]{3}).*$") //
+                                                        .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\(\\d{2}\\.\\d{2}\\.\\d{4}\\)\\s+[\\.,\\d]+ (?<baseCurrency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> {
                                                             var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
@@ -517,9 +517,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                             // @formatter:on
                             type.getCurrentContext().remove("noTax");
 
-                            var item = new TransactionItem(t);
-
-                            return item;
+                            return new TransactionItem(t);
                         });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
@@ -551,7 +549,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
-
+                        
                         .optionalOneOf( //
                                         // @formatter:off
                                         //  Abrechnungsnr. 76560429680
@@ -1370,7 +1368,14 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                         // Courtage CHF -3.17
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Courtage (?<currency>[A-Z]{3}) \\-(?<fee>[\\.'\\d]+)[\\s]*$") //
+                        .match("^Courtage (?<currency>[A-Z]{3}) \\-(?<fee>[\\.',\\d]+)[\\s]*$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+                
+                        // @formatter:off
+                        // Devisenkomm/Courtage: -8,00 EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^(Devisenkomm\\/Courtage): \\-(?<fee>[\\.',\\d]+)\\s+(?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 

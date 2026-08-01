@@ -1,0 +1,70 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.86.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+d a 
+Raiffeisenbank Murau eGen (mbH) 
+Bundesstraße 5, 8850 Murau 
+b 
+BLZ: 38402     DVR: 0039063     UID: ATU28570409 
+a 
+a 
+Abrechnung Ereignis a 
+80052452 - 22.01.2026 a 
+Depot-Nr.: 60.026.259 
+IIaYU hfIMmjb AEKnN Dvxqctp 
+gT YSLFivif 6 
+1991 QrVip QbpLwJ 002/138 
+BuDbOcqY 
+Wir haben für Sie am 22.01.2026 unten angeführtes Geschäft abgerechnet: 
+Geschäftsart: Ertrag 
+500 Stk    
+Titel: US17275R1023 CISCO SYSTEMS INC. 
+Registered Shares DL-,001 
+Dividende: 0,41 USD 
+Verwahrart: WR 
+Positionsdaten: Loco: US New York 
+Bruttobetrag: 205,00 USD  
+Quellensteuer: -30,75 USD  
+Auslands-KESt: -25,63 USD  
+148,62 USD  
+Devisenkurs: 1,1777 (20.01.2026)  126,20 EUR  
+Devisenkomm/Courtage: -8,00 EUR  
+Zu Gunsten IBAN AT28 3840 2000 0006 8643 118,20 EUR  
+Valuta 21.01.2026 
+KESt wurde an das Finanzamt für Großbetriebe abgeführt. 
+Quellensteuer: 15% 
+Es wurde Auslands-KESt in der Höhe von 12,5 % berücksichtigt. 
+Extag: 02.01.2026 
+Record-Tag: 02.01.2026 
+Ausgangssituation: 
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden  
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 500 Stk 
+steuerlicher Anschaffungswert: 23.270,81 EUR 
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden  
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 500 Stk 
+Ertrag: 174,07 EUR 
+22.01.2026 1 / 2 
+Irrtum vorbehalten 
+Dieser Beleg trägt keine Unterschrift. 
+Raiffeisenbank Murau eGen (mbH) 
+Bundesstraße 5, 8850 Murau 
+b 
+BLZ: 38402     DVR: 0039063     UID: ATU28570409 
+a 
+a 
+Abrechnung Ereignis a 
+80052452 - 22.01.2026 a 
+Depot-Nr.: 60.026.259 
+DXbnm qCUrBCx 
+002/138 
+PvPIgKTq 
+Steuerrelevante Daten (alle Beträge in EUR): 
+Bemessungsgrundlage KESt 
+Einkünfte/Verlustüberhang bisher 2.325,83 560,24 
+Bruttoeinkünfte/Verlust 174,07 21,76 
+Verlustausgleich (KESt-Gutschrift) 
+Einkünfte/Verlustüberhang aktuell 2.499,90 582,00 
+22.01.2026 2 / 2 
+Irrtum vorbehalten 
+Dieser Beleg trägt keine Unterschrift. 
