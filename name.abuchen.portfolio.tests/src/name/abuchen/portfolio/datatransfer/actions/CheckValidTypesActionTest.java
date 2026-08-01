@@ -80,5 +80,9 @@ public class CheckValidTypesActionTest
         assertThat(action.process(t, portfolio).getCode(), is(Status.Code.OK));
         t.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
         assertThat(action.process(t, portfolio).getCode(), is(Status.Code.OK));
+        t.setType(PortfolioTransaction.Type.FUND_TRANSFER_IN);
+        assertThat(action.process(t, portfolio).getCode(), is(Status.Code.OK));
+        t.setType(PortfolioTransaction.Type.FUND_TRANSFER_OUT);
+        assertThat(action.process(t, portfolio).getCode(), is(Status.Code.OK));
     }
 }

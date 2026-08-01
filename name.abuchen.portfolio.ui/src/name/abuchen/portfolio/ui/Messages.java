@@ -105,6 +105,7 @@ public class Messages extends NLS
     public static String ColumnAccountFrom;
     public static String ColumnAccountTo;
     public static String ColumnAction;
+    public static String ColumnAcquisitionDate;
     public static String ColumnActualPercent;
     public static String ColumnActualValue;
     public static String ColumnActualValueBaseCurrency;
@@ -731,6 +732,7 @@ public class Messages extends NLS
     public static String LabelFontSize;
     public static String LabelFormatJSON;
     public static String LabelFullClassification;
+    public static String LabelFundTransfer;
     public static String LabelGreenGrayRed;
     public static String LabelGreenWhiteRed;
     public static String LabelGreenYellowRed;
@@ -1146,6 +1148,13 @@ public class Messages extends NLS
     public static String MsgErrorSavingIniFile;
     public static String MsgErrorTradeCollectionWithErrors;
     public static String MsgErrorUpdating;
+    public static String MsgFundTransferCarriedLotCurrencyMismatch;
+    public static String MsgFundTransferCarriedLotSourceSharesMismatch;
+    public static String MsgFundTransferCarriedLotTargetSharesMismatch;
+    public static String MsgFundTransferCarriedLotValuesMustBePositive;
+    public static String MsgFundTransferCarriedLotsMissing;
+    public static String MsgFundTransferNotEnoughShares;
+    public static String MsgFundTransferSecuritiesMustDiffer;
     public static String MsgHintNoAttributesConfigured;
     public static String MsgHintNoEvents;
     public static String MsgHintUseOutboundDeliveryForZeroTotal;
@@ -1472,6 +1481,7 @@ public class Messages extends NLS
     public static String TooltipCurrentDrawdown;
     public static String TooltipDateOfExchangeRate;
     public static String TooltipFIRENumber;
+    public static String TooltipFundTransferCarriedLots;
     public static String TooltipHintPressAlt;
     public static String TooltipMaxDrawdown;
     public static String TooltipMaxDrawdownDuration;

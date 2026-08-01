@@ -6,9 +6,12 @@ import java.math.RoundingMode;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.FundTransferEntry;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 /* protected */ class ClientFilterHelper
@@ -38,6 +41,85 @@ import name.abuchen.portfolio.money.Values;
 
         sourcePortfolio.internalAddTransaction(copy.getSourceTransaction());
         targetPortfolio.internalAddTransaction(copy.getTargetTransaction());
+    }
+
+    /* package */ static void recreateFundTransfer(FundTransferEntry transferEntry, ReadOnlyPortfolio sourcePortfolio,
+                    ReadOnlyPortfolio targetPortfolio)
+    {
+        recreateFundTransfer(transferEntry, sourcePortfolio, targetPortfolio, Classification.ONE_HUNDRED_PERCENT_BD,
+                        Classification.ONE_HUNDRED_PERCENT_BD);
+    }
+
+    /**
+     * Recreates a fund transfer for ownership-weighted portfolios. The common
+     * weight remains a linked internal transfer. Any excess is copied as a
+     * one-sided fund-transfer leg so acquisition lots survive while performance
+     * reporting can recognize the ownership-boundary flow.
+     */
+    /* package */ static void recreateFundTransfer(FundTransferEntry transferEntry, ReadOnlyPortfolio sourcePortfolio,
+                    ReadOnlyPortfolio targetPortfolio, BigDecimal sourceWeight, BigDecimal targetWeight)
+    {
+        BigDecimal commonWeight = sourceWeight.min(targetWeight);
+        FundTransferEntry copy = copyFundTransfer(transferEntry, sourcePortfolio, targetPortfolio, commonWeight,
+                        commonWeight);
+
+        sourcePortfolio.internalAddTransaction(copy.getSourceTransaction());
+        targetPortfolio.internalAddTransaction(copy.getTargetTransaction());
+
+        if (sourceWeight.compareTo(commonWeight) > 0)
+        {
+            BigDecimal excessWeight = sourceWeight.subtract(commonWeight);
+            FundTransferEntry excess = copyFundTransfer(transferEntry, sourcePortfolio,
+                            transferEntry.getTargetPortfolio(), excessWeight, excessWeight);
+            sourcePortfolio.internalAddTransaction(excess.getSourceTransaction());
+        }
+
+        if (targetWeight.compareTo(commonWeight) > 0)
+        {
+            BigDecimal excessWeight = targetWeight.subtract(commonWeight);
+            FundTransferEntry excess = copyFundTransfer(transferEntry, transferEntry.getSourcePortfolio(),
+                            targetPortfolio, excessWeight, excessWeight);
+            targetPortfolio.internalAddTransaction(excess.getTargetTransaction());
+        }
+    }
+
+    /* package */ static FundTransferEntry copyFundTransfer(FundTransferEntry transferEntry, Portfolio sourcePortfolio,
+                    Portfolio targetPortfolio)
+    {
+        return copyFundTransfer(transferEntry, sourcePortfolio, targetPortfolio,
+                        Classification.ONE_HUNDRED_PERCENT_BD, Classification.ONE_HUNDRED_PERCENT_BD);
+    }
+
+    /* package */ static FundTransferEntry copyFundTransfer(FundTransferEntry transferEntry, Portfolio sourcePortfolio,
+                    Portfolio targetPortfolio, BigDecimal sourceWeight, BigDecimal targetWeight)
+    {
+        PortfolioTransaction source = transferEntry.getSourceTransaction();
+        PortfolioTransaction target = transferEntry.getTargetTransaction();
+
+        FundTransferEntry copy = new FundTransferEntry(sourcePortfolio, targetPortfolio);
+
+        copy.setDate(source.getDateTime());
+        copy.setSourceSecurity(source.getSecurity());
+        copy.setTargetSecurity(target.getSecurity());
+        copy.setSourceShares(value(source.getShares(), sourceWeight));
+        copy.setTargetShares(value(target.getShares(), targetWeight));
+        copy.setSourceMonetaryAmount(value(source.getMonetaryAmount(), sourceWeight));
+        copy.setTargetMonetaryAmount(value(target.getMonetaryAmount(), targetWeight));
+        copy.setNote(source.getNote());
+        copy.setSource(source.getSource());
+
+        source.getUnits().forEach(u -> copy.getSourceTransaction().addUnit(value(u, sourceWeight)));
+        target.getUnits().forEach(u -> copy.getTargetTransaction().addUnit(value(u, targetWeight)));
+
+        // Filtered clients must own their own fund-transfer cross entry. Trade
+        // collection looks up open lots by the filtered portfolio owner, while
+        // the copied carried lots preserve the inherited acquisition basis.
+        for (FundTransferEntry.CarriedLot lot : transferEntry.getCarriedLots())
+            copy.addCarriedLot(new FundTransferEntry.CarriedLot(lot.getAcquisitionDate(),
+                            value(lot.getSourceShares(), sourceWeight), value(lot.getTargetShares(), targetWeight),
+                            value(lot.getAcquisitionValue(), targetWeight), lot.getSourceTransactionUUID()));
+
+        return copy;
     }
 
     /**
@@ -175,4 +257,13 @@ import name.abuchen.portfolio.money.Values;
                             .divide(Classification.ONE_HUNDRED_PERCENT_BD, Values.MC)
                             .setScale(0, RoundingMode.HALF_EVEN).longValue();
     }
+
+    private static Money value(Money value, BigDecimal weight)
+    {
+        if (weight.equals(Classification.ONE_HUNDRED_PERCENT_BD))
+            return value;
+        else
+            return Money.of(value.getCurrencyCode(), value(value.getAmount(), weight));
+    }
+
 }

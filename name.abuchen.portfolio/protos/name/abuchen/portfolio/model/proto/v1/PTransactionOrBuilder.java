@@ -211,7 +211,7 @@ public interface PTransactionOrBuilder extends
   /**
    * <code>repeated .name.abuchen.portfolio.PTransactionUnit units = 15;</code>
    */
-  java.util.List<name.abuchen.portfolio.model.proto.v1.PTransactionUnit> 
+  java.util.List<name.abuchen.portfolio.model.proto.v1.PTransactionUnit>
       getUnitsList();
   /**
    * <code>repeated .name.abuchen.portfolio.PTransactionUnit units = 15;</code>
@@ -224,7 +224,7 @@ public interface PTransactionOrBuilder extends
   /**
    * <code>repeated .name.abuchen.portfolio.PTransactionUnit units = 15;</code>
    */
-  java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PTransactionUnitOrBuilder> 
+  java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PTransactionUnitOrBuilder>
       getUnitsOrBuilderList();
   /**
    * <code>repeated .name.abuchen.portfolio.PTransactionUnit units = 15;</code>
@@ -278,4 +278,96 @@ public interface PTransactionOrBuilder extends
    * <code>optional .name.abuchen.portfolio.PLocalDateTime exDate = 18;</code>
    */
   name.abuchen.portfolio.model.proto.v1.PLocalDateTimeOrBuilder getExDateOrBuilder();
+
+  /**
+   * <pre>
+   * Fund transfers use security/shares for the source side and these fields for the target side.
+   * </pre>
+   *
+   * <code>optional string targetSecurity = 19;</code>
+   * @return Whether the targetSecurity field is set.
+   */
+  boolean hasTargetSecurity();
+  /**
+   * <pre>
+   * Fund transfers use security/shares for the source side and these fields for the target side.
+   * </pre>
+   *
+   * <code>optional string targetSecurity = 19;</code>
+   * @return The targetSecurity.
+   */
+  java.lang.String getTargetSecurity();
+  /**
+   * <pre>
+   * Fund transfers use security/shares for the source side and these fields for the target side.
+   * </pre>
+   *
+   * <code>optional string targetSecurity = 19;</code>
+   * @return The bytes for targetSecurity.
+   */
+  com.google.protobuf.ByteString
+      getTargetSecurityBytes();
+
+  /**
+   * <code>optional int64 targetShares = 20;</code>
+   * @return Whether the targetShares field is set.
+   */
+  boolean hasTargetShares();
+  /**
+   * <code>optional int64 targetShares = 20;</code>
+   * @return The targetShares.
+   */
+  long getTargetShares();
+
+  /**
+   * <code>repeated .name.abuchen.portfolio.PFundTransferLot carriedLots = 21;</code>
+   */
+  java.util.List<name.abuchen.portfolio.model.proto.v1.PFundTransferLot>
+      getCarriedLotsList();
+  /**
+   * <code>repeated .name.abuchen.portfolio.PFundTransferLot carriedLots = 21;</code>
+   */
+  name.abuchen.portfolio.model.proto.v1.PFundTransferLot getCarriedLots(int index);
+  /**
+   * <code>repeated .name.abuchen.portfolio.PFundTransferLot carriedLots = 21;</code>
+   */
+  int getCarriedLotsCount();
+  /**
+   * <code>repeated .name.abuchen.portfolio.PFundTransferLot carriedLots = 21;</code>
+   */
+  java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PFundTransferLotOrBuilder>
+      getCarriedLotsOrBuilderList();
+  /**
+   * <code>repeated .name.abuchen.portfolio.PFundTransferLot carriedLots = 21;</code>
+   */
+  name.abuchen.portfolio.model.proto.v1.PFundTransferLotOrBuilder getCarriedLotsOrBuilder(
+      int index);
+
+  /**
+   * <code>optional string targetCurrencyCode = 22;</code>
+   * @return Whether the targetCurrencyCode field is set.
+   */
+  boolean hasTargetCurrencyCode();
+  /**
+   * <code>optional string targetCurrencyCode = 22;</code>
+   * @return The targetCurrencyCode.
+   */
+  java.lang.String getTargetCurrencyCode();
+  /**
+   * <code>optional string targetCurrencyCode = 22;</code>
+   * @return The bytes for targetCurrencyCode.
+   */
+  com.google.protobuf.ByteString
+      getTargetCurrencyCodeBytes();
+
+  /**
+   * <code>optional int64 targetAmount = 23;</code>
+   * @return Whether the targetAmount field is set.
+   */
+  boolean hasTargetAmount();
+  /**
+   * <code>optional int64 targetAmount = 23;</code>
+   * @return The targetAmount.
+   */
+  long getTargetAmount();
 }

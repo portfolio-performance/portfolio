@@ -61,6 +61,7 @@ import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.FundTransferDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
@@ -1018,6 +1019,15 @@ public final class SecuritiesTable implements ModificationListener
                             .with(security) //
                             .addTo(manager);
         }
+
+        // This action is intentionally available with a single securities
+        // account: tax-neutral fund transfers exchange one fund for another and
+        // only optionally move between portfolios.
+        manager.add(new Separator());
+        new OpenDialogAction(view, Messages.LabelFundTransfer + "...") //$NON-NLS-1$
+                        .type(FundTransferDialog.class) //
+                        .with(security) //
+                        .addTo(manager);
 
         manager.add(new Separator());
 

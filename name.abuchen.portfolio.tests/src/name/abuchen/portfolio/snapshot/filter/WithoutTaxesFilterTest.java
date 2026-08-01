@@ -20,6 +20,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.FundTransferEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -216,6 +217,47 @@ public class WithoutTaxesFilterTest
     }
 
     @Test
+    public void testFundTransfersAreKept()
+    {
+        Client client = new Client();
+        Security sourceFund = new SecurityBuilder().addTo(client);
+        Security targetFund = new SecurityBuilder().addTo(client);
+        Account sourceAccount = new AccountBuilder().addTo(client);
+        Account targetAccount = new AccountBuilder().addTo(client);
+
+        Portfolio sourcePortfolio = new PortfolioBuilder(sourceAccount) //
+                        .buy(sourceFund, "2020-01-01", Values.Share.factorize(10),
+                                        Values.Amount.factorize(1000)) //
+                        .addTo(client);
+        Portfolio targetPortfolio = new PortfolioBuilder(targetAccount).addTo(client);
+
+        PortfolioTransaction sourceBuy = sourcePortfolio.getTransactions().get(0);
+
+        FundTransferEntry entry = new FundTransferEntry(sourcePortfolio, targetPortfolio);
+        entry.setDate(LocalDateTime.parse("2020-06-01T00:00"));
+        entry.setSourceSecurity(sourceFund);
+        entry.setTargetSecurity(targetFund);
+        entry.setSourceShares(Values.Share.factorize(3));
+        entry.setTargetShares(Values.Share.factorize(5));
+        entry.setSourceMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(600)));
+        entry.setTargetMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(600)));
+        entry.addCarriedLot(new FundTransferEntry.CarriedLot(LocalDate.parse("2020-01-01"),
+                        Values.Share.factorize(3), Values.Share.factorize(5),
+                        Money.of(CurrencyUnit.EUR, Values.Amount.factorize(300)), sourceBuy.getUUID()));
+        entry.insert();
+
+        Client result = new WithoutTaxesFilter().filter(client);
+
+        PortfolioTransaction sourceTransaction = findTransaction(result.getPortfolios().get(0),
+                        PortfolioTransaction.Type.FUND_TRANSFER_OUT);
+        PortfolioTransaction targetTransaction = findTransaction(result.getPortfolios().get(1),
+                        PortfolioTransaction.Type.FUND_TRANSFER_IN);
+
+        assertThat(sourceTransaction.getCrossEntry(), is(targetTransaction.getCrossEntry()));
+        assertThat(((FundTransferEntry) targetTransaction.getCrossEntry()).getCarriedLots().size(), is(1));
+    }
+
+    @Test
     public void comparePerformanceSnapshots()
     {
         Client filtered = new WithoutTaxesFilter().filter(client);
@@ -243,6 +285,12 @@ public class WithoutTaxesFilterTest
         assertThat(filteredP.getValue(CategoryType.FEES), is(originalP.getValue(CategoryType.FEES)));
         assertThat(filteredP.getValue(CategoryType.CURRENCY_GAINS), is(originalP.getValue(CategoryType.CURRENCY_GAINS)));
         assertThat(filteredP.getValue(CategoryType.FINAL_VALUE), is(originalP.getValue(CategoryType.FINAL_VALUE)));
+    }
+
+    private PortfolioTransaction findTransaction(Portfolio portfolio, PortfolioTransaction.Type type)
+    {
+        return portfolio.getTransactions().stream().filter(t -> t.getType() == type).findFirst()
+                        .orElseThrow(IllegalArgumentException::new);
     }
 
 }

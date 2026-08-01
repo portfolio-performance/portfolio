@@ -8,6 +8,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.CostMethod;
+import name.abuchen.portfolio.model.FundTransferEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.TaxesAndFees;
@@ -110,6 +111,7 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                 break;
 
             case SELL:
+            case FUND_TRANSFER_OUT:
             case DELIVERY_OUTBOUND:
                 long sold = t.getShares();
 
@@ -155,6 +157,33 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                                     Values.DateTime.format(t.getDateTime())));
                 }
 
+                break;
+
+            case FUND_TRANSFER_IN:
+                // Fund transfer amounts are market values at conversion time.
+                // The target FIFO cost must use carried acquisition lots so no
+                // taxable gain is realized during the transfer.
+                if (!(t.getCrossEntry() instanceof FundTransferEntry entry))
+                    throw new UnsupportedOperationException();
+
+                for (FundTransferEntry.CarriedLot lot : entry.getCarriedLots())
+                {
+                    long carriedAmount = converter
+                                    .convert(lot.getAcquisitionDate().atStartOfDay(), lot.getAcquisitionValue())
+                                    .getAmount();
+
+                    TrailRecord lotTrail = TrailRecord.ofTransaction(t);
+                    if (!getTermCurrency().equals(lot.getAcquisitionValue().getCurrencyCode()))
+                        lotTrail = lotTrail.convert(Money.of(getTermCurrency(), carriedAmount),
+                                        converter.getRate(lot.getAcquisitionDate().atStartOfDay(),
+                                                        lot.getAcquisitionValue().getCurrencyCode()));
+
+                    fifo.add(new LineItem(item.getOwner(), lot.getTargetShares(), carriedAmount, carriedAmount,
+                                    lotTrail));
+                    movingRelativeCost += carriedAmount;
+                    movingRelativeNetCost += carriedAmount;
+                    heldShares += lot.getTargetShares();
+                }
                 break;
 
             case TRANSFER_IN:

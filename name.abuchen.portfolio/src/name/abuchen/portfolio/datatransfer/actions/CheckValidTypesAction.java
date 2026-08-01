@@ -50,6 +50,8 @@ public class CheckValidTypesAction implements ImportAction
                                 transaction.getType().toString()));
             case DELIVERY_INBOUND:
             case DELIVERY_OUTBOUND:
+            case FUND_TRANSFER_IN:
+            case FUND_TRANSFER_OUT:
                 return Status.OK_STATUS;
             default:
                 throw new UnsupportedOperationException();

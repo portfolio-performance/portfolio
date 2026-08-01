@@ -2,6 +2,7 @@ package name.abuchen.portfolio.snapshot.trades;
 
 import java.io.Serializable;
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -14,6 +15,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.FundTransferEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
@@ -71,7 +73,9 @@ public class TradeCollector
             if (pair.getTransaction() instanceof PortfolioTransaction tx)
             {
                 if (tx.getType() == PortfolioTransaction.Type.TRANSFER_IN
-                                || tx.getType() == PortfolioTransaction.Type.TRANSFER_OUT)
+                                || tx.getType() == PortfolioTransaction.Type.TRANSFER_OUT
+                                || tx.getType() == PortfolioTransaction.Type.FUND_TRANSFER_IN
+                                || tx.getType() == PortfolioTransaction.Type.FUND_TRANSFER_OUT)
                     return 2;
 
                 return tx.getType().isPurchase() ? 1 : 3;
@@ -93,6 +97,23 @@ public class TradeCollector
 
     private Client client;
     private CurrencyConverter converter;
+
+    private static final class CarriedFundTransferTransaction extends PortfolioTransaction
+                    implements FundTransferCarriedTransaction
+    {
+        private final LocalDate acquisitionDate;
+
+        private CarriedFundTransferTransaction(LocalDate acquisitionDate)
+        {
+            this.acquisitionDate = acquisitionDate;
+        }
+
+        @Override
+        public LocalDate getAcquisitionDate()
+        {
+            return acquisitionDate;
+        }
+    }
 
     public TradeCollector(Client client, CurrencyConverter converter)
     {
@@ -143,6 +164,14 @@ public class TradeCollector
 
                 case TRANSFER_OUT:
                     // ignore -> handled via TRANSFER_IN
+                    break;
+
+                case FUND_TRANSFER_IN:
+                    addFundTransferLots(openTransactions, pair);
+                    break;
+
+                case FUND_TRANSFER_OUT:
+                    removeFundTransferLots(openTransactions, pair);
                     break;
 
                 default:
@@ -273,6 +302,80 @@ public class TradeCollector
                                 remainingShares / (double) candidate.getTransaction().getShares()));
                 target.add(split(candidate, inbound,
                                 sharesToTransfer / (double) candidate.getTransaction().getShares()));
+
+                sharesToTransfer = 0;
+            }
+        }
+
+        if (sharesToTransfer > 0)
+        {
+            throw new TradeCollectorException(
+                            MessageFormat.format(Messages.MsgErrorTradeCollector_MissingHoldingsForTransfer,
+                                            pair.getTransaction().getSecurity(), outbound, inbound,
+                                            Values.Share.format(sharesToTransfer), pair));
+        }
+    }
+
+    private void addFundTransferLots(Map<Portfolio, List<TransactionPair<PortfolioTransaction>>> openTransactions,
+                    TransactionPair<PortfolioTransaction> pair)
+    {
+        FundTransferEntry transfer = (FundTransferEntry) pair.getTransaction().getCrossEntry();
+        Portfolio inbound = (Portfolio) transfer.getOwner(transfer.getTargetTransaction());
+
+        List<TransactionPair<PortfolioTransaction>> target = openTransactions.computeIfAbsent(inbound,
+                        p -> new ArrayList<>());
+
+        for (FundTransferEntry.CarriedLot lot : transfer.getCarriedLots())
+        {
+            PortfolioTransaction syntheticLot = new CarriedFundTransferTransaction(lot.getAcquisitionDate());
+            syntheticLot.setType(Type.FUND_TRANSFER_IN);
+            syntheticLot.setDateTime(pair.getTransaction().getDateTime());
+            syntheticLot.setSecurity(pair.getTransaction().getSecurity());
+            syntheticLot.setShares(lot.getTargetShares());
+            syntheticLot.setMonetaryAmount(lot.getAcquisitionValue());
+
+            // Display the synthetic lot on the real transfer execution date,
+            // while keeping the inherited acquisition date for holding-period
+            // and carried-basis calculations.
+            target.add(new TransactionPair<>(inbound, syntheticLot));
+        }
+    }
+
+    private void removeFundTransferLots(Map<Portfolio, List<TransactionPair<PortfolioTransaction>>> openTransactions,
+                    TransactionPair<PortfolioTransaction> pair) throws TradeCollectorException
+    {
+        FundTransferEntry transfer = (FundTransferEntry) pair.getTransaction().getCrossEntry();
+        Portfolio outbound = (Portfolio) transfer.getOwner(transfer.getSourceTransaction());
+        Portfolio inbound = (Portfolio) transfer.getOwner(transfer.getTargetTransaction());
+
+        List<TransactionPair<PortfolioTransaction>> positions = openTransactions.get(outbound);
+        if (positions == null || positions.isEmpty())
+            throw new TradeCollectorException(
+                            MessageFormat.format(Messages.MsgErrorTradeCollector_NoHoldingsForTransfer,
+                                            pair.getTransaction().getSecurity(), outbound, inbound, pair));
+
+        long sharesToTransfer = pair.getTransaction().getShares();
+
+        // Removing source fund shares must not create a closed trade because the
+        // taxable result belongs to the later liquidation of the target fund.
+        Collections.sort(positions, BY_DATE_AND_TYPE);
+
+        for (TransactionPair<PortfolioTransaction> candidate : new ArrayList<>(positions))
+        {
+            if (sharesToTransfer == 0)
+                break;
+
+            if (sharesToTransfer >= candidate.getTransaction().getShares())
+            {
+                positions.remove(candidate);
+                sharesToTransfer -= candidate.getTransaction().getShares();
+            }
+            else if (sharesToTransfer < candidate.getTransaction().getShares())
+            {
+                long remainingShares = candidate.getTransaction().getShares() - sharesToTransfer;
+
+                positions.set(positions.indexOf(candidate), split(candidate, outbound,
+                                remainingShares / (double) candidate.getTransaction().getShares()));
 
                 sharesToTransfer = 0;
             }
