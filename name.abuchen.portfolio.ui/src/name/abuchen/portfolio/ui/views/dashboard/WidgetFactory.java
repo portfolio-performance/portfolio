@@ -145,6 +145,8 @@ public enum WidgetFactory
 
     FIRE(Messages.LabelFIREWidget, Messages.LabelStatementOfAssets, FIREWidget::new),
 
+    ARVA(Messages.LabelARVAWidget, Messages.LabelStatementOfAssets, ARVAWidget::new),
+
     ABSOLUTE_INVESTED_CAPITAL(Messages.LabelAbsoluteInvestedCapital, Messages.LabelStatementOfAssets, //
                     (widget, data) -> IndicatorWidget.<Money>create(widget, data) //
                                     .with(Values.Money) //
