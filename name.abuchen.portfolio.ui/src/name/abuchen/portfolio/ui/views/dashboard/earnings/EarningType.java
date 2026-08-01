@@ -6,7 +6,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel;
 
-enum EarningType
+public enum EarningType
 {
     EARNINGS(Messages.LabelDividends + " + " + Messages.LabelInterest, //$NON-NLS-1$
                     t -> t.getType() == AccountTransaction.Type.DIVIDENDS
