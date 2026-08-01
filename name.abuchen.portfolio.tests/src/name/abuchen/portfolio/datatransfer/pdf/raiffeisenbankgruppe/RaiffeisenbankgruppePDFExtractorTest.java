@@ -1732,6 +1732,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
                         hasShares(100.00), //
                         hasSource("Dividende15.txt"), //
                         hasNote(null), //
+                        hasForexGrossValue("CHF", 980.00), //
                         hasAmount("EUR", 558.26), hasGrossValue("EUR", 1078.58), //
                         hasTaxes("EUR", 512.32), hasFees("EUR", 8.00))));
     }
@@ -1769,6 +1770,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
                         hasShares(500.00), //
                         hasSource("Dividende16.txt"), //
                         hasNote(null), //
+                        hasForexGrossValue("USD", 205.00), //
                         hasAmount("EUR", 118.20), hasGrossValue("EUR", 174.07), //
                         hasTaxes("EUR", 47.87), hasFees("EUR", 8.00))));
     }
