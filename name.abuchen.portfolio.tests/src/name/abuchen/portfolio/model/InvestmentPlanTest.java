@@ -380,4 +380,37 @@ public class InvestmentPlanTest
         assertThat(tx.get(3).getDateTime(), is(LocalDateTime.parse("2024-04-08T00:00")));
     }
 
+    @Test
+    public void testWeekendAdjustmentNextBusinessDay()
+    {
+        investmentPlan.setStart(LocalDateTime.parse("2024-04-20T00:00:00")); // Saturday
+        investmentPlan.setWeekendAdjustment(WeekendAdjustment.NEXT_BUSINESS_DAY);
+
+        // Saturday April 20 should adjust forward to Monday April 22
+        assertThat(investmentPlan.getDateOfNextTransactionToBeGenerated(), is(LocalDate.parse("2024-04-22")));
+    }
+
+    @Test
+    public void testWeekendAdjustmentPreviousBusinessDay()
+    {
+        investmentPlan.setStart(LocalDateTime.parse("2024-04-20T00:00:00"));
+        investmentPlan.setWeekendAdjustment(WeekendAdjustment.PREVIOUS_BUSINESS_DAY);
+
+        assertThat(investmentPlan.getDateOfNextTransactionToBeGenerated(), is(LocalDate.parse("2024-04-19")));
+    }
+
+    @Test
+    public void testWeekendAdjustmentPreviousBusinessDayAcrossHolidays()
+    {
+        investmentPlan.setStart(LocalDateTime.parse("2016-03-28T00:00:00"));
+        investmentPlan.setWeekendAdjustment(WeekendAdjustment.PREVIOUS_BUSINESS_DAY);
+
+        assertThat(investmentPlan.getDateOfNextTransactionToBeGenerated(), is(LocalDate.parse("2016-03-24")));
+    }
+
+    @Test
+    public void testWeekendAdjustmentDefaultValue()
+    {
+        assertThat(investmentPlan.getWeekendAdjustment(), is(WeekendAdjustment.NEXT_BUSINESS_DAY));
+    }
 }
