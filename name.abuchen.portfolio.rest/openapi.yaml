@@ -101,6 +101,8 @@ tags:
     description: Accounts holding instrument positions
   - name: Holdings
     description: The statement of assets — every holding valued at a date
+  - name: Taxonomies
+    description: The category schemes a file classifies its holdings by.
   - name: Performance
     description: Return and value-change of the file over an interval
 
@@ -685,6 +687,60 @@ paths:
                     value:
                       value: "10520.75"
                       currency: EUR
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/taxonomies:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    get:
+      operationId: listTaxonomies
+      tags: [Taxonomies]
+      summary: List the taxonomies a file defines, with their category trees
+      description: |
+        The key to the `classifications` object on a holding, which is keyed by
+        taxonomy id and names its categories by path: without this list a client has
+        an id it cannot label, and no way to know which categories exist but hold
+        nothing.
+
+        A taxonomy's root is not reported as a category — it names the taxonomy
+        itself. That is the same convention the `classifications` paths follow, so
+        the two line up without the caller stripping anything.
+      responses:
+        "200":
+          description: The taxonomies defined in the file.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Taxonomy"
+              examples:
+                default:
+                  value:
+                    items:
+                      - id: 30314ba9-949f-4bf4-944e-6a30802f5190
+                        name: Asset Allocation
+                        categories:
+                          - name: Equity
+                            color: "#89afee"
+                            children:
+                              - name: Europe
+                              - name: North America
+                          - name: Cash
+                            color: "#c4e8e8"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -1643,6 +1699,41 @@ components:
           type: string
           format: date
           description: The date the price is from.
+
+    Taxonomy:
+      type: object
+      description: |
+        One category scheme and its tree. Joins to a holding's `classifications`,
+        which is keyed by the `id` here.
+      required: [id, name, categories]
+      properties:
+        id:
+          type: string
+          description: The key this taxonomy appears under in a holding's `classifications`.
+        name:
+          type: string
+        categories:
+          type: array
+          description: |
+            The top-level categories. The taxonomy's own root is not among them —
+            it names the taxonomy, not a category.
+          items:
+            $ref: "#/components/schemas/TaxonomyCategory"
+
+    TaxonomyCategory:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        color:
+          type: string
+          description: The category's display color, as set in the application.
+        children:
+          type: array
+          description: Omitted for a leaf, rather than reported as an empty array.
+          items:
+            $ref: "#/components/schemas/TaxonomyCategory"
 
     PriceSeries:
       type: object

@@ -752,6 +752,44 @@ public final class EntityJson
     }
 
     /**
+     * One taxonomy and its category tree. The root is not reported as a category -
+     * it names the taxonomy itself, which is exactly the convention a holding's
+     * {@code classifications} paths follow, so the two line up without the caller
+     * having to strip anything.
+     */
+    public static JsonObject toJson(Taxonomy taxonomy)
+    {
+        var json = new JsonObject();
+        json.addProperty("id", taxonomy.getId());
+        json.addProperty("name", taxonomy.getName());
+
+        var categories = new JsonArray();
+        for (Classification child : taxonomy.getRoot().getChildren())
+            categories.add(toJson(child));
+        json.add("categories", categories);
+
+        return json;
+    }
+
+    private static JsonObject toJson(Classification classification)
+    {
+        var json = new JsonObject();
+        json.addProperty("name", classification.getName());
+        if (classification.getColor() != null)
+            json.addProperty("color", classification.getColor());
+
+        // Only present when the category has children: a leaf's empty array would be
+        // noise on every leaf of a deep taxonomy.
+        var children = new JsonArray();
+        for (Classification child : classification.getChildren())
+            children.add(toJson(child));
+        if (children.size() > 0)
+            json.add("children", children);
+
+        return json;
+    }
+
+    /**
      * The stored quotes for one instrument, oldest first. The currency is stated
      * once for the whole series rather than per point - every quote of an instrument
      * is in the instrument's currency, and a per-point object would triple the size

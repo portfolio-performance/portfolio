@@ -26,6 +26,7 @@ import name.abuchen.portfolio.rest.internal.Router;
 import name.abuchen.portfolio.rest.internal.SecuritiesHandler;
 import name.abuchen.portfolio.rest.internal.SecurityPerformanceHandler;
 import name.abuchen.portfolio.rest.internal.SecurityPricesHandler;
+import name.abuchen.portfolio.rest.internal.TaxonomiesHandler;
 import name.abuchen.portfolio.rest.internal.TradesHandler;
 import name.abuchen.portfolio.rest.internal.TransactionsHandler;
 import name.abuchen.portfolio.rest.spi.HostApplication;
@@ -98,6 +99,9 @@ public final class ApiRoutes
         router.add("GET", "/v1/files/{file}/investment-accounts/{uuid}", calc(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> Response.json(200, PortfoliosHandler.get(context.client(), context.factory(),
                                         req.pathParam("uuid"), req.queryParam("date"), req.queryParam("currency"))))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+        router.add("GET", "/v1/files/{file}/taxonomies", read(resolver, host,
+                        (client, req) -> Response.json(200, TaxonomiesHandler.list(client))));
 
         router.add("GET", "/v1/files/{file}/transactions", read(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (client, req) -> Response.json(200, TransactionsHandler.list(client))));
