@@ -30,7 +30,8 @@ eclipse configuration PortfolioPerformance {
     argument "-consoleLog";
     
     vm-argument "-XX:+IgnoreUnrecognizedVMOptions";
-    vm-argument "--add-modules=ALL-SYSTEM";
+    // pre-empts PDE, which otherwise appends --add-modules=ALL-SYSTEM to every launch
+    vm-argument "--add-modules=ALL-DEFAULT";
     vm-argument "-XX:+UseG1GC";
     vm-argument "-XX:+UseStringDeduplication";
     vm-argument "-XstartOnFirstThread";
