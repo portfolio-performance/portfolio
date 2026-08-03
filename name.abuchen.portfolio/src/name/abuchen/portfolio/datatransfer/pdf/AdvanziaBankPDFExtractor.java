@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.trim;
+
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -16,6 +18,7 @@ public class AdvanziaBankPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("Advanzia Bank S.A.");
 
         addAccountStatementTransaction();
+        addCreditCardStatementTransaction();
     }
 
     @Override
@@ -155,6 +158,82 @@ public class AdvanziaBankPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
+                        })
+
+                        .wrap(TransactionItem::new));
+    }
+
+    private void addCreditCardStatementTransaction()
+    {
+        final var type = new DocumentType("Rechnung Geb.hrenfrei Mastercard Gold", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Datum Beschreibung Ort Betrag EUR
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("^Datum Beschreibung Ort Betrag (?<currency>[A-Z]{3})$") //
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
+
+        this.addDocumentTyp(type);
+
+        // @formatter:off
+        // 07.01.2026 EINZAHLUNG -13,45
+        // @formatter:on
+        var depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} EINZAHLUNG \\-?[\\.\\d]+,[\\d]{2}.*$");
+        type.addBlock(depositBlock);
+        depositBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
+
+                        .section("date", "amount") //
+                        .documentContext("currency") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) EINZAHLUNG \\-?(?<amount>[\\.\\d]+,[\\d]{2}).*$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 03.02.2026 SOLLZINSEN 2,11
+        // @formatter:on
+        var interestChargeBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} SOLLZINSEN [\\.\\d]+,[\\d]{2}.*$");
+        type.addBlock(interestChargeBlock);
+        interestChargeBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST_CHARGE))
+
+                        .section("date", "amount") //
+                        .documentContext("currency") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) SOLLZINSEN (?<amount>[\\.\\d]+,[\\d]{2}).*$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 22.01.2026 A201 KF ARN APVuXQ LS - SEK 191,00 (KURS 10,6347) rXUoMInHk 17,96
+        // 25.01.2026 sphb WUdh - MVR 77,00 (KURS 18,0751) gLHfjmKHv 4,26
+        // @formatter:on
+        var chargeBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?!EINZAHLUNG|SOLLZINSEN|ALTER SALDO|NEUER SALDO).* [\\.\\d]+,[\\d]{2}$");
+        type.addBlock(chargeBlock);
+        chargeBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
+
+                        .section("date", "note", "amount") //
+                        .documentContext("currency") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<note>(?!EINZAHLUNG|SOLLZINSEN|ALTER SALDO|NEUER SALDO).*) (?<amount>[\\.\\d]+,[\\d]{2})$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setNote(trim(v.get("note")));
                         })
 
                         .wrap(TransactionItem::new));
