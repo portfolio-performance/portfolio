@@ -140,6 +140,7 @@ public class PDFImportAssistant
         extractors.add(new SunrisePDFExtractor(client));
         extractors.add(new SuresseDirektBankPDFExtractor(client));
         extractors.add(new SutorBankGmbHPDFExtractor(client));
+        extractors.add(new SwisscardAECSPDFExtractor(client));
         extractors.add(new SwissquotePDFExtractor(client));
         extractors.add(new SydbankASPDFExtractor(client));
         extractors.add(new TargobankPDFExtractor(client));
