@@ -219,17 +219,22 @@ public class AdvanziaBankPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 22.01.2026 A201 KF ARN APVuXQ LS - SEK 191,00 (KURS 10,6347) rXUoMInHk 17,96
         // 25.01.2026 sphb WUdh - MVR 77,00 (KURS 18,0751) gLHfjmKHv 4,26
+        // 19.12.2023 TOP gZu SQlrWnllz JDrHc svoMNz -700,00
         // @formatter:on
-        var chargeBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?!EINZAHLUNG|SOLLZINSEN|ALTER SALDO|NEUER SALDO).* [\\.\\d]+,[\\d]{2}$");
+        var chargeBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?!EINZAHLUNG|SOLLZINSEN|ALTER SALDO|NEUER SALDO).* \\-?[\\.\\d]+,[\\d]{2}$");
         type.addBlock(chargeBlock);
         chargeBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
 
-                        .section("date", "note", "amount") //
+                        .section("date", "note", "sign", "amount") //
                         .documentContext("currency") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<note>(?!EINZAHLUNG|SOLLZINSEN|ALTER SALDO|NEUER SALDO).*) (?<amount>[\\.\\d]+,[\\d]{2})$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<note>(?!EINZAHLUNG|SOLLZINSEN|ALTER SALDO|NEUER SALDO).*) (?<sign>\\-?)(?<amount>[\\.\\d]+,[\\d]{2})$") //
                         .assign((t, v) -> {
+                            // Is sign --> "-" change from REMOVAL to DEPOSIT
+                            if ("-".equals(v.get("sign")))
+                                t.setType(AccountTransaction.Type.DEPOSIT);
+
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));

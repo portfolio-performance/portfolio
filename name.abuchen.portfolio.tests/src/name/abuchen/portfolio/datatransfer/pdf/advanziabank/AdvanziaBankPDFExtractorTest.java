@@ -260,4 +260,44 @@ public class AdvanziaBankPDFExtractorTest
                         hasAmount("EUR", 2.11), hasGrossValue("EUR", 2.11), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
+
+    @Test
+    public void testKreditkartenabrechnung02()
+    {
+        var extractor = new AdvanziaBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kreditkartenabrechnung02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-12-09"), hasAmount("EUR", 131.50), //
+                        hasSource("Kreditkartenabrechnung02.txt"), //
+                        hasNote("tfNYesQXO 16569540 jSiJCLzb"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-12-12"), hasAmount("EUR", 700.00), //
+                        hasSource("Kreditkartenabrechnung02.txt"), //
+                        hasNote("TOP cLu xwJDBZBkg fJGDD rYoFgv"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-12-19"), hasAmount("EUR", 700.00), //
+                        hasSource("Kreditkartenabrechnung02.txt"), //
+                        hasNote("TOP gZu SQlrWnllz JDrHc svoMNz"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-01-01"), hasAmount("EUR", 33.00), //
+                        hasSource("Kreditkartenabrechnung02.txt"), //
+                        hasNote("fdxIckwhI VKfH LEiv"))));
+    }
 }
