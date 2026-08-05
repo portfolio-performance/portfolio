@@ -790,6 +790,7 @@ public class StatementOfAssetsViewer
             }
             catch (Exception e)
             {
+                // If anything goes wrong, just ignore
             }
 
             // Draw triangles to show the collapsed state
@@ -1439,8 +1440,8 @@ public class StatementOfAssetsViewer
         private AssetCategory category;
         private AssetPosition position;
         private boolean collapsed = false;
-        
-        private List<Element> children = new ArrayList<>();      
+
+        private List<Element> children = new ArrayList<>();
 
         private Map<CacheKey, LazySecurityPerformanceRecord> performance = new HashMap<>();
         private Map<CacheKey, LazyValue<PerformanceIndex>> performanceForCategoryTotals = new HashMap<>();
