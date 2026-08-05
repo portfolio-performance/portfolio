@@ -329,8 +329,8 @@ public class StatementOfAssetsViewer
 
     /**
      * Latest snapshot of an ongoing (or just finished) price update job. Used
-     * by the "Date of Quote & Update Status" column to show the live update
-     * status while a job is running.
+     * by the "Date of quote and update status" column to show the live
+     * update status while a job is running.
      */
     private PriceUpdateSnapshot priceUpdateSnapshot;
     private final PriceUpdateProgress.Listener priceUpdateListener = snapshot -> {
