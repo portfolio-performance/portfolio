@@ -239,7 +239,7 @@ public class StatementOfAssetsViewer
          */
         public void saveCollapsedState()
         {
-            String collapsedIds = elements.stream().filter(Element::isCategory).filter(Element::isCollapsed)
+            var collapsedIds = elements.stream().filter(Element::isCategory).filter(Element::isCollapsed)
                             .map(e -> e.getCategory().getClassification().getId()).collect(Collectors.joining(","));
 
             preferences.setValue(COLLAPSED_CATEGORIES, collapsedIds);
@@ -250,20 +250,20 @@ public class StatementOfAssetsViewer
          */
         private void loadCollapsedState()
         {
-            String collapsedIds = preferences.getString(COLLAPSED_CATEGORIES);
+            var collapsedIds = preferences.getString(COLLAPSED_CATEGORIES);
             if (collapsedIds == null || collapsedIds.isEmpty())
                 return;
 
-            String[] ids = collapsedIds.split(",");
+            var ids = collapsedIds.split(",");
             Set<String> collapsedIdSet = new HashSet<>();
-            for (String id : ids)
+            for (var id : ids)
             {
                 if (!id.isEmpty())
                     collapsedIdSet.add(id);
             }
 
             elements.stream().filter(Element::isCategory).forEach(e -> {
-                String id = e.getCategory().getClassification().getId();
+                var id = e.getCategory().getClassification().getId();
                 if (collapsedIdSet.contains(id))
                     e.setCollapsed(true);
             });
