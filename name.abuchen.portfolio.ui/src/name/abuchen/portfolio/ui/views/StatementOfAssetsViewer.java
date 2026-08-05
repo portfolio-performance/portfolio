@@ -374,6 +374,7 @@ public class StatementOfAssetsViewer
     private final Client client;
     private Taxonomy taxonomy;
     private String lastTaxonomyId;
+    private boolean taxonomyInitialized;
     private Model model;
 
     @Inject
@@ -1377,12 +1378,13 @@ public class StatementOfAssetsViewer
         {
             // Check if the taxonomy has changed
             String currentTaxonomyId = taxonomy != null ? taxonomy.getId() : null;
-            if (lastTaxonomyId != null && currentTaxonomyId != null && !lastTaxonomyId.equals(currentTaxonomyId))
+            if (taxonomyInitialized && !Objects.equals(lastTaxonomyId, currentTaxonomyId))
             {
                 // Taxonomy has changed, clear the collapsed state
                 preference.setValue(Model.COLLAPSED_CATEGORIES, "");
             }
             lastTaxonomyId = currentTaxonomyId;
+            taxonomyInitialized = true;
 
             this.model = new Model(preference, client, filter, converter, date, taxonomy);
 
