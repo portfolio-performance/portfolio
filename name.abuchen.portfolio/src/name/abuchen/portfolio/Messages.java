@@ -339,6 +339,7 @@ public class Messages extends NLS
     public static String OAuthErrorGeneratingPKCE;
     public static String OAuthFailedToRequestAccessToken;
     public static String OAuthFailedToStartCallbackServer;
+    public static String OAuthNetworkConnectionFailed;
     public static String OAuthNotAuthenticated;
     public static String OAuthNotConfigured;
     public static String OAuthOngoingAuthentication;
