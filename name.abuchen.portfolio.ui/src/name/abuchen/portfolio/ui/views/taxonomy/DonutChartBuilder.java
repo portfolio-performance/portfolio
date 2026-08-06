@@ -138,7 +138,7 @@ public class DonutChartBuilder
                                     return mergedNode;
                                 })) //
                                 .values().stream() //
-                                .sorted((l, r) -> getMoney(l).compareTo(getMoney(r))) //
+                                .sorted((r, l) -> getMoney(l).compareTo(getMoney(r))) //
                                 .forEach(grandchild -> answer.add(new Pair<>(child, grandchild)));
             }
         }
