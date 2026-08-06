@@ -85,9 +85,10 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
                                             // @formatter:off
                                             //                                 KONTOAUSZUG  Nr. 1/2019
                                             // Renault Bank direkt - Postfach 269 - 45952 Gladbeck Kontoauszug Nr.   2/2021
+                                            // Renault Bank direkt - Postfach 269 - 45952 Gladbeck K o n to a u s z u g Nr.  1/2026
                                             // @formatter:on
                                             .section("year").optional() //
-                                            .match("^.*(KONTOAUSZUG|Kontoauszug)[\\s]*Nr\\.[\\s]*[\\d]{1,2}\\/(?<year>[\\d]{4}).*$") //
+                                        .match("^.*(KONTOAUSZUG|K.*o.*n.*t.*o.*a.*u.*s.*z.*u.*g)[\\s]*Nr\\.[\\s]*[\\d]{1,2}\\/(?<year>[\\d]{4}).*$") //
                                             .assign((ctx, v) -> ctx.put("year", v.get("year"))));
 
         this.addDocumentTyp(type);
