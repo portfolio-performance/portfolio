@@ -22,6 +22,7 @@ import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -409,6 +410,35 @@ public class ClientIndexTest
 
         long taxes[] = index.getTaxes();
         assertThat(taxes[taxes.length - 8], is(7_50L));
+    }
+
+    @Test
+    public void testDividendUsesExDateForDailyAttribution()
+    {
+        Client client = new Client();
+        Security security = new SecurityBuilder().addTo(client);
+
+        Account account = new AccountBuilder() //
+                        .deposit_("2012-01-01", 1000_00) //
+                        .addTo(client);
+
+        AccountTransaction dividend = new AccountTransaction();
+        dividend.setType(AccountTransaction.Type.DIVIDENDS);
+        dividend.setSecurity(security);
+        dividend.setDateTime(LocalDateTime.parse("2012-01-10T00:00"));
+        dividend.setExDate(LocalDateTime.parse("2012-01-05T00:00"));
+        dividend.setAmount(42_50);
+        dividend.setCurrencyCode(account.getCurrencyCode());
+        account.addTransaction(dividend);
+
+        Interval reportInterval = Interval.of(LocalDate.of(2012, Month.JANUARY, 1), //
+                        LocalDate.of(2012, Month.JANUARY, 8));
+        CurrencyConverter converter = new TestCurrencyConverter();
+        PerformanceIndex index = PerformanceIndex.forClient(client, converter, reportInterval, new ArrayList<>());
+
+        long[] dividends = index.getDividends();
+        assertThat(dividends[4], is(42_50L));
+        assertThat(dividends[7], is(0L));
     }
 
 }
