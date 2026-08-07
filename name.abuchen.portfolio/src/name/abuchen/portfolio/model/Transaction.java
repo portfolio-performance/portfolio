@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.model;
 
+import java.beans.Transient;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -357,6 +358,7 @@ public abstract class Transaction implements Annotated, Adaptable
         this.updatedAt = Instant.now();
     }
 
+    @Transient
     public void setBond(Security security)
     {
         setSecurity(security);
@@ -384,6 +386,7 @@ public abstract class Transaction implements Annotated, Adaptable
         this.updatedAt = Instant.now();
     }
 
+    @Transient
     public void setBondNominal(long nominal)
     {
         setShares(nominal);
