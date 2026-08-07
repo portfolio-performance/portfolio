@@ -2,7 +2,6 @@ package name.abuchen.portfolio.datatransfer.actions;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsIterableContaining.hasItem;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -117,17 +116,17 @@ public class InsertActionTest
         Set<String> properties = Arrays.stream(info.getPropertyDescriptors()).filter(p -> p.getWriteMethod() != null)
                         .map(PropertyDescriptor::getName).collect(Collectors.toSet());
 
-        assertThat(properties, hasItem("security"));
-        assertThat(properties, hasItem("monetaryAmount"));
-        assertThat(properties, hasItem("currencyCode"));
-        assertThat(properties, hasItem("amount"));
-        assertThat(properties, hasItem("shares"));
-        assertThat(properties, hasItem("dateTime"));
-        assertThat(properties, hasItem("type"));
-        assertThat(properties, hasItem("note"));
-        assertThat(properties, hasItem("source"));
-        assertThat(properties, hasItem("updatedAt"));
-
-        assertThat(properties.size(), is(10));
+        assertThat(properties.stream().sorted(String.CASE_INSENSITIVE_ORDER).collect(Collectors.joining(",")),
+                        is("" //
+                                        + "amount," //
+                                        + "currencyCode," //
+                                        + "dateTime," //
+                                        + "monetaryAmount," //
+                                        + "note," //
+                                        + "security," //
+                                        + "shares," //
+                                        + "source," //
+                                        + "type," //
+                                        + "updatedAt"));
     }
 }
