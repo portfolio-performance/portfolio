@@ -7,6 +7,7 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.beans.Transient;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Set;
@@ -113,7 +114,9 @@ public class InsertActionTest
 
         BeanInfo info = Introspector.getBeanInfo(PortfolioTransaction.class);
 
-        Set<String> properties = Arrays.stream(info.getPropertyDescriptors()).filter(p -> p.getWriteMethod() != null)
+        Set<String> properties = Arrays.stream(info.getPropertyDescriptors()) //
+                        .filter(p -> p.getWriteMethod() != null)
+                        .filter(p -> !p.getWriteMethod().isAnnotationPresent(Transient.class))
                         .map(PropertyDescriptor::getName).collect(Collectors.toSet());
 
         assertThat(properties.stream().sorted(String.CASE_INSENSITIVE_ORDER).collect(Collectors.joining(",")), is("" //

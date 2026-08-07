@@ -947,7 +947,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
     {
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^(Kauf|Verkauf|Gesamtf.lligkeit) .*$", "Dieser Beleg wird .*$");
+        var firstRelevantLine = new Block("^" + TRANSACTIONTYPE_REGEX + ".*$", "Dieser Beleg wird .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -1082,10 +1082,13 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                         // zu versteuern (negativ) EUR 59,20
                         // Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten
                         // 07.07.2020 1234567 1234567 EUR 16,46
+                        //
+                        // Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten  
+                        // 28.06.2011 1234567890 85552617 EUR             18,68     
                         // @formatter:on
                         .section("currency", "amount").optional() //
                         .find("zu versteuern \\(negativ\\).*") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\d]+ (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
+                        .match("^\\d{2}\\.\\d{2}\\.\\d{4}\\s+[\\d]+ [\\d]+\\s+(?<currency>[A-Z]{3})\\s+(?<amount>[\\.,\\d]+).*$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));

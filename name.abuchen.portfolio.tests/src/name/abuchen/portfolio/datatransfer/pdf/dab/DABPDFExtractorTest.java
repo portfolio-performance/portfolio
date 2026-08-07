@@ -631,7 +631,7 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testAnleihekauf01()
+    public void testAnleiheKauf01()
     {
         var extractor = new DABPDFExtractor(new Client());
 
@@ -642,11 +642,11 @@ public class DABPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(2));
+        assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
         // check security
@@ -662,6 +662,14 @@ public class DABPDFExtractorTest
                         hasNote("Abrechnungs-Nr. 67009861"), //
                         hasAmount("EUR", 1553.80), hasGrossValue("EUR", 1540.77), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 8.63 + 2.90 + 1.50))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2011-06-28T00:00:00"), hasShares(20), //
+                        hasSource("KaufAnleihe01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 17.70 + 0.98), hasGrossValue("EUR", 17.70 + 0.98), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
