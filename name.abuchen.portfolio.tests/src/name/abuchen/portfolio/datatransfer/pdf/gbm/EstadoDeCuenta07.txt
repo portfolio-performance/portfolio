@@ -1,0 +1,294 @@
+```
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.84.3.qualifier
+System: win32 | x86_64 | 21.0.5+9-LTS-239 | Oracle Corporation
+-----------------------------------------
+Hoja: 1 de 8
+OSCAR JONATHAN SOLIS GARCIA Contrato: AAM29001 Periodo:
+RFC:SOGO861125PL0 DEL 1 AL 30 DE JUNIO DE 2022
+MARTIN MENDALDE 922 Ejecutivo: Teléfono Dir.
+COL. Del Valle Centro EMMANUEL ANTONIO JONAPA (01) 54 80 58 00
+DEL./POB. Benito Juarez,Ciudad de México,Mexico
+CP 03100CR 03001
+RESUMEN DEL PORTAFOLIO
+SALDO SALDO % DE
+PORTAFOLIO AL 31-MAY-22 AL 30-JUN-22  PORTAFOLIO MOVIMIENTOS DEL 1 AL 30 DE JUNIO DE 2022
+DEUDA  18,629.69  18,811.07  22.51 ENTRADAS DE EFECTIVO  131.50
+RENTA VARIABLE  68,274.22  64,751.22  77.48 SALIDAS DE EFECTIVO  13.15
+VALORES EN CORTO / PRÉSTAMO DE VALORES  0.00  0.00  0.00 SUBTOTAL EFECTIVO  118.35
+FONDO DE FONDOS  0.00  0.00  0.00 DEPOSITO DE VALORES  0.00
+GARANTÍAS  0.00  0.00  0.00 RETIRO DE VALORES  0.00
+OTRAS INVERSIONES  0.00  0.00  0.00 SUBTOTAL VALORES  0.00
+CREDITOS DE MARGEN  0.00  0.00  0.00 DERECHOS PATRIMONIALES  0.10
+EFECTIVO  3.07  13.57  0.02 COMISIONES  0.00
+DERIVADOS  0.00  0.00  0.00
+VALOR DEL PORTAFOLIO ¹  86,906.97  83,575.86  100.00 SALDO NETO DE MOVIMIENTOS  118.45
+VALOR TOTAL DE LAS GARANTIAS  0.00  0.00
+COMPOSICIÓN DEL PORTAFOLIO AVISOS
+Hoja: 2 de 8
+OSCAR JONATHAN SOLIS GARCIA Contrato: AAM29001 Periodo:
+RFC:SOGO861125PL0 DEL 1 AL 30 DE JUNIO DE 2022
+DESGLOSE DEL PORTAFOLIO
+DEUDA
+DEUDA EN REPORTO
+EMISORA NO. TÍTULOS MES NO. TÍTULOS MES TASA PREMIO PLAZO DEL DÍAS POR VENCER PRECIO DE PRECIO DE VALOR DEL PREMIO % DE LA
+ANTERIOR ACTUAL REPORTO MERCADO MERCADO MES REPORTO DEVENGADO CART.
+ANTERIOR
+ BI 220804  121  0  0.10  1  0  0.000000  9.866041  0.00  0.00  0.00
+ LF 231130  0  13  0.10  1  1  100.090789  100.038794  1,301.18  0.00  1.56
+ Total: DEUDA EN REPORTO  1,301.18  0.00  1.56
+FONDOS DE INVERSION DE DEUDA*
+EMISORA NO. TÍTULOS MES NO. TÍTULOS MES COSTO COSTO TOTAL PRECIO DE PRECIO DE VALOR A PLUSVALÍA % DE LA
+ANTERIOR ACTUAL PROMEDIO MERCADO MERCADO MES MERCADO (MINUSVALIA) CART.
+ANTERIOR
+ GBMF2 BF  456  456  16,752.72  38.398874  38.237669  17,509.89  757.17  20.95
+ Total: FONDOS DE INVERSION DE DEUDA  17,509.89  757.17  20.95
+ TOTAL: DEUDA  18,811.07  757.17  22.51
+RENTA VARIABLE
+ACCIONES
+EMISORA NO. TÍTULOS MES NO. TÍTULOS MES TÍT COSTO COSTO TOTAL PRECIO DE PRECIO DE VALOR A PLUSVALÍA % DE LA
+ANTERIOR ACTUAL OTORGADOS PROMEDIO MERCADO MERCADO MES MERCADO (MINUSVALIA) CART.
+EN PRÉSTAMO ANTERIOR
+ FIBRAPL 14  216  216  0  39.250000  8,478.00  52.740000  51.450000  11,391.84  2,913.84  13.63
+ FUNO 11  220  220  0  16.954867  3,730.07  20.030000  20.780000  4,406.60  676.53  5.27
+ TERRA 13  163  163  0  23.599369  3,846.70  26.880000  29.450000  4,381.44  534.74  5.24
+ Total: ACCIONES  20,179.88  4,125.11  24.15
+ACCIONES DEL SIC
+EMISORA NO. TÍTULOS MES NO. TÍTULOS MES TÍT COSTO COSTO TOTAL PRECIO DE PRECIO DE VALOR A PLUSVALÍA % DE LA
+ANTERIOR ACTUAL OTORGADOS PROMEDIO MERCADO MERCADO MES MERCADO (MINUSVALIA) CART.
+EN PRÉSTAMO ANTERIOR
+ SPCE *  1  1  0  395.000000  395.00  121.203670  138.054940  121.20  (273.80)  0.15
+ VEA *  15  15  0  837.000000  12,555.00  821.446800  896.273940  12,321.70  (233.30)  14.74
+ VOO *  4  4  0  6,386.252500  25,545.01  6,983.908480  7,477.417920  27,935.63  2,390.62  33.43
+ VWO *  5  5  0  822.600000  4,113.00  838.560275  859.446160  4,192.80  79.80  5.02
+ Total: ACCIONES DEL SIC  44,571.33  1,963.32  53.33
+ TOTAL: RENTA VARIABLE  64,751.21  6,088.43  77.48
+EFECTIVO VALOR % DE CART.
+EFECTIVO MISMO DIA  13.57  0.02
+EFECTIVO 24 HORAS  0.00  0.00
+EFECTIVO 48 HORAS  0.00  0.00
+Hoja: 3 de 8
+OSCAR JONATHAN SOLIS GARCIA Contrato: AAM29001 Periodo:
+RFC:SOGO861125PL0 DEL 1 AL 30 DE JUNIO DE 2022
+EFECTIVO VALOR % DE CART.
+EFECTIVO 72 HORAS  0.00  0.00
+EFECTIVO MAYOR A 72 HORAS  0.00  0.00
+TOTAL EN EFECTIVO  13.57  0.02
+Hoja: 4 de 8
+OSCAR JONATHAN SOLIS GARCIA Contrato: AAM29001 Periodo:
+RFC:SOGO861125PL0 DEL 1 AL 30 DE JUNIO DE 2022
+DESGLOSE DE MOVIMIENTOS
+FECHA No. FOLIO DESCRIPCIÓN OPERACIÓN EMISORA NÚMERO PRECIO TASA REND. PLAZO COMISIÓN INTERÉS IMPUESTO NETO SALDO
+OPER/LIQ TÍTULOS UNITARIO
+ 01/01 0 Efectivo Inicial del Mes Efec Ini 0 0.000000 0.00 0.00 0.00 3.07 3.07
+ 01/01 271651468 Vencimiento de Reporto BI 220804 121 9.862098 0.10 1 0.00 0.00 0.00 1,193.31 1,196.38
+ 01/01 273456781 Compra en Reporto BI 220804 121 9.863540 0.10 1 0.00 0.00 0.00 1,193.49 2.89
+ 02/02 273456782 Vencimiento de Reporto BI 220804 121 9.863568 0.10 1 0.00 0.00 0.00 1,193.49 1,196.38
+ 02/02 274502835 Compra en Reporto BI 220804 121 9.864995 0.10 1 0.00 0.00 0.00 1,193.66 2.72
+ 03/03 274502836 Vencimiento de Reporto BI 220804 121 9.865022 0.10 1 0.00 0.00 0.00 1,193.67 1,196.38
+ 03/03 275914502 Compra en Reporto BI 220804 121 9.866452 0.10 3 0.00 0.00 0.00 1,193.84 2.54
+ 06/06 275914503 Vencimiento de Reporto BI 220804 121 9.866533 0.10 3 0.00 0.01 0.01 1,193.84 1,196.38
+ 06/06 277413820 Compra en Reporto BI 220804 121 9.876977 0.10 1 0.00 0.00 0.00 1,195.11 1.27
+ 07/07 277413821 Vencimiento de Reporto BI 220804 121 9.877004 0.10 1 0.00 0.00 0.00 1,195.11 1,196.38
+ 07/07 278550398 Compra en Reporto BI 220804 121 9.878110 0.10 1 0.00 0.00 0.00 1,195.25 1.13
+ 08/08 278550399 Vencimiento de Reporto BI 220804 121 9.878137 0.10 1 0.00 0.00 0.00 1,195.25 1,196.38
+ 08/08 280146915 Compra en Reporto BI 220804 121 9.879251 0.10 1 0.00 0.00 0.00 1,195.39 0.99
+ 09/09 280146916 Vencimiento de Reporto BI 220804 121 9.879279 0.10 1 0.00 0.00 0.00 1,195.39 1,196.38
+ 09/09 281554973 Compra en Reporto BI 220804 121 9.880390 0.10 1 0.00 0.00 0.00 1,195.53 0.86
+ 10/10 281554974 Vencimiento de Reporto BI 220804 121 9.880417 0.10 1 0.00 0.00 0.00 1,195.53 1,196.39
+ 10/10 282867661 Compra en Reporto LF 240321 11 100.154358 0.10 3 0.00 0.00 0.00 1,101.70 94.69
+ 13/13 282867662 Vencimiento de Reporto LF 240321 11 100.155191 0.10 3 0.00 0.01 0.01 1,101.70 1,196.39
+ 13/13 284508177 Compra en Reporto BI 220707 120 9.949951 0.10 1 0.00 0.00 0.00 1,193.99 2.39
+ 14/14 284508178 Vencimiento de Reporto BI 220707 120 9.949978 0.10 1 0.00 0.00 0.00 1,193.99 1,196.39
+ 14/14 285890927 Compra en Reporto BI 220707 120 9.951097 0.10 1 0.00 0.00 0.00 1,194.13 2.26
+ 15/15 285890928 Vencimiento de Reporto BI 220707 120 9.951125 0.10 1 0.00 0.00 0.00 1,194.13 1,196.39
+ 15/15 287203876 Compra en Reporto BI 220707 120 9.952246 0.10 1 0.00 0.00 0.00 1,194.27 2.12
+ 16/16 287203877 Vencimiento de Reporto BI 220707 120 9.952273 0.10 1 0.00 0.00 0.00 1,194.27 1,196.39
+ 16/16 288592815 Compra en Reporto LF 240321 11 99.709397 0.10 1 0.00 0.00 0.00 1,096.80 99.59
+ 17/17 288592816 Vencimiento de Reporto LF 240321 11 99.709673 0.10 1 0.00 0.00 0.00 1,096.80 1,196.39
+ 17/17 290040065 Compra en Reporto BI 220804 120 9.893169 0.10 3 0.00 0.00 0.00 1,187.18 9.21
+ 20/20 290040066 Vencimiento de Reporto BI 220804 120 9.893251 0.10 3 0.00 0.01 0.01 1,187.18 1,196.39
+ 20/20 291509977 Compra en Reporto BI 220714 120 9.948929 0.10 1 0.00 0.00 0.00 1,193.87 2.52
+ 21/21 291509978 Vencimiento de Reporto BI 220714 120 9.948957 0.10 1 0.00 0.00 0.00 1,193.87 1,196.39
+ 21/21 292936418 Compra en Reporto BI 220707 120 9.965680 0.10 1 0.00 0.00 0.00 1,195.88 0.51
+ 22/22 292936419 Vencimiento de Reporto BI 220707 120 9.965708 0.10 1 0.00 0.00 0.00 1,195.88 1,196.39
+ 22/22 294297142 Compra en Reporto BI 221006 122 9.761345 0.10 1 0.00 0.00 0.00 1,190.88 5.51
+ 23/23 294297143 Vencimiento de Reporto BI 221006 122 9.761372 0.10 1 0.00 0.00 0.00 1,190.88 1,196.39
+ 23/23 295442393 Compra en Reporto BI 220714 120 9.954995 0.10 1 0.00 0.00 0.00 1,194.60 1.79
+ 24/24 295442394 Vencimiento de Reporto BI 220714 120 9.955023 0.10 1 0.00 0.00 0.00 1,194.60 1,196.40
+ 24/24 297038762 Compra en Reporto BI 220714 120 9.956138 0.10 3 0.00 0.00 0.00 1,194.74 1.66
+ 24/27 93960162 AEXBTORNAON DJEIVRIADENDO EMISORA VWO * 0 0.000000 0.00 0.00 0.00 21.22 22.88
+ 24/27 93960164 ISR 10 % POR DIVIDENDOS SIC VWO * 0 0.000000 0.00 0.00 0.00 2.12 20.76
+ 24/27 94044647 AEXBTORNAON DJEIVRIADENDO EMISORA VEA * 0 0.000000 0.00 0.00 0.00 110.28 131.04
+ 24/27 94044649 ISR 10 % POR DIVIDENDOS SIC VEA * 0 0.000000 0.00 0.00 0.00 11.03 120.01
+ 27/27 297038763 Vencimiento de Reporto BI 220714 120 9.956222 0.10 3 0.00 0.01 0.01 1,194.74 1,314.75
+ 27/27 298412438 Compra en Reporto BI 220714 131 9.963771 0.10 1 0.00 0.00 0.00 1,305.25 9.49
+ 28/28 298412439 Vencimiento de Reporto BI 220714 131 9.963798 0.10 1 0.00 0.00 0.00 1,305.25 1,314.75
+ 28/28 299883038 Compra en Reporto BI 220714 131 9.965894 0.10 1 0.00 0.00 0.00 1,305.53 9.22
+ 29/29 299883039 Vencimiento de Reporto BI 220714 131 9.965921 0.10 1 0.00 0.00 0.00 1,305.53 1,314.75
+ 29/29 301274500 Compra en Reporto BI 221006 134 9.773384 0.10 1 0.00 0.00 0.00 1,309.63 5.11
+ 30/30 301274501 Vencimiento de Reporto BI 221006 134 9.773411 0.10 1 0.00 0.00 0.00 1,309.63 1,314.75
+ 30/30 302677408 Compra en Reporto LF 231130 13 100.090789 0.10 1 0.00 0.00 0.00 1,301.18 13.57
+Hoja: 5 de 8
+OSCAR JONATHAN SOLIS GARCIA Contrato: AAM29001 Periodo:
+RFC:SOGO861125PL0 DEL 1 AL 30 DE JUNIO DE 2022
+RENDIMIENTO DEL PORTAFOLIO
+Periodo Global Bruto Global Neto
+pesos porcentaje pesos porcentaje
+ Del 01/07/2021 al 30/07/2021  318.78  0.36  276.41  0.31
+ Del 02/08/2021 al 31/08/2021  2,890.43  3.24  2,853.53  3.19
+ Del 01/09/2021 al 30/09/2021  (1,598.92)  (1.73)  (1,606.44)  (1.74)
+ Del 01/10/2021 al 29/10/2021  2,539.24  2.80  2,496.10  2.76
+ Del 01/11/2021 al 30/11/2021  938.45  1.01  897.81  0.96
+ Del 01/12/2021 al 31/12/2021  2,293.56  2.44  2,264.18  2.41
+ Del 03/01/2022 al 31/01/2022  (3,185.75)  (3.31)  (3,221.32)  (3.35)
+ Del 01/02/2022 al 28/02/2022  (2,226.47)  (2.39)  (2,316.59)  (2.49)
+ Del 01/03/2022 al 31/03/2022  718.44  0.79  705.72  0.78
+ Del 01/04/2022 al 29/04/2022  (2,631.81)  (2.88)  (2,670.54)  (2.92)
+ Del 02/05/2022 al 31/05/2022  (1,751.02)  (1.97)  (1,809.55)  (2.04)
+ Del 01/06/2022 al 30/06/2022  (3,317.89)  (3.82)  (3,331.12)  (3.83)
+La moneda utilizada en el cálculo del rendimiento es en pesos mexicanos.
+COMPOSICIÓN FISCAL INFORMATIVA
+NOMBRE ISR RETENIDO POR DIVIDENDOS DIVIDENDOS ISR ACREDITABLE POR ISR DIVIDENDOS ISR CAPITALES
+INTERESES ACUMULABLES DIVIDENDOS DEFINITIVO DEFINITIVO
+ACUMULABLES
+ OSCAR JONATHAN SOLIS  1.26  0.00  0.00  0.00  13.15  0.00
+  GARCIA
+TOTALES:  1.26  0.00  0.00  0.00  13.15  0.00
+Total de ISR Retenido:  0.00 % (proporción del valor del portafolio a cierre del mes)
+La retención del Impuesto sobre la Renta (ISR) se realiza de conformidad con disposiciones fiscales vigentes establecidas en la Ley del Impuesto sobre la Renta (LISR) y demás disposiciones fiscales que sean aplicables; atendiendo a la
+residencia fiscal del inversionista.
+CANTIDAD             1
+Total de Comisiones Cobradas: 0.00(proporción del valor del portafolio a cierre del mes)
+Las comisiones se calculan multiplicando el importe de la operación (compra/venta) de valores, por el porcentaje acordado con la Casa de Bolsa para cada una
+de las operaciones respectivas, o bien conforme al importe acordado como "management fee" aplicado al valor de la cartera en portafolio.
+Si requiere información adicional, no dude en consultar a su asesor, quien le proporcionará todos los detalles que necesite
+DESGLOSE DE COMISIONES COBRADAS*
+Concepto Importe IVA
+Comisiones y gastos de Intermediación  0.00  0.00
+Comisiones y gastos por Servicios  0.00  0.00
+Comisiones y gastos administrativos  0.00  0.00
+Totales:  0.00  0.00
+ * En el período pueden haber cargos por concepto de comisiones y gastos afectos a diversas tasas de I.V.A. o, en su caso, exentos
+CONSTANCIA INFORMATIVA
+CAPITALES
+EMISORA NO. TÍTULOS COSTO PROMEDIO COSTO TOTAL FISCAL PRECIO DE MERCADO VALOR A MERCADO PLUSVALÍA GANANCIA PÉRDIDA GANANCIA PÉRDIDA
+FISCAL MINUSVALÍA FISCAL FISCAL REALIZADA EN FISCAL REALIZADA
+EL MES ACUMULADA
+ SPCE *  1  0.000000  0.00  121.203670  121.20  121.20  0.00  0.00
+Hoja: 6 de 8
+OSCAR JONATHAN SOLIS GARCIA Contrato: AAM29001 Periodo:
+RFC:SOGO861125PL0 DEL 1 AL 30 DE JUNIO DE 2022
+EMISORA NO. TÍTULOS COSTO PROMEDIO COSTO TOTAL FISCAL PRECIO DE MERCADO VALOR A MERCADO PLUSVALÍA GANANCIA PÉRDIDA GANANCIA PÉRDIDA
+FISCAL MINUSVALÍA FISCAL FISCAL REALIZADA EN FISCAL REALIZADA
+EL MES ACUMULADA
+ VEA *  15  957.779100  14,366.69  821.446800  12,321.70  (2,044.98)  0.00  0.00
+ VOO *  4  7,307.788736  29,231.15  6,983.908480  27,935.63  (1,295.52)  0.00  0.00
+ VWO *  5  941.301180  4,706.51  838.560275  4,192.80  (513.70)  0.00  0.00
+GANANCIA O PÉRDIDA FISCAL ACUMULADA  ¹  0.00
+1.- Base de cálculo del ISR o pérdida realizada acumulada.
+Nota: Cifras determinadas conforme a la legislación fiscal vigente.
+Hoja: 7 de 8
+OSCAR JONATHAN SOLIS GARCIA Contrato: AAM29001 Periodo:
+RFC:SOGO861125PL0 DEL 1 AL 30 DE JUNIO DE 2022
+DATOS FISCALES
+ CADENA ORIGINAL DEL COMPLEMENTO DE CERTIFICACIÓN DIGITAL DEL SAT:
+ ||1.1|62FFBB61-5130-744D-9561-F2325FB11BA1|2022-07-04T11:04:32|SCD110105654|uBMQjg+a/EW+D64q1k5SyN5JB2qr4VPrD4w0A1Fmq63vZhQ+mrdILb25y28ov63UBy0CM5G1/dJqiCA4p5AryyjiBzHe8CGwU6lu2mud0cYa3g8T6j
+ Hx84loSGk8nJ99R9gI7UjpOteyY5CfwMrXFxHpklbH0tLSnFI0kn7fQxSP25+QXmx59Z8WvlyS7VXFaL9FIIPTXqz5jUYUMb8zT/ThNwGCIokKTWLlNb45Y9yZ2a0K49eYdLebVUAbvutgDUP+HWUCIcZjS7KRRQOKx+ct9hNks34H25LX53+x
+ MlmTrGFWov6a4cyJq2VeJQhmr6uZWKICpzpCHhbWseSDgA==|00001000000502000436||
+ Sello Digital del Emisor:
+ uBMQjg+a/EW+D64q1k5SyN5JB2qr4VPrD4w0A1Fmq63vZhQ+mrdILb25y28ov63UBy0CM5G1/dJqiCA4p5AryyjiBzHe8CGwU6lu2mud0cYa3g8T6jHx84loSGk8nJ99R9gI7UjpOteyY5CfwMr
+ XFxHpklbH0tLSnFI0kn7fQxSP25+QXmx59Z8WvlyS7VXFaL9FIIPTXqz5jUYUMb8zT/ThNwGCIokKTWLlNb45Y9yZ2a0K49eYdLebVUAbvutgDUP+HWUCIcZjS7KRRQOKx+ct9hNks34H25L
+ X53+xMlmTrGFWov6a4cyJq2VeJQhmr6uZWKICpzpCHhbWseSDgA==
+ Sello Digital del SAT:
+ L8+TlROQ451eUB52MD39DLB/UtRr/bLXQ6Kd5YxEQVGOPDlcYteSj16r1ulK8C9RewC/RAdjRbfVn+YA4qPT//XA3r8vXwj0jYYc7sJUkBv2if9MD+KgPYDwu9Pz1QM7FvPoEjjXXMAq9yTzTS
+ KVcUDHPVR6ZptljoTvqk310bUq5EhrWop+W7IA4pOI7lfURScKdXcWPC1xX4kpLq3kyDLeEKbN9wDJBD0w56Ridom8qQCY2zaF5sQ+a5RktxGiSpuALF4biFxadsKFmewg8wo5DBq0GJkV
+ zxZVzDKU8aQg2OwRgvzM815paKRCEu3PXHIXsRAOu7C4EMhRYfXBjA==
+ Emisor: GRUPO BURSATIL MEXICANO, S.A. DE C.V. CASA DE BOLSA   RFC: GGB080116EZ0
+ Dirección Fiscal: Av. De los Insurgentes Sur No. 1605 No. Int. 31 San José Insurgentes Cuidad de México México CP: 03900
+ Régimen Fiscal: 601 - General de Ley Personas Morales; Lugar de Expedición: 03900, Método de Pago: PUE - Pago en una sola exhibición;
+ Unidad de medida: E48 - Unidad de servicio ;  No de identificación: 84121500 -  Instituciones bancarias
+ Forma de Pago: 03 - Transferencia electrónica de fondos
+ Uso del CFDI: G03 - Gastos en general
+ Esta representación impresa de CFDI no ampara retenciones
+ Folio Fiscal (UUID): 62FFBB61-5130-744D-9561-F2325FB11BA1
+ Número de certificado del Emisor: 00001000000505356191
+ Número de certificado del SAT: 00001000000502000436
+ Fecha de Expedición: 2022-07-03T10:02:51
+ Fecha de Timbrado: 04/07/2022 11:04:32 a. m.
+Hoja: 8 de 8
+OSCAR JONATHAN SOLIS GARCIA Contrato: AAM29001 Periodo:
+RFC:SOGO861125PL0 DEL 1 AL 30 DE JUNIO DE 2022
+EN CASO DE ACLARACIONES: Le recordamos que las inversiones en acciones de las sociedades de inversión no garantizan rendimientos futuros, ni sus
+sociedades operadoras son responsables de las pérdidas que el inversionista pueda sufrir como consecuencia de dichas
+Si tiene alguna duda y/o aclaración respecto a este estado de cuenta, favor de comunicarse directamente con su ejecutivo dentro de los 60 DIAS inversiones o asumen el riesgo de las variaciones en el diferencial del precio a favor de los clientes.
+posteriores a la fecha de recepción.
+PARA CONSULTAS Y RECLAMACIONES: DATOS REFERENCIADOS:
+1.  En caso de que existan valores bajo la garantía llamada Prenda Bursátil con Transmisión de Propiedad , este valor será
+En el caso de que tenga la necesidad de una consulta o reclamación, favor de comunicarse con el Titular de la Unidad Especializada de Consultas y únicamente de carácter informativo, ya que el mismo se encuentra sujeto al pago oportuno de los préstamos. En el supuesto
+Reclamaciones:  Lic. Olivia Montiel Nopal antes señalado, valor real es el que se calcula restando el monto de los valores otorgados en Prenda Bursátil con Transmisión de
+Av. de los Insurgentes Sur número 1605, Piso 31, Col. San José Insurgentes, 03900, México, Ciudad de México. 5480 5848,  une@gbm.com.mx Propiedad.
+En el Horario de Atención: de 9:00 a 18:00 horas de lunes a jueves y de 9:00 a 15:00 horas los viernes. 2.  La propiedad de los valores otorgados en prenda bajo esta modalidad se restituye al cliente al efectuarse el pago
+correspondiente.
+CLAVE BANCARIA ESTANDARIZADA: 3.  Este dato incluye, en su caso, el número de títulos otorgados en préstamo.
+4.  Para calcular el valor de los fondos en dólares se usa el Tipo de Cambio VALMER AL 30-JUN-22
+Le recordamos que para su seguridad y comodidad tenemos la opción de recibir sus transferencias electrónicas directamente a su Contrato a través
+del Sistema de Pagos Electrónicos Interbancario (SPEI). Sólo deberá de instruir al emisor del pago: el número de cuenta Clave Bancaria
+Estandarizada (CLABE) asignada exclusivamente a su Contrato, la institución receptora Casa de Bolsa y el nombre del titular del contrato de PRIVACIDAD:
+Intermediación Bursátil. De conformidad a lo estipulado en la Ley Federal de Protección de Datos Personales en Posesión de los Particulares y como parte
+        Institución: GBM           CLABE:  601180400002684217 del compromiso de GBM por preservar la privacidad de la información, hacemos de su conocimiento que el aviso de privacidad
+respectivo mediante el cual, entre otros puntos, se informa la finalidad del tratamiento de sus datos, se encontrará publicado en
+Si alguno de nuestros asesores te solicita que realices depósitos o transferencias a una cuenta diferente, no lo hagas y denuncia este hecho en la página web de esta Casa de Bolsa, www.gbm.com
+gbmtransparente@gbm.com.mx
+*INFORMACION SOBRE FONDOS DE INVERSION: NOTAS ACLARATORIAS:
+1.  La abreviación efec *. significa efectivo.
+La composición de las carteras, clasificaciones y calificaciones de los fondos de inversión distribuidos por Grupo Bursátil Mexicano, S.A. de C.V. 2.  Todos los importes y cálculos están expresados en Moneda Nacional
+Casa de Bolsa, se publican en la siguiente página de internet: http://www.gbmfondos.com.mx/informacion-para-inversionistas 3.  Si desea consultar la validez del folio de este comprobante fiscal digital por internet podrá ingresar a la página del Servicio
+Definiciones:      de Administración Tributaria (SAT) en la dirección: https://verificacfdi.facturaelectronica.sat.gob.mx
+Fondo de Inversión de Deuda: Sociedad de Inversión en Instrumentos de Deuda 4.  El rubro "Derechos Patrimoniales" en la tabla de Movimientos engloba los conceptos relacionados a dividendos, intereses,
+Fondo de Inversión de Renta Variable: Sociedad de Inversión en Instrumentos de Renta Variable      reembolsos de capital y cualquier derecho por valores adquiridos.
+Clasificación de Fondos de Inversión: INFORMACION DE SU CONTRATO:
+Discrecional Especializada en Inversiones en Dólares GBMDOL Y GBMUSD Actualmente los cotitulares que figuran en su contrato son:
+Corto Plazo GBMF2 Y MPAGORF
+Discrecional DYNVAL, GBM102, GBM103, GBM104, GBM105, GBM106, GBM110, GBM112, SPEI:
+GBMAAA, GBMALFA, GBMCRE, GBMDINT, GBMDIV2, GBMF3, GBMGLB, GBMM3,
+GBMPAT, GBMPICT, GBMRETO, GBMV2, HEYG, NUMC Y SAURORT El Banco de México no será responsable por los daños y perjuicios, incluso financieros, que se pudieran causar a Grupo Bursátil
+Mexicano, S.A. de C.V., Casa de Bolsa o a terceros, cuando por caso fortuito o fuerza mayor esta última no pueda tener acceso al
+Discrecional en Gubernamental GBMGUB SPEI o se presente una interrupción en la operación del citado sistema.
+Corto Plazo Gubernamental GBMGUBL
+Por caso fortuito o fuerza mayor se entenderá todo acontecimiento o circunstancia inevitable más allá del control razonable del
+Especializada en Acciones Nacionales GBMINF Y GBMMOD propio Banco de México que le impida el cumplimiento de sus obligaciones. En tales casos, Grupo Bursátil Mexicano, S.A. de C.V.,
+Especializada en Acciones GBMAGR Y GBMV1 Casa de Bolsa se obliga a realizar las gestiones necesarias, así como, atender las instrucciones que, en su caso, le indique el Banco
+de México para estar en posibilidad de restablecer a la brevedad posible la comunicación con el SPEI, acatando en todo momento
+Especializada en Acciones a través de Trackers Internacionales GBMTRV los procedimientos previstos en las Disposiciones aplicables.
+Especializada en Acciones Indizadas del IPC GBMMXOP
+Asimismo, el Banco de México no asume responsabilidad alguna respecto de las fallas que puedan sufrir los equipos, conexiones,
+Especializada en Acciones Internacionales GBMINT programas o sistemas que Grupo Bursátil Mexicano, S.A. de C.V., Casa de Bolsa utilice para la operación del SPEI, de las fallas que
+Especializada en Valores de Deuda a través de Sociedades de Inversión GBMPCON Y GBMPDEU afecten el buen funcionamiento de los mismos, así como tampoco respecto de los daños y perjuicios, incluso financieros, que se
+causen con motivo de dichas fallas.
+Mayoritariamente en Valores de Deuda a través de Sociedades de Inversión REGIOB
+Mayoritariamente en Acciones a través de Sociedades de Inversión REGIOC
+Especializada en Acciones a través de Sociedades de Inversión GBMPBOL
+Especializada en Acciones Latinoamericanas GBMLATM
+Especializado en Fibras GBMFIBR
+Clasificación de Fondos de Inversión de Deuda:
+ FONDO CALIFICACIÓN FONDO CALIFICACIÓN
+  GBMF2 AAAf/S1(mex) GBMRETO AAAf/S5(mex)
+  GBMF3 AAAf/S4(mex) GBMGUBL AAAf/S1(mex)
+  GBMPAT AAAf/S4(mex) MPAGORF AAAf/S1(mex)
+  GBMM3 AAAf/S4(mex)
+  GBMGUB AAAf/S2(mex)
+Todos los Fondos de Inversión de Deuda de GBM son calificados mensualmente por Fitch México S.A. de C.V., considerando dos aspectos: Buena
+administración; cumplimiento del compromiso de pago, y calidad crediticia de los activos que administra.
+AAA Sobresaliente AA Alta A Buena
+BBB Aceptable BB Baja B Mínima
+Riesgo de mercado: sensibilidad del valor de las inversiones ante los cambios en las variables económicas.
+1 Extremadamente Baja 5 Moderada Alta
+2 Baja 6 Alta
+3 Baja Moderada 7 Muy Alta
+Para ver la calificación actual de cada fondo en otra fuente, lo referimos a la página de Fitch México:
+http://www.fitchmexico.com
+Para conocer los fondos de inversión que se encuentran sub-valuados, lo invitamos a visitar la liga:
+https://gbmfondos.com.mx/home/pdf/soluciones/fisicas/razon/subvaluacion-GBM-Fondos.pdf
+
+```

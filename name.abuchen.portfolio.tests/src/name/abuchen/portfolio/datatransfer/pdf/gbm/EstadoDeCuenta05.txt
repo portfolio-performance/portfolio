@@ -1,0 +1,286 @@
+```
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.84.3.qualifier
+System: win32 | x86_64 | 21.0.5+9-LTS-239 | Oracle Corporation
+-----------------------------------------
+ XXXXX XXXXXXXX XXXXX XXXXX Contrato: XXXXXXXX Hoja: 1 de 8    
+RFC: XXXXXXXXXXXXX
+DIRECCION ### Ejecutivo Teléfono Dir.
+Colonia Equipo de Atención a Inversionistas (01) 54 80 58 00
+DEL./POB. Delegacion,Ciudad,Mexico
+CP 00000 CR 03001 Periodo
+DEL 1 AL 31 DE OCTUBRE DE 2021
+RESUMEN DEL PORTAFOLIO
+SALDO SALDO % DE MOVIMIENTOS
+PORTAFOLIO AL 30-SEP-21 AL 29-OCT-21 PORTAFOLIO DEL 1 AL 31 DE OCTUBRE DE 2021
+DEUDA 17,045.81 17,312.65 18.60 ENTRADAS DE EFECTIVO 75.03
+RENTA VARIABLE 73,422.23 75,740.86 81.39 SALIDAS DE EFECTIVO 43.03
+VALORES EN CORTO / PRÉSTAMO DE VALORES 0.00 0.00 0.00 SUBTOTAL EFECTIVO 32.00
+FONDO DE FONDOS 0.00 0.00 0.00 DEPOSITO DE VALORES 0.00
+GARANTÍAS 0.00 0.00 0.00 RETIRO DE VALORES 0.00
+OTRAS INVERSIONES 0.00 0.00 0.00 SUBTOTAL VALORES 0.00
+CREDITOS DE MARGEN 0.00 0.00 0.00 DERECHOS PATRIMONIALES 118.54
+EFECTIVO 93.13 3.77 0.00 COMISIONES 0.00
+DERIVADOS 0.00 0.00 0.00
+VALOR DEL PORTAFOLIO1
+90,561.18 93,057.28 100.00 SALDO NETO DE MOVIMIENTOS 150.54
+VALOR TOTAL DE LAS GARANTIAS 0.00 0.00
+COMPOSICIÓN DEL PORTAFOLIO AVISOS
+ NOMBRE: Contrato Periodo Hoja: 2 de 8    
+XXXXX XXXXXXXX XXXXX XXXXX XXXXXXXX DEL 1 AL 31 DE OCTUBRE DE 2021
+DESGLOSE DEL PORTAFOLIO
+DEUDA
+DEUDA EN REPORTO
+EMISORA NO.TÍTULOS NO.TÍTULOS TASA PLAZO DEL DIAS POR PRECIO DE PRECIO DE VALOR DEL PREMIO % DE LA
+MES ANTERIOR MES ACTUAL PREMIO REPORTO VENCER MERCADO MERCADO REPORTO DEVENGADO CART.
+MES ANTERIOR
+BI 211104 0 24 1.00 3 3 9.991520 9.953069 239.80 0.00 0.26
+Total: DEUDA EN REPORTO 239.80 0.00 0.26
+FONDOS DE INVERSION DE DEUDA*
+EMISORA NO.TÍTULOS NO.TÍTULOS COSTO COSTO PRECIO DE PRECIO DE VALOR A PLUSVALÍA % DE LA
+MES ANTERIOR MES ACTUAL PROMEDIO TOTAL MERCADO MERCADO MERCADO (MINUSVALÍA) CART.
+MES ANTERIOR
+GBMF2 BF 456 456 36.738421 16,752.72 37.440466 37.381168 17,072.85 320.13 18.35
+Total: FONDOS DE INVERSION DE DEUDA 17,072.85 320.13 18.35
+TOTAL: DEUDA 17,312.65 320.13 18.61
+RENTA VARIABLE
+ACCIONES
+EMISORA NO.TÍTULOS NO.TÍTULOS TÍT OTORGADOS COSTO COSTO PRECIO DE PRECIO DE VALOR A PLUSVALÍA % DE LA
+MES ANTERIOR MES ACTUAL EN PRÉSTAMO PROMEDIO TOTAL MERCADO MERCADO MERCADO (MINUSVALÍA) CART.
+MES ANTERIOR
+FIBRAPL 14 216 216 0 39.250000 8,478.00 47.390000 44.820000 10,236.24 1,758.24 11.00
+FUNO 11 220 220 0 17.028867 3,746.35 20.460000 23.400000 4,501.20 754.85 4.84
+TERRA 13 163 163 0 24.010000 3,913.63 28.840000 30.180000 4,700.92 787.29 5.05
+Total: ACCIONES 19,438.36 3,300.38 20.89
+ACCIONES DEL SIC
+EMISORA NO.TÍTULOS NO.TÍTULOS TÍT OTORGADOS COSTO COSTO PRECIO DE PRECIO DE VALOR A PLUSVALÍA % DE LA
+MES ANTERIOR MES ACTUAL EN PRÉSTAMO PROMEDIO TOTAL MERCADO MERCADO MERCADO (MINUSVALÍA) CART.
+MES ANTERIOR
+SPCE * 1 1 0 395.000000 395.00 384.931875 520.226190 384.93 (10.07) 0.41
+VEA * 15 15 0 837.000000 12,555.00 1,070.007964 1,038.190527 16,050.12 3,495.12 17.25
+VOO * 4 4 0 6,386.252500 25,545.01 8,666.818152 8,109.771120 34,667.27 9,122.26 37.25
+VWO * 5 5 0 822.600000 4,113.00 1,040.034602 1,028.320623 5,200.17 1,087.17 5.59
+Total: ACCIONES DEL SIC 56,302.49 13,694.48 60.50
+TOTAL: RENTA VARIABLE 75,740.85 16,994.86 81.39
+ NOMBRE: Contrato Periodo Hoja: 3 de 8    
+XXXXX XXXXXXXX XXXXX XXXXX XXXXXXXX DEL 1 AL 31 DE OCTUBRE DE 2021
+EFECTIVO % DE
+VALOR CART.
+EFECTIVO MISMO DIA 3.77 0.00
+EFECTIVO 24 HORAS 0.00 0.00
+EFECTIVO 48 HORAS 0.00 0.00
+EFECTIVO 72 HORAS 0.00 0.00
+EFECTIVO MAYOR A 72 HORAS 0.00 0.00
+TOTAL EN EFECTIVO 3.77 0.00
+ NOMBRE: Contrato Periodo Hoja: 4 de 8    
+XXXXX XXXXXXXX XXXXX XXXXX XXXXXXXX DEL 1 AL 31 DE OCTUBRE DE 2021
+DESGLOSE DE MOVIMIENTOS
+FECHA N° DESCRIPCIÓN OPERACIÓN EMISORA NÚMERO PRECIO TASA PLAZO COMISIÓN INTERÉS IMPUESTO NETO SALDO
+OPER/LIQ FOLIO TÍTULOS UNITARIO REND.
+01/01 0 Efectivo Inicial del Mes Efec Ini 0 0.000000 0.00 0.00 0.00 93.13 93.13
+04/04 43745715 ABONO DIVIDENDO EMISORA EXTRANJERA VOO * 0 0.000000 0.00 0.00 0.00 75.03 168.16
+04/04 43745717 ISR 10 % POR DIVIDENDOS SIC VOO * 0 0.000000 0.00 0.00 0.00 7.50 160.66
+04/04 90565309 Compra en Reporto LD 260806 1 99.412030 1.00 1 0.00 0.00 0.00 99.41 61.25
+05/05 90565310 Vencimiento de Reporto LD 260806 1 99.414800 1.00 1 0.00 0.00 0.00 99.41 160.66
+05/05 91202734 Compra en Reporto BI 211104 16 9.959950 1.00 1 0.00 0.00 0.00 159.36 1.30
+06/06 91202735 Vencimiento de Reporto BI 211104 16 9.960225 1.00 1 0.00 0.00 0.00 159.36 160.66
+06/06 91873329 Compra en Reporto BI 211104 16 9.961137 1.00 1 0.00 0.00 0.00 159.38 1.28
+07/07 91873330 Vencimiento de Reporto BI 211104 16 9.961413 1.00 1 0.00 0.00 0.00 159.38 160.66
+07/07 92483164 Compra en Reporto BI 211021 16 9.981479 1.00 1 0.00 0.00 0.00 159.70 0.96
+08/08 92483165 Vencimiento de Reporto BI 211021 16 9.981756 1.00 1 0.00 0.00 0.00 159.70 160.66
+08/08 93153109 Compra en Reporto BI 211104 16 9.963316 1.00 3 0.00 0.00 0.00 159.41 1.25
+11/11 93153110 Vencimiento de Reporto BI 211104 16 9.964150 1.00 3 0.00 0.01 0.01 159.41 160.66
+11/11 93845019 Compra en Reporto BI 211118 16 9.947818 1.00 1 0.00 0.00 0.00 159.17 1.49
+12/12 93845020 Vencimiento de Reporto BI 211118 16 9.948094 1.00 1 0.00 0.00 0.00 159.17 160.66
+12/12 94493105 Compra en Reporto BI 211021 16 9.988034 1.00 1 0.00 0.00 0.00 159.81 0.85
+13/13 94493106 Vencimiento de Reporto BI 211021 16 9.988306 1.00 1 0.00 0.00 0.00 159.81 160.66
+13/13 95167241 Compra en Reporto BI 211021 16 9.989276 1.00 1 0.00 0.00 0.00 159.83 0.83
+14/14 95167242 Vencimiento de Reporto BI 211021 16 9.989550 1.00 1 0.00 0.00 0.00 159.83 160.66
+14/14 95819374 Compra en Reporto BI 211216 16 9.905218 1.00 1 0.00 0.00 0.00 158.48 2.18
+15/15 95819375 Vencimiento de Reporto BI 211216 16 9.905494 1.00 1 0.00 0.00 0.00 158.48 160.66
+15/15 96461059 Compra en Reporto BI 220113 16 9.870809 1.00 3 0.00 0.00 0.00 157.93 2.73
+18/18 96461060 Vencimiento de Reporto BI 220113 16 9.871631 1.00 3 0.00 0.01 0.01 157.93 160.66
+18/18 97244055 Compra en Reporto BI 211104 16 9.977433 1.00 1 0.00 0.00 0.00 159.64 1.02
+19/19 97244056 Vencimiento de Reporto BI 211104 16 9.977706 1.00 1 0.00 0.00 0.00 159.64 160.66
+19/19 97922882 Compra en Reporto BI 211104 16 9.978625 1.00 1 0.00 0.00 0.00 159.66 1.00
+20/20 97922883 Vencimiento de Reporto BI 211104 16 9.978900 1.00 1 0.00 0.00 0.00 159.66 160.66
+20/20 98577403 Compra en Reporto LD 250220 1 99.602331 1.00 1 0.00 0.00 0.00 99.60 61.06
+21/21 98577404 Vencimiento de Reporto LD 250220 1 99.605100 1.00 1 0.00 0.00 0.00 99.60 160.66
+21/21 99294446 Compra en Reporto BI 211118 16 9.960376 1.00 1 0.00 0.00 0.00 159.37 1.30
+22/22 99294447 Vencimiento de Reporto BI 211118 16 9.960650 1.00 1 0.00 0.00 0.00 159.37 160.66
+22/22 99977916 Compra en Reporto BI 211118 16 9.961350 1.00 3 0.00 0.00 0.00 159.38 1.28
+25/25 99977917 Vencimiento de Reporto BI 211118 16 9.962181 1.00 3 0.00 0.01 0.01 159.38 160.66
+25/25 100769386 Compra en Reporto BI 211104 16 9.985980 1.00 1 0.00 0.00 0.00 159.78 0.89
+26/26 100769387 Vencimiento de Reporto BI 211104 16 9.986256 1.00 1 0.00 0.00 0.00 159.78 160.66
+26/26 101449913 Compra en Reporto BI 211104 16 9.986969 1.00 1 0.00 0.00 0.00 159.79 0.87
+27/27 101449914 Vencimiento de Reporto BI 211104 16 9.987244 1.00 1 0.00 0.00 0.00 159.79 160.66
+27/27 102109415 Compra en Reporto BI 211118 16 9.969875 1.00 1 0.00 0.00 0.00 159.52 1.15
+27/29 2336614 Abono efectivo Resultado Fiscal Distribuido FIBRAPL 14 0 0.000000 0.00 0.00 0.00 118.43 119.58
+27/29 46952110 RETENCION ISR POR RESULTADO FISCAL FIBRAPL 14 0 0.000000 0.00 0.00 0.00 35.53 84.05
+DIST.
+28/28 102109416 Vencimiento de Reporto BI 211118 16 9.970150 1.00 1 0.00 0.00 0.00 159.52 243.57
+28/28 102863706 Compra en Reporto BI 211104 16 9.990526 1.00 1 0.00 0.00 0.00 159.85 83.72
+29/29 102863707 Vencimiento de Reporto BI 211104 16 9.990800 1.00 1 0.00 0.00 0.00 159.85 243.57
+29/29 103612880 Compra en Reporto BI 211104 24 9.991520 1.00 3 0.00 0.00 0.00 239.80 3.77
+ NOMBRE: Contrato Periodo Hoja: 5 de 8    
+XXXXX XXXXXXXX XXXXX XXXXX XXXXXXXX DEL 1 AL 31 DE OCTUBRE DE 2021
+RENDIMIENTO DEL PORTAFOLIO
+Periodo Global Bruto Global Neto
+pesos porcentaje pesos porcentaje
+Del 03/11/2020 al 30/11/2020 3,937.38 4.31% 3,904.81 4.28%
+Del 01/12/2020 al 31/12/2020 2,417.98 3.02% 2,399.49 2.99%
+Del 04/01/2021 al 29/01/2021 (65.44) (0.08)% (65.44) (0.08)%
+Del 02/02/2021 al 26/02/2021 3,629.79 4.40% 3,580.55 4.34%
+Del 01/03/2021 al 31/03/2021 852.97 0.99% 810.56 0.94%
+Del 05/04/2021 al 30/04/2021 1,625.41 1.87% 1,590.85 1.83%
+Del 03/05/2021 al 31/05/2021 912.89 1.03% 869.14 0.98%
+Del 01/06/2021 al 30/06/2021 (296.67) (0.33)% (307.40) (0.34)%
+Del 01/07/2021 al 30/07/2021 318.78 0.36% 276.41 0.31%
+Del 02/08/2021 al 31/08/2021 2,890.43 3.24% 2,853.53 3.19%
+Del 01/09/2021 al 30/09/2021 (1,598.92) (1.73)% (1,606.44) (1.74)%
+Del 01/10/2021 al 29/10/2021 2,539.24 2.80% 2,496.10 2.76%
+La moneda utilizada en el cálculo del rendimiento es en pesos mexicanos.
+COMPOSICIÓN FISCAL INFORMATIVA
+NOMBRE ISR DIVIDENDOS DIVIDENDOS ISR ACREDITABLE ISR ISR
+RETENIDO ACUMULABLES POR DIVIDENDOS DIVIDENDOS CAPITALES
+POR INTERESES ACUMULABLES DEFINITIVO DEFINITIVO
+XXXXX XXXXXXXX XXXXX 11.70 0.00 0.00 0.00 7.50 0.00
+XXXX
+TOTALES: 11.70 0.00 0.00 0.00 7.50 0.00
+Total de ISR Retenido: 0.01 % (proporción del valor del portafolio a cierre del mes)
+La retención del Impuesto sobre la Renta (ISR) se realiza de conformidad con disposiciones fiscales vigentes establecidas en la Ley del Impuesto sobre la Renta (LISR) y demás disposiciones fiscales que sean aplicables; atendiendo
+a la residencia fiscal del inversionista.
+CANTIDAD 1
+Total de Comisiones Cobradas: 0.00% (proporción del valor del portafolio a cierre del mes)
+Las comisiones se calculan multiplicando el importe de la operación (compra/venta) de valores, por el porcentaje acordado con la Casa de Bolsa para cada una
+de las operaciones respectivas, o bien conforme al importe acordado como “management fee” aplicado al valor de la cartera en portafolio.
+Si requiere información adicional, no dude en consultar a su asesor, quien le proporcionará todos los detalles que necesite
+DESGLOSE DE COMISIONES COBRADAS *
+Concepto Importe IVA
+Comisiones y gastos de Intermediación 0.00 0.00
+Comisiones y gastos por Servicios 0.00 0.00
+Comisiones y gastos administrativos 0.00 0.00
+Totales: 0.00 0.00
+* En el período pueden haber cargos por concepto de comisiones y gastos afectos a diversas tasas de I.V.A. o, en su caso, exentos
+ NOMBRE: Contrato Periodo Hoja: 6 de 8    
+XXXXX XXXXXXXX XXXXX XXXXX XXXXXXXX DEL 1 AL 31 DE OCTUBRE DE 2021
+CONSTANCIA INFORMATIVA
+CAPITALES
+EMISORA NO. TÍTULOS COSTO PROMEDIO COSTO TOTAL PRECIO DE VALOR A PLUSVALÍA GANANCIA PÉRDIDA GANANCIA PÉRDIDA
+FISCAL FISCAL MERCADO MERCADO MINUSVALÍA FISCAL REALIZADA FISCAL REALIZADA
+FISCAL EN EL MES ACUMULADA
+SPCE * 1 0.000000 0.00 384.931875 384.93 384.93 0.00 0.00
+VEA * 15 906.973200 13,604.60 1,070.007964 16,050.12 2,445.52 0.00 0.00
+VOO * 4 6,920.143209 27,680.57 8,666.818152 34,667.27 6,986.70 0.00 0.00
+VWO * 5 891.369360 4,456.85 1,040.034602 5,200.17 743.33 0.00 0.00
+GANANCIA O PÉRDIDA FISCAL ACUMULADA 1 0.00
+1.- Base de cálculo del ISR o pérdida realizada acumulada.
+Nota: Cifras determinadas conforme a la legislación fiscal vigente.
+ NOMBRE: Contrato Periodo Hoja: 7 de 8    
+XXXXX XXXXXXXX XXXXX XXXXX XXXXXXXX DEL 1 AL 31 DE OCTUBRE DE 2021
+DATOS FISCALES
+CADENA ORIGINAL DEL COMPLEMENTO DE CERTIFICACIÓN DIGITAL DEL SAT:
+||1.1|76A11576-C655-AA44-AF2C-2E0CE3CC64A0|2021-11-03T15:00:33|SCD110105654|P9Dbu/ht8SCR2ur4NbWg6QDK/XstPW7kr6sPSbgfFaRzVO7MOBbnd5qzunoW07dQb0F6IYFdE/rg8l0aTPrOqQEhuo4kd+pDLCf6TZY9CNNdrRi
+olb0CBVRcd+4zTCT6QMrw7jmpg+5McJ6H/0v7GYretzpyxzqx6IbpPTrRoro/htgPgAUn2zn9DqeTX64EQw9giTY6pyC4lzi6gLvRcXCf3FudBLMoSZZn9HZkRcQeS/CTXyUSeqyzLn3JWAsCY9hSZZ+SF8RElx98VtjhRjKDuFB+Tx3UVEFit9ttl
+MIQki/ykVa53My1pUcBvLbyGDlXU4CDYT0So84fkRhq6g==|00001000000502000436||
+Sello Digital del Emisor:
+P9Dbu/ht8SCR2ur4NbWg6QDK/XstPW7kr6sPSbgfFaRzVO7MOBbnd5qzunoW07dQb0F6IYFdE/rg8l0aTPrOqQEhuo4kd+pDLCf6TZY9CNNdrRiolb0CBVRcd+4zTCT6QMrw7jmpg+5McJ6H
+/0v7GYretzpyxzqx6IbpPTrRoro/htgPgAUn2zn9DqeTX64EQw9giTY6pyC4lzi6gLvRcXCf3FudBLMoSZZn9HZkRcQeS/CTXyUSeqyzLn3JWAsCY9hSZZ+SF8RElx98VtjhRjKDuFB+Tx3UVEFi
+t9ttlMIQki/ykVa53My1pUcBvLbyGDlXU4CDYT0So84fkRhq6g==
+Sello Digital del SAT:
+CoKx2jIrDnxzGmQYneMfhuwbpB3NdRaw6mivvizUjQw9/rx4P5iCvtVu6I8Vr18ywRmT3Ylg+ncIKO7X6E5Hga46Tf0w9cfT8jkYe9PUqwXkgQWdxGMj4+9ZlkHjzh+Dfb/w7Hrp3YyKvoPw89YjIF
+CWCEoFjiBzoIbJ8UvL6Q++OzGPTDdvZPXajNiw6dhaSSmQibVrmVgoCWdqXvxfxnl4pcN0atZSq3DYL38h5ZdUBDBqo7VPk4vcConGWT2DlQnaVYMHKfQqeHi/NWUp6CCeGJHMYiEBfH4
+theh5zSm68yq/OGrGAtmGvlepqMalJjiNvmE+9BY3P6IwTPj5tg==
+Emisor: GRUPO BURSATIL MEXICANO S.A. DE C.V., CASA DE BOLSA RFC: GGB080116EZ0
+Dirección Fiscal: Av. De los Insurgentes Sur No. 1605 No. Int. 31 San José Insurgentes Cuidad de México México CP: 03900
+Régimen Fiscal: 601 - General de Ley Personas Morales; Lugar de Expedición: 03900, Método de Pago: PUE - Pago en una sola exhibición;
+Unidad de medida: E48 - Unidad de servicio ; No de identificación: 84121500 - Instituciones bancarias
+Forma de Pago: 03 - Transferencia electrónica de fondos
+Uso del CFDI: G03 - Gastos en general
+Esta representación impresa de CFDI no ampara retenciones
+Folio Fiscal (UUID): 76A11576-C655-AA44-AF2C-2E0CE3CC64A0
+Número de certificado del Emisor: 00001000000505356191
+Número de certificado del SAT: 00001000000502000436
+Fecha de Expedición: 2021-11-02T17:08:16
+Fecha de Timbrado: 03/11/2021 03:00:33 p. m.
+Este Documento es una Representación Impresa de un CFDI
+ Hoja: 8 de 8    
+EN CASO DE ACLARACIONES:
+El ejecutivo Edson Gabriel Navarro de la Rosa es el asignado a su contrato, sin embargo, usted puede ser atendido
+por cualquiera de nuestros ejecutivos del equipo de Atención a Inversionistas en los siguientes teléfonos:
+55 5480 5846 o al 800 426 4663
+O bien, si prefiere escribir a: homebroker@gbm.com.mx
+Le recordamos que las inversiones en acciones de las sociedades de inversión no garantizan rendimientos futuros, ni sus
+PARA CONSULTAS Y RECLAMACIONES: sociedades operadoras son responsables de las pérdidas que el inversionista pueda sufrir como consecuencia de dichas
+inversiones o asumen el riesgo de las variaciones en el diferencial del precio a favor de los clientes.
+En el caso de que tenga la necesidad de una consulta o reclamación, favor de comunicarse con el Titular de la Unidad
+Especializada de Consultas y Reclamaciones:
+Lic. Olivia Montiel Nopal DATOS REFERENCIADOS:
+Av. de los Insurgentes Sur número 1605, Piso 31, Col. San José Insurgentes, 03900, México, Ciudad de México.
+5480 5848 1. En caso de que existan valores bajo la garantía llamada Prenda Bursátil con Transmisión de Propiedad ², este valor
+une@gbm.com.mx será únicamente de carácter informativo, ya que el mismo se encuentra sujeto al pago oportuno de los préstamos. En el
+En el Horario de Atención: de 9:00 a 18:00 horas de lunes a jueves y de 9:00 a 15:00 horas los viernes. supuesto antes señalado, valor real es el que se calcula restando el monto de los valores otorgados en Prenda Bursátil con
+Transmisión de Propiedad.
+2. La propiedad de los valores otorgados en prenda bajo esta modalidad se restituye al cliente al efectuarse el pago
+CLAVE BANCARIA ESTANDARIZADA: correspondiente.
+3. Este dato incluye, en su caso, el número de títulos otorgados en préstamo.
+Le recordamos que para su seguridad y comodidad tenemos la opción de recibir sus transferencias electrónicas 4. Para calcular el valor de los fondos en dólares se usa el Tipo de Cambio VALMER AL 29-OCT-21
+directamente a su Contrato a través del Sistema de Pagos Electrónicos Interbancario (SPEI). Sólo deberá de instruir
+al emisor del pago: el número de cuenta Clave Bancaria Estandarizada (CLABE) asignada exclusivamente a su
+Contrato, la institución receptora Casa de Bolsa y el nombre del titular del contrato de Intermediación Bursátil. PRIVACIDAD:
+Los datos necesarios para hacer la transacción son los siguientes: De conformidad a lo estipulado en la Ley Federal de Protección de Datos Personales en Posesión de los Particulares y
+como parte del compromiso de GBM por preservar la privacidad de la información, hacemos de su conocimiento que el
+Institución: GBM aviso de privacidad respectivo mediante el cual, entre otros puntos, se informa la finalidad del tratamiento de sus datos,
+CLABE: 601180400002684217 se encontrará publicado en la página web de esta Casa de Bolsa, www.gbm.com
+*INFORMACION SOBRE FONDOS DE INVERSION: NOTAS ACLARATORIAS:
+La composición de las carteras, clasificaciones y calificaciones de los fondos de inversión distribuidos por Grupo 1. La abreviación efec *. significa efectivo.
+Bursátil Mexicano, S.A. de C.V. Casa de Bolsa, se publican en la siguiente página de internet: 2. Todos los importes y cálculos están expresados en Moneda Nacional
+http://www.gbmfondos.com.mx/informacion-para-inversionistas 3. Si desea consultar la validez del folio de este comprobante fiscal digital por internet podrá ingresar a la página del
+Servicio de Administración Tributaria (SAT) en la dirección: https://verificacfdi.facturaelectronica.sat.gob.mx
+Definiciones: 4. El rubro "Derechos Patrimoniales" en la tabla de Movimientos engloba los conceptos relacionados a dividendos,
+Fondo de Inversión de Deuda: Sociedad de Inversión en Instrumentos de Deuda intereses, reembolsos de capital y cualquier derecho por valores adquiridos.
+Fondo de Inversión de Renta Variable: Sociedad de Inversión en Instrumentos de Renta Variable
+Clasificación de Fondos de Inversión: INFORMACION DE SU CONTRATO:
+1. Actualmente los cotitulares que figuran en su contrato son:
+D i s c r e c i o n a l   E s p e c i a l iz a d a  e n  I n v e r s i o n e s  e n  D ó l a r e s                                                                 GBMDOL Y GBMUSD
+C o r t o  P la z o                                                                                                            GBMF2 Y MPAGORF
+D i s c r e c i o n a l                                                                                                                                                                           DYNVAL, GBM102, GBM103, GBM104, GBM105, GBM106, GBM110, GBM112, 
+                                                                                                                              GBMAAA, GBMALFA, GBMCRE, GBMDINT, GBMDIV2, GBMF3, GBMGLB, GBMM3, SPEI:
+                                                                                                                              GBMPAT, GBMPICT, GBMRETO, GBMV2, HEYG, NUMC Y SAURORT
+D i s c r e c i o n a l   e n   G u b e r n a m e n t a l                                                                                                                           GBMGUB
+C o r t o  P la z o  G u b e r n a m e n t a l                                                                                                                                     GBMGUBL El Banco de México no será responsable por los daños y perjuicios, incluso financieros, que se pudieran causar a Grupo
+E s p e c i a l i z a d a  e n  A c c io n e s  N a c io n a l e s                                                                                                         GBMINF Y GBMMOD Bursátil Mexicano, S.A. de C.V., Casa de Bolsa o a terceros, cuando por caso fortuito o fuerza mayor esta última no pueda
+E s p e c i a l i z a d a  e n  A c c io n e s                                                                                    GBMAGR Y GBMV1
+E s p e c i a l i z a d a  e n  A c c io n e s  a  t r a v é s   d e   T r a c k e r s   I n t e r n a c i o n a l e s                         GBMTRV tener acceso al SPEI o se presente una interrupción en la operación del citado sistema.
+E s p e c i a l i z a d a  e n  A c c io n e s  I n d i z a d a s  d e l I P C                                                       GBMMXOP
+E s p e c i a l i z a d a  e n  A c c io n e s  I n t e r n a c i o n a l e s                                                          GBMINT Por caso fortuito o fuerza mayor se entenderá todo acontecimiento o circunstancia inevitable más allá del control
+E s p e c i a l i z a d a  e n  V a l o r e s   d e   D e u d a  a  t r a v é s  d e  S o c i e d a d e s   d e   I n v e r s i ó n          GBMPCON Y GBMPDEU
+M a y o r i t a r i a m e n t e  e n  V a lo r e s  d e  D e u d a   a   t r a v é s   d e   S o c i e d a d e s  d e  I n v e r s i ó n     REGIOB razonable del propio Banco de México que le impida el cumplimiento de sus obligaciones. En tales casos, Grupo Bursátil
+M a y o r i t a r i a m e n t e  e n  A c c i o n e s   a   t r a v é s  d e  S o c i e d a d e s  d e  I n v e r s i ó n                               REGIOC Mexicano, S.A. de C.V., Casa de Bolsa se obliga a realizar las gestiones necesarias, así como, atender las instrucciones
+E s p e c i a l i z a d a  e n  A c c io n e s  a  t r a v é s   d e   S o c i e d a d e s   d e   I n v e r s ió n                         GBMPBOL que, en su caso, le indique el Banco de México para estar en posibilidad de restablecer a la brevedad posible la
+Calificación de Fondos de Inversión de Deuda: comunicación con el SPEI, acatando en todo momento los procedimientos previstos en las Disposiciones aplicables.
+Asimismo, el Banco de México no asume responsabilidad alguna respecto de las fallas que puedan sufrir los equipos,
+FONDO CALIFICACIÓN FONDO CALIFICACIÓN conexiones, programas o sistemas que Grupo Bursátil Mexicano, S.A. de C.V., Casa de Bolsa utilice para la operación del
+SPEI, de las fallas que afecten el buen funcionamiento de los mismos, así como tampoco respecto de los daños y
+G B M F 2               AAAf/S1(mex) perjuicios, incluso financieros, que se causen con motivo de dichas fallas.
+G B M F 3               AAAf/S4(mex) G B M R E T O      AAAf/S5(mex)
+G B M P A T         AAAf/S4(mex) M P A G O R F      AAAf/S1(mex)
+G B M M 3           AAAf/S4(mex)
+G B M G U B         AAAf/S2(mex)
+G B M G U B L       AAAf/S1(mex)
+Todos los Fondos de Inversión de Deuda de GBM son calificados mensualmente por Fitch México S.A. de C.V.,
+considerando dos aspectos: Buena administración; cumplimiento del compromiso de pago, y calidad crediticia de los
+activos que administra.
+AAA Sobresaliente AA Alta A Buena
+BBB Aceptable BB Baja B Mínima
+Riesgo de mercado: sensibilidad del valor de las inversiones ante los cambios en las variables económicas.
+1 Extremadamente Baja 5 Moderada Alta
+2 Baja 6 Alta
+3 Baja Moderada 7 Muy Alta
+4 Moderada
+Para ver la calificación actual de cada fondo en otra fuente, lo referimos a la página de Fitch México:
+http://www.fitchmexico.com
+Para conocer los fondos de inversión que se encuentran sub-valuados, lo invitamos a visitar la liga:
+https://gbmfondos.com.mx/home/pdf/soluciones/fisicas/razon/subvaluacion-GBM-Fondos.pdf
+
+```
