@@ -1,0 +1,45 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.86.2.qualifier
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Consorsbank • 90318 Nürnberg
+Depotnummer: 1234 567 890
+1504753979/00
+Vermerk der Bank: 2000
+2
+Vorname Nachname
+Datum: 09.04.2025
+Adress Str. 1
+01234 Stadt
+Seite: 1 von 1
+Ordernummer 329893673.001
+Orderdatum 09.04.2025
+ORDERABRECHNUNG
+KAUF AM 09.04.2025 UM 12:03:33 INL.AUSSERBOERSLICH NR. 329893673.001
+Bezeichnung WKN ISIN
+0,0 % GRIECHENLAND 12-42 IO GDP 15.OKT A1G1UW GRR000000010
+Einheit Umsatz Poolfaktor
+EUR 1.000.000,00000 0,904761904
+Preis pro Anteil 0,280000 % FRANCO COURTAGE
+Kurswert 2.533,33 EUR
+Handelsplatzkosten 1,95 EUR
+Provision 6,33 EUR
+Grundgebühr 4,95 EUR
+zulasten Konto-Nr. 9876543210 2.546,56 EUR
+Valuta 11.04.2025
+Bestand zugunsten Girosammelverwahrung
+CBF 2126
+Limitkurs 0,280000 %
+Beratungsfreies Geschäft
+Hinweis für Orderabrechnungen und Depotbuchungsanzeigen:
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der
+Allgemeinen Geschäftsbedingungen (AGB Banken).
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an die Consorsbank oder per Fax oder Mail an die
+unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil d‘Administration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
+1EE785B1-0BEB-255E-1737-70F159B0B93B
+

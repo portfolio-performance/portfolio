@@ -357,6 +357,11 @@ public abstract class Transaction implements Annotated, Adaptable
         this.updatedAt = Instant.now();
     }
 
+    public void setBond(Security security)
+    {
+        setSecurity(security);
+    }
+
     public CrossEntry getCrossEntry()
     {
         return crossEntry;
@@ -377,6 +382,11 @@ public abstract class Transaction implements Annotated, Adaptable
     {
         this.shares = shares;
         this.updatedAt = Instant.now();
+    }
+
+    public void setBondNominal(long nominal)
+    {
+        setShares(nominal);
     }
 
     @Override

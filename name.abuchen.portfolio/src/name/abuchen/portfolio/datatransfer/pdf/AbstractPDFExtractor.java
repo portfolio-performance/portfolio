@@ -314,6 +314,18 @@ public abstract class AbstractPDFExtractor implements Extractor
         }
     }
 
+    protected long asBondNominal(String value)
+    {
+        try
+        {
+            return Math.round(numberFormat.parse(value).doubleValue() * Values.Share.factor() / 100);
+        }
+        catch (ParseException e)
+        {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
     protected long asShares(String value, Locale locale)
     {
         return ExtractorUtils.asShares(value, locale.getLanguage(), locale.getCountry());

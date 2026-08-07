@@ -1,0 +1,73 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.86.2.qualifier
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Consorsbank • 90318 Nürnberg
+Depotnummer: 1234567890
+1504753979/00
+Vermerk der Bank: 2000
+05
+Vorname Nachname
+Adress Str. 1
+Datum: 14.05.2025
+01234 Stadt
+Seite: 1 von 2
+Einlösung
+Wertpapierbezeichnung Zinssatz WKN ISIN
+Griechenland 0,00000 A1G1UW GRR000000010
+EO-FLR Secs 12(23-42) 1 IO GDP
+Einheit Nominale Zinstermin Fällig per
+EUR 2.100.000 15.Oktober 14.05.2025
+Einlösung zu 0,25228 % Schlusstag 14.05.2025
+Brutto 5.297,88 EUR
+Netto zugunsten IBAN DE00701204009876543210 5.297,88 EUR
+Valuta 14.05.2025 BIC DABBDEMMXXX
+Wertpapiere zulasten Girosammelverwahrung
+Bitte beachten Sie auch die Hinweise auf Seite 2.
+Veräusserungsverlust nach Differenzmethode 3.368,85 EUR
+Kapitalmaßnahme als PURCHASE OPTION
+mit Barabfindung als Call Price
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil d‘Administration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
+135037FC-13AF-9C0F-9187-B559B0B93B36
+Depotnummer: 1234567890
+1504753979/00
+Vermerk der Bank: 2000
+05
+Datum: 14.05.2025
+Seite: 2 von 2
+Details zu den Verrechnungstöpfen
+Verrechnungstopf Allgemein vor der Gutschrift 0,00 EUR
+Mit Verrechnungstopf Allgemein verrechnet 3.368,85 EUR
+Verrechnungstopf Allgemein nach der Abrechnung 3.368,85 EUR
+Sparerpauschbetrag vor der Gutschrift 0,00 EUR
+Mit Sparerpauschbetrag verrechnet 0,00 EUR
+Sparerpauschbetrag nach der Abrechnung 0,00 EUR
+Verrechnungstopf Quellensteuer vor der Gutschrift 0,00 EUR
+Mit Verrechnungstopf Quellensteuer verrechnet 0,00 EUR
+Verrechnungstopf Quellensteuer nach der Abrechnung 0,00 EUR
+Handelt es sich bei dem umseitig genannten Wertpapier um einen endfälligen Optionsschein, beachten Sie bitte den folgenden wichtigen Hinweis:
+Die umseitig genannten Optionsscheine werden zum mit FÄLLIG PER angegebenen Termin endfällig. Der Börsenhandel wird je nach Emittent und Produkt bereits
+vorher zum mit LETZTER HANDELSTAG angegebenen Termin eingestellt. Je nach Emittent und Produkt findet zwischen beiden Terminen noch ein außerbörslicher
+Handel statt. Die Ausübungsmodalitäten ergeben sich aus den Optionsscheinbedingungen des jeweiligen Emittenten. Bitte informieren Sie sich rechtzeitig, ob /
+welche speziellen Fälligkeitsregelungen für den von Ihnen gehaltenen Optionsschein gelten (z.B. Knock out).
+Optionsscheine mit automatischer Ausübung:
+Optionsscheine, die bis zum Endfälligkeitstermin nicht wirksam ausgeübt wurden, gelten an diesem Tag automatisch als ausgeübt. Sofern der Optionsschein am
+Stichtag einen inneren Wert hat, erfolgt ein Geldausgleich bzw. eine Lieferung in Wertpapieren. Anderenfalls verfällt der Optionsschein wertlos und wird ersatzlos
+ausgebucht.
+Optionsscheine mit freiwilliger Ausübung:
+Falls Sie derartige Optionsscheine ausüben wollen, erteilen Sie uns bitte rechtzeitig einen entsprechenden Auftrag. Ohne Ihre Weisung werden wir nicht tätig.
+Freiwillig auszuübende Optionsscheine, für die bis zum genannten Termin kein wirksamer Ausübungsauftrag vorliegt, verfallen - auch wenn sie einen inneren Wert
+haben - wertlos und werden nach Fälligkeit ersatzlos ausgebucht.
+Bei den hier übermittelten Informationen handelt es sich um solche, die wir im Rahmen der allgemeinen Informationspflichten gemäß Ziffer 16 der
+"Sonderbedingungen für den Handel in Finanzinstrumenten" an Sie weitergeben. Richtigkeit und Vollständigkeit der Informationen werden von der Consorsbank nicht
+geprüft. Die Consorsbank haftet als Kommissionärin nicht für die Höhe oder die Erfüllung der verbrieften Rechte.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil d‘Administration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
+

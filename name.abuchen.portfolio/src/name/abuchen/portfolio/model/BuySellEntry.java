@@ -78,9 +78,19 @@ public class BuySellEntry implements CrossEntry, Annotated
         this.accountTransaction.setSecurity(security);
     }
 
+    public void setBond(Security security)
+    {
+        setSecurity(security);
+    }
+
     public void setShares(long shares)
     {
         this.portfolioTransaction.setShares(shares);
+    }
+
+    public void setBondNominal(long nominal)
+    {
+        setShares(nominal);
     }
 
     public void setAmount(long amount)
