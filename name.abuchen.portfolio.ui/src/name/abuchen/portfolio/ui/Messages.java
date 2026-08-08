@@ -530,6 +530,9 @@ public class Messages extends NLS
     public static String InvestmentPlanTypeDeposit;
     public static String InvestmentPlanTypeInterest;
     public static String InvestmentPlanTypeRemoval;
+    public static String InvestmentPlanWeekendAdjustment;
+    public static String InvestmentPlanWeekendAdjustment_PREVIOUS_BUSINESS_DAY;
+    public static String InvestmentPlanWeekendAdjustment_NEXT_BUSINESS_DAY;
     public static String JobLabelAutoSave;
     public static String JobLabelSyncSecuritiesOnline;
     public static String JobLabelUpdateCPI;
