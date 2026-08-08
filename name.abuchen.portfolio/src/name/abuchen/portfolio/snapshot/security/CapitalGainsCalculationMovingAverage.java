@@ -9,6 +9,7 @@ import java.util.List;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
@@ -20,6 +21,20 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
     private long heldShares = 0;
     private long movingAverageNetCost = 0;
     private long movingAverageNetCostForex = 0;
+
+    private final TaxesAndFees taxesAndFees;
+
+    /**
+     * Measures gains against the cost basis with or without the taxes and fees
+     * embedded in a trade. {@link TaxesAndFees#NOT_INCLUDED} is the basis
+     * {@link name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot} needs,
+     * because it carries fees and taxes as separate terms of its breakdown and
+     * would otherwise subtract them twice.
+     */
+    public CapitalGainsCalculationMovingAverage(TaxesAndFees taxesAndFees)
+    {
+        this.taxesAndFees = taxesAndFees;
+    }
 
     @Override
     public void visit(CurrencyConverter converter, CalculationLineItem.ValuationAtStart valuation)
@@ -41,8 +56,14 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
         String termCurrency = getTermCurrency();
         String securityCurrency = getSecurity().getCurrencyCode();
 
-        long netAmountForex = t.getGrossValue(converter.with(securityCurrency)).getAmount();
-        long netAmount = t.getGrossValue(converter).getAmount();
+        // the basis: the gross value leaves out the taxes and fees embedded in
+        // the trade, the monetary amount takes them in - on both legs, as a
+        // sale's gross value is the proceeds before the charges are deducted
+        var netAmountForex = taxesAndFees.isIncluded()
+                        ? t.getMonetaryAmount(converter.with(securityCurrency)).getAmount()
+                        : t.getGrossValue(converter.with(securityCurrency)).getAmount();
+        var netAmount = taxesAndFees.isIncluded() ? t.getMonetaryAmount(converter).getAmount()
+                        : t.getGrossValue(converter).getAmount();
 
         switch (t.getType())
         {
