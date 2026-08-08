@@ -83,6 +83,16 @@ public class MOEXSearchProvider implements SecuritySearchProvider
         private String baseCurrency;
         private String termCurrency;
 
+        /**
+         * Creates a search result from one row of the ISS securities
+         * response. For currency instruments the currency pair is parsed from
+         * the short name and the trading engine, market and primary board are
+         * derived from the instrument group.
+         *
+         * @param json
+         *            the JSON object holding a single security
+         * @return the search result
+         */
         public static Result from(JSONObject json)
         {
             Result result = new Result();
@@ -102,6 +112,12 @@ public class MOEXSearchProvider implements SecuritySearchProvider
             return result;
         }
 
+        /**
+         * Parses the currency pair (e.g. <code>GLD/RUB</code>) from the short
+         * name of a currency instrument and stores it as base and term
+         * currency. The short name follows the pattern
+         * <code>&lt;secid&gt; - &lt;BASE&gt;/&lt;TERM&gt;</code>.
+         */
         private static void parseCurrencyPair(Result result)
         {
             // the shortname contains the currency pair, e.g. "GLDRUB_TOM -
@@ -120,6 +136,11 @@ public class MOEXSearchProvider implements SecuritySearchProvider
             result.termCurrency = pair.substring(slash + 1).trim();
         }
 
+        /**
+         * Returns the trading engine for the given ISS instrument group.
+         * Currency instruments are traded on the <code>currency</code> engine,
+         * everything else on the <code>stock</code> engine.
+         */
         private static String engineForGroup(String group)
         {
             if (CURRENCY_GROUPS.contains(group))
@@ -128,6 +149,9 @@ public class MOEXSearchProvider implements SecuritySearchProvider
             return "stock"; //$NON-NLS-1$
         }
 
+        /**
+         * Returns the market path segment for the given ISS instrument group.
+         */
         private static String marketForGroup(String group)
         {
             if (group == null)
@@ -168,6 +192,9 @@ public class MOEXSearchProvider implements SecuritySearchProvider
             return convertType(type);
         }
 
+        /**
+         * Maps the ISS instrument type to a human readable security type label.
+         */
         private String convertType(String type)
         {
             if (type == null)
@@ -242,6 +269,13 @@ public class MOEXSearchProvider implements SecuritySearchProvider
             return true;
         }
 
+        /**
+         * Creates the security for the search result. Currency instruments are
+         * created as exchange rate securities: the base currency of the pair is
+         * stored as the security currency and the term currency as the target
+         * currency. The trading engine, market and primary board are stored as
+         * feed properties so that the {@link MOEXQuoteFeed} can load the quotes.
+         */
         @Override
         public Security create(Client client)
         {
@@ -269,6 +303,16 @@ public class MOEXSearchProvider implements SecuritySearchProvider
         return NAME;
     }
 
+    /**
+     * Searches the MOEX ISS securities endpoint for the given query and returns
+     * the matching tradeable instruments.
+     *
+     * @param query
+     *            the search term
+     * @return the matching instruments
+     * @throws IOException
+     *             if the request fails
+     */
     @Override
     public List<ResultItem> search(String query) throws IOException
     {
@@ -290,6 +334,13 @@ public class MOEXSearchProvider implements SecuritySearchProvider
         return answer;
     }
 
+    /**
+     * Parses the securities table of the ISS response and adds the tradeable
+     * instruments to the given answer list. Instruments are filtered to those
+     * that are currently trading, have a supported instrument type and either
+     * have a market price board, are a plain stock exchange index, or are
+     * quoted as a currency pair.
+     */
     /* testing */ void extract(List<ResultItem> answer, String json)
     {
         JSONObject response = (JSONObject) JSONValue.parse(json);
@@ -346,6 +397,10 @@ public class MOEXSearchProvider implements SecuritySearchProvider
         }
     }
 
+    /**
+     * Returns whether the given row represents an instrument that is currently
+     * trading, i.e. its <code>is_traded</code> column has the value 1.
+     */
     private boolean isTrading(JSONArray row, Integer isTradedIdx)
     {
         Object value = row.get(isTradedIdx);

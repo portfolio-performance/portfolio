@@ -31,15 +31,18 @@ import name.abuchen.portfolio.util.WebAccess;
  * Statistical Server) API.
  * <p>
  * The ticker symbol of the security holds the MOEX security ID (secid), e.g.
- * <code>SBER</code> or <code>GAZP</code>. The market (shares, bonds, index,
- * etc.) is stored as a feed property (see {@link #MOEX_MARKET}) and is set when
- * the security is created from a search result. If the property is missing,
- * the shares market is used as a sensible default.
+ * <code>SBER</code> or <code>GAZP</code>. The trading engine, the market and
+ * the primary trading board are stored as feed properties (see
+ * {@link #MOEX_ENGINE}, {@link #MOEX_MARKET} and {@link #MOEX_BOARD}) and are
+ * set when the security is created from a search result. If the properties are
+ * missing, the stock engine and the shares market are used as a sensible
+ * default.
  * <p>
  * Historical quotes are retrieved via
- * <code>iss/history/engines/stock/markets/{market}/securities/{secid}.json</code>.
- * The primary board filter is used for the shares, bonds and foreignshares
- * markets to avoid duplicate quotes across boards.
+ * <code>iss/history/engines/{engine}/markets/{market}[/boards/{board}]/securities/{secid}.json</code>.
+ * When a primary board is known, board-specific data is requested so that
+ * quotes from secondary boards are not mixed in. Otherwise the market price
+ * board filter is used for the shares, bonds and foreignshares markets.
  */
 public class MOEXQuoteFeed implements QuoteFeed
 {
@@ -84,6 +87,16 @@ public class MOEXQuoteFeed implements QuoteFeed
         return "MOEX"; //$NON-NLS-1$
     }
 
+    /**
+     * Loads the current quote from the real-time marketdata endpoint. If no
+     * trade has happened yet (e.g. before the market opens), falls back to the
+     * most recent completed session.
+     *
+     * @param security
+     *            the security whose latest quote is to be loaded
+     * @return the latest quote, or {@link Optional#empty()} if none is
+     *         available
+     */
     @Override
     public Optional<LatestSecurityPrice> getLatestQuote(Security security)
     {
@@ -119,21 +132,37 @@ public class MOEXQuoteFeed implements QuoteFeed
         return getLatestFromHistory(security);
     }
 
+    /**
+     * Returns the trading engine stored on the security, defaulting to
+     * {@value #DEFAULT_ENGINE} if not set.
+     */
     private String getEngine(Security security)
     {
         return security.getPropertyValue(SecurityProperty.Type.FEED, MOEX_ENGINE).orElse(DEFAULT_ENGINE);
     }
 
+    /**
+     * Returns the market path segment stored on the security, defaulting to
+     * {@value #DEFAULT_MARKET} if not set.
+     */
     private String getMarket(Security security)
     {
         return security.getPropertyValue(SecurityProperty.Type.FEED, MOEX_MARKET).orElse(DEFAULT_MARKET);
     }
 
+    /**
+     * Returns the primary trading board stored on the security, or
+     * {@code null} if no board was configured.
+     */
     private String getBoard(Security security)
     {
         return security.getPropertyValue(SecurityProperty.Type.FEED, MOEX_BOARD).orElse(null);
     }
 
+    /**
+     * Falls back to the most recent completed session by loading the history of
+     * the last 14 days and returning the newest price.
+     */
     private Optional<LatestSecurityPrice> getLatestFromHistory(Security security)
     {
         QuoteFeedData data = getHistoricalQuotes(security, false, LocalDate.now().minusDays(14));
@@ -151,6 +180,10 @@ public class MOEXQuoteFeed implements QuoteFeed
         return Optional.of(prices.get(prices.size() - 1));
     }
 
+    /**
+     * Loads the historical quotes starting from the last stored price (or from
+     * the beginning if the security has no prices yet).
+     */
     @Override
     public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
     {
@@ -162,12 +195,21 @@ public class MOEXQuoteFeed implements QuoteFeed
         return getHistoricalQuotes(security, collectRawResponse, start);
     }
 
+    /**
+     * Loads a sample of historical quotes for the last two months.
+     */
     @Override
     public QuoteFeedData previewHistoricalQuotes(Security security)
     {
         return getHistoricalQuotes(security, true, LocalDate.now().minusMonths(2));
     }
 
+    /**
+     * Loads the historical quotes of the given security starting at the given
+     * date. The response is fetched in pages of {@value #MAX_ROWS} rows; the
+     * request offset is advanced by the number of source rows fetched until the
+     * cursor indicates that all matching rows have been read.
+     */
     private QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse, LocalDate from)
     {
         String secid = TextUtil.trim(security.getTickerSymbol());
@@ -221,6 +263,11 @@ public class MOEXQuoteFeed implements QuoteFeed
         return data;
     }
 
+    /**
+     * Creates the {@link WebAccess} request for one page of historical quotes.
+     * The board-specific URL is used when a primary board is known; otherwise
+     * the market price board filter is applied for the markets that support it.
+     */
     private WebAccess createUrl(String engine, String market, String board, String secid, LocalDate from, int start)
                     throws URISyntaxException
     {
@@ -239,6 +286,11 @@ public class MOEXQuoteFeed implements QuoteFeed
         return webaccess;
     }
 
+    /**
+     * Builds the ISS history endpoint path for the given engine, market, board
+     * and security. The board path segment is only included when a board is
+     * known.
+     */
     private String createHistoryPath(String engine, String market, String board, String secid)
     {
         StringBuilder path = new StringBuilder("/iss/history/engines/"); //$NON-NLS-1$
@@ -249,6 +301,11 @@ public class MOEXQuoteFeed implements QuoteFeed
         return path.toString();
     }
 
+    /**
+     * Builds the ISS marketdata endpoint path for the given engine, market,
+     * board and security. The board path segment is only included when a board
+     * is known.
+     */
     private String createMarketDataPath(String engine, String market, String board, String secid)
     {
         StringBuilder path = new StringBuilder("/iss/engines/"); //$NON-NLS-1$
@@ -259,11 +316,25 @@ public class MOEXQuoteFeed implements QuoteFeed
         return path.toString();
     }
 
+    /**
+     * Executes the given web request and returns the response body.
+     *
+     * @param webaccess
+     *            the request to execute
+     * @return the response body as a string
+     * @throws IOException
+     *             if the request fails
+     */
     /* testing */ String getJson(WebAccess webaccess) throws IOException
     {
         return webaccess.get();
     }
 
+    /**
+     * Returns whether the given market supports the
+     * <code>marketprice_board</code> filter parameter that restricts the
+     * response to the primary trading board.
+     */
     private boolean supportsMarketPriceBoard(String market)
     {
         return market.equals("shares") || market.equals("bonds") || market.equals("foreignshares"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -342,6 +413,10 @@ public class MOEXQuoteFeed implements QuoteFeed
         return rows.size();
     }
 
+    /**
+     * Reads the total number of matching rows from the history cursor of a
+     * response. Returns {@code -1} if no cursor information is available.
+     */
     /* testing */ long getTotal(String json)
     {
         JSONObject response = (JSONObject) JSONValue.parse(json);
@@ -369,6 +444,11 @@ public class MOEXQuoteFeed implements QuoteFeed
         return total instanceof Number number ? number.longValue() : -1;
     }
 
+    /**
+     * Converts the value in the given row and column into a quoted price.
+     * Returns {@link LatestSecurityPrice#NOT_AVAILABLE} if the value is missing
+     * or cannot be parsed.
+     */
     private long asPrice(JSONArray row, Integer idx)
     {
         if (idx == null)
@@ -467,6 +547,11 @@ public class MOEXQuoteFeed implements QuoteFeed
         return Optional.empty();
     }
 
+    /**
+     * Converts the value in the given row and column into a whole number (e.g.
+     * the trading volume). Returns {@link LatestSecurityPrice#NOT_AVAILABLE} if
+     * the value is missing or cannot be parsed.
+     */
     private long asNumber(JSONArray row, Integer idx)
     {
         if (idx == null)
