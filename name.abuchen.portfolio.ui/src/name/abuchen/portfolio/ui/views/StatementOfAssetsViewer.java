@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -88,10 +89,15 @@ import name.abuchen.portfolio.ui.dnd.ImportFromFileDropAdapter;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
+import name.abuchen.portfolio.ui.jobs.priceupdate.FeedUpdateStatus;
+import name.abuchen.portfolio.ui.jobs.priceupdate.PriceUpdateProgress;
+import name.abuchen.portfolio.ui.jobs.priceupdate.PriceUpdateSnapshot;
+import name.abuchen.portfolio.ui.jobs.priceupdate.UpdateStatus;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.AttributeComparator;
 import name.abuchen.portfolio.ui.util.CacheKey;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.ValueColorScheme;
@@ -321,6 +327,23 @@ public class StatementOfAssetsViewer
     private Taxonomy taxonomy;
     private Model model;
 
+    private PriceUpdateSnapshot priceUpdateSnapshot;
+    private final PriceUpdateProgress.Listener priceUpdateListener = snapshot -> {
+        this.priceUpdateSnapshot = snapshot;
+
+        if (assets != null && !assets.getTable().isDisposed())
+            assets.refresh(true);
+    };
+
+    private Optional<FeedUpdateStatus> getHistoricUpdateStatus(Element element)
+    {
+        var snapshot = priceUpdateSnapshot;
+        if (snapshot == null)
+            return Optional.empty();
+
+        return snapshot.getHistoricStatus(element.getSecurity());
+    }
+
     @Inject
     public StatementOfAssetsViewer(AbstractFinanceView owner, Client client)
     {
@@ -343,6 +366,8 @@ public class StatementOfAssetsViewer
         Control control = createColumns(parent, isConfigurable);
 
         this.assets.getTable().addDisposeListener(e -> StatementOfAssetsViewer.this.widgetDisposed());
+
+        PriceUpdateProgress.getInstance().register(client, priceUpdateListener);
 
         return control;
     }
@@ -500,6 +525,46 @@ public class StatementOfAssetsViewer
             Element element = (Element) e;
             return element.isSecurity() ? element.getSecurityPosition().getPrice().getDate() : null;
         }));
+        column.setComparator(new ElementComparator(new AttributeComparator(
+                        e -> ((Element) e).isSecurity() ? ((Element) e).getSecurityPosition().getPrice().getDate()
+                                        : null)));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("qdate-status", Messages.ColumnDateOfQuoteWithUpdateStatus, SWT.LEFT, 80); //$NON-NLS-1$
+        column.setLabelProvider(new DateLabelProvider(e -> {
+            Element element = (Element) e;
+            return element.isSecurity() ? element.getSecurityPosition().getPrice().getDate() : null;
+        })
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Element element = (Element) e;
+                if (!element.isSecurity())
+                    return null;
+
+                var status = getHistoricUpdateStatus(element);
+                if (status.isPresent() && !status.get().getStatus().isTerminal)
+                    return status.get().getStatus().toString();
+
+                return super.getText(e);
+            }
+
+            @Override
+            public Color getBackground(Object e)
+            {
+                Element element = (Element) e;
+                if (!element.isSecurity())
+                    return null;
+
+                var status = getHistoricUpdateStatus(element);
+                if (status.isPresent() && status.get().getStatus() == UpdateStatus.WAITING)
+                    return Colors.theme().warningBackground();
+
+                return null;
+            }
+        });
         column.setComparator(new ElementComparator(new AttributeComparator(
                         e -> ((Element) e).isSecurity() ? ((Element) e).getSecurityPosition().getPrice().getDate()
                                         : null)));
@@ -1226,6 +1291,8 @@ public class StatementOfAssetsViewer
 
         if (contextMenu != null)
             contextMenu.dispose();
+
+        PriceUpdateProgress.getInstance().unregister(client, priceUpdateListener);
     }
 
     public static class Element implements Adaptable
