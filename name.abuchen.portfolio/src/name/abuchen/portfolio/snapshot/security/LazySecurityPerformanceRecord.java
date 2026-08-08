@@ -69,6 +69,12 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
                     () -> Calculation.perform(IRRCalculation.class, converter, security, lineItems).getIRR());
 
     /**
+     * internal rate of return of security after taxes {@link #calculateIRR()}
+     */
+    private final LazyValue<Double> irrAfterTax = new LazyValue<>(() -> Calculation
+                    .perform(IRRCalculationAfterTax.class, converter, security, lineItems).getIRR());
+
+    /**
      * weak reference to the performance index, because it can consume a lot of
      * memory in particular for large intervals
      */
@@ -187,9 +193,14 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
         super(client, security, converter, interval);
     }
 
-    public Double getIrr()
+   public Double getIrr()
     {
         return irr.get();
+    }
+
+    public Double getIrrAfterTax()
+    {
+        return irrAfterTax.get();
     }
 
     public Double getTrueTimeWeightedRateOfReturn()
