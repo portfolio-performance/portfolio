@@ -149,6 +149,71 @@ public class MOEXQuoteFeedTest
     }
 
     @Test
+    public void testParsingCurrencyHistory() throws IOException
+    {
+        var feed = new MOEXQuoteFeed();
+        var data = new QuoteFeedData();
+
+        var rows = feed.parseHistory(read("gldrub_history.json"), data);
+
+        assertThat(rows, is(3));
+        assertThat(data.getErrors().isEmpty(), is(true));
+
+        var first = data.getLatestPrices().get(0);
+        assertThat(first.getDate(), is(LocalDate.of(2026, 7, 1)));
+        assertThat(first.getValue(), is(Values.Quote.factorize(10115)));
+        assertThat(first.getHigh(), is(Values.Quote.factorize(10200)));
+        assertThat(first.getLow(), is(Values.Quote.factorize(9850)));
+    }
+
+    @Test
+    public void testGetLatestQuoteForCurrency() throws IOException
+    {
+        var json = read("gldrub_history.json");
+
+        var feed = Mockito.spy(new MOEXQuoteFeed());
+        Mockito.doReturn(json).when(feed).getJson(any(WebAccess.class));
+
+        var security = new Security();
+        security.setTickerSymbol("GLDRUB_TOM");
+        security.setPropertyValue(SecurityProperty.Type.FEED, MOEXQuoteFeed.MOEX_ENGINE, "currency");
+        security.setPropertyValue(SecurityProperty.Type.FEED, MOEXQuoteFeed.MOEX_MARKET, "selt");
+        security.setPropertyValue(SecurityProperty.Type.FEED, MOEXQuoteFeed.MOEX_BOARD, "CETS");
+
+        // marketdata returns nothing for the fixture, so the feed falls back to
+        // the most recent completed session
+        var quote = feed.getLatestQuote(security);
+
+        assertThat(quote.isPresent(), is(true));
+        assertThat(quote.get().getDate(), is(LocalDate.of(2026, 7, 3)));
+        assertThat(quote.get().getValue(), is(Values.Quote.factorize(10352.5)));
+    }
+
+    @Test
+    public void testCurrencyHistoryUsesEngineAndBoard() throws IOException, URISyntaxException
+    {
+        var page = read("gldrub_history.json");
+
+        var feed = Mockito.spy(new MOEXQuoteFeed());
+        Mockito.doReturn(page).when(feed).getJson(any(WebAccess.class));
+
+        var security = new Security();
+        security.setTickerSymbol("GLDRUB_TOM");
+        security.setPropertyValue(SecurityProperty.Type.FEED, MOEXQuoteFeed.MOEX_ENGINE, "currency");
+        security.setPropertyValue(SecurityProperty.Type.FEED, MOEXQuoteFeed.MOEX_MARKET, "selt");
+        security.setPropertyValue(SecurityProperty.Type.FEED, MOEXQuoteFeed.MOEX_BOARD, "CETS");
+
+        QuoteFeedData data = feed.getHistoricalQuotes(security, false);
+        assertThat(data.getLatestPrices().size(), is(3));
+
+        ArgumentCaptor<WebAccess> captor = ArgumentCaptor.forClass(WebAccess.class);
+        Mockito.verify(feed, Mockito.times(1)).getJson(captor.capture());
+
+        var url = captor.getValue().getURL();
+        assertThat(url, containsString("/engines/currency/markets/selt/boards/CETS/securities/GLDRUB_TOM.json"));
+    }
+
+    @Test
     public void testMissingTickerSymbol() throws IOException
     {
         MOEXQuoteFeed feed = new MOEXQuoteFeed();

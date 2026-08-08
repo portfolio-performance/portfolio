@@ -52,7 +52,23 @@ public class MOEXQuoteFeed implements QuoteFeed
      */
     public static final String MOEX_MARKET = "MOEX-MARKET"; //$NON-NLS-1$
 
+    /**
+     * Name of the security property (of type {@link SecurityProperty.Type#FEED})
+     * that stores the MOEX trading engine, e.g. <code>stock</code> or
+     * <code>currency</code>.
+     */
+    public static final String MOEX_ENGINE = "MOEX-ENGINE"; //$NON-NLS-1$
+
+    /**
+     * Name of the security property (of type {@link SecurityProperty.Type#FEED})
+     * that stores the primary trading board, e.g. <code>TQBR</code> or
+     * <code>CETS</code>. Used to request board-specific data so that quotes
+     * from secondary boards are not mixed in.
+     */
+    public static final String MOEX_BOARD = "MOEX-BOARD"; //$NON-NLS-1$
+
     private static final String HOST = "iss.moex.com"; //$NON-NLS-1$
+    private static final String DEFAULT_ENGINE = "stock"; //$NON-NLS-1$
     private static final String DEFAULT_MARKET = "shares"; //$NON-NLS-1$
     private static final int MAX_ROWS = 100;
 
@@ -75,16 +91,17 @@ public class MOEXQuoteFeed implements QuoteFeed
         if (secid == null || secid.isEmpty())
             return Optional.empty();
 
-        var market = security.getPropertyValue(SecurityProperty.Type.FEED, MOEX_MARKET).orElse(DEFAULT_MARKET);
+        var engine = getEngine(security);
+        var market = getMarket(security);
+        var board = getBoard(security);
 
         try
         {
-            var webaccess = new WebAccess(HOST,
-                            "/iss/engines/stock/markets/" + market + "/securities/" + secid + ".json") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            WebAccess webaccess = new WebAccess(HOST, createMarketDataPath(engine, market, board, secid))
                             .addParameter("iss.meta", "off") //$NON-NLS-1$ //$NON-NLS-2$
                             .addParameter("iss.only", "marketdata"); //$NON-NLS-1$ //$NON-NLS-2$
 
-            if (supportsMarketPriceBoard(market))
+            if (board == null && supportsMarketPriceBoard(market))
                 webaccess.addParameter("marketprice_board", "1"); //$NON-NLS-1$ //$NON-NLS-2$
 
             var json = getJson(webaccess);
@@ -100,6 +117,21 @@ public class MOEXQuoteFeed implements QuoteFeed
 
         // fall back to the most recent completed session
         return getLatestFromHistory(security);
+    }
+
+    private String getEngine(Security security)
+    {
+        return security.getPropertyValue(SecurityProperty.Type.FEED, MOEX_ENGINE).orElse(DEFAULT_ENGINE);
+    }
+
+    private String getMarket(Security security)
+    {
+        return security.getPropertyValue(SecurityProperty.Type.FEED, MOEX_MARKET).orElse(DEFAULT_MARKET);
+    }
+
+    private String getBoard(Security security)
+    {
+        return security.getPropertyValue(SecurityProperty.Type.FEED, MOEX_BOARD).orElse(null);
     }
 
     private Optional<LatestSecurityPrice> getLatestFromHistory(Security security)
@@ -143,7 +175,9 @@ public class MOEXQuoteFeed implements QuoteFeed
             return QuoteFeedData.withError(
                             new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName())));
 
-        String market = security.getPropertyValue(SecurityProperty.Type.FEED, MOEX_MARKET).orElse(DEFAULT_MARKET);
+        var engine = getEngine(security);
+        var market = getMarket(security);
+        var board = getBoard(security);
 
         QuoteFeedData data = new QuoteFeedData();
 
@@ -154,7 +188,7 @@ public class MOEXQuoteFeed implements QuoteFeed
 
             while (true) // NOSONAR
             {
-                WebAccess webaccess = createUrl(market, secid, from, start);
+                WebAccess webaccess = createUrl(engine, market, board, secid, from, start);
 
                 String json = getJson(webaccess);
 
@@ -187,10 +221,10 @@ public class MOEXQuoteFeed implements QuoteFeed
         return data;
     }
 
-    private WebAccess createUrl(String market, String secid, LocalDate from, int start) throws URISyntaxException
+    private WebAccess createUrl(String engine, String market, String board, String secid, LocalDate from, int start)
+                    throws URISyntaxException
     {
-        WebAccess webaccess = new WebAccess(HOST,
-                        "/iss/history/engines/stock/markets/" + market + "/securities/" + secid + ".json") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        WebAccess webaccess = new WebAccess(HOST, createHistoryPath(engine, market, board, secid))
                         .addParameter("iss.meta", "off") //$NON-NLS-1$ //$NON-NLS-2$
                         .addParameter("iss.only", "history,history.cursor") //$NON-NLS-1$ //$NON-NLS-2$
                         .addParameter("start", String.valueOf(start)) //$NON-NLS-1$
@@ -199,10 +233,30 @@ public class MOEXQuoteFeed implements QuoteFeed
         if (from != null)
             webaccess.addParameter("from", from.toString()); //$NON-NLS-1$
 
-        if (supportsMarketPriceBoard(market))
+        if (board == null && supportsMarketPriceBoard(market))
             webaccess.addParameter("marketprice_board", "1"); //$NON-NLS-1$ //$NON-NLS-2$
 
         return webaccess;
+    }
+
+    private String createHistoryPath(String engine, String market, String board, String secid)
+    {
+        StringBuilder path = new StringBuilder("/iss/history/engines/"); //$NON-NLS-1$
+        path.append(engine).append("/markets/").append(market); //$NON-NLS-1$
+        if (board != null)
+            path.append("/boards/").append(board); //$NON-NLS-1$
+        path.append("/securities/").append(secid).append(".json"); //$NON-NLS-1$ //$NON-NLS-2$
+        return path.toString();
+    }
+
+    private String createMarketDataPath(String engine, String market, String board, String secid)
+    {
+        StringBuilder path = new StringBuilder("/iss/engines/"); //$NON-NLS-1$
+        path.append(engine).append("/markets/").append(market); //$NON-NLS-1$
+        if (board != null)
+            path.append("/boards/").append(board); //$NON-NLS-1$
+        path.append("/securities/").append(secid).append(".json"); //$NON-NLS-1$ //$NON-NLS-2$
+        return path.toString();
     }
 
     /* testing */ String getJson(WebAccess webaccess) throws IOException

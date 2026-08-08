@@ -107,4 +107,31 @@ public class MOEXSearchProviderTest
 
         assertThat(answer.isEmpty(), is(true));
     }
+
+    @Test
+    public void testSearchCurrency() throws IOException
+    {
+        MOEXSearchProvider provider = new MOEXSearchProvider();
+
+        List<ResultItem> answer = new ArrayList<>();
+        provider.extract(answer, read("gldrub_search_fixture.json"));
+
+        assertThat(answer.size(), is(1));
+
+        ResultItem gldrub = answer.get(0);
+        assertEquals("GLDRUB_TOM", gldrub.getSymbol());
+        assertEquals("GLD/RUB", gldrub.getCurrencyCode());
+
+        // the created security is an exchange rate with the base currency as
+        // currency and the term currency as target currency
+        Security security = gldrub.create(null);
+        assertEquals("GLD", security.getCurrencyCode());
+        assertEquals("RUB", security.getTargetCurrencyCode());
+        assertEquals("currency", security.getPropertyValue(
+                        name.abuchen.portfolio.model.SecurityProperty.Type.FEED, MOEXQuoteFeed.MOEX_ENGINE).orElse(null));
+        assertEquals("selt", security.getPropertyValue(
+                        name.abuchen.portfolio.model.SecurityProperty.Type.FEED, MOEXQuoteFeed.MOEX_MARKET).orElse(null));
+        assertEquals("CETS", security.getPropertyValue(
+                        name.abuchen.portfolio.model.SecurityProperty.Type.FEED, MOEXQuoteFeed.MOEX_BOARD).orElse(null));
+    }
 }

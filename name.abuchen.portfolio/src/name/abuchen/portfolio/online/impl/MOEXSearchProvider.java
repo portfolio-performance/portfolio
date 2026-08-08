@@ -25,13 +25,16 @@ import name.abuchen.portfolio.util.WebAccess;
  * <p>
  * The search endpoint returns all instruments known to the exchange, including
  * price fixings, iNAVs, futures and options. The provider therefore filters the
- * results to tradeable securities (shares, bonds, exchange traded funds and
- * indices) that either have a dedicated market price board or represent a plain
- * stock exchange index.
+ * results to tradeable securities (shares, bonds, exchange traded funds,
+ * indices and currency pairs) that either have a dedicated market price board,
+ * represent a plain stock exchange index, or are quoted as a currency pair on
+ * the currency engine (e.g. <code>GLDRUB_TOM</code>).
  * <p>
- * The MOEX security ID (secid) is used as the ticker symbol and the market path
- * segment is stored as a feed property so that the {@link MOEXQuoteFeed} can
- * load the correct historical data.
+ * The MOEX security ID (secid) is used as the ticker symbol. The trading
+ * engine, the market path segment and the primary trading board are stored as
+ * feed properties so that the {@link MOEXQuoteFeed} can load the correct
+ * historical data. Currency pairs are created as exchange rate securities with
+ * the base currency as currency and the term currency as target currency.
  */
 public class MOEXSearchProvider implements SecuritySearchProvider
 {
@@ -51,7 +54,20 @@ public class MOEXSearchProvider implements SecuritySearchProvider
                     "corporate_bond", //$NON-NLS-1$
                     "etf_ppif", //$NON-NLS-1$
                     "exchange_ppif", //$NON-NLS-1$
-                    "stock_index"); //$NON-NLS-1$
+                    "stock_index", //$NON-NLS-1$
+                    "currency", //$NON-NLS-1$
+                    "gold_metal", //$NON-NLS-1$
+                    "silver_metal", //$NON-NLS-1$
+                    "other_metal"); //$NON-NLS-1$
+
+    /**
+     * ISS instrument groups that are traded on the currency engine. These
+     * instruments are quoted as currency pairs (e.g. <code>USD/RUB</code> or
+     * <code>GLD/RUB</code>) and do not have a market price board of their own.
+     */
+    private static final Set<String> CURRENCY_GROUPS = Set.of( //
+                    "currency_selt", //$NON-NLS-1$
+                    "currency_metal"); //$NON-NLS-1$
 
     static class Result implements ResultItem
     {
@@ -61,7 +77,11 @@ public class MOEXSearchProvider implements SecuritySearchProvider
         private String isin;
         private String type;
         private String group;
+        private String engine;
         private String market;
+        private String board;
+        private String baseCurrency;
+        private String termCurrency;
 
         public static Result from(JSONObject json)
         {
@@ -72,14 +92,49 @@ public class MOEXSearchProvider implements SecuritySearchProvider
             result.isin = (String) json.get("isin"); //$NON-NLS-1$
             result.type = (String) json.get("type"); //$NON-NLS-1$
             result.group = (String) json.get("group"); //$NON-NLS-1$
+            result.engine = engineForGroup(result.group);
             result.market = marketForGroup(result.group);
+            result.board = (String) json.get("primary_boardid"); //$NON-NLS-1$
+
+            if (CURRENCY_GROUPS.contains(result.group))
+                parseCurrencyPair(result);
+
             return result;
+        }
+
+        private static void parseCurrencyPair(Result result)
+        {
+            // the shortname contains the currency pair, e.g. "GLDRUB_TOM -
+            // GLD/RUB" or "USDRUB_TOM - USD/RUB"
+            var shortname = result.shortname != null ? result.shortname : result.name;
+            int index = shortname.indexOf(" - "); //$NON-NLS-1$
+            if (index < 0)
+                return;
+
+            String pair = shortname.substring(index + 3).trim();
+            int slash = pair.indexOf('/');
+            if (slash <= 0 || slash == pair.length() - 1)
+                return;
+
+            result.baseCurrency = pair.substring(0, slash).trim();
+            result.termCurrency = pair.substring(slash + 1).trim();
+        }
+
+        private static String engineForGroup(String group)
+        {
+            if (CURRENCY_GROUPS.contains(group))
+                return "currency"; //$NON-NLS-1$
+
+            return "stock"; //$NON-NLS-1$
         }
 
         private static String marketForGroup(String group)
         {
             if (group == null)
                 return "shares"; //$NON-NLS-1$
+
+            if (CURRENCY_GROUPS.contains(group))
+                return "selt"; //$NON-NLS-1$
 
             switch (group)
             {
@@ -132,6 +187,11 @@ public class MOEXSearchProvider implements SecuritySearchProvider
                     return Messages.LabelSearchETF;
                 case "stock_index": //$NON-NLS-1$
                     return Messages.LabelSearchIndex;
+                case "currency": //$NON-NLS-1$
+                case "gold_metal": //$NON-NLS-1$
+                case "silver_metal": //$NON-NLS-1$
+                case "other_metal": //$NON-NLS-1$
+                    return Messages.LabelSearchCurrency;
                 default:
                     return SecurityType.convertType(type);
             }
@@ -158,6 +218,9 @@ public class MOEXSearchProvider implements SecuritySearchProvider
         @Override
         public String getCurrencyCode()
         {
+            if (baseCurrency != null && termCurrency != null)
+                return baseCurrency + "/" + termCurrency; //$NON-NLS-1$
+
             return "RUB"; //$NON-NLS-1$
         }
 
@@ -182,11 +245,20 @@ public class MOEXSearchProvider implements SecuritySearchProvider
         @Override
         public Security create(Client client)
         {
-            var security = new Security(getName(), getCurrencyCode());
+            // currency instruments are quoted as currency pairs, e.g.
+            // GLD/RUB; the base currency is stored as the security currency
+            // and the term currency as the target currency so that the app
+            // treats the security as an exchange rate
+            var security = new Security(getName(),
+                            baseCurrency != null ? baseCurrency : getCurrencyCode());
             security.setTickerSymbol(secid);
             security.setIsin(isin);
             security.setFeed(MOEXQuoteFeed.ID);
+            if (termCurrency != null)
+                security.setTargetCurrencyCode(termCurrency);
+            security.setPropertyValue(SecurityProperty.Type.FEED, MOEXQuoteFeed.MOEX_ENGINE, engine);
             security.setPropertyValue(SecurityProperty.Type.FEED, MOEXQuoteFeed.MOEX_MARKET, market);
+            security.setPropertyValue(SecurityProperty.Type.FEED, MOEXQuoteFeed.MOEX_BOARD, board);
             return security;
         }
     }
@@ -240,6 +312,7 @@ public class MOEXSearchProvider implements SecuritySearchProvider
         Integer isTradedIdx = index.get("is_traded"); //$NON-NLS-1$
         Integer marketPriceBoardIdx = index.get("marketprice_boardid"); //$NON-NLS-1$
         Integer typeIdx = index.get("type"); //$NON-NLS-1$
+        Integer groupIdx = index.get("group"); //$NON-NLS-1$
 
         for (Object rowObj : data)
         {
@@ -249,16 +322,20 @@ public class MOEXSearchProvider implements SecuritySearchProvider
             if (isTradedIdx != null && !isTrading(row, isTradedIdx))
                 continue;
 
-            // only include securities with a supported type, a market price
-            // board or plain indices
+            // only include securities with a supported type
             String type = typeIdx != null ? (String) row.get(typeIdx) : null;
             if (type == null || !SUPPORTED_TYPES.contains(type))
                 continue;
 
+            String group = groupIdx != null ? (String) row.get(groupIdx) : null;
+
+            // currencies are traded on the currency engine and have no market
+            // price board of their own
             boolean hasMarketPriceBoard = marketPriceBoardIdx != null && row.get(marketPriceBoardIdx) != null;
             boolean isIndex = "stock_index".equals(type); //$NON-NLS-1$
+            boolean isCurrency = CURRENCY_GROUPS.contains(group);
 
-            if (!hasMarketPriceBoard && !isIndex)
+            if (!hasMarketPriceBoard && !isIndex && !isCurrency)
                 continue;
 
             JSONObject item = new JSONObject();
