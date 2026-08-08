@@ -111,20 +111,20 @@ public class MOEXSearchProviderTest
     @Test
     public void testSearchCurrency() throws IOException
     {
-        MOEXSearchProvider provider = new MOEXSearchProvider();
+        var provider = new MOEXSearchProvider();
 
-        List<ResultItem> answer = new ArrayList<>();
+        var answer = new ArrayList<ResultItem>();
         provider.extract(answer, read("gldrub_search_fixture.json"));
 
         assertThat(answer.size(), is(1));
 
-        ResultItem gldrub = answer.get(0);
+        var gldrub = answer.get(0);
         assertEquals("GLDRUB_TOM", gldrub.getSymbol());
         assertEquals("GLD/RUB", gldrub.getCurrencyCode());
 
         // the created security is an exchange rate with the base currency as
         // currency and the term currency as target currency
-        Security security = gldrub.create(null);
+        var security = gldrub.create(null);
         assertEquals("GLD", security.getCurrencyCode());
         assertEquals("RUB", security.getTargetCurrencyCode());
         assertEquals("currency", security.getPropertyValue(

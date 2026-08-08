@@ -203,10 +203,10 @@ public class MOEXQuoteFeedTest
         security.setPropertyValue(SecurityProperty.Type.FEED, MOEXQuoteFeed.MOEX_MARKET, "selt");
         security.setPropertyValue(SecurityProperty.Type.FEED, MOEXQuoteFeed.MOEX_BOARD, "CETS");
 
-        QuoteFeedData data = feed.getHistoricalQuotes(security, false);
+        var data = feed.getHistoricalQuotes(security, false);
         assertThat(data.getLatestPrices().size(), is(3));
 
-        ArgumentCaptor<WebAccess> captor = ArgumentCaptor.forClass(WebAccess.class);
+        var captor = ArgumentCaptor.forClass(WebAccess.class);
         Mockito.verify(feed, Mockito.times(1)).getJson(captor.capture());
 
         var url = captor.getValue().getURL();

@@ -110,7 +110,7 @@ public class MOEXQuoteFeed implements QuoteFeed
 
         try
         {
-            WebAccess webaccess = new WebAccess(HOST, createMarketDataPath(engine, market, board, secid))
+            var webaccess = new WebAccess(HOST, createMarketDataPath(engine, market, board, secid))
                             .addParameter("iss.meta", "off") //$NON-NLS-1$ //$NON-NLS-2$
                             .addParameter("iss.only", "marketdata"); //$NON-NLS-1$ //$NON-NLS-2$
 
@@ -230,7 +230,7 @@ public class MOEXQuoteFeed implements QuoteFeed
 
             while (true) // NOSONAR
             {
-                WebAccess webaccess = createUrl(engine, market, board, secid, from, start);
+                var webaccess = createUrl(engine, market, board, secid, from, start);
 
                 String json = getJson(webaccess);
 
@@ -271,7 +271,7 @@ public class MOEXQuoteFeed implements QuoteFeed
     private WebAccess createUrl(String engine, String market, String board, String secid, LocalDate from, int start)
                     throws URISyntaxException
     {
-        WebAccess webaccess = new WebAccess(HOST, createHistoryPath(engine, market, board, secid))
+        var webaccess = new WebAccess(HOST, createHistoryPath(engine, market, board, secid))
                         .addParameter("iss.meta", "off") //$NON-NLS-1$ //$NON-NLS-2$
                         .addParameter("iss.only", "history,history.cursor") //$NON-NLS-1$ //$NON-NLS-2$
                         .addParameter("start", String.valueOf(start)) //$NON-NLS-1$
@@ -293,7 +293,7 @@ public class MOEXQuoteFeed implements QuoteFeed
      */
     private String createHistoryPath(String engine, String market, String board, String secid)
     {
-        StringBuilder path = new StringBuilder("/iss/history/engines/"); //$NON-NLS-1$
+        var path = new StringBuilder("/iss/history/engines/"); //$NON-NLS-1$
         path.append(engine).append("/markets/").append(market); //$NON-NLS-1$
         if (board != null)
             path.append("/boards/").append(board); //$NON-NLS-1$
@@ -308,7 +308,7 @@ public class MOEXQuoteFeed implements QuoteFeed
      */
     private String createMarketDataPath(String engine, String market, String board, String secid)
     {
-        StringBuilder path = new StringBuilder("/iss/engines/"); //$NON-NLS-1$
+        var path = new StringBuilder("/iss/engines/"); //$NON-NLS-1$
         path.append(engine).append("/markets/").append(market); //$NON-NLS-1$
         if (board != null)
             path.append("/boards/").append(board); //$NON-NLS-1$
