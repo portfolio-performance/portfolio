@@ -55,6 +55,20 @@ public class TimelineChart extends Chart // NOSONAR
         }
     }
 
+    private static class HorizontalMarkerLine
+    {
+        private Color color;
+        private String label;
+        private double value;
+
+        private HorizontalMarkerLine(Color color, String label, double value)
+        {
+            this.color = color;
+            this.label = label;
+            this.value = value;
+        }
+    }
+
     private static class NonTradingDayMarker
     {
         private LocalDate date;
@@ -73,6 +87,7 @@ public class TimelineChart extends Chart // NOSONAR
     }
 
     private List<MarkerLine> markerLines = new ArrayList<>();
+    private List<HorizontalMarkerLine> horizMarkerLines = new ArrayList<>();
     private List<NonTradingDayMarker> nonTradingDayMarkers = new ArrayList<>();
     private Map<Object, IAxis> addedAxis = new HashMap<>();
 
@@ -150,6 +165,16 @@ public class TimelineChart extends Chart // NOSONAR
     public void clearMarkerLines()
     {
         this.markerLines.clear();
+    }
+
+    public void addHorizontalMarkerLine(double value, Color color, String label)
+    {
+        this.horizMarkerLines.add(new HorizontalMarkerLine(color, label, value));
+    }
+
+    public void clearHorizontalMarkerLines()
+    {
+        this.horizMarkerLines.clear();
     }
 
     public void addNonTradingDayMarker(LocalDate date, Color color)
@@ -251,7 +276,7 @@ public class TimelineChart extends Chart // NOSONAR
 
     private void paintMarkerLines(PaintEvent e) // NOSONAR
     {
-        if (markerLines.isEmpty())
+        if (markerLines.isEmpty() && horizMarkerLines.isEmpty())
             return;
 
         IAxis xAxis = getAxisSet().getXAxis(0);
@@ -284,6 +309,22 @@ public class TimelineChart extends Chart // NOSONAR
             {
                 int y = yAxis.getPixelCoordinate(marker.value);
                 e.gc.drawLine(x - 5, y, x + 5, y);
+            }
+        }
+
+        for (HorizontalMarkerLine marker : horizMarkerLines)
+        {
+            int y = yAxis.getPixelCoordinate(marker.value);
+
+            e.gc.setLineStyle(SWT.LINE_DASHDOT);
+            e.gc.setForeground(marker.color);
+            e.gc.setLineWidth(1);
+            e.gc.drawLine(0, y, e.width, y);
+
+            if (marker.label != null)
+            {
+                Point textExtent = e.gc.textExtent(marker.label);
+                e.gc.drawText(marker.label, 10, y - textExtent.y - 2, true);
             }
         }
     }
