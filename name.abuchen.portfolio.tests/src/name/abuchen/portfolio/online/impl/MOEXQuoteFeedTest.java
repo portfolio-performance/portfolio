@@ -1,17 +1,21 @@
 package name.abuchen.portfolio.online.impl;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import name.abuchen.portfolio.model.LatestSecurityPrice;
@@ -173,7 +177,7 @@ public class MOEXQuoteFeedTest
     }
 
     @Test
-    public void testPaginationContinuesPastFullPageWithInvalidRow() throws IOException
+    public void testPaginationContinuesPastFullPageWithInvalidRow() throws IOException, URISyntaxException
     {
         var page1 = read("sber_history_page1_invalid.json");
         var page2 = read("sber_history_page2.json");
@@ -190,5 +194,13 @@ public class MOEXQuoteFeedTest
         // 99 accepted prices from the full page plus 2 from the second page
         assertThat(data.getLatestPrices().size(), is(101));
         assertThat(data.getErrors().isEmpty(), is(true));
+
+        // the second page request must continue at the source row offset
+        ArgumentCaptor<WebAccess> captor = ArgumentCaptor.forClass(WebAccess.class);
+        Mockito.verify(feed, Mockito.times(2)).getJson(captor.capture());
+
+        List<WebAccess> requests = captor.getAllValues();
+        assertThat(requests.size(), is(2));
+        assertThat(requests.get(1).getURL(), containsString("start=100"));
     }
 }
