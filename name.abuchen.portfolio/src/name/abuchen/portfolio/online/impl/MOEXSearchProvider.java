@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -37,6 +38,20 @@ public class MOEXSearchProvider implements SecuritySearchProvider
     private static final String NAME = "MOEX"; //$NON-NLS-1$
     private static final String HOST = "iss.moex.com"; //$NON-NLS-1$
     private static final String EXCHANGE = "MISX"; //$NON-NLS-1$
+
+    /**
+     * ISS instrument types that the provider understands. Everything else (for
+     * example price fixings, iNAVs or open-ended interval funds) is filtered
+     * out even if it is currently traded and has a market price board.
+     */
+    private static final Set<String> SUPPORTED_TYPES = Set.of( //
+                    "common_share", //$NON-NLS-1$
+                    "preferred_share", //$NON-NLS-1$
+                    "exchange_bond", //$NON-NLS-1$
+                    "corporate_bond", //$NON-NLS-1$
+                    "etf_ppif", //$NON-NLS-1$
+                    "exchange_ppif", //$NON-NLS-1$
+                    "stock_index"); //$NON-NLS-1$
 
     static class Result implements ResultItem
     {
@@ -234,8 +249,12 @@ public class MOEXSearchProvider implements SecuritySearchProvider
             if (isTradedIdx != null && !isTrading(row, isTradedIdx))
                 continue;
 
-            // only include securities with a market price board or plain indices
+            // only include securities with a supported type, a market price
+            // board or plain indices
             String type = typeIdx != null ? (String) row.get(typeIdx) : null;
+            if (type == null || !SUPPORTED_TYPES.contains(type))
+                continue;
+
             boolean hasMarketPriceBoard = marketPriceBoardIdx != null && row.get(marketPriceBoardIdx) != null;
             boolean isIndex = "stock_index".equals(type); //$NON-NLS-1$
 

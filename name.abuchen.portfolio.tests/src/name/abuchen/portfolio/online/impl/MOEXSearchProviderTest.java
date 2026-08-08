@@ -38,9 +38,14 @@ public class MOEXSearchProviderTest
         List<ResultItem> answer = new ArrayList<>();
         provider.extract(answer, read("sber_search_fixture.json"));
 
-        // only tradeable securities with a market price board are returned,
-        // i.e. the price fixing must be filtered out
+        // only tradeable securities with a supported type and a market price
+        // board are returned, i.e. the price fixing and the unsupported
+        // interval fund (which has a market price board) must be filtered out
         assertThat(answer.size(), is(3));
+
+        // an unsupported traded instrument with a non-null market price board
+        // is excluded
+        assertThat(answer.stream().filter(r -> "RU000A0ZZMD7".equals(r.getSymbol())).findAny().isPresent(), is(false));
 
         ResultItem sber = answer.stream().filter(r -> "SBER".equals(r.getSymbol())).findAny().orElseThrow();
         assertEquals("Sberbank", sber.getName());

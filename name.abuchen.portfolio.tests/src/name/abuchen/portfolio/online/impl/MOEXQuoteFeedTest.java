@@ -38,10 +38,10 @@ public class MOEXQuoteFeedTest
     @Test
     public void testParsingShareHistory() throws IOException
     {
-        MOEXQuoteFeed feed = new MOEXQuoteFeed();
-        QuoteFeedData data = new QuoteFeedData();
+        var feed = new MOEXQuoteFeed();
+        var data = new QuoteFeedData();
 
-        int rows = feed.parseHistory(read("sber_history.json"), data);
+        var rows = feed.parseHistory(read("sber_history.json"), data);
 
         assertThat(rows, is(4));
         assertThat(data.getErrors().isEmpty(), is(true));
@@ -155,5 +155,40 @@ public class MOEXQuoteFeedTest
         QuoteFeedData data = feed.getHistoricalQuotes(security, false);
 
         assertThat(data.getErrors().isEmpty(), is(false));
+    }
+
+    @Test
+    public void testParseHistoryReturnsSourceRowCount() throws IOException
+    {
+        var feed = new MOEXQuoteFeed();
+        var data = new QuoteFeedData();
+
+        // the fixture is a full page of 100 rows with one invalid row (no
+        // trade); the source row count is returned while only 99 prices are
+        // accepted
+        var rows = feed.parseHistory(read("sber_history_page1_invalid.json"), data);
+
+        assertThat(rows, is(100));
+        assertThat(data.getLatestPrices().size(), is(99));
+    }
+
+    @Test
+    public void testPaginationContinuesPastFullPageWithInvalidRow() throws IOException
+    {
+        var page1 = read("sber_history_page1_invalid.json");
+        var page2 = read("sber_history_page2.json");
+
+        var feed = Mockito.spy(new MOEXQuoteFeed());
+        Mockito.doReturn(page1, page2).when(feed).getJson(any(WebAccess.class));
+
+        var security = new Security();
+        security.setTickerSymbol("SBER");
+        security.setPropertyValue(SecurityProperty.Type.FEED, MOEXQuoteFeed.MOEX_MARKET, "shares");
+
+        QuoteFeedData data = feed.getHistoricalQuotes(security, false);
+
+        // 99 accepted prices from the full page plus 2 from the second page
+        assertThat(data.getLatestPrices().size(), is(101));
+        assertThat(data.getErrors().isEmpty(), is(true));
     }
 }

@@ -71,15 +71,15 @@ public class MOEXQuoteFeed implements QuoteFeed
     @Override
     public Optional<LatestSecurityPrice> getLatestQuote(Security security)
     {
-        String secid = TextUtil.trim(security.getTickerSymbol());
-        if (secid.isEmpty())
+        var secid = TextUtil.trim(security.getTickerSymbol());
+        if (secid == null || secid.isEmpty())
             return Optional.empty();
 
-        String market = security.getPropertyValue(SecurityProperty.Type.FEED, MOEX_MARKET).orElse(DEFAULT_MARKET);
+        var market = security.getPropertyValue(SecurityProperty.Type.FEED, MOEX_MARKET).orElse(DEFAULT_MARKET);
 
         try
         {
-            WebAccess webaccess = new WebAccess(HOST,
+            var webaccess = new WebAccess(HOST,
                             "/iss/engines/stock/markets/" + market + "/securities/" + secid + ".json") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                             .addParameter("iss.meta", "off") //$NON-NLS-1$ //$NON-NLS-2$
                             .addParameter("iss.only", "marketdata"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -87,9 +87,9 @@ public class MOEXQuoteFeed implements QuoteFeed
             if (supportsMarketPriceBoard(market))
                 webaccess.addParameter("marketprice_board", "1"); //$NON-NLS-1$ //$NON-NLS-2$
 
-            String json = getJson(webaccess);
+            var json = getJson(webaccess);
 
-            Optional<LatestSecurityPrice> quote = parseMarketData(json);
+            var quote = parseMarketData(json);
             if (quote.isPresent())
                 return quote;
         }
@@ -161,18 +161,21 @@ public class MOEXQuoteFeed implements QuoteFeed
                 if (collectRawResponse)
                     data.addResponse(webaccess.getURL(), json);
 
-                int rows = parseHistory(json, data);
+                // advance by the number of source rows fetched, not by the
+                // number of accepted prices, so that pagination continues until
+                // the source page is exhausted even if rows are skipped
+                int rowsFetched = parseHistory(json, data);
 
-                if (rows == 0)
+                if (rowsFetched == 0)
                     break;
 
                 long newTotal = getTotal(json);
                 if (newTotal >= 0)
                     total = newTotal;
 
-                start += rows;
+                start += rowsFetched;
 
-                if (total >= 0 ? start >= total : rows < MAX_ROWS)
+                if (total >= 0 ? start >= total : rowsFetched < MAX_ROWS)
                     break;
             }
         }
@@ -212,6 +215,17 @@ public class MOEXQuoteFeed implements QuoteFeed
         return market.equals("shares") || market.equals("bonds") || market.equals("foreignshares"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
+    /**
+     * Parses one page of the history response and adds all accepted prices to
+     * the given {@link QuoteFeedData}. The accepted prices can be retrieved via
+     * {@link QuoteFeedData#getLatestPrices()}.
+     *
+     * @return the number of source rows fetched from the page. This differs
+     *         from the number of accepted prices when individual rows are
+     *         skipped (for example because they contain no trade); the return
+     *         value is used for pagination so that paging continues until the
+     *         source page is exhausted.
+     */
     /* testing */ int parseHistory(String json, QuoteFeedData data)
     {
         JSONObject response = (JSONObject) JSONValue.parse(json);
@@ -242,8 +256,6 @@ public class MOEXQuoteFeed implements QuoteFeed
         if (dateIdx == null)
             return 0;
 
-        int count = 0;
-
         for (Object rowObj : rows)
         {
             JSONArray row = (JSONArray) rowObj;
@@ -266,7 +278,6 @@ public class MOEXQuoteFeed implements QuoteFeed
                 long volume = volumeIdx != null ? asNumber(row, volumeIdx) : LatestSecurityPrice.NOT_AVAILABLE;
 
                 data.addPrice(new LatestSecurityPrice(date, value, high, low, volume));
-                count++;
             }
             catch (RuntimeException e)
             {
@@ -274,7 +285,7 @@ public class MOEXQuoteFeed implements QuoteFeed
             }
         }
 
-        return count;
+        return rows.size();
     }
 
     /* testing */ long getTotal(String json)
