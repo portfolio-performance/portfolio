@@ -81,19 +81,19 @@ public class Trade implements Adaptable
         boolean isLong = this.isLong();
 
         // for purchases, getMonetaryAmount() returns the value including taxes
-        // and fees paid
+        // and fees paid. Passing the converter applies the exchange rate
+        // recorded on the transaction (if applicable) instead of the historical
+        // rate of that day
         this.entryValue = transactions.stream() //
                         .filter(t -> t.getTransaction().getType().isPurchase() == isLong)
-                        .map(t -> t.getTransaction().getMonetaryAmount()
-                                        .with(converter.at(t.getTransaction().getDateTime())))
+                        .map(t -> t.getTransaction().getMonetaryAmount(converter))
                         .collect(MoneyCollectors.sum(converter.getTermCurrency()));
 
         // for purchases, getGrossValue() returns the value without taxes and
         // fees paid
         this.entryValueWithoutTaxesAndFees = transactions.stream() //
                         .filter(t -> t.getTransaction().getType().isPurchase() == isLong)
-                        .map(t -> t.getTransaction().getGrossValue()
-                                        .with(converter.at(t.getTransaction().getDateTime())))
+                        .map(t -> t.getTransaction().getGrossValue(converter))
                         .collect(MoneyCollectors.sum(converter.getTermCurrency()));
 
         if (end != null)
@@ -102,16 +102,14 @@ public class Trade implements Adaptable
             // (after) taxes and fees deducted
             this.exitValue = transactions.stream() //
                             .filter(t -> t.getTransaction().getType().isLiquidation() == isLong)
-                            .map(t -> t.getTransaction().getMonetaryAmount()
-                                            .with(converter.at(t.getTransaction().getDateTime())))
+                            .map(t -> t.getTransaction().getMonetaryAmount(converter))
                             .collect(MoneyCollectors.sum(converter.getTermCurrency()));
 
             // for sales, getGrossValue() returns the sales proceeds without
             // (before) taxes and fees deducted
             this.exitValueWithoutTaxesAndFees = transactions.stream() //
                             .filter(t -> t.getTransaction().getType().isLiquidation() == isLong)
-                            .map(t -> t.getTransaction().getGrossValue()
-                                            .with(converter.at(t.getTransaction().getDateTime())))
+                            .map(t -> t.getTransaction().getGrossValue(converter))
                             .collect(MoneyCollectors.sum(converter.getTermCurrency()));
 
             this.holdingPeriod = Math.round(transactions.stream() //
@@ -168,8 +166,7 @@ public class Trade implements Adaptable
         transactions.stream().forEach(t -> {
             dates.add(t.getTransaction().getDateTime().toLocalDate());
 
-            double amount = t.getTransaction().getMonetaryAmount().with(converter.at(t.getTransaction().getDateTime()))
-                            .getAmount() / Values.Amount.divider();
+            double amount = t.getTransaction().getMonetaryAmount(converter).getAmount() / Values.Amount.divider();
 
             if (t.getTransaction().getType().isPurchase() == isLong())
             {

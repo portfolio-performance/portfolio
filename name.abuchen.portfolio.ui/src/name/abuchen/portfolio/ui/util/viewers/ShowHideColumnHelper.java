@@ -860,7 +860,11 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
         if (isEditable)
         {
-            ContextMenu headerMenu = new ContextMenu(policy.getViewer().getControl(), this::headerMenuAboutToShow);
+            var headerMenu = new ContextMenu(policy.getViewer().getControl(), manager -> {
+                headerMenuAboutToShow(manager);
+                manager.add(new Separator());
+                menuAboutToShow(manager);
+            });
 
             policy.getViewer().getControl().addListener(SWT.MenuDetect, event -> {
                 Control control = policy.getViewer().getControl();

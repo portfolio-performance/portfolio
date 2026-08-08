@@ -14,6 +14,8 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
@@ -3020,5 +3022,47 @@ public class DZBankGruppePDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testUmsatzuebersicht13()
+    {
+        var extractor = new DZBankGruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umsatzuebersicht13.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(2L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000A1W2CK8"), hasWkn(null), hasTicker(null), //
+                        hasName("GLS Bank Aktienfonds Inhaber-Anteil"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check sale transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-01-06T00:00"), hasShares(2.560), //
+                        hasSource("Umsatzuebersicht13.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 198.99), hasGrossValue("EUR", 200.00), //
+                        hasTaxes("EUR", 1.01), hasFees("EUR", 0.00))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-01-27T00:00"), hasShares(2.541), //
+                        hasSource("Umsatzuebersicht13.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 200.00), hasGrossValue("EUR", 200.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 }

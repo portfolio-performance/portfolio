@@ -37,6 +37,26 @@
 	    <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.86.1" date="2026-07-30">
+      <description>
+        <ul>
+          <li>New: PDF and CSV import remember the last used directory per account.</li>
+          <li>New: Added a PDF importer for Thurgauer Kantonalbank.</li>
+          <li>Improvement: Enhanced PDF importers for DADAT, Sunrise, St.Galler Kantonalbank, comdirect, S Broker, Union Investment, Findependent AG, UmweltBank, and DekaBank.</li>
+          <li>Improvement: The right-click menu on a table header now also lists the show/hide column actions.</li>
+          <li>Improvement: The attributes page of the edit security dialog can be scrolled.</li>
+          <li>Fix: FIFO capital gains now use the exchange rate recorded on the transaction, matching the moving average and cost calculations.</li>
+          <li>Fix: Corrected a regression in the calculation of shares held.</li>
+          <li xml:lang="de">Neu: PDF- und CSV-Import merken sich das zuletzt verwendete Verzeichnis je Depot.</li>
+          <li xml:lang="de">Neu: PDF-Importer für Thurgauer Kantonalbank hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für DADAT, Sunrise, St.Galler Kantonalbank, comdirect, S Broker, Union Investment, Findependent AG, UmweltBank und DekaBank verbessert.</li>
+          <li xml:lang="de">Verbesserung: Das Kontextmenü der Tabellenüberschrift enthält jetzt auch die Aktionen zum Ein- und Ausblenden von Spalten.</li>
+          <li xml:lang="de">Verbesserung: Die Attribute-Seite im Dialog zum Bearbeiten eines Wertpapiers lässt sich jetzt scrollen.</li>
+          <li xml:lang="de">Fehlerbehebung: Die Kapitalgewinne nach FIFO verwenden jetzt den in der Buchung hinterlegten Wechselkurs, passend zum gleitenden Durchschnitt und zur Kostenberechnung.</li>
+          <li xml:lang="de">Fehlerbehebung: Regression bei der Berechnung der gehaltenen Stücke behoben.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.86.0" date="2026-07-16">
       <description>
         <ul>

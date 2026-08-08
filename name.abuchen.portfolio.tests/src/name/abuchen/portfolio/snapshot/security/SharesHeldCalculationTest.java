@@ -40,4 +40,23 @@ public class SharesHeldCalculationTest
         assertThat(snapshot.getRecords().get(0).getSharesHeld(), is(Values.Share.factorize(2)));
     }
 
+    @Test
+    public void testSharesHeldIfSecurityIsTemporarilyNegative()
+    {
+        Client client = new Client();
+        Security security = new Security();
+        client.addSecurity(security);
+
+        new PortfolioBuilder() //
+                        .sell(security, "2018-01-01", Values.Share.factorize(10), Values.Amount.factorize(100)) //$NON-NLS-1$
+                        .buy(security, "2018-02-01", Values.Share.factorize(10), Values.Amount.factorize(100)) //$NON-NLS-1$
+                        .addTo(client);
+
+        var interval = Interval.of(LocalDate.parse("2017-12-31"), LocalDate.parse("2018-03-01")); //$NON-NLS-1$ //$NON-NLS-2$
+        var snapshot = LazySecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(), interval);
+
+        assertThat(snapshot.getRecords().size(), is(1));
+        assertThat(snapshot.getRecords().get(0).getSharesHeld(), is(0L));
+    }
+
 }

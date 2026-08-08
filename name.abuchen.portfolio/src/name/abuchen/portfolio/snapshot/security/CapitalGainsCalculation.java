@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.snapshot.security;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,6 +16,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.Values;
@@ -26,9 +29,28 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
     {
         private long shares;
         private LocalDate date;
+
+        /**
+         * Lot cost basis in the term (reporting) currency.
+         */
         private long value;
 
+        /**
+         * Lot cost basis in the security's currency. Carried alongside
+         * {@link #value} so that the currency component can be derived from the
+         * exchange rate recorded on the transaction rather than the historic
+         * day rate of the exchange-rate provider - matching the moving-average
+         * sibling and {@code CostCalculation}.
+         */
+        private long valueForex;
+
         private final TrailRecord trail;
+
+        /**
+         * Trail for {@link #valueForex}, i.e. the cost basis in the security's
+         * currency.
+         */
+        private final TrailRecord forexTrail;
 
         /**
          * Holds the original number of shares (of the transaction). The
@@ -39,12 +61,15 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 
         private final CalculationLineItem source;
 
-        public LineItem(long shares, LocalDate date, long value, TrailRecord trail, CalculationLineItem source)
+        public LineItem(long shares, LocalDate date, long value, long valueForex, TrailRecord trail,
+                        TrailRecord forexTrail, CalculationLineItem source)
         {
             this.shares = shares;
             this.date = Objects.requireNonNull(date);
             this.value = value;
+            this.valueForex = valueForex;
             this.trail = trail;
+            this.forexTrail = forexTrail;
             this.originalShares = shares;
             this.source = source;
         }
@@ -57,16 +82,22 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
     {
         SecurityPosition position = valuation.getSecurityPosition().orElseThrow(IllegalArgumentException::new);
 
-        Money value = valuation.getValue();
-        Money converted = value.with(converter.at(valuation.getDateTime()));
+        // the valuation is expressed in the security's currency
+        Money valueForex = valuation.getValue();
+        Money converted = valueForex.with(converter.at(valuation.getDateTime()));
 
-        TrailRecord trail = TrailRecord.ofPosition(valuation.getDateTime().toLocalDate(),
+        // the valuation carries no transaction exchange rate, hence the
+        // historic conversion at that date is correct for the term-currency
+        // basis
+
+        TrailRecord forexTrail = TrailRecord.ofPosition(valuation.getDateTime().toLocalDate(),
                         (Portfolio) valuation.getOwner(), position);
-        if (!value.getCurrencyCode().equals(converter.getTermCurrency()))
-            trail = trail.convert(converted, converter.getRate(valuation.getDateTime(), value.getCurrencyCode()));
+        TrailRecord trail = forexTrail;
+        if (!valueForex.getCurrencyCode().equals(converter.getTermCurrency()))
+            trail = trail.convert(converted, converter.getRate(valuation.getDateTime(), valueForex.getCurrencyCode()));
 
-        fifo.add(new LineItem(position.getShares(), valuation.getDateTime().toLocalDate(), converted.getAmount(), trail,
-                        valuation));
+        fifo.add(new LineItem(position.getShares(), valuation.getDateTime().toLocalDate(), converted.getAmount(),
+                        valueForex.getAmount(), trail, forexTrail, valuation));
     }
 
     @Override
@@ -74,26 +105,38 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                     PortfolioTransaction t)
     {
         String termCurrency = getTermCurrency();
+        String securityCurrency = t.getSecurity().getCurrencyCode();
+
         Money grossValue = t.getGrossValue();
-        Money convertedGrossValue = grossValue.with(converter.at(t.getDateTime()));
+
+        // prefer the exchange rate recorded on the transaction (via
+        // getGrossValue(converter)) over the historic day rate of the
+        // exchange-rate provider, in both the term and the security currency
+        Money termBasis = t.getGrossValue(converter);
+        Money forexBasis = t.getGrossValue(converter.with(securityCurrency));
 
         TrailRecord txTrail = TrailRecord.ofTransaction(t).asGrossValue(grossValue);
-        if (!grossValue.getCurrencyCode().equals(converter.getTermCurrency()))
-            txTrail = txTrail.convert(convertedGrossValue, converter
-                            .getRate(transactionItem.getDateTime().toLocalDate(), grossValue.getCurrencyCode()));
+        if (!grossValue.getCurrencyCode().equals(termCurrency))
+            txTrail = txTrail.convert(termBasis, impliedRate(grossValue, termBasis, t.getDateTime().toLocalDate()));
+
+        TrailRecord forexTxTrail = TrailRecord.ofTransaction(t).asGrossValue(grossValue);
+        if (!grossValue.getCurrencyCode().equals(securityCurrency))
+            forexTxTrail = forexTxTrail.convert(forexBasis,
+                            impliedRate(grossValue, forexBasis, t.getDateTime().toLocalDate()));
 
         switch (t.getType())
         {
             case BUY:
             case DELIVERY_INBOUND:
-                fifo.add(new LineItem(t.getShares(), t.getDateTime().toLocalDate(), convertedGrossValue.getAmount(),
-                                txTrail, transactionItem));
+                fifo.add(new LineItem(t.getShares(), t.getDateTime().toLocalDate(), termBasis.getAmount(),
+                                forexBasis.getAmount(), txTrail, forexTxTrail, transactionItem));
                 break;
 
             case SELL:
             case DELIVERY_OUTBOUND:
 
-                long value = convertedGrossValue.getAmount();
+                long value = termBasis.getAmount();
+                long valueForex = forexBasis.getAmount();
 
                 long sold = t.getShares();
 
@@ -110,6 +153,7 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 
                     long soldShares = Math.min(sold, item.shares);
                     long start = Math.round((double) soldShares / item.shares * item.value);
+                    long startForex = Math.round((double) soldShares / item.shares * item.valueForex);
                     long end = Math.round((double) soldShares / t.getShares() * value);
 
                     TrailRecord startTrail = item.trail.fraction(Money.of(termCurrency, start), soldShares,
@@ -118,24 +162,34 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                     long forexGain = 0L;
                     TrailRecord forexGainTrail = TrailRecord.empty();
 
-                    if (!termCurrency.equals(t.getSecurity().getCurrencyCode()))
+                    // valueForex can be zero because an outbound delivery can
+                    // be zero value
+                    if (!termCurrency.equals(securityCurrency) && valueForex != 0)
                     {
-                        // calculate currency gains (if the security is
-                        // traded in forex) by converting the start value to
-                        // forex and converting it back with the exchange
-                        // rate at the end of the period (equivalent to
-                        // holding the money as cash in forex currency)
+                        // calculate currency gains as the relieved cost basis
+                        // in the security currency, valued at the exchange rate
+                        // recorded on the sale transaction, less the relieved
+                        // cost basis in the term currency (equivalent to
+                        // holding the money as cash in the security's
+                        // currency).
 
-                        CurrencyConverter convert2forex = converter.with(t.getSecurity().getCurrencyCode());
+                        // derive the exchange rate from netAmount /
+                        // netAmountForex because a) we want the actual exchange
+                        // rate of the transaction and b) the account currency
+                        // might be different than the reporting currency
 
-                        Money forex = convert2forex.convert(item.date, Money.of(termCurrency, start));
-                        Money back = forex.with(converter.at(t.getDateTime()));
-                        forexGain = back.getAmount() - start;
+                        BigDecimal exchangeRate = BigDecimal.valueOf(value).divide(BigDecimal.valueOf(valueForex),
+                                        Values.MC);
 
-                        forexGainTrail = startTrail //
-                                        .convert(forex, convert2forex.getRate(item.date, termCurrency)) //
-                                        .convert(back, converter.getRate(t.getDateTime(),
-                                                        t.getSecurity().getCurrencyCode()))
+                        long relievedForexInTerm = BigDecimal.valueOf(startForex).multiply(exchangeRate)
+                                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
+                        forexGain = relievedForexInTerm - start;
+
+                        forexGainTrail = item.forexTrail
+                                        .fraction(Money.of(securityCurrency, startForex), soldShares,
+                                                        item.originalShares)
+                                        .convert(Money.of(termCurrency, relievedForexInTerm),
+                                                        new ExchangeRate(t.getDateTime().toLocalDate(), exchangeRate))
                                         .subtract(startTrail);
                     }
 
@@ -148,6 +202,7 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 
                     item.shares -= soldShares;
                     item.value -= start;
+                    item.valueForex -= startForex;
 
                     sold -= soldShares;
                 }
@@ -180,13 +235,21 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                         continue;
 
                     long n = Math.min(moved, entry.shares);
-                    
-                    long transferredValue = Math.round(n / (double) entry.shares * entry.value);                    
+
+                    long transferredValue = Math.round(n / (double) entry.shares * entry.value);
+                    long transferredValueForex = Math.round(n / (double) entry.shares * entry.valueForex);
                     LineItem transfer = new LineItem(n, t.getDateTime().toLocalDate(), transferredValue,
-                                    entry.trail.fraction(
-                                                    Money.of(getTermCurrency(), transferredValue),
-                                                    n,
-                                                    entry.originalShares
+                                    transferredValueForex, //
+                                    entry.trail.fraction( //
+                                                    Money.of(termCurrency, transferredValue), //
+                                                    n, //
+                                                    entry.originalShares //
+                                    ).transfer(t.getDateTime().toLocalDate(), entry.source.getOwner(),
+                                                    transactionItem.getOwner()),
+                                    entry.forexTrail.fraction( //
+                                                    Money.of(securityCurrency, transferredValueForex), //
+                                                    n, //
+                                                    entry.originalShares //
                                     ).transfer(t.getDateTime().toLocalDate(), entry.source.getOwner(),
                                                     transactionItem.getOwner()),
                                     transactionItem);
@@ -199,6 +262,7 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                     else
                     {
                         entry.value -= transferredValue;
+                        entry.valueForex -= transferredValueForex;
                         entry.shares -= n;
 
                         fifo.add(fifo.indexOf(entry) + 1, transfer);
@@ -234,6 +298,7 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
         // up the trails into very many fractions
 
         String termCurrency = getTermCurrency();
+        String securityCurrency = getSecurity().getCurrencyCode();
 
         List<CalculationLineItem.ValuationAtEnd> valuationsAtEnd = lineItems.stream()
                         .filter(item -> item instanceof CalculationLineItem.ValuationAtEnd)
@@ -265,10 +330,17 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
         // starting valuation (based on open line items)
 
         long start = fifo.stream().mapToLong(item -> item.value).sum();
+        long startForex = fifo.stream().mapToLong(item -> item.valueForex).sum();
 
         TrailRecord startTrail = TrailRecord.of(fifo.stream() //
                         .filter(item -> item.shares != 0).map(item -> item.trail
                                         .fraction(Money.of(termCurrency, item.value), item.shares, item.originalShares))
+                        .collect(Collectors.toList()));
+
+        TrailRecord startForexTrail = TrailRecord.of(fifo.stream() //
+                        .filter(item -> item.shares != 0)
+                        .map(item -> item.forexTrail.fraction(Money.of(securityCurrency, item.valueForex), item.shares,
+                                        item.originalShares))
                         .collect(Collectors.toList()));
 
         // end value (based on the security positions)
@@ -284,50 +356,37 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                                         item.getSecurityPosition().orElseThrow(IllegalArgumentException::new)))
                         .collect(Collectors.toList()));
 
+        // the valuation at the end carries no transaction exchange rate, hence
+        // the historic conversion at that date is correct
+
         Money convertedEndValue = endValue.with(converter.at(valuationAtEndDate));
         if (!endValue.getCurrencyCode().equals(converter.getTermCurrency()))
             endTrail = endTrail.convert(convertedEndValue,
                             converter.getRate(valuationAtEndDate, endValue.getCurrencyCode()));
 
         long end = convertedEndValue.getAmount();
+        long endForex = endValue.getAmount();
         long forexGain = 0L;
         TrailRecord forexGainTrail = TrailRecord.empty();
 
-        if (!termCurrency.equals(getSecurity().getCurrencyCode()))
+        // endForex can be zero if there is no holding value at the end
+        if (!termCurrency.equals(securityCurrency) && endForex != 0)
         {
-            // calculate forex gains: use exchange rate of
-            // each date of investment
+            // calculate currency gains as the accumulated cost basis of the
+            // still-open lots in the security currency, valued at the closing
+            // exchange rate, less the accumulated cost basis in the term
+            // currency - mirroring the realized calculation, but with the
+            // closing valuation providing the rate
 
-            CurrencyConverter convert2Forex = converter.with(getSecurity().getCurrencyCode());
+            BigDecimal exchangeRate = BigDecimal.valueOf(end).divide(BigDecimal.valueOf(endForex), Values.MC);
 
-            Money forex = fifo.stream() //
-                            .filter(item -> item.value != 0) //
-                            .map(item -> convert2Forex.convert(item.date, Money.of(termCurrency, item.value)))
-                            .collect(MoneyCollectors.sum(getSecurity().getCurrencyCode()));
+            long forexInTerm = BigDecimal.valueOf(startForex).multiply(exchangeRate).setScale(0, RoundingMode.HALF_DOWN)
+                            .longValue();
+            forexGain = forexInTerm - start;
 
-            Money back = forex.with(converter.at(valuationAtEndDate));
-
-            forexGain = back.getAmount() - start;
-
-            // collect all start values and convert to forex
-            // using the start date
-
-            forexGainTrail = TrailRecord.of(fifo.stream() //
-                            .filter(item -> item.value != 0) //
-                            .map(item -> item.trail
-                                            .fraction(Money.of(termCurrency, item.value), item.shares,
-                                                            item.originalShares)
-                                            .convert(convert2Forex.convert(item.date,
-                                                            Money.of(termCurrency, item.value)),
-                                                            convert2Forex.getRate(item.date, termCurrency)))
-                            .collect(Collectors.toList()));
-
-            // convert the forex amount back with the
-            // exchange rate at the end (=snapshot end) and
-            // subtract start value
-
-            forexGainTrail = forexGainTrail
-                            .convert(back, converter.getRate(valuationAtEndDate, getSecurity().getCurrencyCode()))
+            forexGainTrail = startForexTrail
+                            .convert(Money.of(termCurrency, forexInTerm),
+                                            new ExchangeRate(valuationAtEndDate.toLocalDate(), exchangeRate))
                             .subtract(startTrail);
         }
 
@@ -335,8 +394,21 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
         unrealizedCapitalGains.addCapitalGainsTrail(endTrail.subtract(startTrail));
         unrealizedCapitalGains.addForexCaptialGains(Money.of(termCurrency, forexGain));
         unrealizedCapitalGains.addForexCapitalGainsTrail(forexGainTrail);
-        
+
         fifo.clear();
+    }
+
+    /**
+     * Derives the exchange rate implied by two amounts (from {@code from} to
+     * {@code to}). Used to label the conversion step of a trail so that the
+     * rate shown is the one actually applied to the value rather than the
+     * historic day rate.
+     */
+    private static ExchangeRate impliedRate(Money from, Money to, LocalDate date)
+    {
+        BigDecimal rate = from.getAmount() == 0 ? BigDecimal.ONE
+                        : BigDecimal.valueOf(to.getAmount()).divide(BigDecimal.valueOf(from.getAmount()), Values.MC);
+        return new ExchangeRate(date, rate);
     }
 
     private void squashForexValuationsAtStart(CurrencyConverter converter)
@@ -368,16 +440,17 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                         .collect(MoneyCollectors.sum(getSecurity().getCurrencyCode()));
         Money converted = value.with(converter.at(valuationAtStartDate));
 
-        TrailRecord trail = TrailRecord.of(itemsToSquash.stream()
+        TrailRecord forexTrail = TrailRecord.of(itemsToSquash.stream()
                         .map(item -> TrailRecord.ofPosition(valuationAtStartDate.toLocalDate(),
                                         (Portfolio) item.source.getOwner(),
                                         item.source.getSecurityPosition().orElseThrow(IllegalArgumentException::new)))
                         .collect(Collectors.toList()));
 
-        trail = trail.convert(converted, converter.getRate(valuationAtStartDate, value.getCurrencyCode()));
+        TrailRecord trail = forexTrail.convert(converted,
+                        converter.getRate(valuationAtStartDate, value.getCurrencyCode()));
 
-        LineItem replacement = new LineItem(shares, valuationAtStartDate.toLocalDate(), converted.getAmount(), trail,
-                        null);
+        LineItem replacement = new LineItem(shares, valuationAtStartDate.toLocalDate(), converted.getAmount(),
+                        value.getAmount(), trail, forexTrail, null);
 
         fifo.removeAll(itemsToSquash);
         fifo.add(0, replacement);

@@ -206,6 +206,73 @@ public class ExtractorUtilsDateParserTest
     }
 
     @Test
+    public void testAsDateWithSeparateTime()
+    {
+        // Test one valid input for each pattern in DATE_TIME_FORMATTER
+        LocalDateTime expected = LocalDateTime.of(2023, 4, 11, 9, 33);
+        assertEquals(expected, ExtractorUtils.asDate("11.4.2023", "09:33"));
+        assertEquals(expected, ExtractorUtils.asDate("11-04-2023", "09:33"));
+        assertEquals(expected, ExtractorUtils.asDate("11/04/2023", "09:33"));
+        assertEquals(expected, ExtractorUtils.asDate("11/04/23", "09.33"));
+
+        expected = LocalDateTime.of(2023, 4, 11, 9, 33, 0);
+        assertEquals(expected, ExtractorUtils.asDate("11-04-2023", "09:33:00"));
+        assertEquals(expected, ExtractorUtils.asDate("11.04.2023", "09.33.00"));
+        assertEquals(expected, ExtractorUtils.asDate("11.04.2023", "9:33:00"));
+        assertEquals(expected, ExtractorUtils.asDate("11.04.23", "09:33:00"));
+        assertEquals(expected, ExtractorUtils.asDate("11 Apr 2023", "09:33:00"));
+        assertEquals(expected, ExtractorUtils.asDate("11-Apr-2023", "09:33:00"));
+        assertEquals(expected, ExtractorUtils.asDate("11 April 2023", "09:33:00"));
+        assertEquals(expected, ExtractorUtils.asDate("11.4.2023", "09:33:00"));
+        assertEquals(expected, ExtractorUtils.asDate("11/04/2023", "09:33:00"));
+        assertEquals(expected, ExtractorUtils.asDate("Apr 11, 2023", "09:33:00 AM"));
+        assertEquals(expected, ExtractorUtils.asDate("2023-04-11", "09:33:00"));
+        assertEquals(expected, ExtractorUtils.asDate("20230411", "093300"));
+        assertEquals(expected, ExtractorUtils.asDate("11.04.2023", "09:33:00 AM"));
+        assertEquals(expected, ExtractorUtils.asDate("11/04/2023", "09.33.00"));
+
+        expected = LocalDateTime.of(2026, 7, 20, 9, 33, 0);
+        assertEquals(expected, ExtractorUtils.asDate("20. Juli 2026", "9:33:00"));
+
+        // English month abbreviations without a German equivalent fall
+        // through to the Locale.UK patterns
+        expected = LocalDateTime.of(2023, 5, 11, 9, 33, 0);
+        assertEquals(expected, ExtractorUtils.asDate("11 May 2023", "09:33:00"));
+        assertEquals(expected, ExtractorUtils.asDate("11-May-2023", "09:33:00"));
+    }
+
+    @Test
+    public void testAsDateWithSeparateTimeSingleDigitDayAndHour()
+    {
+        // The day and hour fields are variable width, so a single digit is
+        // parsed by the same pattern as a padded two digit value
+        LocalDateTime expected = LocalDateTime.of(2023, 4, 5, 9, 33, 0);
+        assertEquals(expected, ExtractorUtils.asDate("5.4.2023", "09:33:00"));
+        assertEquals(expected, ExtractorUtils.asDate("05.04.2023", "09:33:00"));
+        assertEquals(expected, ExtractorUtils.asDate("5.04.2023", "9:33:00"));
+        assertEquals(expected, ExtractorUtils.asDate("05.04.2023", "9:33:00"));
+
+        expected = LocalDateTime.of(2026, 7, 5, 9, 33, 0);
+        assertEquals(expected, ExtractorUtils.asDate("5. Juli 2026", "9:33:00"));
+        assertEquals(expected, ExtractorUtils.asDate("05. Juli 2026", "09:33:00"));
+    }
+
+    @Test
+    public void testAsDateWithSeparateTimeInvalidValue()
+    {
+        String value = "11-April-2023 09:33:00";
+        try
+        {
+            ExtractorUtils.asDate("11-April-2023", "09:33:00");
+            fail("Expected DateTimeParseException was not thrown");
+        }
+        catch (DateTimeParseException e)
+        {
+            assertEquals(MessageFormat.format(Messages.MsgErrorNotAValidDate, value), e.getMessage());
+        }
+    }
+
+    @Test
     public void testValidFormats()
     {
         assertEquals(LocalTime.of(13, 15), ExtractorUtils.asTime("13:15:00"));

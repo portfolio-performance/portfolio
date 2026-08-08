@@ -1,0 +1,55 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.83.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Sparkasse Pfaffenhofen · Postfach 12 51 · 85262 Pfaffenhofen a. d. Ilm  Seite 1
+Depotnummer
+ 1234567
+ Kundennummer 7654321
+ Max Mustermannn
+Abrechnungsnr. 60357534450
+Herrn Datum 13.04.2026
+Max Mustermann Ihr Berater XXXXX XXXXXXX
+Musterstraße 8 Telefon 00000-755-000
+12345 Musterhausen
+ 
+  
+ 
+Zinsgutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 100 LEVERAGE SHARES PLC XS3068771271 (A4AN04)
+ETP 19.06.75 INCOMESHARES 20+
+Zahlbarkeitstag 10.04.2026 Ertrag pro St. 0,3807 USD
+Bestandsstichtag 31.03.2026 Herkunftsland Irland
+Kupon per 31.03.2026
+Zinstermin Monat(e) April 
+Devisenkurs EUR / USD 1,1713 
+Devisenkursdatum 13.04.2026
+Zinsertrag 38,07 USD 32,50+ EUR
+Umrechnung in EUR 32,50 EUR
+Kapitalertragsteuerpflichtiger Ertrag 32,50 EUR
+Verrechneter Sparer-Pauschbetrag 32,50 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+Ausmachender Betrag 32,50+ EUR
+Lagerstelle Clearstream Banking Lux (849133 / 64003)
+Den Betrag buchen wir mit Wertstellung 13.04.2026 zu Gunsten des Kontos 9876543 (IBAN DE15 XXXX XXXX XXXX XXXX
+XX), BLZ 721 516 50 (BIC BYLADEM1PAF). 
+Keine Steuerbescheinigung. 
+Bitte ggf. Rückseite beachten.
+2247.04140100.0000005ER02
+
+Seite 2
+Depotnummer 7654321
+Kundennummer 7654321
+Abrechnungsnr. 60357534450
+Datum 13.04.2026
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2026 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 737,48 0,00 0,00
+Ertrag 0,00 0,00 32,50- 0,00 0,00
+Nachher 0,00 0,00 704,98 0,00 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+2247.04140100.0000006ER02

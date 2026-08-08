@@ -268,6 +268,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
     {
         final var type = new DocumentType("(Dividendengutschrift|" //
                         + "Aussch.ttung|" //
+                        + "Zinsgutschrift|" //
                         + "Kapitalr.ckzahlung)");
         this.addDocumentTyp(type);
 
@@ -275,6 +276,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
         var firstRelevantLine = new Block("^(Dividendengutschrift" //
                         + "|Aussch.ttung (f.r|Investmentfonds)" //
+                        + "|Zinsgutschrift" //
                         + "|Gutschrift)" //
                         + "( [^\\.,\\d]+.*)?$");
         type.addBlock(firstRelevantLine);
@@ -338,12 +340,17 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         // Stück 250 GLADSTONE COMMERCIAL CORP. US3765361080 (260884)
                                         // REGISTERED SHARES DL -,01
                                         // Zahlbarkeitstag 31.12.2021 Ausschüttung pro St. 0,125275000 USD
+                                        //
+                                        // Nominale Wertpapierbezeichnung ISIN (WKN)
+                                        // Stück 100 LEVERAGE SHARES PLC XS3068771271 (A4AN04)
+                                        // ETP 19.06.75 INCOMESHARES 20+
+                                        // Zahlbarkeitstag 10.04.2026 Ertrag pro St. 0,3807 USD
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "isin", "wkn", "name1", "currency") //
                                                         .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                                                         .match("^(?<name1>.*)$") //
-                                                        .match("^Zahlbarkeitstag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Aussch.ttung|Dividende|Auszahlung) pro (St\\.|St.ck) [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .match("^Zahlbarkeitstag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Aussch.ttung|Dividende|Auszahlung|Ertrag) pro (St\\.|St.ck) [\\.,\\d]+ (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> {
                                                             if (!v.get("name1").startsWith("Zahlbarkeitstag"))
                                                                 v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
@@ -463,11 +470,14 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // Devisenkurs EUR / PLN 4,5044
                                         // Ausschüttung 31,32 USD 27,48+ EUR
+                                        //
+                                        // Devisenkurs EUR / USD 1,1713
+                                        // Zinsertrag 38,07 USD 32,50+ EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "gross") //
-                                                        .match("^Devisenkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3})[\\s]*(?<exchangeRate>[\\.,\\d]+)$") //
-                                                        .match("^(Dividendengutschrift|Aussch.ttung|Kurswert) (?<fxGross>[\\.,\\d]+) [\\w]{3} (?<gross>[\\.,\\d]+)\\+ [\\w]{3}$") //
+                                                        .match("^Devisenkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3})[\\s]*(?<exchangeRate>[\\.,\\d]+)[\\s]*$") //
+                                                        .match("^(Dividendengutschrift|Aussch.ttung|Kurswert|Zinsertrag) (?<fxGross>[\\.,\\d]+) [\\w]{3} (?<gross>[\\.,\\d]+)\\+ [\\w]{3}$") //
                                                         .assign((t, v) -> {
                                                             var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);

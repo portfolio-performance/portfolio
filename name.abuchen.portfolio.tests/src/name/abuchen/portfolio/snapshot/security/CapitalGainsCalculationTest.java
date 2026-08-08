@@ -243,4 +243,75 @@ public class CapitalGainsCalculationTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(-97.54))));
 
     }
+
+    /**
+     * Same portfolio as {@link #testFifoBuySellTransactions3()} but reported in
+     * the security's currency (USD) rather than the transaction/account currency
+     * (EUR). In that case the FIFO lot basis must be the {@code GROSS_VALUE}
+     * unit's forex amount (the rate recorded on the transaction) rather than the
+     * historic day rate published by the exchange-rate provider, matching the
+     * moving-average sibling and {@code CostCalculation}. See
+     * https://github.com/portfolio-performance/portfolio/issues/5908
+     */
+    @Test
+    public void testFifoBuySellTransactions3ReportedInSecurityCurrency()
+    {
+        var client = new Client();
+        client.setBaseCurrency(CurrencyUnit.EUR);
+
+        var security = new SecurityBuilder(CurrencyUnit.USD) //
+                        .addPrice("2025-01-01", Values.Quote.factorize(80)) //
+                        .addTo(client);
+
+        var account = new AccountBuilder(CurrencyUnit.EUR) //
+                        .addTo(client);
+
+        new PortfolioBuilder(account) //
+                        .inbound_delivery(security, "2024-01-01", Values.Share.factorize(100),
+                                        new Transaction.Unit(Transaction.Unit.Type.GROSS_VALUE,
+                                                        Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4500)),
+                                                        Money.of(CurrencyUnit.USD, Values.Amount.factorize(5000)),
+                                                        BigDecimal.valueOf(0.90)) //
+                        )
+                        .inbound_delivery(security, "2024-02-01", Values.Share.factorize(50),
+                                        new Transaction.Unit(Transaction.Unit.Type.GROSS_VALUE,
+                                                        Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2550)),
+                                                        Money.of(CurrencyUnit.USD, Values.Amount.factorize(3000)),
+                                                        BigDecimal.valueOf(0.85)) //
+                        )
+                        .outbound_delivery(security, "2024-03-01", Values.Share.factorize(50),
+                                        new Transaction.Unit(Transaction.Unit.Type.GROSS_VALUE,
+                                                        Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3080)),
+                                                        Money.of(CurrencyUnit.USD, Values.Amount.factorize(3500)),
+                                                        BigDecimal.valueOf(0.88)) //
+                        ).addTo(client);
+
+        var interval = Interval.of(LocalDate.parse("2023-12-31"), LocalDate.parse("2024-12-31"));
+        LazySecurityPerformanceSnapshot snapshot = LazySecurityPerformanceSnapshot.create(client,
+                        new TestCurrencyConverter(CurrencyUnit.USD), interval);
+        LazySecurityPerformanceRecord record = snapshot.getRecord(security).orElseThrow(IllegalArgumentException::new);
+
+        // realized gains reported in USD
+        // [revenue in USD] - [partial cost of first buy in USD]
+        // the basis must be the GROSS_VALUE unit's forex amount (USD 5000), not
+        // the historic conversion of EUR 4500
+        // 3500 - (50/100) * 5000 = 1000
+        var realizedFifo = record.getRealizedCapitalGains(CostMethod.FIFO);
+        assertThat(realizedFifo.getCapitalGains(), //
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1000))));
+
+        // no currency gains when reporting in the security's own currency
+        assertThat(realizedFifo.getForexCaptialGains(), //
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0))));
+
+        // unrealized gains reported in USD
+        // [current valuation in USD] - [remaining basis of both buys in USD]
+        // 100 * 80 - ((50/100) * 5000 + 3000) = 8000 - 5500 = 2500
+        var unrealizedFifo = record.getUnrealizedCapitalGains(CostMethod.FIFO);
+        assertThat(unrealizedFifo.getCapitalGains(), //
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(2500))));
+
+        assertThat(unrealizedFifo.getForexCaptialGains(), //
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0))));
+    }
 }

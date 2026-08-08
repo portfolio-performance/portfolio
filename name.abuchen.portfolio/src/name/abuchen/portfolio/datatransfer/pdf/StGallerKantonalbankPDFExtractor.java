@@ -1,6 +1,9 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
+
+import java.math.BigDecimal;
 
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -10,6 +13,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 /**
@@ -137,17 +141,36 @@ public class StGallerKantonalbankPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
-                        // @formatter:off
-                        // 10'000 N-Akt TUI AG Aus Konversion
-                        // Namenaktien Valoren-Nr.: 125205291, ISIN: DE000TUAG505
-                        // Ausschüttung: EUR 0.10
-                        // @formatter:on
-                        .section("name", "wkn", "isin", "currency") //
-                        .find("Ihr Depotbestand per Ex\\-Datum .*") //
-                        .match("^[\\.'\\d]+ (?<name>.*)$") //
-                        .match("^.* Valoren\\-Nr\\.: (?<wkn>[A-Z0-9]{5,9}), ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                        .match("^Aussch.ttung: (?<currency>[A-Z]{3}) [\\.'\\d]+$") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .oneOf( //
+
+                                        // @formatter:off
+                                        // 10'000 N-Akt Sibanye Stillwater Limited
+                                        // Sponsored ADR Repr 4 Shs ADR/ADS
+                                        // Übrige Aktien Valoren-Nr.: 52619625, ISIN: US82575P1075
+                                        // Ausschüttung: USD 0.310942
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "nameContinued", "wkn", "isin", "currency") //
+                                                        .find("Ihr Depotbestand per Ex\\-Datum .*") //
+                                                        .match("^[\\.'\\d]+ (?<name>.*)$") //
+                                                        .match("^(?<nameContinued>.*)$") //
+                                                        .match("^.* Valoren\\-Nr\\.: (?<wkn>[A-Z0-9]{5,9}), ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^Aussch.ttung: (?<currency>[A-Z]{3}) [\\.'\\d]+$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))) //
+                                        , //
+                                        // @formatter:off
+                                        // 10'000 N-Akt TUI AG Aus Konversion
+                                        // Namenaktien Valoren-Nr.: 125205291, ISIN: DE000TUAG505
+                                        // Ausschüttung: EUR 0.10
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "wkn", "isin", "currency") //
+                                                        .find("Ihr Depotbestand per Ex\\-Datum .*") //
+                                                        .match("^[\\.'\\d]+ (?<name>.*)$") //
+                                                        .match("^.* Valoren\\-Nr\\.: (?<wkn>[A-Z0-9]{5,9}), ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^Aussch.ttung: (?<currency>[A-Z]{3}) [\\.'\\d]+$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))) //
+                        )
 
                         // @formatter:off
                         // 10'000 N-Akt TUI AG Aus Konversion
@@ -182,6 +205,23 @@ public class StGallerKantonalbankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // @formatter:off
+                        // Betrag USD 6'218.84
+                        // Umrechnungskurs EUR/USD 1.175393
+                        // @formatter:on
+                        .section("termCurrency", "baseCurrency", "exchangeRate", "fxGross").optional() //
+                        .match("^Betrag\\s+[A-Z]{3}\\s+(?<fxGross>['\\.,\\d]+)\\s*$") //
+                        .match("^Umrechnungskurs\\s+(?<baseCurrency>[A-Z]{3})\\/(?<termCurrency>[A-Z]{3})\\s+(?<exchangeRate>[\\.'\\d]+)\\s*$") //
+                        .assign((t, v) -> {
+                            var rate = asExchangeRate(v);
+                            type.getCurrentContext().putType(rate);
+
+                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                            var gross = rate.convert(rate.getBaseCurrency(), fxGross);
+
+                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                        })
+
+                        // @formatter:off
                         // Referenznummer 1746312001 DEUTSCHLAND
                         // @formatter:on
                         .section("note").optional() //
@@ -204,12 +244,32 @@ public class StGallerKantonalbankPDFExtractor extends AbstractPDFExtractor
                         .match("^Eidg\\. Stempelsteuer ?(\\(.*\\))? (?<currency>[A-Z]{3}) (\\-)?(?<tax>[\\.'\\d]+)$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
-                        // @formatter:off
-                        // Quellensteuer 26.375% EUR 263.75
-                        // @formatter:on
-                        .section("withHoldingTax", "currency").optional() //
-                        .match("^Quellensteuer [\\.,'\\d]+% (?<currency>[A-Z]{3}) (\\-)?(?<withHoldingTax>[\\.'\\d]+)$") //
-                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type));
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Quellensteuer 20% USD 1'243.77
+                                        // Umrechnungskurs EUR/USD 1.175393
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("withHoldingTax", "currency", "termCurrency",
+                                                                        "baseCurrency", "exchangeRate")
+                                                        .match("^Quellensteuer [\\.,'\\d]+% (?<currency>[A-Z]{3}) (\\-)?(?<withHoldingTax>[\\.'\\d]+)$") //
+                                                        .match("^Umrechnungskurs\\s+(?<baseCurrency>[A-Z]{3})\\/(?<termCurrency>[A-Z]{3})\\s+(?<exchangeRate>[\\.'\\d]+)\\s*$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+                                                            processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
+                                                        }) //
+                                        ,
+                                        // @formatter:off
+                                        // Quellensteuer 26.375% EUR 263.75
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("withHoldingTax", "currency") //
+                                                        .match("^Quellensteuer [\\.,'\\d]+% (?<currency>[A-Z]{3}) (\\-)?(?<withHoldingTax>[\\.'\\d]+)$") //
+                                                        .assign((t, v) -> processWithHoldingTaxEntries(t, v,
+                                                                        "withHoldingTax", type)) //
+                        )
+        ;
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
@@ -229,6 +289,12 @@ public class StGallerKantonalbankPDFExtractor extends AbstractPDFExtractor
                         .section("fee", "currency").optional() //
                         .match("^Fremde Courtage (?<currency>[A-Z]{3}) (\\-)?(?<fee>[\\.'\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
+    }
+
+    @Override
+    protected BigDecimal asExchangeRate(String value)
+    {
+        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "de", "CH");
     }
 
     @Override

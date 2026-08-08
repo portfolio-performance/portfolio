@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.junit;
+package name.abuchen.portfolio.model;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -7,10 +7,6 @@ import java.util.UUID;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.model.AttributeType;
-import name.abuchen.portfolio.model.Bookmark;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 
 @SuppressWarnings("nls")

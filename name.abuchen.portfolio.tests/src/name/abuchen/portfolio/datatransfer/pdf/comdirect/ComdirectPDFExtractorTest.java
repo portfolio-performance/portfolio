@@ -2344,6 +2344,84 @@ public class ComdirectPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkaufMitSteuerbehandlung24()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung24.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IL0010845571"), hasWkn("937092"), hasTicker(null), //
+                        hasName("Nova Ltd. Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-07-29T17:53"), hasShares(10.00), //
+                        hasSource("VerkaufMitSteuerbehandlung24.txt"), //
+                        hasNote("Ord.-Nr.: 000536186167-001 | R.-Nr.: 712432458658DA25"), //
+                        hasAmount("EUR", 3233.08), hasGrossValue("EUR", 3249.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 2.90 + 13.02))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2026-07-29T00:00"), hasShares(10.00), //
+                        hasSource("VerkaufMitSteuerbehandlung24.txt"), //
+                        hasNote("Ref.-Nr.: 0FINLZC5C8Z00012"), //
+                        hasAmount("EUR", 377.26), hasGrossValue("EUR", 377.26), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkaufMitSteuerbehandlung25()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung25.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US29084Q1004"), hasWkn("898814"), hasTicker(null), //
+                        hasName("Emcor Group Inc. Registered Shares DL -,01"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-07-29T15:51"), hasShares(20.00), //
+                        hasSource("VerkaufMitSteuerbehandlung25.txt"), //
+                        hasNote("Ord.-Nr.: 000533403543-001 | R.-Nr.: 712425089536DDC5"), //
+                        hasAmount("EUR", 11789.86), hasGrossValue("EUR", 12160.00), //
+                        hasTaxes("EUR", 329.44), hasFees("EUR", 2.90 + 35.30 + 2.50))));
+    }
+
+    @Test
     public void testWertpapierSteuerbehandlungOhneVerkauf01()
     {
         var extractor = new ComdirectPDFExtractor(new Client());
@@ -7433,7 +7511,7 @@ public class ComdirectPDFExtractorTest
                         hasDate("2026-01-19T00:00"), hasExDate(null), //
                         hasShares(50.000), //
                         hasSource("Dividende40.txt"), //
-                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG"), //
+                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG | Halbjahresdividende"), //
                         hasAmount("EUR", 32.16), hasGrossValue("EUR", 32.16), //
                         hasForexGrossValue("USD", 37.50), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -7470,7 +7548,7 @@ public class ComdirectPDFExtractorTest
                         hasDate("2026-01-19T00:00"), hasExDate(null), //
                         hasShares(50.000), //
                         hasSource("Dividende40.txt"), //
-                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG"), //
+                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG | Halbjahresdividende"), //
                         hasAmount("EUR", 32.16), hasGrossValue("EUR", 32.16), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
@@ -7542,7 +7620,7 @@ public class ComdirectPDFExtractorTest
                         hasDate("2026-01-19T00:00"), hasExDate(null), //
                         hasShares(50.000), //
                         hasSource("Dividende40.txt; SteuerbehandlungVonDividende40.txt"), //
-                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG"), //
+                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG | Halbjahresdividende"), //
                         hasAmount("EUR", 23.94), hasGrossValue("EUR", 32.16), //
                         hasForexGrossValue("USD", 37.50), //
                         hasTaxes("EUR", 4.82 + 3.39 + 0.01), hasFees("EUR", 0.00))));
@@ -7582,7 +7660,7 @@ public class ComdirectPDFExtractorTest
                         hasDate("2026-01-19T00:00"), hasExDate(null), //
                         hasShares(50.000), //
                         hasSource("Dividende40.txt; SteuerbehandlungVonDividende40.txt"), //
-                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG"), //
+                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG | Halbjahresdividende"), //
                         hasAmount("EUR", 23.94), hasGrossValue("EUR", 32.16), //
                         hasTaxes("EUR", 4.82 + 3.39 + 0.01), hasFees("EUR", 0.00))));
     }
@@ -7619,7 +7697,7 @@ public class ComdirectPDFExtractorTest
                         hasDate("2026-01-19T00:00"), hasExDate(null), //
                         hasShares(50.000), //
                         hasSource("Dividende40.txt; SteuerbehandlungVonDividende40.txt"), //
-                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG"), //
+                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG | Halbjahresdividende"), //
                         hasAmount("EUR", 23.94), hasGrossValue("EUR", 32.16), //
                         hasTaxes("EUR", 4.82 + 3.39 + 0.01), hasFees("EUR", 0.00))));
     }
@@ -7657,7 +7735,7 @@ public class ComdirectPDFExtractorTest
                         hasDate("2026-01-19T00:00"), hasExDate(null), //
                         hasShares(50.000), //
                         hasSource("Dividende40.txt; SteuerbehandlungVonDividende40.txt"), //
-                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG"), //
+                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG | Halbjahresdividende"), //
                         hasAmount("EUR", 23.94), hasGrossValue("EUR", 32.16), //
                         hasTaxes("EUR", 4.82 + 3.39 + 0.01), hasFees("EUR", 0.00))));
     }
@@ -7692,7 +7770,7 @@ public class ComdirectPDFExtractorTest
                         hasDate("2026-04-02T00:00"), hasExDate(null), //
                         hasShares(220.000), //
                         hasSource("Dividende41.txt"), //
-                        hasNote("Ref.-Nr.: 3cfTL5t0xMT71563"), //
+                        hasNote("Ref.-Nr.: 3cfTL5t0xMT71563 | Quartalsdividende"), //
                         hasAmount("EUR", 187.00), hasGrossValue("EUR", 187.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
@@ -7764,7 +7842,7 @@ public class ComdirectPDFExtractorTest
                         hasDate("2026-04-02T00:00"), hasExDate(null), //
                         hasShares(220.000), //
                         hasSource("Dividende41.txt; SteuerbehandlungVonDividende41.txt"), //
-                        hasNote("Ref.-Nr.: 3cfTL5t0xMT71563"), //
+                        hasNote("Ref.-Nr.: 3cfTL5t0xMT71563 | Quartalsdividende"), //
                         hasAmount("EUR", 116.19), hasGrossValue("EUR", 187.00), //
                         hasTaxes("EUR", (46.75 - 23.94) + 23.94 + 24.06), hasFees("EUR", 0.00))));
     }
@@ -7801,9 +7879,270 @@ public class ComdirectPDFExtractorTest
                         hasDate("2026-04-02T00:00"), hasExDate(null), //
                         hasShares(220.000), //
                         hasSource("Dividende41.txt; SteuerbehandlungVonDividende41.txt"), //
-                        hasNote("Ref.-Nr.: 3cfTL5t0xMT71563"), //
+                        hasNote("Ref.-Nr.: 3cfTL5t0xMT71563 | Quartalsdividende"), //
                         hasAmount("EUR", 116.19), hasGrossValue("EUR", 187.00), //
                         hasTaxes("EUR", (46.75 - 23.94) + 23.94 + 24.06), hasFees("EUR", 0.00))));
+    }
+    
+    @Test
+    public void testDividende42()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende42.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US2546871060"), hasWkn("855686"), hasTicker(null), //
+                        hasName("Walt Disney Co., The Registered Shares DL -,01"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-07-24T00:00"), hasExDate(null), //
+                        hasShares(9.999), //
+                        hasSource("Dividende42.txt"), //
+                        hasNote("Ref.-Nr.: 1HINLIWN1N8001JK | Halbjahresdividende"), //
+                        hasAmount("EUR", 6.56), hasGrossValue("EUR", 6.56), //
+                        hasForexGrossValue("USD", 7.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende42WithSecurityInEUR()
+    {
+        var security = new Security("Walt Disney Co., The Registered Shares DL -,01", "EUR");
+        security.setIsin("US2546871060");
+        security.setWkn("855686");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new ComdirectPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende42.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-07-24T00:00"), hasExDate(null), //
+                        hasShares(9.999), //
+                        hasSource("Dividende42.txt"), //
+                        hasNote("Ref.-Nr.: 1HINLIWN1N8001JK | Halbjahresdividende"), //
+                        hasAmount("EUR", 6.56), hasGrossValue("EUR", 6.56), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testSteuerbehandlungVonDividende42()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende42.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US2546871060"), hasWkn("855686"), hasTicker(null), //
+                        hasName("DISNEY (WALT) CO."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2026-07-24T00:00"), hasShares(9.999), //
+                        hasSource("SteuerbehandlungVonDividende42.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.99), hasGrossValue("EUR", 0.99), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende42MitSteuerbehandlungVonDividende42()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "Dividende42.txt", "SteuerbehandlungVonDividende42.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US2546871060"), hasWkn("855686"), hasTicker(null), //
+                        hasName("Walt Disney Co., The Registered Shares DL -,01"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-07-24T00:00"), //
+                        hasExDate(null), //
+                        hasShares(9.999), //
+                        hasSource("Dividende42.txt; SteuerbehandlungVonDividende42.txt"), //
+                        hasNote("Ref.-Nr.: 1HINLIWN1N8001JK | Halbjahresdividende"), //
+                        hasAmount("EUR", 5.57), //
+                        hasGrossValue("EUR", 6.56), //
+                        hasForexGrossValue("USD", 7.50), //
+                        hasTaxes("EUR", 0.99 + 0.00 + 0.00), //
+                        hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende42MitSteuerbehandlungVonDividende42WithSecurityInEUR()
+    {
+        var security = new Security("Walt Disney Co., The Registered Shares DL -,01", "EUR");
+        security.setIsin("US2546871060");
+        security.setWkn("855686");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new ComdirectPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "Dividende42.txt", "SteuerbehandlungVonDividende42.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-07-24T00:00"), hasExDate(null), //
+                        hasShares(9.999), //
+                        hasSource("Dividende42.txt; SteuerbehandlungVonDividende42.txt"), //
+                        hasNote("Ref.-Nr.: 1HINLIWN1N8001JK | Halbjahresdividende"), //
+                        hasAmount("EUR", 5.57), hasGrossValue("EUR", 6.56), //
+                        hasTaxes("EUR", 0.99 + 0.00 + 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende42MitSteuerbehandlungVonDividende42_SourceFilesReversed()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende42.txt", "Dividende42.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US2546871060"), hasWkn("855686"), hasTicker(null), //
+                        hasName("DISNEY (WALT) CO."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-07-24T00:00"), hasExDate(null), //
+                        hasShares(9.999), //
+                        hasSource("Dividende42.txt; SteuerbehandlungVonDividende42.txt"), //
+                        hasNote("Ref.-Nr.: 1HINLIWN1N8001JK | Halbjahresdividende"), //
+                        hasAmount("EUR", 5.57), hasGrossValue("EUR", 6.56), //
+                        hasTaxes("EUR", 0.99 + 0.00 + 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende42MitSteuerbehandlungVonDividende42WithSecurityInEUR_SourceFilesReversed()
+    {
+        var security = new Security("DISNEY (WALT) CO.", "EUR");
+        security.setIsin("US2546871060");
+        security.setWkn("855686");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new ComdirectPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende42.txt", "Dividende42.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-07-24T00:00"), hasExDate(null), //
+                        hasShares(9.999), //
+                        hasSource("Dividende42.txt; SteuerbehandlungVonDividende42.txt"), //
+                        hasNote("Ref.-Nr.: 1HINLIWN1N8001JK | Halbjahresdividende"), //
+                        hasAmount("EUR", 5.57), hasGrossValue("EUR", 6.56), //
+                        hasTaxes("EUR", 0.99 + 0.00 + 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
