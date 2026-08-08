@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui.wizards.search;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -370,8 +369,13 @@ public class SearchSecurityWizardPage extends WizardPage
                         progressMonitor.setTaskName(provider.getName());
                         result.addAll(provider.search(query));
                     }
-                    catch (IOException e)
+                    catch (Exception e) // NOSONAR
                     {
+                        // catch any exception (not only IOException) because a
+                        // single failing search provider must not abort the
+                        // search of the other providers. Instead the error is
+                        // reported in the error message area of the wizard.
+
                         PortfolioPlugin.log(e);
                         errors.add(provider.getName() + ": " + e.getMessage()); //$NON-NLS-1$
                     }

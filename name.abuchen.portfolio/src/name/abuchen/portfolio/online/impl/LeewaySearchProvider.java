@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.json.simple.JSONArray;
@@ -56,10 +57,16 @@ public class LeewaySearchProvider implements SecuritySearchProvider
         private List<ResultItem> markets = new ArrayList<>();
 
         @SuppressWarnings("nls")
-        public static Result from(JSONObject json)
+        public static Optional<Result> from(JSONObject json)
         {
+            if (json == null)
+                return Optional.empty();
+
             // Extract values from the JSON object
             var tickerSymbol = (String) json.get("Code");
+            if (tickerSymbol == null)
+                return Optional.empty();
+
             var exchange = (String) json.get("Exchange");
             var name = (String) json.get("Name");
             var type = (String) json.get("Type");
@@ -72,10 +79,13 @@ public class LeewaySearchProvider implements SecuritySearchProvider
 
             // Combine the symbol and exchange codes to create the security ID
             var symbol = new StringBuilder(tickerSymbol);
-            symbol.append(".");
-            symbol.append(exchange);
+            if (exchange != null && !exchange.isBlank())
+            {
+                symbol.append(".");
+                symbol.append(exchange);
+            }
 
-            return new Result(isin, symbol.toString(), currencyCode, name, type, exchange);
+            return Optional.of(new Result(isin, symbol.toString(), currencyCode, name, type, exchange));
         }
 
         public Result(String isin, String symbol, String currencyCode, String name, String type, String exchange)
@@ -237,18 +247,16 @@ public class LeewaySearchProvider implements SecuritySearchProvider
         }
     }
 
-    private List<Result> extract(String array)
+    /* package */ List<Result> extract(String array)
     {
-        var jsonArray = (JSONArray) JSONValue.parse(array);
-
-        if (jsonArray.isEmpty())
+        if (!(JSONValue.parse(array) instanceof JSONArray jsonArray) || jsonArray.isEmpty())
             return Collections.emptyList();
 
         List<Result> answer = new ArrayList<>();
         for (Object element : jsonArray)
         {
-            var item = (JSONObject) element;
-            answer.add(Result.from(item));
+            if (element instanceof JSONObject item)
+                Result.from(item).ifPresent(answer::add);
         }
         return answer;
     }
