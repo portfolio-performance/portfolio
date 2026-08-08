@@ -19,7 +19,6 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
@@ -92,16 +91,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         .match("^(?i).*(?<type>Verkauf" //
                                         + "|VERK\\. TEIL\\-\\/BEZUGSR\\." //
                                         + "|VERKAUF KAPITALMA.*) .*AM .*$")
-                        .assign((t, v) -> {
-                            if ("VERKAUF".equalsIgnoreCase(v.get("type")) //
-                                            || "Verkauf".equalsIgnoreCase(v.get("type")) //
-                                            || "VERK. TEIL-/BEZUGSR.".equalsIgnoreCase(v.get("type")) //
-                                            || "VERKAUF KAPITALMAßN.".equalsIgnoreCase(v.get("type")) //
-                                            || "VERKAUF KAPITALMASSN.".equalsIgnoreCase(v.get("type")))
-                            {
-                                t.setType(PortfolioTransaction.Type.SELL);
-                            }
-                        })
+                        .assign((t, v) -> t.setType(PortfolioTransaction.Type.SELL))
 
                         .oneOf( //
                                         // @formatter:off
@@ -175,12 +165,15 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                         // 0,375 % VOLKSWAGEN LEASING 21/26 20.JULI A2YN0C XS2343822842
                                         // Einheit Umsatz Fälligkeit
                                         // EUR 7.000,00000 Letzte Fälligkeit 20.07.2026
+                                        //
+                                        // Einheit Umsatz
+                                        // EUR 400.000,00000
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "wkn", "isin", "currency") //
                                                         .match("^(?<name>[\\.,\\d]+ % .*) (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                                                        .find("Einheit Umsatz F.lligkeit") //
-                                                        .match("^(?<currency>[A-Z]{3}) [\\.,\\d]+ .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
+                                                        .find("Einheit Umsatz( F.lligkeit| Poolfaktor)?") //
+                                                        .match("^(?<currency>[A-Z]{3})\\s+[\\.,\\d]+\\s*(.*[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}\\s*)?$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         .oneOf( //
@@ -200,11 +193,21 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^[A-Z]{3}[\\s]{1,}(?<shares>[\\.,\\d]+) .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
-                                                        .assign((t, v) -> {
-                                                            // Percentage quotation, workaround for bonds
-                                                            var shares = asBigDecimal(v.get("shares"));
-                                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
-                                                        }))
+                                                        .assign((t, v) -> t.setShares(asBondNominal(v.get("shares")))), //
+                                        
+                                        // @formatter:off
+                                        // Einheit Umsatz
+                                        // EUR 400.000,00000
+                                        //
+                                        // Einheit Umsatz Poolfaktor
+                                        // EUR 1.000.000,00000 0,904761904
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^Einheit Umsatz.*$")
+                                                        .match("^[A-Z]{3}\\s+(?<shares>[\\.,\\d]+)\\s*.*$") //
+                                                        .assign((t, v) -> t.setShares(asBondNominal(v.get("shares")))) //
+                        )
 
                         // @formatter:off
                         // KAUF AM 15.01.2015  UM 08:13:35 MUENCHEN NR. 12345670.001
@@ -462,7 +465,36 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "wkn", "isin", "currency") //
                                                         .match("^(?<name>.*) (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .match("^(Steuerfreie )?(Dividende pro St.ck|Ertragsaussch.ttung je Anteil|Zinssatz) [\\.,\\d]+ (?<currency>[A-Z]{3}) Schlusstag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
-                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                                        
+                                        // @formatter:off
+                                        // EUR                     150,00000          WKN:  A1G1UA                 
+                                        //  3,00000 % Griechenland                    ZINSTERMIN:  24.FEBRUAR      
+                                        // EO-Bonds 2012(23) Ser.1                                      
+                                        // ZINS-/DIVIDENDENSATZ            3,000000  %   SCHLUSSTAG PER 23.02.2017 
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("wkn", "name", "nameContinued", "currency") //
+                                                        .match("^(?<currency>[A-Z]{3})\\s+[\\.,\\d]+\\s+WKN:\\s+(?<wkn>[A-Z0-9]{6}).*$") //
+                                                        .match("^(?<name>.*?)(ZINSTERMIN.*)$") //
+                                                        .match("^(?<nameContinued>.*)$") //
+                                                        .match("^(?i)(ZINS-\\/DIVIDENDENSATZ|(ERTRAGSAUSSCHUETTUNG|ERTRAGSTHESAURIERUNG) P\\. ST\\.) .* ([\\d,.]+\\s+%|(?<currency>[A-Z]{3}))\\s+SCHLUSSTAG PER [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        
+                                        // @formatter:off
+                                        // Wertpapierbezeichnung WKN ISIN
+                                        // Griechenland EO-Bonds 2012(23) Ser.1 A1G1UA GR0128010676
+                                        // Bestand Kupontag
+                                        // 150 EUR 24.02.2018
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("wkn", "isin", "name", "currency") //
+                                                        .match("^Wertpapierbezeichnung\\s+WKN\\s+ISIN$") //
+                                                        .match("^(?<name>.*?)(?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^Bestand Kupontag.*$")
+                                                        .match("^[\\d,.]+\\s+(?<currency>[A-Z]{3}) \\d{2}\\.\\d{2}\\.\\d{4}$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        )
 
                         .oneOf( //
                                         // @formatter:off
@@ -479,7 +511,25 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^(?<shares>[\\.,\\d]+) St.ck.*$") //
-                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))), //
+                                                        
+                                        // @formatter:off
+                                        // EUR                     150,00000          WKN:  A1G1UA                 
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^\\s*[A-Z]{3}\\s+(?<shares>[\\.,\\d]+)\\s+WKN.*$") //
+                                                        .assign((t, v) -> t.setShares(asBondNominal(v.get("shares")))), //
+                                         
+                                        // @formatter:off
+                                        // 150 EUR 24.02.2018: false
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^Bestand Kupontag\\s*")
+                                                        .match("^\\s*(?<shares>[\\.,\\d]+)\\s+[A-Z]{3}\\s+\\d{2}\\.\\d{2}\\.\\d{4}\\s*$") //
+                                                        .assign((t, v) -> t.setShares(asBondNominal(v.get("shares")))) //
+                        )
 
                         .oneOf( //
                                         // @formatter:off
@@ -504,7 +554,17 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("exDate") //
                                                         .match("^(?i).*EX\\-TAG[\\s]{1,}(?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate")))))
+                                                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate")))), //
+                                                        
+                                        // @formatter:off
+                                        // Zinssatz 3,00 % Schlusstag 21.02.2018
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exDate") //
+                                                        .match("^Zinssatz\\s+[\\d,.]+ %\\s+Schlu..?tag\\s+(?<exDate>\\d{2}\\.\\d{2}\\.\\d{4})\\s*$") //
+                                                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate")))) //
+                        )
+                        
 
                         .oneOf( //
                                         // @formatter:off
@@ -736,27 +796,60 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new BuySellEntry(PortfolioTransaction.Type.SELL))
 
-                        // @formatter:off
-                        // Wertpapierbezeichnung WKN ISIN
-                        // Lang & Schwarz AG LS846N DE000LS846N5
-                        // @formatter:on
-                        .section("wkn", "isin", "name", "name1") //
-                        .find("Wertpapierbezeichnung WKN ISIN") //
-                        .match("^(?<name>.*) (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                        .match("^(?<name1>.*)$") //
-                        .assign((t, v) -> {
-                            if (!v.get("name1").startsWith("Einheit"))
-                                v.put("name", v.get("name") + " " + v.get("name1"));
-
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
-
-                        // @formatter:off
-                        // Stück 1.000 20.05.2021
-                        // @formatter:on
-                        .section("shares") //
-                        .match("^St.ck (?<shares>[\\.,\\d]+) [\\d]+.[\\d]+.[\\d]{4}$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .oneOf(
+                            // @formatter:off
+                            // Wertpapierbezeichnung WKN ISIN
+                            // Lang & Schwarz AG LS846N DE000LS846N5
+                            // @formatter:on
+                            section -> section //
+                            .attributes("wkn", "isin", "name", "name1") //
+                            .find("Wertpapierbezeichnung WKN ISIN") //
+                            .match("^(?<name>.*?) (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                            .match("^(?<name1>.*)$") //
+                            .assign((t, v) -> {
+                                if (!v.get("name1").startsWith("Einheit"))
+                                    v.put("name", v.get("name") + " " + v.get("name1"));
+    
+                                t.setSecurity(getOrCreateSecurity(v));
+                            }),
+                            
+                            // @formatter:off
+                            // Wertpapierbezeichnung WKN ISIN
+                            // Lang & Schwarz AG LS846N DE000LS846N5
+                            // @formatter:on
+                            section -> section //
+                            .attributes("wkn", "isin", "name", "name1") //
+                            .find("Wertpapierbezeichnung Zinssatz WKN ISIN") //
+                            .match("^(?<name>.*?) [\\d,.]+ (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                            .match("^(?<name1>.*)$") //
+                            .assign((t, v) -> {
+                                if (!v.get("name1").startsWith("Einheit"))
+                                    v.put("name", v.get("name") + " " + v.get("name1"));
+    
+                                t.setSecurity(getOrCreateSecurity(v));
+                            })
+                            
+                        )
+                        .oneOf(
+                            // @formatter:off
+                            // Stück 1.000 20.05.2021
+                            // @formatter:on
+                            section -> section //
+                            .attributes("shares") //
+                            .match("^St.ck (?<shares>[\\.,\\d]+) [\\d]+.[\\d]+.[\\d]{4}$") //
+                            .assign((t, v) -> t.setShares(asShares(v.get("shares")))), //
+                            
+                            // @formatter:off
+                            // Einheit Nominale Zinstermin Fällig per
+                            // EUR 2.100.000 15.Oktober 14.05.2025
+                            // @formatter:on
+                            section -> section //
+                            .attributes("shares") //
+                            .match("^Einheit Nominale .*$")
+                            .match("^[A-Z]{3} (?<shares>[\\.,\\d]+) .* \\d{2}\\.\\d{2}\\.\\d{4}$") //
+                            .assign((t, v) -> t.setShares(asBondNominal(v.get("shares")))) //
+                            
+                        )
 
                         // @formatter:off
                         // Einlösung zu 0,001 EUR Schlusstag 20.05.2021
