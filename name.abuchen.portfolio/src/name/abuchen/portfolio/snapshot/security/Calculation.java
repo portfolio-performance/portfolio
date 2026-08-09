@@ -108,17 +108,26 @@ import name.abuchen.portfolio.money.CurrencyConverter;
     {
         try
         {
-            T thing = type.getDeclaredConstructor().newInstance();
-            thing.setSecurity(security);
-            thing.setTermCurrency(converter.getTermCurrency());
-            thing.prepare();
-            thing.visitAll(converter, lineItems);
-            thing.finish(converter, lineItems);
-            return thing;
+            return perform(type.getDeclaredConstructor().newInstance(), converter, security, lineItems);
         }
         catch (Exception e)
         {
             throw new UnsupportedOperationException(e);
         }
+    }
+
+    /**
+     * Runs an already constructed calculation, for the calculations that are
+     * parameterized and hence cannot be created from a no-argument constructor.
+     */
+    public static <T extends Calculation> T perform(T calculation, CurrencyConverter converter, Security security,
+                    List<CalculationLineItem> lineItems)
+    {
+        calculation.setSecurity(security);
+        calculation.setTermCurrency(converter.getTermCurrency());
+        calculation.prepare();
+        calculation.visitAll(converter, lineItems);
+        calculation.finish(converter, lineItems);
+        return calculation;
     }
 }
