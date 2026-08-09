@@ -20,6 +20,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.chart.ChartLineWidth;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.chart.TimelineSeriesModel;
 import name.abuchen.portfolio.ui.views.SecuritiesChart;
@@ -113,7 +114,7 @@ public class SharesHeldChartSeries
             series.setYAxisId(axis.getId());
             series.enableStep(true);
 
-            series.setLineWidth(2);
+            series.setLineWidth(ChartLineWidth.get());
             series.setLineStyle(LineStyle.SOLID);
             series.enableArea(false);
             series.setAntialias(chart.getAntialias());

@@ -45,6 +45,7 @@ import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.chart.ChartLineWidth;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartCSVExporter;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
@@ -329,6 +330,9 @@ public class PortfolioBalanceChart
         manager.add(addMenuAction(ChartDetails.ABSOLUTE_DELTA));
         manager.add(addMenuAction(ChartDetails.TAXES_ACCUMULATED));
         manager.add(addMenuAction(ChartDetails.FEES_ACCUMULATED));
+
+        manager.add(new Separator());
+        ChartLineWidth.addMenu(manager);
     }
 
     private Action addMenuAction(ChartDetails detail)

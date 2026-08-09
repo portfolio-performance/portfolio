@@ -28,6 +28,13 @@ import name.abuchen.portfolio.util.TextUtil;
     private Chart chart;
     private Menu contextMenu;
 
+    /**
+     * Whether to offer the line width of the chart. Charts painting lines of a
+     * configurable width switch it on; charts with configurable data series
+     * switch it off again because the user picks a line width per data series.
+     */
+    private boolean lineWidthConfigurable = false;
+
     private static int lastUsedFileExtension = DEFAULT_FILE_EXTENSION;
 
     public ChartContextMenu(Chart chart)
@@ -76,8 +83,19 @@ import name.abuchen.portfolio.util.TextUtil;
         manager.add(new Separator());
         addMoveActions(manager);
 
+        if (lineWidthConfigurable)
+        {
+            manager.add(new Separator());
+            ChartLineWidth.addMenu(manager);
+        }
+
         manager.add(new Separator());
         exportMenuAboutToShow(manager, chart.getTitle().getText());
+    }
+
+    /* package */ void setLineWidthConfigurable(boolean configurable)
+    {
+        this.lineWidthConfigurable = configurable;
     }
 
     private void addZoomActions(IMenuManager manager)
