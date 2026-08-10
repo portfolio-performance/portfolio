@@ -4,7 +4,11 @@ import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -101,11 +105,7 @@ public class FileAccessRegistry
     {
         if (alias != null)
         {
-            if (!ALIAS_PATTERN.matcher(alias).matches())
-                throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorAliasMustMatchPattern, alias));
-            if (parsesAsUuid(alias))
-                throw new IllegalArgumentException(
-                                MessageFormat.format(Messages.MsgErrorAliasMustNotLookLikeUUID, alias));
+            checkAliasFormat(alias);
             for (FileAccess access : all())
             {
                 if (!access.path().equals(path) && access.alias() != null && access.alias().equalsIgnoreCase(alias))
@@ -120,6 +120,39 @@ public class FileAccessRegistry
         else
             child.put("alias", alias); //$NON-NLS-1$
         flush();
+    }
+
+    /**
+     * Validates aliases that are about to be stored together - before the first
+     * of them is stored, so that an offending alias in the last row does not
+     * leave the earlier rows applied.
+     * <p/>
+     * The check runs against the intended end state, not against what is stored
+     * now: within one batch two files may swap their aliases, or one may hand
+     * its alias over to another.
+     *
+     * @throws IllegalArgumentException
+     *             naming the first offending alias
+     */
+    public synchronized void validateAliases(Map<String, String> aliasesByPath)
+    {
+        var endState = new LinkedHashMap<String, String>();
+        for (FileAccess access : all())
+            endState.put(access.path(), access.alias());
+        endState.putAll(aliasesByPath);
+
+        var takenBy = new HashMap<String, String>();
+        for (var entry : endState.entrySet())
+        {
+            var alias = entry.getValue();
+            if (alias == null)
+                continue;
+
+            checkAliasFormat(alias);
+
+            if (takenBy.put(alias.toLowerCase(Locale.ROOT), entry.getKey()) != null)
+                throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorAliasAlreadyInUse, alias));
+        }
     }
 
     public synchronized void remove(String path)
@@ -160,6 +193,14 @@ public class FileAccessRegistry
         var child = node.node(encode(path));
         return new FileAccess(path, child.get("uuid", null), child.get("alias", null), //$NON-NLS-1$ //$NON-NLS-2$
                         child.getBoolean("enabled", false)); //$NON-NLS-1$
+    }
+
+    private static void checkAliasFormat(String alias)
+    {
+        if (!ALIAS_PATTERN.matcher(alias).matches())
+            throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorAliasMustMatchPattern, alias));
+        if (parsesAsUuid(alias))
+            throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorAliasMustNotLookLikeUUID, alias));
     }
 
     private static boolean parsesAsUuid(String candidate)
