@@ -93,6 +93,13 @@ public class ApiException extends RuntimeException
         return new ApiException(400, "invalid-request", "Invalid request", null, errors, Map.of()); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
+    /** the body is refused before it is buffered whole, so the limit is the only detail */
+    public static ApiException requestTooLarge(int maxBytes)
+    {
+        return new ApiException(413, "request-too-large", "Request body too large", //$NON-NLS-1$ //$NON-NLS-2$
+                        "The request body must not exceed " + maxBytes + " bytes", List.of(), Map.of()); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
     public static ApiException validation(List<FieldError> errors)
     {
         return new ApiException(422, "validation", "Validation failed", null, errors, Map.of()); //$NON-NLS-1$ //$NON-NLS-2$

@@ -34,6 +34,15 @@ public class RestApiServer
 
     private static final Set<String> IPV6_LOOPBACK = Set.of("::1", "0:0:0:0:0:0:0:1"); //$NON-NLS-1$ //$NON-NLS-2$
 
+    /**
+     * The largest request body accepted. Handlers parse JSON, so a body is
+     * buffered whole - without a limit any local process could make the
+     * application allocate arbitrary amounts of memory, and the pairing
+     * endpoints do not even require a token. A JSON merge patch of a portfolio
+     * entity is orders of magnitude smaller than this.
+     */
+    private static final int MAX_REQUEST_BODY = 1024 * 1024;
+
     private final int port;
     private final Predicate<String> tokenValidator;
     private final Router router;
@@ -86,7 +95,7 @@ public class RestApiServer
                 var match = router.match(exchange.getRequestMethod(), exchange.getRequestURI().getPath());
                 var request = new Request(exchange.getRequestMethod(), exchange.getRequestURI().getPath(),
                                 match.pathParams(), Request.parseQuery(exchange.getRequestURI().getRawQuery()),
-                                exchange.getRequestBody().readAllBytes());
+                                readBody(exchange));
                 response = match.handler().handle(request);
             }
             catch (ApiException e)
@@ -109,6 +118,19 @@ public class RestApiServer
         {
             exchange.close();
         }
+    }
+
+    /**
+     * Reads the body, but never more than {@link #MAX_REQUEST_BODY}. Reading one
+     * byte past the limit is how an oversized body announces itself: the
+     * Content-Length header is not trusted, as it need not match what is sent.
+     */
+    private static byte[] readBody(HttpExchange exchange) throws IOException
+    {
+        var body = exchange.getRequestBody().readNBytes(MAX_REQUEST_BODY + 1);
+        if (body.length > MAX_REQUEST_BODY)
+            throw ApiException.requestTooLarge(MAX_REQUEST_BODY);
+        return body;
     }
 
     /**
