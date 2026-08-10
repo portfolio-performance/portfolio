@@ -30,7 +30,7 @@ import name.abuchen.portfolio.rest.internal.Router;
 public class RestApiServer
 {
     /** 127.0.0.0/8, as a literal - a host name must never match */
-    private static final Pattern IPV4_LOOPBACK = Pattern.compile("127(\\.\\d{1,3}){3}"); //$NON-NLS-1$
+    private static final Pattern IPV4_LOOPBACK = Pattern.compile("127(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}"); //$NON-NLS-1$
 
     private static final Set<String> IPV6_LOOPBACK = Set.of("::1", "0:0:0:0:0:0:0:1"); //$NON-NLS-1$ //$NON-NLS-2$
 
