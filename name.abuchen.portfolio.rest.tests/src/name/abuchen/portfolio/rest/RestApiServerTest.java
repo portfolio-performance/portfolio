@@ -231,6 +231,27 @@ public class RestApiServerTest
         assertThat(sendWithHost(null), is(403));
     }
 
+    /** an unbounded read would let any local process exhaust the heap */
+    @Test
+    public void testOversizedRequestBodyIs413Problem() throws Exception
+    {
+        var response = http.send(request("/v1/auth/requests")
+                        .POST(HttpRequest.BodyPublishers.ofByteArray(new byte[2 * 1024 * 1024])).build(),
+                        HttpResponse.BodyHandlers.ofString());
+        assertThat(response.statusCode(), is(413));
+        assertThat(response.body(), containsString("problems/request-too-large"));
+    }
+
+    /** ...but a body up to the limit is passed through untouched */
+    @Test
+    public void testBodyAtTheLimitIsAccepted() throws Exception
+    {
+        var response = http.send(request("/v1/auth/requests")
+                        .POST(HttpRequest.BodyPublishers.ofByteArray(new byte[1024 * 1024])).build(),
+                        HttpResponse.BodyHandlers.ofString());
+        assertThat(response.statusCode(), is(201));
+    }
+
     @Test
     public void testUnknownRouteIs404Problem() throws Exception
     {
