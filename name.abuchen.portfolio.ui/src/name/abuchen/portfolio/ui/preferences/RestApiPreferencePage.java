@@ -371,20 +371,31 @@ public class RestApiPreferencePage extends PreferencePage
             return false;
         }
 
+        var rows = ((List<?>) filesViewer.getInput()).stream().map(Row.class::cast).toList();
+
         try
         {
-            var input = (List<?>) filesViewer.getInput();
-            for (Object element : input)
-            {
-                var row = (Row) element;
-                registry.setEnabled(row.path(), filesViewer.getChecked(row));
-                registry.setAlias(row.path(), aliases.get(row.path()));
-            }
+            // nothing is stored until every alias is known to be good: an
+            // invalid one in the last row must not leave the earlier rows
+            // applied and the dialog still open
+            registry.validateAliases(aliases);
         }
         catch (IllegalArgumentException e)
         {
             setErrorMessage(e.getMessage());
             return false;
+        }
+
+        // clearing first lets one file hand its alias to another within the
+        // same edit - setAlias checks against what is stored, and would
+        // otherwise see the name as taken by the file that is giving it up
+        for (Row row : rows)
+            registry.setAlias(row.path(), null);
+
+        for (Row row : rows)
+        {
+            registry.setEnabled(row.path(), filesViewer.getChecked(row));
+            registry.setAlias(row.path(), aliases.get(row.path()));
         }
 
         preferences.putBoolean(RestApiConstants.PREF_ENABLED, enableButton.getSelection());
