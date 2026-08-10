@@ -51,6 +51,9 @@ info:
       point its own domain at 127.0.0.1 and reach the API.
     - **No browser origin.** Any request that carries an `Origin` header is rejected
       `403 browser-origin-forbidden`. A web page therefore cannot reach this API.
+    - **Bounded request body.** A body larger than 1 MiB is rejected
+      `413 request-too-large` without being read to the end. Every legitimate
+      request is far smaller; the limit exists because bodies are buffered whole.
     - **Per-file access.** Only files the user has individually enabled are visible.
       A file that exists but is not enabled answers exactly like one that does not
       exist (`404 not-found`) — the token must not let a client enumerate files the
@@ -1755,6 +1758,7 @@ components:
             - https://portfolio-performance.info/rest/problems/not-found
             - https://portfolio-performance.info/rest/problems/no-activity-in-period
             - https://portfolio-performance.info/rest/problems/method-not-allowed
+            - https://portfolio-performance.info/rest/problems/request-too-large
             - https://portfolio-performance.info/rest/problems/file-not-open
             - https://portfolio-performance.info/rest/problems/ambiguous-alias
             - https://portfolio-performance.info/rest/problems/delete-blocked
