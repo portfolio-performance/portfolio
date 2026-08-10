@@ -204,6 +204,21 @@ public class RestApiServerTest
     }
 
     @Test
+    public void testLoopbackAddressesFromTheWholeRangeAreAccepted() throws Exception
+    {
+        assertThat(sendWithHost("127.255.255.254:" + server.getPort()), is(200));
+        assertThat(sendWithHost("127.1.2.3:" + server.getPort()), is(200));
+    }
+
+    /** only real 127.0.0.0/8 literals - anything else is a host name */
+    @Test
+    public void testHostWithOutOfRangeOctetIs403() throws Exception
+    {
+        assertThat(sendWithHost("127.300.1.1:" + server.getPort()), is(403));
+        assertThat(sendWithHost("127.0.0.256:" + server.getPort()), is(403));
+    }
+
+    @Test
     public void testHostThatMerelyContainsLoopbackIs403() throws Exception
     {
         assertThat(sendWithHost("127.0.0.1.evil.example:" + server.getPort()), is(403));
