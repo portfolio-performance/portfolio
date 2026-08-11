@@ -631,6 +631,48 @@ public class DABPDFExtractorTest
     }
 
     @Test
+    public void testAnleiheKauf01()
+    {
+        var extractor = new DABPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AnleiheKauf01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("GR0114020457"), hasWkn(null), hasTicker(null), //
+                        hasName("4,1% Griechenland EO-Bonds 2007(12)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2011-06-28T08:09:00"), hasShares(20), //
+                        hasSource("AnleiheKauf01.txt"), //
+                        hasNote("Abrechnungs-Nr. 67009861"), //
+                        hasAmount("EUR", 1553.80), hasGrossValue("EUR", 1540.77), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 8.63 + 2.90 + 1.50))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2011-06-28T00:00:00"), hasShares(20), //
+                        hasSource("AnleiheKauf01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 17.70 + 0.98), hasGrossValue("EUR", 17.70 + 0.98), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         var extractor = new DABPDFExtractor(new Client());
@@ -1286,6 +1328,40 @@ public class DABPDFExtractorTest
                         hasNote("Abrechnungs-Nr. 64518224"), //
                         hasAmount("EUR", 11.60), hasGrossValue("EUR", 11.67), //
                         hasTaxes("EUR", 0.07), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testAnleiheVerkauf01()
+    {
+        var extractor = new DABPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AnleiheVerkauf01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("GRR000000010"), hasWkn(null), hasTicker(null), //
+                        hasName("Griechenland EO-FLR Secs 12(23-42) 1 IO GDP"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2012-03-27T16:15"), hasShares(0.5), //
+                        hasSource("AnleiheVerkauf01.txt"), //
+                        hasNote("Abrechnungs-Nr. 69859650"), //
+                        hasAmount("EUR", 0.30), hasGrossValue("EUR", 0.30), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -2320,6 +2396,41 @@ public class DABPDFExtractorTest
                         hasNote("Abrechnungs-Nr. 12345678"), //
                         hasAmount("EUR", 21.38), hasGrossValue("EUR", 28.73), //
                         hasTaxes("EUR", 4.31 + 2.88 + 0.16), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testAnleiheZinsen01()
+    {
+        var extractor = new DABPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AnleiheZinsen01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("GR0114020457"), hasWkn(null), hasTicker(null), //
+                        hasName("4,1% Griechenland EO-Bonds 2007(12)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2011-08-22T00:00"), hasExDate("2011-08-20T00:00"), //
+                        hasShares(40), //
+                        hasSource("AnleiheZinsen01.txt"), //
+                        hasNote("Abrechnungs-Nr. 85374419"), //
+                        hasAmount("EUR", 120.74), hasGrossValue("EUR", 164.00), //
+                        hasTaxes("EUR", 41.00 + 2.26), hasFees("EUR", 0.00))));
     }
 
     @Test
