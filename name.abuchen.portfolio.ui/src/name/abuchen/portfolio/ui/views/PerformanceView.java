@@ -252,7 +252,7 @@ public class PerformanceView extends AbstractHistoricView
 
     private StatementOfAssetsViewer createStatementOfAssetsItem(CTabFolder folder, String title, String viewId)
     {
-        StatementOfAssetsViewer viewer = make(StatementOfAssetsViewer.class);
+        var viewer = make(StatementOfAssetsViewer.class);
         viewer.setViewId(viewId);
         Control control = viewer.createControl(folder, false);
 
