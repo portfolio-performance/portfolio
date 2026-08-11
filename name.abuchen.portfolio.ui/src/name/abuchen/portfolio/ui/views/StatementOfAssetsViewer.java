@@ -137,7 +137,8 @@ public class StatementOfAssetsViewer
         private static final String TOP = Model.class.getSimpleName() + "@top"; //$NON-NLS-1$
         private static final String BOTTOM = Model.class.getSimpleName() + "@bottom"; //$NON-NLS-1$
 
-        // suffixed with a view id so each embedding keeps its own folding state
+        // suffixed with a view id and taxonomy id so each embedding keeps its
+        // own folding state per taxonomy
         static final String COLLAPSED_CATEGORIES_PREFIX = Model.class.getSimpleName() + "@collapsed@"; //$NON-NLS-1$
 
         private final IPreferenceStore preferences;
@@ -162,7 +163,8 @@ public class StatementOfAssetsViewer
                         LocalDate date, Taxonomy taxonomy, String viewId)
         {
             this.preferences = preferences;
-            this.collapsedCategoriesKey = COLLAPSED_CATEGORIES_PREFIX + viewId;
+            this.collapsedCategoriesKey = COLLAPSED_CATEGORIES_PREFIX + viewId + "@"
+                            + (taxonomy != null ? taxonomy.getId() : PREFERENCE_NONE); //$NON-NLS-1$
 
             this.clientFilter = filter;
             this.filteredClient = filter.filter(client);
@@ -377,8 +379,6 @@ public class StatementOfAssetsViewer
 
     private final Client client;
     private Taxonomy taxonomy;
-    private String lastTaxonomyId;
-    private boolean taxonomyInitialized;
     private Model model;
 
     // identifies which embedding of this viewer is showing, so each keeps its own folding state
@@ -1388,16 +1388,6 @@ public class StatementOfAssetsViewer
         assets.getTable().setRedraw(false);
         try
         {
-            // Check if the taxonomy has changed
-            String currentTaxonomyId = taxonomy != null ? taxonomy.getId() : null;
-            if (taxonomyInitialized && !Objects.equals(lastTaxonomyId, currentTaxonomyId))
-            {
-                // Taxonomy has changed, clear the collapsed state
-                preference.setValue(Model.COLLAPSED_CATEGORIES_PREFIX + viewId, "");
-            }
-            lastTaxonomyId = currentTaxonomyId;
-            taxonomyInitialized = true;
-
             this.model = new Model(preference, client, filter, converter, date, taxonomy, viewId);
 
             support.invalidateCache();
