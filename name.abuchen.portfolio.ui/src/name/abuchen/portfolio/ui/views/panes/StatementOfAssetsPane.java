@@ -58,7 +58,8 @@ public class StatementOfAssetsPane implements InformationPanePage
     public Control createViewControl(Composite parent)
     {
         viewer = view.make(StatementOfAssetsViewer.class);
-        viewer.setViewId("pane"); //$NON-NLS-1$
+        // suffix with the owning view so different panes (e.g. Portfolios vs Accounts) don't share folding state
+        viewer.setViewId("pane." + view.getClass().getSimpleName()); //$NON-NLS-1$
 
         Control control = viewer.createControl(parent, true);
 
