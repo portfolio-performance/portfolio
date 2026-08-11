@@ -91,7 +91,7 @@ public class IssuePerformanceIndicatorsWithPartialAssignmentTest
         Taxonomy taxonomy = CLIENT.getTaxonomy("f8ffb083-774d-499e-a983-5c214eff7297"); //$NON-NLS-1$
 
         StatementOfAssetsViewer.Model model = new StatementOfAssetsViewer.Model(new PreferenceStore(), CLIENT,
-                        ClientFilter.NO_FILTER, SNAPSHOT.getCurrencyConverter(), SNAPSHOT.getTime(), taxonomy);
+                        ClientFilter.NO_FILTER, SNAPSHOT.getCurrencyConverter(), SNAPSHOT.getTime(), taxonomy, "test"); //$NON-NLS-1$
 
         model.getElements().stream().map(Element.class::cast).filter(Element::isSecurity).forEach(e -> e
                         .setPerformance(CurrencyUnit.EUR, REPORTING_PERIOD, SECURITY2RECORD.get(e.getSecurity())));
@@ -118,7 +118,7 @@ public class IssuePerformanceIndicatorsWithPartialAssignmentTest
         Taxonomy taxonomy = CLIENT.getTaxonomy("21baca92-db77-41f2-96d4-64e31ff4b4f5"); //$NON-NLS-1$
 
         StatementOfAssetsViewer.Model model = new StatementOfAssetsViewer.Model(new PreferenceStore(), CLIENT,
-                        ClientFilter.NO_FILTER, SNAPSHOT.getCurrencyConverter(), SNAPSHOT.getTime(), taxonomy);
+                        ClientFilter.NO_FILTER, SNAPSHOT.getCurrencyConverter(), SNAPSHOT.getTime(), taxonomy, "test"); //$NON-NLS-1$
 
         model.getElements().stream().map(Element.class::cast).filter(Element::isSecurity).forEach(e -> e
                         .setPerformance(CurrencyUnit.EUR, REPORTING_PERIOD, SECURITY2RECORD.get(e.getSecurity())));

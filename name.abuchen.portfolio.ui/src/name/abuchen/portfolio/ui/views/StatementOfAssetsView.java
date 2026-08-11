@@ -136,6 +136,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
     protected Control createBody(Composite parent)
     {
         assetViewer = make(StatementOfAssetsViewer.class);
+        assetViewer.setViewId("sidebar"); //$NON-NLS-1$
         Control control = assetViewer.createControl(parent, true);
         assetViewer.setToolBarManager(getViewToolBarManager());
 

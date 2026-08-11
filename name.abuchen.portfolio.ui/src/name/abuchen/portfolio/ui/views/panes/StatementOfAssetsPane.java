@@ -58,6 +58,7 @@ public class StatementOfAssetsPane implements InformationPanePage
     public Control createViewControl(Composite parent)
     {
         viewer = view.make(StatementOfAssetsViewer.class);
+        viewer.setViewId("pane"); //$NON-NLS-1$
 
         Control control = viewer.createControl(parent, true);
 

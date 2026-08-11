@@ -136,9 +136,12 @@ public class StatementOfAssetsViewer
     {
         private static final String TOP = Model.class.getSimpleName() + "@top"; //$NON-NLS-1$
         private static final String BOTTOM = Model.class.getSimpleName() + "@bottom"; //$NON-NLS-1$
-        private static final String COLLAPSED_CATEGORIES = Model.class.getSimpleName() + "@collapsed"; //$NON-NLS-1$
+
+        // suffixed with a view id so each embedding keeps its own folding state
+        static final String COLLAPSED_CATEGORIES_PREFIX = Model.class.getSimpleName() + "@collapsed@"; //$NON-NLS-1$
 
         private final IPreferenceStore preferences;
+        private final String collapsedCategoriesKey;
 
         private final Taxonomy taxonomy;
         private final ClientFilter clientFilter;
@@ -156,9 +159,10 @@ public class StatementOfAssetsViewer
         private boolean hideTotalsAtTheBottom;
 
         public Model(IPreferenceStore preferences, Client client, ClientFilter filter, CurrencyConverter converter,
-                        LocalDate date, Taxonomy taxonomy)
+                        LocalDate date, Taxonomy taxonomy, String viewId)
         {
             this.preferences = preferences;
+            this.collapsedCategoriesKey = COLLAPSED_CATEGORIES_PREFIX + viewId;
 
             this.clientFilter = filter;
             this.filteredClient = filter.filter(client);
@@ -242,7 +246,7 @@ public class StatementOfAssetsViewer
             var collapsedIds = elements.stream().filter(Element::isCategory).filter(Element::isCollapsed)
                             .map(e -> e.getCategory().getClassification().getId()).collect(Collectors.joining(","));
 
-            preferences.setValue(COLLAPSED_CATEGORIES, collapsedIds);
+            preferences.setValue(collapsedCategoriesKey, collapsedIds);
         }
 
         /**
@@ -250,7 +254,7 @@ public class StatementOfAssetsViewer
          */
         private void loadCollapsedState()
         {
-            var collapsedIds = preferences.getString(COLLAPSED_CATEGORIES);
+            var collapsedIds = preferences.getString(collapsedCategoriesKey);
             if (collapsedIds == null || collapsedIds.isEmpty())
                 return;
 
@@ -377,11 +381,19 @@ public class StatementOfAssetsViewer
     private boolean taxonomyInitialized;
     private Model model;
 
+    // identifies which embedding of this viewer is showing, so each keeps its own folding state
+    private String viewId = StatementOfAssetsViewer.class.getSimpleName();
+
     @Inject
     public StatementOfAssetsViewer(AbstractFinanceView owner, Client client)
     {
         this.owner = owner;
         this.client = client;
+    }
+
+    public void setViewId(String viewId)
+    {
+        this.viewId = viewId;
     }
 
     @Inject
@@ -1381,12 +1393,12 @@ public class StatementOfAssetsViewer
             if (taxonomyInitialized && !Objects.equals(lastTaxonomyId, currentTaxonomyId))
             {
                 // Taxonomy has changed, clear the collapsed state
-                preference.setValue(Model.COLLAPSED_CATEGORIES, "");
+                preference.setValue(Model.COLLAPSED_CATEGORIES_PREFIX + viewId, "");
             }
             lastTaxonomyId = currentTaxonomyId;
             taxonomyInitialized = true;
 
-            this.model = new Model(preference, client, filter, converter, date, taxonomy);
+            this.model = new Model(preference, client, filter, converter, date, taxonomy, viewId);
 
             support.invalidateCache();
             assets.setInput(model.getElements());
