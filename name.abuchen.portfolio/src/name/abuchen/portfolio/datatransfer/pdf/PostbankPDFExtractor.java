@@ -484,7 +484,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("exdate") //
-                                                        .match("^.*Ex-Tag\\s+(?<exdate>\\d{2}\\.\\d{2}\\.\\d{4}).*$") //
+                                                        .match("^.*Ex-Tag\\s+(?<exdate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                                                         .assign((t, v) -> t.setExDate(asDate(v.get("exdate")))), //
 
                                         // @formatter:off
@@ -492,7 +492,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("exdate") //
-                                                        .match("^Kupon per (?<exdate>\\d{2}\\.\\d{2}\\.\\d{4}).*$") //
+                                                        .match("^Kupon per (?<exdate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                                                         .assign((t, v) -> t.setExDate(asDate(v.get("exdate"))))
                         )
                         
