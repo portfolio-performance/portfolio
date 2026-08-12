@@ -686,6 +686,12 @@ import name.abuchen.portfolio.model.TypedMap;
         }
     }
 
+    static class MatchHolder
+    {
+        Pattern pattern;
+        UnaryOperator<String> linePreparation;
+    }
+
     /* package */static class Section<T>
     {
         private String id;
@@ -701,7 +707,7 @@ import name.abuchen.portfolio.model.TypedMap;
         /** attributes mixed in from the document matched in the given range */
         private String[] rangeAttributes;
 
-        private List<Pattern> pattern = new ArrayList<>();
+        private List<MatchHolder> pattern = new ArrayList<>();
         private BiConsumer<T, ParsedData> assignment;
         private UnaryOperator<String> linePreparation;
 
@@ -760,13 +766,25 @@ import name.abuchen.portfolio.model.TypedMap;
 
         public Section<T> find(String string)
         {
-            pattern.add(Pattern.compile("^" + string + "$")); //$NON-NLS-1$ //$NON-NLS-2$
-            return this;
+            return find(string, s -> s);
+        }
+
+        public Section<T> find(String string, UnaryOperator<String> linePreparation)
+        {
+            return match("^" + string + "$", linePreparation); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         public Section<T> match(String regex)
         {
-            pattern.add(Pattern.compile(regex));
+            return match(regex, s -> s);
+        }
+
+        public Section<T> match(String regex, UnaryOperator<String> linePreparation)
+        {
+            MatchHolder mh = new MatchHolder();
+            mh.pattern = Pattern.compile(regex);
+            mh.linePreparation = linePreparation;
+            pattern.add(mh);
             return this;
         }
 
@@ -794,11 +812,18 @@ import name.abuchen.portfolio.model.TypedMap;
             var sectionFoundAtLeastOnce = false;
             for (var ii = lineNo; ii <= lineNoEnd; ii++)
             {
-                var p = pattern.get(patternNo);
+                var mh = pattern.get(patternNo);
                 var line = lines[ii];
                 if (linePreparation != null)
                     line = linePreparation.apply(line);
+                if (mh.linePreparation != null)
+                    line = mh.linePreparation.apply(line);
+
+                var p = mh.pattern;
+
                 var m = p.matcher(line);
+
+                System.out.println((m.matches() ? "+++ " : "--- ") + p.pattern() + " on " + line + ": " + m.matches());
 
                 if (m.matches())
                 {
