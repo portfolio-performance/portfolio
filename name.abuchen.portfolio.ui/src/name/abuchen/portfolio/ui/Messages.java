@@ -134,7 +134,6 @@ public class Messages extends NLS
     public static String ColumnChangeOnPrevious_MenuLabel;
     public static String ColumnChangeOnPrevious_MenuLabelAmount;
     public static String ColumnChangeOnPreviousAmount;
-    public static String ColumnCollapser;
     public static String ColumnColor;
     public static String ColumnColumnLabel;
     public static String ColumnConvertedAmount;

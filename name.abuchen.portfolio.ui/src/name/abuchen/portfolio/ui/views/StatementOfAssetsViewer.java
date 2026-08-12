@@ -46,9 +46,13 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableColumn;
@@ -375,7 +379,8 @@ public class StatementOfAssetsViewer
     private AbstractFinanceView owner;
     private ShowHideColumnHelper support;
 
-    private Column collapserColumn;
+    private Column nameColumn;
+    private Image collapseIndicatorSpacer;
 
     private final Client client;
     private Taxonomy taxonomy;
@@ -472,43 +477,22 @@ public class StatementOfAssetsViewer
                 TableItem item = assets.getTable().getItem(new Point(event.x, event.y));
                 if (item != null)
                 {
-                    // Get the column index where the click occurred
-                    int columnIndex = -1;
-                    for (int i = 0; i < assets.getTable().getColumnCount(); i++)
-                    {
-                        if (item.getBounds(i).contains(event.x, event.y))
-                        {
-                            columnIndex = i;
-                            break;
-                        }
-                    }
-
                     Object data = item.getData();
-                    if (data instanceof Element)
+                    if (data instanceof Element element && element.isCategory())
                     {
-                        Element element = (Element) data;
-
-                        // Check if the click was in the Collapser column
-                        boolean isCollapserColumn = false;
-                        if (columnIndex >= 0 && columnIndex < assets.getTable().getColumnCount())
+                        int columnIndex = -1;
+                        for (int i = 0; i < assets.getTable().getColumnCount(); i++)
                         {
-                            TableColumn tableColumn = assets.getTable().getColumn(columnIndex);
-                            try
+                            TableColumn tableColumn = assets.getTable().getColumn(i);
+                            if (tableColumn.getData(Column.class.getName()) == nameColumn)
                             {
-                                Object columnData = tableColumn.getData(Column.class.getName());
-                                if (columnData == collapserColumn)
-                                {
-                                    isCollapserColumn = true;
-                                }
-                            }
-                            catch (Exception e)
-                            {
-                                // If anything goes wrong, just ignore
+                                columnIndex = i;
+                                break;
                             }
                         }
 
-                        // If the click was a category row, Collapser column
-                        if (element.isCategory() && isCollapserColumn)
+                        // only toggle if the click was on the collapse indicator itself
+                        if (columnIndex >= 0 && item.getImageBounds(columnIndex).contains(event.x, event.y))
                         {
                             element.toggleCollapsed();
                             model.saveCollapsedState();
@@ -529,18 +513,8 @@ public class StatementOfAssetsViewer
 
         support = new ShowHideColumnHelper(StatementOfAssetsViewer.class.getName(), client, preference, assets, layout);
 
-        // Add a column for the collapse/expand icon
-        this.collapserColumn = new Column("collapser", Messages.ColumnCollapser, SWT.CENTER, 30); //$NON-NLS-1$
-        this.collapserColumn.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object element)
-            {
-                // Return empty string to prevent default toString() output
-                return "";
-            }
-        });
-        support.addColumn(this.collapserColumn);
+        // 16x16 to match the logo/icon size other rows use
+        collapseIndicatorSpacer = createTransparentImage(assets.getTable().getDisplay(), 16, 16);
 
         Column column = new Column("0", Messages.ColumnSharesOwned, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new SharesLabelProvider() // NOSONAR
@@ -557,6 +531,7 @@ public class StatementOfAssetsViewer
         support.addColumn(column);
 
         column = new NameColumn(client, "1"); //$NON-NLS-1$
+        this.nameColumn = column;
         column.setLabelProvider(new NameColumnLabelProvider(client) // NOSONAR
         {
             @Override
@@ -579,8 +554,9 @@ public class StatementOfAssetsViewer
             @Override
             public Image getImage(Object e)
             {
+                // reserve space for the collapse indicator, painted separately
                 if (((Element) e).isCategory())
-                    return null;
+                    return collapseIndicatorSpacer;
                 return super.getImage(e);
             }
         });
@@ -787,59 +763,41 @@ public class StatementOfAssetsViewer
         assets.getTable().setHeaderVisible(true);
         assets.getTable().setLinesVisible(true);
 
-        // Add a paint listener to draw the collapse/expand indicators
+        // Add a paint listener to draw the collapse/expand indicator
         assets.getTable().addListener(SWT.PaintItem, event -> {
 
-            // Check if the column being painted is the Collapser column
+            // Check if the column being painted is the Name column
             TableColumn tableColumn = assets.getTable().getColumn(event.index);
-            boolean isCollapserColumn = false;
-            try
+            if (tableColumn.getData(Column.class.getName()) != nameColumn)
+                return;
+
+            Object data = event.item.getData();
+            if (!(data instanceof Element element) || !element.isCategory())
+                return;
+
+            Rectangle imageBounds = ((TableItem) event.item).getImageBounds(event.index);
+
+            GC gc = event.gc;
+            int x = imageBounds.x + 4;
+            int y = imageBounds.y + (imageBounds.height - 8) / 2;
+
+            Color oldBackground = gc.getBackground();
+            gc.setBackground(assets.getTable().getForeground());
+
+            if (element.isCollapsed())
             {
-                Object data = tableColumn.getData(Column.class.getName());
-                if (data == collapserColumn)
-                {
-                    isCollapserColumn = true;
-                }
+                // Points to the right
+                int[] trianglePoints = new int[] { x, y, x, y + 8, x + 8, y + 4 };
+                gc.fillPolygon(trianglePoints);
             }
-            catch (Exception e)
+            else
             {
-                // If anything goes wrong, just ignore
+                // Points down
+                int[] trianglePoints = new int[] { x, y, x + 8, y, x + 4, y + 8 };
+                gc.fillPolygon(trianglePoints);
             }
 
-            // Draw triangles to show the collapsed state
-            if (isCollapserColumn)
-            {
-                Object data = event.item.getData();
-                if (data instanceof Element)
-                {
-                    Element element = (Element) data;
-                    if (element.isCategory())
-                    {
-                        GC gc = event.gc;
-                        int x = event.x + 5;
-                        int y = event.y + (event.height - 8) / 2;
-
-                        Color oldBackground = gc.getBackground();
-                        Color textColor = assets.getTable().getForeground();
-                        gc.setBackground(textColor);
-
-                        if (element.isCollapsed())
-                        {
-                            // Points to the right
-                            int[] trianglePoints = new int[] { x, y, x, y + 8, x + 8, y + 4 };
-                            gc.fillPolygon(trianglePoints);
-                        }
-                        else
-                        {
-                            // Points down
-                            int[] trianglePoints = new int[] { x, y, x + 8, y, x + 4, y + 8 };
-                            gc.fillPolygon(trianglePoints);
-                        }
-
-                        gc.setBackground(oldBackground);
-                    }
-                }
-            }
+            gc.setBackground(oldBackground);
         });
 
         assets.setContentProvider(ArrayContentProvider.getInstance());
@@ -857,6 +815,13 @@ public class StatementOfAssetsViewer
         boldFont = resources.create(FontDescriptor.createFrom(assets.getTable().getFont()).setStyle(SWT.BOLD));
 
         return container;
+    }
+
+    private static Image createTransparentImage(Display display, int width, int height)
+    {
+        var imageData = new ImageData(width, height, 32, new PaletteData(0xFF0000, 0xFF00, 0xFF));
+        imageData.alphaData = new byte[width * height];
+        return new Image(display, imageData);
     }
 
     private void addPurchaseCostColumns()
@@ -1428,6 +1393,9 @@ public class StatementOfAssetsViewer
 
         if (contextMenu != null)
             contextMenu.dispose();
+
+        if (collapseIndicatorSpacer != null)
+            collapseIndicatorSpacer.dispose();
     }
 
     public static class Element implements Adaptable
