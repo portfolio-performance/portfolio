@@ -291,7 +291,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("wkn", "isin", "name", "currency") //
                                                         .find("St.ck WKN ISIN") //
-                                                        .match("^(Hallo)?[\\.,\\d]+ (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^[\\.,\\d]+ (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .match("(?<name>.*)") //
                                                         .match("^(Aussch.ttung|Dividende|Ertrag) pro (St\\.|St.ck) [\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
