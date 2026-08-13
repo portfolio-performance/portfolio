@@ -1304,6 +1304,7 @@ public class Messages extends NLS
     public static String PrefMsgConfigureUpdates;
     public static String PrefMsgLanguageConfig;
     public static String PrefMyDividends24APIKey;
+    public static String PrefNoteExperimentsRestartRequired;
     public static String PrefNoteIndirectQuotation;
     public static String PrefNoteStoreSettingsNextToFile;
     public static String PrefPortfolioReportAPIKey;

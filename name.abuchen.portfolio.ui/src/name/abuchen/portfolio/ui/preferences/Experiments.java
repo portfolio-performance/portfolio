@@ -12,7 +12,7 @@ public class Experiments
 {
     public enum Feature
     {
-        JULY26_PREVENT_UPDATE_WHILE_EDITING_CELLS
+        JULY26_PREVENT_UPDATE_WHILE_EDITING_CELLS, JULY26_WRAP_COLUMN_HEADERS
     }
 
     public boolean isEnabled(Feature feature)

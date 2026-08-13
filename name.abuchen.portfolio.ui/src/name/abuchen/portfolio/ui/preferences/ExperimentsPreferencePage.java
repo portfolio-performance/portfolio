@@ -43,6 +43,9 @@ public class ExperimentsPreferencePage extends FieldEditorPreferencePage
         addField(new CheckboxGroupFieldEditor(UIConstants.Preferences.EXPERIMENTS,
                         Messages.PrefLabelEnableExperimentalFeatures, features, getFieldEditorParent()));
 
+        PreferenceDialogUtil.createNoteComposite(getFieldEditorParent().getFont(), getFieldEditorParent(),
+                        Messages.PrefLabelNote, Messages.PrefNoteExperimentsRestartRequired);
+
         var os = Platform.getOS();
         var showMonitorSpecificScaling = Platform.OS_WIN32.equals(os) || Platform.OS_LINUX.equals(os);
 

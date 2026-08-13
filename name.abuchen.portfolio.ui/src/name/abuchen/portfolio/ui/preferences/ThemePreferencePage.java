@@ -1,22 +1,16 @@
 package name.abuchen.portfolio.ui.preferences;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.ui.css.swt.theme.ITheme;
 import org.eclipse.e4.ui.css.swt.theme.IThemeEngine;
@@ -262,29 +256,12 @@ public final class ThemePreferencePage extends PreferencePage
 
     private Path getPathToCustomCSS() throws IOException, URISyntaxException
     {
-        URL url = FileLocator.resolve(new URI("platform:/meta/name.abuchen.portfolio.ui/custom.css").toURL()); //$NON-NLS-1$ //NOSONAR
-        return new File(url.getFile()).toPath();
+        return ThemePreferences.getPathToCustomCSS();
     }
 
     private int readFontSizeFromCSS()
     {
-        try
-        {
-            String customCSS = Files.readString(getPathToCustomCSS());
-
-            Pattern p = Pattern.compile("font-size: (\\d+)px;"); //$NON-NLS-1$
-            Matcher m = p.matcher(customCSS);
-
-            if (!m.find())
-                return -1;
-
-            return Integer.parseInt(m.group(1));
-        }
-        catch (IOException | URISyntaxException | NumberFormatException e)
-        {
-            PortfolioPlugin.log(e);
-            return -1;
-        }
+        return ThemePreferences.getConfiguredFontSize();
     }
 
     private void setThemeToAutomatic()
@@ -319,6 +296,10 @@ public final class ThemePreferencePage extends PreferencePage
             }
 
             Files.writeString(getPathToCustomCSS(), css, StandardOpenOption.TRUNCATE_EXISTING);
+
+            // the running application keeps rendering with the previous size
+            // until it is restarted, so the size in effect is now unknown
+            ThemePreferences.invalidateSessionFontSize();
         }
         catch (IOException | URISyntaxException e)
         {

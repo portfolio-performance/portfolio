@@ -1,11 +1,14 @@
 package name.abuchen.portfolio.ui.util.viewers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
+import java.util.function.IntSupplier;
 import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.Platform;
@@ -28,6 +31,8 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.ViewerColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
@@ -44,6 +49,8 @@ import org.eclipse.swt.widgets.Widget;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.preferences.Experiments;
+import name.abuchen.portfolio.ui.theme.ThemePreferences;
 import name.abuchen.portfolio.ui.util.ConfigurationStore;
 import name.abuchen.portfolio.ui.util.ConfigurationStore.ConfigurationStoreOwner;
 import name.abuchen.portfolio.ui.util.ContextMenu;
@@ -157,6 +164,160 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             // labels, but not Windows
             return Platform.OS_WIN32.equals(Platform.getOS()) ? TextUtil.wordwrap(text) : text;
         }
+    }
+
+    /**
+     * Returns the logical label of a column, i.e. the label without any line break
+     * inserted for the two-line header display. Use this instead of
+     * {@link Item#getText()} wherever the label is consumed as data - for example
+     * when exporting to CSV - so that a wrapped header never leaks a line break
+     * into the output.
+     */
+    public static String getColumnLabel(Item column)
+    {
+        var label = (String) column.getData(WRAP_LABEL_KEY);
+        return label != null ? label : column.getText();
+    }
+
+    /**
+     * Re-applies the two-line header wrap after the label of a column has been
+     * changed. Does nothing unless the wrap is active for this column, so callers
+     * do not need to know whether the feature is enabled.
+     */
+    private static void reflowHeader(Item column)
+    {
+        if (column.getData(REFLOW_KEY) instanceof Runnable reflow)
+            reflow.run();
+    }
+
+    /**
+     * Answers whether the header is drawn small enough for a second line to fit.
+     * A size that cannot be determined counts as too large: wrapping a header that
+     * then does not fit is worse than not wrapping one that would.
+     */
+    private static boolean isFontSizeSmallEnoughToWrap()
+    {
+        return ThemePreferences.getSessionFontSize().orElse(Integer.MAX_VALUE) <= MAX_FONT_SIZE_FOR_WRAP;
+    }
+
+    /**
+     * Wraps a column header label onto a second line only when the full label does
+     * not fit the column's current width; snaps back to a single line once it does.
+     * Re-evaluated on every column resize, so it stays correct as the user drags.
+     * The label to wrap is tracked via {@link #WRAP_LABEL_KEY} rather than closed
+     * over at attach time, so a later rename or restored custom label is wrapped
+     * instead of being silently overwritten by the original label on next resize.
+     */
+    private static void attachDynamicHeaderWrap(Item column, IntSupplier widthSupplier, Consumer<String> textSetter,
+                    Control measureControl, String fullLabel)
+    {
+        if (!new Experiments().isEnabled(Experiments.Feature.JULY26_WRAP_COLUMN_HEADERS))
+            return;
+
+        // native header text renders single-line only on Windows (win32
+        // header custom-draw uses DT_SINGLELINE) and is unverified on Linux;
+        // an embedded "\n" only produces a real two-line header on macOS
+        if (!Platform.OS_MACOSX.equals(Platform.getOS()))
+            return;
+
+        // the header row has a fixed height that does not grow with the font
+        // size. Two lines only fit while the header is drawn in the small
+        // system font; as soon as a larger font size is configured, the style
+        // sheet sets that font on the table, the header cell inherits it, and
+        // the second line would be cut off. Keep the single line in that case.
+        if (!isFontSizeSmallEnoughToWrap())
+            return;
+
+        column.setData(WRAP_LABEL_KEY, fullLabel);
+
+        Consumer<String> setIfChanged = text -> {
+            if (!text.equals(column.getText()))
+                textSetter.accept(text);
+        };
+
+        Runnable reflow = () -> {
+            var label = (String) column.getData(WRAP_LABEL_KEY);
+            if (label == null)
+                label = fullLabel;
+
+            if (!label.contains(" ")) //$NON-NLS-1$
+            {
+                setIfChanged.accept(label);
+                return;
+            }
+
+            var gc = new GC(measureControl);
+            try
+            {
+                // this GC inherits the table's 13pt body font, but on macOS
+                // the header itself always renders in Cocoa's 11pt small
+                // system font (both fixed AppKit constants) -- SWT exposes no
+                // API for the header's real font or its usable width, so this
+                // ~15% overestimate is used deliberately in place of an
+                // explicit margin: it approximates the space actually
+                // reserved by native chrome SWT doesn't expose (sort-arrow
+                // icon, cell padding). Do not "fix" this by measuring with
+                // the true 11pt font unless an explicit margin is added back
+                // for that reserved space -- doing one without the other
+                // causes real clipping on sorted columns
+                var available = widthSupplier.getAsInt();
+                if (available <= 0)
+                    return;
+
+                // hysteresis: wrap as soon as it no longer fits, but only
+                // unwrap once there is a bit of extra headroom -- otherwise a
+                // live drag hovering right at the boundary flips the header
+                // between one and two lines on every pixel of movement
+                var wasWrapped = column.getText().indexOf('\n') >= 0;
+                var fitThreshold = wasWrapped ? available - UNWRAP_HYSTERESIS_PX : available;
+
+                if (gc.textExtent(label).x <= fitThreshold)
+                {
+                    setIfChanged.accept(label);
+                    return;
+                }
+
+                var words = label.split(" "); //$NON-NLS-1$
+                var fillTo = 1;
+                for (int i = 2; i <= words.length; i++)
+                {
+                    var candidate = String.join(" ", Arrays.copyOfRange(words, 0, i)); //$NON-NLS-1$
+                    if (gc.textExtent(candidate).x > fitThreshold)
+                        break;
+                    fillTo = i;
+                }
+                var line2 = String.join(" ", Arrays.copyOfRange(words, fillTo, words.length)); //$NON-NLS-1$
+                if (line2.isEmpty())
+                {
+                    setIfChanged.accept(label);
+                    return;
+                }
+                var line1 = String.join(" ", Arrays.copyOfRange(words, 0, fillTo)); //$NON-NLS-1$
+                setIfChanged.accept(line1 + "\n" + line2); //$NON-NLS-1$
+            }
+            finally
+            {
+                gc.dispose();
+            }
+        };
+
+        column.setData(REFLOW_KEY, reflow);
+
+        if (column instanceof TableColumn tc)
+            tc.addControlListener(ControlListener.controlResizedAdapter(e -> reflow.run()));
+        else if (column instanceof TreeColumn tc)
+            tc.addControlListener(ControlListener.controlResizedAdapter(e -> reflow.run()));
+
+        reflow.run();
+
+        // the theme engine applies fonts only after the columns have been
+        // created and a font change fires no resize event, so the measurement
+        // above can still be based on the pre-theme font; recompute once the
+        // UI has settled so that a view already wraps when it is first opened
+        measureControl.getDisplay().asyncExec(() -> {
+            if (!column.isDisposed() && !measureControl.isDisposed())
+                reflow.run();
+        });
     }
 
     private static class TableViewerPolicy extends ViewerPolicy
@@ -283,6 +444,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                 tableColumn.setText(column.getLabel());
                 tableColumn.setToolTipText(
                                 createToolTip(column.getLabel(), column.getDescription(), column.getMenuLabel()));
+                attachDynamicHeaderWrap(tableColumn, tableColumn::getWidth, tableColumn::setText, table.getTable(),
+                                column.getLabel());
             }
             else
             {
@@ -292,6 +455,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                 tableColumn.setToolTipText(createToolTip(text, description, column.getMenuLabel()));
 
                 tableColumn.setData(OPTIONS_KEY, option);
+                attachDynamicHeaderWrap(tableColumn, tableColumn::getWidth, tableColumn::setText, table.getTable(),
+                                text);
             }
 
             CellLabelProvider labelProvider = column.getLabelProvider().get();
@@ -454,6 +619,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                 treeColumn.setText(column.getLabel());
                 treeColumn.setToolTipText(
                                 createToolTip(column.getLabel(), column.getDescription(), column.getMenuLabel()));
+                attachDynamicHeaderWrap(treeColumn, treeColumn::getWidth, treeColumn::setText, tree.getTree(),
+                                column.getLabel());
             }
             else
             {
@@ -462,6 +629,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                 String description = column.getOptions().getDescription(option);
                 treeColumn.setToolTipText(createToolTip(text, description, column.getMenuLabel()));
                 treeColumn.setData(OPTIONS_KEY, option);
+                attachDynamicHeaderWrap(treeColumn, treeColumn::getWidth, treeColumn::setText, tree.getTree(), text);
             }
 
             CellLabelProvider labelProvider = column.getLabelProvider().get();
@@ -501,6 +669,10 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
     /* package */static final String OPTIONS_KEY = Column.class.getName() + "_OPTION"; //$NON-NLS-1$
     private static final String ORIGINAL_LABEL_KEY = "$original_label$"; //$NON-NLS-1$
+    private static final String WRAP_LABEL_KEY = "$wrap_label$"; //$NON-NLS-1$
+    private static final String REFLOW_KEY = "$wrap_reflow$"; //$NON-NLS-1$
+    private static final int UNWRAP_HYSTERESIS_PX = 8;
+    private static final int MAX_FONT_SIZE_FOR_WRAP = 11;
     private static final int NO_COLUMN_SELECTED = -1;
 
     private final String identifier;
@@ -924,8 +1096,12 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
                 if (item.getLabel() != null)
                 {
-                    viewerColumn.setData(ORIGINAL_LABEL_KEY, viewerColumn.getText());
+                    var cleanDefault = viewerColumn.getData(WRAP_LABEL_KEY);
+                    viewerColumn.setData(ORIGINAL_LABEL_KEY,
+                                    cleanDefault != null ? cleanDefault : viewerColumn.getText());
                     viewerColumn.setText(item.getLabel());
+                    viewerColumn.setData(WRAP_LABEL_KEY, item.getLabel());
+                    reflowHeader(viewerColumn);
                 }
             });
 
@@ -993,7 +1169,10 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
             String originalLabel = (String) col.getData(ORIGINAL_LABEL_KEY);
             if (originalLabel != null)
-                item.setLabel(col.getText());
+            {
+                var wrapLabel = (String) col.getData(WRAP_LABEL_KEY);
+                item.setLabel(wrapLabel != null ? wrapLabel : col.getText());
+            }
 
             configuration.addItem(item);
         }
@@ -1034,12 +1213,14 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             return;
 
         String originalLabel = (String) widget.getData(ORIGINAL_LABEL_KEY);
+        var wrapLabel = (String) widget.getData(WRAP_LABEL_KEY);
+        var currentLabel = wrapLabel != null ? wrapLabel : widget.getText();
 
-        manager.add(new LabelOnly(originalLabel != null ? originalLabel : widget.getText()));
+        manager.add(new LabelOnly(originalLabel != null ? originalLabel : currentLabel));
 
         manager.add(new SimpleAction(Messages.MenuRenameColumn, a -> {
 
-            String oldLabel = widget.getText();
+            var oldLabel = currentLabel;
 
             InputDialog dlg = new InputDialog(Display.getCurrent().getActiveShell(), Messages.ColumnName,
                             Messages.ColumnName, oldLabel,
@@ -1049,6 +1230,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
             String newLabel = dlg.getValue();
             widget.setText(newLabel);
+            widget.setData(WRAP_LABEL_KEY, newLabel);
+            reflowHeader(widget);
 
             if (originalLabel == null)
                 widget.setData(ORIGINAL_LABEL_KEY, oldLabel);
@@ -1059,6 +1242,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             manager.add(new SimpleAction(Messages.MenuResetColumnName, a -> {
                 widget.setData(ORIGINAL_LABEL_KEY, null);
                 widget.setText(originalLabel);
+                widget.setData(WRAP_LABEL_KEY, originalLabel);
+                reflowHeader(widget);
             }));
         }
 

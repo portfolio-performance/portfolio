@@ -21,6 +21,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.DateTimeLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class TableViewerCSVExporter extends AbstractCSVExporter
@@ -58,7 +59,7 @@ public class TableViewerCSVExporter extends AbstractCSVExporter
 
             // write header
             for (TableColumn column : viewer.getTable().getColumns())
-                printer.print(column.getText());
+                printer.print(ShowHideColumnHelper.getColumnLabel(column));
             printer.println();
 
             // check for "special" label provider
