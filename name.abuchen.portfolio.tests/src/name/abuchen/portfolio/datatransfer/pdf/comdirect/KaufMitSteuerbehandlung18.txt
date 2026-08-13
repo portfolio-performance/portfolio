@@ -1,0 +1,86 @@
+PDFBox Version: 3.0.6
+Portfolio AIIpAWFSjJJ Version: 0.83.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Ihren Auftrag haben wir gemäß unseren produktbezogenen
+Geschäftsbedingungen "Trading" wie nachstehend ausgeführt.
+Die Wertpapiere haben wir der Abrechnung entsprechend gebucht.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und
+Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+25449 Quickborn
+Telefon : 04106-708 25 00
+92310 733
+Depotnr.: 9474910 56
+BLZ: 504 765 19
+qziDu NJISUT
+yQmzUbGIi Str. 71 A
+96820 mxk hMn
+GESCHÄFTSABRECHNUNG VOM 07.05.2026
+*
+Wertpapierkauf
+Geschäftsnummer : 95 732547
+125831349520 Rechnungsnummer : 594872387631vO33
+Geschäftstag : 07.05.2026 Ausführungsplatz : TRADEGATE
+(Kommissionsgeschäft)
+Wertpapier-Bezeichnung WPKNR/ISIN
+Rheinmetall AG 703000
+Inhaber-Aktien o.N. DE0007030009
+Nennwert Zum Kurs von
+St. 0,021 EUR 1.345,80
+Kurswert : EUR 28,26
+--------------------------------------------------------------------------------
+Eigene Entgelte
+Provision : EUR 0,44
+--------------------------------------------------------------------------------
+IBAN Valuta Zu Ihren Lasten vor Steuern
+QI64 9932 7501 6620 1329 00 EUR 11.05.2026 EUR 28,70
+Verwahrungs-Art: UiqrSAsmZdatnVq
+GLOBALURKUNDE, KEIN STUECKEAUSDRUCK
+Informationen zur steuerlichen Behandlung dieses Geschäftsvorgangs und den auf
+Ihrem Konto gebuchten Endbetrag finden Sie auf der separaten Steuermitteilung.
+Ihre comdirect
+Diese Abrechnung wird von der Bank nicht unterschrieben
+Die Leistung ist gemäß §4 Nr.8 UStG umsatzsteuerfrei. USt-Id-Nr.: DE 114 103 514
+A113
+DO15DD/16/04/2010
+Kundennr. /BLZ Bezeichnung
+idWeT JrMfsy
+8465446
+YIsvQrqxQ Str. 09 c
+446 753 70 82760 HHj tYd
+MiUhfSwnnG wirtschaftlich Berechtigter
+----
+comdirect
+25451 Quickborn
+010 11831
+Telefon: 04106 - 708 25 00
+Herrn Datum: 07.05.2026
+XabvL UhxsbR Depotnummer: 5265971 87
+iWEmVNXiL Str. 36 U
+33590 YTN RUn Referenz-Nummer: 2hVqtHt27N840206
+Steuerliche Behandlung: Wertpapierkauf Nr. 13658142 vom 07.05.2026
+Stk. 0,021 RHEINMETALL AG , WKN / ISIN: 455191 / DE0007030009
+Zu Ihren Lasten vor Steuern: EUR -28,70
+Steuerbemessungsgrundlage EUR 0,00
+Kapitalertragsteuer EUR 0,00
+Solidaritätszuschlag EUR 0,00
+Kirchensteuer E_U_R_______________0_,_0_0_
+abgeführte Steuern E_U_R_______________0_,_0_0_
+Zu Ihren Lasten nach Steuern: EUR -28,70
+Die Belastung erfolgt mit Valuta 11.05.2026 auf Konto EUR mit der IBAN uC22 9570 1111 0316 8314 00
+KEINE STEUERBESCHEINIGUNG ...
+Bisher einbehaltene bzw. angerechnete Steuer in EUR (4)
+in 2026 einbehaltene einbehaltener einbehaltene angerechnete
+Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer ausländische Quellensteuer
+vor Ermittlung 271,98 14,69 24,24 25,76
+nach Ermittlung 271,98 14,69 24,24 25,76
+Verrechnungssalden in EUR (4)
+Gewinne / Verluste sonstige anrechenbare verfügbarer
+in 2026 aus Aktien Gewinne / Verluste ausländische Quellensteuer Freistellungsauftrag
+vor Ermittlung 1.311,60 839,68 0,00 0,00
+nach Ermittlung 1.311,60 839,68 0,00 0,00
+Ihre comdirect
+Diese Abrechnung ist maschinell erstellt und wird nicht unterschrieben.
+(4) Die ausgewiesenen EUR-Beträge spiegeln den Stand zum Abrechnungszeitpunkt wider.
+KEINE STEUERBESCHEINIGUNG
