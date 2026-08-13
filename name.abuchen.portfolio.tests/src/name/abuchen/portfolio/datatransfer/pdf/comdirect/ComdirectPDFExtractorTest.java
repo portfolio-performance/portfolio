@@ -1016,6 +1016,40 @@ public class ComdirectPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKaufMitSteuerbehandlung18()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung18.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0007030009"), hasWkn("703000"), hasTicker(null), //
+                        hasName("Rheinmetall AG Inhaber-Aktien o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-05-07T00:00"), hasShares(0.021), //
+                        hasSource("KaufMitSteuerbehandlung18.txt"), //
+                        hasNote("Ord.-Nr.: 125831349520 | R.-Nr.: 594872387631vO33"), //
+                        hasAmount("EUR", 28.70), hasGrossValue("EUR", 28.26), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.44))));
+    }
+
+    @Test
     public void testWertpapierKaufSteuerbehandlung01()
     {
         var extractor = new ComdirectPDFExtractor(new Client());
