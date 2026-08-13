@@ -5,6 +5,7 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.ParsedData;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
@@ -19,6 +20,7 @@ public class BarclaysBankIrelandPLCPDFExtractor extends AbstractPDFExtractor
         super(client);
 
         addBankIdentifier("Barclays Bank Ireland PLC");
+        addBankIdentifier("Barclays Bank PLC");
 
         addCreditcardStatementTransaction();
     }
@@ -31,51 +33,72 @@ public class BarclaysBankIrelandPLCPDFExtractor extends AbstractPDFExtractor
 
     private void addCreditcardStatementTransaction()
     {
-        final var type = new DocumentType("Kontoauszug", //
+        final var type = new DocumentType("(?:Kontoauszug|Konto.bersicht)", //
                         documentContext -> documentContext //
-                                        // @formatter:off
-                                        // Beleg- Buchungs-/ Beschreibung Karte Betrag (EUR)
-                                        // Gebucht am Wertstellung am Verwendungszweck Betrag (EUR)
-                                        // @formatter:on
-                                        .section("currency") //
-                                        .match("^.* \\((?<currency>[A-Z]{3})\\)$") //
-                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
+                                        .oneOf( //
+                                                        // @formatter:off
+                                                        // Beleg- Buchungs-/ Beschreibung Karte Betrag (EUR)
+                                                        // Gebucht am Wertstellung am Verwendungszweck Betrag (EUR)
+                                                        // @formatter:on
+                                                        section -> section //
+                                                                        .attributes("currency") //
+                                                                        .match("^.* \\((?<currency>[A-Z]{3})\\)$") //
+                                                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))),
+                                                        // @formatter:off
+                                                        // Abrechnungszeitraum: 19.06.2015 - 19.07.2015 Kreditrahmen: EUR         2.800,00
+                                                        // IBAN: DE12 3456 7890 1234 5678 12 Kreditrahmen: EUR        12.800,00
+                                                        // @formatter:on
+                                                        section -> section //
+                                                                        .attributes("currency") //
+                                                                        .match("^.*Kreditrahmen: (?<currency>[A-Z]{3}).*$") //
+                                                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency"))))));
 
         this.addDocumentTyp(type);
 
-        // @formatter:off
-        // 23.12.2023 25.12.2023 Lidl sagt Danke        Ort           DE Visa B A             60,78-
-        // 23.12.2023 28.12.2023 Lidl sagt Danke        Ort           DE Visa B A             60,78+
-        // @formatter:on
         var depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
-                        + "(?!(Abgeltungsteuer|Solidarit.tszuschlag)).* [\\.,\\d]+[\\-|\\+]$");
+                        + "(?!(?:Monatl\\. Zinsen|Abgeltungsteuer|Solidarit.tszuschlag)).* [\\.,\\d]+[\\-\\+]$");
         type.addBlock(depositRemovalBlock);
         depositRemovalBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
-                        .section("date", "note", "amount", "type") //
-                        .documentContext("currency") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
-                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
-                                        + "(?<note>.{1,36})" //
-                                        + ".* " //
-                                        + "(?<amount>[\\.,\\d]+)" //
-                                        + "(?<type>[\\-|\\+])$") //
-                        .assign((t, v) -> {
-                            // Is type --> "-" change from DEPOSIT to REMOVAL
-                            if ("-".equals(v.get("type")))
-                                t.setType(AccountTransaction.Type.REMOVAL);
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Weitere Kontotransaktionen
+                                        // 19.07.2015 19.07.2015 Reiseversicherung jährlicher Abschluss /             31,00-
+                                        // 08.07.2015 08.07.2015 Vorname Nachname /          2.000,00+
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "amount", "type") //
+                                                        .documentContext("currency") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                                                        + "(?<note>.*?)" //
+                                                                        + "\\s\\/\\s+" //
+                                                                        + "(?<amount>[\\.,\\d]+)" //
+                                                                        + "(?<type>[\\-\\+])$") //
+                                                        .assign(this::assignDepositRemoval),
 
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(v.get("currency"));
-                            t.setNote(trim(replaceMultipleBlanks(v.get("note"))));
-                        })
+                                        // @formatter:off
+                                        // 23.12.2023 25.12.2023 Lidl sagt Danke        Ort           DE Visa B A             60,78-
+                                        // 23.12.2023 28.12.2023 Lidl sagt Danke        Ort           DE Visa B A             60,78+
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "amount", "type") //
+                                                        .documentContext("currency") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                                                        + "(?<note>.{1,36})" //
+                                                                        + ".* " //
+                                                                        + "(?<amount>[\\.,\\d]+)" //
+                                                                        + "(?<type>[\\-\\+])$") //
+                                                        .assign(this::assignDepositRemoval) //
+                        )
 
                         .wrap(TransactionItem::new));
 
-        var interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Habenzinsen [\\.,\\d]+$");
+        var interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                        + "(?:Monatl\\. Zinsen.*|Habenzinsen) [\\.,\\d]+\\-?$");
         type.addBlock(interestBlock);
         interestBlock.setMaxSize(4);
         interestBlock.set(new Transaction<AccountTransaction>()
@@ -84,17 +107,23 @@ public class BarclaysBankIrelandPLCPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // 31.12.2023 31.12.2023 Habenzinsen 4,80
+                        // 18.03.2021 18.03.2021 Monatl. Zinsen für Einkäufe/Überweisungen              1,68-
                         // @formatter:on
-                        .section("date", "amount") //
+                        .section("date", "note", "amount", "negative") //
                         .documentContext("currency") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
-                                        + "Habenzinsen " //
-                                        + "(?<amount>[\\.,\\d]+)$") //
+                                        + "(?<note>Monatl\\. Zinsen.*|Habenzinsen) " //
+                                        + "(?<amount>[\\.,\\d]+)(?<negative>\\-?)$") //
                         .assign((t, v) -> {
+                            // Is negative --> "-" change from INTEREST to INTEREST_CHARGE
+                            if ("-".equals(v.get("negative")))
+                                t.setType(AccountTransaction.Type.INTEREST_CHARGE);
+
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
+                            t.setNote(trim(v.get("note")));
                         })
 
                         // @formatter:off
@@ -124,5 +153,17 @@ public class BarclaysBankIrelandPLCPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
+    }
+
+    private void assignDepositRemoval(AccountTransaction t, ParsedData v)
+    {
+        // Is type --> "-" change from DEPOSIT to REMOVAL
+        if ("-".equals(v.get("type")))
+            t.setType(AccountTransaction.Type.REMOVAL);
+
+        t.setDateTime(asDate(v.get("date")));
+        t.setAmount(asAmount(v.get("amount")));
+        t.setCurrencyCode(v.get("currency"));
+        t.setNote(trim(replaceMultipleBlanks(v.get("note"))));
     }
 }
