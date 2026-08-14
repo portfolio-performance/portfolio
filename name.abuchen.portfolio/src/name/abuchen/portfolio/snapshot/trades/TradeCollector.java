@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -22,6 +24,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.security.SnapshotCache;
 
 public class TradeCollector
 {
@@ -91,13 +94,29 @@ public class TradeCollector
         }
     }
 
-    private Client client;
-    private CurrencyConverter converter;
+    private final Client client;
+    private final CurrencyConverter converter;
+    private final TradeGrouping grouping;
+    private final SnapshotCache snapshotCache;
 
-    public TradeCollector(Client client, CurrencyConverter converter)
+    public TradeCollector(Client client, CurrencyConverter converter, TradeGrouping grouping,
+                    SnapshotCache snapshotCache)
     {
         this.client = client;
         this.converter = converter;
+        this.grouping = grouping;
+        this.snapshotCache = snapshotCache;
+    }
+
+    /**
+     * Creates a collector for tests and for the one-off collection of trades:
+     * it groups trades as {@link TradeGrouping#COMBINED} and uses a private
+     * {@link SnapshotCache} that is shared with nobody.
+     */
+    @VisibleForTesting
+    public TradeCollector(Client client, CurrencyConverter converter)
+    {
+        this(client, converter, TradeGrouping.COMBINED, new SnapshotCache());
     }
 
     public List<Trade> collect(Security security) throws TradeCollectorException
@@ -134,7 +153,7 @@ public class TradeCollector
                     if (openList.isEmpty() || openList.get(0).getTransaction().getType().isPurchase() == type.isPurchase())
                         openList.add(pair);
                     else
-                        trades.add(createNewTrade(openTransactions, pair));
+                        trades.addAll(createNewTrades(openTransactions, pair));
                     break;
 
                 case TRANSFER_IN:
@@ -160,26 +179,49 @@ public class TradeCollector
             if (position.isEmpty())
                 continue;
 
-            long shares = position.stream().mapToLong(p -> p.getTransaction().getShares()).sum();
+            if (grouping == TradeGrouping.PER_LOT)
+            {
+                // one trade per open lot. Note: the portfolio is taken from the
+                // key of the map, i.e. the portfolio whose open positions are
+                // drained, and *not* from the transaction pair: after a
+                // transfer, the pair still reports the portfolio the lot has
+                // been transferred away from
 
-            Trade newTrade = new Trade(security, entry.getKey(), shares);
-            newTrade.setStart(position.get(0).getTransaction().getDateTime());
-            newTrade.getTransactions().addAll(position);
+                for (var lot : position)
+                {
+                    var newTrade = new Trade(security, entry.getKey(), lot.getTransaction().getShares());
+                    newTrade.setStart(lot.getTransaction().getDateTime());
+                    newTrade.getTransactions().add(lot);
 
-            trades.add(newTrade);
+                    trades.add(newTrade);
+                }
+            }
+            else
+            {
+                long shares = position.stream().mapToLong(p -> p.getTransaction().getShares()).sum();
+
+                Trade newTrade = new Trade(security, entry.getKey(), shares);
+                newTrade.setStart(position.get(0).getTransaction().getDateTime());
+                newTrade.getTransactions().addAll(position);
+
+                trades.add(newTrade);
+            }
         }
 
-        trades.forEach(t -> t.calculate(client, converter));
+        trades.forEach(t -> t.calculate(client, converter, snapshotCache));
 
         return trades;
     }
 
-    private Trade createNewTrade(Map<Portfolio, List<TransactionPair<PortfolioTransaction>>> openTransactions,
+    /**
+     * Matches the given closing transaction against the open lots of the
+     * portfolio and creates the resulting trades: one trade covering all
+     * consumed lots ({@link TradeGrouping#COMBINED}) or one trade per consumed
+     * lot ({@link TradeGrouping#PER_LOT}).
+     */
+    private List<Trade> createNewTrades(Map<Portfolio, List<TransactionPair<PortfolioTransaction>>> openTransactions,
                     TransactionPair<PortfolioTransaction> pair) throws TradeCollectorException
     {
-        Trade newTrade = new Trade(pair.getTransaction().getSecurity(), (Portfolio) pair.getOwner(),
-                        pair.getTransaction().getShares());
-
         List<TransactionPair<PortfolioTransaction>> open = openTransactions.get(pair.getOwner());
 
         if (open == null || open.isEmpty())
@@ -191,23 +233,24 @@ public class TradeCollector
         // sort open to get fifo
         Collections.sort(open, BY_DATE_AND_TYPE);
 
+        // the open lots consumed by this closing transaction. If a lot is
+        // consumed only partially, the element is the split off part of it
+        List<TransactionPair<PortfolioTransaction>> consumed = new ArrayList<>();
+
         for (TransactionPair<PortfolioTransaction> candidate : new ArrayList<>(open))
         {
             if (sharesToDistribute == 0)
                 break;
 
-            if (newTrade.getStart() == null)
-                newTrade.setStart(candidate.getTransaction().getDateTime());
-
             if (sharesToDistribute >= candidate.getTransaction().getShares())
             {
-                newTrade.getTransactions().add(candidate);
+                consumed.add(candidate);
                 open.remove(candidate);
                 sharesToDistribute -= candidate.getTransaction().getShares();
             }
             else if (sharesToDistribute < candidate.getTransaction().getShares())
             {
-                newTrade.getTransactions().add(split(candidate, (Portfolio) pair.getOwner(),
+                consumed.add(split(candidate, (Portfolio) pair.getOwner(),
                                 sharesToDistribute / (double) candidate.getTransaction().getShares()));
                 open.set(open.indexOf(candidate),
                                 split(candidate, (Portfolio) pair.getOwner(),
@@ -225,10 +268,78 @@ public class TradeCollector
                             pair.getOwner(), Values.Share.format(sharesToDistribute), pair));
         }
 
+        // if no lot has been consumed at all (a closing transaction without
+        // shares), there is nothing to distribute and both groupings create the
+        // same single trade
+        if (grouping == TradeGrouping.PER_LOT && !consumed.isEmpty())
+            return createTradePerLot(pair, consumed);
+        else
+            return List.of(createCombinedTrade(pair, consumed));
+    }
+
+    /**
+     * Creates one trade holding all consumed lots and the closing transaction.
+     */
+    private Trade createCombinedTrade(TransactionPair<PortfolioTransaction> pair,
+                    List<TransactionPair<PortfolioTransaction>> consumed)
+    {
+        var newTrade = new Trade(pair.getTransaction().getSecurity(), (Portfolio) pair.getOwner(),
+                        pair.getTransaction().getShares());
+
+        if (!consumed.isEmpty())
+            newTrade.setStart(consumed.get(0).getTransaction().getDateTime());
+
+        newTrade.getTransactions().addAll(consumed);
         newTrade.getTransactions().add(pair);
         newTrade.setEnd(pair.getTransaction().getDateTime());
+        newTrade.setRealClosingTransaction(pair.getTransaction());
 
         return newTrade;
+    }
+
+    /**
+     * Creates one trade per consumed lot. Every trade holds its lot and its own
+     * split copy of the closing transaction.
+     */
+    private List<Trade> createTradePerLot(TransactionPair<PortfolioTransaction> pair,
+                    List<TransactionPair<PortfolioTransaction>> consumed)
+    {
+        long closingShares = pair.getTransaction().getShares();
+
+        var answer = new ArrayList<Trade>();
+
+        for (TransactionPair<PortfolioTransaction> lot : consumed)
+        {
+            // the shares of the lot are the shares it contributed to the
+            // closing transaction (the lot has been split beforehand if it has
+            // been consumed only partially)
+            long consumedShares = lot.getTransaction().getShares();
+
+            var newTrade = new Trade(pair.getTransaction().getSecurity(), (Portfolio) pair.getOwner(),
+                            consumedShares);
+            newTrade.setStart(lot.getTransaction().getDateTime());
+            newTrade.getTransactions().add(lot);
+
+            // if the closing transaction is matched against a single lot, the
+            // weight is 1 and the real transaction is used. Otherwise every
+            // trade gets its own split copy. Note that the weight is relative
+            // to the shares of the *closing* transaction while the other call
+            // sites of #split weight relative to the shares of the open lot
+
+            newTrade.getTransactions().add(consumed.size() == 1 ? pair
+                            : split(pair, (Portfolio) pair.getOwner(), consumedShares / (double) closingShares));
+
+            newTrade.setEnd(pair.getTransaction().getDateTime());
+
+            // the trade must keep the real closing transaction because the
+            // ClientTransactionFilter identifies it by reference; a split copy
+            // exists nowhere in the client and would be silently ignored
+            newTrade.setRealClosingTransaction(pair.getTransaction());
+
+            answer.add(newTrade);
+        }
+
+        return answer;
     }
 
     private void moveOpenTransaction(Map<Portfolio, List<TransactionPair<PortfolioTransaction>>> openTransactions,
