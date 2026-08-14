@@ -174,6 +174,7 @@ public final class TradeDetailsView extends AbstractFinanceView
             }
 
             update();
+            updateTitle(getDefaultTitle());
             updateFilterButtonImage(theMenu);
             updateClientFilterEnablement();
         }
@@ -308,7 +309,12 @@ public final class TradeDetailsView extends AbstractFinanceView
     @Override
     protected String getDefaultTitle()
     {
-        return Messages.LabelTrades;
+        var noLocalClientFilter = usePreselectedTrades.isTrue() || clientFilterDropDown == null
+                        || !clientFilterDropDown.hasActiveFilter();
+
+        return noLocalClientFilter ? Messages.LabelTrades
+                        : Messages.LabelTrades + " : " //$NON-NLS-1$
+                                        + clientFilterDropDown.getClientFilterMenu().getSelectedItem().getLabel();
     }
 
     /**
@@ -396,6 +402,8 @@ public final class TradeDetailsView extends AbstractFinanceView
 
         if (!table.getTableViewer().getTable().isDisposed())
             table.getTableViewer().refresh(true);
+
+        updateTitle(getDefaultTitle());
     }
 
     @Override
@@ -609,6 +617,7 @@ public final class TradeDetailsView extends AbstractFinanceView
         });
 
         update();
+        updateTitle(getDefaultTitle());
 
         new ContextMenu(table.getTableViewer().getControl(), this::fillContextMenu).hook();
         hookKeyListener();

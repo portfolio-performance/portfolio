@@ -407,37 +407,55 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
     {
         if (coins == null)
         {
-            List<Coin> coinList = new ArrayList<>();
+            var extracted = extractCoins(requestCoinList());
 
-            WebAccess webaccess = new WebAccess(getHost(), "/api/v3/coins/list"); //$NON-NLS-1$
+            // do not cache a rejected response - for example the error object
+            // returned if the rate limit is exceeded - but retry with the next
+            // call instead
+            if (extracted.isEmpty())
+                return extracted;
 
-            if (hasPlan())
-                webaccess.addHeader("x-cg-pro-api-key", this.apiKey); //$NON-NLS-1$
-            else if (hasDemoAccount())
-                webaccess.addHeader("x-cg-demo-api-key", this.demoApiKey); //$NON-NLS-1$
-
-            String html = webaccess.get();
-
-            JSONArray coinArray = (JSONArray) JSONValue.parse(html);
-
-            if (coinArray != null)
-            {
-                for (Object object : coinArray)
-                {
-                    JSONObject coinObject = (JSONObject) object;
-
-                    Coin coin = new Coin();
-                    coin.id = (String) coinObject.get("id"); //$NON-NLS-1$
-                    coin.symbol = (String) coinObject.get("symbol"); //$NON-NLS-1$
-                    coin.name = (String) coinObject.get("name"); //$NON-NLS-1$
-
-                    coinList.add(coin);
-                }
-            }
-
-            coins = coinList;
+            coins = extracted;
         }
 
         return coins;
+    }
+
+    /* package */ String requestCoinList() throws IOException
+    {
+        WebAccess webaccess = new WebAccess(getHost(), "/api/v3/coins/list"); //$NON-NLS-1$
+
+        if (hasPlan())
+            webaccess.addHeader("x-cg-pro-api-key", this.apiKey); //$NON-NLS-1$
+        else if (hasDemoAccount())
+            webaccess.addHeader("x-cg-demo-api-key", this.demoApiKey); //$NON-NLS-1$
+
+        return webaccess.get();
+    }
+
+    /* package */ static List<Coin> extractCoins(String html)
+    {
+        List<Coin> coinList = new ArrayList<>();
+
+        if (JSONValue.parse(html) instanceof JSONArray coinArray)
+        {
+            for (Object object : coinArray)
+            {
+                if (!(object instanceof JSONObject coinObject))
+                    continue;
+
+                Coin coin = new Coin();
+                coin.id = (String) coinObject.get("id"); //$NON-NLS-1$
+                coin.symbol = (String) coinObject.get("symbol"); //$NON-NLS-1$
+                coin.name = (String) coinObject.get("name"); //$NON-NLS-1$
+
+                if (coin.id == null || coin.symbol == null)
+                    continue;
+
+                coinList.add(coin);
+            }
+        }
+
+        return coinList;
     }
 }

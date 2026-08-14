@@ -44,6 +44,7 @@ public interface UIConstants
         {
             String DISCREET_MODE = "global/discreet-mode"; //$NON-NLS-1$
             String VALUE_COLOR_SCHEME_CHANGED = "global/value-color-scheme-changed"; //$NON-NLS-1$
+            String CHART_LINE_WIDTH_CHANGED = "global/chart-line-width-changed"; //$NON-NLS-1$
         }
     }
 
@@ -220,6 +221,13 @@ public interface UIConstants
         String ENABLE_SURVEY_REMINDER = "ENABLE_SURVEY_REMINDER"; //$NON-NLS-1$ //NOSONAR
 
         String ENABLE_SWTCHART_PIECHARTS = "ENABLE_SWTCHART_PIECHARTS"; //$NON-NLS-1$
+
+        /**
+         * Preference key for the width (in pixel) of the lines painted by those
+         * charts and dashboard widget series that do not offer a line width per
+         * data series.
+         */
+        String CHART_LINE_WIDTH = "CHART_LINE_WIDTH"; //$NON-NLS-1$
 
         /**
          * Preference key whether to activate in-place editing with a double

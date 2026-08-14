@@ -5,6 +5,7 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -322,6 +323,26 @@ public abstract class AbstractPDFExtractor implements Extractor
     protected long asShares(String value, String language, String country)
     {
         return ExtractorUtils.asShares(value, language, country);
+    }
+
+    /**
+     * Converts the nominal of a bond quoted in percent into shares.
+     */
+    protected long asBondNominal(String value)
+    {
+        return asBondNominal(value, Locale.GERMANY);
+    }
+
+    /**
+     * Converts the nominal of a bond quoted in percent into shares.
+     */
+    protected long asBondNominal(String value, Locale locale)
+    {
+        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, locale) //
+                        .movePointLeft(2) //
+                        .multiply(BigDecimal.valueOf(Values.Share.factor())) //
+                        .setScale(0, RoundingMode.HALF_UP) //
+                        .longValue();
     }
 
     protected String asCurrencyCode(String currency)

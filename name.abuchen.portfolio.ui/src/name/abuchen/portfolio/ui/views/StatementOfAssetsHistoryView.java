@@ -120,6 +120,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         composite.setBackground(Colors.theme().defaultBackground());
 
         chart = new TimelineChart(composite);
+        chart.setLineWidthConfigurable(false);
         chart.getTitle().setVisible(false);
 
         chart.getToolTip().reverseLabels(true);

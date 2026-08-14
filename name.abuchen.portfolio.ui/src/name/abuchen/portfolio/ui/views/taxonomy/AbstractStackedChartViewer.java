@@ -35,6 +35,7 @@ import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodListener;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.chart.ChartLineWidth;
 import name.abuchen.portfolio.ui.util.chart.StackedChartCSVExporter;
 import name.abuchen.portfolio.ui.util.chart.StackedTimelineChart;
 import name.abuchen.portfolio.util.Interval;
@@ -149,6 +150,9 @@ public abstract class AbstractStackedChartViewer extends AbstractChartPage imple
         });
         action.setChecked(getModel().isOrderByTaxonomyInStackChart());
         manager.add(action);
+
+        manager.add(new Separator());
+        ChartLineWidth.addMenu(manager);
     }
 
     @Override

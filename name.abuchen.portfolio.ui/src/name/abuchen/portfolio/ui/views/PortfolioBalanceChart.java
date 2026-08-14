@@ -32,7 +32,6 @@ import com.google.common.base.Objects;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
@@ -46,6 +45,7 @@ import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.chart.ChartLineWidth;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartCSVExporter;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
@@ -223,11 +223,25 @@ public class PortfolioBalanceChart
         if (tx.isEmpty())
             return null;
 
-        Collections.sort(tx, Transaction.BY_DATE);
+        // do not sort the list of transactions: it is owned by the model and
+        // sorting it while another thread iterates over it (for example a
+        // second chart update that is still running) fails with a
+        // ConcurrentModificationException
+
+        LocalDate start = null;
+        LocalDate end = null;
+
+        for (PortfolioTransaction t : tx)
+        {
+            var date = t.getDateTime().toLocalDate();
+
+            if (start == null || date.isBefore(start))
+                start = date;
+            if (end == null || date.isAfter(end))
+                end = date;
+        }
 
         LocalDate now = LocalDate.now();
-        LocalDate start = tx.get(0).getDateTime().toLocalDate();
-        LocalDate end = tx.get(tx.size() - 1).getDateTime().toLocalDate();
 
         if (now.isAfter(end))
             end = now;
@@ -316,6 +330,9 @@ public class PortfolioBalanceChart
         manager.add(addMenuAction(ChartDetails.ABSOLUTE_DELTA));
         manager.add(addMenuAction(ChartDetails.TAXES_ACCUMULATED));
         manager.add(addMenuAction(ChartDetails.FEES_ACCUMULATED));
+
+        manager.add(new Separator());
+        ChartLineWidth.addMenu(manager);
     }
 
     private Action addMenuAction(ChartDetails detail)

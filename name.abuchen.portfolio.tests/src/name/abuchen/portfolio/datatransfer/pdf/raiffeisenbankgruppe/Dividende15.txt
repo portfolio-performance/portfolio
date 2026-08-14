@@ -1,0 +1,71 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.86.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+d a 
+Raiffeisenbank Murau eGen (mbH) 
+Bundesstraße 5, 8850 Murau 
+b 
+BLZ: 38402     DVR: 0039063     UID: ATU28570409 
+a 
+a 
+Abrechnung Ereignis a 
+81935970 - 17.03.2026 a 
+Depot-Nr.: 60.026.259 
+OUEDX SrebDwG zpGBs zNNaeuS 
+Ro OQsmzTJN 6 
+3176 MmJbx SQJqfZ 002/138 
+YLmbKPbb 
+Wir haben für Sie am 17.03.2026 unten angeführtes Geschäft abgerechnet: 
+Geschäftsart: Ertrag 
+100 Stk    
+Titel: CH0012032113 ROCHE HOLDING AG 
+Inhaber-Aktien SF 1 
+Kup. 25  
+Dividende: 9,8 CHF 
+Verwahrart: WR 
+Positionsdaten: Loco: CH Olten 
+Bruttobetrag: 980,00 CHF  
+Quellensteuer: -343,00 CHF  
+Auslands-KESt: -122,50 CHF  
+514,50 CHF  
+Devisenkurs: 0,9086 (13.03.2026)  566,26 EUR  
+Devisenkomm/Courtage: -8,00 EUR  
+Zu Gunsten IBAN AT28 3840 2000 0006 8643 558,26 EUR  
+Valuta 16.03.2026 
+KESt wurde an das Finanzamt für Großbetriebe abgeführt. 
+Quellensteuer: 35% 
+Es wurde Auslands-KESt in der Höhe von 12,5 % berücksichtigt. 
+Extag: 12.03.2026 
+Record-Tag: 13.03.2026 
+Ausgangssituation: 
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden  
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 100 Stk 
+steuerlicher Anschaffungswert: 30.179,03 EUR 
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden  
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 100 Stk 
+Ertrag: 1.078,58 EUR 
+17.03.2026 1 / 2 
+Irrtum vorbehalten 
+Dieser Beleg trägt keine Unterschrift. 
+Raiffeisenbank Murau eGen (mbH) 
+Bundesstraße 5, 8850 Murau 
+b 
+BLZ: 38402     DVR: 0039063     UID: ATU28570409 
+a 
+a 
+Abrechnung Ereignis a 
+81935970 - 17.03.2026 a 
+Depot-Nr.: 60.026.259 
+XnYZM WlzAbPV 
+002/138 
+YHHNSAos 
+Steuerrelevante Daten (alle Beträge in EUR): 
+Bemessungsgrundlage KESt 
+Einkünfte/Verlustüberhang bisher 2.845,04 625,15 
+Bruttoeinkünfte/Verlust 1.078,58 134,82 
+Verlustausgleich (KESt-Gutschrift) 
+Einkünfte/Verlustüberhang aktuell 3.923,62 759,97 
+17.03.2026 2 / 2 
+Irrtum vorbehalten 
+Dieser Beleg trägt keine Unterschrift. 
