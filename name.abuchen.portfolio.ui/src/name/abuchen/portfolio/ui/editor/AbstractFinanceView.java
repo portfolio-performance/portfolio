@@ -120,6 +120,14 @@ public abstract class AbstractFinanceView
         onRecalculationNeeded();
     }
 
+    @Inject
+    @org.eclipse.e4.core.di.annotations.Optional
+    public void onChartLineWidthChanged(
+                    @UIEventTopic(UIConstants.Event.Global.CHART_LINE_WIDTH_CHANGED) Object ignored)
+    {
+        onRecalculationNeeded();
+    }
+
     /** called when some other view modifies the model */
     public void notifyModelUpdated()
     {
