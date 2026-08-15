@@ -8,7 +8,6 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -48,19 +47,6 @@ import name.abuchen.portfolio.util.Interval;
 @SuppressWarnings("nls")
 public class TradeCollector7Test
 {
-    /**
-     * Every piece of a split transaction is rounded independently with an error
-     * in (-0.5, 0.5] minor units, so the error of the sum of N pieces is
-     * bounded by floor(N / 2) minor units.
-     * <p>
-     * Once the exact remainder correction is implemented, this bound becomes
-     * zero and all the assertions below turn into exact equality.
-     */
-    private static long maxDrift(int pieces)
-    {
-        return pieces / 2;
-    }
-
     private static List<Trade> collect(Client client, Security security, TradeGrouping grouping)
                     throws TradeCollectorException
     {
@@ -409,43 +395,114 @@ public class TradeCollector7Test
         var trades = collect(client, security, TradeGrouping.PER_LOT);
         assertThat(trades.size(), is(3));
 
-        long bound = maxDrift(trades.size());
-
-        // shares are exact: with the weight consumedShares / closingShares,
-        // Math.round returns exactly the consumed shares. Any drift here means
-        // that the weight is computed against the wrong base
+        // shares are exact because split weights are share counts
         long shares = trades.stream().mapToLong(t -> closingOf(t).getShares()).sum();
         assertThat(shares, is(sale.getShares()));
 
+        // EUR 1,000.01 is apportioned as 333.34, 333.34 and 333.33
         long amount = trades.stream().mapToLong(t -> closingOf(t).getAmount()).sum();
-        assertTrue("amount drifted by " + (amount - sale.getAmount()), Math.abs(amount - sale.getAmount()) <= bound);
+        assertThat(amount, is(sale.getAmount()));
 
-        // units are rounded per type, so a cent moved from taxes to fees is
-        // invisible in a combined total
+        // each unit type reconciles exactly
         for (Unit.Type type : Unit.Type.values())
         {
             var original = sale.getUnitSum(type);
 
             long units = trades.stream() //
                             .mapToLong(t -> closingOf(t).getUnitSum(type).getAmount()).sum();
-            assertTrue(type + " amount drifted by " + (units - original.getAmount()),
-                            Math.abs(units - original.getAmount()) <= bound);
+            assertThat(type + " amount", units, is(original.getAmount()));
         }
 
-        // the forex amount is split independently of the amount
+        // forex is apportioned separately and also reconciles
         long forex = trades.stream() //
                         .mapToLong(t -> closingOf(t).getUnit(Unit.Type.GROSS_VALUE)
                                         .orElseThrow(IllegalArgumentException::new).getForex().getAmount())
                         .sum();
         long forexOfSale = sale.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new).getForex()
                         .getAmount();
-        assertTrue("forex drifted by " + (forex - forexOfSale), Math.abs(forex - forexOfSale) <= bound);
+        assertThat(forex, is(forexOfSale));
 
         // the exchange rate is carried over unchanged
         for (Trade trade : trades)
         {
             assertThat(closingOf(trade).getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new)
                             .getExchangeRate(), is(BigDecimal.valueOf(0.80)));
+        }
+    }
+
+    /**
+     * Purchase fixture with amounts that do not divide evenly into the later
+     * instalments.
+     */
+    private static PortfolioTransaction createPurchaseOfHundredShares(Security security)
+    {
+        var purchase = new PortfolioTransaction(LocalDateTime.parse("2021-01-01T00:00"), CurrencyUnit.EUR,
+                        amountOf(1000.01), security, sharesOf(100), PortfolioTransaction.Type.DELIVERY_INBOUND, 0, 0);
+
+        // EUR 970.01 gross value plus EUR 30.00 fees = EUR 1,000.01 paid
+        purchase.addUnit(new Unit(Unit.Type.GROSS_VALUE, //
+                        Money.of(CurrencyUnit.EUR, amountOf(970.01)), //
+                        Money.of(CurrencyUnit.USD, amountOf(1212.51)), //
+                        BigDecimal.valueOf(0.80)));
+        purchase.addUnit(new Unit(Unit.Type.FEE, Money.of(CurrencyUnit.EUR, amountOf(30))));
+
+        return purchase;
+    }
+
+    /**
+     * Asserts exact conservation of shares, amount, units and gross-value
+     * forex.
+     */
+    private static void assertConserved(PortfolioTransaction original, List<PortfolioTransaction> pieces)
+    {
+        assertThat("shares", pieces.stream().mapToLong(PortfolioTransaction::getShares).sum(),
+                        is(original.getShares()));
+        assertThat("amount", pieces.stream().mapToLong(PortfolioTransaction::getAmount).sum(),
+                        is(original.getAmount()));
+
+        for (Unit.Type type : Unit.Type.values())
+        {
+            assertThat(type + " amount", pieces.stream().mapToLong(p -> p.getUnitSum(type).getAmount()).sum(),
+                            is(original.getUnitSum(type).getAmount()));
+        }
+
+        assertThat("forex of gross value",
+                        pieces.stream().mapToLong(p -> p.getUnit(Unit.Type.GROSS_VALUE)
+                                        .orElseThrow(IllegalArgumentException::new).getForex().getAmount()).sum(),
+                        is(original.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new)
+                                        .getForex().getAmount()));
+    }
+
+    @Test
+    public void testRepeatedPartialSalesConserveTheLot() throws TradeCollectorException
+    {
+        // repeated partial sales split the synthetic remainder again, so
+        // rounding drift used to compound
+
+        var client = new Client();
+
+        var security = new SecurityBuilder(CurrencyUnit.USD).addPrice("2021-12-01", quoteOf(30)).addTo(client);
+
+        var portfolio = new PortfolioBuilder(new Account("one")) //
+                        .outbound_delivery(security, "2021-02-01", sharesOf(7), amountOf(100.01), 0, 0) //
+                        .outbound_delivery(security, "2021-03-01", sharesOf(7), amountOf(101.03), 0, 0) //
+                        .outbound_delivery(security, "2021-04-01", sharesOf(7), amountOf(102.07), 0, 0) //
+                        .outbound_delivery(security, "2021-05-01", sharesOf(7), amountOf(103.11), 0, 0) //
+                        .outbound_delivery(security, "2021-06-01", sharesOf(7), amountOf(104.13), 0, 0) //
+                        .addTo(client);
+
+        var purchase = createPurchaseOfHundredShares(security);
+        portfolio.addTransaction(purchase);
+
+        // createNewTrades runs for both groupings
+        for (TradeGrouping grouping : TradeGrouping.values())
+        {
+            var trades = collect(client, security, grouping);
+
+            // five closed trades plus the 65-share remainder
+            assertThat(grouping.name(), trades.size(), is(6));
+
+            assertConserved(purchase, trades.stream().map(TradeCollector7Test::openingOf).toList());
         }
     }
 
@@ -967,6 +1024,46 @@ public class TradeCollector7Test
             assertThat(trade.getTransactions().get(0).getOwner(), is((Object) portfolioA));
     }
 
+    @Test
+    public void testPartialTransferConservesTheLot() throws TradeCollectorException
+    {
+        // partial transfers must conserve transferred and remaining pieces
+
+        var client = new Client();
+
+        var security = new SecurityBuilder(CurrencyUnit.USD).addPrice("2021-12-01", quoteOf(30)).addTo(client);
+
+        var portfolioA = new PortfolioBuilder(new Account("one")).addTo(client);
+        var portfolioB = new PortfolioBuilder(new Account("two")).addTo(client);
+
+        var purchase = createPurchaseOfHundredShares(security);
+        portfolioA.addTransaction(purchase);
+
+        var transfer = new PortfolioTransferEntry(portfolioA, portfolioB);
+        transfer.setSecurity(security);
+        transfer.setDate(LocalDateTime.parse("2021-03-01T00:00"));
+        transfer.setShares(sharesOf(33));
+        transfer.setAmount(amountOf(330));
+        transfer.setCurrencyCode(security.getCurrencyCode());
+        transfer.insert();
+
+        var trades = collect(client, security, TradeGrouping.PER_LOT);
+        assertThat(trades.size(), is(2));
+
+        var transferred = openingOf(trades.stream().filter(t -> t.getPortfolio() == portfolioB).findAny()
+                        .orElseThrow(IllegalArgumentException::new));
+        var remaining = openingOf(trades.stream().filter(t -> t.getPortfolio() == portfolioA).findAny()
+                        .orElseThrow(IllegalArgumentException::new));
+
+        assertConserved(purchase, List.of(transferred, remaining));
+
+        // 330.0033 / 670.0067 rounds the extra cent into the larger remainder
+        assertThat(transferred.getShares(), is(sharesOf(33)));
+        assertThat(transferred.getAmount(), is(amountOf(330)));
+        assertThat(remaining.getShares(), is(sharesOf(67)));
+        assertThat(remaining.getAmount(), is(amountOf(670.01)));
+    }
+
     // -----------------------------------------------------------------------
     // relationship between the two groupings
     // -----------------------------------------------------------------------
@@ -1004,10 +1101,10 @@ public class TradeCollector7Test
     }
 
     @Test
-    public void testTotalsDriftWithinBoundIfSalesAreSplit() throws TradeCollectorException
+    public void testTotalsAreIdenticalIfSalesAreSplit() throws TradeCollectorException
     {
-        // where a sale spans several lots, each piece is rounded on its own.
-        // The totals are therefore only equal within the documented bound
+        // the fixture avoids conversion rounding, so split and combined totals
+        // match
 
         var client = createClientWithSaleSpanningThreeLots();
         var security = client.getSecurities().get(0);
@@ -1018,15 +1115,9 @@ public class TradeCollector7Test
         assertThat(combined.size(), is(1));
         assertThat(perLot.size(), is(3));
 
-        long bound = maxDrift(perLot.size());
-
         assertThat(sum(perLot, Trade::getEntryValue), is(sum(combined, Trade::getEntryValue)));
-
-        long exit = sum(perLot, Trade::getExitValue).getAmount() - sum(combined, Trade::getExitValue).getAmount();
-        assertTrue("exit value drifted by " + exit, Math.abs(exit) <= bound);
-
-        long profit = sum(perLot, Trade::getProfitLoss).getAmount() - sum(combined, Trade::getProfitLoss).getAmount();
-        assertTrue("profit/loss drifted by " + profit, Math.abs(profit) <= bound);
+        assertThat(sum(perLot, Trade::getExitValue), is(sum(combined, Trade::getExitValue)));
+        assertThat(sum(perLot, Trade::getProfitLoss), is(sum(combined, Trade::getProfitLoss)));
     }
 
     // -----------------------------------------------------------------------
