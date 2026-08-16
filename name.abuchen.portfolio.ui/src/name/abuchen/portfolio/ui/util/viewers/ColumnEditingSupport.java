@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.util.viewers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
@@ -114,11 +115,25 @@ public abstract class ColumnEditingSupport
 
     public static void prepare(EditorActivationState state, ColumnViewer viewer)
     {
+        prepare(state, viewer, null);
+    }
+
+    /**
+     * Prepares the in-place editing of the given viewer. The optional veto is
+     * asked first and can suppress the activation of the editor, for example if
+     * the mouse event belongs to a control that is painted into the cell.
+     */
+    public static void prepare(EditorActivationState state, ColumnViewer viewer,
+                    Predicate<ColumnViewerEditorActivationEvent> veto)
+    {
         ColumnViewerEditorActivationStrategy activationStrategy = new ColumnViewerEditorActivationStrategy(viewer)
         {
             @Override
             protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event)
             {
+                if (veto != null && veto.test(event))
+                    return false;
+
                 // activate on double-click only if MOD3 (usually the Alt key)
                 // is *not* pressed because pressing MOD3 copies cell content to
                 // the clipboard (see CopyPasteSupport)

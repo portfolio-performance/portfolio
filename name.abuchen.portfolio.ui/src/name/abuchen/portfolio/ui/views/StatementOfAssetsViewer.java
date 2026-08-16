@@ -37,14 +37,18 @@ import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
@@ -92,6 +96,7 @@ import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.AttributeComparator;
 import name.abuchen.portfolio.ui.util.CacheKey;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.ValueColorScheme;
@@ -248,6 +253,10 @@ public class StatementOfAssetsViewer
                     Element child = new Element(groupByTaxonomy, p, sortOrder);
                     answer.add(child);
                     category.addChild(child);
+
+                    // hidden categories cannot fold their positions
+                    if (!hideCategory)
+                        child.setParent(category);
                 }
                 sortOrder++;
             }
@@ -317,15 +326,30 @@ public class StatementOfAssetsViewer
     private AbstractFinanceView owner;
     private ShowHideColumnHelper support;
 
+    private Column nameColumn;
+
     private final Client client;
     private Taxonomy taxonomy;
     private Model model;
+
+    /** Identifies this viewer instance for folding state. */
+    private String viewId;
+
+    /** Classification ids of folded categories. */
+    private final Set<String> collapsedCategories = new HashSet<>();
 
     @Inject
     public StatementOfAssetsViewer(AbstractFinanceView owner, Client client)
     {
         this.owner = owner;
         this.client = client;
+        this.viewId = owner.getClass().getSimpleName();
+    }
+
+    /** Distinguishes multiple viewers in one owning view. */
+    public void setInstanceId(String instanceId)
+    {
+        this.viewId = owner.getClass().getSimpleName() + "@" + instanceId; //$NON-NLS-1$
     }
 
     @Inject
@@ -379,7 +403,10 @@ public class StatementOfAssetsViewer
 
         assets = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
         ColumnViewerToolTipSupport.enableFor(assets, ToolTip.NO_RECREATE);
-        ColumnEditingSupport.prepare(owner.getEditorActivationState(), assets);
+        // do not edit the name when clicking the collapse indicator
+        ColumnEditingSupport.prepare(owner.getEditorActivationState(), assets,
+                        event -> event.sourceEvent instanceof MouseEvent mouseEvent
+                                        && getCollapseIndicatorAt(mouseEvent.x, mouseEvent.y) != null);
         CopyPasteSupport.enableFor(assets);
 
         ImportFromFileDropAdapter.attach(this.assets.getControl(), owner.getPart());
@@ -391,6 +418,46 @@ public class StatementOfAssetsViewer
                 selectionService.setSelection(new SecuritySelection(client, securities));
             else
                 selectionService.setSelection(null);
+        });
+
+        // toggle folding from the collapse indicator
+        assets.getTable().addListener(SWT.MouseDown, event -> {
+            if (event.button != 1)
+                return;
+
+            var element = getCollapseIndicatorAt(event.x, event.y);
+            if (element != null)
+                toggleCollapsed(element);
+        });
+
+        // tree-like arrow key folding
+        assets.getTable().addListener(SWT.KeyDown, event -> {
+            if (event.stateMask != 0)
+                return;
+
+            var isForward = event.keyCode == SWT.ARROW_RIGHT;
+            if (!isForward && event.keyCode != SWT.ARROW_LEFT)
+                return;
+
+            if (!(assets.getStructuredSelection().getFirstElement() instanceof Element element))
+                return;
+
+            if (element.isCategory())
+            {
+                if (isForward && isCollapsed(element))
+                    setCollapsed(element, false);
+                else if (!isCollapsed(element))
+                    setCollapsed(element, true);
+                else
+                    return; // category has no parent row
+
+                event.doit = false;
+            }
+            else if (!isForward && element.getParent() != null)
+            {
+                assets.setSelection(new StructuredSelection(element.getParent()), true);
+                event.doit = false;
+            }
         });
 
         support = new ShowHideColumnHelper(StatementOfAssetsViewer.class.getName(), client, preference, assets, layout);
@@ -410,6 +477,7 @@ public class StatementOfAssetsViewer
         support.addColumn(column);
 
         column = new NameColumn(client, "1"); //$NON-NLS-1$
+        this.nameColumn = column;
         column.setLabelProvider(new NameColumnLabelProvider(client) // NOSONAR
         {
             @Override
@@ -432,8 +500,9 @@ public class StatementOfAssetsViewer
             @Override
             public Image getImage(Object e)
             {
-                if (((Element) e).isCategory())
-                    return null;
+                var element = (Element) e;
+                if (element.isCategory())
+                    return isCollapsed(element) ? Colors.theme().arrowRight() : Colors.theme().arrowDown();
                 return super.getImage(e);
             }
         });
@@ -642,6 +711,16 @@ public class StatementOfAssetsViewer
 
         assets.setContentProvider(ArrayContentProvider.getInstance());
 
+        // hide positions in folded categories
+        assets.addFilter(new ViewerFilter()
+        {
+            @Override
+            public boolean select(Viewer viewer, Object parentElement, Object element)
+            {
+                return !isFoldedAway((Element) element);
+            }
+        });
+
         assets.addDragSupport(DND.DROP_MOVE, //
                         new Transfer[] { SecurityTransfer.getTransfer() }, //
                         new SecurityDragListener(assets));
@@ -655,6 +734,81 @@ public class StatementOfAssetsViewer
         boldFont = resources.create(FontDescriptor.createFrom(assets.getTable().getFont()).setStyle(SWT.BOLD));
 
         return container;
+    }
+
+    /** Returns the category indicator at the given table position. */
+    private Element getCollapseIndicatorAt(int x, int y)
+    {
+        var item = assets.getTable().getItem(new Point(x, y));
+        if (item == null || !(item.getData() instanceof Element element) || !element.isCategory())
+            return null;
+
+        int columnIndex = getIndexOfNameColumn();
+        if (columnIndex < 0 || !item.getImageBounds(columnIndex).contains(x, y))
+            return null;
+
+        return element;
+    }
+
+    private int getIndexOfNameColumn()
+    {
+        var table = assets.getTable();
+        for (int index = 0; index < table.getColumnCount(); index++)
+        {
+            if (table.getColumn(index).getData(Column.class.getName()) == nameColumn)
+                return index;
+        }
+        return -1;
+    }
+
+    private boolean isCollapsed(Element element)
+    {
+        return element.isCategory()
+                        && collapsedCategories.contains(element.getCategory().getClassification().getId());
+    }
+
+    private boolean isFoldedAway(Element element)
+    {
+        var parent = element.getParent();
+        return parent != null && isCollapsed(parent);
+    }
+
+    private void toggleCollapsed(Element category)
+    {
+        setCollapsed(category, !isCollapsed(category));
+    }
+
+    private void setCollapsed(Element category, boolean collapsed)
+    {
+        var id = category.getCategory().getClassification().getId();
+
+        var hasChanged = collapsed ? collapsedCategories.add(id) : collapsedCategories.remove(id);
+        if (!hasChanged)
+            return;
+
+        // stable preference value
+        preference.setValue(getCollapsedCategoriesKey(),
+                        collapsedCategories.stream().sorted().collect(Collectors.joining(","))); //$NON-NLS-1$
+
+        assets.refresh();
+    }
+
+    private void loadCollapsedCategories()
+    {
+        collapsedCategories.clear();
+
+        for (String id : preference.getString(getCollapsedCategoriesKey()).split(",")) //$NON-NLS-1$
+        {
+            if (!id.isEmpty())
+                collapsedCategories.add(id);
+        }
+    }
+
+    /** Returns the per-viewer, per-taxonomy folding preference key. */
+    private String getCollapsedCategoriesKey()
+    {
+        return Model.class.getSimpleName() + "@collapsed@" + viewId + "@" //$NON-NLS-1$ //$NON-NLS-2$
+                        + (taxonomy != null ? taxonomy.getId() : PREFERENCE_NONE);
     }
 
     private void addPurchaseCostColumns()
@@ -1188,6 +1342,9 @@ public class StatementOfAssetsViewer
         {
             this.model = new Model(preference, client, filter, converter, date, taxonomy);
 
+            // the taxonomy might have changed since the last call
+            loadCollapsedCategories();
+
             support.invalidateCache();
             assets.setInput(model.getElements());
             assets.refresh();
@@ -1200,8 +1357,13 @@ public class StatementOfAssetsViewer
 
     public void selectSubject(Object subject)
     {
-        model.getElements().stream().filter(e -> Objects.equals(e.getSubject(), subject)).findAny()
-                        .ifPresent(e -> assets.setSelection(new StructuredSelection(e)));
+        model.getElements().stream().filter(e -> Objects.equals(e.getSubject(), subject)).findAny().ifPresent(e -> {
+            // expand first so the element has a row
+            if (isFoldedAway(e))
+                setCollapsed(e.getParent(), false);
+
+            assets.setSelection(new StructuredSelection(e));
+        });
     }
 
     public Function<Stream<Object>, Object> withSum()
@@ -1241,6 +1403,9 @@ public class StatementOfAssetsViewer
         private GroupByTaxonomy groupByTaxonomy;
         private AssetCategory category;
         private AssetPosition position;
+
+        /** Visible category row owning this position. */
+        private Element parent;
 
         private List<Element> children = new ArrayList<>();
 
@@ -1294,6 +1459,16 @@ public class StatementOfAssetsViewer
         public Stream<Element> getChildren()
         {
             return children.stream();
+        }
+
+        private void setParent(Element parent)
+        {
+            this.parent = parent;
+        }
+
+        public Element getParent()
+        {
+            return parent;
         }
 
         public int getSortOrder()
