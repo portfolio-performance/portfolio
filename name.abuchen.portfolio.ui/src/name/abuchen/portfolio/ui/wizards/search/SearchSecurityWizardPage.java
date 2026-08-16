@@ -20,6 +20,7 @@ import org.eclipse.nebula.widgets.chips.Chips;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
@@ -36,7 +37,6 @@ import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.online.impl.PortfolioPerformanceFeed;
-import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.Colors;
@@ -266,9 +266,9 @@ public class SearchSecurityWizardPage extends WizardPage
             }
 
             @Override
-            public Images getTrailingImage(ResultItem e)
+            public Image getTrailingImage(ResultItem e)
             {
-                return e.getMarkets().isEmpty() ? null : Images.ARROW_FORWARD;
+                return e.getMarkets().isEmpty() ? null : Colors.theme().arrowRight();
             }
         };
 
