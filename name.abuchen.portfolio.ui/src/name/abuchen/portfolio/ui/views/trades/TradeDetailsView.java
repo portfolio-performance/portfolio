@@ -39,11 +39,13 @@ import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.snapshot.security.SnapshotCache;
 import name.abuchen.portfolio.snapshot.trades.Trade;
 import name.abuchen.portfolio.snapshot.trades.TradeCategory;
 import name.abuchen.portfolio.snapshot.trades.TradeCategory.TradeAssignment;
 import name.abuchen.portfolio.snapshot.trades.TradeCollector;
 import name.abuchen.portfolio.snapshot.trades.TradeCollectorException;
+import name.abuchen.portfolio.snapshot.trades.TradeGrouping;
 import name.abuchen.portfolio.snapshot.trades.TradeTotals;
 import name.abuchen.portfolio.snapshot.trades.TradesGroupedByTaxonomy;
 import name.abuchen.portfolio.ui.Images;
@@ -77,14 +79,16 @@ public final class TradeDetailsView extends AbstractFinanceView
         private final List<Trade> trades;
         private final List<TradeCollectorException> errors;
         private final boolean useSecurityCurrency;
+        private final TradeGrouping grouping;
 
         public Input(Interval interval, List<Trade> trades, List<TradeCollectorException> errors,
-                        boolean useSecurityCurrency)
+                        boolean useSecurityCurrency, TradeGrouping grouping)
         {
             this.interval = interval;
             this.trades = trades;
             this.errors = errors;
             this.useSecurityCurrency = useSecurityCurrency;
+            this.grouping = grouping;
         }
 
         public Interval getInterval()
@@ -105,6 +109,11 @@ public final class TradeDetailsView extends AbstractFinanceView
         public boolean useSecurityCurrency()
         {
             return useSecurityCurrency;
+        }
+
+        public TradeGrouping getGrouping()
+        {
+            return grouping;
         }
     }
 
@@ -184,6 +193,7 @@ public final class TradeDetailsView extends AbstractFinanceView
     {
         private final Input preselectedInput;
         private final boolean useSecCurrency;
+        private final TradeGrouping jobGrouping;
         private final CurrencyConverter jobConverter;
         private final Client jobFilteredClient;
         private final boolean onlyOpen;
@@ -195,14 +205,15 @@ public final class TradeDetailsView extends AbstractFinanceView
         private final boolean hideTotalsAtTheTopJob;
         private final boolean hideTotalsAtTheBottomJob;
 
-        UpdateTradesJob(Input preselectedInput, boolean useSecCurrency, CurrencyConverter converter,
-                        Client filteredClient, boolean onlyOpen, boolean onlyClosed, boolean onlyProfitable,
-                        boolean onlyLossMaking, Pattern filterPattern, Taxonomy taxonomy, boolean hideTotalsAtTheTop,
-                        boolean hideTotalsAtTheBottom)
+        UpdateTradesJob(Input preselectedInput, boolean useSecCurrency, TradeGrouping grouping,
+                        CurrencyConverter converter, Client filteredClient, boolean onlyOpen, boolean onlyClosed,
+                        boolean onlyProfitable, boolean onlyLossMaking, Pattern filterPattern, Taxonomy taxonomy,
+                        boolean hideTotalsAtTheTop, boolean hideTotalsAtTheBottom)
         {
             super(Messages.LabelTrades);
             this.preselectedInput = preselectedInput;
             this.useSecCurrency = useSecCurrency;
+            this.jobGrouping = grouping;
             this.jobConverter = converter;
             this.jobFilteredClient = filteredClient;
             this.onlyOpen = onlyOpen;
@@ -224,7 +235,7 @@ public final class TradeDetailsView extends AbstractFinanceView
             try
             {
                 Input data = preselectedInput != null ? preselectedInput
-                                : collectAllTrades(useSecCurrency, jobConverter, jobFilteredClient);
+                                : collectAllTrades(useSecCurrency, jobGrouping, jobConverter, jobFilteredClient);
 
                 if (monitor != null && monitor.isCanceled())
                     return Status.CANCEL_STATUS;
@@ -293,6 +304,8 @@ public final class TradeDetailsView extends AbstractFinanceView
     private static final String PREF_TAXONOMY = TradeDetailsView.class.getSimpleName() + "-taxonomy"; //$NON-NLS-1$
     private static final String PREF_TAXONOMY_NONE = "@none"; //$NON-NLS-1$
 
+    /* package */ static final String PREF_TRADE_GROUPING = TradeDetailsView.class.getSimpleName() + "-tradeGrouping"; //$NON-NLS-1$
+
     private static final String ID_WARNING_TOOL_ITEM = "warning"; //$NON-NLS-1$
 
     @Inject
@@ -322,6 +335,13 @@ public final class TradeDetailsView extends AbstractFinanceView
      */
     private boolean useSecurityCurrency = false;
 
+    /**
+     * Indicates how the transactions are grouped into trades. If the trades are
+     * preselected, this is the grouping of the preselected input and not the
+     * grouping stored in the preferences.
+     */
+    private TradeGrouping grouping = TradeGrouping.COMBINED;
+
     private MutableBoolean usePreselectedTrades = new MutableBoolean(false);
 
     private MutableBoolean onlyOpen = new MutableBoolean(false);
@@ -344,7 +364,23 @@ public final class TradeDetailsView extends AbstractFinanceView
             this.input = input;
             this.usePreselectedTrades.setValue(true);
             this.useSecurityCurrency = input.useSecurityCurrency();
+            this.grouping = input.getGrouping();
         }
+    }
+
+    /* package */ TradeGrouping getGrouping()
+    {
+        return grouping;
+    }
+
+    /**
+     * Returns the input grouping for preselected trades, otherwise the stored
+     * preference.
+     */
+    /* package */ static TradeGrouping determineGrouping(Input preselectedInput, IPreferenceStore preferences)
+    {
+        return preselectedInput != null ? preselectedInput.getGrouping()
+                        : TradeGrouping.fromString(preferences.getString(PREF_TRADE_GROUPING));
     }
 
     @PostConstruct
@@ -354,11 +390,13 @@ public final class TradeDetailsView extends AbstractFinanceView
     }
 
     @PostConstruct
-    private void readPreferences(IPreferenceStore preferences)
+    /* package */ void readPreferences(IPreferenceStore preferences)
     {
         // read preferences only if not preselected by the setTrades method
         if (usePreselectedTrades.isFalse())
             useSecurityCurrency = preferences.getBoolean(this.getClass().getSimpleName() + PREF_USE_SECURITY_CURRENCY);
+
+        grouping = determineGrouping(usePreselectedTrades.isTrue() ? input : null, preferences);
 
         hideTotalsAtTheTop = preferences.getBoolean(PREF_HIDE_TOTALS_TOP);
         hideTotalsAtTheBottom = preferences.getBoolean(PREF_HIDE_TOTALS_BOTTOM);
@@ -467,6 +505,23 @@ public final class TradeDetailsView extends AbstractFinanceView
             action.setEnabled(usePreselectedTrades.isFalse());
 
             manager.add(action);
+
+            manager.add(new Separator());
+            manager.add(new LabelOnly(Messages.LabelTradeGrouping));
+
+            for (var tradeGrouping : TradeGrouping.values())
+            {
+                var groupingAction = new SimpleAction(tradeGrouping.getLabel(), a -> {
+                    grouping = tradeGrouping;
+                    getPreferenceStore().setValue(PREF_TRADE_GROUPING, tradeGrouping.name());
+                    update();
+                });
+
+                groupingAction.setChecked(tradeGrouping == grouping);
+                groupingAction.setEnabled(usePreselectedTrades.isFalse());
+
+                manager.add(groupingAction);
+            }
         }));
     }
 
@@ -715,10 +770,10 @@ public final class TradeDetailsView extends AbstractFinanceView
                         : clientFilterDropDown.getSelectedFilter().filter(getClient());
         setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
 
-        currentUpdateJob = new UpdateTradesJob(preselectedInput, this.useSecurityCurrency, this.converter,
-                        filteredClient, this.onlyOpen.isTrue(), this.onlyClosed.isTrue(), this.onlyProfitable.isTrue(),
-                        this.onlyLossMaking.isTrue(), this.filterPattern, this.taxonomy, this.hideTotalsAtTheTop,
-                        this.hideTotalsAtTheBottom);
+        currentUpdateJob = new UpdateTradesJob(preselectedInput, this.useSecurityCurrency, this.grouping,
+                        this.converter, filteredClient, this.onlyOpen.isTrue(), this.onlyClosed.isTrue(),
+                        this.onlyProfitable.isTrue(), this.onlyLossMaking.isTrue(), this.filterPattern, this.taxonomy,
+                        this.hideTotalsAtTheTop, this.hideTotalsAtTheBottom);
         currentUpdateJob.setSystem(true);
         currentUpdateJob.schedule();
     }
@@ -834,17 +889,23 @@ public final class TradeDetailsView extends AbstractFinanceView
         return false;
     }
 
-    private Input collectAllTrades(boolean useSecCurrency, CurrencyConverter currentConverter, Client filteredClient)
+    private Input collectAllTrades(boolean useSecCurrency, TradeGrouping tradeGrouping,
+                    CurrencyConverter currentConverter, Client filteredClient)
     {
         List<Trade> trades = new ArrayList<>();
         List<TradeCollectorException> errors = new ArrayList<>();
+
+        // one cache for this collection run: it is shared by the collectors of
+        // all securities and it is kept alive by the trades that captured it
+        var snapshotCache = new SnapshotCache();
+
         getClient().getSecurities().forEach(s -> {
             try
             {
                 CurrencyConverter converterToUse = useSecCurrency && s.getCurrencyCode() != null
                                 ? currentConverter.with(s.getCurrencyCode())
                                 : currentConverter;
-                var collector = new TradeCollector(filteredClient, converterToUse);
+                var collector = new TradeCollector(filteredClient, converterToUse, tradeGrouping, snapshotCache);
                 trades.addAll(collector.collect(s));
             }
             catch (TradeCollectorException e)
@@ -853,7 +914,7 @@ public final class TradeDetailsView extends AbstractFinanceView
             }
         });
 
-        return new Input(null, trades, errors, useSecCurrency);
+        return new Input(null, trades, errors, useSecCurrency, tradeGrouping);
     }
 
     /**

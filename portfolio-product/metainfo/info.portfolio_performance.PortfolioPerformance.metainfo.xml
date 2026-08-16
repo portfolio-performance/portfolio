@@ -37,6 +37,32 @@
 	    <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.87.0" date="2026-08-16">
+      <description>
+        <ul>
+          <li>New: Trades can now be grouped by lot: each purchase creates its own trade, and sales are split across the lots they close.</li>
+          <li>New: Categories in the statement of assets can be collapsed and expanded; the collapsed state is remembered per file and taxonomy.</li>
+          <li>New: The line width in the historical price chart can now be set to 1, 2, or 3 pixels via the chart menu.</li>
+          <li>Improvement: Enhanced PDF importers for Barclays Bank Ireland, comdirect, Consorsbank, DAB, Raiffeisen Bankengruppe, and Trade Republic.</li>
+          <li>Improvement: The title of the Trades view now reflects the selected accounts and portfolios.</li>
+          <li>Fix: Importing a large number of PDF documents no longer fails with a "No more handles" error.</li>
+          <li>Fix: Searching for a new instrument no longer aborts with an error when a search provider returns an unexpected answer.</li>
+          <li>Fix: Trades now use the exchange rate recorded on the transaction instead of the daily rate.</li>
+          <li>Fix: Fixed a sporadic error in the portfolio balance chart when it was updated twice in quick succession.</li>
+          <li>Fix: The donut chart now sorts consistently with the pie chart.</li>
+          <li xml:lang="de">Neu: Trades können jetzt je Zugang gruppiert werden: Jeder Kauf erzeugt einen eigenen Trade, und Verkäufe werden auf die Zugänge aufgeteilt, die dadurch geschlossen werden.</li>
+          <li xml:lang="de">Neu: Kategorien in der Vermögensaufstellung lassen sich ein- und ausklappen; der eingeklappte Zustand wird pro Datei und Klassifizierung gespeichert.</li>
+          <li xml:lang="de">Neu: Die Linienbreite im Kursdiagramm eines Wertpapiers lässt sich jetzt über das Diagramm-Menü auf 1, 2 oder 3 Pixel einstellen.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für Barclays Bank Ireland, comdirect, Consorsbank, DAB, Raiffeisen Bankengruppe und Trade Republic wurden verbessert.</li>
+          <li xml:lang="de">Verbesserung: Der Titel der Trades-Ansicht berücksichtigt jetzt die ausgewählten Konten und Depots.</li>
+          <li xml:lang="de">Fehlerbehebung: Der Import vieler PDF-Dokumente schlägt nicht mehr mit dem Fehler "No more handles" fehl.</li>
+          <li xml:lang="de">Fehlerbehebung: Die Suche nach einem neuen Wertpapier bricht nicht mehr ab, wenn ein Suchanbieter eine unerwartete Antwort liefert.</li>
+          <li xml:lang="de">Fehlerbehebung: Trades verwenden jetzt den in der Buchung hinterlegten Wechselkurs statt des Tageskurses.</li>
+          <li xml:lang="de">Fehlerbehebung: Ein sporadischer Fehler im Diagramm zum Depotbestand wurde behoben, der auftrat, wenn es zweimal kurz hintereinander aktualisiert wurde.</li>
+          <li xml:lang="de">Fehlerbehebung: Das Donut-Diagramm sortiert jetzt wie das Kreisdiagramm.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.86.1" date="2026-07-30">
       <description>
         <ul>

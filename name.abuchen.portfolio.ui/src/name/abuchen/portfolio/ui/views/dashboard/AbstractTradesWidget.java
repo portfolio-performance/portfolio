@@ -23,9 +23,11 @@ import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
+import name.abuchen.portfolio.snapshot.security.SnapshotCache;
 import name.abuchen.portfolio.snapshot.trades.Trade;
 import name.abuchen.portfolio.snapshot.trades.TradeCollector;
 import name.abuchen.portfolio.snapshot.trades.TradeCollectorException;
+import name.abuchen.portfolio.snapshot.trades.TradeGrouping;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
@@ -111,6 +113,10 @@ import name.abuchen.portfolio.util.TextUtil;
                                 List<Trade> trades = new ArrayList<>();
                                 List<TradeCollectorException> errors = new ArrayList<>();
 
+                                // one cache for this dashboard run, retained
+                                // only by the trades that use it
+                                var snapshotCache = new SnapshotCache();
+
                                 getClient().getSecurities().forEach(s -> {
                                     try
                                     {
@@ -118,7 +124,10 @@ import name.abuchen.portfolio.util.TextUtil;
                                         if (useSecurityCurrency() && s.getCurrencyCode() != null)
                                             converter = converter.with(s.getCurrencyCode());
 
-                                        var collector = new TradeCollector(filteredClient, converter);
+                                        // the widgets do not offer the trade
+                                        // grouping to the user
+                                        var collector = new TradeCollector(filteredClient, converter,
+                                                        TradeGrouping.COMBINED, snapshotCache);
                                         trades.addAll(collector.collect(s));
                                     }
                                     catch (TradeCollectorException error)
@@ -127,7 +136,8 @@ import name.abuchen.portfolio.util.TextUtil;
                                     }
                                 });
 
-                                return new TradeDetailsView.Input(interval, trades, errors, useSecurityCurrency());
+                                return new TradeDetailsView.Input(interval, trades, errors, useSecurityCurrency(),
+                                                TradeGrouping.COMBINED);
                             });
 
             // filter trades on the *cached* result (which includes all trades)
@@ -135,7 +145,7 @@ import name.abuchen.portfolio.util.TextUtil;
 
             return new TradeDetailsView.Input(input.getInterval(),
                             input.getTrades().stream().filter(getFilter(interval)).collect(toMutableList()),
-                            input.getErrors(), input.useSecurityCurrency());
+                            input.getErrors(), input.useSecurityCurrency(), input.getGrouping());
         };
     }
 

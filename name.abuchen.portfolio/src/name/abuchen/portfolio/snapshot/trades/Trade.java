@@ -28,6 +28,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.filter.ClientTransactionFilter;
 import name.abuchen.portfolio.snapshot.filter.ReadOnlyPortfolio;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.security.SnapshotCache;
 import name.abuchen.portfolio.util.Dates;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.LazyValue;
@@ -51,6 +52,13 @@ public class Trade implements Adaptable
     private LocalDateTime start;
     private LocalDateTime end;
     private final long shares;
+
+    /**
+     * Real closing transaction, or null for open trades. Set by the collector
+     * because transaction type alone is ambiguous for short trades, and
+     * {@link ClientTransactionFilter} requires the original object.
+     */
+    private PortfolioTransaction realClosingTransaction;
 
     private List<TransactionPair<PortfolioTransaction>> transactions = new ArrayList<>();
 
@@ -76,7 +84,7 @@ public class Trade implements Adaptable
         return transactions.get(0).getTransaction().getType().isPurchase();
     }
 
-    /* package */ void calculate(Client client, CurrencyConverter converter)
+    /* package */ void calculate(Client client, CurrencyConverter converter, SnapshotCache snapshotCache)
     {
         boolean isLong = this.isLong();
 
@@ -148,9 +156,9 @@ public class Trade implements Adaptable
         calculateIRR(converter);
 
         this.entryValueMovingAverage = new LazyValue<>(
-                        () -> getMovingAverageCost(client, converter, TaxesAndFees.INCLUDED));
+                        () -> getMovingAverageCost(client, converter, snapshotCache, TaxesAndFees.INCLUDED));
         this.entryValueMovingAverageWithoutTaxesAndFees = new LazyValue<>(
-                        () -> getMovingAverageCost(client, converter, TaxesAndFees.NOT_INCLUDED));
+                        () -> getMovingAverageCost(client, converter, snapshotCache, TaxesAndFees.NOT_INCLUDED));
     }
 
     private void calculateIRR(CurrencyConverter converter)
@@ -267,6 +275,21 @@ public class Trade implements Adaptable
     /* package */ void setEnd(LocalDateTime end)
     {
         this.end = end;
+    }
+
+    /** Sets the original transaction that closed this trade. */
+    /* package */ void setRealClosingTransaction(PortfolioTransaction transaction)
+    {
+        this.realClosingTransaction = transaction;
+    }
+
+    /**
+     * Returns the original closing transaction, unlike
+     * {@link #getClosingTransaction()}, which may return a split copy.
+     */
+    public Optional<PortfolioTransaction> getRealClosingTransaction()
+    {
+        return Optional.ofNullable(realClosingTransaction);
     }
 
     public LocalDateTime getStart()
@@ -411,27 +434,28 @@ public class Trade implements Adaptable
                         shares, start, entryValue, end, exitValue);
     }
 
-    private Money getMovingAverageCost(Client client, CurrencyConverter converter, TaxesAndFees taxesAndFees)
+    private Money getMovingAverageCost(Client client, CurrencyConverter converter, SnapshotCache snapshotCache,
+                    TaxesAndFees taxesAndFees)
     {
-        var closingTransaction = transactions.stream() //
-                        .filter(t -> t.getTransaction().getType().isLiquidation()) //
-                        .findFirst().map(t -> t.getTransaction());
+        var interval = Interval.of(LocalDate.MIN, realClosingTransaction != null
+                        ? realClosingTransaction.getDateTime().toLocalDate()
+                        : LocalDate.now());
 
-        Client filteredClient = client;
-        if (closingTransaction.isPresent())
-        {
+        // open trades share one unfiltered snapshot across all securities
+
+        var snapshot = snapshotCache.lookup(client, realClosingTransaction, converter, interval, () -> {
+
             // if a closing transaction is present, we need to calculate the
-            // moving average costs based on all transactions before the
-            // closing transaction
+            // moving average costs based on all transactions before the closing
+            // transaction
 
-            filteredClient = new ClientTransactionFilter(security, closingTransaction.get()).filter(client);
-        }
+            Client filteredClient = realClosingTransaction != null
+                            ? new ClientTransactionFilter(security, realClosingTransaction).filter(client)
+                            : client;
 
-        var snapshot = LazySecurityPerformanceSnapshot.create(filteredClient, converter,
-                        Interval.of(LocalDate.MIN,
-                                        closingTransaction.isPresent()
-                                                        ? closingTransaction.get().getDateTime().toLocalDate()
-                                                        : LocalDate.now()));
+            return LazySecurityPerformanceSnapshot.create(filteredClient, converter, interval);
+        });
+
         var r = snapshot.getRecord(security);
         if (r.isEmpty())
             return null;

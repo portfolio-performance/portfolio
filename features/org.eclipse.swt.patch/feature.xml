@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.swt.patch"
       label="SWT Patch for Portfolio Performance"
-      version="0.86.2.qualifier"
+      version="0.87.0"
       provider-name="Portfolio Performance">
 
    <!--
