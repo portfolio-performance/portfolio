@@ -8,9 +8,7 @@ import java.time.temporal.ChronoUnit;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import jakarta.inject.Inject;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -18,17 +16,12 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.ui.di.UIEventTopic;
-import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.graphics.Image;
-import org.osgi.service.event.Event;
 
 import name.abuchen.portfolio.money.ExchangeRateProvider;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
@@ -37,7 +30,6 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.log.LogEntryCache;
-import name.abuchen.portfolio.ui.update.UpdateHelper;
 import name.abuchen.portfolio.ui.util.ProgressMonitorFactory;
 import name.abuchen.portfolio.ui.util.RecentFilesCache;
 import name.abuchen.portfolio.ui.util.UnrecognizedPDFCache;
@@ -149,38 +141,6 @@ public class StartupAddon
     public void setupUnrecognizedPdfCache(UnrecognizedPDFCache cache)
     {
         // force creation of the unrecognized-PDF cache
-    }
-
-    @Inject
-    @Optional
-    public void checkForUpdates(@UIEventTopic(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE) Event event, // NOSONAR
-                    @Preference(value = UIConstants.Preferences.AUTO_UPDATE) boolean autoUpdate)
-    {
-        if (autoUpdate && UpdateHelper.isInAppUpdateEnabled())
-        {
-            Job job = new Job(Messages.JobMsgCheckingForUpdates)
-            {
-
-                @Override
-                protected IStatus run(IProgressMonitor monitor)
-                {
-                    try
-                    {
-                        monitor.beginTask(Messages.JobMsgCheckingForUpdates, 200);
-                        UpdateHelper updateHelper = new UpdateHelper();
-                        updateHelper.runUpdate(monitor, true);
-                    }
-                    catch (CoreException e) // NOSONAR
-                    {
-                        PortfolioPlugin.log(e.getStatus());
-                    }
-                    return Status.OK_STATUS;
-                }
-
-            };
-            job.setSystem(true);
-            job.schedule(3000);
-        }
     }
 
     @PostConstruct

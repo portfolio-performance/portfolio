@@ -968,6 +968,7 @@ public class Messages extends NLS
     public static String LabelUnknown;
     public static String LabelUnnamedFile;
     public static String LabelUnnamedXml;
+    public static String LabelUpdateAvailableShort;
     public static String LabelUpdatedConfiguration;
     public static String LabelUpdatesAvailable;
     public static String LabelUseExistingSecurity;
