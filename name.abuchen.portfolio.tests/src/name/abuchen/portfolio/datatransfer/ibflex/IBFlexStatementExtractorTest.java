@@ -3491,6 +3491,33 @@ public class IBFlexStatementExtractorTest
     }
 
     @Test
+    public void testDividendReversalKeepsNegativeAmount() throws IOException
+    {
+        var extractor = new IBFlexStatementExtractor(new Client());
+        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile30.xml");
+        var tempFile = createTempFile(activityStatement);
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(Collections.singletonList(tempFile), errors);
+
+        assertThat(errors, empty());
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-06-16"), hasShares(-8), //
+                        hasSecurity(hasTicker("TEST")), //
+                        hasAmount("USD", -0.70))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-06-16"), hasShares(9), //
+                        hasSecurity(hasTicker("TEST")), //
+                        hasAmount("USD", 0.76))));
+
+        var cashDelta = results.stream().filter(TransactionItem.class::isInstance).map(TransactionItem.class::cast)
+                        .map(TransactionItem::getSubject).map(AccountTransaction.class::cast)
+                        .mapToLong(t -> t.getType().isDebit() ? -t.getAmount() : t.getAmount()).sum();
+        assertThat(cashDelta, is(0L));
+    }
+
+    @Test
     public void testIBFlexStatementFile27() throws IOException
     {
         // Test minor unit currency handling: IBKR provides GBP, security is GBX

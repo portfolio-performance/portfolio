@@ -459,6 +459,11 @@ public class IBFlexStatementExtractor implements Extractor
                     break;
                 case "Dividends":
                 case "Payment In Lieu Of Dividends":
+                    // Dividend reversals are reported as negative cash transactions.
+                    // Keep that sign instead of turning the correction into income.
+                    if (asDecimal(element.getAttribute("amount")).signum() < 0)
+                        amount = Money.of(amount.getCurrencyCode(), -amount.getAmount());
+
                     // Set the Symbol
                     if (element.getAttribute("symbol").length() > 0)
                         accountTransaction.setSecurity(this.getOrCreateSecurity(element, true));
