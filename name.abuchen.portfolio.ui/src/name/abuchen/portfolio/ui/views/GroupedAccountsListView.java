@@ -70,6 +70,7 @@ import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.swt.StyledLabel;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -225,6 +226,7 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
     protected void addButtons(ToolBarManager toolBar)
     {
         addNewButton(toolBar);
+        addExportButton(toolBar);
         addConfigButton(toolBar);
     }
 
@@ -239,6 +241,12 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
                                             // select the newly created account
                                             groupedAccounts.setSelection(new StructuredSelection(newItem));
                                         })))));
+    }
+
+    private void addExportButton(ToolBarManager toolBar)
+    {
+        toolBar.add(new SimpleAction(Messages.MenuExportData, Images.EXPORT,
+                        a -> new TreeViewerCSVExporter(groupedAccounts).export(getTitle() + ".csv"))); //$NON-NLS-1$
     }
 
     private void addConfigButton(final ToolBarManager toolBar)
