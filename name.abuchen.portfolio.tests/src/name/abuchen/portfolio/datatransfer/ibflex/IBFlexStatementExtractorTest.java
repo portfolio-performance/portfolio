@@ -3530,6 +3530,38 @@ public class IBFlexStatementExtractorTest
         assertThat(cashDelta, is(0L));
     }
 
+    /// A withholding tax lands on the dividend the user can actually import.
+    @Test
+    public void testDividendReversalDoesNotConsumeTheWithholdingTax() throws IOException
+    {
+        var extractor = new IBFlexStatementExtractor(new Client());
+        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile31.xml");
+        var tempFile = createTempFile(activityStatement);
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(Collections.singletonList(tempFile), errors);
+
+        assertThat(errors, empty());
+
+        // postProcessing pairs a tax with one dividend per date and security,
+        // and removes the tax item. The reversal and the replacement share both,
+        // so whichever is matched first takes the tax. It has to be the
+        // replacement: the reversal is flagged and never reaches the portfolio,
+        // which would drop the tax entirely.
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-06-16"), hasShares(9), //
+                        hasSecurity(hasTicker("TEST")), //
+                        hasAmount("USD", 0.65), hasGrossValue("USD", 0.76), //
+                        hasTaxes("USD", 0.11), hasFees("USD", 0.00))));
+
+        // The reversal keeps the amount IB reported and stays flagged.
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorCashDividendCorrectionUnmatched, //
+                        dividend( //
+                                        hasDate("2026-06-16"), hasShares(-8), //
+                                        hasAmount("USD", -0.70)))));
+    }
+
     @Test
     public void testIBFlexStatementFile27() throws IOException
     {

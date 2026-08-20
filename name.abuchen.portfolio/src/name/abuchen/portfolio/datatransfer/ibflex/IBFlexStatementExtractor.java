@@ -1473,8 +1473,14 @@ public class IBFlexStatementExtractor implements Extractor
                         .toList();
 
         // Filter transactions by dividend transactions
+        //
+        // Failed items are left out: matchTransactionPair keeps one dividend
+        // per date and security and then deletes the tax item, so a flagged
+        // dividend correction sharing both with its replacement would take the
+        // tax and carry it out of the import.
         List<Item> dividendTransactionList = items.stream() //
                         .filter(TransactionItem.class::isInstance) //
+                        .filter(i -> !i.isFailure()) //
                         .filter(i -> i.getSubject() instanceof AccountTransaction) //
                         .filter(i -> AccountTransaction.Type.DIVIDENDS //
                                         .equals((((AccountTransaction) i.getSubject()).getType()))) //
