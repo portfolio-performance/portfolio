@@ -29,8 +29,8 @@ var thePieChart = {
         this.radius = (Math.min(this.width, this.height) / 2) - 10;
 
         this.pie = d3.layout.pie()
-            .startAngle(Math.PI / 2)
-            .endAngle(2.5 * Math.PI)
+            .startAngle(0)
+            .endAngle(2 * Math.PI)
             .value(function(d) { return d.value; })
             .sort(null);
 
