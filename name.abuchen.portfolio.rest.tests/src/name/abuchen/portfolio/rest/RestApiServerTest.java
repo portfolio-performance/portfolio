@@ -37,7 +37,7 @@ public class RestApiServerTest
         var router = new Router();
         router.add("GET", "/v1/ping", request -> Response.json(200, JsonParser.parseString("{\"pong\":true}")));
         router.add("GET", "/v1/echo", request -> Response.json(200,
-                        JsonParser.parseString("{\"name\":\"" + request.queryParam("name") + "\"}")));
+                        JsonParser.parseString("{\"name\":\"" + request.queryParam("name") + "\"}")), "name");
         router.add("GET", "/v1/openapi.yaml",
                         request -> Response.of(200, "application/yaml", "openapi: 3.1.0\n".getBytes(StandardCharsets.UTF_8)));
         router.add("POST", "/v1/auth/requests",
@@ -81,6 +81,24 @@ public class RestApiServerTest
                         .build(), HttpResponse.BodyHandlers.ofString());
         assertThat(response.statusCode(), is(200));
         assertThat(response.body(), containsString("a b"));
+    }
+
+    /**
+     * The strict query-parameter check, seen the way a client sees it: the
+     * unknown name comes back as problem+json over the wire, not as a 200 the
+     * caller has to second-guess.
+     */
+    @Test
+    public void testUnknownQueryParameterIs400Problem() throws Exception
+    {
+        var response = http.send(request("/v1/echo?nickname=a").header("Authorization", "Bearer " + TOKEN).GET()
+                        .build(), HttpResponse.BodyHandlers.ofString());
+
+        assertThat(response.statusCode(), is(400));
+        assertThat(response.headers().firstValue("Content-Type").orElse(""), is("application/problem+json"));
+        assertThat(response.body(), containsString("invalid-request"));
+        assertThat(response.body(), containsString("unknown-parameter"));
+        assertThat(response.body(), containsString("nickname"));
     }
 
     @Test
