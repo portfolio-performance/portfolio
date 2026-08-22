@@ -126,17 +126,17 @@ public class AMFIIndiaQuoteFeed implements QuoteFeed
         for (String line : lines)
         {
             // @formatter:off
-            // Scheme Code;ISIN Div Payout/ ISIN Growth;ISIN Div Reinvestment;Scheme Name;Net Asset Value;Date
+            // Scheme Code;ISIN Div Payout/ ISIN Growth;ISIN Div Reinvestment;Scheme Name;Plan;Option;Net Asset Value;Date
             // @formatter:on
             String[] words = line.split(";"); //$NON-NLS-1$
-            if (words.length < 6)
+            if (words.length < 8)
                 continue;
 
             String schemeCode = words[0];
             String isin1 = words[1];
             String isin2 = words[2];
-            String nav = words[4];
-            String date = words[5];
+            String nav = words[6];
+            String date = words[7];
 
             try
             {
