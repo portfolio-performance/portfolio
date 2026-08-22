@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.is;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -30,16 +31,7 @@ import name.abuchen.portfolio.rest.FileAccessRegistry;
 import name.abuchen.portfolio.rest.PairingService;
 import name.abuchen.portfolio.rest.testsupport.FakeHost;
 
-/**
- * The query parameters of the calculation endpoints, exercised through the real
- * routing table rather than by calling a handler directly.
- * <p/>
- * Every other test in this fragment hands the handlers their arguments
- * positionally, which says nothing about the name a client has to put in the
- * query string. Without this, renaming a parameter in {@code ApiRoutes} alone -
- * or forgetting to - leaves the whole suite green while the endpoint silently
- * ignores what the specification tells clients to send.
- */
+/** Exercises calculation query parameters through the real routing table. */
 @SuppressWarnings("nls")
 public class CalculationQueryParametersTest
 {
@@ -90,58 +82,77 @@ public class CalculationQueryParametersTest
     @Test
     public void testReportingCurrencyIsHonouredOnEveryCalculationRoute() throws Exception
     {
-        for (String path : calculationRoutes())
-            assertThat("on " + path, get(path, Map.of("openingDate", "2024-01-01", "closingDate", "2024-12-31",
-                            "date", "2024-12-31", "reportingCurrency", "USD")).get("reportingCurrency").getAsString(),
+        for (var route : calculationRoutes().entrySet())
+            assertThat("on " + route.getKey(),
+                            get(route.getKey(), with(route.getValue(), "reportingCurrency", "USD"))
+                                            .get("reportingCurrency").getAsString(),
                             is("USD"));
     }
 
-    /**
-     * And the name the parameter used to have is no longer one: an unknown
-     * query parameter is ignored, so a client still sending `?currency=` would
-     * quietly get the base currency instead of an error. Pinning it here is the
-     * only thing that keeps the rename honest.
-     */
+    /** the former {@code currency} parameter name is rejected on every calculation route */
     @Test
-    public void testTheFormerParameterNameNoLongerSelectsTheCurrency() throws Exception
+    public void testTheFormerParameterNameIsRejected()
     {
-        for (String path : calculationRoutes())
-            assertThat("on " + path, get(path, Map.of("openingDate", "2024-01-01", "closingDate", "2024-12-31",
-                            "date", "2024-12-31", "currency", "USD")).get("reportingCurrency").getAsString(),
-                            is("EUR"));
+        for (var route : calculationRoutes().entrySet())
+        {
+            try
+            {
+                get(route.getKey(), with(route.getValue(), "currency", "USD"));
+                throw new AssertionError("expected ApiException on " + route.getKey());
+            }
+            catch (Exception e)
+            {
+                if (!(e instanceof ApiException problem))
+                    throw new AssertionError("expected ApiException on " + route.getKey(), e);
+
+                assertThat("on " + route.getKey(), problem.getStatus(), is(400));
+                assertThat("on " + route.getKey(), problem.getErrors().get(0).field(), is("currency"));
+                assertThat("on " + route.getKey(), problem.getErrors().get(0).code(), is("unknown-parameter"));
+            }
+        }
     }
 
     /** the field error names the parameter the client actually sent */
     @Test
     public void testUnknownCurrencyErrorNamesTheParameter()
     {
-        for (String path : calculationRoutes())
+        for (var route : calculationRoutes().entrySet())
         {
             try
             {
-                get(path, Map.of("openingDate", "2024-01-01", "closingDate", "2024-12-31", "date", "2024-12-31",
-                                "reportingCurrency", "ZZZ"));
-                throw new AssertionError("expected ApiException on " + path);
+                get(route.getKey(), with(route.getValue(), "reportingCurrency", "ZZZ"));
+                throw new AssertionError("expected ApiException on " + route.getKey());
             }
             catch (Exception e)
             {
                 if (!(e instanceof ApiException problem))
-                    throw new AssertionError("expected ApiException on " + path, e);
+                    throw new AssertionError("expected ApiException on " + route.getKey(), e);
 
-                assertThat("on " + path, problem.getStatus(), is(400));
-                assertThat("on " + path, problem.getErrors().get(0).field(), is("reportingCurrency"));
-                assertThat("on " + path, problem.getErrors().get(0).code(), is("unknown-currency"));
+                assertThat("on " + route.getKey(), problem.getStatus(), is(400));
+                assertThat("on " + route.getKey(), problem.getErrors().get(0).field(), is("reportingCurrency"));
+                assertThat("on " + route.getKey(), problem.getErrors().get(0).code(), is("unknown-currency"));
             }
         }
     }
 
     /** every route that converts a whole report into a reporting currency */
-    private List<String> calculationRoutes()
+    private Map<String, Map<String, String>> calculationRoutes()
     {
-        return List.of("/v1/files/" + fileId + "/holdings", //
-                        "/v1/files/" + fileId + "/performance", //
-                        "/v1/files/" + fileId + "/performance/instruments", //
-                        "/v1/files/" + fileId + "/performance/instruments/" + security.getUUID());
+        var interval = Map.of("openingDate", "2024-01-01", "closingDate", "2024-12-31");
+
+        var routes = new LinkedHashMap<String, Map<String, String>>();
+        routes.put("/v1/files/" + fileId + "/holdings", Map.of("date", "2024-12-31"));
+        routes.put("/v1/files/" + fileId + "/performance", interval);
+        routes.put("/v1/files/" + fileId + "/performance/instruments", interval);
+        routes.put("/v1/files/" + fileId + "/performance/instruments/" + security.getUUID(), interval);
+        return routes;
+    }
+
+    private static Map<String, String> with(Map<String, String> query, String name, String value)
+    {
+        var result = new LinkedHashMap<>(query);
+        result.put(name, value);
+        return result;
     }
 
     private JsonObject get(String path, Map<String, String> query) throws Exception

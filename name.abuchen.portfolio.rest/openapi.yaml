@@ -66,6 +66,26 @@ info:
     portfolio data**. Calling any method that a path does not list returns
     `405 method-not-allowed`.
 
+    ## Query parameters
+
+    An operation accepts only the query parameters listed for it here, and an
+    operation that lists none accepts none. Anything else is rejected
+    `400 invalid-request`, with one `errors` entry per offending name
+    (`code: unknown-parameter`) that names the parameters the endpoint does
+    accept — send two typos and you learn about both in one round trip.
+
+    This is deliberate rather than lenient: an ignored parameter would be
+    answered with a complete, confident-looking report computed from defaults.
+    `GET .../holdings?currency=USD` — a plausible misremembering of
+    `reportingCurrency` — would return the base-currency statement of assets,
+    and only a client that compared the echoed `reportingCurrency` against what
+    it sent would notice. Failing the request is the only answer that cannot be
+    mistaken for the requested one.
+
+    **Names are case-sensitive**, exactly as spelled here: `reportingcurrency`
+    is rejected, not treated as `reportingCurrency`. Accepting a case variant
+    would mean guessing, and the response says so, naming the parameter meant.
+
     ## Writes are not saved
 
     A write (`PATCH`, `DELETE`) mutates the **in-memory** file and marks it dirty,
@@ -129,6 +149,8 @@ paths:
             application/yaml:
               schema:
                 type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "403":
           $ref: "#/components/responses/Forbidden"
         "500":
@@ -219,6 +241,8 @@ paths:
                   value:
                     status: approved
                     token: wZ4mJc9Y3K…
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "403":
           $ref: "#/components/responses/Forbidden"
         "404":
@@ -255,6 +279,8 @@ paths:
                         alias: main
                         label: portfolio.xml
                         path: /Users/me/portfolio.xml
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -282,6 +308,8 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Instrument"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -318,6 +346,8 @@ paths:
                     wkn: "865985"
                     tickerSymbol: AAPL
                     note: Core holding
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -387,6 +417,8 @@ paths:
       responses:
         "204":
           description: Deleted
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -426,6 +458,8 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/AttributeDefinition"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -457,6 +491,8 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/CashAccount"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -490,6 +526,8 @@ paths:
                     name: Cash Account
                     currencyCode: EUR
                     note: Settlement account
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -521,6 +559,8 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/InvestmentAccount"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -557,6 +597,8 @@ paths:
                     name: Broker
                     referenceCashAccount: c4b2a1e0-3f6d-4a2e-8b1c-5d7f9a0e2c46
                     note: Main brokerage
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -1717,6 +1759,7 @@ components:
             - invalid-range
             - too-long
             - unknown-field
+            - unknown-parameter
             - unknown-currency
             - locked-by-transactions
             - exchange-rate-requires-currency
@@ -1795,8 +1838,13 @@ components:
   responses:
     BadRequest:
       description: |
-        The request body is not a JSON object, or a query parameter is invalid
-        (`invalid-request`). Invalid query parameters are itemized in `errors`.
+        The request body is not a JSON object, or a query parameter is unknown to
+        this operation or invalid (`invalid-request`). Either way the offending
+        names are itemized in `errors`, one entry each.
+
+        **Every operation can answer this**, including those that take no body and
+        list no parameters: an operation that lists none accepts none, and rejects
+        anything sent.
       content:
         application/problem+json:
           schema:

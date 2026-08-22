@@ -35,6 +35,10 @@ import name.abuchen.portfolio.rest.spi.OpenFile;
  */
 public final class ApiRoutes
 {
+    /** Shared query parameters for the instrument performance list and item routes. */
+    private static final String[] INSTRUMENT_PERFORMANCE_PARAMS = { "openingDate", "closingDate", //$NON-NLS-1$ //$NON-NLS-2$
+                    "reportingCurrency", "costMethod", "taxesAndFees", "metrics" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+
     private ApiRoutes()
     {
     }
@@ -90,13 +94,15 @@ public final class ApiRoutes
 
         router.add("GET", "/v1/files/{file}/holdings", calc(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> Response.json(200, HoldingsHandler.list(context.client(), context.factory(),
-                                        req.queryParam("date"), req.queryParam("reportingCurrency"))))); //$NON-NLS-1$ //$NON-NLS-2$
+                                        req.queryParam("date"), req.queryParam("reportingCurrency")))), //$NON-NLS-1$ //$NON-NLS-2$
+                        "date", "reportingCurrency"); //$NON-NLS-1$ //$NON-NLS-2$
 
         router.add("GET", "/v1/files/{file}/performance", calc(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> Response.json(200, PerformanceHandler.list(context.client(),
                                         context.factory(), req.queryParam("openingDate"), //$NON-NLS-1$
                                         req.queryParam("closingDate"), req.queryParam("reportingCurrency"), //$NON-NLS-1$ //$NON-NLS-2$
-                                        req.queryParam("costMethod"))))); //$NON-NLS-1$
+                                        req.queryParam("costMethod")))), //$NON-NLS-1$
+                        "openingDate", "closingDate", "reportingCurrency", "costMethod"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
         // the performance report broken down by instrument. Five segments like
         // /files/{file}/instruments/{uuid}, but segment 4 is a literal in both
@@ -107,13 +113,15 @@ public final class ApiRoutes
                                         context.factory(), req.queryParam("openingDate"), //$NON-NLS-1$
                                         req.queryParam("closingDate"), req.queryParam("reportingCurrency"), //$NON-NLS-1$ //$NON-NLS-2$
                                         req.queryParam("costMethod"), req.queryParam("taxesAndFees"), //$NON-NLS-1$ //$NON-NLS-2$
-                                        req.queryParam("metrics"))))); //$NON-NLS-1$
+                                        req.queryParam("metrics")))), //$NON-NLS-1$
+                        INSTRUMENT_PERFORMANCE_PARAMS);
         router.add("GET", "/v1/files/{file}/performance/instruments/{uuid}", calc(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> Response.json(200, InstrumentPerformanceHandler.get(context.client(),
                                         context.factory(), req.pathParam("uuid"), req.queryParam("openingDate"), //$NON-NLS-1$ //$NON-NLS-2$
                                         req.queryParam("closingDate"), req.queryParam("reportingCurrency"), //$NON-NLS-1$ //$NON-NLS-2$
                                         req.queryParam("costMethod"), req.queryParam("taxesAndFees"), //$NON-NLS-1$ //$NON-NLS-2$
-                                        req.queryParam("metrics"))))); //$NON-NLS-1$
+                                        req.queryParam("metrics")))), //$NON-NLS-1$
+                        INSTRUMENT_PERFORMANCE_PARAMS);
 
         return router;
     }

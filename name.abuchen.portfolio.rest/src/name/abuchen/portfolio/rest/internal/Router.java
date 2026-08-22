@@ -2,8 +2,11 @@ package name.abuchen.portfolio.rest.internal;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Router
 {
@@ -16,15 +19,26 @@ public class Router
     {
     }
 
-    private record Route(String method, String[] segments, Handler handler)
+    private record Route(String method, String[] segments, Set<String> queryParams, Handler handler)
     {
     }
 
     private final List<Route> routes = new ArrayList<>();
 
-    public void add(String method, String pattern, Handler handler)
+    /**
+     * Registers a route and rejects query parameters not declared for it before
+     * invoking the handler.
+     */
+    public void add(String method, String pattern, Handler handler, String... queryParams)
     {
-        routes.add(new Route(method, split(pattern), handler));
+        // declaration order is the specification's order, which reads better in
+        // the error message than an alphabetical list would
+        var permitted = new LinkedHashSet<>(List.of(queryParams));
+
+        routes.add(new Route(method, split(pattern), permitted, request -> {
+            rejectUnknownQueryParams(request, permitted);
+            return handler.handle(request);
+        }));
     }
 
     public Match match(String method, String path)
@@ -55,8 +69,54 @@ public class Router
     public List<String> routeSignatures()
     {
         return routes.stream() //
-                        .map(route -> route.method() + " /" + String.join("/", route.segments())) //$NON-NLS-1$ //$NON-NLS-2$
+                        .map(Router::signatureOf) //
                         .toList();
+    }
+
+    /**
+     * The query parameters each route permits, keyed like {@link #routeSignatures()}.
+     */
+    public Map<String, Set<String>> permittedQueryParameters()
+    {
+        var result = new LinkedHashMap<String, Set<String>>();
+        for (Route route : routes)
+            result.put(signatureOf(route), route.queryParams());
+        return result;
+    }
+
+    /** Reports all unknown parameters and includes the permitted names. */
+    private static void rejectUnknownQueryParams(Request request, Set<String> permitted)
+    {
+        var unknown = request.queryParams().keySet().stream() //
+                        .filter(name -> !permitted.contains(name)) //
+                        .sorted() // parseQuery does not preserve order; the response should be stable
+                        .toList();
+
+        if (unknown.isEmpty())
+            return;
+
+        throw ApiException.badRequest(unknown.stream() //
+                        .map(name -> new ApiException.FieldError(name, "unknown-parameter", //$NON-NLS-1$
+                                        explain(name, permitted)))
+                        .toList());
+    }
+
+    /** Builds the client-facing message for an unknown parameter. */
+    private static String explain(String name, Set<String> permitted)
+    {
+        var accepted = permitted.isEmpty() ? "this endpoint accepts no query parameters" //$NON-NLS-1$
+                        : "this endpoint accepts: " + String.join(", ", permitted); //$NON-NLS-1$ //$NON-NLS-2$
+
+        var casing = permitted.stream().filter(name::equalsIgnoreCase).findFirst()
+                        .map(match -> "parameter names are case-sensitive, did you mean '" + match + "'? ") //$NON-NLS-1$ //$NON-NLS-2$
+                        .orElse(""); //$NON-NLS-1$
+
+        return "unknown query parameter '" + name + "'; " + casing + accepted; //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    private static String signatureOf(Route route)
+    {
+        return route.method() + " /" + String.join("/", route.segments()); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     private static Map<String, String> matchSegments(String[] pattern, String[] actual)

@@ -152,7 +152,7 @@ save.
 
 | Status | `type` | When |
 |---|---|---|
-| 400 | `invalid-request` | body is not a JSON object |
+| 400 | `invalid-request` | body is not a JSON object, or an unknown query parameter — see `errors` |
 | 401 | `unauthorized` | missing or wrong bearer token; the body's `pairing_endpoint` says where to pair |
 | 403 | `forbidden-host` | not addressed as loopback |
 | 403 | `browser-origin-forbidden` | request carries an `Origin` header |
@@ -175,6 +175,29 @@ user did not share.
 than silently clobbered by whatever the dialog writes back on OK. Reads still work. Respect
 `Retry-After` and try again.
 
+## Query parameters are strict
+
+An endpoint accepts only the query parameters documented for it, and one that documents none accepts
+none. Anything else is `400 invalid-request` with one `errors` entry per offending name
+(`code: unknown-parameter`) naming what the endpoint does accept:
+
+```json
+{"type": "https://portfolio-performance.info/rest/problems/invalid-request",
+ "title": "Invalid request", "status": 400,
+ "errors": [{"field": "currency", "code": "unknown-parameter",
+             "message": "unknown query parameter 'currency'; this endpoint accepts: date, reportingCurrency"}]}
+```
+
+Ignoring the parameter instead would be worse than it sounds: the endpoint still computes, from
+defaults, and answers `200` with a full report. `?currency=USD` — a plausible misremembering of
+`reportingCurrency` — would return the base-currency statement of assets, and only a client that
+compared the echoed `reportingCurrency` against what it sent would ever notice.
+
+**Names are case-sensitive.** `reportingcurrency` is rejected rather than read as
+`reportingCurrency`; accepting it would mean guessing, which is the failure being avoided. The
+message points at the name that was meant, since working from memory is exactly how the case gets
+lost.
+
 ## For contributors
 
 The plugin depends on the model plugin and **must not depend on the UI plugin**. The UI side is
@@ -186,10 +209,16 @@ location, session clients in memory only); the pairing state machine is `Pairing
 
 Adding an endpoint means writing a handler and a serializer, and registering the route in
 `ApiRoutes`. The cross-cutting concerns are in the pipeline and cannot be forgotten per endpoint:
-authentication and the loopback/Origin checks in `RestApiServer`, file-scope resolution in
-`FileResolver`, and — via the `read(…)` / `write(…)` wrappers in `ApiRoutes` — UI-thread marshalling
-plus the modal-dialog gate on writes. Note that handler classes keep the *model's* vocabulary
-(`SecuritiesHandler`), while the routes and user-facing strings use the API vocabulary.
+authentication and the loopback/Origin checks in `RestApiServer`, the query-parameter check in
+`Router.add(…)`, file-scope resolution in `FileResolver`, and — via the `read(…)` / `write(…)`
+wrappers in `ApiRoutes` — UI-thread marshalling plus the modal-dialog gate on writes. Note that
+handler classes keep the *model's* vocabulary (`SecuritiesHandler`), while the routes and
+user-facing strings use the API vocabulary.
+
+A route's query parameters are the trailing arguments of `router.add(…)`; naming none means the
+endpoint takes none, so a new endpoint is strict without doing anything. Document them in
+`openapi.yaml` in the same change, and give the operation a `400` response — every endpoint can
+now return one. `OpenApiSpecDriftTest` fails if any of that drifts apart.
 
 Run the tests:
 
