@@ -44,6 +44,7 @@ import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
@@ -103,6 +104,7 @@ public class AccountListView extends AbstractFinanceView implements Modification
     {
         addNewButton(manager);
         addFilterButton(manager);
+        addExportButton(manager);
         addConfigButton(manager);
     }
 
@@ -146,6 +148,12 @@ public class AccountListView extends AbstractFinanceView implements Modification
         filter.setImageDescriptor(isFiltered ? Images.FILTER_ON.descriptor() : Images.FILTER_OFF.descriptor());
         filter.setToolTipText(Messages.AccountFilterRetiredAccounts);
         manager.add(filter);
+    }
+
+    private void addExportButton(ToolBarManager manager)
+    {
+        manager.add(new SimpleAction(Messages.MenuExportData, Images.EXPORT,
+                        a -> new TableViewerCSVExporter(accounts).export(getTitle() + ".csv"))); //$NON-NLS-1$
     }
 
     private void addConfigButton(final ToolBarManager toolBar)
