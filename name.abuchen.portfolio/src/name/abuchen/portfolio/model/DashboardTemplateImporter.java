@@ -78,11 +78,38 @@ public class DashboardTemplateImporter
         }
 
         // validate required fields
-        if (!json.containsKey("name") || json.get("name") == null) //$NON-NLS-1$ //$NON-NLS-2$
+        if (!(json.get("name") instanceof String)) //$NON-NLS-1$
             throw new IOException(MessageFormat.format(Messages.MsgJSONFormatInvalid, "name")); //$NON-NLS-1$
 
-        if (!json.containsKey("columns") || json.get("columns") == null) //$NON-NLS-1$ //$NON-NLS-2$
+        if (!(json.get("columns") instanceof List)) //$NON-NLS-1$
             throw new IOException(MessageFormat.format(Messages.MsgJSONFormatInvalid, "columns")); //$NON-NLS-1$
+
+        for (Object columnObj : (List<?>) json.get("columns")) //$NON-NLS-1$
+        {
+            if (!(columnObj instanceof Map))
+                throw new IOException(MessageFormat.format(Messages.MsgJSONFormatInvalid, "columns")); //$NON-NLS-1$
+
+            Object widgetsObj = ((Map<?, ?>) columnObj).get("widgets"); //$NON-NLS-1$
+            if (widgetsObj == null)
+                continue;
+
+            if (!(widgetsObj instanceof List))
+                throw new IOException(MessageFormat.format(Messages.MsgJSONFormatInvalid, "widgets")); //$NON-NLS-1$
+
+            for (Object widgetObj : (List<?>) widgetsObj)
+            {
+                if (!(widgetObj instanceof Map))
+                    throw new IOException(MessageFormat.format(Messages.MsgJSONFormatInvalid, "widgets")); //$NON-NLS-1$
+
+                Object typeObj = ((Map<?, ?>) widgetObj).get("type"); //$NON-NLS-1$
+                if (typeObj != null && !(typeObj instanceof String))
+                    throw new IOException(MessageFormat.format(Messages.MsgJSONFormatInvalid, "type")); //$NON-NLS-1$
+
+                Object labelObj = ((Map<?, ?>) widgetObj).get("label"); //$NON-NLS-1$
+                if (labelObj != null && !(labelObj instanceof String))
+                    throw new IOException(MessageFormat.format(Messages.MsgJSONFormatInvalid, "label")); //$NON-NLS-1$
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")
