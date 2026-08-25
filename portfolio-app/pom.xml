@@ -62,7 +62,7 @@
 		<repository>
 			<id>portfolio-jre</id>
 			<layout>p2</layout>
-			<url>http://portfolio-performance.github.io/bundled-jre/21.0.5</url>
+			<url>https://portfolio-performance.github.io/bundled-jre/25.0.4/</url>
 		</repository>
 		<!-- Re-qualified (patched) SWT bundles from the SWT fork update-site. Added as an
 		     available-but-unrooted p2 repository (not a target-definition root) so the

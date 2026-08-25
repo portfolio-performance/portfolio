@@ -29,10 +29,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-mvn-
 
-      - name: Set up Zulu JDK 21
+      - name: Set up Zulu JDK 25
         uses: actions/setup-java@v5
         with:
-          java-version: 21
+          java-version: 25
           distribution: zulu
 
       - name: Set up Maven 3.9.16
@@ -68,10 +68,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-mvn-
 
-      - name: Set up Zulu JDK 21
+      - name: Set up Zulu JDK 25
         uses: actions/setup-java@v5
         with:
-          java-version: 21
+          java-version: 25
           distribution: zulu
 
       - name: Set up Maven 3.9.16
