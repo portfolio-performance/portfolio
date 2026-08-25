@@ -158,10 +158,11 @@ public class AccountTransferEntry implements CrossEntry, Annotated
             throw new UnsupportedOperationException();
     }
 
-    private void copyAttributesOver(AccountTransaction source, AccountTransaction target)
+    private void copyAttributesOver(AccountTransaction from, AccountTransaction to)
     {
-        target.setDateTime(source.getDateTime());
-        target.setNote(source.getNote());
+        to.setDateTime(from.getDateTime());
+        to.setNote(from.getNote());
+        to.setSource(from.getSource());
     }
 
     @Override

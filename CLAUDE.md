@@ -54,6 +54,5 @@ mvn -f portfolio-app/pom.xml verify -Plocal-dev \
 ## Code Style
 
 - Use `var` keyword for local variables where type is obvious
-- Do NOT generate `$NON-NLS-1$` comments (internationalization warnings are suppressed globally)
 - Do NOT auto-format PDF extractor files — use `@formatter:off` / `@formatter:on` where formatting is intentional; otherwise carefully insert code manually preserving existing alignment
 - Do not reformat code unrelated to your change

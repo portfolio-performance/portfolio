@@ -33,7 +33,7 @@ final class CSVExtractorTestUtil
 
             configure(f, column);
 
-            field2column.put(f.getName(), column);
+            field2column.put(f.getCode(), column);
         }
         return field2column;
     }
@@ -62,7 +62,7 @@ final class CSVExtractorTestUtil
 
             configure(field, column);
 
-            field2column.put(field.getName(), column);
+            field2column.put(field.getCode(), column);
         }
         return field2column;
     }

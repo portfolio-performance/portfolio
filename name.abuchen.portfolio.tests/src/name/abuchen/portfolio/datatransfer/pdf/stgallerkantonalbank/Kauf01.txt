@@ -1,0 +1,54 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.84.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+gVupo Klaus-KWaHxh
+Privatkonto EUR
+Depot-Nr. 0140.3332.5704
+IBAN CH11 5949 1030 8056 5914 0
+St.Galler Kantonalbank AG
+St. Leonhardstrasse 25
+9001 St. Gallen
+www.sgkb.ch
+BIC KBSGCH22
+Ihr Kontakt:
+Bqrtk Wemslo Elektronisch versandt
+Telefon +41 71 594 28 73 Herr
+bqrtk.wemslo@sgkb.ch Klaus-aBMEvQ CfKKL
+ ideavu 73 l
+St. Gallen, 24. Februar 2025 84961 ZfPanuppr
+Referenznummer 1603933135 DEUTSCHLAND
+Abrechnung: Ihr Kauf
+Wir haben für Sie am 24. Februar 2025 gekauft (Details siehe Folgeseite):
+10'000 N-Akt TUI AG Aus Konversion Valoren-Nr. 125205291
+ISIN DE000TUAG505
+Währung Betrag
+Kurs EUR 6.822613 EUR 68'226.13
+Courtage EUR 955.17
+Eidg. Stempelsteuer(CHF -96.20) EUR 102.34
+Fremde Courtage EUR 13.65
+Total EUR 69'297.29
+Zu Ihren Lasten Valuta 26.02.2025 EUR 69'297.29
+Bitte beachten Sie, dass die SGKB im Zusammenhang mit diesem Finanzdienstleistungs-Auftrag keine
+Anlageberatungs-Dienstleistungen erbracht und folglich weder eine Angemessenheits- noch Geeignetheitsprüfung
+durchgeführt hat. Die Leistungen der SGKB beschränken sich auf die Ausführung oder die Übermittlung solcher Aufträge.
+Die Titel wurden in Ihr Depot eingebucht. Wir danken für Ihren Auftrag.
+Freundliche Grüsse
+St.Galler Kantonalbank AG
+222198 205587847 1603833135 Seite 1 von 2
+nQIBe Klaus-hDQxWr
+Privatkonto EUR
+IBAN hK09 5838 7320 5908 2504 0
+Ausführungsdetails
+Die Abrechnung setzt sich wie folgt zusammen:
+Menge Ausführungszeitpunkt Börsenplatz Währung Kurs
+1'753 24.02.2025 10:35:48 Xetra EUR 6.82
+2'520 24.02.2025 10:35:48 Xetra EUR 6.822
+2'494 24.02.2025 10:35:48 Xetra EUR 6.824
+2'028 24.02.2025 10:35:48 Xetra EUR 6.826
+414 24.02.2025 10:35:48 CBOE EUROPE - DXE ORDER BOOKS (NL) EUR 6.818
+606 24.02.2025 10:35:48 CBOE EUROPE - DXE ORDER BOOKS (NL) EUR 6.818
+67 24.02.2025 10:35:48 CBOE EUROPE - DXE ORDER BOOKS (NL) EUR 6.824
+67 24.02.2025 10:35:48 CBOE EUROPE - DXE ORDER BOOKS (NL) EUR 6.826
+51 24.02.2025 10:35:48 CBOE EUROPE - DXE ORDER BOOKS (NL) EUR 6.826
+222198 205547847 1603933135 Seite 2 von 2

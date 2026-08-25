@@ -148,12 +148,13 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
             throw new UnsupportedOperationException("unable to update from transaction " + t); //$NON-NLS-1$
     }
 
-    private void copyAttributesOver(PortfolioTransaction source, PortfolioTransaction target)
+    private void copyAttributesOver(PortfolioTransaction from, PortfolioTransaction to)
     {
-        target.setDateTime(source.getDateTime());
-        target.setSecurity(source.getSecurity());
-        target.setShares(source.getShares());
-        target.setNote(source.getNote());
+        to.setDateTime(from.getDateTime());
+        to.setSecurity(from.getSecurity());
+        to.setShares(from.getShares());
+        to.setNote(from.getNote());
+        to.setSource(from.getSource());
     }
 
     @Override

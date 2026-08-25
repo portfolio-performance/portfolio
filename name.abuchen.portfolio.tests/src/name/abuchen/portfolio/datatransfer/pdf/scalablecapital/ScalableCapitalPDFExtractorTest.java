@@ -291,6 +291,40 @@ public class ScalableCapitalPDFExtractorTest
     }
 
     @Test
+    public void testSecurityBuy03()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0000120578"), hasWkn(null), hasTicker(null), //
+                        hasName("Sanofi"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-03-06T13:02:41"), hasShares(4.00), //
+                        hasSource("Buy03.txt"), //
+                        hasNote("Order ID: ZmDcb31E0uXxNxm"), //
+                        hasAmount("EUR", 307.67), hasGrossValue("EUR", 306.44), //
+                        hasTaxes("EUR", 1.23), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testEffectKopen01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());

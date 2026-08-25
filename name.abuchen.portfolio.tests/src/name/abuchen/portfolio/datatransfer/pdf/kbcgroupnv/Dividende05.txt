@@ -1,0 +1,55 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.83.2
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+kbpCXEw-RKF yHynjfNyQ ZfiFBV-YN
+Overzicht transacties en rekeninguittreksels voor klantnummer 5827558
+29/05/2026
+EUR-REKENING - 199
+Borderel 067498551
+Buiten beurs (OTC)
+Uitvoeringsdatum : 29/05/2026 Uitvoeringstijdstip : 02:37:36 Valuta : 29/05/2026
+Uw Uitbetaling dividenden van 1.000 ISHARES PLCS P GL.CLEAN ENERGY T.-D 19,20 USD
+aan 0,0192 USD
+Buitenlandse bronheffing (basisbedrag 19,2 USD) 0,00 USD
+Roerende voorheffing (basisbedrag 19,2 USD) 5,76 USD
+Kosten incassostelling (basisbedrag 13,44 USD) 0,22 USD
+BTW (basisbedrag 0,22 USD) 0,05 USD
+Netto 13,17 USD
+1 EUR = 1,172292 USD
+Netto credit 11,23 EUR
+Wettelijke fiscale informatie Basisbedrag RV 16,38 EUR
+Roerende voorheffing 30,00% 4,91 EUR
+Waardecode 0957698519
+A
+Cash Dividend IE00B1XNHC34ex 2026-05-21 pd 2026-05-29
+pioPLKM-qTA PirNJucoa viFdXp-Si Pagina 1
+2_7_2_1_99_2__________________________________________________________________________________
+KBC BANK NV Documentreferte: 424
+Havenlaan 2, 1080 Brussels, Belgium VAT BE 0462.920.226
+Account N° BE77 4096 5474 0142 - BIC KREDBEBB
+Borderel 067784648
+Buiten beurs (OTC)
+Uitvoeringsdatum : 29/05/2026 Uitvoeringstijdstip : 09:57:53 Valuta : 29/05/2026
+Uw Uitbetaling dividenden van 25 CP SOFINA (BR) 27.05.26 aan 3,66 EUR 91,50 EUR
+Roerende voorheffing (basisbedrag 91,5 EUR) 27,45 EUR
+Netto credit 64,05 EUR
+Wettelijke fiscale informatie Basisbedrag RV 91,50 EUR
+Roerende voorheffing 30,00% 27,45 EUR
+Waardecode 0003717517
+A
+Cash Dividend BE0003717312ex 2026-05-27 pd 2026-05-29
+Rekeninguittreksel Nr 307 Vorig Saldo: 25.558,71 EUR
+29/05/2026 Uitbetaling dividenden ISHARES PLCS P Valuta 29/05/2026 11,23 EUR
+GL.CLEAN ENERGY
+29/05/2026 Uitbetaling dividenden CP SOFINA (BR) Valuta 29/05/2026 64,05 EUR
+27.05.26
+Nieuw Saldo* 25.633,99 EUR
+*Dit deposito komt in aanmerking voor depositobescherming. Meer info:
+www.kbc.be/depositobescherming
+Heb je nog vragen ? Gelieve je te richten tot de Bolero orderdesk
+REJLZWO-ftu TjqiPFGAQ owYVXJ-zF Pagina 2
+5_3_2_2_97_2__________________________________________________________________________________
+KBC BANK NV Documentreferte: 424
+Havenlaan 2, 1080 Brussels, Belgium VAT BE 0462.920.226
+Account N° BE77 4096 5474 0142 - BIC KREDBEBB

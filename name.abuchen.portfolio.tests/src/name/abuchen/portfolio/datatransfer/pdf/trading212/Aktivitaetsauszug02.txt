@@ -1,0 +1,166 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+KUNDEN-ID NAME DES KUNDEN
+12345678 Max Mustermann
+Aktivitätsauszug
+Erstellt von FXFlat Bank GmbH am 8. Januar 2026, über von 06.01.2026 22:00 (UTC) bis 07.01.2026 21:59 (UTC).
+Übersicht
+Trading 212 Invest Trading 212 CFD
+Konto-ID: 12345678 Konto-ID: 12345678
+Einzahlungen €22.33 Einzahlungen €0.00
+Auszahlungen €-257.25 Auszahlungen €0.00
+Realisierte Rendite €0.82 FX Gebühr €0.00
+Unrealisierte Rendite €2.90 Dividendenanpassungen €0.00
+Unrealisierte Renditeänderung €0.51 Overnight-Zinsen €0.00
+Dividenden €0.00 Geschlossenes Ergebnis €0.00
+Verzinsung von Geld €1.79 Offenes Ergebnis €0.00
+FX Gebühr €0.00 Offene Ergebnisänderung €0.00
+Gebühren von Dritten €0.00 Margin-Anforderung €0.00
+Steuern €-0.61 Freie Margin €0.00
+Kontowert €11,773.33 Kontowert €0.00
+1/10
+KUNDEN-ID NAME DES KUNDEN
+12345678 Max Mustermann
+Invest-Konto - ausgeführte Aufträge
+GEBÜHREN DER
+HANDELSPLATT
+INSTRUMENT AUSFÜHRUNGS TRANSAKTIONS FORM &
+AUSFÜHRUNGSZEITPUNKT WERTPAPIER ISIN WÄHRUNG AUFTRAGS-ID-NR. ANWEISUNG ANZAHL AUSFÜHRUNGSKURS WERT AUFTRAGSTYP PLATZES SITZUNG DEVISENKURS WÄHRUNG FX GEBÜHR STEUERN RENDITE WERT STEUERN
+2026-01-07 08:05:03 VWCE IE00BK5BQT80 EUR 44514761133 Kaufen 0.03377465 148.04 5 Market OTC Reguläre Zeiten 1 EUR - - - 5 -
+2026-01-07 08:05:24 EUNL IE00B4L5Y983 EUR 44514762366 Kaufen 0.04406062 113.48 5 Market OTC Reguläre Zeiten 1 EUR - - - 5 -
+2026-01-07 11:34:48 EUNL IE00B4L5Y983 EUR 44551706884 Verkaufen 1.00035279 113.38 113.42 Market OTC Reguläre Zeiten 1 EUR - - 0.82 113.42 -0.14
+2026-01-07 11:34:49 VWCE IE00BK5BQT80 EUR 44551706892 Kaufen 0.76659456 147.94 113.41 Market OTC Reguläre Zeiten 1 EUR - - - 113.41 -
+Die FXFlat Bank GmbH empfängt und übermittelt deine Aufträge, die anschließend, einschließlich eventueller Währungsumrechnungen, von Trading 212 Markets Ltd. ausgeführt werden. 2/10
+KUNDEN-ID NAME DES KUNDEN
+12345678 Max Mustermann
+Invest-Konto - Zusammenfassung offener Positionen
+Offene Aufträge
+WERTPAPIER ISIN INSTRUMENT WÄHRUNG AUFTRAGS-ID-NR. ART ANWEISUNG ABLAUF ANZAHL LIMIT-PREIS STOP-KURS WERT
+Keine Daten verfügbar
+Offene Positionen
+DURCHSCHNITTLICHER
+WERTPAPIER ISIN INSTRUMENT WÄHRUNG ANZAHL PREIS KURS RENDITE WERT DEVISENKURS RENDITE WERT
+EUNL IE00B4L5Y983 EUR 2.15447336 112.57043345 113.475 1.95 244.4789 1 €1.95 €244.48
+VWCE IE00BK5BQT80 EUR 1.65105656 147.42680893 148 0.95 244.3564 1 €0.95 €244.36
+Dein Bargeld ist jederzeit geschützt und deine Aufträge werden von der FXFlat Bank GmbH (Firmennummer 101710/Lizenznummer 10109603) empfangen und übermittelt. Deine Aufträge und etwaige Währungsumrechnungen werden von Trading 212 Markets Ltd (Firmennummer: HE 409763 / CySEC-Lizenznummer: 398/21) ausgeführt und dein Vermögen wird gesichert. 3/10
+KUNDEN-ID NAME DES KUNDEN
+12345678 Max Mustermann
+Invest-Konto - Transaktionen und Dividenden
+Transaktionen
+ZEIT ART WÄHRUNG BRUTTOBETRAG STEUERN STEUERN NETTOBETRAG
+2026-01-07 01:32:07 Kartenkauf EUR -57.35 - - -57.35
+2026-01-07 01:32:07 Kartenkauf EUR -199.9 - - -199.9
+2026-01-07 02:10:10 Verzinsung von Geld EUR 1.79 -0.47 €-0.47 1.32
+2026-01-07 11:30:16 JP Morgan Bankeinzahlung EUR 22.33 - - 22.33
+Dividenden
+WERTPAPIER ISIN INSTRUMENT WÄHRUNG AUSGABELAND ZULÄSSIGE BESTÄNDE ZAHLUNGSDATUM BETRAG PRO AKTIE GESAMTBETRAG QST-TARIFE WHT DEVISENKURS KONTOWÄHRUNG NETTOBETRAG
+Keine Daten verfügbar
+4/10
+KUNDEN-ID NAME DES KUNDEN
+12345678 Max Mustermann
+CFD-Konto - ausgeführte Aufträge
+AUSFÜHRUNGSZEITPUNKT WERTPAPIER INSTRUMENT WÄHRUNG AUFTRAGS-ID-NR. AUFTRAGSTYP ANWEISUNG ERÖFFNUNGSKURS ANZAHL AUSFÜHRUNGSKURS WERT SPREAD FX GEBÜHR DEVISENKURS AUSFÜHRUNGSPLATZES ERZIELTER G/V (EUR)
+Keine Daten verfügbar
+5/10
+KUNDEN-ID NAME DES KUNDEN
+12345678 Max Mustermann
+CFD-Konto - Zusammenfassung offener Positionen
+Offene Aufträge
+WERTPAPIER INSTRUMENT WÄHRUNG AUFTRAGS-ID-NR. ART ABLAUF ANWEISUNG ANZAHL KURS WERT (EUR)
+Keine Daten verfügbar
+Offene Positionen
+PREISÄNDERUNGEN IM
+WERTPAPIER INSTRUMENT WÄHRUNG ANWEISUNG ANZAHL ERÖFFNUNGSKURS KURS NICHT REALISIERTER G/V WERT NICHT REALISIERTER G/V (EUR) ZEITRAUM MARGIN
+Keine Daten verfügbar
+Dein Bargeld ist jederzeit geschützt und deine Aufträge werden von der FXFlat Bank GmbH ausgeführt. 6/10
+KUNDEN-ID NAME DES KUNDEN
+12345678 Max Mustermann
+CFD-Konto - Barmittelübersicht
+CFDs werden unverzüglich abgerechnet, somit sind alle freien Barmittel abgerechnete Barmittel. Erfahre mehr über abgerechnete Barmittelsaldo hier.
+Gesamte freie Barmittel
+WERT
+EUR barmittel 0
+Gesamte freie Barmittel bei Banken
+WERT
+EUR barmittel 0
+7/10
+KUNDEN-ID NAME DES KUNDEN
+12345678 Max Mustermann
+CFD-Konto - Transaktionen, Dividenden und Haltegebühr über Nacht
+Transaktionen
+ZEIT ART WÄHRUNG BETRAG
+Keine Daten verfügbar
+Dividendenanpassungen
+ZULÄSSIGE
+WERTPAPIER INSTRUMENT WÄHRUNG ANWEISUNG BESTÄNDE ZAHLUNGSDATUM BETRAG PRO AKTIE GESAMTBETRAG DEVISENKURS NETTOBETRAG (EUR)
+Keine Daten verfügbar
+Overnight-Zinsen
+TRANSAKTIONSZEITPUNKT WERTPAPIER ANWEISUNG ANZAHL BETRAG (EUR)
+Keine Daten verfügbar
+8/10
+KUNDEN-ID NAME DES KUNDEN
+12345678 Max Mustermann
+Glossar
+Wert Devisenkurs
+Der gesamte Wert des Trades/der Position, wobei die Quantität mit dem Preis multipliziert wird. • Ausgeführte Trades: Der zum Zeitpunkt der Trade-Ausführung geltende Wechselkurs.
+• Zusammenfassung offener Positionen: Der Bloomberg-Zinssatz zum Monatsende dient ausschließlich zur Orientierung.
+Ergebnis geschlossener Positionen/Realisierte Rendite
+Das Gesamtergebnis/die Gesamtrendite aus geschlossenen Positionen während des Zeitraums. Transaktions währung
+Die Währung, in der die Transaktion ausgeführt wird. Dabei kann es sich um die Hauptwährung des Kontos oder um die Währung der Wallet bei Konten
+Offenes Ergebnis/Rendite mit mehreren Währungen handeln.
+Das gesamte schwebende Ergebnis/Rendite deiner offenen Positionen, berechnet seit ihrer Eröffnung.
+WHT (Quellensteuer)
+Offene Ergebnis/Renditeänderung Eine an der Quelle einbehaltene Steuer, oft auf an Gebietsfremde gezahlte Zinsen oder Dividenden. Der Quellensteuersatz ist der Prozentsatz, der auf
+Die Veränderung des schwebenden Ergebnisses/Rendite deiner Positionen zwischen dem Beginn und dem Ende des Abrechnungszeitraums. diese Zahlungen angewendet wird.
+Kontowert Sitzung
+Die Summe der offenen Positionen und der Geldmittel auf dem Konto am Ende des ausgewählten Zeitraums. Die Sitzung, in der der Handel ausgeführt wurde, so dass Kunden zwischen Aufträgen während der Hauptzeiten, der verlängerten (vor- und
+nachbörslichen) und der Über-Nacht-Handelszeiten unterscheiden können.
+Instrument Währung
+Die Währung, in der das Instrument denominiert ist und gehandelt wird. Bonus
+Transaktionen, bei denen ein zusätzlicher Wert zugewiesen wird, wie z. B. Gratisaktien, Barauszahlungen oder Bezugsrechte.
+Auftrags-ID-Nr.
+Eine eindeutige Kennung für einen Auftrag. Ein Auftrag kann mehrere Ausführungen haben. Sonstiges
+Umfasst alle Transaktionen, die nicht unter die Hauptkategorien fallen, wie z. B. Anpassungen und Aktiensplits.
+Steuern
+Der Gesamtbetrag der auf Ihr Konto anfallenden Steuern, einschließlich Abgeltungssteuer, Solidaritätszuschlag und ggf. Kirchensteuer. Gebühren von Dritten
+Die Übersicht zeigt die Summe der Börsen- und Regierungsgebühren sowie der ADR-Gebühren.
+Ablauf
+Zeigt an, wann eine ausstehende Order ablaufen würde. Gebühren der Handelsplattform & Steuern
+Alle von den Behörden auferlegten obligatorischen Gebühren , darunter Stempelgebühren, Finanztransaktionssteuern, PTM-Abgaben, FINRA-Gebühren,
+Dividendenanpassungen SEC-Gebühren und Quellensteuern.
+Eine Geldgutschrift oder -abbuchung, die deinem Konto gutgeschrieben oder belastet wird, um die Dividendenzahlung des Basiswerts abzubilden. Bei
+einer Long-Position erhältst du eine Gutschrift, bei einer Short-Position wird dir eine Lastschrift berechnet. ADR-Gebühr
+Eine Verwaltungsgebühr für das Halten von American Depositary Receipts (ADRs). Diese geringe Gebühr wird von der Depotbank erhoben, die die
+Dividenden Aktien verwaltet. Wir geben sie in der Regel in Höhe von 0,01 bis 0,05 US-Dollar pro Aktie direkt an dich weiter.
+Bezieht sich auf den Teil des Gewinns eines Unternehmens, der an die Aktionäre ausgeschüttet wird. Der Betrag wird in der Regel auf der Grundlage
+der Anzahl der von jedem Aktionär gehaltenen Aktien ausgeschüttet. Overnight-Zinsen
+Eine vom Kunden für das Aufrechterhalten von CFD-Position über Nacht bezahlte oder erhaltene Zinszahlung.
+9/10
+KUNDEN-ID NAME DES KUNDEN
+12345678 Max Mustermann
+Offenlegungen
+Die Übersicht wird in der Hauptwährung des Kontos dargestellt. Bei Transaktionen in mehreren Währungen werden die Beträge anhand der zum Zeitpunkt der Transaktion geltenden
+Interbanken-Wechselkurse umgerechnet.
+Die Bargeld-Aufschlüsselung zeigt den Wert jeder Geldbörse in der jeweiligen Währung und in der Hauptwährung deines Kontos an. Der in der Währung des Hauptkontos angezeigte Wert
+wird zum aktuellen Wechselkurs am letzten Tag des Monats, für den dieser Auszug erstellt wurde, umgerechnet.
+Die Ausführungszeiten aller Transaktionen sind UTC.
+Die an einer Börse getätigten Anlagegeschäfte folgen dem Standardabwicklungszyklus für Aktien: Abschlusstag plus zwei Tage (T+2), auch wenn dieser Zeitraum aus betrieblichen Gründen
+gelegentlich verlängert werden kann. Wie in unseren AGB beschrieben, wird eine Transaktion, die nicht abgewickelt werden kann, storniert und dein Konto wird auf den Stand vor der
+Transaktion zurückgesetzt. Auf deinem Kontoauszug, den du bei der Transaktion bekommst, siehst du, ob die Transaktion an einer Börse ausgeführt wurde.
+Wurde ein Depotübertrag durchgeführt, ist der Ausführungspreis für die Übertragung in der Regel der Preis, zu dem eine Anlage gekauft wurde, wie vom Kunden während der Übertragung
+angegeben. Dessen Richtigkeit liegt in der alleinigen Verantwortung des Kunden. Bei einer Übertragung wäre der Ausführungskurs der Kurs, zu dem die Anlage gekauft wurde.
+Der Auszug umfasst auch die schwebenden Aufträge zum Zeitpunkt der Erstellung. Alle Aufträge, die danach aufgegeben oder storniert werden, werden nicht angezeigt. Es wird empfohlen,
+die Kontobewegungen auf der Online-Plattform regelmäßig zu überprüfen, um über alle Änderungen auf dem Laufenden zu bleiben.
+Bitte beachte, dass du für die Überprüfung deiner Auszüge verantwortlich bist und dafür, uns innerhalb von 24 Stunden nach Erhalt über Abweichungen zu informieren. Nach Ablauf dieser
+Frist gelten alle Geschäfte als von dir bestätigt. Diese Nachricht und alle Anhänge wurden vertraulich nur zu Händen des Adressaten versandt. Solltest du diese irrtümlich erhalten haben,
+teile uns das bitte mit, indem du uns unter info@trading212.com kontaktierst.
+Beim Investieren ist dein Kapital Risiken ausgesetzt und möglicherweise erhältst du weniger zurück als du ursprünglich investiert hast. Historische Entwicklungen sind keine Garantie für
+zukünftige Ergebnisse. Trading 212 ist ein Handelsname von FXFlat Bank GmbH. FXFlat Bank GmbH ist in Deutschland registriert (Firmennummer 101710). Eingetragene Adresse: Bahnstraße
+47, 40878 Ratingen, Deutschland. FXFlat Bank GmbH ist von der BaFin autorisiert und reguliert (Lizenznummer 10109603).
+Trading 212 Markets Ltd. ist in Zypern registriert (Firmennummer: 409763), autorisiert und reguliert durch die Cyprus Securities and Exchange Commission, CySEC (Register number 398/21).
+Dieser Auszug dient nur zu Informationszwecken und enthält keine Anlageberatung, Empfehlung oder Aufforderung zum Kauf oder Verkauf von Finanzinstrumenten.
+Trading 212 handelt bei allen Geschäften als Auftraggeber oder Vermittler und auf reiner Ausführungsbasis. Die Veröffentlichung dieses Auszugs ist gesetzlich vorgeschrieben und du kannst
+sie nicht abbestellen.
+10/10

@@ -28,6 +28,7 @@ public class SecurityCache
     private final Client client;
 
     private final List<Map<String, Security>> localMaps = new ArrayList<>();
+    private final Set<Security> created = new HashSet<>();
 
     public SecurityCache(Client client) // NOSONAR
     {
@@ -98,6 +99,7 @@ public class SecurityCache
             return security;
 
         security = creationFunction.get();
+        created.add(security);
         security.setIsin(isin);
         security.setWkn(wkn);
         security.setTickerSymbol(tickerSymbol);
@@ -154,6 +156,11 @@ public class SecurityCache
     private boolean doNotMatchIfGiven(String attribute1, String attribute2)
     {
         return attribute1 != null && attribute2 != null && !attribute1.equalsIgnoreCase(attribute2);
+    }
+
+    public boolean wasCreated(Security security)
+    {
+        return created.contains(security);
     }
 
     /**

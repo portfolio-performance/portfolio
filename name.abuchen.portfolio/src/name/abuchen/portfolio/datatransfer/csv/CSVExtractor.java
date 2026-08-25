@@ -223,7 +223,7 @@ public abstract class CSVExtractor implements Extractor
     protected final Account getAccount(Client client, String[] rawValues, Map<String, Column> field2column,
                     boolean use2nd)
     {
-        var type = use2nd ? Messages.CSVColumn_AccountName2nd : Messages.CSVColumn_AccountName;
+        var type = use2nd ? FieldCode.ACCOUNT_2ND : FieldCode.ACCOUNT;
         var accountName = getText(type, rawValues, field2column);
 
         if (accountName != null && !accountName.isEmpty())
@@ -242,7 +242,7 @@ public abstract class CSVExtractor implements Extractor
     protected final Portfolio getPortfolio(Client client, String[] rawValues, Map<String, Column> field2column,
                     boolean use2nd)
     {
-        var type = use2nd ? Messages.CSVColumn_PortfolioName2nd : Messages.CSVColumn_PortfolioName;
+        var type = use2nd ? FieldCode.PORTFOLIO_2ND : FieldCode.PORTFOLIO;
         var portfolioName = getText(type, rawValues, field2column);
 
         if (portfolioName != null && !portfolioName.isEmpty())

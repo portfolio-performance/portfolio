@@ -1,0 +1,76 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+DADAT-Bank KONTOAUSZUG
+Schelhammer Capital Bank AG vom 19.11.2024
+133333
+Kundennummer
+Alter Saldo per 11.11.2024 0,00
+Summe der Gutschriften 16.000,00
+Summe der Lastschriften 15.812,91-
+Schelhammer, PF 1000, A-5021 Salzburg
+Neuer Saldo zu Ihren Gunsten
+Max Mustermann EUR 187,09
+Musterstraße 1
+8000 Stadt
+Konto-Nr.: 00339456246 Bankleitzahl: 19190
+Empfängerhinweis:
+Datum Buchungstext Wert Betrag
+19.11 Max Mustermann 19.11 16.000,00
+IBAN: AT39 1234 5678 1234 5678
+Eigenübertrag Dadat Werpapierdepot
+REF: 208152411192CDC-00FWIJDNCZEU
+19.11 Kauf                             Depot     123456246/20241119-55110950 21.11 15.812,91-
+ISIN XS1458408561 1.625% GOLDM.S.GRP 16/26 MT        16.000,00000 EUR
+Kurs                     98,195000  Kurswert           -15.711,20 EUR
+Stückzinsen             -83,34 EUR  Handelsspesen          -16,27 EUR
+DADAT Handelsspesen      -1,00 EUR  Clearing Gebühr         -1,10 EUR
+Neuer Saldo zu Ihren Gunsten 187,09
+AT39 1919 1919 1919 1919 BSSWATWW 01 0001 1/1
+IBAN BIC Filiale Auszug Blatt/Gesamt
+R0042 06390 Doknr.: EK00-045-0324002269
+Abrechnung Handel
+55110950-19.11.2024
+Depot-Nr.: 123456246
+Max Mustermann
+01/5020
+DADAT-Bank
+Herrn
+Max Mustermann
+Musterstraße 1
+8000 Stadt
+Wir haben für Sie am 19.11.2024 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Kauf
+Auftrags-Nr.: 39279541-19.11.2024
+Auftragseingang: 19.11.2024-17:06:52
+Zugang: 16.000 EUR
+Titel: XS1458408561  G o l d m a n  S a c hs Group Inc., The
+EO-Medium-Term Notes 2016(26)
+Kup. 27.7.2025/GZJ Endfälligkeit 27.7.2026
+aktueller Zinssatz: 1,625 %
+Kurs: 98,195 %
+Handelsplatz: XBER     Börse Berlin
+Handelszeit: 19.11.2024 um 17:07:19 Uhr
+Verwahrart: WR
+Positionsdaten: Loco: München
+Kurswert: -15.711,20 EUR
+Stückzinsen für 117 Tage: -83,34 EUR
+Handelsspesen: -16,27 EUR
+DADAT Handelsspesen: -1,-- EUR
+Clearing Gebühr: -1,10 EUR
+Zu Lasten IBAN AT39 1919 1919 1919 1919 -15.812,91 EUR
+Valuta 21.11.2024
+Schlusstag: 19.11.2024
+Kassatag: 21.11.2024
+Bestand nach Buchung:
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 16.000 EUR
+steuerlicher Anschaffungswert: 15.794,54 EUR
+Stückzinsen: 83,34 EUR
+Freundliche Grüße
+DADAT - Schelhammer Capital Bank AG
+19.11.2024 Seite 1
+DVR 0060011 ,HG WIEN ,FN58248i, Irrtum vorbehalten! Dieser Beleg wird von der Bank
+nicht unterschrieben!
+06391 Doknr.: EK00-045-0324002269

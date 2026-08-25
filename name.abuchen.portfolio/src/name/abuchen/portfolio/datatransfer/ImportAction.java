@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer;
 
+import java.util.List;
+
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
@@ -63,6 +65,11 @@ public interface ImportAction
     }
 
     default Status process(Security security, SecurityPrice price)
+    {
+        return Status.OK_STATUS;
+    }
+
+    default Status process(Security security, List<SecurityUpdate> updates)
     {
         return Status.OK_STATUS;
     }

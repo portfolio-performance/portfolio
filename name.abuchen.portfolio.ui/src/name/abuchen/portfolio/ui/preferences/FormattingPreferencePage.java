@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jface.preference.ComboFieldEditor;
@@ -14,7 +15,7 @@ import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 
-import com.google.common.base.Objects;
+import com.google.common.annotations.VisibleForTesting;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientProperties;
@@ -104,7 +105,7 @@ class ClientPropertiesPreferenceStore implements IPreferenceStore
     public void setValue(String name, String value)
     {
         var oldValue = getString(name);
-        if (!Objects.equal(oldValue, value))
+        if (!Objects.equals(oldValue, value))
         {
             client.setProperty(name, value);
             isDirty = true;
@@ -115,8 +116,8 @@ class ClientPropertiesPreferenceStore implements IPreferenceStore
     @Override
     public void setValue(String name, long value)
     {
-        var oldValue = getString(name);
-        if (!Objects.equal(oldValue, value))
+        var oldValue = getLong(name);
+        if (!Objects.equals(oldValue, value))
         {
             client.setProperty(name, Long.toString(value));
             isDirty = true;
@@ -128,8 +129,8 @@ class ClientPropertiesPreferenceStore implements IPreferenceStore
     @Override
     public void setValue(String name, int value)
     {
-        var oldValue = getString(name);
-        if (!Objects.equal(oldValue, value))
+        var oldValue = getInt(name);
+        if (!Objects.equals(oldValue, value))
         {
             client.setProperty(name, Integer.toString(value));
             isDirty = true;
@@ -140,8 +141,8 @@ class ClientPropertiesPreferenceStore implements IPreferenceStore
     @Override
     public void setValue(String name, float value)
     {
-        var oldValue = getString(name);
-        if (!Objects.equal(oldValue, value))
+        var oldValue = getFloat(name);
+        if (!Objects.equals(oldValue, value))
         {
             client.setProperty(name, Float.toString(value));
             isDirty = true;
@@ -152,8 +153,8 @@ class ClientPropertiesPreferenceStore implements IPreferenceStore
     @Override
     public void setValue(String name, double value)
     {
-        var oldValue = getString(name);
-        if (!Objects.equal(oldValue, value))
+        var oldValue = getDouble(name);
+        if (!Objects.equals(oldValue, value))
         {
             client.setProperty(name, Double.toString(value));
             isDirty = true;
@@ -164,8 +165,8 @@ class ClientPropertiesPreferenceStore implements IPreferenceStore
     @Override
     public void setValue(String name, boolean value)
     {
-        var oldValue = getString(name);
-        if (!Objects.equal(oldValue, value))
+        var oldValue = getBoolean(name);
+        if (!Objects.equals(oldValue, value))
         {
             client.setProperty(name, Boolean.toString(value));
             isDirty = true;
@@ -226,6 +227,12 @@ class ClientPropertiesPreferenceStore implements IPreferenceStore
         return isDirty;
     }
 
+    @VisibleForTesting
+    void resetDirty()
+    {
+        isDirty = false;
+    }
+
     @Override
     public boolean isDefault(String name)
     {
@@ -247,25 +254,25 @@ class ClientPropertiesPreferenceStore implements IPreferenceStore
     @Override
     public int getInt(String name)
     {
-        return getInt(client.getProperty(name));
+        return asInt(client.getProperty(name));
     }
 
     @Override
     public float getFloat(String name)
     {
-        return getFloat(client.getProperty(name));
+        return asFloat(client.getProperty(name));
     }
 
     @Override
     public double getDouble(String name)
     {
-        return getDouble(client.getProperty(name));
+        return asDouble(client.getProperty(name));
     }
 
     @Override
     public boolean getBoolean(String name)
     {
-        return getBoolean(client.getProperty(name));
+        return asBoolean(client.getProperty(name));
     }
 
     @Override
@@ -310,18 +317,20 @@ class ClientPropertiesPreferenceStore implements IPreferenceStore
         return client.getProperty(name) != null;
     }
 
-    private String asString(String value)
+    @VisibleForTesting
+    String asString(String value)
     {
-        return value == null ? "" : value; //$NON-NLS-1$
+        return Objects.toString(value, ""); //$NON-NLS-1$
     }
 
-    private double asDouble(String value)
+    @VisibleForTesting
+    double asDouble(String value)
     {
         if (value == null)
             return 0;
         try
         {
-            return Double.parseDouble(value);
+            return Double.parseDouble(value.trim());
         }
         catch (NumberFormatException e)
         {
@@ -329,13 +338,14 @@ class ClientPropertiesPreferenceStore implements IPreferenceStore
         }
     }
 
-    private float asFloat(String value)
+    @VisibleForTesting
+    float asFloat(String value)
     {
         if (value == null)
             return 0;
         try
         {
-            return Float.parseFloat(value);
+            return Float.parseFloat(value.trim());
         }
         catch (NumberFormatException e)
         {
@@ -343,13 +353,14 @@ class ClientPropertiesPreferenceStore implements IPreferenceStore
         }
     }
 
-    private int asInt(String value)
+    @VisibleForTesting
+    int asInt(String value)
     {
         if (value == null)
             return 0;
         try
         {
-            return Integer.parseInt(value);
+            return Integer.parseInt(value.trim());
         }
         catch (NumberFormatException e)
         {
@@ -357,13 +368,14 @@ class ClientPropertiesPreferenceStore implements IPreferenceStore
         }
     }
 
-    private long asLong(String value)
+    @VisibleForTesting
+    long asLong(String value)
     {
         if (value == null)
             return 0;
         try
         {
-            return Long.parseLong(value);
+            return Long.parseLong(value.trim());
         }
         catch (NumberFormatException e)
         {
@@ -371,10 +383,11 @@ class ClientPropertiesPreferenceStore implements IPreferenceStore
         }
     }
 
-    private boolean asBoolean(String value)
+    @VisibleForTesting
+    boolean asBoolean(String value)
     {
         if (value == null)
             return false;
-        return Boolean.parseBoolean(value);
+        return Boolean.parseBoolean(value.trim());
     }
 }

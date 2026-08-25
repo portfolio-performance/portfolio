@@ -852,6 +852,16 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // @formatter:off
+                        // Financial transaction taxes +1.23 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Financial transaction taxes \\+(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("positive"))
+                                processTaxEntries(t, v, type);
+                        })
+
+                        // @formatter:off
                         // Belastingen op financiële transacties 0.00 EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //

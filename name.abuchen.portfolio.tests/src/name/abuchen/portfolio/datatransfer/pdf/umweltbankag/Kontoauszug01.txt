@@ -1,0 +1,65 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.83.2
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+UmweltFlexkonto
+EUR-Konto Kontonummer 0050413
+UmweltBank AG
+Laufertorgraben 6 * 90489 Nürnberg K o n to a u s z u g Nr.  4/2026
+erstellt am 30.04.2026 22:26 Blatt  1 von 1
+IBAN: iW61 3898 5430 6126 3320 43 BIC: UMWEDE7NXXX
+Frau
+Tg. mCKEyz TaYzbfdB VtPgbU Ihr Berater: Service UmweltBank
+tw rgRiXFbtOIn 9
+12373 mVvcqZ
+Bu-Tag Wert Vorgang
+alter Kontostand vom 31.03.2026  5.268,24 H
+10.04. 10.04. Dauerauftragsgutschr 200,00 H
+ ZeeWke NSCcip
+ für Anleihe-Sparplan zum 15. monatlich
+17.04. 17.04. Effekten  200,00 S
+ UmweltBank AG
+ WERTPAPIERABRECHNUNG
+ KAUF WKN A41CHM / LU3093383670
+ UMWELTBA-GR.SO.BD EO PEOD DEPOTNR.: 64666451
+ HANDELSTAG 15.04.2026 MENGE 20,0224
+ KURS 9,98880000 AUFTRAGSNR. 9028797680
+                                    ──────────────────────────────────────────────────────
+ neuer Kontostand vom 30.04.2026 5.268,24 H
+                                    ──────────────────────────────────────────────────────
+ Bleiben Sie informiert: umweltbank.de/newsletter
+0112
+403
+H27515774
+5M Bitte beachten S ie die Hinweise auf der Rückseite oder am Ende des Dokuments
+Sehr geehrte Kundin, sehr geehrter Kunde,
+Sie haben eine B ankmitteilung erhalten, z. B . einen Kontoauszug, einen Sparkontoauszug oder eine Dividendenabrechnung. B itte
+prüfen Sie diese genau: Ist alles korrekt?  Falls  nicht, sprechen Sie uns bitte an. Damit S ie immer gut informiert s ind und wissen, wie
+S ie Ihre B ankmitteilung "richtig lesen", haben wir diese nützlichen Hinweise für S ie zusammengestellt:
+Falls  in diesem Dokument B ankdienstleistungen aufgeführt s ind, s ind diese umsatzsteuerfrei - sofern nichts Abweichendes angegeben
+ist. Der im Kontoauszug ausgewiesene B etrag muss nicht dem tatsächlichen Kontoguthaben entsprechen, weil z. B . die Wertstellung
+einzelner B uchungen nicht berücksichtigt wurde oder noch Zinsen für eine Kontoüberziehung bei einer Verfügung anfallen können.
+Rechnungsabschlüsse
+Ihr Kontoauszug ist mit dem Hinweis "Rechnungsabschluss" versehen?
+Dann haben wir für Ihr Konto einen Rechnungsabschluss durchgeführt, einschließlich Zinsen und Entgelte. Alle weiteren, nach dem
+Erstellungsdatum dieser Mitteilung anfallenden Umsätze und Kontoauszüge werden erst in der folgenden Abrechnung
+berücksichtigt - auch wenn sie s ich auf den Abrechnungssaldo des abgelaufenen Abrechnungszeitraumes auswirken.
+Korrekturen werden gekennzeichnet. Den Rechnungsabschluss können Sie beim Finanzamt vorlegen.
+Einwendungen
+Sie haben Einwendungen gegen den Rechnungsabschluss Ihres Kontokorrentkontos oder den Inhalt des Sparkontoauszugs? Dann
+haben Sie nach Erhalt sechs Wochen Zeit, uns zu informieren. Sonst gilt der Rechnungsabschluss zum Kontokorrentkonto oder der
+Sparkontoauszug als  genehmigt. Wenn Sie ihre Einwendungen in Textform geltend machen, z. B . per E-Mail oder B rief, so genügt die
+Absendung innerhalb von sechs Wochen nach Erhalt.
+Einzugsaufträge
+Einzugspapiere wie z. B . Schecks und Lastschriften werden unter dem Vorbehalt des Eingangs gutgeschrieben, und zwar auch
+dann, wenn diese Papiere bei uns selbst zahlbar s ind.
+Schecks und Lastschriften sind erst eingelöst, wenn die B elastungsbuchung nicht spätestens am zweiten B ankarbeitstag - bei
+Lastschriften im SEPA-Firmen-Lastschriftverfahren nicht spätestens am dritten B ankarbeitstag - nach ihrer Vornahme rückgängig
+gemacht wird. B arschecks s ind bereits  mit Zahlung an den Scheckvorleger eingelöst. Schecks s ind auch schon dann eingelöst,
+wenn wir im Einzelfall eine B ezahltmeldung absenden.
+Guthaben
+Guthaben sind als  Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können dem
+"Informationsbogen für den Einleger" entnommen werden.
+Sie haben noch Fragen? Dann kontaktieren Sie uns bitte. Wir s ind gern für S ie da.
+Mit freundlichen Grüßen
+Ihre B ank

@@ -101,11 +101,15 @@ public class FindependentAGPDFExtractor extends AbstractPDFExtractor
                         // Kaufpreis total USD 912.50
                         // Wechselkurs CHF/USD 0.87555
                         // Kaufpreis CHF CHF 798.94
+                        //
+                        // Verkaufspreis total USD 1'278.91
+                        // Wechselkurs CHF/USD 0.799750
+                        // Verkaufspreis CHF CHF 1'022.81
                         // @formatter:on
                         .section("fxGross", "baseCurrency", "termCurrency", "exchangeRate", "gross").optional() //
-                        .match("^Kaufpreis total [\\w]{3} (?<fxGross>[\\.'\\d]+)$") //
+                        .match("^(Kaufpreis|Verkaufspreis) total [\\w]{3} (?<fxGross>[\\.'\\d]+)$") //
                         .match("^Wechselkurs (?<termCurrency>[\\w]{3})\\/(?<baseCurrency>[\\w]{3}) (?<exchangeRate>[\\.'\\d]+)$") //
-                        .match("^Kaufpreis [\\w]{3} [\\w]{3} (?<gross>[\\.'\\d]+)$") //
+                        .match("^(Kaufpreis|Verkaufspreis) [\\w]{3} [\\w]{3} (?<gross>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             ExtrExchangeRate rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
@@ -290,6 +294,14 @@ public class FindependentAGPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction //
+
+                        // @formatter:off
+                        // Wechselkursaufschlag CHF 6.42
+                        // Wechselkursaufschlag CHF -4.30
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^Wechselkursaufschlag (?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.'\\d]+)$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Börsenabgaben CHF 0.05

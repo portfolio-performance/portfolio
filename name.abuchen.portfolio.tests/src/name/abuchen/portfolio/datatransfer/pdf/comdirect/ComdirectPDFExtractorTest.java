@@ -39,7 +39,6 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -58,7 +57,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
 
@@ -92,7 +91,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
 
@@ -126,7 +125,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
 
@@ -160,7 +159,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
 
@@ -202,7 +201,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
 
@@ -230,7 +229,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
 
@@ -260,11 +259,45 @@ public class ComdirectPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf06()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B3XXRP09"), hasWkn("A1JX53"), hasTicker(null), //
+                        hasName("Vanguard S&P 500 UCITS ETF Registered Shares USD Dis.oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-07-09T00:00"), hasShares(120.00), //
+                        hasSource("Kauf06.txt"), //
+                        hasNote("Ord.-Nr.: 000532542608 | R.-Nr.: 710725441378D0A5"), //
+                        hasAmount("EUR", 14990.95), hasGrossValue("EUR", 14921.40), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 69.55))));
+    }
+
+    @Test
     public void testWertpapierKaufMitSteuerbehandlung01()
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung01.txt"), errors);
 
@@ -298,7 +331,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung02.txt"), errors);
 
@@ -332,7 +365,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung03.txt"), errors);
 
@@ -366,7 +399,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung04.txt"), errors);
 
@@ -400,7 +433,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung05.txt"), errors);
 
@@ -442,7 +475,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung05.txt"), errors);
 
@@ -470,7 +503,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung06.txt"), errors);
 
@@ -504,7 +537,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung07.txt"), errors);
 
@@ -546,7 +579,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung07.txt"), errors);
 
@@ -574,7 +607,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung08.txt"), errors);
 
@@ -616,7 +649,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung08.txt"), errors);
 
@@ -644,7 +677,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung09.txt"), errors);
 
@@ -678,7 +711,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung10.txt"), errors);
 
@@ -712,7 +745,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung11.txt"), errors);
 
@@ -746,7 +779,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung12.txt"), errors);
 
@@ -780,7 +813,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung13.txt"), errors);
 
@@ -814,7 +847,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung14.txt"), errors);
 
@@ -848,7 +881,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung15.txt"), errors);
 
@@ -890,7 +923,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung15.txt"), errors);
 
@@ -918,7 +951,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung16.txt"), errors);
 
@@ -952,7 +985,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung17.txt"), errors);
 
@@ -982,11 +1015,45 @@ public class ComdirectPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKaufMitSteuerbehandlung18()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung18.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0007030009"), hasWkn("703000"), hasTicker(null), //
+                        hasName("Rheinmetall AG Inhaber-Aktien o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-05-07T00:00"), hasShares(0.021), //
+                        hasSource("KaufMitSteuerbehandlung18.txt"), //
+                        hasNote("Ord.-Nr.: 125831349520 | R.-Nr.: 594872387631vO33"), //
+                        hasAmount("EUR", 28.70), hasGrossValue("EUR", 28.26), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.44))));
+    }
+
+    @Test
     public void testWertpapierKaufSteuerbehandlung01()
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufSteuerbehandlung01.txt"), errors);
 
@@ -1022,7 +1089,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
 
@@ -1056,7 +1123,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
 
@@ -1090,7 +1157,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf03.txt"), errors);
 
@@ -1129,7 +1196,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf04.txt"), errors);
 
@@ -1169,6 +1236,40 @@ public class ComdirectPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf05()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US02079K3059"), hasWkn("A14Y6F"), hasTicker(null), //
+                        hasName("Alphabet Inc. Reg. Shs Cap.Stk Cl. A DL-,001"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-06-08T21:46"), hasShares(7), //
+                        hasSource("Verkauf05.txt"), //
+                        hasNote("Ord.-Nr.: 000526703524-001 | R.-Nr.: 708040026946D3A5"), //
+                        hasAmount("EUR", 2193.43), hasGrossValue("EUR", 2206.75), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 13.32))));
+    }
+
+    @Test
     public void testWertpapierVerkauf04WithSecurityInEUR()
     {
         // This is a manipulated PDF debug to check if a fee refund works with a
@@ -1185,7 +1286,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf04.txt"), errors);
 
@@ -1221,7 +1322,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung01.txt"),
                         errors);
@@ -1256,7 +1357,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung02.txt"),
                         errors);
@@ -1291,7 +1392,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung03.txt"),
                         errors);
@@ -1326,7 +1427,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung04.txt"),
                         errors);
@@ -1361,7 +1462,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung05.txt"),
                         errors);
@@ -1404,7 +1505,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung06.txt"),
                         errors);
@@ -1447,7 +1548,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung07.txt"),
                         errors);
@@ -1499,7 +1600,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung07.txt"),
                         errors);
@@ -1536,7 +1637,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung08.txt"),
                         errors);
@@ -1571,7 +1672,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung09.txt"),
                         errors);
@@ -1614,7 +1715,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung10.txt"),
                         errors);
@@ -1649,7 +1750,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung11.txt"),
                         errors);
@@ -1684,7 +1785,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung12.txt"),
                         errors);
@@ -1727,7 +1828,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung13.txt"),
                         errors);
@@ -1762,7 +1863,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung14.txt"),
                         errors);
@@ -1805,7 +1906,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung15.txt"),
                         errors);
@@ -1848,7 +1949,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung16.txt"),
                         errors);
@@ -1891,7 +1992,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung17.txt"),
                         errors);
@@ -1926,7 +2027,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung18.txt"),
                         errors);
@@ -1969,7 +2070,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung19.txt"),
                         errors);
@@ -2012,7 +2113,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung19.txt"),
                         errors);
@@ -2041,7 +2142,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung20.txt"),
                         errors);
@@ -2076,7 +2177,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung21.txt"),
                         errors);
@@ -2128,7 +2229,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung21.txt"),
                         errors);
@@ -2165,7 +2266,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung22.txt"),
                         errors);
@@ -2208,7 +2309,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung22.txt"),
                         errors);
@@ -2233,11 +2334,132 @@ public class ComdirectPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkaufMitSteuerbehandlung23()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung23.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0460391732"), hasWkn("DBX0DZ"), hasTicker(null), //
+                        hasName("Xtr.BBG Comm.ex-Agr.+Livest.Sw Inhaber-Anteile 2C EUR Hgd oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-07-07T00:00"), hasShares(2.799), //
+                        hasSource("VerkaufMitSteuerbehandlung23.txt"), //
+                        hasNote("Ord.-Nr.: 511445411424 | R.-Nr.: 324696388726h801"), //
+                        hasAmount("EUR", 130.85), hasGrossValue("EUR", 130.85), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2026-07-07T00:00"), hasShares(2.799), //
+                        hasSource("VerkaufMitSteuerbehandlung23.txt"), //
+                        hasNote("Ref.-Nr.: 0tsYra6xyu5195BC"), //
+                        hasAmount("EUR", 1.08), hasGrossValue("EUR", 1.08), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkaufMitSteuerbehandlung24()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung24.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IL0010845571"), hasWkn("937092"), hasTicker(null), //
+                        hasName("Nova Ltd. Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-07-29T17:53"), hasShares(10.00), //
+                        hasSource("VerkaufMitSteuerbehandlung24.txt"), //
+                        hasNote("Ord.-Nr.: 000536186167-001 | R.-Nr.: 712432458658DA25"), //
+                        hasAmount("EUR", 3233.08), hasGrossValue("EUR", 3249.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 2.90 + 13.02))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2026-07-29T00:00"), hasShares(10.00), //
+                        hasSource("VerkaufMitSteuerbehandlung24.txt"), //
+                        hasNote("Ref.-Nr.: 0FINLZC5C8Z00012"), //
+                        hasAmount("EUR", 377.26), hasGrossValue("EUR", 377.26), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkaufMitSteuerbehandlung25()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung25.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US29084Q1004"), hasWkn("898814"), hasTicker(null), //
+                        hasName("Emcor Group Inc. Registered Shares DL -,01"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-07-29T15:51"), hasShares(20.00), //
+                        hasSource("VerkaufMitSteuerbehandlung25.txt"), //
+                        hasNote("Ord.-Nr.: 000533403543-001 | R.-Nr.: 712425089536DDC5"), //
+                        hasAmount("EUR", 11789.86), hasGrossValue("EUR", 12160.00), //
+                        hasTaxes("EUR", 329.44), hasFees("EUR", 2.90 + 35.30 + 2.50))));
+    }
+
+    @Test
     public void testWertpapierSteuerbehandlungOhneVerkauf01()
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungOhneVerkauf01.txt"),
                         errors);
@@ -2274,7 +2496,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
@@ -2317,7 +2539,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
@@ -2346,7 +2568,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
 
@@ -2381,7 +2603,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
 
@@ -2426,7 +2648,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
 
@@ -2455,7 +2677,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
 
@@ -2498,7 +2720,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
 
@@ -2527,7 +2749,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
 
@@ -2570,7 +2792,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
 
@@ -2599,7 +2821,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
 
@@ -2643,7 +2865,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
 
@@ -2672,7 +2894,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
 
@@ -2707,7 +2929,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende08.txt"), errors);
 
@@ -2742,7 +2964,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende08.txt"),
                         errors);
@@ -2777,7 +2999,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende08.txt", "SteuerbehandlungVonDividende08.txt"),
@@ -2814,7 +3036,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende08.txt", "Dividende08.txt"),
@@ -2851,7 +3073,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende09.txt"), errors);
 
@@ -2886,7 +3108,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende09.txt"),
                         errors);
@@ -2923,7 +3145,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende09.txt", "SteuerbehandlungVonDividende09.txt"),
@@ -2960,7 +3182,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende09.txt", "Dividende09.txt"),
@@ -2997,7 +3219,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende10.txt"), errors);
 
@@ -3032,7 +3254,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende11.txt"), errors);
 
@@ -3075,7 +3297,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende11.txt"), errors);
 
@@ -3104,7 +3326,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende11.txt"),
                         errors);
@@ -3139,7 +3361,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende11.txt", "SteuerbehandlungVonDividende11.txt"),
@@ -3184,7 +3406,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende11.txt", "SteuerbehandlungVonDividende11.txt"),
@@ -3215,7 +3437,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende11.txt", "Dividende11.txt"),
@@ -3259,7 +3481,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende11.txt", "Dividende11.txt"),
@@ -3290,7 +3512,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende12.txt"), errors);
 
@@ -3335,7 +3557,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende12.txt"), errors);
 
@@ -3364,7 +3586,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende12.txt"),
                         errors);
@@ -3399,7 +3621,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende12.txt", "SteuerbehandlungVonDividende12.txt"),
@@ -3446,7 +3668,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende12.txt", "SteuerbehandlungVonDividende12.txt"),
@@ -3477,7 +3699,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende12.txt", "Dividende12.txt"),
@@ -3523,7 +3745,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende12.txt", "Dividende12.txt"),
@@ -3554,7 +3776,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende13.txt"), errors);
 
@@ -3589,7 +3811,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende13.txt"),
                         errors);
@@ -3624,7 +3846,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende13.txt", "SteuerbehandlungVonDividende13.txt"),
@@ -3661,7 +3883,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende13.txt", "Dividende13.txt"),
@@ -3698,7 +3920,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende14.txt"), errors);
 
@@ -3741,7 +3963,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende14.txt"), errors);
 
@@ -3770,7 +3992,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende14.txt"),
                         errors);
@@ -3805,7 +4027,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende14.txt", "SteuerbehandlungVonDividende14.txt"),
@@ -3850,7 +4072,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende14.txt", "SteuerbehandlungVonDividende14.txt"),
@@ -3881,7 +4103,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende14.txt", "Dividende14.txt"),
@@ -3925,7 +4147,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende14.txt", "Dividende14.txt"),
@@ -3956,7 +4178,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende15.txt"), errors);
 
@@ -3998,7 +4220,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende15.txt"), errors);
 
@@ -4027,7 +4249,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende15.txt"),
                         errors);
@@ -4062,7 +4284,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende15.txt", "SteuerbehandlungVonDividende15.txt"),
@@ -4106,7 +4328,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende15.txt", "SteuerbehandlungVonDividende15.txt"),
@@ -4137,7 +4359,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende15.txt", "Dividende15.txt"),
@@ -4181,7 +4403,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende15.txt", "Dividende15.txt"),
@@ -4212,7 +4434,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende16.txt"), errors);
 
@@ -4247,7 +4469,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende16.txt"),
                         errors);
@@ -4282,7 +4504,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende16.txt", "SteuerbehandlungVonDividende16.txt"),
@@ -4319,7 +4541,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende16.txt", "Dividende16.txt"),
@@ -4356,7 +4578,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende17.txt"), errors);
 
@@ -4391,7 +4613,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende18MitSteuerbehandlung.txt"),
                         errors);
@@ -4427,7 +4649,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende19MitSteuerbehandlung.txt"),
                         errors);
@@ -4463,7 +4685,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende20MitSteuerbehandlung.txt"),
                         errors);
@@ -4508,7 +4730,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende20MitSteuerbehandlung.txt"),
                         errors);
@@ -4538,7 +4760,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende21.txt"), errors);
 
@@ -4581,7 +4803,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende21.txt"), errors);
 
@@ -4610,7 +4832,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende21.txt"),
                         errors);
@@ -4645,7 +4867,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende21.txt", "SteuerbehandlungVonDividende21.txt"),
@@ -4690,7 +4912,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende21.txt", "SteuerbehandlungVonDividende21.txt"),
@@ -4721,7 +4943,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende21.txt", "Dividende21.txt"),
@@ -4765,7 +4987,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende21.txt", "Dividende21.txt"),
@@ -4796,7 +5018,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende22.txt"), errors);
 
@@ -4831,7 +5053,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende23.txt"), errors);
 
@@ -4866,7 +5088,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende24.txt"), errors);
 
@@ -4901,7 +5123,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende25.txt"), errors);
 
@@ -4938,7 +5160,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende26.txt"),
                         errors);
@@ -4975,7 +5197,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende27.txt"), errors);
 
@@ -5012,7 +5234,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende28.txt"), errors);
 
@@ -5055,7 +5277,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende28.txt"), errors);
 
@@ -5084,7 +5306,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende28.txt"),
                         errors);
@@ -5119,7 +5341,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende28.txt", "SteuerbehandlungVonDividende28.txt"),
@@ -5164,7 +5386,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende28.txt", "SteuerbehandlungVonDividende28.txt"),
@@ -5195,7 +5417,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende28.txt", "Dividende28.txt"),
@@ -5239,7 +5461,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende28.txt", "Dividende28.txt"),
@@ -5270,7 +5492,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende29.txt"), errors);
 
@@ -5313,7 +5535,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende29.txt"), errors);
 
@@ -5342,7 +5564,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende29.txt"),
                         errors);
@@ -5379,7 +5601,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende29.txt", "SteuerbehandlungVonDividende29.txt"),
@@ -5424,7 +5646,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende29.txt", "SteuerbehandlungVonDividende29.txt"),
@@ -5455,7 +5677,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende29.txt", "Dividende29.txt"),
@@ -5499,7 +5721,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende29.txt", "Dividende29.txt"),
@@ -5530,7 +5752,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende30.txt"), errors);
 
@@ -5565,7 +5787,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende30.txt"),
                         errors);
@@ -5602,7 +5824,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende30.txt", "SteuerbehandlungVonDividende30.txt"),
@@ -5639,7 +5861,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende30.txt", "Dividende30.txt"),
@@ -5676,7 +5898,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende31.txt"), errors);
 
@@ -5719,7 +5941,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende31.txt"), errors);
 
@@ -5748,7 +5970,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende32.txt"), errors);
 
@@ -5791,7 +6013,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende32.txt"), errors);
 
@@ -5820,7 +6042,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende33.txt"), errors);
 
@@ -5855,7 +6077,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende33.txt"),
                         errors);
@@ -5890,7 +6112,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende33.txt", "SteuerbehandlungVonDividende33.txt"),
@@ -5927,7 +6149,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende33.txt", "Dividende33.txt"),
@@ -5964,7 +6186,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende34.txt"), errors);
 
@@ -6008,7 +6230,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende34.txt"), errors);
 
@@ -6037,7 +6259,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende34.txt"),
                         errors);
@@ -6072,7 +6294,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende34.txt", "SteuerbehandlungVonDividende34.txt"),
@@ -6118,7 +6340,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende34.txt", "SteuerbehandlungVonDividende34.txt"),
@@ -6149,7 +6371,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende34.txt", "Dividende34.txt"),
@@ -6193,7 +6415,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende34.txt", "Dividende34.txt"),
@@ -6224,7 +6446,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende35.txt"), errors);
 
@@ -6268,7 +6490,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende35.txt"), errors);
 
@@ -6297,7 +6519,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende35.txt"),
                         errors);
@@ -6332,7 +6554,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende35.txt", "SteuerbehandlungVonDividende35.txt"),
@@ -6378,7 +6600,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende35.txt", "SteuerbehandlungVonDividende35.txt"),
@@ -6409,7 +6631,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende35.txt", "Dividende35.txt"),
@@ -6453,7 +6675,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende35.txt", "Dividende35.txt"),
@@ -6484,7 +6706,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende36.txt"), errors);
 
@@ -6527,7 +6749,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende36.txt"), errors);
 
@@ -6556,7 +6778,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende36.txt"),
                         errors);
@@ -6591,7 +6813,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende36.txt", "SteuerbehandlungVonDividende36.txt"),
@@ -6636,7 +6858,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende36.txt", "SteuerbehandlungVonDividende36.txt"),
@@ -6667,7 +6889,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende36.txt", "Dividende36.txt"),
@@ -6711,7 +6933,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende36.txt", "Dividende36.txt"),
@@ -6742,7 +6964,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende37.txt"), errors);
 
@@ -6786,7 +7008,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende37.txt"), errors);
 
@@ -6815,7 +7037,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende37.txt"),
                         errors);
@@ -6850,7 +7072,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende37.txt", "SteuerbehandlungVonDividende37.txt"),
@@ -6896,7 +7118,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende37.txt", "SteuerbehandlungVonDividende37.txt"),
@@ -6927,7 +7149,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende37.txt", "Dividende37.txt"),
@@ -6971,7 +7193,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende37.txt", "Dividende37.txt"),
@@ -7002,7 +7224,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende38.txt"), errors);
 
@@ -7046,7 +7268,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende38.txt"), errors);
 
@@ -7075,7 +7297,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende38.txt"),
                         errors);
@@ -7110,7 +7332,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende38.txt", "SteuerbehandlungVonDividende38.txt"),
@@ -7156,7 +7378,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende38.txt", "SteuerbehandlungVonDividende38.txt"),
@@ -7187,7 +7409,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende38.txt", "Dividende38.txt"),
@@ -7231,7 +7453,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende38.txt", "Dividende38.txt"),
@@ -7262,7 +7484,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende39.txt"), errors);
 
@@ -7297,7 +7519,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende40.txt"), errors);
 
@@ -7322,7 +7544,7 @@ public class ComdirectPDFExtractorTest
                         hasDate("2026-01-19T00:00"), hasExDate(null), //
                         hasShares(50.000), //
                         hasSource("Dividende40.txt"), //
-                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG"), //
+                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG | Halbjahresdividende"), //
                         hasAmount("EUR", 32.16), hasGrossValue("EUR", 32.16), //
                         hasForexGrossValue("USD", 37.50), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -7340,7 +7562,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende40.txt"), errors);
 
@@ -7359,7 +7581,7 @@ public class ComdirectPDFExtractorTest
                         hasDate("2026-01-19T00:00"), hasExDate(null), //
                         hasShares(50.000), //
                         hasSource("Dividende40.txt"), //
-                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG"), //
+                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG | Halbjahresdividende"), //
                         hasAmount("EUR", 32.16), hasGrossValue("EUR", 32.16), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
@@ -7369,7 +7591,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende40.txt"),
                         errors);
@@ -7404,7 +7626,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende40.txt", "SteuerbehandlungVonDividende40.txt"),
@@ -7431,7 +7653,7 @@ public class ComdirectPDFExtractorTest
                         hasDate("2026-01-19T00:00"), hasExDate(null), //
                         hasShares(50.000), //
                         hasSource("Dividende40.txt; SteuerbehandlungVonDividende40.txt"), //
-                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG"), //
+                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG | Halbjahresdividende"), //
                         hasAmount("EUR", 23.94), hasGrossValue("EUR", 32.16), //
                         hasForexGrossValue("USD", 37.50), //
                         hasTaxes("EUR", 4.82 + 3.39 + 0.01), hasFees("EUR", 0.00))));
@@ -7450,7 +7672,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende40.txt", "SteuerbehandlungVonDividende40.txt"),
@@ -7471,7 +7693,7 @@ public class ComdirectPDFExtractorTest
                         hasDate("2026-01-19T00:00"), hasExDate(null), //
                         hasShares(50.000), //
                         hasSource("Dividende40.txt; SteuerbehandlungVonDividende40.txt"), //
-                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG"), //
+                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG | Halbjahresdividende"), //
                         hasAmount("EUR", 23.94), hasGrossValue("EUR", 32.16), //
                         hasTaxes("EUR", 4.82 + 3.39 + 0.01), hasFees("EUR", 0.00))));
     }
@@ -7481,7 +7703,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende40.txt", "Dividende40.txt"),
@@ -7508,7 +7730,7 @@ public class ComdirectPDFExtractorTest
                         hasDate("2026-01-19T00:00"), hasExDate(null), //
                         hasShares(50.000), //
                         hasSource("Dividende40.txt; SteuerbehandlungVonDividende40.txt"), //
-                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG"), //
+                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG | Halbjahresdividende"), //
                         hasAmount("EUR", 23.94), hasGrossValue("EUR", 32.16), //
                         hasTaxes("EUR", 4.82 + 3.39 + 0.01), hasFees("EUR", 0.00))));
     }
@@ -7525,7 +7747,7 @@ public class ComdirectPDFExtractorTest
 
         var extractor = new ComdirectPDFExtractor(client);
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende40.txt", "Dividende40.txt"),
@@ -7546,7 +7768,7 @@ public class ComdirectPDFExtractorTest
                         hasDate("2026-01-19T00:00"), hasExDate(null), //
                         hasShares(50.000), //
                         hasSource("Dividende40.txt; SteuerbehandlungVonDividende40.txt"), //
-                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG"), //
+                        hasNote("Ref.-Nr.: 38SG3483Kt8789ZG | Halbjahresdividende"), //
                         hasAmount("EUR", 23.94), hasGrossValue("EUR", 32.16), //
                         hasTaxes("EUR", 4.82 + 3.39 + 0.01), hasFees("EUR", 0.00))));
     }
@@ -7556,7 +7778,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende41.txt"), errors);
 
@@ -7581,7 +7803,7 @@ public class ComdirectPDFExtractorTest
                         hasDate("2026-04-02T00:00"), hasExDate(null), //
                         hasShares(220.000), //
                         hasSource("Dividende41.txt"), //
-                        hasNote("Ref.-Nr.: 3cfTL5t0xMT71563"), //
+                        hasNote("Ref.-Nr.: 3cfTL5t0xMT71563 | Quartalsdividende"), //
                         hasAmount("EUR", 187.00), hasGrossValue("EUR", 187.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
@@ -7591,7 +7813,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende41.txt"),
                         errors);
@@ -7626,7 +7848,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende41.txt", "SteuerbehandlungVonDividende41.txt"),
@@ -7653,7 +7875,7 @@ public class ComdirectPDFExtractorTest
                         hasDate("2026-04-02T00:00"), hasExDate(null), //
                         hasShares(220.000), //
                         hasSource("Dividende41.txt; SteuerbehandlungVonDividende41.txt"), //
-                        hasNote("Ref.-Nr.: 3cfTL5t0xMT71563"), //
+                        hasNote("Ref.-Nr.: 3cfTL5t0xMT71563 | Quartalsdividende"), //
                         hasAmount("EUR", 116.19), hasGrossValue("EUR", 187.00), //
                         hasTaxes("EUR", (46.75 - 23.94) + 23.94 + 24.06), hasFees("EUR", 0.00))));
     }
@@ -7663,7 +7885,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende41.txt", "Dividende41.txt"),
@@ -7690,9 +7912,270 @@ public class ComdirectPDFExtractorTest
                         hasDate("2026-04-02T00:00"), hasExDate(null), //
                         hasShares(220.000), //
                         hasSource("Dividende41.txt; SteuerbehandlungVonDividende41.txt"), //
-                        hasNote("Ref.-Nr.: 3cfTL5t0xMT71563"), //
+                        hasNote("Ref.-Nr.: 3cfTL5t0xMT71563 | Quartalsdividende"), //
                         hasAmount("EUR", 116.19), hasGrossValue("EUR", 187.00), //
                         hasTaxes("EUR", (46.75 - 23.94) + 23.94 + 24.06), hasFees("EUR", 0.00))));
+    }
+    
+    @Test
+    public void testDividende42()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende42.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US2546871060"), hasWkn("855686"), hasTicker(null), //
+                        hasName("Walt Disney Co., The Registered Shares DL -,01"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-07-24T00:00"), hasExDate(null), //
+                        hasShares(9.999), //
+                        hasSource("Dividende42.txt"), //
+                        hasNote("Ref.-Nr.: 1HINLIWN1N8001JK | Halbjahresdividende"), //
+                        hasAmount("EUR", 6.56), hasGrossValue("EUR", 6.56), //
+                        hasForexGrossValue("USD", 7.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende42WithSecurityInEUR()
+    {
+        var security = new Security("Walt Disney Co., The Registered Shares DL -,01", "EUR");
+        security.setIsin("US2546871060");
+        security.setWkn("855686");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new ComdirectPDFExtractor(client);
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende42.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-07-24T00:00"), hasExDate(null), //
+                        hasShares(9.999), //
+                        hasSource("Dividende42.txt"), //
+                        hasNote("Ref.-Nr.: 1HINLIWN1N8001JK | Halbjahresdividende"), //
+                        hasAmount("EUR", 6.56), hasGrossValue("EUR", 6.56), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testSteuerbehandlungVonDividende42()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende42.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US2546871060"), hasWkn("855686"), hasTicker(null), //
+                        hasName("DISNEY (WALT) CO."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2026-07-24T00:00"), hasShares(9.999), //
+                        hasSource("SteuerbehandlungVonDividende42.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.99), hasGrossValue("EUR", 0.99), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende42MitSteuerbehandlungVonDividende42()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "Dividende42.txt", "SteuerbehandlungVonDividende42.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US2546871060"), hasWkn("855686"), hasTicker(null), //
+                        hasName("Walt Disney Co., The Registered Shares DL -,01"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-07-24T00:00"), //
+                        hasExDate(null), //
+                        hasShares(9.999), //
+                        hasSource("Dividende42.txt; SteuerbehandlungVonDividende42.txt"), //
+                        hasNote("Ref.-Nr.: 1HINLIWN1N8001JK | Halbjahresdividende"), //
+                        hasAmount("EUR", 5.57), //
+                        hasGrossValue("EUR", 6.56), //
+                        hasForexGrossValue("USD", 7.50), //
+                        hasTaxes("EUR", 0.99 + 0.00 + 0.00), //
+                        hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende42MitSteuerbehandlungVonDividende42WithSecurityInEUR()
+    {
+        var security = new Security("Walt Disney Co., The Registered Shares DL -,01", "EUR");
+        security.setIsin("US2546871060");
+        security.setWkn("855686");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new ComdirectPDFExtractor(client);
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "Dividende42.txt", "SteuerbehandlungVonDividende42.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-07-24T00:00"), hasExDate(null), //
+                        hasShares(9.999), //
+                        hasSource("Dividende42.txt; SteuerbehandlungVonDividende42.txt"), //
+                        hasNote("Ref.-Nr.: 1HINLIWN1N8001JK | Halbjahresdividende"), //
+                        hasAmount("EUR", 5.57), hasGrossValue("EUR", 6.56), //
+                        hasTaxes("EUR", 0.99 + 0.00 + 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende42MitSteuerbehandlungVonDividende42_SourceFilesReversed()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende42.txt", "Dividende42.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US2546871060"), hasWkn("855686"), hasTicker(null), //
+                        hasName("DISNEY (WALT) CO."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-07-24T00:00"), hasExDate(null), //
+                        hasShares(9.999), //
+                        hasSource("Dividende42.txt; SteuerbehandlungVonDividende42.txt"), //
+                        hasNote("Ref.-Nr.: 1HINLIWN1N8001JK | Halbjahresdividende"), //
+                        hasAmount("EUR", 5.57), hasGrossValue("EUR", 6.56), //
+                        hasTaxes("EUR", 0.99 + 0.00 + 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende42MitSteuerbehandlungVonDividende42WithSecurityInEUR_SourceFilesReversed()
+    {
+        var security = new Security("DISNEY (WALT) CO.", "EUR");
+        security.setIsin("US2546871060");
+        security.setWkn("855686");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new ComdirectPDFExtractor(client);
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende42.txt", "Dividende42.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-07-24T00:00"), hasExDate(null), //
+                        hasShares(9.999), //
+                        hasSource("Dividende42.txt; SteuerbehandlungVonDividende42.txt"), //
+                        hasNote("Ref.-Nr.: 1HINLIWN1N8001JK | Halbjahresdividende"), //
+                        hasAmount("EUR", 5.57), hasGrossValue("EUR", 6.56), //
+                        hasTaxes("EUR", 0.99 + 0.00 + 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -7700,7 +8183,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonEinloesung01.txt"),
                         errors);
@@ -7735,7 +8218,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonEinbuchung01.txt"),
                         errors);
@@ -7770,7 +8253,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VorabpauschaleSteuerbehandlung01.txt"),
                         errors);
@@ -7805,7 +8288,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VorabpauschaleSteuerbehandlung02.txt"),
                         errors);
@@ -7852,7 +8335,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport01.txt"), errors);
 
@@ -7964,7 +8447,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport02.txt"), errors);
 
@@ -8028,7 +8511,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport03.txt"), errors);
 
@@ -8100,7 +8583,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport04.txt"), errors);
 
@@ -8153,7 +8636,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport05.txt"), errors);
 
@@ -8237,7 +8720,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport06.txt"), errors);
 
@@ -8277,7 +8760,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport07.txt"), errors);
 
@@ -8305,7 +8788,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Finanzreport08MitAuslandsueberweisung.txt"), errors);
@@ -8346,7 +8829,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Finanzreport09MitSteuerverrechnungNegativ.txt"), errors);
@@ -8407,7 +8890,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Finanzreport10MitSteuerverrechnungPositiv.txt"), errors);
@@ -8440,7 +8923,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport11.txt"), errors);
 
@@ -8484,7 +8967,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport12.txt"), errors);
 
@@ -8508,7 +8991,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport13.txt"), errors);
 
@@ -8532,7 +9015,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport14.txt"), errors);
 
@@ -8556,7 +9039,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport15.txt"), errors);
 
@@ -8580,7 +9063,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verwahrentgelt01.txt"), errors);
 
@@ -8614,7 +9097,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verwahrentgelt02.txt"), errors);
 
@@ -8648,7 +9131,7 @@ public class ComdirectPDFExtractorTest
     {
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungOhneDividende01.txt"),
                         errors);
@@ -8699,7 +9182,7 @@ public class ComdirectPDFExtractorTest
         // @formatter:off
         var extractor = new ComdirectPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        var errors = new ArrayList<Exception>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung13.txt",
                         "KaufMitSteuerbehandlung14.txt", "VerkaufMitSteuerbehandlung13.txt"), errors);

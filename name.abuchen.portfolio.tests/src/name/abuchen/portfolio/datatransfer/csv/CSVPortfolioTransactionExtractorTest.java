@@ -131,7 +131,7 @@ public class CSVPortfolioTransactionExtractorTest
         var column = new Column(0, dateTimeField.getName());
         column.setField(dateTimeField);
         column.setFormat(dateTimeField.textToFormat("yyyy-MM-dd'T'HH:mm"));
-        field2Column.put(dateTimeField.getName(), column);
+        field2Column.put(dateTimeField.getCode(), column);
 
         List<Item> results = extractor.extract(0,
                         Arrays.<String[]>asList(new String[] { "2013-01-01T14:05", "", "DE0007164600", "SAP", "",

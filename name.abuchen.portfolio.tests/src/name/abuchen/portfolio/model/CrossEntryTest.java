@@ -80,6 +80,10 @@ public class CrossEntryTest
         entry.updateFrom(pa);
         assertThat(pt.getDateTime(), is(pa.getDateTime()));
 
+        pa.setSource("some-source"); //$NON-NLS-1$
+        entry.updateFrom(pa);
+        assertThat(pt.getSource(), is(pa.getSource()));
+
         // check deletion
         portfolio.deleteTransaction(pt, client);
         assertThat(portfolio.getTransactions().size(), is(0));
@@ -125,6 +129,10 @@ public class CrossEntryTest
         pA.setNote("Test"); //$NON-NLS-1$
         entry.updateFrom(pA);
         assertThat(pB.getNote(), is(pA.getNote()));
+
+        pA.setSource("some-source"); //$NON-NLS-1$
+        entry.updateFrom(pA);
+        assertThat(pB.getSource(), is(pA.getSource()));
 
         pB.setDateTime(LocalDateTime.of(2013, Month.MARCH, 16, 0, 0));
         entry.updateFrom(pB);
@@ -243,6 +251,10 @@ public class CrossEntryTest
         pA.setShares(2);
         entry.updateFrom(pA);
         assertThat(pB.getShares(), is(2L));
+
+        pA.setSource("some-source"); //$NON-NLS-1$
+        entry.updateFrom(pA);
+        assertThat(pB.getSource(), is(pA.getSource()));
 
         pB.setDateTime(LocalDateTime.of(2013, Month.MARCH, 16, 0, 0));
         entry.updateFrom(pB);

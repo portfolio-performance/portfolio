@@ -1,0 +1,39 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.4
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Wertpapierabrechnung 
+Verkauf 
+Abrechnungsnummer 
+KpqEC gxsMIGfax acbcQS 33c092d9-3c6e-4a0d-ad35-b44c1e1efe81 
+Sb gIC QZcvjDdwTnb 53 
+73520 oUQRFhgXt 
+Deutschland Depotinhaber Depotnummer - Konto 
+zOWbV IgKHzZsPh VEVkHC 005876943-2 
+Wir haben für Sie verkauft Berlin, 02.02.2026 
+Wertpapier ISIN 
+XTR.II EUR OV.RATE SW. 1C LU0290358497 
+Nominal/Anzahl Kurs Kurswert 
+2,60301 Stück 148,31 EUR 386,05 EUR 
+Handel 
+Handelsdatum, Uhrzeit: 02.02.2026 15:05:46 
+Handelsplatz: Tradegate 
+Ordertyp: Market Order 
+Steuererrechnung 
+Realisierter Gewinn: 0,05 EUR 
+Teilfreistellung Investmentfonds (0%): 0,00 EUR 
+Steuerlicher Bruttoertrag: 0,05 EUR 
+Abrechnung 
+Kurswert: 386,05 EUR 
+Kapitalertragssteuer: 0,01 EUR 
+Solidaritätszuschlag: 0,00 EUR 
+Kirchensteuer: 0,00 EUR 
+Valuta Betrag zu Ihren Gunsten 
+04.02.2026 386,04 EUR 
+Im Rahmen dieses Geschäfts wurden: 
+1. 0,00 EUR des vorhandenen Verlustverrechnungstopf - Allgemein verbraucht. Der verbleibende Betrag beläuft sich damit 
+auf 0,00 EUR. 
+2. 0,00 EUR des vorhandenen Sparer-Pauschbetrags verbraucht. Der verbleibende Betrag beläuft sich damit auf 0,00 EUR. 
+Dokument ID: 27e2b2bd-d039-4ebb-99f3-451f32a828ec
+Upvest Securities GmbH, Prenzlauer Allee 242-247, 10405 Berlin, Geschäftsführer: Tobias Auferoth, Sitz der Gesellschaft: Berlin; Amtsgericht Charlottenburg: HRB
+232445 B, USt-ID: DE346524922 Aufsichtsbehörde: Bundesanstalt für Finanzdienstleistungsaufsicht, BaFin

@@ -1,0 +1,28 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.20.e430-v0811
+-----------------------------------------
+Wertpapierabrechnung 
+Kauf 
+Abrechnungsnummer 
+fTZdS kenyWfNqm hZmvir 47ca082b-7818-45d4-9dda-8cb2d1174086 
+KX DTY bMQfjCrNcFM 48 
+48086 omiBNEPjd 
+Deutschland Depotinhaber Depotnummer - Konto 
+OlRnd qHSgzWyUd KFjYcn 162115923-1 
+Wir haben für Sie gekauft Berlin, 30.01.2026 
+Wertpapier ISIN 
+XTR.II EUR OV.RATE SW. 1C LU0290358497 
+Nominal/Anzahl Kurs Kurswert 
+2,60301 Stück 148,29 EUR 386,00 EUR 
+Handel 
+Handelsdatum, Uhrzeit: 30.01.2026 15:35:01 
+Handelsplatz: Tradegate 
+Ordertyp: Market Order 
+Verwahrung 
+Verwahrart: Wertpapierrechnung 
+Lagerland: Irland 
+Valuta Betrag zu Ihren Lasten 
+03.02.2026 386,00 EUR 
+Dokument ID: 1d4d6a61-4371-4247-80ca-cb5d42c999af
+Upvest Securities GmbH, Prenzlauer Allee 242-247, 10405 Berlin, Geschäftsführer: Tobias Auferoth, Sitz der Gesellschaft: Berlin; Amtsgericht Charlottenburg: HRB
+232445 B, USt-ID: DE346524922 Aufsichtsbehörde: Bundesanstalt für Finanzdienstleistungsaufsicht, BaFin

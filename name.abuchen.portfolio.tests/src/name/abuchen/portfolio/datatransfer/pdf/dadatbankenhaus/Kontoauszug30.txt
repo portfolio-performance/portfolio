@@ -1,0 +1,31 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+DADAT-Bank KONTOAUSZUG
+Schelhammer Capital Bank AG vom 04.06.2025
+133333
+Kundennummer
+Alter Saldo per 24.04.2025 7,35
+Summe der Gutschriften 270,97
+Summe der Lastschriften 270,00-
+Schelhammer, PF 1000, A-5021 Salzburg
+Neuer Saldo zu Ihren Gunsten
+Max Mustermann EUR 8,32
+Musterstraße 1
+8000 Stadt
+Konto-Nr.: 00339456246 Bankleitzahl: 19190
+Empfängerhinweis:
+Datum Buchungstext Wert Betrag
+04.06 Ertrag              2,8750 %     Depot     639456246/20250603-64126838 03.06 270,97
+ISIN XS1074144871 2.875% GOLDM.S.GRP 14/26 MT        13.000,00000 EUR
+Kurs                      2,875000  Zinsen/Dividenden       373,75 EUR
+Kapitalertragsteuer    -102,78 EUR
+04.06 IBAN: AT39 1234 5678 1234 5678 04.06 270,00-
+Max Mustermann
+EIGENÜBERTRAG
+REF: 19190250604O3136
+Neuer Saldo zu Ihren Gunsten 8,32
+AT39 1919 1919 1919 1919 BSSWATWW 01 0005 1/1
+IBAN BIC Filiale Auszug Blatt/Gesamt
+R0042 05965 Doknr.: EK00-045-0302255761

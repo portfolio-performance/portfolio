@@ -666,6 +666,80 @@ public class FindependentAGPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf12()
+    {
+        var extractor = new FindependentAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf12.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BFNM3G45"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares MSCI USA Screened ETF"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-03-19T00:00"), hasShares(142), //
+                        hasSource("Kauf12.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 1536.76), hasGrossValue("CHF", 1527.81), //
+                        hasForexGrossValue("USD", 1920.69), //
+                        hasTaxes("CHF", 2.29), hasFees("CHF", 6.42 + 0.24))));
+    }
+
+    @Test
+    public void testWertpapierKauf12WithSecurityInCHF()
+    {
+        var security = new Security("iShares MSCI USA Screened ETF", "CHF");
+        security.setIsin("IE00BFNM3G45");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new FindependentAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf12.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-03-19T00:00"), hasShares(142), //
+                        hasSource("Kauf12.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 1536.76), hasGrossValue("CHF", 1527.81), //
+                        hasTaxes("CHF", 2.29), hasFees("CHF", 6.42 + 0.24), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         var extractor = new FindependentAGPDFExtractor(new Client());
@@ -697,6 +771,154 @@ public class FindependentAGPDFExtractorTest
                         hasNote(null), //
                         hasAmount("CHF", 700.02), hasGrossValue("CHF", 701.12), //
                         hasTaxes("CHF", 1.05), hasFees("CHF", 0.05))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf02()
+    {
+        var extractor = new FindependentAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BFNM3G45"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares MSCI USA Screened ETF"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-04-02T00:00"), hasShares(96), //
+                        hasSource("Verkauf02.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 1016.83), hasGrossValue("CHF", 1022.81), //
+                        hasForexGrossValue("USD", 1278.91), //
+                        hasTaxes("CHF", 1.53), hasFees("CHF", 4.30 + 0.15))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf02WithSecurityInCHF()
+    {
+        var security = new Security("iShares MSCI USA Screened ETF", "CHF");
+        security.setIsin("IE00BFNM3G45");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new FindependentAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-04-02T00:00"), hasShares(96), //
+                        hasSource("Verkauf02.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 1016.83), hasGrossValue("CHF", 1022.81), //
+                        hasTaxes("CHF", 1.53), hasFees("CHF", 4.30 + 0.15), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf03()
+    {
+        var extractor = new FindependentAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BFNM3D14"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares MSCI Europe Screened ETF"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-04-02T00:00"), hasShares(2), //
+                        hasSource("Verkauf03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 18.08), hasGrossValue("CHF", 18.19), //
+                        hasForexGrossValue("EUR", 19.73), //
+                        hasTaxes("CHF", 0.03), hasFees("CHF", 0.08 + 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf03WithSecurityInCHF()
+    {
+        var security = new Security("iShares MSCI Europe Screened ETF", "CHF");
+        security.setIsin("IE00BFNM3D14");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new FindependentAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-04-02T00:00"), hasShares(2), //
+                        hasSource("Verkauf03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 18.08), hasGrossValue("CHF", 18.19), //
+                        hasTaxes("CHF", 0.03), hasFees("CHF", 0.08 + 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test

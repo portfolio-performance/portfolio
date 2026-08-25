@@ -1,0 +1,57 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.83.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Account Statement
+Generated on the 06 Jul 2026
+hTkwQpXs bNvRmLd
+kv Pqrstuvwxy, bl 12, vh A, ap 34 Period 24 May 2024 - 06 Jul 2026
+Account name hTkwQpXs bNvRmLd
+Wtqzk Account number 31415926
+1234
+BG
+EUR Account summary
+Starting Ending
+Positions Value €0 €715.92
+Cash value* €0 €14.17
+Total €0 €730.09
+*Cash value is the amount of cash in your stock trading account that has not been invested
+EUR Portfolio breakdown
+Symbol Company ISIN Quantity Price Value % of Portfolio
+XDWI Xtrackers MSCI World Industrials UCITS ETF (Acc) IE00BM67HV82 0.27961238 €77.61 €21.70 2.97%
+WELK Amundi S&P Global Financials ESG Acc UCITS ETF IE000KYX7IP4 1.13596698 €19.56 €22.22 3.04%
+PRAR Amundi Prime Euro Govies UCITS ETF DR (Acc) LU2089238898 2.17544364 €18.15 €39.49 5.41%
+LKOR Amundi MSCI Korea UCITS ETF (Acc) LU1900066975 0.02864974 €188.48 €5.40 0.74%
+AMEL Amundi MSCI Emerging Markets Latin America UCITS ETF EUR (Acc) LU1681045024 1.05543184 €20.66 €21.80 2.99%
+LYTR Amundi Bloomberg Equal-weight Commodity ex-Agriculture (Acc) ETF LU1829218749 0.65952333 €33.43 €22.05 3.02%
+79U0 Amundi S&P 500 II EUR Hedged ETF (Acc) LU0959211326 0.40178515 €207.13 €83.22 11.4%
+PRAJ Amundi Prime Japan UCITS ETF DR (Acc) LU2089238385 1.28456878 €36.82 €47.30 6.48%
+LEMA Amundi MSCI Emerging Markets ETF (Acc) LU2573967036 0.87777359 €76.11 €66.81 9.15%
+EMBH Amundi USD Emerging Markets Government Bond UCITS ETF EUR Hedged (Dist) LU1686831030 0.60020643 €66.11 €39.68 5.43%
+EFRW iShares S&P 500 Equal Weight UCITS ETF EUR Hedged (Acc) IE000DVLBQ03 3.50666098 €6.24 €21.87 3%
+EBUY Amundi MSCI Digital Economy and Metaverse ESG Screened UCITS ETF (Acc) LU2023678878 1.06736138 €20.12 €21.48 2.94%
+LYMS Amundi Nasdaq-100 II UCITS ETF (Acc) LU1829221024 1.3407428 €105.55 €141.52 19.38%
+LYP6 Amundi Stoxx Europe 600 UCITS ETF (Acc) LU0908500753 0.50336313 €320.60 €161.38 22.1%
+Positions Value €715.92 98.06%
+Cash value €14.17 1.94%
+Total €730.09
+EUR Transactions
+Date Symbol Type Quantity Price Side Value Fees Commission
+29 Sep 2024 10:03:54 GMT Cash top-up €0.10 €0 €0
+29 Oct 2024 00:54:48 GMT Robo management fee -€0.01 €0 €0
+29 Nov 2024 17:47:56 GMT QDVY Dividend €0.05 €0 €0
+17 Dec 2024 17:40:20 GMT EXI2 Dividend €0.01 €0 €0
+07 Jun 2025 01:35:13 GMT Cash top-up €1 €0 €0
+05 Mar 2026 13:00:53 GMT XDWT Trade - Market 0.81203982 €96.74 Sell €78.56 €0 €0
+06 Mar 2026 10:03:13 GMT XDWI Trade - Market 0.10614448 €72.26 Buy €7.67 €0 €0
+06 Mar 2026 10:06:29 GMT PRAR Trade - Market 2.04187328 €18.15 Buy €37.06 €0 €0
+This statement is provided by Revolut Securities Europe UAB, represented in Switzerland by Revolut (Switzerland) AG ("Revolut", "we", "our") in respect of the orders you 
+Get help directly In app submitted via the Revolut app which Revolut has transmitted to its third party brokers for execution.
+Scan the QR code
+Given Revolut’s execution-only service, we don’t provide tax or financial planning advice. The tax treatment of your investments will depend on your individual circumstances. 
+The value of your investments can go up as well as down, and you may receive back less than your original investments. In case you need assistance in completing your tax 
+return, please seek independent financial advice.
+Revolut Securities Europe UAB LEI: 9845001DE7E84FF54124
+Revolut Securities Europe UAB is an authorised financial brokerage firm regulated by the Bank of Lithuania and represented in Switzerland by Revolut (Switzerland) AG. Our 
+registered office is Konstitucijos ave. 21B, Vilnius, 08130, the Republic of Lithuania, company number 305799582.
+© 2026 Revolut Securities Europe UAB

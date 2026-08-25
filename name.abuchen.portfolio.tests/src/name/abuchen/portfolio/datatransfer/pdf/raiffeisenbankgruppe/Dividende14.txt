@@ -1,0 +1,63 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.84.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+d a 
+Raiffeisenbank Stockerau eGen 
+Rathausplatz 2, 2000 Stockerau 
+b 
+BLZ: 32842     UID: ATU16346103 
+a 
+a 
+Abrechnung Ereignis a 
+29438080 - 22.06.2026 a 
+Depot-Nr.: 60.999.999 
+Max Mustermann
+Donaustraße 1
+2000 Stockerau 063/78 
+Private Banking 
+Wir haben für Sie am 22.06.2026 unten angeführtes Geschäft abgerechnet: 
+Geschäftsart: Ertrag 
+261 Stk    
+Titel: AT0000821103 UNIQA Insurance Group AG 
+Stamm-Aktien o.N. 
+Dividende: 0,72 EUR 
+Verwahrart: SV 
+Positionsdaten: Loco: AT Österreich 
+Bruttobetrag: 187,92 EUR  
+KESt: -51,68 EUR  
+Zu Gunsten IBAN AT99 3284 2000 0099 9999 136,24 EUR  
+Valuta 22.06.2026 
+Extag: 18.06.2026 
+Record-Tag: 19.06.2026 
+Ausgangssituation: 
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden  
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 261 Stk 
+steuerlicher Anschaffungswert: 1.786,86 EUR 
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden  
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 261 Stk 
+Ertrag: 187,92 EUR 
+22.06.2026 1 / 2 
+Dieser Beleg wurde durch die depotführende Bank erstellt.  
+Ohne Unterschrift. Bitte geben Sie Unstimmigkeiten sofort bekannt. 
+Raiffeisenbank Stockerau eGen 
+Rathausplatz 2, 2000 Stockerau 
+b 
+BLZ: 32842     UID: ATU16346103 
+a 
+a 
+Abrechnung Ereignis a 
+29438080 - 22.06.2026 a 
+Depot-Nr.: 60.999.999 
+Max Mustermann
+063/78 
+Private Banking 
+Steuerrelevante Daten (alle Beträge in EUR): 
+Bemessungsgrundlage KESt 
+Einkünfte/Verlustüberhang bisher 4.157,28 696,43 
+Bruttoeinkünfte/Verlust 187,92 51,68 
+Verlustausgleich (KESt-Gutschrift) 
+Einkünfte/Verlustüberhang aktuell 4.345,20 748,11 
+22.06.2026 2 / 2 
+Dieser Beleg wurde durch die depotführende Bank erstellt.  
+Ohne Unterschrift. Bitte geben Sie Unstimmigkeiten sofort bekannt. 

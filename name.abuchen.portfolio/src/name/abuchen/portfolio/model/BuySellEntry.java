@@ -144,12 +144,14 @@ public class BuySellEntry implements CrossEntry, Annotated
             portfolioTransaction.setDateTime(accountTransaction.getDateTime());
             portfolioTransaction.setSecurity(accountTransaction.getSecurity());
             portfolioTransaction.setNote(accountTransaction.getNote());
+            portfolioTransaction.setSource(accountTransaction.getSource());
         }
         else if (t == portfolioTransaction)
         {
             accountTransaction.setDateTime(portfolioTransaction.getDateTime());
             accountTransaction.setSecurity(portfolioTransaction.getSecurity());
             accountTransaction.setNote(portfolioTransaction.getNote());
+            accountTransaction.setSource(portfolioTransaction.getSource());
         }
         else
         {

@@ -4,9 +4,6 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
 
-import jakarta.annotation.PostConstruct;
-
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -18,25 +15,12 @@ import org.eclipse.swt.graphics.Font;
 
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel.Line;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class PaymentsPerMonthMatrixTab extends PaymentsMatrixTab
 {
-    // Keys in PreferenceStore
-    private static final String KEY_SHOW_ONE_YEAR = PaymentsPerMonthMatrixTab.class.getSimpleName()
-                    + "-showOnlyOneYear"; //$NON-NLS-1$
-
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM yy"); //$NON-NLS-1$
-
-    private boolean showOnlyOneYear = false;
-
-    @PostConstruct
-    private void setup()
-    {
-        showOnlyOneYear = preferences.getBoolean(KEY_SHOW_ONE_YEAR);
-    }
 
     @Override
     public String getLabel()
@@ -47,13 +31,7 @@ public class PaymentsPerMonthMatrixTab extends PaymentsMatrixTab
     @Override
     public void addConfigActions(IMenuManager manager)
     {
-        Action action = new SimpleAction(Messages.LabelShowOnlyOneYear, a -> {
-            showOnlyOneYear = !showOnlyOneYear;
-            updateColumns(tableViewer, tableLayout);
-            preferences.setValue(KEY_SHOW_ONE_YEAR, showOnlyOneYear);
-        });
-        action.setChecked(showOnlyOneYear);
-        manager.add(action);
+        addShowOnlyFirstYearAction(manager);
 
         addReverseColumnAction(manager);
         addAverageColumnAction(manager);
@@ -75,7 +53,7 @@ public class PaymentsPerMonthMatrixTab extends PaymentsMatrixTab
         // create monthly columns
         var date = LocalDate.of(model.getStartYear(), Month.JANUARY, 1);
 
-        var noOfMonths = showOnlyOneYear ? Math.min(12, model.getNoOfMonths()) : model.getNoOfMonths();
+        var noOfMonths = showOnlyFirstYear ? Math.min(12, model.getNoOfMonths()) : model.getNoOfMonths();
 
         for (var index = 0; index < noOfMonths; index++)
         {
@@ -85,10 +63,10 @@ public class PaymentsPerMonthMatrixTab extends PaymentsMatrixTab
 
         if (showAverageColumn)
         {
-            createAveragePerMonthColumn(records, layout, showOnlyOneYear);
+            createAveragePerMonthColumn(records, layout, showOnlyFirstYear);
         }
 
-        createSumColumn(records, layout, showOnlyOneYear);
+        createSumColumn(records, layout, showOnlyFirstYear);
 
         // add security name at the end of the matrix table again because the
         // first column is most likely not visible anymore
@@ -143,11 +121,7 @@ public class PaymentsPerMonthMatrixTab extends PaymentsMatrixTab
                 if (showOnlyFirstYear)
                 {
                     var noOfMonths = Math.min(12, line.getNoOfMonths());
-                    var sum = 0L;
-                    for (var ii = 0; ii < noOfMonths; ii++)
-                        sum += line.getValue(ii);
-
-                    var average = PaymentsAverageCalculator.calculateAveragePerMonth(sum, noOfMonths);
+                    var average = PaymentsAverageCalculator.calculateAveragePerMonth(sumFirstYear(line), noOfMonths);
                     return Values.Amount.formatNonZero(average);
                 }
                 else
@@ -174,15 +148,8 @@ public class PaymentsPerMonthMatrixTab extends PaymentsMatrixTab
                 var m1 = Math.min(12, l1.getNoOfMonths());
                 var m2 = Math.min(12, l2.getNoOfMonths());
 
-                var sum1 = 0L;
-                for (var ii = 0; ii < m1; ii++)
-                    sum1 += l1.getValue(ii);
-                avg1 = PaymentsAverageCalculator.calculateAveragePerMonth(sum1, m1);
-
-                var sum2 = 0L;
-                for (var ii = 0; ii < m2; ii++)
-                    sum2 += l2.getValue(ii);
-                avg2 = PaymentsAverageCalculator.calculateAveragePerMonth(sum2, m2);
+                avg1 = PaymentsAverageCalculator.calculateAveragePerMonth(sumFirstYear(l1), m1);
+                avg2 = PaymentsAverageCalculator.calculateAveragePerMonth(sumFirstYear(l2), m2);
             }
             else
             {
