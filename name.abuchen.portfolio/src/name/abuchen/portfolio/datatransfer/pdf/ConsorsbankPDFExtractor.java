@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
+import static name.abuchen.portfolio.util.TextUtil.replaceMultipleBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -381,7 +382,8 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>Limitkurs .*)") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
+                        .assign((t, v) -> t
+                                        .setNote(concatenate(t.getNote(), replaceMultipleBlanks(v.get("note")), " | ")))
 
                         // @formatter:off
                         // Ursprungs-WKN 549532
@@ -392,12 +394,13 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Stückzins Zinsvaluta 10.07.2023 356 Tage 25,60 EUR
+                        // Stückzins    Zinsvaluta    26.11.2020    277    Tage EUR 4,42
                         // @formatter:on
                         .section("note1", "note2").optional() //
-                        .match("^(?<note1>St.ckzins) .* (?<note2>[\\d]+ Tag(e)? [\\.,\\d]+ [A-Z]{3})$") //
+                        .match("^(Hallo)?(?<note1>St.ckzins) .* (?<note2>[\\d]+\\s+Tag(e)?\\s+([\\.,\\d]+ [A-Z]{3}|[A-Z]{3} [\\.,\\d]+))$") //
                         .assign((t, v) -> {
                             t.setNote(concatenate(t.getNote(), v.get("note1"), " | "));
-                            t.setNote(concatenate(t.getNote(), v.get("note2"), " "));
+                            t.setNote(concatenate(t.getNote(), replaceMultipleBlanks(v.get("note2")), " "));
                         })
 
                         .optionalOneOf( //
