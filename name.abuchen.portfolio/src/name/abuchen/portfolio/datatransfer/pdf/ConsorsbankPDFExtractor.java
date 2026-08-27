@@ -397,7 +397,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         // Stückzins    Zinsvaluta    26.11.2020    277    Tage EUR 4,42
                         // @formatter:on
                         .section("note1", "note2").optional() //
-                        .match("^(Hallo)?(?<note1>St.ckzins) .* (?<note2>[\\d]+\\s+Tag(e)?\\s+([\\.,\\d]+ [A-Z]{3}|[A-Z]{3} [\\.,\\d]+))$") //
+                        .match("^(?<note1>St.ckzins) .* (?<note2>[\\d]+\\s+Tag(e)?\\s+([\\.,\\d]+ [A-Z]{3}|[A-Z]{3} [\\.,\\d]+))$") //
                         .assign((t, v) -> {
                             t.setNote(concatenate(t.getNote(), v.get("note1"), " | "));
                             t.setNote(concatenate(t.getNote(), replaceMultipleBlanks(v.get("note2")), " "));
