@@ -13,8 +13,10 @@ import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardData;
 import name.abuchen.portfolio.ui.views.dashboard.DataSeriesConfig;
+import name.abuchen.portfolio.ui.views.dashboard.PerformanceMetricConfig;
 import name.abuchen.portfolio.ui.views.dashboard.ReportingPeriodConfig;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
+import name.abuchen.portfolio.ui.views.dataseries.PerformanceMetric;
 import name.abuchen.portfolio.util.Interval;
 
 public class PerformanceHeatmapWidget extends AbstractHeatmapWidget<Double>
@@ -26,6 +28,7 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget<Double>
         addConfig(new ColorSchemaConfig(this));
         addConfig(new HeatmapOrnamentConfig(this));
         addConfig(new DataSeriesConfig(this, true));
+        addConfig(new PerformanceMetricConfig(this));
         addConfig(new ExcessReturnDataSeriesConfig(this));
         addConfig(new ExcessReturnOperatorConfig(this));
     }
@@ -46,13 +49,15 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget<Double>
 
         DataSeries dataSeries = get(DataSeriesConfig.class).getDataSeries();
         PerformanceIndex performanceIndex = getDashboardData().calculate(dataSeries, calcInterval);
+        PerformanceMetric metric = get(PerformanceMetricConfig.class).getMetric();
 
         var actualInterval = performanceIndex.getActualInterval();
 
         // build functions to calculate performance and sum values
 
-        ToDoubleFunction<YearMonth> calculatePerformance = month -> getPerformanceFor(performanceIndex, month);
-        ToDoubleFunction<Year> calculateSum = year -> getSumPerformance(performanceIndex, year);
+        ToDoubleFunction<YearMonth> calculatePerformance = month -> getPerformanceFor(dataSeries, performanceIndex,
+                        month, metric);
+        ToDoubleFunction<Year> calculateSum = year -> getSumPerformance(dataSeries, performanceIndex, year, metric);
 
         DataSeries benchmark = get(ExcessReturnDataSeriesConfig.class).getDataSeries();
         if (benchmark != null)
@@ -69,12 +74,12 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget<Double>
             DoubleBinaryOperator operator = get(ExcessReturnOperatorConfig.class).getValue().getOperator();
             var notBefore = actualInterval.getStart();
             calculatePerformance = month -> operator.applyAsDouble( //
-                            getPerformanceFor(performanceIndex, month),
-                            getPerformanceFor(benchmarkIndex, month, notBefore));
+                            getPerformanceFor(dataSeries, performanceIndex, month, metric),
+                            getPerformanceFor(benchmark, benchmarkIndex, month, notBefore, metric));
 
             calculateSum = year -> operator.applyAsDouble( //
-                            getSumPerformance(performanceIndex, year),
-                            getSumPerformance(benchmarkIndex, year, notBefore));
+                            getSumPerformance(dataSeries, performanceIndex, year, metric),
+                            getSumPerformance(benchmark, benchmarkIndex, year, notBefore, metric));
         }
 
         boolean showSum = get(HeatmapOrnamentConfig.class).getValues().contains(HeatmapOrnament.SUM);
@@ -130,13 +135,15 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget<Double>
         return model;
     }
 
-    private double getPerformanceFor(PerformanceIndex index, YearMonth month)
+    private double getPerformanceFor(DataSeries series, PerformanceIndex index, YearMonth month,
+                    PerformanceMetric metric)
     {
-        return index.getPerformance(Interval.of(month.atDay(1).minusDays(1),
-                                                month.atEndOfMonth()));
+        return getPerformanceFor(series, index,
+                        Interval.of(month.atDay(1).minusDays(1), month.atEndOfMonth()), metric);
     }
 
-    private double getPerformanceFor(PerformanceIndex index, YearMonth month, LocalDate notBefore)
+    private double getPerformanceFor(DataSeries series, PerformanceIndex index, YearMonth month, LocalDate notBefore,
+                    PerformanceMetric metric)
     {
         var start = month.atDay(1).minusDays(1);
         var end = month.atEndOfMonth();
@@ -144,13 +151,14 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget<Double>
         if (notBefore.isAfter(end))
             return 0;
 
-        return index.getPerformance(Interval.of(notBefore.isAfter(start) ? notBefore : start, end));
+        return getPerformanceFor(series, index, Interval.of(notBefore.isAfter(start) ? notBefore : start, end), metric);
     }
 
-    private double getSumPerformance(PerformanceIndex index, Year year)
+    private double getSumPerformance(DataSeries series, PerformanceIndex index, Year year, PerformanceMetric metric)
     {
-        return index.getPerformance(Interval.of(year.atDay(1).minusDays(1),
-                                                year.atDay(1).with(TemporalAdjusters.lastDayOfYear())));
+        return getPerformanceFor(series, index,
+                        Interval.of(year.atDay(1).minusDays(1), year.atDay(1).with(TemporalAdjusters.lastDayOfYear())),
+                        metric);
     }
 
     /**
@@ -159,7 +167,8 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget<Double>
      * activation year only compares the period in which the primary series
      * actually held assets.
      */
-    private double getSumPerformance(PerformanceIndex index, Year year, LocalDate notBefore)
+    private double getSumPerformance(DataSeries series, PerformanceIndex index, Year year, LocalDate notBefore,
+                    PerformanceMetric metric)
     {
         var start = year.atDay(1).minusDays(1);
         var end = year.atDay(1).with(TemporalAdjusters.lastDayOfYear());
@@ -167,6 +176,13 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget<Double>
         if (notBefore.isAfter(end))
             return 0;
 
-        return index.getPerformance(Interval.of(notBefore.isAfter(start) ? notBefore : start, end));
+        return getPerformanceFor(series, index, Interval.of(notBefore.isAfter(start) ? notBefore : start, end), metric);
+    }
+
+    private double getPerformanceFor(DataSeries series, PerformanceIndex index, Interval interval,
+                    PerformanceMetric metric)
+    {
+        return metric == PerformanceMetric.IRR ? getDashboardData().calculate(series, interval).getPerformanceIRR()
+                        : index.getPerformance(interval);
     }
 }
