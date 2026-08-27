@@ -118,7 +118,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(results, hasItem(purchase( //
                         hasDate("2015-09-21T12:45:38"), hasShares(250.00), //
                         hasSource("Kauf02.txt"), //
-                        hasNote("92612045.001 | Limitkurs  5,500000 EUR"), //
+                        hasNote("92612045.001 | Limitkurs 5,500000 EUR"), //
                         hasAmount("EUR", 1387.85), hasGrossValue("EUR", 1370.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 2.95 + 3.00 + 5.00 + 4.95 + 1.95))));
     }
@@ -186,7 +186,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(results, hasItem(purchase( //
                         hasDate("2020-01-15T12:00:56"), hasShares(210.00), //
                         hasSource("Kauf04.txt"), //
-                        hasNote("123456.001 | Limitkurs  46,200000 EUR"), //
+                        hasNote("123456.001 | Limitkurs 46,200000 EUR"), //
                         hasAmount("EUR", 9745.25), hasGrossValue("EUR", 9702.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 2.50 + 11.54 + 24.26 + 4.95))));
     }
@@ -912,7 +912,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(results, hasItem(purchase( //
                         hasDate("2019-09-06T13:43:10"), hasShares(300.00), //
                         hasSource("Kauf20.txt"), //
-                        hasNote("148553598.001 | Limitkurs  11,300000 EUR"), //
+                        hasNote("148553598.001 | Limitkurs 11,300000 EUR"), //
                         hasAmount("EUR", 3408.64), hasGrossValue("EUR", 3390.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 2.50 + 2.71 + 8.48 + 4.95))));
     }
@@ -946,7 +946,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(results, hasItem(purchase( //
                         hasDate("2020-03-27T20:13:13"), hasShares(37.00), //
                         hasSource("Kauf21.txt"), //
-                        hasNote("161127520.001 | Limitkurs  27,700000 EUR"), //
+                        hasNote("161127520.001 | Limitkurs 27,700000 EUR"), //
                         hasAmount("EUR", 1026.34), hasGrossValue("EUR", 1016.39), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 5.00 + 4.95))));
     }
@@ -1360,7 +1360,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(results, hasItem(purchase( //
                         hasDate("2017-12-19T17:00:34"), hasShares(4000), //
                         hasSource("AnleiheKauf01.txt"), //
-                        hasNote("120321388.001 | Limitkurs  0,550000 %"), //
+                        hasNote("120321388.001 | Limitkurs 0,550000 %"), //
                         hasAmount("EUR", 2210.45), hasGrossValue("EUR", 2200.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 5.50 + 4.95))));
     }
@@ -1462,7 +1462,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(results, hasItem(sale( //
                         hasDate("2015-02-18T12:10:30"), hasShares(140.00), //
                         hasSource("Verkauf01.txt"), //
-                        hasNote("12345678.001 | Limitkurs  42,850000 EUR"), //
+                        hasNote("12345678.001 | Limitkurs 42,850000 EUR"), //
                         hasAmount("EUR", 5794.56), hasGrossValue("EUR", 6048.00), //
                         hasTaxes("EUR", 198.08 + 17.82 + 10.89), hasFees("EUR", 2.95 + 3.63 + 15.12 + 4.95))));
     }
@@ -1941,6 +1941,74 @@ public class ConsorsbankPDFExtractorTest
                         hasNote("15681369.001"), //
                         hasAmount("EUR", 211.30), hasGrossValue("EUR", 222.20), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.95 + 5.00 + 4.95))));
+    }
+
+    @Test
+    public void testAnleiheVerkauf01()
+    {
+        var extractor = new ConsorsbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AnleiheVerkauf01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("GR0133007204"), hasWkn("A1G1UG"), hasTicker(null), //
+                        hasName("3,65 % GRIECHENLAND 12-29 7 24.FEB"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-12-14T16:06:51"), hasShares(1.6), //
+                        hasSource("AnleiheVerkauf01.txt"), //
+                        hasNote("183797558.001 | Limitkurs 124,963000 % | Stückzins 296 Tage 4,72 EUR"), //
+                        hasAmount("EUR", 160.69), hasGrossValue("EUR", 204.66), //
+                        hasTaxes("EUR", 32.25 + 1.77), hasFees("EUR", 5.00 + 4.95))));
+    }
+
+    @Test
+    public void testAnleiheVerkauf02()
+    {
+        var extractor = new ConsorsbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AnleiheVerkauf02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("GR0133010232"), hasWkn("A1G1UK"), hasTicker(null), //
+                        hasName("3,65 % GRIECHENLAND 12-32 10       24.FEB"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-25T10:55:28"), hasShares(1.6), //
+                        hasSource("AnleiheVerkauf02.txt"), //
+                        hasNote("182034228.001 | Limitkurs 130,791000 % | Stückzins 277 Tage EUR 4,42"), //
+                        hasAmount("EUR", 167.34), hasGrossValue("EUR", 213.69), //
+                        hasTaxes("EUR", 34.51 + 1.89), hasFees("EUR", 5.00 + 4.95))));
     }
 
     @Test
