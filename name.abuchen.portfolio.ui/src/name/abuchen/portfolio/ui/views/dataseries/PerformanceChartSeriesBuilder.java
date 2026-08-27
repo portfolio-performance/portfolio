@@ -80,7 +80,7 @@ public class PerformanceChartSeriesBuilder extends AbstractChartSeriesBuilder
 
     private void addIRRSeries(DataSeries series, PerformanceIndex index, Aggregation.Period aggregationPeriod)
     {
-        LocalDate[] dates = index.getDates();
+        LocalDate[] dates = IRRSeries.getDates(index);
         double[] values = IRRSeries.calculate(index);
 
         if (aggregationPeriod != null)
