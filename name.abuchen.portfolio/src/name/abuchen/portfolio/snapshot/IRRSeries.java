@@ -29,6 +29,20 @@ public final class IRRSeries
         return calculateInvestment(index);
     }
 
+    public static LocalDate[] getDates(PerformanceIndex index)
+    {
+        var dates = index.getDates().clone();
+
+        if (index instanceof SecurityIndex && dates.length > 0)
+        {
+            var end = index.getReportInterval().getEnd();
+            if (dates[dates.length - 1].isBefore(end))
+                dates[dates.length - 1] = end;
+        }
+
+        return dates;
+    }
+
     private static double[] calculateInvestment(PerformanceIndex index)
     {
         LocalDate[] indexDates = index.getDates();
@@ -89,7 +103,7 @@ public final class IRRSeries
 
     private static double[] calculateBenchmark(SecurityIndex index)
     {
-        LocalDate[] indexDates = index.getDates();
+        LocalDate[] indexDates = getDates(index);
         double[] answer = new double[indexDates.length];
 
         Security security = index.getSecurity();
