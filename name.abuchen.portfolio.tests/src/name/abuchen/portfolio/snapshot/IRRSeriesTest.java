@@ -16,6 +16,7 @@ import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.math.IRR;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.Interval;
@@ -144,6 +145,38 @@ public class IRRSeriesTest
         double[] irr = IRRSeries.calculate(benchmarkIndex);
 
         assertThat(irr.length, is(benchmarkIndex.getDates().length));
+        assertThat(irr[irr.length - 1], IsCloseTo.closeTo(benchmarkIndex.getPerformanceIRR(), PRECISION));
+    }
+
+    @Test
+    public void testBenchmarkUsesReportingPeriodEndWhenLastQuoteIsOlder()
+    {
+        var start = LocalDate.of(2024, 1, 1);
+        var lastQuote = LocalDate.of(2024, 9, 30);
+        var end = LocalDate.of(2024, 12, 31);
+
+        var client = new Client();
+        new AccountBuilder().deposit_(start.atStartOfDay(), Values.Amount.factorize(10000)).addTo(client);
+
+        var benchmark = new SecurityBuilder() //
+                        .generatePrices(Values.Quote.factorize(100), start, lastQuote) //
+                        .addTo(client);
+        benchmark.addPrice(new SecurityPrice(lastQuote, Values.Quote.factorize(120)), true);
+
+        var converter = new TestCurrencyConverter();
+        var clientIndex = PerformanceIndex.forClient(client, converter, Interval.of(start, end), new ArrayList<>());
+        var benchmarkIndex = PerformanceIndex.forSecurity(clientIndex, benchmark);
+
+        var originalDates = benchmarkIndex.getDates();
+        var dates = IRRSeries.getDates(benchmarkIndex);
+        var irr = IRRSeries.calculate(benchmarkIndex);
+
+        assertThat(originalDates[originalDates.length - 1], is(lastQuote));
+        assertThat(dates.length, is(originalDates.length + 1));
+        assertThat(dates[dates.length - 2], is(lastQuote));
+        assertThat(dates[dates.length - 1], is(end));
+        assertThat(irr.length, is(dates.length));
+        assertThat(Math.abs(irr[irr.length - 2] - irr[irr.length - 1]) > PRECISION, is(true));
         assertThat(irr[irr.length - 1], IsCloseTo.closeTo(benchmarkIndex.getPerformanceIRR(), PRECISION));
     }
 
