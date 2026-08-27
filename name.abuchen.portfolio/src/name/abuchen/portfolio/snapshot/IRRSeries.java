@@ -2,6 +2,7 @@ package name.abuchen.portfolio.snapshot;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import name.abuchen.portfolio.math.IRR;
@@ -37,7 +38,10 @@ public final class IRRSeries
         {
             var end = index.getReportInterval().getEnd();
             if (dates[dates.length - 1].isBefore(end))
+            {
+                dates = Arrays.copyOf(dates, dates.length + 1);
                 dates[dates.length - 1] = end;
+            }
         }
 
         return dates;
