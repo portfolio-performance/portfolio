@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import name.abuchen.portfolio.math.IRR;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 /**
@@ -19,6 +22,14 @@ public final class IRRSeries
     }
 
     public static double[] calculate(PerformanceIndex index)
+    {
+        if (index instanceof SecurityIndex securityIndex)
+            return calculateBenchmark(securityIndex);
+
+        return calculateInvestment(index);
+    }
+
+    private static double[] calculateInvestment(PerformanceIndex index)
     {
         LocalDate[] indexDates = index.getDates();
         long[] totals = index.getTotals();
@@ -71,6 +82,43 @@ public final class IRRSeries
                 dates.remove(dates.size() - 1);
                 values.remove(values.size() - 1);
             }
+        }
+
+        return answer;
+    }
+
+    private static double[] calculateBenchmark(SecurityIndex index)
+    {
+        LocalDate[] indexDates = index.getDates();
+        double[] answer = new double[indexDates.length];
+
+        Security security = index.getSecurity();
+        List<SecurityPrice> prices = security.getPricesIncludingLatest();
+        if (prices.isEmpty())
+            return answer;
+
+        LocalDate start = index.getReportInterval().getStart();
+        if (prices.get(0).getDate().isAfter(start))
+            start = prices.get(0).getDate();
+
+        String currency = security.getCurrencyCode() == null ? index.getClient().getBaseCurrency()
+                        : security.getCurrencyCode();
+
+        double startValue = index.getCurrencyConverter()
+                        .convert(start, Money.of(currency, security.getSecurityPrice(start).getValue())).getAmount()
+                        / Values.Amount.divider();
+
+        for (int ii = 0; ii < indexDates.length; ii++)
+        {
+            LocalDate end = indexDates[ii];
+            if (end.isBefore(start))
+                continue;
+
+            double endValue = index.getCurrencyConverter()
+                            .convert(end, Money.of(currency, security.getSecurityPrice(end).getValue())).getAmount()
+                            / Values.Amount.divider();
+
+            answer[ii] = IRR.calculate(List.of(start, end), List.of(-startValue, endValue));
         }
 
         return answer;
