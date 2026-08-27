@@ -46,6 +46,7 @@ import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesSerializer;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesSet;
 import name.abuchen.portfolio.ui.views.dataseries.PerformanceChartSeriesBuilder;
+import name.abuchen.portfolio.ui.views.dataseries.PerformanceMetric;
 import name.abuchen.portfolio.ui.views.dataseries.StatementOfAssetsSeriesBuilder;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TextUtil;
@@ -177,6 +178,59 @@ public class ChartWidget extends WidgetDelegate<Object>
         }
     }
 
+    private class PerformanceMetricConfig implements WidgetConfig
+    {
+        private WidgetDelegate<?> delegate;
+        private PerformanceMetric metric = PerformanceMetric.TTWROR;
+
+        public PerformanceMetricConfig(WidgetDelegate<?> delegate)
+        {
+            this.delegate = delegate;
+
+            try
+            {
+                String code = delegate.getWidget().getConfiguration().get(Dashboard.Config.METRIC.name());
+                if (code != null)
+                    metric = PerformanceMetric.valueOf(code);
+            }
+            catch (IllegalArgumentException ignore)
+            {
+                PortfolioPlugin.log(ignore);
+            }
+        }
+
+        @Override
+        public void menuAboutToShow(IMenuManager manager)
+        {
+            manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME, new LabelOnly(metric.toString()));
+
+            MenuManager subMenu = new MenuManager(Messages.LabelPerformanceMetric);
+            Arrays.stream(PerformanceMetric.values()).forEach(m -> {
+                Action action = new SimpleAction(m.toString(), a -> {
+                    metric = m;
+                    delegate.getWidget().getConfiguration().put(Dashboard.Config.METRIC.name(), m.name());
+                    delegate.update();
+                    delegate.getClient().touch();
+                });
+                action.setChecked(metric == m);
+                subMenu.add(action);
+            });
+
+            manager.add(subMenu);
+        }
+
+        public PerformanceMetric getMetric()
+        {
+            return metric;
+        }
+
+        @Override
+        public String getLabel()
+        {
+            return Messages.LabelPerformanceMetric + ": " + metric; //$NON-NLS-1$
+        }
+    }
+
     private DataSeries.UseCase useCase;
     private DataSeriesSet dataSeriesSet;
 
@@ -195,7 +249,10 @@ public class ChartWidget extends WidgetDelegate<Object>
 
         addConfig(new ChartConfig(this, useCase));
         if (useCase == DataSeries.UseCase.PERFORMANCE)
+        {
+            addConfig(new PerformanceMetricConfig(this));
             addConfig(new AggregationConfig(this));
+        }
         addConfig(new ReportingPeriodConfig(this));
         addConfig(new ChartHeightConfig(this));
     }
@@ -256,9 +313,6 @@ public class ChartWidget extends WidgetDelegate<Object>
     @Override
     public Supplier<Object> getUpdateTask()
     {
-        // just fill the cache - the chart series builder will look it up and
-        // pass it directly to the chart
-
         DataSeriesCache cache = getDashboardData().getDataSeriesCache();
 
         List<DataSeries> series = new DataSeriesSerializer().fromString(dataSeriesSet,
@@ -334,7 +388,7 @@ public class ChartWidget extends WidgetDelegate<Object>
     private void buildPerformanceSeries(List<DataSeries> series, Interval reportingPeriod)
     {
         PerformanceChartSeriesBuilder b2 = new PerformanceChartSeriesBuilder(chart,
-                        getDashboardData().getDataSeriesCache());
+                        getDashboardData().getDataSeriesCache(), get(PerformanceMetricConfig.class).getMetric());
         series.forEach(s -> b2.build(s, reportingPeriod, get(AggregationConfig.class).getAggregation()));
     }
 }
