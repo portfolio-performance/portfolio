@@ -104,4 +104,29 @@ public class IRRSeriesTest
         assertThat(irr.length, is(benchmarkIndex.getDates().length));
         assertThat(irr[irr.length - 1], IsCloseTo.closeTo(benchmarkIndex.getPerformanceIRR(), PRECISION));
     }
+
+    @Test
+    public void testBenchmarkUsesReportingPeriodStartWhenHoldingsBeginLater()
+    {
+        LocalDate start = LocalDate.of(2024, 1, 1);
+        LocalDate firstHolding = LocalDate.of(2024, 7, 1);
+        LocalDate end = LocalDate.of(2024, 12, 31);
+
+        Client client = new Client();
+        new AccountBuilder().deposit_(firstHolding.atStartOfDay(), Values.Amount.factorize(10000)).addTo(client);
+
+        Security benchmark = new SecurityBuilder() //
+                        .generatePrices(Values.Quote.factorize(100), start, end) //
+                        .addTo(client);
+
+        CurrencyConverter converter = new TestCurrencyConverter();
+        PerformanceIndex clientIndex = PerformanceIndex.forClient(client, converter, Interval.of(start, end),
+                        new ArrayList<>());
+        PerformanceIndex benchmarkIndex = PerformanceIndex.forSecurity(clientIndex, benchmark);
+
+        double[] irr = IRRSeries.calculate(benchmarkIndex);
+
+        assertThat(benchmarkIndex.getDates()[0].isAfter(start), is(true));
+        assertThat(irr[irr.length - 1], IsCloseTo.closeTo(benchmarkIndex.getPerformanceIRR(), PRECISION));
+    }
 }
