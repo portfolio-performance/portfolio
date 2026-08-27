@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.is;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.hamcrest.number.IsCloseTo;
 import org.junit.Test;
@@ -12,6 +13,7 @@ import org.junit.Test;
 import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
+import name.abuchen.portfolio.math.IRR;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -79,6 +81,46 @@ public class IRRSeriesTest
             else
                 assertThat("Expected a non-finite value at " + dates[ii], Double.isFinite(irr[ii]), is(false));
         }
+    }
+
+    @Test
+    public void testMonthlyIntervalUsesAnnualizedIRR()
+    {
+        Client client = new Client();
+        new AccountBuilder() //
+                        .deposit_("2024-01-01", Values.Amount.factorize(10000)) //
+                        .interest("2024-01-31", Values.Amount.factorize(200)) //
+                        .addTo(client);
+
+        LocalDate start = LocalDate.of(2023, 12, 31);
+        LocalDate end = LocalDate.of(2024, 1, 31);
+        CurrencyConverter converter = new TestCurrencyConverter();
+        PerformanceIndex index = PerformanceIndex.forClient(client, converter, Interval.of(start, end),
+                        new ArrayList<>());
+
+        double expected = IRR.calculate(List.of(LocalDate.of(2024, 1, 1), end), List.of(-10000d, 10200d));
+        assertThat(index.getPerformanceIRR(), IsCloseTo.closeTo(expected, PRECISION));
+    }
+
+    @Test
+    public void testYearlyIntervalUsesSameScalarIRRSemantics()
+    {
+        Client client = new Client();
+        new AccountBuilder() //
+                        .deposit_("2024-01-01", Values.Amount.factorize(10000)) //
+                        .deposit_("2024-07-01", Values.Amount.factorize(2500)) //
+                        .interest("2024-12-31", Values.Amount.factorize(1500)) //
+                        .addTo(client);
+
+        LocalDate start = LocalDate.of(2023, 12, 31);
+        LocalDate end = LocalDate.of(2024, 12, 31);
+        CurrencyConverter converter = new TestCurrencyConverter();
+        PerformanceIndex index = PerformanceIndex.forClient(client, converter, Interval.of(start, end),
+                        new ArrayList<>());
+
+        double expected = IRR.calculate(List.of(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 7, 1), end),
+                        List.of(-10000d, -2500d, 14000d));
+        assertThat(index.getPerformanceIRR(), IsCloseTo.closeTo(expected, PRECISION));
     }
 
     @Test
