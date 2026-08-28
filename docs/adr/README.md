@@ -28,3 +28,4 @@ One screen is the norm. Keep the argument, cut the exposition.
 | [0001](0001-feature-patch-for-patched-swt.md) | Ship patched SWT via a feature patch in the product build |
 | [0002](0002-local-rest-api-for-scripts-and-agents.md) | Expose a local REST API for scripts and agents |
 | [0003](0003-sign-monetary-fields-only-inside-reconciling-breakdowns.md) | Sign monetary fields only inside reconciling breakdowns |
+| [0004](0004-derived-resources-have-no-synthetic-identity.md) | Derived resources have no synthetic identity |
