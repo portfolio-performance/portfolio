@@ -34,7 +34,7 @@ info:
        it cannot be retrieved again. The user chooses whether the grant is
        permanent or expires when the application quits.
 
-    Every `401` response carries the pairing endpoint in its `pairing_endpoint`
+    Every `401` response carries the pairing endpoint in its `pairingEndpoint`
     field, so this flow is discoverable at runtime. Users can also mint a token
     manually (Preferences → REST API → "Add client") for headless setups, and can
     revoke any client there at any time.
@@ -1829,7 +1829,7 @@ components:
             reported at once.
           items:
             $ref: "#/components/schemas/FieldError"
-        pairing_endpoint:
+        pairingEndpoint:
           type: string
           description: |
             RFC 9457 extension member, present on `401 unauthorized`: the path
@@ -1853,7 +1853,7 @@ components:
     Unauthorized:
       description: |
         Missing or invalid bearer token (`unauthorized`). The problem body
-        carries a `pairing_endpoint` extension member naming the path where a
+        carries a `pairingEndpoint` extension member naming the path where a
         client can request access interactively.
       headers:
         WWW-Authenticate:
@@ -1870,7 +1870,7 @@ components:
                 type: https://portfolio-performance.info/rest/problems/unauthorized
                 title: Missing or invalid bearer token
                 status: 401
-                pairing_endpoint: /v1/auth/requests
+                pairingEndpoint: /v1/auth/requests
 
     Forbidden:
       description: |

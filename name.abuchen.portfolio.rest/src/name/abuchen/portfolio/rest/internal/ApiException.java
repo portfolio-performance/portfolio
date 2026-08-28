@@ -53,7 +53,7 @@ public class ApiException extends RuntimeException
         return new ApiException(401, "unauthorized", "Missing or invalid bearer token", null, List.of(), //$NON-NLS-1$ //$NON-NLS-2$
                         Map.of("WWW-Authenticate", "Bearer"), //$NON-NLS-1$ //$NON-NLS-2$
                         // self-serve discovery: where a client can request access
-                        Map.of("pairing_endpoint", RestApiConstants.PAIRING_ENDPOINT)); //$NON-NLS-1$
+                        Map.of("pairingEndpoint", RestApiConstants.PAIRING_ENDPOINT)); //$NON-NLS-1$
     }
 
     public static ApiException forbiddenHost()

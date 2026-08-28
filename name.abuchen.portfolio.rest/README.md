@@ -36,7 +36,7 @@ The approval prompt offers **Allow for this session** (the token dies when the a
 **Always allow** (persistent), and **Decline**. The token is delivered **exactly once** — store it.
 A request expires after 2 minutes; only one may be pending at a time, and a decline imposes a
 cool-down (both reported `429` with `Retry-After`). Every `401` names the pairing endpoint in its
-`pairing_endpoint` field, so the flow is discoverable at runtime.
+`pairingEndpoint` field, so the flow is discoverable at runtime.
 
 The preference page lists all authorized clients with their last use, lets the user **revoke** each
 individually (effective immediately), and can mint a token manually via **Add client** — the path
@@ -153,7 +153,7 @@ save.
 | Status | `type` | When |
 |---|---|---|
 | 400 | `invalid-request` | body is not a JSON object, or an unknown query parameter — see `errors` |
-| 401 | `unauthorized` | missing or wrong bearer token; the body's `pairing_endpoint` says where to pair |
+| 401 | `unauthorized` | missing or wrong bearer token; the body's `pairingEndpoint` says where to pair |
 | 403 | `forbidden-host` | not addressed as loopback |
 | 403 | `browser-origin-forbidden` | request carries an `Origin` header |
 | 404 | `not-found` | unknown file, **file not enabled**, or unknown entity |

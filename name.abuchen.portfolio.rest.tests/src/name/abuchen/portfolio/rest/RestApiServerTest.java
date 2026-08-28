@@ -116,7 +116,7 @@ public class RestApiServerTest
     {
         var response = http.send(request("/v1/ping").GET().build(), HttpResponse.BodyHandlers.ofString());
         assertThat(response.statusCode(), is(401));
-        assertThat(response.body(), containsString("\"pairing_endpoint\":\"/v1/auth/requests\""));
+        assertThat(response.body(), containsString("\"pairingEndpoint\":\"/v1/auth/requests\""));
     }
 
     /** the OpenAPI document is reachable without a token, so the API is self-describing */
