@@ -849,17 +849,18 @@ public class TradeCollector7Test
     }
 
     @Test
-    public void testMovingAverageCostOfShortTrades() throws TradeCollectorException
+    public void testMovingAverageCostOfShortTradesIsUndefined() throws TradeCollectorException
     {
         // "Moving average acquisition cost" has no meaningful reading for a
-        // position that was never acquired; the point of this test is that the
-        // value is a number and not null. TradeCategory sums
-        // getProfitLossMovingAverage() without a null check, so a null here is
-        // an NPE in the totals row rather than a meaningless number.
+        // position that was never acquired, so the trade reports it as
+        // undefined instead of as a number a caller has to know to discard -
+        // it used to answer zero, which reads like a free acquisition. Every
+        // value derived from it is undefined with it: null for the monetary
+        // ones, NaN for the return.
         //
-        // The value depends on the trade knowing its real closing transaction:
-        // it cannot be derived from the transaction type, because the *opening*
-        // transactions of a short position are liquidations as well.
+        // Everything that sums these values treats an undefined one as a zero
+        // contribution rather than voiding the sum; see
+        // TradeCategoryTest#testShortTradeContributesZeroToTheMovingAverageTotals.
 
         var client = createClientWithShortPosition();
         var security = client.getSecurities().get(0);
@@ -868,9 +869,15 @@ public class TradeCollector7Test
         {
             for (var trade : collect(client, security, grouping))
             {
-                assertThat(grouping.name(), trade.getEntryValueMovingAverage(), is(notNullValue()));
-                assertThat(grouping.name(), trade.getEntryValueMovingAverage(), is(Money.of(CurrencyUnit.EUR, 0)));
-                assertThat(grouping.name(), trade.getProfitLossMovingAverage(), is(notNullValue()));
+                assertThat(grouping.name(), trade.getEntryValueMovingAverage(), is(nullValue()));
+                assertThat(grouping.name(), trade.getEntryValueMovingAverageWithoutTaxesAndFees(), is(nullValue()));
+                assertThat(grouping.name(), trade.getProfitLossMovingAverage(), is(nullValue()));
+                assertThat(grouping.name(), trade.getProfitLossMovingAverageWithoutTaxesAndFees(), is(nullValue()));
+                assertThat(grouping.name(), Double.isNaN(trade.getReturnMovingAverage()), is(true));
+
+                // what does not depend on the cost basis stays defined
+                assertThat(grouping.name(), trade.getEntryValue(), is(notNullValue()));
+                assertThat(grouping.name(), trade.getProfitLoss(), is(notNullValue()));
             }
         }
 
@@ -886,8 +893,33 @@ public class TradeCollector7Test
         {
             var trades = collect(openClient, openSecurity, grouping);
             assertThat(grouping.name(), trades.size(), is(1));
-            assertThat(grouping.name(), trades.get(0).getEntryValueMovingAverage(), is(notNullValue()));
-            assertThat(grouping.name(), trades.get(0).getEntryValueMovingAverage(), is(Money.of(CurrencyUnit.EUR, 0)));
+            assertThat(grouping.name(), trades.get(0).getEntryValueMovingAverage(), is(nullValue()));
+            assertThat(grouping.name(), trades.get(0).getProfitLossMovingAverage(), is(nullValue()));
+        }
+    }
+
+    @Test
+    public void testMovingAverageCostOfLongTradesStaysDefined() throws TradeCollectorException
+    {
+        // the undefined value is specific to a position that was never
+        // acquired, not to the cost method
+
+        var client = new Client();
+        var security = new SecurityBuilder().addPrice("2026-07-01", quoteOf(80)).addTo(client);
+
+        new PortfolioBuilder(new Account("one")) //
+                        .buy(security, "2026-01-01", sharesOf(10), amountOf(1000)) //
+                        .sell(security, "2026-03-01", sharesOf(10), amountOf(1200)) //
+                        .addTo(client);
+
+        for (var grouping : TradeGrouping.values())
+        {
+            for (var trade : collect(client, security, grouping))
+            {
+                assertThat(grouping.name(), trade.getEntryValueMovingAverage(), is(notNullValue()));
+                assertThat(grouping.name(), trade.getProfitLossMovingAverage(), is(notNullValue()));
+                assertThat(grouping.name(), Double.isFinite(trade.getReturnMovingAverage()), is(true));
+            }
         }
     }
 
