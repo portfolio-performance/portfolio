@@ -478,6 +478,8 @@ public class TradeCategory
             this.totalProfitLossMovingAverage = weightedTrades.stream() //
                             .map(wt -> {
                                 Money pnl = wt.trade.getProfitLossMovingAverage();
+                                if (pnl == null)
+                                    return Money.of(converter.getTermCurrency(), 0);
                                 LocalDate date = wt.trade.getEnd().map(LocalDate::from).orElse(LocalDate.now());
                                 return pnl.with(converter.at(date)).multiplyAndRound(wt.weight);
                             }) //
@@ -486,6 +488,8 @@ public class TradeCategory
             this.totalProfitLossMovingAverageWithoutTaxesAndFees = weightedTrades.stream() //
                             .map(wt -> {
                                 Money pnl = wt.trade.getProfitLossMovingAverageWithoutTaxesAndFees();
+                                if (pnl == null)
+                                    return Money.of(converter.getTermCurrency(), 0);
                                 LocalDate date = wt.trade.getEnd().map(LocalDate::from).orElse(LocalDate.now());
                                 return pnl.with(converter.at(date)).multiplyAndRound(wt.weight);
                             }) //
