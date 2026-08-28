@@ -2,6 +2,7 @@ package name.abuchen.portfolio.rest.internal;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.function.Function;
 
@@ -26,6 +27,7 @@ import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
+import name.abuchen.portfolio.snapshot.trades.Trade;
 
 /**
  * Maps the model entities to the wire format. The API vocabulary is
@@ -36,6 +38,15 @@ import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
  */
 public final class EntityJson
 {
+    /**
+     * A local date and time, always with seconds. The model stores a
+     * LocalDateTime with no zone - inventing the machine's offset to satisfy
+     * RFC 3339 would attribute a timezone to a file that may not have been
+     * recorded in it - and LocalDateTime#toString drops the seconds at
+     * midnight, which would make the field vary in length.
+     */
+    private static final DateTimeFormatter DATE_TIME = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"); //$NON-NLS-1$
+
     private EntityJson()
     {
     }
@@ -418,6 +429,159 @@ public final class EntityJson
         // stripTrailingZeros is documented to misbehave for zero
         var plain = value.signum() == 0 ? "0" : value.stripTrailingZeros().toPlainString(); //$NON-NLS-1$
         return JsonParser.parseString(plain);
+    }
+
+    public static JsonObject tradesContext(TradesHandler.Params params)
+    {
+        var json = new JsonObject();
+        json.addProperty("reportingCurrency", params.currency()); //$NON-NLS-1$
+        json.addProperty("costMethod", CalcParams.wireName(params.costMethod())); //$NON-NLS-1$
+        json.addProperty("taxesAndFees", CalcParams.wireName(params.taxesAndFees())); //$NON-NLS-1$
+        json.addProperty("grouping", CalcParams.wireName(params.grouping())); //$NON-NLS-1$
+        // valuation date for open trades
+        json.addProperty("valuationDate", params.valuationDate().toString()); //$NON-NLS-1$
+
+        var status = new JsonArray();
+        // in the enum's declaration order, not the order the client asked for
+        for (var value : TradeStatus.values())
+            if (params.status().contains(value))
+                status.add(value.getWireName());
+        json.add("status", status); //$NON-NLS-1$
+
+        return json;
+    }
+
+    public static JsonObject toJson(TradesHandler.Warning warning)
+    {
+        var json = new JsonObject();
+        json.add("instrument", reference(warning.instrument())); //$NON-NLS-1$
+        json.addProperty("code", warning.code()); //$NON-NLS-1$
+        json.addProperty("message", warning.message()); //$NON-NLS-1$
+        return json;
+    }
+
+    /**
+     * One matched trade, using the requested cost and fee parameters.
+     */
+    public static JsonObject toJson(Trade trade, TradesHandler.Params params)
+    {
+        var json = new JsonObject();
+        json.addProperty("status", TradeStatus.of(trade).getWireName()); //$NON-NLS-1$
+        // share count is positive for both directions
+        json.addProperty("direction", trade.isLong() ? "long" : "short"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+        json.add("instrument", reference(trade.getSecurity())); //$NON-NLS-1$
+        json.add("portfolio", reference(trade.getPortfolio())); //$NON-NLS-1$
+
+        json.addProperty("start", DATE_TIME.format(trade.getStart())); //$NON-NLS-1$
+        var end = trade.getEnd();
+        if (end.isPresent())
+            json.addProperty("end", DATE_TIME.format(end.get())); //$NON-NLS-1$
+        else
+            json.add("end", JsonNull.INSTANCE); //$NON-NLS-1$
+
+        json.add("shares", decimal(trade.getShares(), Values.Share.precision())); //$NON-NLS-1$
+        json.addProperty("transactionCount", trade.getTransactions().size()); //$NON-NLS-1$
+
+        // the model reports the moving average values as undefined where they
+        // have no reading - a short position was never acquired - and they are
+        // undefined as a set, so entryValue, profitLoss and return are null
+        // together and no case analysis is needed here
+
+        var entryValue = entryValue(trade, params);
+        var profitLoss = profitLoss(trade, params);
+
+        // exit value does not depend on the cost basis
+        var exitValue = params.taxesAndFees().isIncluded() ? trade.getExitValue()
+                        : trade.getExitValueWithoutTaxesAndFees();
+
+        json.add("entryValue", money(entryValue)); //$NON-NLS-1$
+        json.add("exitValue", money(exitValue)); //$NON-NLS-1$
+        json.add("profitLoss", money(profitLoss)); //$NON-NLS-1$
+
+        json.addProperty("holdingPeriodDays", trade.getHoldingPeriod()); //$NON-NLS-1$
+        json.add("irr", ratio(trade.getIRR())); //$NON-NLS-1$
+
+        // null when the model returns NaN, which includes the undefined case
+        json.add("return", ratio(returnRatio(trade, params))); //$NON-NLS-1$
+
+        var note = trade.getLastTransaction().getTransaction().getNote();
+        if (note != null && !note.isBlank())
+            json.addProperty("note", note); //$NON-NLS-1$
+
+        return json;
+    }
+
+    /**
+     * The trade exposes the cost method and the taxes and fees as four
+     * separately named getters rather than as parameters, so the choice
+     * between them is made here - as a switch over the enums, which a new cost
+     * method cannot pass silently.
+     */
+    private static Money entryValue(Trade trade, TradesHandler.Params params)
+    {
+        var included = params.taxesAndFees().isIncluded();
+
+        return switch (params.costMethod())
+        {
+            case FIFO -> included ? trade.getEntryValue() : trade.getEntryValueWithoutTaxesAndFees();
+            case MOVING_AVERAGE -> included ? trade.getEntryValueMovingAverage()
+                            : trade.getEntryValueMovingAverageWithoutTaxesAndFees();
+        };
+    }
+
+    /** the result of the trade, under the same two parameters */
+    private static Money profitLoss(Trade trade, TradesHandler.Params params)
+    {
+        var included = params.taxesAndFees().isIncluded();
+
+        return switch (params.costMethod())
+        {
+            case FIFO -> included ? trade.getProfitLoss() : trade.getProfitLossWithoutTaxesAndFees();
+            case MOVING_AVERAGE -> included ? trade.getProfitLossMovingAverage()
+                            : trade.getProfitLossMovingAverageWithoutTaxesAndFees();
+        };
+    }
+
+    /** the total return, which follows the cost method but not the charges */
+    private static double returnRatio(Trade trade, TradesHandler.Params params)
+    {
+        return switch (params.costMethod())
+        {
+            case FIFO -> trade.getReturn();
+            case MOVING_AVERAGE -> trade.getReturnMovingAverage();
+        };
+    }
+
+    /**
+     * A pointer to an entity that has its own resource. Only the uuid joins;
+     * the name travels with it so that a response is readable without a second
+     * call.
+     */
+    private static JsonObject reference(Security security)
+    {
+        var json = new JsonObject();
+        json.addProperty("uuid", security.getUUID()); //$NON-NLS-1$
+        json.addProperty("name", security.getName()); //$NON-NLS-1$
+        json.addProperty("currencyCode", security.getCurrencyCode()); //$NON-NLS-1$
+        return json;
+    }
+
+    private static JsonObject reference(Portfolio portfolio)
+    {
+        var json = new JsonObject();
+        json.addProperty("uuid", portfolio.getUUID()); //$NON-NLS-1$
+        json.addProperty("name", portfolio.getName()); //$NON-NLS-1$
+        return json;
+    }
+
+    /**
+     * A monetary value that the model may not be able to state: the moving
+     * average cost is undefined when no performance record backs the trade.
+     */
+    private static JsonElement money(Money money)
+    {
+        return money != null ? toJson(money) : JsonNull.INSTANCE;
     }
 
     public static JsonObject toJson(Portfolio portfolio)

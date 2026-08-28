@@ -175,6 +175,24 @@ user did not share.
 than silently clobbered by whatever the dialog writes back on OK. Reads still work. Respect
 `Retry-After` and try again.
 
+## Computed collections
+
+Some collections are not stored in the file but computed per request — `trades` is the first. Two
+rules apply to all of them.
+
+**They have no ids.** A computed item gets no `uuid`, and there is no `…/trades/{id}`: an id minted
+per request would not survive the next one. Address such an item by the filter that produced it
+(`GET .../instruments/{uuid}/trades?status=closed`). Ordering carries the weight identity otherwise
+would, so these collections sort stably — repeated identical requests return identical lists.
+
+**They can half succeed.** Where the computation runs over independent units and can fail on some of
+them, the response is `200` with the results it has plus a `warnings` array naming each unit that
+failed and why. One unreconcilable security must not make the resource unreadable for the other four
+hundred, and `problem+json` stays reserved for a *total* failure — a response is either a problem or
+a result, never both. `warnings` is always present, empty when nothing failed, so that "nothing went
+wrong" is distinguishable from "this endpoint cannot report problems". **A client that ignores
+`warnings` reads a partial list as a complete one.**
+
 ## Query parameters are strict
 
 An endpoint accepts only the query parameters documented for it, and one that documents none accepts

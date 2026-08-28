@@ -8,6 +8,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.TaxesAndFees;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.snapshot.trades.TradeGrouping;
 
 /**
  * The query parameters shared by the calculation endpoints. They accumulate
@@ -131,5 +132,31 @@ public final class CalcParams
     public static String wireName(TaxesAndFees taxesAndFees)
     {
         return taxesAndFees.isIncluded() ? "included" : "excluded"; //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    /**
+     * Trade grouping, parsed strictly because {@link TradeGrouping#fromString}
+     * falls back to COMBINED for unknown names.
+     */
+    public static TradeGrouping grouping(String value, List<ApiException.FieldError> errors)
+    {
+        if (value == null || "combined".equals(value)) //$NON-NLS-1$
+            return TradeGrouping.COMBINED;
+
+        if ("per-lot".equals(value)) //$NON-NLS-1$
+            return TradeGrouping.PER_LOT;
+
+        errors.add(new ApiException.FieldError("grouping", "invalid-value", //$NON-NLS-1$ //$NON-NLS-2$
+                        "grouping must be combined or per-lot")); //$NON-NLS-1$
+        return TradeGrouping.COMBINED;
+    }
+
+    public static String wireName(TradeGrouping grouping)
+    {
+        return switch (grouping)
+        {
+            case COMBINED -> "combined"; //$NON-NLS-1$
+            case PER_LOT -> "per-lot"; //$NON-NLS-1$
+        };
     }
 }

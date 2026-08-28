@@ -24,6 +24,7 @@ import name.abuchen.portfolio.rest.internal.Request;
 import name.abuchen.portfolio.rest.internal.Response;
 import name.abuchen.portfolio.rest.internal.Router;
 import name.abuchen.portfolio.rest.internal.SecuritiesHandler;
+import name.abuchen.portfolio.rest.internal.TradesHandler;
 import name.abuchen.portfolio.rest.spi.HostApplication;
 import name.abuchen.portfolio.rest.spi.OpenFile;
 
@@ -38,6 +39,10 @@ public final class ApiRoutes
     /** Shared query parameters for the instrument performance list and item routes. */
     private static final String[] INSTRUMENT_PERFORMANCE_PARAMS = { "openingDate", "closingDate", //$NON-NLS-1$ //$NON-NLS-2$
                     "reportingCurrency", "costMethod", "taxesAndFees", "metrics" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+
+    /** Query parameters shared by both trade routes. */
+    private static final String[] TRADE_PARAMS = { "status", "grouping", "costMethod", "taxesAndFees", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                    "reportingCurrency" }; //$NON-NLS-1$
 
     private ApiRoutes()
     {
@@ -122,6 +127,20 @@ public final class ApiRoutes
                                         req.queryParam("costMethod"), req.queryParam("taxesAndFees"), //$NON-NLS-1$ //$NON-NLS-2$
                                         req.queryParam("metrics")))), //$NON-NLS-1$
                         INSTRUMENT_PERFORMANCE_PARAMS);
+
+        // matched trades for the whole file or one instrument sub-collection
+        router.add("GET", "/v1/files/{file}/trades", calc(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> Response.json(200, TradesHandler.list(context.client(), context.factory(),
+                                        req.queryParam("status"), req.queryParam("grouping"), //$NON-NLS-1$ //$NON-NLS-2$
+                                        req.queryParam("costMethod"), req.queryParam("taxesAndFees"), //$NON-NLS-1$ //$NON-NLS-2$
+                                        req.queryParam("reportingCurrency")))), //$NON-NLS-1$
+                        TRADE_PARAMS);
+        router.add("GET", "/v1/files/{file}/instruments/{uuid}/trades", calc(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
+                        (context, req) -> Response.json(200, TradesHandler.forInstrument(context.client(),
+                                        context.factory(), req.pathParam("uuid"), req.queryParam("status"), //$NON-NLS-1$ //$NON-NLS-2$
+                                        req.queryParam("grouping"), req.queryParam("costMethod"), //$NON-NLS-1$ //$NON-NLS-2$
+                                        req.queryParam("taxesAndFees"), req.queryParam("reportingCurrency")))), //$NON-NLS-1$ //$NON-NLS-2$
+                        TRADE_PARAMS);
 
         return router;
     }

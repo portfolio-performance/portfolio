@@ -126,6 +126,8 @@ tags:
     description: The statement of assets — every holding valued at a date
   - name: Performance
     description: Return and value-change of the file over an interval
+  - name: Trades
+    description: Matched buy/sell pairs, computed from the transactions
 
 paths:
   /v1/openapi.yaml:
@@ -983,6 +985,201 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
+  /v1/files/{file}/trades:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    get:
+      operationId: listTrades
+      tags: [Trades]
+      summary: List the file's trades
+      description: |
+        Every trade in the file, across all instruments and securities
+        accounts. Sorted by instrument name; the trades of one instrument keep
+        the order they were matched in, which is chronological.
+
+        A trade is a set of purchases matched against the sales that closed
+        them. It is **computed, not stored**: it has no identity that survives
+        the next call, it cannot be created, changed or deleted through this
+        API, and there is no `/trades/{id}`. To change a trade, change the
+        transactions behind it. Address a trade by the filter that produced it.
+
+        Lot matching is always FIFO; `grouping` decides how the matched lots
+        are gathered into trades, it does not select a matching strategy.
+
+        An **open** trade has no `end`. Its `exitValue`, `profitLoss` and
+        `return` are a valuation at the market price of `valuationDate` rather
+        than a realized result, and its `holdingPeriodDays` runs until that
+        date — so two calls on different days legitimately return different
+        numbers for the same trade. Use `status` to tell the two kinds apart,
+        and `direction`: for a short trade profit is entry minus exit, and the
+        share count is positive either way.
+
+        A security whose transactions do not reconcile — a sale covering more
+        shares than were held, a transfer of shares that are not there — is
+        reported in `warnings` and contributes no trades. Note a sale into an
+        account holding nothing is *not* such a case: it opens a short
+        position, reported as an open trade with `direction: short`. The request still
+        succeeds: one unreconcilable security, which an import can leave
+        behind, must not make the resource unreadable. **A client that ignores
+        `warnings` will read a partial list as a complete one.**
+      parameters:
+        - $ref: "#/components/parameters/TradeStatus"
+        - $ref: "#/components/parameters/TradeGrouping"
+        - $ref: "#/components/parameters/TradeCostMethod"
+        - $ref: "#/components/parameters/TradeTaxesAndFees"
+        - $ref: "#/components/parameters/ReportingCurrency"
+      responses:
+        "200":
+          description: The file's trades
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TradesResponse"
+              examples:
+                default:
+                  value:
+                    reportingCurrency: EUR
+                    costMethod: fifo
+                    taxesAndFees: included
+                    grouping: combined
+                    valuationDate: "2026-08-27"
+                    status: [open, closed]
+                    warnings: []
+                    items:
+                      - status: closed
+                        direction: long
+                        instrument:
+                          uuid: 8a1e0c4b-2f5d-4e6a-b1c3-7d9f0a2e4c68
+                          name: Apple Inc.
+                          currencyCode: USD
+                        portfolio:
+                          uuid: 1d3f5a7c-9e0b-4c2d-8f6a-3b5d7e9f1a2c
+                          name: Broker Depot
+                        start: "2024-03-04T00:00:00"
+                        end: "2025-11-18T00:00:00"
+                        shares: 10
+                        transactionCount: 2
+                        entryValue: { value: 1010.5, currency: EUR }
+                        exitValue: { value: 1320, currency: EUR }
+                        profitLoss: { value: 309.5, currency: EUR }
+                        holdingPeriodDays: 624
+                        irr: 0.1782
+                        return: 0.3063
+                        note: rebalancing
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/files/{file}/instruments/{uuid}/trades:
+    parameters:
+      - $ref: "#/components/parameters/File"
+      - $ref: "#/components/parameters/Uuid"
+    get:
+      operationId: listInstrumentTrades
+      tags: [Trades]
+      summary: List one instrument's trades
+      description: |
+        The trades of a single instrument — a sub-collection of the
+        instrument, filtered exactly as `GET .../trades` is.
+
+        An instrument that exists but was never traded has an **empty** list of
+        trades, not no list: this returns `200` with `items: []`, not a `404`.
+        That differs from `GET .../performance/instruments/{uuid}`, which does
+        404, because there the uuid identifies the single item the response
+        consists of, while here it identifies the instrument the collection
+        belongs to. A `404` from this route means the instrument is unknown.
+
+        A trade is a set of purchases matched against the sales that closed
+        them. It is **computed, not stored**: it has no identity that survives
+        the next call, it cannot be created, changed or deleted through this
+        API, and there is no `/trades/{id}`. To change a trade, change the
+        transactions behind it. Address a trade by the filter that produced it.
+
+        Lot matching is always FIFO; `grouping` decides how the matched lots
+        are gathered into trades, it does not select a matching strategy.
+
+        An **open** trade has no `end`. Its `exitValue`, `profitLoss` and
+        `return` are a valuation at the market price of `valuationDate` rather
+        than a realized result, and its `holdingPeriodDays` runs until that
+        date — so two calls on different days legitimately return different
+        numbers for the same trade. Use `status` to tell the two kinds apart,
+        and `direction`: for a short trade profit is entry minus exit, and the
+        share count is positive either way.
+
+        A security whose transactions do not reconcile — a sale covering more
+        shares than were held, a transfer of shares that are not there — is
+        reported in `warnings` and contributes no trades. Note a sale into an
+        account holding nothing is *not* such a case: it opens a short
+        position, reported as an open trade with `direction: short`. The request still
+        succeeds: one unreconcilable security, which an import can leave
+        behind, must not make the resource unreadable. **A client that ignores
+        `warnings` will read a partial list as a complete one.**
+      parameters:
+        - $ref: "#/components/parameters/TradeStatus"
+        - $ref: "#/components/parameters/TradeGrouping"
+        - $ref: "#/components/parameters/TradeCostMethod"
+        - $ref: "#/components/parameters/TradeTaxesAndFees"
+        - $ref: "#/components/parameters/ReportingCurrency"
+      responses:
+        "200":
+          description: The instrument's trades
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TradesResponse"
+              examples:
+                default:
+                  value:
+                    reportingCurrency: EUR
+                    costMethod: fifo
+                    taxesAndFees: included
+                    grouping: combined
+                    valuationDate: "2026-08-27"
+                    status: [open, closed]
+                    warnings: []
+                    items:
+                      - status: closed
+                        direction: long
+                        instrument:
+                          uuid: 8a1e0c4b-2f5d-4e6a-b1c3-7d9f0a2e4c68
+                          name: Apple Inc.
+                          currencyCode: USD
+                        portfolio:
+                          uuid: 1d3f5a7c-9e0b-4c2d-8f6a-3b5d7e9f1a2c
+                          name: Broker Depot
+                        start: "2024-03-04T00:00:00"
+                        end: "2025-11-18T00:00:00"
+                        shares: 10
+                        transactionCount: 2
+                        entryValue: { value: 1010.5, currency: EUR }
+                        exitValue: { value: 1320, currency: EUR }
+                        profitLoss: { value: 309.5, currency: EUR }
+                        holdingPeriodDays: 624
+                        irr: 0.1782
+                        return: 0.3063
+                        note: rebalancing
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
 components:
   securitySchemes:
     bearerAuth:
@@ -1100,8 +1297,309 @@ components:
             [valuation, gains, income, expenses, moneyWeighted, timeWeighted, risk]
       style: form
       explode: false
+    TradeStatus:
+      name: status
+      in: query
+      required: false
+      description: |
+        Which trades to return (default: both). A comma-separated list of
+        `open` and `closed`. Echoed in the response as an array, in the order
+        above rather than the order sent.
+      schema:
+        type: array
+        items:
+          type: string
+          enum: [open, closed]
+        default: [open, closed]
+      style: form
+      explode: false
+    TradeGrouping:
+      name: grouping
+      in: query
+      required: false
+      description: |
+        How matched lots are gathered into trades (default: `combined`).
+        `combined` makes one trade out of the acquisitions that a sale closed;
+        `per-lot` reports each acquisition as its own trade.
+
+        This is **not** a lot matching strategy — matching is always FIFO and
+        cannot be changed. An unknown value is rejected rather than silently
+        treated as `combined`. Echoed in the response.
+      schema:
+        type: string
+        enum: [combined, per-lot]
+        default: combined
+    TradeCostMethod:
+      name: costMethod
+      in: query
+      required: false
+      description: |
+        The cost basis method (default: `fifo`). It changes `entryValue`,
+        `profitLoss` and `return`, which are then computed against the moving
+        average cost of the shares rather than the matched lots.
+
+        It does **not** change `irr`, which is derived from the actual cash
+        flows and has no moving-average counterpart — so a request with
+        `moving-average` returns a deliberately mixed-basis item. Nor does it
+        change `exitValue`, which is what the shares realized or are worth.
+
+        `entryValue`, `profitLoss` and `return` are `null` — always all three
+        together — for a trade whose moving average cost is undefined. That is
+        the case for every **short** trade, which was never acquired and so has
+        no acquisition cost, and for a trade no performance record backs.
+        `exitValue` and `irr` stay defined. Echoed in the response.
+      schema:
+        type: string
+        enum: [fifo, moving-average]
+        default: fifo
+    TradeTaxesAndFees:
+      name: taxesAndFees
+      in: query
+      required: false
+      description: |
+        Whether the taxes and fees of the trade's own transactions are part of
+        its values (default: `included`). It moves `entryValue`, `exitValue`
+        and `profitLoss` **together**, so that
+        `profitLoss = exitValue - entryValue` keeps holding for a long trade
+        (and `entryValue - exitValue` for a short one).
+
+        It does not change `irr` or `return`, matching the rule the performance
+        resource states. It has no effect on the exit side of an **open**
+        trade: that is a valuation at the market price, on which no charges
+        have been incurred. Echoed in the response.
+      schema:
+        type: string
+        enum: [included, excluded]
+        default: included
 
   schemas:
+    TradesResponse:
+      type: object
+      description: |
+        The trades matching the request, with the parameters they were computed
+        with echoed back and the securities that could not be reconciled.
+      required:
+        [
+          reportingCurrency,
+          costMethod,
+          taxesAndFees,
+          grouping,
+          valuationDate,
+          status,
+          warnings,
+          items,
+        ]
+      properties:
+        reportingCurrency:
+          type: string
+          description: |
+            The currency every amount in this response has been converted into
+            — the `reportingCurrency` query parameter, or the file's base
+            currency. Not to be confused with a `MonetaryValue`'s `currency`
+            (one amount) or an instrument's `currencyCode` (its own declared
+            currency).
+        costMethod:
+          type: string
+          enum: [fifo, moving-average]
+        taxesAndFees:
+          type: string
+          enum: [included, excluded]
+        grouping:
+          type: string
+          enum: [combined, per-lot]
+        valuationDate:
+          type: string
+          format: date
+          description: |
+            The date the open trades were valued at, and the date their holding
+            period runs to. Closed trades do not depend on it.
+        status:
+          type: array
+          description: The selected statuses, in declaration order.
+          items:
+            type: string
+            enum: [open, closed]
+        warnings:
+          type: array
+          description: |
+            The securities the collector could not reconcile, each contributing
+            no trades to `items`. Always present, empty when nothing failed —
+            a client must be able to tell "nothing went wrong" from "this
+            endpoint cannot report problems".
+          items:
+            $ref: "#/components/schemas/TradeWarning"
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Trade"
+
+    TradeWarning:
+      type: object
+      description: |
+        One security whose transactions do not add up, and which therefore
+        contributes no trades. The message is English regardless of the
+        application's language.
+      required: [instrument, code, message]
+      properties:
+        instrument:
+          $ref: "#/components/schemas/InstrumentReference"
+        code:
+          type: string
+          description: Why the collector gave up on this security.
+          enum:
+            [
+              no-holdings-for-sell,
+              missing-holdings-for-sell,
+              no-holdings-for-transfer,
+              missing-holdings-for-transfer,
+            ]
+        message:
+          type: string
+
+    InstrumentReference:
+      type: object
+      description: |
+        A pointer to an instrument. Join to `GET .../instruments/{uuid}` by
+        `uuid`; the ISIN, WKN and ticker are deliberately not repeated here.
+      required: [uuid, name, currencyCode]
+      properties:
+        uuid:
+          type: string
+        name:
+          type: string
+        currencyCode:
+          type: [string, "null"]
+          description: |
+            The instrument's own declared currency, or `null` for a
+            currency-less instrument such as an index or a CPI series. The key
+            is **always present** (hence `required`); only its value may be
+            null — the same rule as on `Instrument`.
+
+    PortfolioReference:
+      type: object
+      description: |
+        A pointer to a securities account. Join to
+        `GET .../investment-accounts/{uuid}` by `uuid`.
+      required: [uuid, name]
+      properties:
+        uuid:
+          type: string
+        name:
+          type: string
+
+    Trade:
+      type: object
+      description: |
+        One set of purchases matched against the sales that closed them. Has no
+        id: a trade is recomputed on every request and its identity would not
+        survive `grouping` changing or a transaction being edited.
+      required:
+        [
+          status,
+          direction,
+          instrument,
+          portfolio,
+          start,
+          end,
+          shares,
+          transactionCount,
+          entryValue,
+          exitValue,
+          profitLoss,
+          holdingPeriodDays,
+          irr,
+          return,
+        ]
+      properties:
+        status:
+          type: string
+          enum: [open, closed]
+          description: |
+            `closed` when the shares have been fully sold. An `open` trade has
+            a null `end`, and its exit-side values are a valuation rather than
+            a realized result.
+        direction:
+          type: string
+          enum: [long, short]
+          description: |
+            `long` when the trade opened with a purchase. For a `short` trade
+            `profitLoss` is entry minus exit, the reverse of a long one — and
+            `shares` is positive in both cases, so this cannot be inferred from
+            the other fields.
+        instrument:
+          $ref: "#/components/schemas/InstrumentReference"
+        portfolio:
+          $ref: "#/components/schemas/PortfolioReference"
+        start:
+          type: string
+          description: |
+            When the trade was opened, as a **local** date and time in
+            `YYYY-MM-DDTHH:MM:SS` — always with seconds, and deliberately
+            without a UTC offset: the model records no timezone, and adding the
+            server's would attribute one the file may not have been kept in.
+            Not an RFC 3339 `date-time` for that reason.
+        end:
+          type: [string, "null"]
+          description: |
+            When the trade was closed, in the same format as `start`; `null`
+            while the trade is open.
+        shares:
+          type: number
+          description: The number of shares the trade covers, always positive.
+        transactionCount:
+          type: integer
+          description: |
+            How many transactions the trade was matched from — 2 for a clean
+            buy and sell, more for an accumulated or partially sold position.
+        entryValue:
+          oneOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+            - type: "null"
+          description: |
+            What acquiring the shares cost. Follows `costMethod` and
+            `taxesAndFees`. `null` when `costMethod=moving-average` and the
+            moving average cost is undefined for this trade — in particular for
+            every `short` trade, which was never acquired. `profitLoss` and
+            `return` are `null` whenever this is.
+        exitValue:
+          $ref: "#/components/schemas/MonetaryValue"
+          description: |
+            What selling the shares realized, or — for an open trade — what
+            they are worth at `valuationDate`. Follows `taxesAndFees` for a
+            closed trade; an open trade has incurred no charges. Does not
+            follow `costMethod`.
+        profitLoss:
+          oneOf:
+            - $ref: "#/components/schemas/MonetaryValue"
+            - type: "null"
+          description: |
+            `exitValue - entryValue` for a long trade, the reverse for a
+            short one — so check `direction` before subtracting the two
+            yourself. Signed: it is a term of that reconciling difference.
+            Follows `costMethod` and `taxesAndFees`, and is `null` under
+            exactly the same condition as `entryValue`.
+        holdingPeriodDays:
+          type: integer
+          description: |
+            The share-weighted average number of days the shares were held,
+            counted to `end` or, for an open trade, to `valuationDate`.
+        irr:
+          type: [number, "null"]
+          description: |
+            The internal rate of return as a fraction (0.0523 is 5.23 %),
+            annualized, from the trade's actual cash flows. Does **not** follow
+            `costMethod` or `taxesAndFees` — there is no variant of it. `null`
+            when the model cannot define it.
+        return:
+          type: [number, "null"]
+          description: |
+            The total return as a fraction (0.0523 is 5.23 %), not annualized.
+            Follows `costMethod` but not `taxesAndFees`. `null` when the model
+            cannot define it, and always when `entryValue` is.
+        note:
+          type: string
+          description: The note on the trade's last transaction, when it has one.
+
     File:
       type: object
       description: An open, enabled portfolio file you may address.
