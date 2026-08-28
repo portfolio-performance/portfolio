@@ -198,6 +198,33 @@ compared the echoed `reportingCurrency` against what it sent would ever notice.
 message points at the name that was meant, since working from memory is exactly how the case gets
 lost.
 
+## Naming
+
+Three registers, each uniform. What you *name* is `camelCase`; what you *choose* and what appears in
+a URL is `lower-kebab`.
+
+| | Style | Examples |
+|---|---|---|
+| Query parameter names | `camelCase` | `reportingCurrency`, `costMethod`, `openingDate`, `taxesAndFees` |
+| JSON field names | `camelCase` | `holdingPeriodDays`, `periodCostBasis`, `referenceCashAccount` |
+| Path segments | `lower-kebab` | `cash-accounts`, `investment-accounts`, `attribute-types` |
+| Enum values | `lower-kebab` | `moving-average`, `cash-account`, `per-lot`, `limit-price` |
+| `FieldError` codes, problem types | `lower-kebab` | `unknown-parameter`, `no-activity-in-period` |
+
+A query string therefore shows both registers at once — `?costMethod=moving-average` — and the `=` is
+the boundary. That looks mixed and is not: no identifier anywhere is kebab, and no value is camel
+except the case below.
+
+**The exception: a value that names a field is spelled like a field.** The `metrics` values are
+*field references*, not ordinary enum values — each one is literally the response property it
+switches on, so `?metrics=timeWeighted` turns on the `timeWeighted` object and the echoed
+`"metrics": ["timeWeighted"]` matches the key it enabled. Spelling them `time-weighted` would make a
+caller translate between what it asks for and what it gets back. Five of the seven are single words,
+so only `moneyWeighted` and `timeWeighted` show the difference.
+
+This applies only where the value genuinely *is* a field name. `per-lot`, `moving-average` and
+`cash-account` name no property and are kebab like every other value.
+
 ## For contributors
 
 The plugin depends on the model plugin and **must not depend on the UI plugin**. The UI side is

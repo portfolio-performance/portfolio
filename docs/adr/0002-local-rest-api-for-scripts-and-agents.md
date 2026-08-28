@@ -57,19 +57,9 @@ becomes a later thin adapter over the same service layer. The individual decisio
   dialogs such as `EditSecurityDialog` hold a stale copy of the entity that is written back wholesale
   on OK, and `syncExec` runnables *do* execute during a modal event loop — so an API write landing
   mid-dialog would be silently clobbered. Reads stay allowed.
-- **PATCH is JSON Merge Patch (RFC 7386)** against a strict writable-field whitelist; unknown or
-  read-only fields are rejected with 422 rather than ignored, and all violations are reported at once
-  so an agent self-corrects in one round-trip.
-- **DELETE of an instrument is blocked (409) when transactions or investment plans reference it**,
-  because `Client.removeSecurity` cascades into transaction history the API client may never have
-  seen. Watchlist and taxonomy membership do not block; those references are cleaned up.
-- **The API vocabulary is deliberately more general than the model:** `Security` → *instrument*,
-  `Account` → *cash account*, `Portfolio` → *investment account*. An investment account may be a bank
-  Depot, a broker account or a crypto exchange account, so "securities account" — the term the English
-  UI uses — would bake bank vocabulary into a contract we cannot rename without breaking clients. The
-  pairing mirrors the industry split (Plaid: `depository` vs `investment`). Java class names keep the
-  model's vocabulary; only the wire format and user-facing strings use the API vocabulary.
-- **Errors are RFC 9457 problem+json** with field-level `errors: [{field, code, message}]`.
+- **The API vocabulary is deliberately more general than the model** (`Security` → *instrument*,
+  `Portfolio` → *investment account*), because the contract cannot be renamed once clients exist.
+  Java class names keep the model's vocabulary; the mapping and its rationale are in the README.
 
 **Considered Options**
 
