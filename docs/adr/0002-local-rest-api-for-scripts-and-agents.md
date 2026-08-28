@@ -31,7 +31,7 @@ becomes a later thin adapter over the same service layer. The individual decisio
   (token in memory only, dies with the application), *always allow* (persisted), or *decline*.
   The token is delivered in the first `approved` poll and the request record deleted — one-shot,
   never re-displayable. At most one request is pending at a time, a decline starts a cool-down
-  (both 429 + `Retry-After`), and every 401 carries the pairing endpoint as a `pairing_endpoint`
+  (both 429 + `Retry-After`), and every 401 carries the pairing endpoint as a `pairingEndpoint`
   extension member, making the flow self-serve discoverable. Persistent clients are stored as
   SHA-256 token hashes in an owner-only JSON file in the plugin state location; the preference
   page lists clients (name, created, last used), revokes them individually with immediate effect,
