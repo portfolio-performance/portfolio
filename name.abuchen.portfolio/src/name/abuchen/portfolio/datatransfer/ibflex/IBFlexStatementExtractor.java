@@ -437,6 +437,7 @@ public class IBFlexStatementExtractor implements Extractor
          */
         private Consumer<Element> buildAccountTransaction = element -> {
             AccountTransaction accountTransaction = new AccountTransaction();
+            boolean isDividendCorrection = false;
 
             accountTransaction.setDateTime(extractDate(element));
 
@@ -459,6 +460,18 @@ public class IBFlexStatementExtractor implements Extractor
                     break;
                 case "Dividends":
                 case "Payment In Lieu Of Dividends":
+                    // A dividend reversal is reported as a negative cash
+                    // transaction. Keep that sign, which asAmount strips, so
+                    // the correction is not presented as income. Portfolio
+                    // Performance cannot apply a correction to the original
+                    // dividend, so the item is flagged as a failure below and
+                    // the user is asked to fix the original by hand.
+                    if (asDecimal(element.getAttribute("amount")).signum() < 0)
+                    {
+                        amount = Money.of(amount.getCurrencyCode(), -amount.getAmount());
+                        isDividendCorrection = true;
+                    }
+
                     // Set the Symbol
                     if (element.getAttribute("symbol").length() > 0)
                         accountTransaction.setSecurity(this.getOrCreateSecurity(element, true));
@@ -517,7 +530,12 @@ public class IBFlexStatementExtractor implements Extractor
 
             // Transactions without an account-id will not be imported.
             if (!"-".equals(element.getAttribute("accountId")))
-                addItem(accountTransaction);
+            {
+                TransactionItem item = addItem(accountTransaction);
+
+                if (isDividendCorrection)
+                    item.setFailureMessage(Messages.MsgErrorCashDividendCorrectionUnmatched);
+            }
         };
 
         /**
@@ -1455,8 +1473,14 @@ public class IBFlexStatementExtractor implements Extractor
                         .toList();
 
         // Filter transactions by dividend transactions
+        //
+        // Failed items are left out: matchTransactionPair keeps one dividend
+        // per date and security and then deletes the tax item, so a flagged
+        // dividend correction sharing both with its replacement would take the
+        // tax and carry it out of the import.
         List<Item> dividendTransactionList = items.stream() //
                         .filter(TransactionItem.class::isInstance) //
+                        .filter(i -> !i.isFailure()) //
                         .filter(i -> i.getSubject() instanceof AccountTransaction) //
                         .filter(i -> AccountTransaction.Type.DIVIDENDS //
                                         .equals((((AccountTransaction) i.getSubject()).getType()))) //
