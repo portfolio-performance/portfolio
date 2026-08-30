@@ -3998,7 +3998,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .match("^Einbehaltene Steuer:\\D+(?<tax>[,.\\d]+).*$")
                         .match("^Saldo nach Rechnungsabschluss zum (?<date>\\d{2}\\.\\d{2}\\.\\d{4}).*$")
                         .assign((t, v) -> {
-                            String currencyCode = v.get("currency");
+                            String currencyCode = asCurrencyCode(v.get("currency"));
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
