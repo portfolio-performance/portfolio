@@ -26,7 +26,6 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.update.NewVersion.ConditionalMessage;
 import name.abuchen.portfolio.ui.update.NewVersion.Release;
-import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.swt.StyledLabel;
 
 /* package */class UpdateMessageDialog extends MessageDialog
@@ -48,7 +47,6 @@ import name.abuchen.portfolio.ui.util.swt.StyledLabel;
         GridDataFactory.fillDefaults().grab(true, false).applyTo(container);
         GridLayoutFactory.fillDefaults().numColumns(1).applyTo(container);
 
-        create32BitWarning(container);
         createHeader(container);
         createText(container);
 
@@ -68,17 +66,6 @@ import name.abuchen.portfolio.ui.util.swt.StyledLabel;
         GridDataFactory.fillDefaults().grab(true, false);
 
         return container;
-    }
-
-    private void create32BitWarning(Composite container)
-    {
-        if (newVersion.get32BitWarning() == null)
-            return;
-
-        StyledLabel label = new StyledLabel(container, SWT.WRAP);
-        GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.END).applyTo(label);
-        label.setText(newVersion.get32BitWarning());
-        label.setBackground(Colors.theme().warningBackground());
     }
 
     private void createHeader(Composite container)
