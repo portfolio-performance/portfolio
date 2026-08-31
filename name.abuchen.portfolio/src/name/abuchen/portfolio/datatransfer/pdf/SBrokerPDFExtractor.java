@@ -1630,7 +1630,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setNote(trim(v.get("note")));
 
-                                                            Money tax = Money.of(v.get("currency"),
+                                                            var tax = Money.of(v.get("currency"),
                                                                             asAmount(v.get("tax")));
                                                             t.addUnit(new Unit(Unit.Type.TAX, tax));
                                                         }),
