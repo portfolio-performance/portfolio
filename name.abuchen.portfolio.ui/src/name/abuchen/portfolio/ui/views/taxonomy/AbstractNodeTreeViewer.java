@@ -3,7 +3,6 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,6 +17,7 @@ import jakarta.inject.Inject;
 
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -81,6 +81,7 @@ import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
+import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.SortMode;
 import name.abuchen.portfolio.util.TextUtil;
 
 /* package */abstract class AbstractNodeTreeViewer extends Page implements ModificationListener
@@ -278,11 +279,6 @@ import name.abuchen.portfolio.util.TextUtil;
         }
     }
 
-    private enum SortCriterion
-    {
-        TYPE, NAME, ACTUAL
-    }
-
     protected static final String MENU_GROUP_DEFAULT_ACTIONS = "defaultActions"; //$NON-NLS-1$
     protected static final String MENU_GROUP_CUSTOM_ACTIONS = "customActions"; //$NON-NLS-1$
     protected static final String MENU_GROUP_DELETE_ACTIONS = "deleteActions"; //$NON-NLS-1$
@@ -357,18 +353,33 @@ import name.abuchen.portfolio.util.TextUtil;
 
         manager.add(new Separator());
 
+        // the config menu applies the sort mode to the whole tree, i.e. every
+        // classification is set to the same mode (recursive)
+        addSortMenu(manager, getModel().getClassificationRootNode(), true);
+    }
+
+    /**
+     * Adds the "Sort by" sub menu with a check-box radio group for the sort
+     * modes. When {@code recursive} is set, choosing a mode applies it to the
+     * given node and all its descendants; otherwise it only affects the node
+     * itself. The checked entry reflects the node's currently stored mode.
+     */
+    private void addSortMenu(IMenuManager manager, TaxonomyNode node, boolean recursive)
+    {
         MenuManager sorting = new MenuManager(Messages.MenuTaxonomySortTreeBy);
-        sorting.add(new SimpleAction(
+
+        SortMode activeMode = getModel().getSortMode(node);
+
+        addSortModeAction(sorting, Messages.MenuTaxonomySortManual, SortMode.MANUAL, node, activeMode, recursive);
+        sorting.add(new Separator());
+        addSortModeAction(sorting,
                         String.join(", ", Messages.MenuTaxonomySortByType, Messages.MenuTaxonomySortByName), //$NON-NLS-1$
-                        a -> doSortRecursively(getModel().getClassificationRootNode(), SortCriterion.TYPE,
-                                        SortCriterion.NAME)));
-        sorting.add(new SimpleAction(String.join(", ", Messages.MenuTaxonomySortByType, Messages.ColumnActualValue), //$NON-NLS-1$
-                        a -> doSortRecursively(getModel().getClassificationRootNode(), SortCriterion.TYPE,
-                                        SortCriterion.ACTUAL)));
-        sorting.add(new SimpleAction(Messages.MenuTaxonomySortByName,
-                        a -> doSortRecursively(getModel().getClassificationRootNode(), SortCriterion.NAME)));
-        sorting.add(new SimpleAction(Messages.ColumnActualValue,
-                        a -> doSortRecursively(getModel().getClassificationRootNode(), SortCriterion.ACTUAL)));
+                        SortMode.TYPE_NAME, node, activeMode, recursive);
+        addSortModeAction(sorting,
+                        String.join(", ", Messages.MenuTaxonomySortByType, Messages.ColumnActualValue), //$NON-NLS-1$
+                        SortMode.TYPE_ACTUAL, node, activeMode, recursive);
+        addSortModeAction(sorting, Messages.MenuTaxonomySortByName, SortMode.NAME, node, activeMode, recursive);
+        addSortModeAction(sorting, Messages.ColumnActualValue, SortMode.ACTUAL, node, activeMode, recursive);
 
         manager.add(sorting);
     }
@@ -809,6 +820,12 @@ import name.abuchen.portfolio.util.TextUtil;
     protected void onTaxnomyNodeEdited(TaxonomyNode node)
     {
         getModel().recalculate();
+
+        // re-apply the sort mode of every classification so that newly added or
+        // moved items are automatically placed according to each folder's mode
+        // (recalculate() already re-sorts value-based modes)
+        getModel().applyStoredSort(getModel().getClassificationRootNode(), false);
+
         getModel().fireTaxonomyModelChange(node);
         getModel().markDirty();
     }
@@ -885,16 +902,9 @@ import name.abuchen.portfolio.util.TextUtil;
 
             manager.add(new Separator());
 
-            MenuManager sorting = new MenuManager(Messages.MenuTaxonomySortTreeBy);
-            sorting.add(new SimpleAction(
-                            String.join(", ", Messages.MenuTaxonomySortByType, Messages.MenuTaxonomySortByName), //$NON-NLS-1$
-                            a -> doSort(node, SortCriterion.TYPE, SortCriterion.NAME)));
-            sorting.add(new SimpleAction(String.join(", ", Messages.MenuTaxonomySortByType, Messages.ColumnActualValue), //$NON-NLS-1$
-                            a -> doSort(node, SortCriterion.TYPE, SortCriterion.ACTUAL)));
-            sorting.add(new SimpleAction(Messages.MenuTaxonomySortByName, a -> doSort(node, SortCriterion.NAME)));
-            sorting.add(new SimpleAction(Messages.ColumnActualValue, a -> doSort(node, SortCriterion.ACTUAL)));
-
-            manager.add(sorting);
+            // the context menu applies the sort mode only to the selected
+            // classification (its direct children)
+            addSortMenu(manager, node, false);
 
             if (!node.isRoot() && !node.getParent().isRoot())
             {
@@ -1052,79 +1062,25 @@ import name.abuchen.portfolio.util.TextUtil;
     }
 
     /**
-     * Sorts the children of a node and fires an update notification.
+     * Adds a check-box menu item that activates the given sort mode.
      */
-    private void doSort(TaxonomyNode node, SortCriterion... criteria) // NOSONAR
+    private void addSortModeAction(MenuManager menu, String label, SortMode mode, TaxonomyNode node,
+                    SortMode activeMode, boolean recursive)
     {
-        sort(node, false, criteria);
-
-        getModel().markDirty();
-        getModel().fireTaxonomyModelChange(node);
+        Action action = new SimpleAction(label, IAction.AS_CHECK_BOX, a -> applySortMode(node, mode, recursive));
+        action.setChecked(mode == activeMode);
+        menu.add(action);
     }
 
     /**
-     * Sorts the children of a node recursively and fires an update
-     * notification.
+     * Applies the sort mode chosen in the menu to the given classification node
+     * and refreshes the tree.
      */
-    private void doSortRecursively(TaxonomyNode node, SortCriterion... criteria) // NOSONAR
+    private void applySortMode(TaxonomyNode node, SortMode mode, boolean recursive)
     {
-        sort(node, true, criteria);
+        getModel().setSortMode(node, mode, recursive);
 
         getModel().markDirty();
         getModel().fireTaxonomyModelChange(node);
-    }
-
-    /**
-     * Sorts the children of a node, but does not fire update notifications.
-     */
-    private void sort(TaxonomyNode node, boolean recursive, SortCriterion... criteria) // NOSONAR
-    {
-        Collections.sort(node.getChildren(), (node1, node2) -> { // NOSONAR
-            // unassigned category always stays at the end of the list
-            if (node1.isUnassignedCategory())
-                return 1;
-            if (node2.isUnassignedCategory())
-                return -1;
-
-            for (int ii = 0; ii < criteria.length; ii++)
-            {
-                switch (criteria[ii])
-                {
-                    case TYPE:
-                        if (node1.isClassification() && !node2.isClassification())
-                            return -1;
-                        if (!node1.isClassification() && node2.isClassification())
-                            return 1;
-                        break;
-                    case NAME:
-                        int cn = TextUtil.compare(node1.getName(), node2.getName());
-                        if (cn != 0)
-                            return cn;
-                        break;
-                    case ACTUAL:
-                        int ca = node2.getActual().compareTo(node1.getActual());
-                        if (ca != 0)
-                            return ca;
-                        break;
-                    default:
-
-                }
-            }
-
-            return 0;
-        });
-
-        int rank = 0;
-        for (TaxonomyNode child : node.getChildren())
-            child.setRank(rank++);
-
-        if (recursive)
-        {
-            for (var child : node.getChildren())
-            {
-                if (child.isClassification())
-                    sort(child, true, criteria);
-            }
-        }
     }
 }
