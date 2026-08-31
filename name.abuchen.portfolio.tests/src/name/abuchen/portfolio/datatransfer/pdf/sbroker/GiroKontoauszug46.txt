@@ -1,0 +1,85 @@
+```
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.76.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+SSpaSrkpaasrskea SsscheSchweinfuwrte-iHnafußrbt-eHragßeberge
+Herrn Ihr Ansprechpartner:
+nFOXpW SWaPMi DlDAkxO yPlwptU
+BUDGetZmT Kundenberatung DCOYX
+vvVkQAffz 9 ZmsrRYTOmC 3
+62263 GuAnzUEOq 13856 zefQB
+Telefon 20749 58-438
+Fax 65248 58-146
+xxxx.gexxein@sparkasse-sw-has.de
+1. Mai 2025
+Kontoauszug 4/2025 Seite 1 von 2
+K  onto mit Zukunft 21769999, Rt10 3486 0101 0721 6635 02 
+Datum Erläuterung Betrag Soll EUR Betrag Haben EUR
+Kontostand am 31.03.2025, Auszug Nr.    3                52,81
+01.04.2025 Überweisung online               -50,00
+Winfried Henger DATUM 31.03.2025, 20.07 UHR 
+55667783-43158211232165
+01.04.2025 Abrechnung 31.03.2025                 0,19
+siehe Anlage Nr. 1
+01.04.2025 GutschriftÜberweisung                25,00
+xCzzjUTT aQcQnZ Taschengeld
+01.04.2025 GutschriftÜberweisung                50,00
+FlSNagqM TfSOsn
+23.04.2025 GutschriftÜberweisung                30,00
+BZhBYr mlyeomG gLjOyohWXgI OSTERGESCHENK 
+75793302426794517513979
+24.04.2025 Überweisung online                -8,80
+mJOWVC jklELp Einzahlung DATUM 24.04.2025, 17.26 UHR 
+0619276780-88662238118857
+Kontostand am 30.04.2025 um 20:02 Uhr                99,20
+Der Kontostand kann Beträge mit späterer Wertstellung enthalten, bitte Hinweise zum Kontoauszug beachten.
+Anzahl Anlagen 1
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-4914 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+S Sparkasse
+Schweinfurt-Haßberge
+Kontoauszug 4/2025 Seite 2 von 2
+Konto mit Zukunft 21761374, qk22 7935 0101 2121 8065 74,  MVdRFf LPyImY
+Rechnungsabschluss: Anlage     1
+Kontostand in EUR am 31.03.2025                                    52,81 +
+                                                            --------------
+Abrechnungszeitraum vom 01.01.2025 bis 31.03.2025
+Zinsen für Guthaben                                                  0,26+
+ 0,5000 v.H. Haben-Zins bis 30.03.2025
+Kapitalertragsteuer                                    0,07-
+                                              --------------
+                                                       0,07-         0,07-
+                                                              --------------
+Abrechnung 31.03.2025                                                0,19+
+Sollzinssätze am 30.03.2025
+11,3000 v.H. für geduldete Kontoüberziehung
+Die Anpassungen des Zinssatzes für Kontoüberziehungen sind abhängig von
+der Entwicklung des 3-Monats-Euribor.
+Kontostand/Rechnungsabschluss in EUR am 31.03.2025                 53,00 +
+Rechnungsnummer: 20250331-BY044-00022618501
+Bitte beachten Sie die Hinweise zum Kontoauszug.
+Hinweise zum Kontoauszug:
+l Einwendungen gegen den Kontoauszug teilen Sie uns bitte unverzüglich mit.
+l Rechnungsabschlüsse gelten als genehmigt, sofern Sie innerhalb von sechs Wochen nach Zugang keine Einwendungen erheben. 
+Einwendungen gegen Rechnungsabschlüsse müssen der Sparkasse zugehen. Zur Fristwahrung genügt die rechtzeitige 
+Absendung (Nr. 7 Abs. 3 unserer Allgemeinen Geschäftsbedingungen).
+l Der angegebene Kontostand berücksichtigt nicht die Werstellung der einzelnen Buchungen. Dies bedeutet, dass der genannte 
+Betrag nicht dem für die Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei Verfügungen möglicherweise 
+Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können.
+l Gutschriften aus eingereichten Schecks, Lastschriften und anderen Einzugspapieren erfolgen unter dem Vorbehalt der 
+Einlösung.
+l Soweit als Sparurkunde ein Loseblatt-Sparkassenbuch vereinbart wurde, heften Sie bitte die Sparkontoauszüge in Ihr 
+Loseblatt-Sparkassenbuch ein.
+l Dieser Kontoauszug gilt im Zusammenhang mit den zugrunde liegenden Verträgen laut angegebener Kontonummer als 
+Rechnung im Sinne des UStG.
+l Bitte beachten Sie: Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere 
+Informationen können dem "Informationsbogen für den Einleger" entnommen werden.
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+
+```
