@@ -797,7 +797,6 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         + "|.berweisung Vordruck" //
                                         + "|Kartenzahlung" //
                                         + "|EIGENE KREDITKARTENABRECHN\\." //
-                                        + "|Rechnung" //
                                         + "|Gutschrift.berweisung" //
                                         + "|Gutschrift .berw\\." //
                                         + "|SEPA GUTSCHRIFT" //
@@ -887,7 +886,6 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         + "|.berweisung Vordruck" //
                                         + "|Kartenzahlung" //
                                         + "|EIGENE KREDITKARTENABRECHN\\." //
-                                        + "|Rechnung" //
                                         + "|Gutschrift.berweisung" //
                                         + "|SEPA GUTSCHRIFT" //
                                         + "|Dauerauftrag" //
@@ -923,7 +921,6 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         + "|.berweisung Vordruck" //
                                         + "|Kartenzahlung" //
                                         + "|EIGENE KREDITKARTENABRECHN\\." //
-                                        + "|Rechnung" //
                                         + "|Gutschrift.berweisung" //
                                         + "|SEPA GUTSCHRIFT" //
                                         + "|Dauerauftrag" //
@@ -1009,7 +1006,6 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                                         + "|.berweisung Vordruck" //
                                                                         + "|Kartenzahlung" //
                                                                         + "|EIGENE KREDITKARTENABRECHN\\." //
-                                                                        + "|Rechnung" //
                                                                         + "|Gutschrift.berweisung" //
                                                                         + "|SEPA GUTSCHRIFT" //
                                                                         + "|Dauerauftrag" //
@@ -1082,7 +1078,6 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                                         + "|.berweisung Vordruck" //
                                                                         + "|Kartenzahlung" //
                                                                         + "|EIGENE KREDITKARTENABRECHN\\." //
-                                                                        + "|Rechnung" //
                                                                         + "|Gutschrift.berweisung" //
                                                                         + "|SEPA GUTSCHRIFT" //
                                                                         + "|Dauerauftrag" //
@@ -1162,7 +1157,6 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         + "|.berweisung" //
                         + "|Kartenzahlung" //
                         + "|EIGENE KREDITKARTENABRECHN\\." //
-                        + "|Rechnung" //
                         + "|Gutschrift.berweisung" //
                         + "|SEPA GUTSCHRIFT" //
                         + "|Dauerauftrag" //
@@ -1195,7 +1189,6 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         + "|.berweisung" //
                                         + "|Kartenzahlung" //
                                         + "|EIGENE KREDITKARTENABRECHN\\." //
-                                        + "|Rechnung" //
                                         + "|Gutschrift.berweisung" //
                                         + "|SEPA GUTSCHRIFT" //
                                         + "|Dauerauftrag" //
@@ -1268,7 +1261,6 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         + "|.berweisung" //
                         + "|Kartenzahlung" //
                         + "|EIGENE KREDITKARTENABRECHN\\." //
-                        + "|Rechnung" //
                         + "|Gutschrift.berweisung" //
                         + "|SEPA GUTSCHRIFT" //
                         + "|Dauerauftrag" //
@@ -1300,7 +1292,6 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         + "|.berweisung" //
                                         + "|Kartenzahlung" //
                                         + "|EIGENE KREDITKARTENABRECHN\\." //
-                                        + "|Rechnung" //
                                         + "|Gutschrift.berweisung" //
                                         + "|SEPA GUTSCHRIFT" //
                                         + "|Dauerauftrag" //
@@ -1361,6 +1352,130 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                 return new TransactionItem(t);
 
                             return null;
+                        }));
+
+        // @formatter:off
+        // 03.07.2023 Kartenzahlung               -45,90
+        // DANKE 13525 E ROTHER//stadt/DE 2023-07-01T16:54
+        //
+        // 03.07.2023 GutschriftÜberweisung               242,49
+        // max max Handyvertrag, max Taschengeld, S trom
+        //
+        // 27.07.2023 Bargeldauszahlung            -9.000,00
+        //
+        // 02.11.2021 Dauerauftrag / Wert: 01.11.2021              -600,00
+        // max max ETF
+        // @formatter:on
+        var depositRemovalBlock_Format06 = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                        + "(Lastschrift" //
+                        + "|.berweisung online" //
+                        + "|.berweisung" //
+                        + "|.berweisung Vordruck" //
+                        + "|Kartenzahlung" //
+                        + "|EIGENE KREDITKARTENABRECHN\\." //
+                        + "|Gutschrift.berweisung" //
+                        + "|Gutschrift .berw\\." //
+                        + "|SEPA GUTSCHRIFT" //
+                        + "|Dauerauftrag" //
+                        + "|Scheckeinzug" //
+                        + "|Lohn, Gehalt, Rente" //
+                        + "|Basis\\-Lastschrift" //
+                        + "|Basislastschrift" //
+                        + "|Zahlungseingang" //
+                        + "|Bargeldeinzahlung" //
+                        + "|Bargeldeinzahlung SB" //
+                        + "|Geldautomat" //
+                        + "|Bargeldauszahlung" //
+                        + "|Bargeldausz\\.Debitk\\.GA" //
+                        + "|BargAuszDebitFremdGA" //
+                        + "|Barumsatz" //
+                        + "|sonstige Buchung" //
+                        + "|sonstige Entgelte" //
+                        + "|entgeltfreie Buchung) " //
+                        + "(\\/ Wert: [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} )?" //
+                        + "[\\s]*\\-?[\\.,\\d]+$");
+        depositRemovalBlock_Format06.setMaxSize(1);
+        type.addBlock(depositRemovalBlock_Format06);
+        depositRemovalBlock_Format06.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
+
+                        .section("date", "note", "type", "amount") //
+                        .documentContext("currency") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + "(?<note>(Lastschrift" //
+                                        + "|.berweisung online" //
+                                        + "|.berweisung" //
+                                        + "|.berweisung Vordruck" //
+                                        + "|Kartenzahlung" //
+                                        + "|EIGENE KREDITKARTENABRECHN\\." //
+                                        + "|Gutschrift.berweisung" //
+                                        + "|Gutschrift .berw\\." //
+                                        + "|SEPA GUTSCHRIFT" //
+                                        + "|Dauerauftrag" //
+                                        + "|Scheckeinzug" //
+                                        + "|Lohn, Gehalt, Rente" //
+                                        + "|Basis\\-Lastschrift" //
+                                        + "|Basislastschrift" //
+                                        + "|Zahlungseingang" //
+                                        + "|Bargeldeinzahlung" //
+                                        + "|Bargeldeinzahlung SB" //
+                                        + "|Geldautomat" //
+                                        + "|Bargeldauszahlung" //
+                                        + "|Bargeldausz\\.Debitk\\.GA" //
+                                        + "|BargAuszDebitFremdGA" //
+                                        + "|Barumsatz" //
+                                        + "|sonstige Buchung" //
+                                        + "|sonstige Entgelte" //
+                                        + "|entgeltfreie Buchung))" //
+                                        + "(?: \\/ Wert: [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})?" //
+                                        + "(?<type>[\\s]{1,}(\\-)?)" //
+                                        + "(?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            // Is type is "-" change from DEPOSIT to REMOVAL
+                            if ("-".equals(trim(v.get("type"))))
+                                t.setType(AccountTransaction.Type.REMOVAL);
+
+                        // @formatter:off
+                            // Is note equal "sonstige Entgelte" change from DEPOSIT to FEE
+                            // @formatter:on
+                            if ("sonstige Entgelte".equals(trim(v.get("note"))))
+                                t.setType(AccountTransaction.Type.FEES);
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+
+                            // Formatting some notes
+                            if ("Bargeldausz.Debitk.GA".equals(v.get("note")))
+                                v.put("note", "Bargeldauszahlung (Debitkarte)");
+
+                            if ("BargAuszDebitFremdGA".equals(v.get("note")))
+                                v.put("note", "Bargeldauszahlung (Debitkarte & Fremd-Geldautomat)");
+
+                            if ("GutschriftÜberweisung".equals(v.get("note")))
+                                v.put("note", "Gutschrift (Überweisung)");
+
+                            if ("Gutschrift Überw.".equals(v.get("note")))
+                                v.put("note", "Gutschrift (Überweisung)");
+
+                            if ("EIGENE KREDITKARTENABRECHN.".equals(v.get("note")))
+                                v.put("note", "Eigene Kreditkartenabrechnung");
+
+                            if ("SEPA GUTSCHRIFT".equals(v.get("note")))
+                                v.put("note", "SEPA Gutschrift");
+
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap((t, ctx) -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                            if (t.getDateTime() == null && t.getNote() == null)
+                                return null;
+
+                            return new TransactionItem(t);
                         }));
 
         var feesBlock = new Block("^Entgelte vom .*$", "^Abrechnung .*$");
@@ -1439,6 +1554,46 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             return new TransactionItem(t);
                         }));
 
+        // @formatter:off
+        // Rechnung: Anlage     1
+        // Rechnungsdatum:  28.12.2022
+        // Rechnungsnummer: 20221228-BY044-00016356071
+        // Auslandszahlungsverkehr - Gutschrift einer Überweisung
+        //      1x Entgelt                                         10,00 EUR
+        //      Gutschrift einer Überweisung (Auslandsüberweisung)
+        //      ...
+        //      Provision                                10,00 EUR
+        // Rechnungsbetrag                                                   10,00 EUR
+        //
+        // Note: a statement can reference multiple such invoices in the same period
+        // (Anlage 1, Anlage 4, ...); this block matches each occurrence independently.
+        // The corresponding line in the main transaction list ("Rechnung / Wert: ...")
+        // is intentionally NOT parsed as a transaction to avoid booking this fee twice.
+        // @formatter:on
+        var foreignPaymentFeeBlock = new Block("^Rechnung: Anlage[\\s]+[\\d]+$", "^Rechnungsbetrag .*$");
+        type.addBlock(foreignPaymentFeeBlock);
+        foreignPaymentFeeBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
+
+                        .section("date", "amount", "currency") //
+                        .match("^Rechnungsdatum:[\\s]+(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .match("^Rechnungsbetrag[\\s]+(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setNote("Auslandszahlungsverkehr");
+                        })
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                return new SkippedItem(new TransactionItem(t),
+                                                Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                            return new TransactionItem(t);
+                        }));
+
         var interestBlock = new Block("^Abrechnungszeitraum vom .*$", "^Abrechnung .*$");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
@@ -1446,6 +1601,39 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
                         .oneOf( //
+                                        // @formatter:off
+                                        // Abrechnungszeitraum vom 01.01.2025 bis 31.03.2025
+                                        // Zinsen für Guthaben                                                  0,26+
+                                        //  0,5000 v.H. Haben-Zins bis 30.03.2025
+                                        // Kapitalertragsteuer                                    0,07-
+                                        //                                               --------------
+                                        //                                                        0,07-         0,07-
+                                        //                                                               --------------
+                                        // Abrechnung 31.03.2025                                                0,19+
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note", "tax", "date", "amount", "type") //
+                                                        .documentContext("currency") //
+                                                        .match("^(?<note>Abrechnungszeitraum vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .match("^Zinsen f.r Guthaben[\\s]+[\\.,\\d]+[\\-|\\+]$") //
+                                                        .match("^Kapitalertragsteuer[\\s]+(?<tax>[\\.,\\d]+)\\-$") //
+                                                        .match("^Abrechnung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .* (?<amount>[\\.,\\d]+)(?<type>[\\-|\\+])$") //
+                                                        .assign((t, v) -> {
+                                                        // @formatter:off
+                                                            // Is type is "-" change from INTEREST to INTEREST_CHARGE
+                                                            // @formatter:on
+                                                            if ("-".equals(v.get("type")))
+                                                                t.setType(AccountTransaction.Type.INTEREST_CHARGE);
+
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setNote(trim(v.get("note")));
+
+                                                            Money tax = Money.of(v.get("currency"),
+                                                                            asAmount(v.get("tax")));
+                                                            t.addUnit(new Unit(Unit.Type.TAX, tax));
+                                                        }),
                                         // @formatter:off
                                         // Abrechnungszeitraum vom 01.01.2020 bis 31.03.2020
                                         // Zinsen für eingeräumte Kontoüberziehung                              0,66-
@@ -1541,7 +1729,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         // Beleg BuchungVerwendungszweck EUR
                                         // @formatter:on
                                         .section("currency") //
-                                        .match("^Beleg BuchungVerwendungszweck (?<currency>[\\w]{3})$") //
+                                        .match("^Beleg Buchung[\\s]?Verwendungszweck (?<currency>[\\w]{3})$") //
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
 
         this.addDocumentTyp(type);

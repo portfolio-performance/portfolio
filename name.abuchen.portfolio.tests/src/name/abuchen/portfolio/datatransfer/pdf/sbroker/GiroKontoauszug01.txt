@@ -1,156 +1,125 @@
-PDFBox Version: 1.8.17
-Portfolio Performance Version: 0.62.0
+```
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.74.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
 -----------------------------------------
-Sparkasse
-S
-Sparkasse Schweinfurt-Haßberge
-Schweinfurt-Haßberge
-Herrn
-Ihr Ansprechpartner:
-Max Mustermann
-Beate Meier
-Stasse
-Kundenberatung Stadt
-Stasse 7 Marktplatz 7
-99999 Stadt
-99999 Stadt
-Telefon 09999 99-999
-Fax 09999 99-999
-Beate.Meier@sparkasse-sw-has.de
+SSpaSrkpaasrskea SsscheSchweinfuwrte-iHnafußrbt-eHragßeberge
+Herrn Ihr Ansprechpartner:
+max max max max
+strasse Kundenberatung Hofheim
+strasse 7 Marktplatz 7
+99999 stadt 97461 Hofheim
+Telefon 09521 58-764
+Fax 09521 58-499
+max.max@sparkasse-sw-has.de
 1. April 2023
 Kontoauszug 5/2023 Seite 1 von 4
-S-Giro Smart 190999999, DE34 7935 0101 9999 9999 99 
-  
+S  -Giro Smart 19099999, DE34 7935 0101 0190 999 99 
 Datum Erläuterung Betrag Soll EUR Betrag Haben EUR
-            9.999,79
-Kontostand am 28.02.2023, Auszug Nr.    4
-             -1,00
-01.03.2023 Überweisung online
+Kontostand am 28.02.2023, Auszug Nr.    4             6.143,79
+01.03.2023 Überweisung online              -250,00
 solarisBank AG BISON App DATUM 28.02.2023, 21.54 UHR 
-69e99931-14992875-21539999-20230228
-              -1,50
-01.03.2023 Lastschrift
+69e54031-14222875-21533218-20230228
+01.03.2023 Lastschrift               -35,50
 IGM Schweinfurt Industriegewerkschaft Metall BEITRAG BIS 
-02/23 MANDATSREF 999999 9999 GLAEUBIGER-ID 
+02/23 MANDATSREF 999999 3701 GLAEUBIGER-ID 
 DE71ZZZ000000535 93 NAECHSTER BEITRAGSEINZUG IN 
 BEKA NNTER HOEHE UND VEREINBARTEM TURNUS 
-189990317 1140893701 Gläubiger-ID: 
+189990317 9999993701 Gläubiger-ID: 
 DE71ZZZ00000053593
-              -1,80
-03.03.2023 Kartenzahlung
+03.03.2023 Kartenzahlung               -91,80
 OKTAN TANKSTELLE SCHWEINFURT//Schwe infurt/DE 
 2023-03-02T15:59 Debitk.5 2026-12
-              -2,00
-06.03.2023 Überweisung online
+06.03.2023 Überweisung online               -32,00
 Emilio Klassen Brio Bahn DATUM 04.03.2023, 18.40 UHR 
-56b9999ff1-764437-18409975-20230304
-              -3,00
-06.03.2023 Überweisung online
+56b0598ff1-764437-18402375-20230304
+06.03.2023 Überweisung online               -30,00
 eBay Kleinanzeigen GmbH 6YDYJP8 tra 8f1b0b54d7a7 Ho 
 lzbahn Format Brio DATUM 04.03.2023, 10.35 UHR
-           -4,00
-08.03.2023 Überweisung online
-Max Mustermann ETF DATUM 07.03.2023, 20.56 UHR 
-ddf19999b-7398562-20550987-20230307
-               3,00
-08.03.2023 GutschriftÜberweisung
+08.03.2023 Überweisung online            -4.000,00
+max max ETF DATUM 07.03.2023, 20.56 UHR 
+ddf1da4eb-7398562-20550887-20230307
+08.03.2023 GutschriftÜberweisung                30,00
 Online Payments Foundation Rueckerstattung fuer 
 tra8f1b0b54d7a 7 - Online Payments Foundation - eB ay 
-Kleinanzeigen - Anzeigennr.: 237 3391032 
+Kleinanzeigen - Anzeigennr.: 237 9999999 
 AWV-MELDEPFLICHT BEACHTEN HOTLINE BUNDESBANK: 
-(0800) 9999-111 ref-e9999e6bb908
-              -10,00
-14.03.2023 Lastschrift
+(0800) 1234-111 ref-e9893e6bb908
+14.03.2023 Lastschrift               -10,00
 PayPal Europe S.a.r.l. et Cie S.C.A 1025755846077 . 
 Telekom Deutschland GmbH, Ihr Einkauf bei Telekom Deut 
 schland GmbH AWV-MELDEPFLICHT BEACHTEN HOTLINE 
-BUNDESBANK: (0800) 1234-111 1999995846077 
+BUNDESBANK: (0800) 1234-111 1025755846077 
 4CU2224VNSRPG Gläubiger-ID: 
-LxxxZZZ0000000000000999999
+LU96ZZZ0000000000000000058
 Übertrag:             1.724,49
-Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09999/999-0 www.sparkasse-sw-has.de
-Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09999/999-3229 info@sparkasse-sw-has.de
-97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 999 999 01 BIC: BYLADEM1KSW
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
 Sparkassen-Finanzgruppe
-Sparkasse
-S
+S Sparkasse
 Schweinfurt-Haßberge
 Kontoauszug 5/2023 Seite 2 von 4
-S-Giro Smart 190999999, DE34 7935 0101 9999 9999 99,  Max Mustermann
+S-Giro Smart 19099999, DE34 7935 0101 0190 999 99,  max max
 Datum Erläuterung Betrag Soll EUR Betrag Haben EUR
 Übertrag:             1.724,49
-               -8,60
-14.03.2023 Lastschrift
+14.03.2023 Lastschrift                -8,60
 LOTTO24 LOTTO24 C99685998 T930917703336 
 CDF5XK2D496RTJ482C B9CFPGQV9Q683VB2 
-Gläubiger-ID: NL48ZZZ399999900000
-             -224,00
-20.03.2023 Lastschrift
-Bundeskasse in Weiden Kfz-Steuer fuer XXX XX 99 fuer die 
+Gläubiger-ID: NL48ZZZ342764500000
+20.03.2023 Lastschrift              -224,00
+Bundeskasse in Weiden Kfz-Steuer fuer XXX ll 29 fuer die 
 Zeit vom 19.03.2023 bis zum 18.03.2 024 Kassenzeichen 
-K1089999960 K10999920960/000031/299996F 
-KFZF999999996027092018 Gläubiger-ID: 
-DE99999990000001
-             -189,90
-20.03.2023 Lastschrift
+K10850020960 K10850020960/000031/23ZVS06F 
+KFZFK1085002096027092018 Gläubiger-ID: 
+DE09ZZZ00000000001
+20.03.2023 Lastschrift              -189,90
 AMAZON EU S.A R.L., NIEDERLASSUNG D 
 305-8256010-7715520 Amazon.de 1XXQE OXIBDOB3TWX 
 1XXQEOXIBDOB3TWX 
-KcoKMYuv9999td-,O0?0,pPDaFQVWe Gläubiger-ID: 
-  
+  KcoKMYuvg4ojtd-,O0?0,pPDaFQVWe Gläubiger-ID: 
 DE24ZZZ00000561652
-              -7,87
-21.03.2023 Lastschrift
+21.03.2023 Lastschrift               -70,87
 PayPal Europe S.a.r.l. et Cie S.C.A 1025910619291 
 PP.9962.PP . Autoteil e Gigant GmbH, Ihr Einkauf bei Auto 
 teile Gigant GmbH AWV-MELDEPFLICHT BEACHTEN 
-HOTLINE BUNDESBANK: (0800) 1234-111 10999999291 
-4CU2999NSRPG Gläubiger-ID: 
-LU96999990000000000000058
-              -90,18
-23.03.2023 Kartenzahlung
+HOTLINE BUNDESBANK: (0800) 1234-111 1025910619291 
+4CU2224VNSRPG Gläubiger-ID: 
+LU96ZZZ0000000000000000058
+23.03.2023 Kartenzahlung               -90,18
 OKTAN TANKSTELLE SCHWEINFURT//Schwe infurt/DE 
 2023-03-22T16:20 Debitk.5 2026-12
-              189,90
-23.03.2023 GutschriftÜberweisung
+23.03.2023 GutschriftÜberweisung               189,90
 AMAZON EU S.A R.L., NIEDERLASSUNG D 
 305-8256010-7715520 AMZ Amazon.de 5 
-TGZV24J9999S0H 5TGZV24J56BT2S0H
-             -191,00
-27.03.2023 Kartenzahlung
+TGZV24J56BT2S0H 5TGZV24J56BT2S0H
+27.03.2023 Kartenzahlung              -181,00
 Autohaus Hennig Fil. Ebern//Ebern/D E 2023-03-25T12:29 
 Debitk.5 2026-12
-               -8,60
-28.03.2023 Lastschrift
+28.03.2023 Lastschrift                -8,60
 LOTTO24 LOTTO24 C99685998 T183144533936 
 CMLBJL2BGDG7PQR32C B9CFPGQV9Q683VB2 
 Gläubiger-ID: NL48ZZZ342764500000
-           -1.000,00
-30.03.2023 Dauerauftrag
-Max Mustermann ETF
-            25,63
-30.03.2023 Lohn, Gehalt, Rente
-ZF FRIEDRICHSHAFEN A Lohn/Gehalt 0999999/202303
-               -5,40
-31.03.2023 Entgeltabrechnung / Wert: 01.04.2023
+30.03.2023 Dauerauftrag            -1.000,00
+max max ETF
+30.03.2023 Lohn, Gehalt, Rente             2.566,63
+ZF FRIEDRICHSHAFEN A Lohn/Gehalt 99999999/202303
+31.03.2023 Entgeltabrechnung / Wert: 01.04.2023                -5,40
 siehe Anlage Nr. 1
-                0,00
-31.03.2023 Abrechnung 31.03.2023 / Wert: 01.04.2023
+31.03.2023 Abrechnung 31.03.2023 / Wert: 01.04.2023                 0,00
 siehe Anlage Nr. 2
-            2.702,47
-Kontostand am 31.03.2023 um 20:01 Uhr
+Kontostand am 31.03.2023 um 20:01 Uhr             2.702,47
 Der Kontostand kann Beträge mit späterer Wertstellung enthalten, bitte Hinweise zum Kontoauszug beachten.
 Anzahl Anlagen 2
 Ihr Kreditlimit EUR: 2.000,00
-Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09999/999-0 www.sparkasse-sw-has.de
-Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09999/999-3229 info@sparkasse-sw-has.de
-97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 999 999 01 BIC: BYLADEM1KSW
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
 Sparkassen-Finanzgruppe
-Sparkasse
-S
+S Sparkasse
 Schweinfurt-Haßberge
 Kontoauszug 5/2023 Seite 3 von 4
-S-Giro Smart 190999999, DE34 7935 0101 9999 9999 99,  Max Mustermann
+S-Giro Smart 19099999, DE34 7935 0101 0190 999 99,  max max
 Entgeltabschluss: Anlage     1
 Entgelte vom 01.03.2023 bis 31.03.2023                               5,40-
 Grundpreis (Kontoführung)                              4,00-
@@ -158,33 +127,31 @@ Zahlungsverkehr                                        1,40-
                                                             --------------
 Abrechnung 31.03.2023                                                5,40-
 Es handelt sich hierbei um eine umsatzsteuerfreie Leistung.
-Rechnungsnummer: 20299999-BY999-00099999023
+Rechnungsnummer: 20230331-BY044-00017206023
   
 Bitte beachten Sie die Hinweise zum Kontoauszug.
-Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09999/999-0 www.sparkasse-sw-has.de
-Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09999/999-3229 info@sparkasse-sw-has.de
-97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 999 999 01 BIC: BYLADEM1KSW
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
 Sparkassen-Finanzgruppe
-Sparkasse
-S
+S Sparkasse
 Schweinfurt-Haßberge
 Kontoauszug 5/2023 Seite 4 von 4
-S-Giro Smart 190999999, DE34 7935 0101 9999 9999 99,  Max Mustermann
+S-Giro Smart 19099999, DE34 7935 0101 0190 999 99,  max max
 Rechnungsabschluss: Anlage     2
-Kontostand in EUR am 31.03.2023                                 9.999,47 +
+Kontostand in EUR am 31.03.2023                                 2.702,47 +
                                                             --------------
 Abrechnungszeitraum vom 01.01.2023 bis 31.03.2023
 Abrechnung 31.03.2023                                                0,00+
 Sollzinssätze am 30.03.2023
 10,6500 v.H. für eingeräumte Kontoüberziehung
-(aktuell eingeräumte Kontoüberziehung       9.9999,00)
+(aktuell eingeräumte Kontoüberziehung       2.000,00)
 13,6500 v.H. für geduldete Kontoüberziehung
 über die eingeräumte Kontoüberziehung hinaus
-  
-Die Anpassungen des Zinssatzes für Kontoüberziehungen sind abhängig von
+  Die Anpassungen des Zinssatzes für Kontoüberziehungen sind abhängig von
 der Entwicklung des 3-Monats-Euribor.
 Es handelt sich hierbei um eine umsatzsteuerfreie Leistung.
-Kontostand/Rechnungsabschluss in EUR am 31.03.2023              9.999,47 +
+Kontostand/Rechnungsabschluss in EUR am 31.03.2023              2.702,47 +
 Rechnungsnummer: 20230331-BY044-00017206021
 Bitte beachten Sie die Hinweise zum Kontoauszug.
 Hinweise zum Kontoauszug:
@@ -202,7 +169,9 @@ l Dieser Kontoauszug gilt im Zusammenhang mit den zugrunde liegenden Verträgen 
 Rechnung im Sinne des UStG.
 l Bitte beachten Sie: Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere 
 Informationen können dem "Informationsbogen für den Einleger" entnommen werden.
-Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09999/999-0 www.sparkasse-sw-has.de
-Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09999/999-3229 info@sparkasse-sw-has.de
-97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 999 999 01 BIC: BYLADEM1KSW
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
 Sparkassen-Finanzgruppe
+
+```
