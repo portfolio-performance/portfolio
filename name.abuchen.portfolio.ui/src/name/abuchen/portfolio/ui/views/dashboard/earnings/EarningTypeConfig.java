@@ -5,7 +5,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.views.dashboard.EnumBasedConfig;
 import name.abuchen.portfolio.ui.views.dashboard.WidgetDelegate;
 
-class EarningTypeConfig extends EnumBasedConfig<EarningType>
+public class EarningTypeConfig extends EnumBasedConfig<EarningType>
 {
     public EarningTypeConfig(WidgetDelegate<?> delegate)
     {
