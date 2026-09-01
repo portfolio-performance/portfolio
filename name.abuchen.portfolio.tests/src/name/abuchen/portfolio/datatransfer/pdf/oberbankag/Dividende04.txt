@@ -1,0 +1,44 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.6.qualifier
+System: macosx | aarch64 | 21.0.9+10-LTS | Eclipse Adoptium
+-----------------------------------------
+Wertpapier-Abrechnu n g     Ausschüttungsgleicher Ertrag
+888888 - 10.11.2022
+Depotnummer Betreuer
+Mustermann Max 111-1111.11 Z 3
+23
+Wertpapiernummer Bezeichnung Nominale/Stück
+IE00BYZK4552 iShsIV-Automation&Robot.U.ETF Stk .             123,00
+Registered Shares o.N.
+Auslands-KESt USD                1,07
+Ertrag 0 USD
+KESt USD               21,71
+Zwischensumme USD               22,78
+0,0006 EUR KESt a 0,9976 v. 07.11.2022 EUR               22,83
+0,0087 EUR Auslands-KESt
+0,1763 EUR KESt Substanzgewinn
+Extag 09.11.2022
+Verrechnung
+Verwahrart, Positionsdaten
+Wertpapierrechnung Wert 09.11.2022 EUR               22,83
+Düsseldorf zu Lasten Konto AT11 1111 1111 1111 1111
+      Seite 1 von 2
+Oberbank AG, Rechtsform: Aktiengesellschaft, Sitz: Linz, Firmenbuch Nr. FN 79063w, Landesgericht Linz, DVR: 0019020, UID-Nr. ATU22852606
+Wertpapier-Abrechnung
+888888 - 10.11.2022
+Depotbezeichnung Depotnummer Betreuer
+Mustermann Max 111-1111.11 Z 3
+23
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden                         123,00 STK
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG
+  ausschüttungsgleicher Ertrag:                                                     84,69 EUR
+  Anschaffungswertreduzierender Betrag:                                              0,00 EUR
+  steuerlicher Anschaffungswert:                                                 1.364,34 EUR
+---------------------------------------------------------------------------------------------
+Die KESt wird an das Finanzamt Linz abgeführt.
+Fondsgesellschaft: iShares IV PLC
+KESt auf ausschüttungsgleichen Ertrag
+Ausschüttungsgleicher Ertrag
+steuerpflichtige Substanzgewinne des
+abgelaufenen Fondsgeschäftsjahres
+Oberbank AG, Rechtsform: Aktiengesellschaft, Sitz: Linz, Firmenbuch Nr. FN 79063w, Landesgericht Linz, DVR: 0019020, UID-Nr. ATU22852606       Seite 2 von 2
