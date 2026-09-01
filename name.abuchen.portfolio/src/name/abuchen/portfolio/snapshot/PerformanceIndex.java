@@ -34,6 +34,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.filter.ClientClassificationFilter;
 import name.abuchen.portfolio.snapshot.filter.ClientSecurityFilter;
 import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
+import name.abuchen.portfolio.util.Dates;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TradeCalendar;
 import name.abuchen.portfolio.util.TradeCalendarManager;
@@ -258,6 +259,47 @@ public class PerformanceIndex
 
         return volatility;
     }
+
+    /**
+     * Returns the standard deviation of the returns scaled to one year.
+     * <p>
+     * {@link Volatility#getStandardDeviation()} scales the standard deviation
+     * to the length of the reporting period, i.e. it matches the conventional
+     * annualized figure only if that period happens to be about one year.
+     * <p>
+     * Annualizing divides out the number of observations actually used and
+     * multiplies by the number a full year contributes. Both counts come from
+     * the trade calendar that
+     * {@link #filterReturnsForVolatilityCalculation()} already uses to drop
+     * weekends and holidays, so an instrument trading on a regular exchange
+     * scales by about sqrt(252) and one trading every calendar day by about
+     * sqrt(365), without a special case for either.
+     * <p>
+     * Note that the number of observations deliberately excludes days on which
+     * nothing was held: the result answers how volatile the investment is
+     * while it is held, rather than diluting the movement across a longer
+     * reporting period during which it was not.
+     */
+    public double getAnnualizedVolatility()
+    {
+        var filter = filterReturnsForVolatilityCalculation();
+
+        var observations = 0;
+        for (int index = 0; index < delta.length; index++)
+        {
+            if (filter.test(index))
+                observations++;
+        }
+
+        if (observations <= 1)
+            return 0d;
+
+        var end = getActualInterval().getEnd();
+        var observationsPerYear = Dates.tradingDaysBetween(end.minusYears(1), end);
+
+        return getVolatility().getStandardDeviation() / Math.sqrt(observations) * Math.sqrt(observationsPerYear);
+    }
+
 
     /**
      * The volatility calculation must exclude returns
