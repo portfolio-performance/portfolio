@@ -17,6 +17,7 @@ import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.util.Interval;
+import name.abuchen.portfolio.util.SnapshotUtil;
 
 /* package */ class SecurityPerformanceSnapshotBuilder<T extends BaseSecurityPerformanceRecord>
 {
@@ -115,7 +116,7 @@ import name.abuchen.portfolio.util.Interval;
             if (t.getSecurity() == null)
                 continue;
 
-            if (!interval.contains(t.getDateTime()))
+            if (!interval.contains(SnapshotUtil.getPerformanceDateTime(t)))
                 continue;
 
             switch (t.getType())
