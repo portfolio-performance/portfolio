@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.function.Predicate;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -30,7 +31,6 @@ import org.eclipse.equinox.p2.operations.UpdateOperation;
 import org.eclipse.equinox.p2.repository.IRepositoryManager;
 import org.eclipse.equinox.p2.repository.artifact.IArtifactRepositoryManager;
 import org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -49,6 +49,18 @@ public final class UpdateHelper
     private interface Task
     {
         public void run(IProgressMonitor monitor) throws CoreException;
+    }
+
+    public enum Outcome
+    {
+        /** the update has been installed and a restart is pending */
+        INSTALLED,
+        /** the update site does not offer an update (anymore) */
+        NOTHING_TO_UPDATE,
+        /** the user has closed the dialog without installing */
+        CANCELED,
+        /** the update could not be installed */
+        FAILED
     }
 
     private static final String VERSION_HISTORY = "version.history"; //$NON-NLS-1$
@@ -73,113 +85,126 @@ public final class UpdateHelper
 
     public void runUpdateWithUIMonitor()
     {
-        runWithUIMonitor(monitor -> runUpdate(monitor, false));
+        runWithUIMonitor(monitor -> resolveAndInstall(monitor, this::confirmUpdate));
     }
 
-    public void runUpdate(IProgressMonitor monitor, boolean silent) throws CoreException
+    /**
+     * Checks for updates without showing any user interface. Returns null if no
+     * update is available.
+     */
+    public NewVersion findUpdates(IProgressMonitor monitor) throws CoreException
     {
         if (!isInAppUpdateEnabled())
-            return;
+            return null;
 
-        SubMonitor sub = SubMonitor.convert(monitor, Messages.JobMsgCheckingForUpdates, 200);
-
-        checkForLetsEncryptRootCertificate(silent);
+        var sub = SubMonitor.convert(monitor, Messages.JobMsgCheckingForUpdates, 100);
 
         configureProvisioningAgent();
 
-        final NewVersion newVersion = checkForUpdates(sub.newChild(100));
-        if (newVersion != null)
-        {
-            final boolean[] doUpdate = new boolean[1];
-            Display.getDefault().syncExec(() -> {
-                Dialog dialog = new UpdateMessageDialog(Display.getDefault().getActiveShell(),
-                                Messages.LabelUpdatesAvailable, //
-                                MessageFormat.format(Messages.MsgConfirmInstall, newVersion.getVersion()), //
-                                newVersion);
-
-                doUpdate[0] = dialog.open() == 0;
-            });
-
-            if (doUpdate[0])
-            {
-                if (silent)
-                {
-                    // if the update check was started silently in the
-                    // background, but the user has chosen to update, show a
-                    // meaningful progress monitor
-
-                    runWithUIMonitor(m -> {
-                        runUpdateOperation(m);
-                        promptForRestart();
-                    });
-                }
-                else
-                {
-                    runUpdateOperation(sub.newChild(100));
-                    promptForRestart();
-                }
-            }
-        }
-        else
-        {
-            if (!silent)
-            {
-                Display.getDefault()
-                                .asyncExec(() -> MessageDialog.openInformation(Display.getDefault().getActiveShell(),
-                                                Messages.LabelInfo, Messages.MsgNoUpdatesAvailable));
-            }
-        }
+        return checkForUpdates(sub.newChild(100));
     }
 
-    private void checkForLetsEncryptRootCertificate(boolean silent) throws CoreException
+    /**
+     * Shows the version history of the given version and, if the user confirms,
+     * installs the update that has just been found by {@link #findUpdates}.
+     */
+    public void promptAndInstall(NewVersion newVersion)
     {
-        // if the java version is too old, the Let's Encrypt certificate is not
-        // trusted. Unfortunately, the exception is only printed to the log and
-        // propagated up. This checks upfront. As PP does not run on 1.7, we do
-        // not check for the 1.7 version with the certificate.
+        if (!confirmUpdate(newVersion))
+            return;
 
-        try
+        // the update itself has been found by a background check, therefore
+        // show a meaningful progress monitor while installing
+
+        runWithUIMonitor(monitor -> {
+            runUpdateOperation(monitor);
+            promptForRestart();
+        });
+    }
+
+    /**
+     * Shows the version history that {@link #findUpdates} has retrieved earlier
+     * and, if the user confirms, installs whatever the update site offers at
+     * that moment. The dialog therefore opens without delay, while the update
+     * that is actually installed is resolved again: the version found earlier
+     * may have been replaced by a newer one in the meantime, and the previously
+     * resolved update operation would then fail to download its artifacts.
+     */
+    public Outcome promptAndInstallLatest(NewVersion newVersion)
+    {
+        if (!confirmUpdate(newVersion))
+            return Outcome.CANCELED;
+
+        var outcome = new Outcome[] { Outcome.FAILED };
+
+        runWithUIMonitor(monitor -> outcome[0] = resolveAndInstall(monitor, this::isUpdateAllowed));
+
+        return outcome[0];
+    }
+
+    /**
+     * Resolves the update again and installs it if the given check confirms
+     * that it may be installed.
+     */
+    private Outcome resolveAndInstall(IProgressMonitor monitor, Predicate<NewVersion> isConfirmed)
+                    throws CoreException
+    {
+        if (!isInAppUpdateEnabled())
+            return Outcome.NOTHING_TO_UPDATE;
+
+        var sub = SubMonitor.convert(monitor, Messages.JobMsgCheckingForUpdates, 200);
+
+        configureProvisioningAgent();
+
+        operation = null;
+
+        var latest = checkForUpdates(sub.newChild(100));
+
+        if (latest == null)
         {
-            String javaVersion = System.getProperty("java.version"); //$NON-NLS-1$
-
-            int p = javaVersion.indexOf('-');
-            if (p >= 0)
-                javaVersion = javaVersion.substring(0, p);
-
-            String[] digits = javaVersion.split("[\\._]"); //$NON-NLS-1$
-            if (digits.length < 4)
-                return;
-
-            int majorVersion = Integer.parseInt(digits[0]);
-            if (majorVersion > 1)
-                return;
-
-            int minorVersion = Integer.parseInt(digits[1]);
-            if (minorVersion > 8)
-                return;
-
-            int patchVersion = Integer.parseInt(digits[2]);
-            if (patchVersion > 0)
-                return;
-
-            int updateNumber = Integer.parseInt(digits[3]);
-            if (updateNumber >= 101)
-                return;
-
-            CoreException exception = new CoreException(new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID,
-                            MessageFormat.format(Messages.MsgJavaVersionTooOldForLetsEncrypt, javaVersion)));
-
-            if (silent)
-                PortfolioPlugin.log(exception);
-            else
-                throw exception;
-
-        }
-        catch (NumberFormatException e)
-        {
-            PortfolioPlugin.log(e);
+            Display.getDefault().asyncExec(() -> MessageDialog.openInformation(Display.getDefault().getActiveShell(),
+                            Messages.LabelInfo, Messages.MsgNoUpdatesAvailable));
+            return Outcome.NOTHING_TO_UPDATE;
         }
 
+        if (!isConfirmed.test(latest))
+            return Outcome.CANCELED;
+
+        runUpdateOperation(sub.newChild(100));
+        promptForRestart();
+
+        return Outcome.INSTALLED;
+    }
+
+    /**
+     * Used if the user has already confirmed the update: the version offered
+     * now may be a different one, and only the dialog enforces that a version
+     * must not be installed - for example because it requires a newer Java
+     * version. Show that dialog, which explains why, instead of installing.
+     */
+    private boolean isUpdateAllowed(NewVersion latest)
+    {
+        if (!latest.doPreventUpdate())
+            return true;
+
+        confirmUpdate(latest);
+        return false;
+    }
+
+    private boolean confirmUpdate(NewVersion newVersion)
+    {
+        var doUpdate = new boolean[1];
+
+        Display.getDefault().syncExec(() -> {
+            var dialog = new UpdateMessageDialog(Display.getDefault().getActiveShell(),
+                            Messages.LabelUpdatesAvailable, //
+                            MessageFormat.format(Messages.MsgConfirmInstall, newVersion.getVersion()), //
+                            newVersion);
+
+            doUpdate[0] = dialog.open() == 0;
+        });
+
+        return doUpdate[0];
     }
 
     private void promptForRestart()

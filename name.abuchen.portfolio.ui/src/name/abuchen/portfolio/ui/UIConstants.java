@@ -5,6 +5,7 @@ public interface UIConstants
     interface Part // NOSONAR
     {
         String PORTFOLIO = "name.abuchen.portfolio.ui.part.portfolio"; //$NON-NLS-1$
+        String WELCOME = "name.abuchen.portfolio.ui.part.welcome"; //$NON-NLS-1$
         String ERROR_LOG = "name.abuchen.portfolio.ui.part.errorlog"; //$NON-NLS-1$
         String TEXT_VIEWER = "name.abuchen.portfolio.ui.part.textviewer"; //$NON-NLS-1$
     }

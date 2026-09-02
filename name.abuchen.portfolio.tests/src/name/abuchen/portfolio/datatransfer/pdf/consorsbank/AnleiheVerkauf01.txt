@@ -1,0 +1,67 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Consorsbank • 90318 Nürnberg
+Depotnummer: 0123 456 789
+1504753979/00
+Vermerk der Bank: 2000
+2
+Vorname Nachname
+Adress Str. 1 Datum: 14.12.2020
+01234 Stadt Seite: 1 von 2
+Ordernummer 183797558.001
+Orderdatum 14.12.2020
+ORDERABRECHNUNG
+VERKAUF AM 14.12.2020 UM 16:06:51 INL.AUSSERBOERSLICH NR. 183797558.001
+Bezeichnung WKN ISIN
+3,65 % GRIECHENLAND 12-29 7 24.FEB A1G1UG GR0133007204
+Einheit Umsatz Fälligkeit
+EUR 160,00000 Letzte Fälligkeit 24.02.2029
+Preis pro Anteil 124,963000 % FRANCO COURTAGE
+Kurswert 199,94 EUR
+Stückzins Zinsvaluta 15.12.2020 296 Tage 4,72 EUR
+abzgl. Provision 5,00 EUR
+abzgl. Grundgebühr 4,95 EUR
+abzgl. Kapitalertragssteuer 25,00% 128,99 EUR 32,25 EUR
+abzgl. Solidaritätszuschlag 5,50% 32,25 EUR 1,77 EUR
+zugunsten Konto-Nr. 8291948001 160,69 EUR
+Bestand zulasten Girosammelverwahrung
+CBF 2126
+JAHRESSTEUERBESCHEINIGUNG FOLGT
+Limitkurs 124,963000 %
+Beratungsfreies Geschäft
+Hinweis für Orderabrechnungen und Depotbuchungsanzeigen:
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der
+Allgemeinen Geschäftsbedingungen (AGB Banken).
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an die Consorsbank oder per Fax oder Mail an die
+unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil d‘Administration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
+Depotnummer: 0123 456 789
+1504753979/00
+Vermerk der Bank: 2000
+2
+Datum: 14.12.2020
+Seite: 2 von 2
+Ordernummer 183797558.001
+Orderdatum 14.12.2020
+Informationen bei Gewinn Aktien / Wertpapiere ungleich Aktien
+Veräusserungsgewinn nach Differenzmethode 124,27 EUR
+Erhaltene Kapst-pflichtige Stückzinsen 4,72 EUR
+Bemessungsgrundlage für Kapitalertragsteuer 128,99 EUR
+Stand Ihrer Töpfe und Freibeträge nach dem Geschäft
+Sparerpauschbetrag nach dem Geschäft 0,00 EUR
+Verrechnungstopf Aktien nach dem Geschäft 123,70 EUR
+Verrechnungstopf Allg. nach dem Geschäft 0,00 EUR
+Verrechnungstopf QUST nach dem Geschäft 0,00 EUR
+Es wurde keine Kirchensteuer einbehalten.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil d‘Administration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
+
