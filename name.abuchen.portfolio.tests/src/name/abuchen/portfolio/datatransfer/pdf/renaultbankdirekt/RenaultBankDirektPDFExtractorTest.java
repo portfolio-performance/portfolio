@@ -403,11 +403,11 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(9L));
+        assertThat(countAccountTransactions(results), is(8L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(1L));
         assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(9));
+        assertThat(results.size(), is(8));
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
@@ -569,11 +569,11 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(4));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
@@ -585,7 +585,65 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(results, hasItem(interest( //
                         hasDate("2021-02-26"), //
                         hasSource("Kontoauszug13.txt"), //
+                        hasNote("05.02.2021 bis 28.02.2021"), //
                         hasAmount("EUR", 4.00), hasGrossValue("EUR", 4.72), //
                         hasTaxes("EUR", 0.72), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testKontoauszug14()
+    {
+        var extractor = new RenaultBankDirektPDFExtractor(new Client());
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug14.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(7L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(7));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2026-07-27"), hasAmount("EUR", 50.00), //
+                        hasSource("Kontoauszug14.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2026-07-29"), hasAmount("EUR", 500.00), //
+                        hasSource("Kontoauszug14.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2026-07-30"), hasAmount("EUR", 2000.00), //
+                        hasSource("Kontoauszug14.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2026-07-30"), hasAmount("EUR", 35200.00), //
+                        hasSource("Kontoauszug14.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2026-07-31"), hasAmount("EUR", 60000.00), //
+                        hasSource("Kontoauszug14.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2026-07-31"), hasAmount("EUR", 2250.00), //
+                        hasSource("Kontoauszug14.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2026-07-31"), //
+                        hasSource("Kontoauszug14.txt"), //
+                        hasNote("27.07.2026 bis 31.07.2026"), //
+                        hasAmount("EUR", 0.05), hasGrossValue("EUR", 0.07), //
+                        hasTaxes("EUR", 0.02), hasFees("EUR", 0.00))));
     }
 }
