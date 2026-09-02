@@ -53,6 +53,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         addAdvanceTaxTransaction();
         addAccountStatementTransaction();
         addNonImportableTransaction();
+        addTaxAdjustmentTransaction();
     }
 
     @Override
@@ -922,6 +923,62 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> v.markAsFailure(Messages.MsgErrorTransactionSplitUnsupported))
 
                         .wrap(TransactionItem::new);
+    }
+
+    private void addTaxAdjustmentTransaction()
+    {
+        final var type = new DocumentType("(?i)nachtr.gliche verlustverrechnung");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^[\\s]*Erstattung\\/Belastung \\(\\-\\) von Steuern$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
+
+                        // @formatter:off
+                        // Erstattung/Belastung(-) 0,02
+                        // Den Steuerausgleich buchen wir mit Valuta 16.01.2026 auf
+                        // das Gegenkonto DE99 5001 0517 1234 5678 90.
+                        // @formatter:on
+                        .section("date") //
+                        .match("^[\\s]*Den Steuerausgleich buchen wir mit Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Erstattung/Belastung (-) von Steuern
+                        // Anteil 100,000%
+                        // KapSt Person 1 0,02
+                        // SolZ Person 1 0,00
+                        // KiSt Person 1 0,00
+                        // Erstattung/Belastung(-) 0,02
+                        // @formatter:on
+
+                        .section("amount", "type") //
+                        .find("^[\\s]*Erstattung\\/Belastung \\(\\-\\) von Steuern.*") //
+                        .match("^[\\s]*Erstattung\\/Belastung\\(\\-\\)[\\s]+(?<type>\\-?)(?<amount>[\\.,\\d]+).*$") //
+                        .assign((t, v) -> {
+                            // @formatter:off
+                            // Is type --> "-" change from TAX_REFUND to TAXES
+                            // @formatter:on
+                            if ("-".equals(v.get("type")))
+                                t.setType(AccountTransaction.Type.TAXES);
+
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode("EUR"));
+                        })
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                return new SkippedItem(new TransactionItem(t),
+                                                Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                            return new TransactionItem(t);
+                        });
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)

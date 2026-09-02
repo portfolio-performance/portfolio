@@ -85,6 +85,7 @@ public class ConvertDeliveryToBuySellAction extends Action
             entry.setSecurity(deliveryTransaction.getSecurity());
             entry.setNote(deliveryTransaction.getNote());
             entry.setShares(deliveryTransaction.getShares());
+            entry.setSource(deliveryTransaction.getSource());
 
             deliveryTransaction.getUnits().forEach(entry.getPortfolioTransaction()::addUnit);
 
