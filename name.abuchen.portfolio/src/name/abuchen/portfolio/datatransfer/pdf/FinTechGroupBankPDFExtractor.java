@@ -25,6 +25,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.Transaction.Unit.Type;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -58,6 +59,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         addAdvanceTaxTransaction();
         addDepotServiceFeesTransaction();
         addNonImportableTransaction();
+        addAccountStatementTransaction();
     }
 
     @Override
@@ -3966,6 +3968,53 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             if (!type.getCurrentContext().getBoolean("negative") && type.getCurrentContext().getBoolean("isPurchaseBonds"))
                                 processFeeEntries(t, v, type);
                         });
+    }
+
+    private void addAccountStatementTransaction()
+    {
+        final var type = new DocumentType("Rechnungsabschluss");
+
+        // @formatter:off
+        // Summe Zinsen: -8,21 EUR
+        // Einbehaltene Steuer: 0,00 EUR
+        // Rechnungsabschluss: -8,21 EUR
+        // Saldo nach Rechnungsabschluss zum 30.06.2026: -530,53 EUR
+        // @formatter:on
+        var interestBlock = new Block("^Summe Zinsen:\\s+\\-[,.\\d]+\\s+[A-Z]{3}.*$");
+        type.addBlock(interestBlock);
+
+        interestBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST_CHARGE))
+
+                        // @formatter:off
+                        // Summe Zinsen: -8,21 EUR
+                        // Einbehaltene Steuer: 0,00 EUR
+                        // Rechnungsabschluss: -8,21 EUR
+                        // Saldo nach Rechnungsabschluss zum 30.06.2026: -530,53 EUR
+                        // @formatter:on
+                        .section("date", "amount", "currency", "tax") //
+                        .match("^Summe Zinsen:\\s+\\-(?<amount>[,.\\d]+)\\s+(?<currency>[A-Z]{3}).*$")
+                        .match("^Einbehaltene Steuer:\\D+(?<tax>[,.\\d]+).*$")
+                        .match("^Saldo nach Rechnungsabschluss zum (?<date>\\d{2}\\.\\d{2}\\.\\d{4}).*$")
+                        .assign((t, v) -> {
+                            String currencyCode = asCurrencyCode(v.get("currency"));
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(currencyCode);
+
+                            var tax = Money.of(currencyCode, asAmount(v.get("tax")));
+                            if (tax.getAmount() != 0)
+                            {
+                                Type unitType = Unit.Type.TAX;
+                                t.addUnit(new Unit(unitType, tax));
+                            }
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        this.addDocumentTyp(type);
     }
 
     @Override
