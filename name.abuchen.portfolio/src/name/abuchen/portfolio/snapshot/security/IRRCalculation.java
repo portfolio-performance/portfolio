@@ -11,10 +11,21 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
 
+/**
+ * Calculates the internal rate of return (IRR) of a security based on the
+ * gross cash flows, i.e. taxes withheld on dividends and paid on sales are
+ * added back to reconstruct the value before taxes. Fees, on the other
+ * hand, are always treated as real cash flows.
+ *
+ * @see IRRCalculationAfterTax for the after-tax variant of this calculation
+ */
 /* package */class IRRCalculation extends Calculation
 {
-    private List<LocalDate> dates = new ArrayList<>();
-    private List<Double> values = new ArrayList<>();
+    // package-visible (not private) so that IRRCalculationAfterTax can reuse
+    // the ValuationAtStart/ValuationAtEnd handling and append its own,
+    // after-tax cash flows for dividends, buys/sells and taxes.
+    protected List<LocalDate> dates = new ArrayList<>();
+    protected List<Double> values = new ArrayList<>();
 
     @Override
     public void visit(CurrencyConverter converter, CalculationLineItem.ValuationAtStart t)
