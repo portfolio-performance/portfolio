@@ -1505,12 +1505,6 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                             if ("-".equals(trim(v.get("type"))))
                                                                 t.setType(AccountTransaction.Type.FEES);
 
-                                                            // @formatter:off
-                                                            // Is note equal "sonstige Entgelte" change from DEPOSIT to FEE
-                                                            // @formatter:on
-                                                            if ("sonstige Entgelte".equals(trim(v.get("note"))))
-                                                                t.setType(AccountTransaction.Type.FEES);
-
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
@@ -1533,12 +1527,6 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                             // Is type is "-" change from FEES_REFUND to FEES
                                                             // @formatter:on
                                                             if ("S".equals(trim(v.get("type"))))
-                                                                t.setType(AccountTransaction.Type.FEES);
-
-                                                            // @formatter:off
-                                                            // Is note equal "sonstige Entgelte" change from DEPOSIT to FEE
-                                                            // @formatter:on
-                                                            if ("sonstige Entgelte".equals(trim(v.get("note"))))
                                                                 t.setType(AccountTransaction.Type.FEES);
 
                                                             t.setDateTime(asDate(v.get("date")));
@@ -1729,7 +1717,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         // Beleg BuchungVerwendungszweck EUR
                                         // @formatter:on
                                         .section("currency") //
-                                        .match("^Beleg Buchung[\\s]?Verwendungszweck (?<currency>[\\w]{3})$") //
+                                        .match("^Beleg Buchung[\\s]*Verwendungszweck (?<currency>[\\w]{3})$") //
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
 
         this.addDocumentTyp(type);
