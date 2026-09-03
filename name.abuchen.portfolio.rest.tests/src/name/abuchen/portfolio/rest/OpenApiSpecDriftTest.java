@@ -110,6 +110,25 @@ public class OpenApiSpecDriftTest
                             is(new TreeSet<>(documented.getOrDefault(route.getKey(), Set.of()))));
     }
 
+    /**
+     * The server answers /v1/version from a constant so that it needs no YAML
+     * reader at runtime; that only stays honest while the constant matches the
+     * document it summarises.
+     */
+    @Test
+    public void testApiVersionConstantMatchesTheSpec() throws IOException
+    {
+        var documented = readSpec().lines() //
+                        .dropWhile(line -> !line.startsWith("info:")) //
+                        .filter(line -> line.strip().startsWith("version:")) //
+                        .map(line -> unquote(line.strip().substring("version:".length()).strip())) //
+                        .findFirst() //
+                        .orElseThrow(() -> new IOException("no info.version in openapi.yaml"));
+
+        assertThat("RestApiConstants.API_VERSION vs. info.version in openapi.yaml", RestApiConstants.API_VERSION,
+                        is(documented));
+    }
+
     /** Any request can carry an unknown query parameter, so any operation can answer 400. */
     @Test
     public void testEveryOperationDocumentsTheInvalidRequestResponse() throws IOException

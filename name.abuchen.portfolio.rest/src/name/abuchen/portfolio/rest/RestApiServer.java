@@ -197,14 +197,16 @@ public class RestApiServer
 
     /**
      * The pairing endpoints exist to obtain a token, and the OpenAPI document
-     * describes how; both are reachable without one. Host and Origin checks
-     * still apply.
+     * describes how; both are reachable without one. So is the contract
+     * version, which a client needs before it can judge whether pairing is even
+     * worth attempting. Host and Origin checks still apply.
      */
     private static boolean isAuthExempt(String path)
     {
         return path.equals(RestApiConstants.PAIRING_ENDPOINT)
                         || path.startsWith(RestApiConstants.PAIRING_ENDPOINT + "/") //$NON-NLS-1$
-                        || path.equals(RestApiConstants.OPENAPI_ENDPOINT);
+                        || path.equals(RestApiConstants.OPENAPI_ENDPOINT)
+                        || path.equals(RestApiConstants.VERSION_ENDPOINT);
     }
 
     private static Response problem(ApiException exception)

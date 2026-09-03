@@ -25,6 +25,7 @@ import name.abuchen.portfolio.rest.internal.Response;
 import name.abuchen.portfolio.rest.internal.Router;
 import name.abuchen.portfolio.rest.internal.SecuritiesHandler;
 import name.abuchen.portfolio.rest.internal.TradesHandler;
+import name.abuchen.portfolio.rest.internal.VersionHandler;
 import name.abuchen.portfolio.rest.spi.HostApplication;
 import name.abuchen.portfolio.rest.spi.OpenFile;
 
@@ -56,6 +57,9 @@ public final class ApiRoutes
 
         // the API's own description: a static resource, no UI thread, no auth
         router.add("GET", RestApiConstants.OPENAPI_ENDPOINT, request -> OpenApiHandler.serve()); //$NON-NLS-1$
+
+        // the contract version: likewise static, and cheap enough to poll
+        router.add("GET", RestApiConstants.VERSION_ENDPOINT, request -> VersionHandler.serve()); //$NON-NLS-1$
 
         // pairing endpoints run on the HTTP worker thread: the service is
         // thread-safe and prompting the user is asynchronous by contract
