@@ -19,6 +19,18 @@ public final class RestApiConstants
     /** the API's own OpenAPI description; exempt from bearer auth so it is discoverable before pairing */
     public static final String OPENAPI_ENDPOINT = "/v1/openapi.yaml"; //$NON-NLS-1$
 
+    /** the API contract version; exempt from bearer auth, like the description it summarises */
+    public static final String VERSION_ENDPOINT = "/v1/version"; //$NON-NLS-1$
+
+    /**
+     * The version of the {@code /v1} contract. Additive changes within v1 bump
+     * it; a change that would break a client means /v2 at a new path, never a
+     * major bump here. Kept in lockstep with {@code info.version} in
+     * openapi.yaml by {@code OpenApiSpecDriftTest} rather than parsed at
+     * runtime, so the server needs no YAML reader to answer /v1/version.
+     */
+    public static final String API_VERSION = "1.0.0"; //$NON-NLS-1$
+
     private RestApiConstants()
     {
     }

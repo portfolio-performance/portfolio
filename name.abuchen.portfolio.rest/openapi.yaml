@@ -21,6 +21,27 @@ info:
     - The server serves this document at `GET /v1/openapi.yaml`, unauthenticated,
       so the contract of the running server is discoverable at runtime.
 
+    ## Compatibility — what `/v1` promises
+
+    **Everything under `/v1` is additive.** Within it, no field, endpoint,
+    parameter or value ever changes meaning, changes type or disappears; the only
+    changes are new ones. A change that would break a client is not made here —
+    it means **`/v2` at a new path**, served alongside, so nothing you already
+    call stops working.
+
+    `info.version` is the counter *within* that promise: it rises as endpoints and
+    fields are added, and never goes major inside `/v1`. Read it cheaply from
+    `GET /v1/version` rather than parsing this document.
+
+    So a client built against an older `1.x` keeps working against a newer server —
+    it simply cannot see what it does not know about. A client built against a
+    *newer* `1.x` than the server it meets will find some endpoints absent (`404`)
+    and should say which, rather than failing wholesale.
+
+    Two things this deliberately does **not** promise: the order of items in a
+    collection where none is documented, and the exact prose of a `title` or
+    `message` field. Match on `type` and `code`, never on prose.
+
     ## How to get a token (interactive pairing)
 
     Each client holds its own token. To obtain one:
@@ -157,6 +178,55 @@ paths:
             application/yaml:
               schema:
                 type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/version:
+    get:
+      operationId: getApiVersion
+      tags: [Discovery]
+      summary: The version of the API contract
+      description: |
+        The `/v1` contract version, and the release of the application serving
+        it. No bearer token required, for the same reason the OpenAPI document
+        needs none: it carries no user data, and a client needs it *before* it
+        can judge whether talking to this server is worth attempting.
+
+        Exists so that a client does not have to fetch and parse this whole
+        document to read one line of it. See **Compatibility** above for what a
+        version means.
+      security: []
+      responses:
+        "200":
+          description: The contract version.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [apiVersion]
+                properties:
+                  apiVersion:
+                    type: string
+                    description: |
+                      The version of the `/v1` contract, e.g. `1.3.0`. Rises as
+                      endpoints and fields are added; never goes major within
+                      `/v1`.
+                  applicationVersion:
+                    type: string
+                    description: |
+                      The running application's release, e.g. `0.87.1` — what to
+                      tell a *human* to update, since nobody thinks in API
+                      versions. Absent when the server runs outside the packaged
+                      application, so treat it as optional.
+              examples:
+                default:
+                  value:
+                    apiVersion: "1.0.0"
+                    applicationVersion: "0.87.1"
         "400":
           $ref: "#/components/responses/BadRequest"
         "403":
