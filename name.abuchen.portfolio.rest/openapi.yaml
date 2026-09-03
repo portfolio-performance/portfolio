@@ -80,6 +80,23 @@ info:
       exist (`404 not-found`) — the token must not let a client enumerate files the
       user did not share.
 
+    ## Rates and ratios
+
+    A rate — `ttwror`, `irr`, `volatility`, `maxDrawdown`, a trade's `return` — is
+    a **fraction**, so `0.0723` is 7.23 %, and it is served rounded to **8 decimal
+    places**. The raw computation carries no more meaning than that: IRR is found
+    by an iteration that stops once successive estimates differ by less than
+    1e-5, and TTWROR chains period returns whose rounding accumulates. Eight
+    decimals keep three orders of magnitude more precision than the best-resolved
+    rate actually has, and collapse the residue of an iteration that halted near
+    zero, which would otherwise be served as a return like
+    `-0.000000000002438937940496544`.
+
+    A rate the model cannot define for the interval is `null`, never `0` — handle
+    it rather than assuming a number. A **weight** is not a rate and is not
+    rounded: a dust holding is a legitimately tiny fraction of a portfolio, where
+    a rate that small is only ever noise.
+
     ## Methods
 
     A path serves only the methods listed for it in this document; the only

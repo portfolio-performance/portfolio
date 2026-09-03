@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.rest.internal;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
@@ -394,11 +395,35 @@ public final class EntityJson
         return json;
     }
 
-    /** a return ratio, or JSON null when the model cannot define it (NaN/infinite) */
+    /**
+     * A return ratio, or JSON null when the model cannot define it
+     * (NaN/infinite).
+     * <p/>
+     * Rounded, because the raw double claims precision the computation does not
+     * have. IRR is solved by Newton iteration that stops once successive
+     * iterates differ by less than 1e-5 ({@code NewtonGoalSeek}), and TTWROR
+     * chains period returns whose rounding accumulates - so a rate is credible
+     * to perhaps five decimals, never to seventeen. {@value #RATE_SCALE} leaves
+     * three orders of magnitude more precision than the best-resolved rate
+     * actually has, while collapsing the residue of an iteration that halted
+     * near zero: an IRR of exactly zero was being served as
+     * -0.000000000002438937940496544, which a client can faithfully report as a
+     * return of -0.00000000024%.
+     */
     static JsonElement ratio(double value)
     {
-        return Double.isFinite(value) ? decimal(value) : JsonNull.INSTANCE;
+        if (!Double.isFinite(value))
+            return JsonNull.INSTANCE;
+
+        return decimal(BigDecimal.valueOf(value).setScale(RATE_SCALE, RoundingMode.HALF_UP));
     }
+
+    /**
+     * Decimal places kept for a rate. Not applied to a weight: a weight can be
+     * legitimately tiny (a dust holding is a real fraction of a portfolio),
+     * where a rate that small is only ever noise.
+     */
+    private static final int RATE_SCALE = 8;
 
     private static Money negate(Money money)
     {
