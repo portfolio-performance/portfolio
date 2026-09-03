@@ -1,0 +1,54 @@
+{
+ "securities": {
+  "columns": [
+   "secid",
+   "shortname",
+   "regnumber",
+   "name",
+   "isin",
+   "is_traded",
+   "emitent_id",
+   "emitent_title",
+   "emitent_inn",
+   "emitent_okpo",
+   "type",
+   "group",
+   "primary_boardid",
+   "marketprice_boardid"
+  ],
+  "data": [
+   [
+    "IMOEX",
+    "MOEX Russia Index",
+    null,
+    "MOEX Russia Index",
+    "RU000A0JP7K5",
+    1,
+    null,
+    null,
+    null,
+    null,
+    "stock_index",
+    "stock_index",
+    "SNDX",
+    null
+   ],
+   [
+    "IMOEX2",
+    "IMOEX2 – MOEX Russia Index calculated during all trading day with additional trading sessions",
+    null,
+    "IMOEX2 – MOEX Russia Index calculated during all trading day with additional trading sessions",
+    null,
+    1,
+    null,
+    null,
+    null,
+    null,
+    "stock_index_eq",
+    "stock_index",
+    "SNDX",
+    null
+   ]
+  ]
+ }
+}
