@@ -283,7 +283,7 @@ public enum WidgetFactory
                                         PerformanceIndex index = data.calculate(ds, period);
                                         double r = index.getPerformanceIRR();
                                         double rf = new ClientProperties(data.getClient()).getRiskFreeRateOfReturn();
-                                        double volatility = index.getVolatility().getStandardDeviation();
+                                        double volatility = index.getAnnualizedVolatility();
 
                                         // handle invalid rf value
                                         if (Double.isNaN(rf))
@@ -296,7 +296,7 @@ public enum WidgetFactory
                                         PerformanceIndex index = data.calculate(ds, period);
                                         double r = index.getPerformanceIRR();
                                         double rf = new ClientProperties(data.getClient()).getRiskFreeRateOfReturn();
-                                        double volatility = index.getVolatility().getStandardDeviation();
+                                        double volatility = index.getAnnualizedVolatility();
                                         double sharpeRatio = (r - rf) / volatility;
                                         return MessageFormat.format(Messages.TooltipSharpeRatio,
                                                         Values.Percent5.format(r), Values.Percent2.format(rf),
