@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Shell;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.editor.ClientInputFactory;
 import name.abuchen.portfolio.ui.preferences.AlphaVantagePreferencePage;
 import name.abuchen.portfolio.ui.preferences.BackupsPreferencePage;
 import name.abuchen.portfolio.ui.preferences.CalendarPreferencePage;
@@ -39,6 +40,7 @@ import name.abuchen.portfolio.ui.preferences.PresentationPreferencePage;
 import name.abuchen.portfolio.ui.preferences.PresetsPreferencePage;
 import name.abuchen.portfolio.ui.preferences.ProxyPreferencePage;
 import name.abuchen.portfolio.ui.preferences.QuandlPreferencePage;
+import name.abuchen.portfolio.ui.preferences.RestApiPreferencePage;
 import name.abuchen.portfolio.ui.preferences.ThemePreferencePage;
 import name.abuchen.portfolio.ui.preferences.TwelveDataPreferencePage;
 import name.abuchen.portfolio.ui.preferences.UpdatePreferencePage;
@@ -65,7 +67,7 @@ public class OpenPreferenceDialogHandler
     public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
                     @Named(IServiceConstants.ACTIVE_PART) MPart part,
                     @Optional @Named(UIConstants.Parameter.PAGE) String page, //
-                    IThemeEngine themeEngine)
+                    IThemeEngine themeEngine, ClientInputFactory clientInputFactory)
     {
         // the active client
         var clientInput = MenuHelper.getActiveClientInput(part, false);
@@ -95,6 +97,8 @@ public class OpenPreferenceDialogHandler
         pm.addTo("api", new PreferenceNode("mydividends24", new MyDividends24PreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("api", new PreferenceNode("twelvedata", new TwelveDataPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("api", new PreferenceNode("quandl", new QuandlPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
+
+        pm.addToRoot(new PreferenceNode("restapi", new RestApiPreferencePage(clientInputFactory))); //$NON-NLS-1$
 
         pm.addToRoot(new PreferenceNode("proxy", new ProxyPreferencePage())); //$NON-NLS-1$
         pm.addToRoot(new PreferenceNode("experiments", new ExperimentsPreferencePage())); //$NON-NLS-1$
