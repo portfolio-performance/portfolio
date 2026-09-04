@@ -13,8 +13,10 @@ import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardData;
 import name.abuchen.portfolio.ui.views.dashboard.MultiDataSeriesConfig;
+import name.abuchen.portfolio.ui.views.dashboard.PerformanceMetricConfig;
 import name.abuchen.portfolio.ui.views.dashboard.ReportingPeriodConfig;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
+import name.abuchen.portfolio.ui.views.dataseries.PerformanceMetric;
 import name.abuchen.portfolio.util.Interval;
 
 public class YearlyPerformanceHeatmapWidget extends AbstractHeatmapWidget<Double>
@@ -26,6 +28,7 @@ public class YearlyPerformanceHeatmapWidget extends AbstractHeatmapWidget<Double
         addConfig(new ColorSchemaConfig(this));
         addConfig(new HeatmapOrnamentConfig(this));
         addConfig(new MultiDataSeriesConfig(this));
+        addConfig(new PerformanceMetricConfig(this));
     }
 
     @Override
@@ -42,6 +45,7 @@ public class YearlyPerformanceHeatmapWidget extends AbstractHeatmapWidget<Double
         Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(now);
 
         List<DataSeries> dataSeries = get(MultiDataSeriesConfig.class).getDataSeries();
+        PerformanceMetric metric = get(PerformanceMetricConfig.class).getMetric();
 
         // adapt interval to include the first and last year fully
 
@@ -68,7 +72,7 @@ public class YearlyPerformanceHeatmapWidget extends AbstractHeatmapWidget<Double
             {
                 PerformanceIndex performanceIndex = getDashboardData().calculate(series,
                                 new ReportingPeriod.YearX(year.getValue()).toInterval(now));
-                row.addData(performanceIndex.getFinalAccumulatedPercentage());
+                row.addData(getPerformance(performanceIndex, metric));
             }
 
             model.addRow(row);
@@ -82,7 +86,7 @@ public class YearlyPerformanceHeatmapWidget extends AbstractHeatmapWidget<Double
             for (DataSeries series : dataSeries)
             {
                 PerformanceIndex performanceIndex = getDashboardData().calculate(series, calcInterval);
-                sum.addData(performanceIndex.getFinalAccumulatedPercentage());
+                sum.addData(getPerformance(performanceIndex, metric));
             }
         }
 
@@ -110,5 +114,10 @@ public class YearlyPerformanceHeatmapWidget extends AbstractHeatmapWidget<Double
         }
 
         return model;
+    }
+
+    private double getPerformance(PerformanceIndex index, PerformanceMetric metric)
+    {
+        return metric == PerformanceMetric.IRR ? index.getPerformanceIRR() : index.getFinalAccumulatedPercentage();
     }
 }
