@@ -282,9 +282,9 @@ public class PerformanceIndex
      */
     public double getAnnualizedVolatility()
     {
-        IntPredicate filter = filterReturnsForVolatilityCalculation();
+        var filter = filterReturnsForVolatilityCalculation();
 
-        int observations = 0;
+        var observations = 0;
         for (int index = 0; index < delta.length; index++)
         {
             if (filter.test(index))
@@ -294,8 +294,8 @@ public class PerformanceIndex
         if (observations <= 1)
             return 0d;
 
-        LocalDate end = getActualInterval().getEnd();
-        int observationsPerYear = Dates.tradingDaysBetween(end.minusYears(1), end);
+        var end = getActualInterval().getEnd();
+        var observationsPerYear = Dates.tradingDaysBetween(end.minusYears(1), end);
 
         return getVolatility().getStandardDeviation() / Math.sqrt(observations) * Math.sqrt(observationsPerYear);
     }
