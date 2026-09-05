@@ -6,6 +6,7 @@ import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 
@@ -125,10 +126,10 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<notation>(St.ck|[A-Z]{3})) (?<shares>[\\.,\\d]+) .* [A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\)$") //
                                                         .assign((t, v) -> {
                                                             // Percentage quotation, workaround for bonds
-                                                            if (v.get("notation") != null && !"Stück".equalsIgnoreCase(v.get("notation")))
+                                                            if (!Objects.toString(v.get("notation"), "")
+                                                                            .matches("St.ck"))
                                                             {
-                                                                var shares = asBigDecimal(v.get("shares"));
-                                                                t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                                t.setShares(asBondNominal(v.get("shares")));
                                                             }
                                                             else
                                                             {
@@ -362,8 +363,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                                             // @formatter:off
                                                             // Percentage quotation, workaround for bonds
                                                             // @formatter:on
-                                                            var shares = asBigDecimal(v.get("shares"));
-                                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                            t.setShares(asBondNominal(v.get("shares")));
                                                         }),
                                         // @formatter:off
                                         // 16.000,000000 EUR A0JCCZ XS1014610254
@@ -375,8 +375,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                                             // @formatter:off
                                                             // Percentage quotation, workaround for bonds
                                                             // @formatter:on
-                                                            var shares = asBigDecimal(v.get("shares"));
-                                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                            t.setShares(asBondNominal(v.get("shares")));
                                                         }))
 
                         .oneOf( //
@@ -473,6 +472,30 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }))
 
+
+                        .optionalOneOf( //
+
+                        // @formatter:off
+                                        // Ex-Tag 22.02.2021 Art der Dividende Quartalsdividende
+                                        // Ex-Tag 26.02.2021
+                                        // Ex-Tag 15.04.2016 anteil pro St. 0,007344000 EUR
+                                        // Ursprungsland DEUTSCHLAND Ex-Tag 16.01.2023
+                                        // Ursprungsland USA Ex-Tag 23.01.2023
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exdate") //
+                                                        .match("^.*Ex-Tag\\s+(?<exdate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setExDate(asDate(v.get("exdate")))), //
+
+                                        // @formatter:off
+                                        // Kupon per 29.09.2022 Herkunftsland Niederlande
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exdate") //
+                                                        .match("^Kupon per (?<exdate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setExDate(asDate(v.get("exdate"))))
+                        )
+                        
                         // @formatter:off
                         //  Abrechnungsnr. 12345678999
                         // @formatter:on
