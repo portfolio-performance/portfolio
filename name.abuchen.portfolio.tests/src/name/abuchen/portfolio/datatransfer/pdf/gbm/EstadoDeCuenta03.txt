@@ -1,0 +1,214 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.84.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+ XXXXX XXXXX XXXX XXX Contrato: XXXXXXXX Hoja: 1 de 7    
+RFC: XXXXXXXXXXXXX
+DIRECCION NUMERO Ejecutivo Teléfono Dir.
+Colonia Equipo de Atención a Inversionistas (01) 54 80 58 00
+DEL./POB. Delegacion,Ciudad,Mexico
+CP 00000 CR 03001 Periodo
+DEL 1 AL 31 DE JULIO DE 2021
+RESUMEN DEL PORTAFOLIO
+SALDO SALDO % DE MOVIMIENTOS
+PORTAFOLIO AL 30-JUN-21 AL 30-JUL-21 PORTAFOLIO DEL 1 AL 31 DE JULIO DE 2021
+DEUDA 16,714.89 16,885.09 18.91 ENTRADAS DE EFECTIVO 74.49
+RENTA VARIABLE 72,295.90 72,402.59 81.07 SALIDAS DE EFECTIVO 42.37
+VALORES EN CORTO / PRÉSTAMO DE VALORES 0.00 0.00 0.00 SUBTOTAL EFECTIVO 32.12
+FONDO DE FONDOS 0.00 0.00 0.00 DEPOSITO DE VALORES 0.00
+GARANTÍAS 0.00 0.00 0.00 RETIRO DE VALORES 0.00
+OTRAS INVERSIONES 0.00 0.00 0.00 SUBTOTAL VALORES 0.00
+CREDITOS DE MARGEN 0.00 0.00 0.00 DERECHOS PATRIMONIALES 116.39
+EFECTIVO 26.88 26.40 0.03 COMISIONES 0.00
+DERIVADOS 0.00 0.00 0.00
+VALOR DEL PORTAFOLIO1
+89,037.67 89,314.09 100.00 SALDO NETO DE MOVIMIENTOS 148.51
+VALOR TOTAL DE LAS GARANTIAS 0.00 0.00
+COMPOSICIÓN DEL PORTAFOLIO AVISOS
+ NOMBRE: Contrato Periodo Hoja: 2 de 7    
+XXXXX XXXXX XXXX XXX XXXXXXXX DEL 1 AL 31 DE JULIO DE 2021
+DESGLOSE DEL PORTAFOLIO
+DEUDA
+FONDOS DE INVERSION DE DEUDA*
+EMISORA NO.TÍTULOS NO.TÍTULOS COSTO COSTO PRECIO DE PRECIO DE VALOR A PLUSVALÍA % DE LA
+MES ANTERIOR MES ACTUAL PROMEDIO TOTAL MERCADO MERCADO MERCADO (MINUSVALÍA) CART.
+MES ANTERIOR
+GBMF2 BF 449 453 36.734834 16,640.88 37.273939 37.226937 16,885.09 244.21 18.91
+Total: FONDOS DE INVERSION DE DEUDA 16,885.09 244.21 18.91
+TOTAL: DEUDA 16,885.09 244.21 18.91
+RENTA VARIABLE
+ACCIONES
+EMISORA NO.TÍTULOS NO.TÍTULOS TÍT OTORGADOS COSTO COSTO PRECIO DE PRECIO DE VALOR A PLUSVALÍA % DE LA
+MES ANTERIOR MES ACTUAL EN PRÉSTAMO PROMEDIO TOTAL MERCADO MERCADO MERCADO (MINUSVALÍA) CART.
+MES ANTERIOR
+FIBRAPL 14 216 216 0 39.250000 8,478.00 43.590000 44.390000 9,415.44 937.44 10.54
+FUNO 11 220 220 0 17.141441 3,771.12 21.700000 21.530000 4,774.00 1,002.88 5.35
+TERRA 13 163 163 0 24.010000 3,913.63 31.470000 30.260000 5,129.61 1,215.98 5.74
+Total: ACCIONES 19,319.05 3,156.30 21.63
+ACCIONES DEL SIC
+EMISORA NO.TÍTULOS NO.TÍTULOS TÍT OTORGADOS COSTO COSTO PRECIO DE PRECIO DE VALOR A PLUSVALÍA % DE LA
+MES ANTERIOR MES ACTUAL EN PRÉSTAMO PROMEDIO TOTAL MERCADO MERCADO MERCADO (MINUSVALÍA) CART.
+MES ANTERIOR
+SPCE * 1 1 0 395.000000 395.00 595.166545 915.685200 595.17 200.17 0.67
+VEA * 15 15 0 837.000000 12,555.00 1,027.599990 1,025.567424 15,414.00 2,859.00 17.26
+VOO * 4 4 0 6,386.252500 25,545.01 8,000.713325 7,833.487824 32,002.85 6,457.84 35.83
+VWO * 5 5 0 822.600000 4,113.00 1,014.303505 1,081.105722 5,071.52 958.52 5.68
+Total: ACCIONES DEL SIC 53,083.54 10,475.53 59.43
+TOTAL: RENTA VARIABLE 72,402.59 13,631.83 81.07
+ NOMBRE: Contrato Periodo Hoja: 3 de 7    
+XXXXX XXXXX XXXX XXX XXXXXXXX DEL 1 AL 31 DE JULIO DE 2021
+EFECTIVO % DE
+VALOR CART.
+EFECTIVO MISMO DIA 26.40 0.03
+EFECTIVO 24 HORAS 0.00 0.00
+EFECTIVO 48 HORAS 0.00 0.00
+EFECTIVO 72 HORAS 0.00 0.00
+EFECTIVO MAYOR A 72 HORAS 0.00 0.00
+TOTAL EN EFECTIVO 26.40 0.03
+ NOMBRE: Contrato Periodo Hoja: 4 de 7    
+XXXXX XXXXX XXXX XXX XXXXXXXX DEL 1 AL 31 DE JULIO DE 2021
+DESGLOSE DE MOVIMIENTOS
+FECHA N° DESCRIPCIÓN OPERACIÓN EMISORA NÚMERO PRECIO TASA PLAZO COMISIÓN INTERÉS IMPUESTO NETO SALDO
+OPER/LIQ FOLIO TÍTULOS UNITARIO REND.
+01/01 0 Efectivo Inicial del Mes Efec Ini 0 0.000000 0.00 0.00 0.00 26.88 26.88
+01/02 31968894 ABONO DIVIDENDO EMISORA EXTRANJERA VOO * 0 0.000000 0.00 0.00 0.00 74.49 101.37
+01/02 31968896 ISR 10 % POR DIVIDENDOS SIC VOO * 0 0.000000 0.00 0.00 0.00 7.45 93.92
+02/02 63309965 Compra Soc. de Inv. - Cliente GBMF2 BF 2 37.227765 0.00 0.00 0.00 74.46 19.47
+28/30 1951276 Abono efectivo Resultado Fiscal Distribuido FIBRAPL 14 0 0.000000 0.00 0.00 0.00 116.39 135.86
+28/30 34796755 RETENCION ISR POR RESULTADO FISCAL FIBRAPL 14 0 0.000000 0.00 0.00 0.00 34.92 100.94
+DIST.
+30/30 69843400 Compra Soc. de Inv. - Cliente GBMF2 BF 2 37.268391 0.00 0.00 0.00 74.54 26.40
+ NOMBRE: Contrato Periodo Hoja: 5 de 7    
+XXXXX XXXXX XXXX XXX XXXXXXXX DEL 1 AL 31 DE JULIO DE 2021
+RENDIMIENTO DEL PORTAFOLIO
+Periodo Global Bruto Global Neto
+pesos porcentaje pesos porcentaje
+Del 03/08/2020 al 31/08/2020 1,987.28 2.13% 1,949.37 2.09%
+Del 01/09/2020 al 30/09/2020 (562.55) (0.59)% (571.03) (0.60)%
+Del 01/10/2020 al 30/10/2020 (3,390.97) (3.58)% (3,426.72) (3.62)%
+Del 03/11/2020 al 30/11/2020 3,937.38 4.31% 3,904.81 4.28%
+Del 01/12/2020 al 31/12/2020 2,417.98 3.02% 2,399.49 2.99%
+Del 04/01/2021 al 29/01/2021 (65.44) (0.08)% (65.44) (0.08)%
+Del 02/02/2021 al 26/02/2021 3,629.79 4.40% 3,580.55 4.34%
+Del 01/03/2021 al 31/03/2021 852.97 0.99% 810.56 0.94%
+Del 05/04/2021 al 30/04/2021 1,625.41 1.87% 1,590.85 1.83%
+Del 03/05/2021 al 31/05/2021 912.89 1.03% 869.14 0.98%
+Del 01/06/2021 al 30/06/2021 (296.67) (0.33)% (307.40) (0.34)%
+Del 01/07/2021 al 30/07/2021 318.78 0.36% 276.41 0.31%
+La moneda utilizada en el cálculo del rendimiento es en pesos mexicanos.
+COMPOSICIÓN FISCAL INFORMATIVA
+NOMBRE ISR DIVIDENDOS DIVIDENDOS ISR ACREDITABLE ISR ISR
+RETENIDO ACUMULABLES POR DIVIDENDOS DIVIDENDOS CAPITALES
+POR INTERESES ACUMULABLES DEFINITIVO DEFINITIVO
+XXXXX XXXXXXXX XXXXXX 11.81 0.00 0.00 0.00 7.45 0.00
+XXXXX
+TOTALES: 11.81 0.00 0.00 0.00 7.45 0.00
+Total de ISR Retenido: 0.01 % (proporción del valor del portafolio a cierre del mes)
+La retención del Impuesto sobre la Renta (ISR) se realiza de conformidad con disposiciones fiscales vigentes establecidas en la Ley del Impuesto sobre la Renta (LISR) y demás disposiciones fiscales que sean aplicables; atendiendo
+a la residencia fiscal del inversionista.
+CANTIDAD 1
+Total de Comisiones Cobradas: 0.00% (proporción del valor del portafolio a cierre del mes)
+Las comisiones se calculan multiplicando el importe de la operación (compra/venta) de valores, por el porcentaje acordado con la Casa de Bolsa para cada una
+de las operaciones respectivas, o bien conforme al importe acordado como “management fee” aplicado al valor de la cartera en portafolio.
+Si requiere información adicional, no dude en consultar a su asesor, quien le proporcionará todos los detalles que necesite
+DESGLOSE DE COMISIONES COBRADAS *
+Concepto Importe IVA
+Comisiones y gastos de Intermediación 0.00 0.00
+Comisiones y gastos por Servicios 0.00 0.00
+Comisiones y gastos administrativos 0.00 0.00
+Totales: 0.00 0.00
+* En el período pueden haber cargos por concepto de comisiones y gastos afectos a diversas tasas de I.V.A. o, en su caso, exentos
+ NOMBRE: Contrato Periodo Hoja: 6 de 7    
+XXXXX XXXXX XXXX XXX XXXXXXXX DEL 1 AL 31 DE JULIO DE 2021
+CONSTANCIA INFORMATIVA
+CAPITALES
+EMISORA NO. TÍTULOS COSTO PROMEDIO COSTO TOTAL PRECIO DE VALOR A PLUSVALÍA GANANCIA PÉRDIDA GANANCIA PÉRDIDA
+FISCAL FISCAL MERCADO MERCADO MINUSVALÍA FISCAL REALIZADA FISCAL REALIZADA
+FISCAL EN EL MES ACUMULADA
+SPCE * 1 0.000000 0.00 595.166545 595.17 595.17 0.00 0.00
+VEA * 15 894.418200 13,416.27 1,027.599990 15,414.00 1,997.73 0.00 0.00
+VOO * 4 6,824.349422 27,297.40 8,000.713325 32,002.85 4,705.46 0.00 0.00
+VWO * 5 879.030360 4,395.15 1,014.303505 5,071.52 676.37 0.00 0.00
+GANANCIA O PÉRDIDA FISCAL ACUMULADA 1 0.00
+1.- Base de cálculo del ISR o pérdida realizada acumulada.
+Nota: Cifras determinadas conforme a la legislación fiscal vigente.
+ Hoja: 7 de 7    
+EN CASO DE ACLARACIONES:
+El ejecutivo Edson Gabriel Navarro de la Rosa es el asignado a su contrato, sin embargo, usted puede ser atendido
+por cualquiera de nuestros ejecutivos del equipo de Atención a Inversionistas en los siguientes teléfonos:
+55 5480 5846 o al 800 426 4663
+O bien, si prefiere escribir a: homebroker@gbm.com.mx
+Le recordamos que las inversiones en acciones de las sociedades de inversión no garantizan rendimientos
+PARA CONSULTAS Y RECLAMACIONES: futuros, ni sus sociedades operadoras son responsables de las pérdidas que el inversionista pueda sufrir como
+consecuencia de dichas inversiones o asumen el riesgo de las variaciones en el diferencial del precio a favor de los
+En el caso de que tenga la necesidad de una consulta o reclamación, favor de comunicarse con el Titular de la Unidad clientes.
+Especializada de Consultas y Reclamaciones:
+Lic. Olivia Montiel Nopal
+Av. de los Insurgentes Sur número 1605, Piso 31, Col. San José Insurgentes, 03900, México, Ciudad de México. DATOS REFERENCIADOS:
+5480 5848
+une@gbm.com.mx 1. En caso de que existan valores bajo la garantía llamada Prenda Bursátil con Transmisión de Propiedad ²,
+En el Horario de Atención: de 9:00 a 18:00 horas de lunes a jueves y de 9:00 a 15:00 horas los viernes. este valor será únicamente de carácter informativo, ya que el mismo se encuentra sujeto al pago oportuno de los
+préstamos. En el supuesto antes señalado, valor real es el que se calcula restando el monto de los valores
+otorgados en Prenda Bursátil con Transmisión de Propiedad.
+CLAVE BANCARIA ESTANDARIZADA: 2. La propiedad de los valores otorgados en prenda bajo esta modalidad se restituye al cliente al efectuarse el
+pago correspondiente.
+Le recordamos que para su seguridad y comodidad tenemos la opción de recibir sus transferencias electrónicas 3. Este dato incluye, en su caso, el número de títulos otorgados en préstamo.
+directamente a su Contrato a través del Sistema de Pagos Electrónicos Interbancario (SPEI). Sólo deberá de instruir 4. Para calcular el valor de los fondos en dólares se usa el Tipo de Cambio VALMER AL 30-JUL-21
+al emisor del pago: el número de cuenta Clave Bancaria Estandarizada (CLABE) asignada exclusivamente a su
+Contrato, la institución receptora Casa de Bolsa y el nombre del titular del contrato de Intermediación Bursátil. PRIVACIDAD:
+Los datos necesarios para hacer la transacción son los siguientes:
+De conformidad a lo estipulado en la Ley Federal de Protección de Datos Personales en Posesión de los
+Institución: GBM Particulares y como parte del compromiso de GBM por preservar la privacidad de la información, hacemos de su
+CLABE: 601180400002684217 conocimiento que el aviso de privacidad respectivo mediante el cual, entre otros puntos, se informa la finalidad
+del tratamiento de sus datos, se encontrará publicado en la página web de esta Casa de Bolsa, www.gbm.com
+*INFORMACION SOBRE FONDOS DE INVERSION:
+NOTAS ACLARATORIAS:
+La composición de las carteras, clasificaciones y calificaciones de los fondos de inversión distribuidos por Grupo
+Bursátil Mexicano, S.A. de C.V. Casa de Bolsa, se publican en la siguiente página de internet: 1. La abreviación efec *. significa efectivo.
+http://www.gbmfondos.com.mx/informacion-para-inversionistas 2. Todos los importes y cálculos están expresados en Moneda Nacional
+3. Si desea consultar la validez del folio de este comprobante fiscal digital por internet podrá ingresar a la
+Definiciones: página del Servicio de Administración Tributaria (SAT) en la dirección:
+Fondo de Inversión de Deuda: Sociedad de Inversión en Instrumentos de Deuda https://verificacfdi.facturaelectronica.sat.gob.mx
+Fondo de Inversión de Renta Variable: Sociedad de Inversión en Instrumentos de Renta Variable 4. El rubro "Derechos Patrimoniales" en la tabla de Movimientos engloba los conceptos relacionados a
+dividendos, intereses, reembolsos de capital y cualquier derecho por valores adquiridos.
+Clasificación de Fondos de Inversión:
+INFORMACION DE SU CONTRATO:
+D i s c r e c i o n a l   E s p e c i a l iz a d a  e n  I n v e r s i o n e s  e n  D ó l a r e s                                         GBMDOL Y GBMUSD
+C o r t o  P la z o                                                                                                            GBMF2 Y MPAGORF
+D i s c r e c i o n a l                                                                                                           DYNVAL, GBM102, GBM103, GBM104, GBM105, GBM106, GBM110, GBM112, 1. Actualmente los cotitulares que figuran en su contrato son:
+                                                                                                                              GBMAAA, GBMALFA, GBMCRE, GBMDINT, GBMDIV2, GBMF3, GBMGLB, GBMM3, 
+                                                                                                                              GBMPAT, GBMPICT, GBMRETO, GBMV2, HEYG, NUMC Y SAURORT
+D i s c r e c i o n a l   e n   G u b e r n a m e n t a l                                                                            GBMGUB
+C o r t o  P la z o  G u b e r n a m e n t a l                                                                                  GBMGUBL
+E s p e c i a l i z a d a  e n  A c c io n e s  N a c io n a l e s                                                                 GBMINF Y GBMMOD
+E s p e c i a l i z a d a  e n  A c c io n e s                                                                                    GBMAGR Y GBMV1
+E s p e c i a l i z a d a  e n  A c c io n e s  a  t r a v é s   d e   T r a c k e r s   I n t e r n a c i o n a l e s                         GBMTRV
+E s p e c i a l i z a d a  e n  A c c io n e s  I n d i z a d a s  d e l I P C                                                       GBMMXOP
+E s p e c i a l i z a d a  e n  A c c io n e s  I n t e r n a c i o n a l e s                                                          GBMINT
+E s p e c i a l i z a d a  e n  V a l o r e s   d e   D e u d a  a  t r a v é s  d e  S o c i e d a d e s   d e   I n v e r s i ó n          GBMPCON Y GBMPDEU
+M a y o r i t a r i a m e n t e  e n  V a lo r e s  d e  D e u d a   a   t r a v é s   d e   S o c i e d a d e s  d e  I n v e r s i ó n     REGIOB
+M a y o r i t a r i a m e n t e  e n  A c c i o n e s   a   t r a v é s  d e  S o c i e d a d e s  d e  I n v e r s i ó n                    REGIOC
+E s p e c i a l i z a d a  e n  A c c io n e s  a  t r a v é s   d e   S o c i e d a d e s   d e   I n v e r s ió n                         GBMPBOL
+Calificación de Fondos de Inversión de Deuda:
+FONDO CALIFICACIÓN FONDO CALIFICACIÓN
+G B M F 2               AAAf/S1(mex)
+G B M F 3               AAAf/S4(mex) G B M R E T O      AAAf/S5(mex)
+G B M P A T         AAAf/S4(mex) M P A G O R F      AAAf/S1(mex)
+G B M M 3           AAAf/S4(mex)
+G B M G U B         AAAf/S2(mex)
+G B M G U B L       AAAf/S1(mex)
+Todos los Fondos de Inversión de Deuda de GBM son calificados mensualmente por Fitch México S.A. de C.V.,
+considerando dos aspectos: Buena administración; cumplimiento del compromiso de pago, y calidad crediticia de los
+activos que administra.
+AAA Sobresaliente AA Alta A Buena
+BBB Aceptable BB Baja B Mínima
+Riesgo de mercado: sensibilidad del valor de las inversiones ante los cambios en las variables económicas.
+1 Extremadamente Baja 5 Moderada Alta
+2 Baja 6 Alta
+3 Baja Moderada 7 Muy Alta
+4 Moderada
+Para ver la calificación actual de cada fondo en otra fuente, lo referimos a la página de Fitch México:
+http://www.fitchmexico.com
+Para conocer los fondos de inversión que se encuentran sub-valuados, lo invitamos a visitar la liga:
+https://gbmfondos.com.mx/home/pdf/soluciones/fisicas/razon/subvaluacion-GBM-Fondos.pdf
+
