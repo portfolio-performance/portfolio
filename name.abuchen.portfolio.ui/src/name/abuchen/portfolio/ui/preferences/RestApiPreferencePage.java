@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.preferences;
 
+import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -42,6 +43,7 @@ import org.osgi.service.prefs.BackingStoreException;
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.rest.ClientStore;
 import name.abuchen.portfolio.rest.FileAccessRegistry;
+import name.abuchen.portfolio.rest.RejectedConnections;
 import name.abuchen.portfolio.rest.RestApiConstants;
 import name.abuchen.portfolio.rest.RestApiWorkspace;
 import name.abuchen.portfolio.ui.Messages;
@@ -49,24 +51,37 @@ import name.abuchen.portfolio.ui.editor.ClientInputFactory;
 import name.abuchen.portfolio.ui.util.Colors;
 
 /**
- * Configures the local REST API: global enable switch, port, the per-file
- * opt-in with optional alias, and the authorized clients. Clients are usually
- * added through interactive pairing; "Add client" mints a token manually for
- * headless use. Revocation takes effect immediately. Only files currently open
- * in the application are listed; unsaved files cannot be enabled because the
- * API identity is keyed by file path.
+ * Configures both local front doors - the MCP server and the REST API - which
+ * are one server on one port behind one switch, because the sixteen MCP tools
+ * are the REST operations: global enable switch, port, the MCP URL, the
+ * per-file opt-in with optional alias, and the authorized clients. Clients are
+ * usually added through interactive pairing; "Add client" mints a token
+ * manually, for a headless setup or for an MCP client that is handed one
+ * (ADR 0005). Revocation takes effect immediately. Only files currently open in
+ * the application are listed; unsaved files cannot be enabled because the API
+ * identity is keyed by file path.
  */
 public class RestApiPreferencePage extends PreferencePage
 {
-    /** shows a freshly minted token exactly once, with a copy button */
+    /**
+     * Shows a freshly minted token exactly once, and assembles the connector
+     * settings around it.
+     * <p/>
+     * This is where the MCP snippet belongs, because this is the one moment the
+     * token exists: it is stored as a hash and can never be shown again, so a
+     * preference page that displayed the URL and the header together would be
+     * displaying half of them. The page itself shows only what is not secret.
+     */
     private static final class ShowTokenDialog extends Dialog
     {
         private final String token;
+        private final int port;
 
-        private ShowTokenDialog(Shell parentShell, String token)
+        private ShowTokenDialog(Shell parentShell, String token, int port)
         {
             super(parentShell);
             this.token = token;
+            this.port = port;
         }
 
         @Override
@@ -80,31 +95,38 @@ public class RestApiPreferencePage extends PreferencePage
         protected Control createDialogArea(Composite parent)
         {
             var container = (Composite) super.createDialogArea(parent);
-            GridLayoutFactory.swtDefaults().numColumns(2).margins(15, 15).applyTo(container);
+            GridLayoutFactory.swtDefaults().numColumns(3).margins(15, 15).applyTo(container);
 
             var hint = new Label(container, SWT.WRAP);
             hint.setText(Messages.PrefMsgRestApiTokenShownOnce);
-            GridDataFactory.fillDefaults().span(2, 1).grab(true, false).hint(400, SWT.DEFAULT).applyTo(hint);
+            GridDataFactory.fillDefaults().span(3, 1).grab(true, false).hint(460, SWT.DEFAULT).applyTo(hint);
 
-            var tokenText = new Text(container, SWT.BORDER | SWT.READ_ONLY);
-            tokenText.setText(token);
-            GridDataFactory.fillDefaults().grab(true, false).applyTo(tokenText);
+            addCopyRow(container, Messages.PrefRestApiLabelToken, token);
 
-            var copyButton = new Button(container, SWT.PUSH);
-            copyButton.setText(Messages.LabelCopyToClipboard);
-            copyButton.addListener(SWT.Selection, event -> {
-                var clipboard = new Clipboard(getShell().getDisplay());
-                try
-                {
-                    clipboard.setContents(new Object[] { token }, new Transfer[] { TextTransfer.getInstance() });
-                }
-                finally
-                {
-                    clipboard.dispose();
-                }
-            });
+            var connector = new Label(container, SWT.WRAP);
+            connector.setText(Messages.PrefMsgRestApiConnectorSettings);
+            GridDataFactory.fillDefaults().span(3, 1).grab(true, false).indent(0, 10).hint(460, SWT.DEFAULT)
+                            .applyTo(connector);
+
+            addCopyRow(container, Messages.PrefRestApiLabelMcpUrl, mcpUrl(port));
+            // the header value, named by its label: a client's connector dialog
+            // asks for the two separately
+            addCopyRow(container, Messages.PrefRestApiLabelAuthorizationHeader, "Bearer " + token); //$NON-NLS-1$
 
             return container;
+        }
+
+        private void addCopyRow(Composite container, String label, String value)
+        {
+            new Label(container, SWT.NONE).setText(label);
+
+            var text = new Text(container, SWT.BORDER | SWT.READ_ONLY);
+            text.setText(value);
+            GridDataFactory.fillDefaults().grab(true, false).applyTo(text);
+
+            var button = new Button(container, SWT.PUSH);
+            button.setText(Messages.LabelCopyToClipboard);
+            button.addListener(SWT.Selection, event -> copyToClipboard(getShell(), value));
         }
     }
 
@@ -149,6 +171,9 @@ public class RestApiPreferencePage extends PreferencePage
         portText.setText(String.valueOf(preferences.getInt(RestApiConstants.PREF_PORT, RestApiConstants.DEFAULT_PORT)));
         GridDataFactory.fillDefaults().hint(80, SWT.DEFAULT).applyTo(portText);
 
+        createMcpUrl(container);
+        createLastRejection(container);
+
         var hasUnsavedFiles = clientInputFactory.listOpenClients().stream().anyMatch(input -> input.getFile() == null);
         if (hasUnsavedFiles)
         {
@@ -162,6 +187,88 @@ public class RestApiPreferencePage extends PreferencePage
         createClientsSection(container);
 
         return container;
+    }
+
+    /**
+     * The URL to paste into an MCP client, and nothing secret. It tracks the
+     * port field rather than the stored preference, because what the user is
+     * about to copy is the address the server will listen on once they press
+     * OK.
+     */
+    private void createMcpUrl(Composite container)
+    {
+        new Label(container, SWT.NONE).setText(Messages.PrefRestApiLabelMcpUrl);
+
+        var row = new Composite(container, SWT.NONE);
+        GridLayoutFactory.fillDefaults().numColumns(2).applyTo(row);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(row);
+
+        var urlText = new Text(row, SWT.BORDER | SWT.READ_ONLY);
+        urlText.setText(mcpUrl(currentPort()));
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(urlText);
+
+        var copyButton = new Button(row, SWT.PUSH);
+        copyButton.setText(Messages.LabelCopyToClipboard);
+        copyButton.addListener(SWT.Selection, event -> copyToClipboard(getShell(), urlText.getText()));
+
+        portText.addListener(SWT.Modify, event -> urlText.setText(mcpUrl(currentPort())));
+    }
+
+    /**
+     * A client whose token is wrong never becomes an entry in the list below,
+     * and an MCP client reports nothing at all on failure - no error, no retry,
+     * no sign-in prompt. Without this, a mistyped token is invisible from both
+     * ends and the user has nowhere to look.
+     */
+    private void createLastRejection(Composite container)
+    {
+        var rejection = RejectedConnections.last().orElse(null);
+        if (rejection == null)
+            return;
+
+        var client = rejection.userAgent() != null ? rejection.userAgent()
+                        : Messages.PrefRestApiLabelUnidentifiedClient;
+
+        var label = new Label(container, SWT.WRAP);
+        label.setText(MessageFormat.format(
+                        rejection.tokenPresented() ? Messages.PrefMsgRestApiRejectedInvalidToken
+                                        : Messages.PrefMsgRestApiRejectedNoToken,
+                        format(rejection.when()), client));
+        label.setForeground(Colors.theme().warningForeground());
+        GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(label);
+    }
+
+    private int currentPort()
+    {
+        try
+        {
+            var port = Integer.parseInt(portText.getText().trim());
+            if (port >= 1024 && port <= 65535)
+                return port;
+        }
+        catch (NumberFormatException e) // NOSONAR - an unfinished edit, not an error
+        {
+            // fall through to what is actually stored
+        }
+        return preferences.getInt(RestApiConstants.PREF_PORT, RestApiConstants.DEFAULT_PORT);
+    }
+
+    private static String mcpUrl(int port)
+    {
+        return "http://127.0.0.1:" + port + RestApiConstants.MCP_ENDPOINT; //$NON-NLS-1$
+    }
+
+    private static void copyToClipboard(Shell shell, String value)
+    {
+        var clipboard = new Clipboard(shell.getDisplay());
+        try
+        {
+            clipboard.setContents(new Object[] { value }, new Transfer[] { TextTransfer.getInstance() });
+        }
+        finally
+        {
+            clipboard.dispose();
+        }
     }
 
     private void createFilesTable(Composite container)
@@ -344,7 +451,7 @@ public class RestApiPreferencePage extends PreferencePage
             return;
 
         var token = clientStore.addPersistentClient(dialog.getValue());
-        new ShowTokenDialog(getShell(), token).open();
+        new ShowTokenDialog(getShell(), token, currentPort()).open();
         clientsViewer.setInput(clientStore.listClients());
     }
 
