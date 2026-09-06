@@ -1,17 +1,24 @@
-# REST API
+# REST API and MCP server
 
 A local HTTP/JSON API into the *running* Portfolio Performance application, so that scripts and
 agents can read and edit the data of open portfolio files. The server listens on the loopback
 interface only and is off by default.
 
+It has **two front doors on one port**: this REST API, for `curl`, scripts and the CLI plugin; and
+an [MCP endpoint](#the-mcp-endpoint) at `POST /mcp`, for chat clients that cannot run a script. They
+are the same operations, and they must answer the same question the same way.
+
 The design decisions behind the API — and the alternatives that were rejected — are recorded in
-[ADR 0002](../docs/adr/0002-local-rest-api-for-scripts-and-agents.md).
+[ADR 0002](../docs/adr/0002-local-rest-api-for-scripts-and-agents.md); the MCP endpoint's
+authentication choice is recorded in
+[ADR 0005](../docs/adr/0005-authenticate-the-mcp-endpoint-with-rest-api-tokens.md).
 
-## Enabling the API
+## Enabling it
 
-Preferences → **REST API**:
+Preferences → **MCP Server & REST API**:
 
-1. Tick **Enable REST API (localhost only)**. Optionally change the port (default **5712**).
+1. Tick **Enable MCP server and REST API (localhost only)**. Optionally change the port
+   (default **5712**).
 2. Enable the individual files you want to expose, and optionally give each an **alias**.
 
 Both switches are required: the server only serves a file that is globally enabled *and*
@@ -48,12 +55,34 @@ be re-displayed, only replaced.
 Base URL `http://127.0.0.1:5712/v1`, bearer token on every request:
 
 ```bash
-TOKEN=<from pairing, or Preferences → REST API → Add client>
+TOKEN=<from pairing, or Preferences → MCP Server & REST API → Add client>
 curl -s -H "Authorization: Bearer $TOKEN" http://127.0.0.1:5712/v1/files
 ```
 
 The API can only be addressed as loopback (`127.0.0.1`, `[::1]`, `localhost`), and any request that
 carries an `Origin` header is rejected — a web page cannot reach this API, by design.
+
+## The MCP endpoint
+
+`POST /mcp` speaks the Model Context Protocol over Streamable HTTP, offering sixteen of the
+operations above as named tools. Point a client at `http://127.0.0.1:5712/mcp` and give it an
+`Authorization: Bearer …` header — **Add client** assembles both, at the one moment the token
+exists. Same switch, same port, same tokens; there is nothing extra to install.
+
+- **No session.** No `Mcp-Session-Id` is issued, responses are plain `application/json`, and `GET`
+  and `DELETE` answer `405` — an SSE stream would park one of the server's two worker threads, which
+  is the reason ADR 0002 already rejected long-polling.
+- **Authorisation is per JSON-RPC method.** `initialize`, `tools/list` and `ping` answer without a
+  token; `tools/call` requires one and, lacking it, returns HTTP 200 with `isError: true`. A `401`
+  is invisible in a chat client's UI, so the refusal has to reach the chat. `/.well-known/*` answers
+  `404`: there is no authorization server here.
+- **Deliberately outside `/v1`,** because MCP negotiates its own version, and therefore outside the
+  additive-only promise.
+- **The last refused connection is shown on the preference page.** A client with a wrong token never
+  becomes an entry in the client list and reports nothing itself.
+
+The tools themselves — names, descriptions, `inputSchema`, annotations — are `mcp-tools.json` in
+this bundle. See [For contributors](#for-contributors) before editing a word of it.
 
 ## Vocabulary
 
@@ -257,6 +286,22 @@ also starts and stops the server and shows the pairing approval dialog. Tokens l
 `ClientStore` (persistent clients as SHA-256 hashes in an owner-only JSON file in the plugin state
 location, session clients in memory only); the pairing state machine is `PairingService`.
 
+`mcp-tools.json` is **hand-authored and guarded by a test**, like `openapi.yaml` — there is no
+generator and no `package.json`, and none is to be introduced. `McpToolsDriftTest` holds it against
+the routing table: a tool pointing at a route that does not exist, a query binding the route would
+reject, or an annotation that contradicts the method all fail the build. Two things about that file
+are not ordinary code:
+
+- **It is published contract.** Claude Desktop hashes a tool's description and parameters into the
+  user's "always allow" grant, so revising wording silently revokes it. Change the words
+  deliberately, in a release, on purpose.
+- **It is English only** and excluded from translation: it is read by a model, not by a user.
+
+The endpoint that serves it lives in `rest/internal/mcp/` and dispatches *into* `ApiRoutes` rather
+than beside it, so UI-thread marshalling, file-scope resolution and the modal write gate are solved
+once. `McpEnvelope` and `McpExplain` hold the result envelope and problem explanations;
+`McpEndpoint`'s javadoc carries the transport reasoning.
+
 Adding an endpoint means writing a handler and a serializer, and registering the route in
 `ApiRoutes`. The cross-cutting concerns are in the pipeline and cannot be forgotten per endpoint:
 authentication and the loopback/Origin checks in `RestApiServer`, the query-parameter check in
@@ -268,7 +313,8 @@ user-facing strings use the API vocabulary.
 A route's query parameters are the trailing arguments of `router.add(…)`; naming none means the
 endpoint takes none, so a new endpoint is strict without doing anything. Document them in
 `openapi.yaml` in the same change, and give the operation a `400` response — every endpoint can
-now return one. `OpenApiSpecDriftTest` fails if any of that drifts apart.
+now return one. `OpenApiSpecDriftTest` fails if any of that drifts apart, and `McpToolsDriftTest`
+fails until the new route either has a tool or is listed as one that deliberately has none.
 
 Run the tests:
 

@@ -21,11 +21,14 @@ import name.abuchen.portfolio.rest.internal.Response;
 import name.abuchen.portfolio.rest.internal.Router;
 
 /**
- * Loopback-only HTTP server hosting the REST API. Binds 127.0.0.1 on a fixed
- * port and never hops ports on bind failure. Requests must address the API as
- * loopback (Host header) and must not come from a browser context (Origin
- * header); all must present a bearer token - except the pairing endpoints,
- * whose purpose is to obtain one.
+ * Loopback-only HTTP server hosting the REST API and the MCP endpoint. Binds
+ * 127.0.0.1 on a fixed port and never hops ports on bind failure. Requests must
+ * address the API as loopback (Host header) and must not come from a browser
+ * context (Origin header); all must present a bearer token - except the pairing
+ * endpoints, whose purpose is to obtain one, and the MCP endpoint, which
+ * decides per JSON-RPC method. One server, one port, one switch: a second
+ * toggle would advertise a boundary that does not exist, since the sixteen MCP
+ * tools <em>are</em> the REST operations.
  */
 public class RestApiServer
 {
@@ -90,12 +93,13 @@ public class RestApiServer
             {
                 checkHost(exchange);
                 checkOrigin(exchange);
-                checkAuthorization(exchange);
+                var authorization = checkAuthorization(exchange);
 
                 var match = router.match(exchange.getRequestMethod(), exchange.getRequestURI().getPath());
                 var request = new Request(exchange.getRequestMethod(), exchange.getRequestURI().getPath(),
                                 match.pathParams(), Request.parseQuery(exchange.getRequestURI().getRawQuery()),
-                                readBody(exchange));
+                                readBody(exchange), authorization,
+                                exchange.getRequestHeaders().getFirst("User-Agent")); //$NON-NLS-1$
                 response = match.handler().handle(request);
             }
             catch (ApiException e)
@@ -182,31 +186,58 @@ public class RestApiServer
             throw ApiException.forbiddenOrigin();
     }
 
-    private void checkAuthorization(HttpExchange exchange)
+    /**
+     * Decides whether the caller may proceed, and hands the handler what it
+     * needs to decide the rest.
+     * <p/>
+     * Every {@code /v1} route is refused outright without a valid token. The
+     * MCP endpoint is neither refused nor exempt: ADR 0005 decides it per
+     * JSON-RPC method inside the handler, so all that is settled here is what
+     * the caller presented, which travels on the {@link Request}.
+     * <p/>
+     * Which is why no {@code /mcp} request is recorded as a rejected connection
+     * here either. A token-free {@code initialize} is answered, not refused,
+     * and only the handler knows whether the call needed a token.
+     */
+    private Request.Authorization checkAuthorization(HttpExchange exchange)
     {
-        if (isAuthExempt(exchange.getRequestURI().getPath()))
-            return;
-
+        var path = exchange.getRequestURI().getPath();
         var header = exchange.getRequestHeaders().getFirst("Authorization"); //$NON-NLS-1$
-        if (header == null || !header.startsWith("Bearer ")) //$NON-NLS-1$
-            throw ApiException.unauthorized();
+        var presented = header != null && header.startsWith("Bearer "); //$NON-NLS-1$
 
-        if (!tokenValidator.test(header.substring("Bearer ".length()))) //$NON-NLS-1$
-            throw ApiException.unauthorized();
+        if (presented && tokenValidator.test(header.substring("Bearer ".length()))) //$NON-NLS-1$
+            return Request.Authorization.VALID;
+
+        var authorization = presented ? Request.Authorization.INVALID : Request.Authorization.MISSING;
+
+        if (isAuthExempt(path) || RestApiConstants.MCP_ENDPOINT.equals(path))
+            return authorization;
+
+        // a wrong token never becomes an entry in the client list, so this
+        // record is the only trace the user will have of it
+        RejectedConnections.record(path, exchange.getRequestHeaders().getFirst("User-Agent"), presented); //$NON-NLS-1$
+
+        throw ApiException.unauthorized();
     }
 
     /**
      * The pairing endpoints exist to obtain a token, and the OpenAPI document
      * describes how; both are reachable without one. So is the contract
      * version, which a client needs before it can judge whether pairing is even
-     * worth attempting. Host and Origin checks still apply.
+     * worth attempting.
+     * <p/>
+     * {@code /.well-known/*} is exempt for a different reason: an MCP client
+     * with no credential asks for OAuth metadata in seven placements, and the
+     * honest answer to all seven is a 404 rather than a 401, which says
+     * something else entirely. Host and Origin checks still apply to all.
      */
     private static boolean isAuthExempt(String path)
     {
         return path.equals(RestApiConstants.PAIRING_ENDPOINT)
                         || path.startsWith(RestApiConstants.PAIRING_ENDPOINT + "/") //$NON-NLS-1$
                         || path.equals(RestApiConstants.OPENAPI_ENDPOINT)
-                        || path.equals(RestApiConstants.VERSION_ENDPOINT);
+                        || path.equals(RestApiConstants.VERSION_ENDPOINT)
+                        || path.startsWith(RestApiConstants.WELL_KNOWN_PREFIX);
     }
 
     private static Response problem(ApiException exception)

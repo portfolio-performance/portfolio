@@ -15,11 +15,27 @@ info:
 
     - Base URL `http://127.0.0.1:{port}` (default port **5712**), **loopback only**.
     - The server binds `127.0.0.1` and is **off by default**; the user enables it
-      in Preferences → REST API.
+      in Preferences → MCP Server & REST API.
     - Every request needs a **bearer token** — except the pairing endpoints below,
       whose purpose is to obtain one. See the `bearerAuth` scheme.
     - The server serves this document at `GET /v1/openapi.yaml`, unauthenticated,
       so the contract of the running server is discoverable at runtime.
+
+    ## The MCP endpoint
+
+    The same server also answers `POST /mcp`, a Model Context Protocol endpoint
+    over Streamable HTTP that offers sixteen of the operations below as named
+    tools, for chat clients that cannot run a script. Same switch, same port,
+    same bearer tokens — point a client at `http://127.0.0.1:{port}/mcp` and give
+    it an `Authorization: Bearer …` header.
+
+    It sits deliberately **outside `/v1`**, because MCP negotiates its own version
+    in its `initialize` handshake, and it is therefore **not** covered by the
+    promise below. It is described by `mcp-tools.json` in the same bundle as this
+    document rather than here: one JSON-RPC endpoint is not sixteen REST
+    operations, and pretending otherwise would make this document claim a
+    contract it does not define. Nothing about it changes anything for a client
+    of this document.
 
     ## Compatibility — what `/v1` promises
 
@@ -57,7 +73,7 @@ info:
 
     Every `401` response carries the pairing endpoint in its `pairingEndpoint`
     field, so this flow is discoverable at runtime. Users can also mint a token
-    manually (Preferences → REST API → "Add client") for headless setups, and can
+    manually (Preferences → MCP Server & REST API → "Add client") for headless setups, and can
     revoke any client there at any time.
 
     ## Constraints that are not expressible in this document
@@ -148,7 +164,7 @@ servers:
     variables:
       port:
         default: "5712"
-        description: The port configured in Preferences → REST API
+        description: The port configured in Preferences → MCP Server & REST API
 
 security:
   - bearerAuth: []
@@ -1280,7 +1296,7 @@ components:
       scheme: bearer
       description: |
         A per-client access token, obtained through interactive pairing
-        (`POST /v1/auth/requests`) or minted manually in Preferences → REST API
+        (`POST /v1/auth/requests`) or minted manually in Preferences → MCP Server & REST API
         ("Add client"). The user can revoke each client individually; a
         session-scoped token additionally expires when the application quits.
 
