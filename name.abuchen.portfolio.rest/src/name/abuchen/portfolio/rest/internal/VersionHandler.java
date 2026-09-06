@@ -38,9 +38,10 @@ public final class VersionHandler
     /**
      * The running application's release, or null outside OSGi - the headless
      * dev server has no bundle, and an absent key is honester than a fake
-     * version a client might compare against.
+     * version a client might compare against. Also the MCP endpoint's
+     * {@code serverInfo.version}, for the same reason.
      */
-    private static String applicationVersion()
+    public static String applicationVersion()
     {
         var bundle = FrameworkUtil.getBundle(VersionHandler.class);
         if (bundle == null)

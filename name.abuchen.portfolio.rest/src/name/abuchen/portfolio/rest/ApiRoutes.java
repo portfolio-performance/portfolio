@@ -26,11 +26,13 @@ import name.abuchen.portfolio.rest.internal.Router;
 import name.abuchen.portfolio.rest.internal.SecuritiesHandler;
 import name.abuchen.portfolio.rest.internal.TradesHandler;
 import name.abuchen.portfolio.rest.internal.VersionHandler;
+import name.abuchen.portfolio.rest.internal.mcp.McpEndpoint;
 import name.abuchen.portfolio.rest.spi.HostApplication;
 import name.abuchen.portfolio.rest.spi.OpenFile;
 
 /**
- * Registers all v1 routes. Reads and writes are marshalled to the UI thread;
+ * Registers all v1 routes, and the MCP endpoint that dispatches into them.
+ * Reads and writes are marshalled to the UI thread;
  * writes are additionally rejected with 423 while an application-modal dialog
  * is open or the user edits a table cell. Calculation endpoints only resolve
  * the {file} scope on the UI thread and compute on the HTTP worker thread.
@@ -54,6 +56,11 @@ public final class ApiRoutes
         var router = new Router();
         var resolver = new FileResolver(registry, host);
         var files = new FilesHandler(registry, host);
+
+        // the MCP front door: registered on this same table and dispatching
+        // back into it, so the sixteen tools cannot drift from the routes they
+        // are - and GET and DELETE get the router's own 405
+        McpEndpoint.register(router);
 
         // the API's own description: a static resource, no UI thread, no auth
         router.add("GET", RestApiConstants.OPENAPI_ENDPOINT, request -> OpenApiHandler.serve()); //$NON-NLS-1$

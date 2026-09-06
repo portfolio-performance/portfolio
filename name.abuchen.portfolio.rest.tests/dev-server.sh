@@ -35,6 +35,11 @@ for bundle in "${BUNDLES[@]}"; do
     CP="$CP:$classes"
 done
 
+# openapi.yaml and mcp-tools.json sit at the bundle root rather than in
+# target/classes, so outside OSGi the root itself has to be on the classpath -
+# without it GET /v1/openapi.yaml and every MCP tool call fail to find them.
+CP="$CP:$REPO/name.abuchen.portfolio.rest"
+
 if [[ ! -d "$PLUGINS" ]]; then
     echo "missing $PLUGINS - build the product once to resolve the target platform:" >&2
     echo "  mvn -f portfolio-app/pom.xml verify -Plocal-dev" >&2

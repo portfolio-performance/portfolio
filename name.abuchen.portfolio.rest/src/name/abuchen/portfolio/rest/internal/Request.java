@@ -6,12 +6,38 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+/**
+ * One request as a handler sees it.
+ * <p/>
+ * The last two components exist for {@code /mcp} alone, which ADR 0005 lets
+ * through with or without a token because it decides authorisation per JSON-RPC
+ * method. A handler that has to report who was refused, and whether they
+ * offered a token at all, needs both facts carried to it. Every {@code /v1}
+ * route is unreachable without a valid token, so it only ever sees VALID.
+ */
 public record Request(String method, String path, Map<String, String> pathParams, Map<String, String> queryParams,
-                byte[] body)
+                byte[] body, Authorization authorization, String userAgent)
 {
+    /** the preference page says which: "you forgot the header" and "your token is wrong" differ */
+    public enum Authorization
+    {
+        VALID, INVALID, MISSING
+    }
+
+    public Request(String method, String path, Map<String, String> pathParams, Map<String, String> queryParams,
+                    byte[] body)
+    {
+        this(method, path, pathParams, queryParams, body, Authorization.VALID, null);
+    }
+
     public Request(String method, String path, Map<String, String> pathParams, byte[] body)
     {
         this(method, path, pathParams, Map.of(), body);
+    }
+
+    public boolean authenticated()
+    {
+        return authorization == Authorization.VALID;
     }
 
     public String pathParam(String name)

@@ -51,6 +51,16 @@ public class OpenApiSpecDriftTest
 
     private static final Pattern STATUS_CODE = Pattern.compile("[1-5][0-9][0-9]");
 
+    /**
+     * Routes on this server that are not REST operations and are deliberately
+     * not described here. {@code POST /mcp} speaks JSON-RPC, not REST: it sits
+     * outside {@code /v1} on purpose, because MCP negotiates its own version,
+     * and describing one JSON-RPC endpoint as sixteen operations would make
+     * this document claim a contract it does not define. The specification's
+     * prose points at it instead.
+     */
+    private static final Set<String> NOT_REST_OPERATIONS = Set.of("POST /mcp");
+
     private IEclipsePreferences node;
 
     @Before
@@ -69,6 +79,7 @@ public class OpenApiSpecDriftTest
     public void testSpecAndRoutesAreInLockstep() throws IOException
     {
         var routes = actualRoutes();
+        routes.removeAll(NOT_REST_OPERATIONS);
         var documented = documentedOperations();
 
         var undocumented = new TreeSet<>(routes);
