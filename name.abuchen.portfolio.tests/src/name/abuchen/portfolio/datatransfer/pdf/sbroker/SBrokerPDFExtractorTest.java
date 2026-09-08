@@ -2191,7 +2191,8 @@ public class SBrokerPDFExtractorTest
 
         // check dividende transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2021-09-07T00:00"), hasShares(8.000), //
+                        hasDate("2021-09-07T00:00"), hasExDate(null), //
+                        hasShares(8.000), //
                         hasSource("Dividende13.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 5.30), hasGrossValue("EUR", 7.12), //
@@ -2384,7 +2385,8 @@ public class SBrokerPDFExtractorTest
 
         // check dividende transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2016-11-15T00:00"), hasShares(105.00), //
+                        hasDate("2016-11-15T00:00"), hasExDate(null), //
+                        hasShares(105.00), //
                         hasSource("Dividende16.txt"), //
                         hasNote("Ertrag für 2016/17 (57,56 EUR)"), //
                         hasAmount("EUR", 41.44), hasGrossValue("EUR", 57.56), //
@@ -3284,8 +3286,12 @@ public class SBrokerPDFExtractorTest
                         hasSource("GiroKontoauszug08.txt"), hasNote("Lohn, Gehalt, Rente"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2018-12-28"), hasAmount("EUR", 4.40), //
-                        hasSource("GiroKontoauszug08.txt"), hasNote("Entgelte vom 01.12.2018 bis 28.12.2018"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2018-12-28"), //
+                        hasSource("GiroKontoauszug08.txt"), //
+                        hasNote("Entgelte vom 01.12.2018 bis 28.12.2018"), //
+                        hasAmount("EUR", 4.40), hasGrossValue("EUR", 4.40), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check skipped item
         assertThat(results, hasItem(skippedItem( //
@@ -3324,8 +3330,12 @@ public class SBrokerPDFExtractorTest
                         hasSource("GiroKontoauszug09.txt"), hasNote("Lohn, Gehalt, Rente"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2019-12-30"), hasAmount("EUR", 6.20), //
-                        hasSource("GiroKontoauszug09.txt"), hasNote("Entgelte vom 30.11.2019 bis 30.12.2019"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2019-12-30"), //
+                        hasSource("GiroKontoauszug09.txt"), //
+                        hasNote("Entgelte vom 30.11.2019 bis 30.12.2019"), //
+                        hasAmount("EUR", 6.20), hasGrossValue("EUR", 6.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check skipped item
         assertThat(results, hasItem(skippedItem( //
@@ -3378,8 +3388,12 @@ public class SBrokerPDFExtractorTest
                         hasSource("GiroKontoauszug10.txt"), hasNote("Geldautomat"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2014-06-30"), hasAmount("EUR", 4.05), //
-                        hasSource("GiroKontoauszug10.txt"), hasNote("Entgelte vom 31.05.2014 bis 30.06.2014"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2014-06-30"), //
+                        hasSource("GiroKontoauszug10.txt"), //
+                        hasNote("Entgelte vom 31.05.2014 bis 30.06.2014"), //
+                        hasAmount("EUR", 4.05), hasGrossValue("EUR", 4.05), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check skipped item
         assertThat(results, hasItem(skippedItem( //
@@ -3416,8 +3430,12 @@ public class SBrokerPDFExtractorTest
                         hasSource("GiroKontoauszug11.txt"), hasNote("Barumsatz"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2015-06-30"), hasAmount("EUR", 3.55), //
-                        hasSource("GiroKontoauszug11.txt"), hasNote("Entgelte vom 30.05.2015 bis 30.06.2015"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2015-06-30"), //
+                        hasSource("GiroKontoauszug11.txt"), //
+                        hasNote("Entgelte vom 30.05.2015 bis 30.06.2015"), //
+                        hasAmount("EUR", 3.55), hasGrossValue("EUR", 3.55), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check skipped item
         assertThat(results, hasItem(skippedItem( //
@@ -3482,8 +3500,12 @@ public class SBrokerPDFExtractorTest
                         hasSource("GiroKontoauszug12.txt"), hasNote("Basislastschrift"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2018-04-30"), hasAmount("EUR", 4.40), //
-                        hasSource("GiroKontoauszug12.txt"), hasNote("Entgelte vom 30.03.2018 bis 30.04.2018"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2018-04-30"), //
+                        hasSource("GiroKontoauszug12.txt"), //
+                        hasNote("Entgelte vom 30.03.2018 bis 30.04.2018"), //
+                        hasAmount("EUR", 4.40), hasGrossValue("EUR", 4.40), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3510,12 +3532,20 @@ public class SBrokerPDFExtractorTest
                         hasSource("GiroKontoauszug13.txt"), hasNote("Lastschrift"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2017-02-01"), hasAmount("EUR", 5.00), //
-                        hasSource("GiroKontoauszug13.txt"), hasNote("sonstige Entgelte"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2017-02-01"), //
+                        hasSource("GiroKontoauszug13.txt"), //
+                        hasNote("sonstige Entgelte"), //
+                        hasAmount("EUR", 5.00), hasGrossValue("EUR", 5.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2017-01-31"), hasAmount("EUR", 4.10), //
-                        hasSource("GiroKontoauszug13.txt"), hasNote("Entgelte vom 31.12.2016 bis 31.01.2017"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2017-01-31"), //
+                        hasSource("GiroKontoauszug13.txt"), //
+                        hasNote("Entgelte vom 31.12.2016 bis 31.01.2017"), //
+                        hasAmount("EUR", 4.10), hasGrossValue("EUR", 4.10), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3614,8 +3644,12 @@ public class SBrokerPDFExtractorTest
                         hasSource("GiroKontoauszug15.txt"), hasNote("Gutschrift (Überweisung)"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2019-03-29"), hasAmount("EUR", 5.00), //
-                        hasSource("GiroKontoauszug15.txt"), hasNote("Entgelte vom 01.03.2019 bis 29.03.2019"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2019-03-29"), //
+                        hasSource("GiroKontoauszug15.txt"), //
+                        hasNote("Entgelte vom 01.03.2019 bis 29.03.2019"), //
+                        hasAmount("EUR", 5.00), hasGrossValue("EUR", 5.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check skipped item
         assertThat(results, hasItem(skippedItem( //
@@ -3870,9 +3904,12 @@ public class SBrokerPDFExtractorTest
                         hasSource("GiroKontoauszug19.txt"), hasNote("Überweisung"))));
 
         // assert transaction
-        assertThat(results, hasItem(interestCharge(hasDate("2008-09-30"), hasAmount("EUR", 0.15), //
-                        hasSource("GiroKontoauszug19.txt"),
-                        hasNote("Abrechnungszeitraum vom 01.07.2008 bis 30.09.2008"))));
+        assertThat(results, hasItem(interestCharge( //
+                        hasDate("2008-09-30"), //
+                        hasSource("GiroKontoauszug19.txt"), //
+                        hasNote("Abrechnungszeitraum vom 01.07.2008 bis 30.09.2008"), //
+                        hasAmount("EUR", 0.15), hasGrossValue("EUR", 0.15), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3907,8 +3944,12 @@ public class SBrokerPDFExtractorTest
                         hasSource("GiroKontoauszug20.txt"), hasNote("Zahlungseingang"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2015-08-31"), hasAmount("EUR", 6.20), //
-                        hasSource("GiroKontoauszug20.txt"), hasNote("Entgelte vom 01.08.2015 bis 31.08.2015"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2015-08-31"), //
+                        hasSource("GiroKontoauszug20.txt"), //
+                        hasNote("Entgelte vom 01.08.2015 bis 31.08.2015"), //
+                        hasAmount("EUR", 6.20), hasGrossValue("EUR", 6.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3943,8 +3984,12 @@ public class SBrokerPDFExtractorTest
                         hasSource("GiroKontoauszug21.txt"), hasNote("Basis-Lastschrift"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2014-11-28"), hasAmount("EUR", 3.55 - 1.80), //
-                        hasSource("GiroKontoauszug21.txt"), hasNote("Entgelte vom 01.11.2014 bis 28.11.2014"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2014-11-28"), //
+                        hasSource("GiroKontoauszug21.txt"), //
+                        hasNote("Entgelte vom 01.11.2014 bis 28.11.2014"), //
+                        hasAmount("EUR", 3.55 - 1.80), hasGrossValue("EUR", 3.55 - 1.80), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3975,8 +4020,12 @@ public class SBrokerPDFExtractorTest
                         hasSource("GiroKontoauszug22.txt"), hasNote("Lohn, Gehalt, Rente"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2012-11-30"), hasAmount("EUR", 4.30 - 1.80), //
-                        hasSource("GiroKontoauszug22.txt"), hasNote("Entgelte vom 01.11.2012 bis 30.11.2012"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2012-11-30"), //
+                        hasSource("GiroKontoauszug22.txt"), //
+                        hasNote("Entgelte vom 01.11.2012 bis 30.11.2012"), //
+                        hasAmount("EUR", 4.30 - 1.80), hasGrossValue("EUR", 4.30 - 1.80), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4003,13 +4052,20 @@ public class SBrokerPDFExtractorTest
                         hasSource("GiroKontoauszug23.txt"), hasNote("Zahlungseingang"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2013-12-30"), hasAmount("EUR", 5.30), //
-                        hasSource("GiroKontoauszug23.txt"), hasNote("Entgelte vom 30.11.2013 bis 30.12.2013"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2013-12-30"), //
+                        hasSource("GiroKontoauszug23.txt"), //
+                        hasNote("Entgelte vom 30.11.2013 bis 30.12.2013"), //
+                        hasAmount("EUR", 5.30), hasGrossValue("EUR", 5.30), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
-        assertThat(results, hasItem(interestCharge(hasDate("2013-12-31"), hasAmount("EUR", 0.74), //
-                        hasSource("GiroKontoauszug23.txt"),
-                        hasNote("Abrechnungszeitraum vom 01.10.2013 bis 31.12.2013"))));
+        assertThat(results, hasItem(interestCharge( //
+                        hasDate("2013-12-31"), //
+                        hasSource("GiroKontoauszug23.txt"), //
+                        hasNote("Abrechnungszeitraum vom 01.10.2013 bis 31.12.2013"), //
+                        hasAmount("EUR", 0.74), hasGrossValue("EUR", 0.74), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4036,8 +4092,12 @@ public class SBrokerPDFExtractorTest
                         hasSource("GiroKontoauszug24.txt"), hasNote("Geldautomat"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2012-12-28"), hasAmount("EUR", 4.30 - 1.80), //
-                        hasSource("GiroKontoauszug24.txt"), hasNote("Entgelte vom 01.12.2012 bis 28.12.2012"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2012-12-28"), //
+                        hasSource("GiroKontoauszug24.txt"), //
+                        hasNote("Entgelte vom 01.12.2012 bis 28.12.2012"), //
+                        hasAmount("EUR", 4.30 - 1.80), hasGrossValue("EUR", 4.30 - 1.80), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check skipped item
         assertThat(results, hasItem(skippedItem( //
@@ -4102,8 +4162,12 @@ public class SBrokerPDFExtractorTest
                         hasSource("GiroKontoauszug25.txt"), hasNote("Überweisung"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2011-06-30"), hasAmount("EUR", 4.05), //
-                        hasSource("GiroKontoauszug25.txt"), hasNote("Entgelte vom 01.06.2011 bis 30.06.2011"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2011-06-30"), //
+                        hasSource("GiroKontoauszug25.txt"), //
+                        hasNote("Entgelte vom 01.06.2011 bis 30.06.2011"), //
+                        hasAmount("EUR", 4.05), hasGrossValue("EUR", 4.05), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check skipped item
         assertThat(results, hasItem(skippedItem( //
@@ -4184,8 +4248,12 @@ public class SBrokerPDFExtractorTest
                         hasSource("GiroKontoauszug27.txt"), hasNote("Scheckeinzug"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2012-08-31"), hasAmount("EUR", 4.55), //
-                        hasSource("GiroKontoauszug27.txt"), hasNote("Entgelte vom 01.08.2012 bis 31.08.2012"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2012-08-31"), //
+                        hasSource("GiroKontoauszug27.txt"), //
+                        hasNote("Entgelte vom 01.08.2012 bis 31.08.2012"), //
+                        hasAmount("EUR", 4.55), hasGrossValue("EUR", 4.55), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4557,8 +4625,12 @@ public class SBrokerPDFExtractorTest
                         hasSource("GiroKontoauszug31.txt"), hasNote("Bargeldeinzahlung SB"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2019-04-30"), hasAmount("EUR", 8.50), //
-                        hasSource("GiroKontoauszug31.txt"), hasNote("Entgelte vom 30.03.2019 bis 30.04.2019"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2019-04-30"), //
+                        hasSource("GiroKontoauszug31.txt"), //
+                        hasNote("Entgelte vom 30.03.2019 bis 30.04.2019"), //
+                        hasAmount("EUR", 8.50), hasGrossValue("EUR", 8.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4585,8 +4657,12 @@ public class SBrokerPDFExtractorTest
                         hasSource("GiroKontoauszug32.txt"), hasNote("Überweisung Vordruck"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2019-06-28"), hasAmount("EUR", 8.50), //
-                        hasSource("GiroKontoauszug32.txt"), hasNote("Entgelte vom 01.06.2019 bis 28.06.2019"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2019-06-28"), //
+                        hasSource("GiroKontoauszug32.txt"), //
+                        hasNote("Entgelte vom 01.06.2019 bis 28.06.2019"), //
+                        hasAmount("EUR", 8.50), hasGrossValue("EUR", 8.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4646,8 +4722,12 @@ public class SBrokerPDFExtractorTest
                         hasSource("GiroKontoauszug34.txt"), hasNote("Bargeldeinzahlung"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2019-03-29"), hasAmount("EUR", 8.50), //
-                        hasSource("GiroKontoauszug34.txt"), hasNote("Entgelte vom 01.03.2019 bis 29.03.2019"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2019-03-29"), //
+                        hasSource("GiroKontoauszug34.txt"), //
+                        hasNote("Entgelte vom 01.03.2019 bis 29.03.2019"), //
+                        hasAmount("EUR", 8.50), hasGrossValue("EUR", 8.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check skipped item
         assertThat(results, hasItem(skippedItem( //
@@ -4973,38 +5053,6 @@ public class SBrokerPDFExtractorTest
     }
 
     @Test
-    public void testGiroKontoauszug37()
-    {
-        var extractor = new SBrokerPDFExtractor(new Client());
-
-        List<Exception> errors = new ArrayList<>();
-
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug37.txt"), errors);
-
-        assertThat(errors, empty());
-        assertThat(countSecurities(results), is(0L));
-        assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(3L));
-        assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, "EUR");
-
-        // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2024-02-13"), hasAmount("EUR", 60.00), //
-                        hasSource("GiroKontoauszug37.txt"), hasNote("Gutschrift (Überweisung)"))));
-
-        // assert transaction
-        assertThat(results, hasItem(removal(hasDate("2024-02-15"), hasAmount("EUR", 60.00), //
-                        hasSource("GiroKontoauszug37.txt"), hasNote("Überweisung online"))));
-
-        // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2024-02-22"), hasAmount("EUR", 161.59), //
-                        hasSource("GiroKontoauszug37.txt"), hasNote("Gutschrift (Überweisung)"))));
-    }
-
-    @Test
     public void testGiroKontoauszug38()
     {
         var extractor = new SBrokerPDFExtractor(new Client());
@@ -5136,8 +5184,12 @@ public class SBrokerPDFExtractorTest
                         hasSource("GiroKontoauszug38.txt"), hasNote("Basis-Lastschrift"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2017-11-30"), hasAmount("EUR", 8.50), //
-                        hasSource("GiroKontoauszug38.txt"), hasNote("Entgelte vom 31.10.2017 bis 30.11.2017"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2017-11-30"), //
+                        hasSource("GiroKontoauszug38.txt"), //
+                        hasNote("Entgelte vom 31.10.2017 bis 30.11.2017"), //
+                        hasAmount("EUR", 8.50), hasGrossValue("EUR", 8.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -5212,8 +5264,12 @@ public class SBrokerPDFExtractorTest
                         hasSource("GiroKontoauszug39.txt"), hasNote("Lohn, Gehalt, Rente"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2019-12-30"), hasAmount("EUR", 6.20), //
-                        hasSource("GiroKontoauszug39.txt"), hasNote("Entgelte vom 30.11.2019 bis 30.12.2019"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2019-12-30"), //
+                        hasSource("GiroKontoauszug39.txt"), //
+                        hasNote("Entgelte vom 30.11.2019 bis 30.12.2019"), //
+                        hasAmount("EUR", 6.20), hasGrossValue("EUR", 6.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check skipped item
         assertThat(results, hasItem(skippedItem( //
@@ -5358,8 +5414,12 @@ public class SBrokerPDFExtractorTest
                         hasSource("GiroKontoauszug40.txt"), hasNote("Gutschrift (Überweisung)"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2020-06-30"), hasAmount("EUR", 8.50), //
-                        hasSource("GiroKontoauszug40.txt"), hasNote("Entgelte vom 30.05.2020 bis 30.06.2020"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2020-06-30"), //
+                        hasSource("GiroKontoauszug40.txt"), //
+                        hasNote("Entgelte vom 30.05.2020 bis 30.06.2020"), //
+                        hasAmount("EUR", 8.50), hasGrossValue("EUR", 8.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check skipped item
         assertThat(results, hasItem(skippedItem( //
@@ -5370,35 +5430,6 @@ public class SBrokerPDFExtractorTest
                                         hasNote("Abrechnungszeitraum vom 01.04.2020 bis 30.06.2020"), //
                                         hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
                                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
-    }
-
-    @Test
-    public void testGiroKontoauszug41()
-    {
-        var extractor = new SBrokerPDFExtractor(new Client());
-
-        List<Exception> errors = new ArrayList<>();
-
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug41.txt"), errors);
-
-        assertThat(errors, empty());
-        assertThat(countSecurities(results), is(0L));
-        assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(2L));
-        assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, "EUR");
-
-        // assert transaction
-        assertThat(results, hasItem(removal(hasDate("2024-04-04"), hasAmount("EUR", 0.07), //
-                        hasSource("GiroKontoauszug41.txt"), hasNote("Überweisung online"))));
-
-        // assert transaction
-        assertThat(results, hasItem(taxRefund(hasDate("2024-04-08"), hasAmount("EUR", 0.02), //
-                        hasSource("GiroKontoauszug41.txt"), hasNote("Buchung beleglos"))));
-
     }
 
     @Test
@@ -5573,12 +5604,20 @@ public class SBrokerPDFExtractorTest
                         hasSource("GiroKontoauszug42.txt"), hasNote("Basis-Lastschrift"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2016-05-31"), hasAmount("EUR", 0.50), //
-                        hasSource("GiroKontoauszug42.txt"), hasNote("Entgelte vom 30.04.2016 bis 31.05.2016"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2016-05-31"), //
+                        hasSource("GiroKontoauszug42.txt"), //
+                        hasNote("Entgelte vom 30.04.2016 bis 31.05.2016"), //
+                        hasAmount("EUR", 0.50), hasGrossValue("EUR", 0.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2016-06-30"), hasAmount("EUR", 8.50), //
-                        hasSource("GiroKontoauszug42.txt"), hasNote("Entgelte vom 01.06.2016 bis 30.06.2016"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2016-06-30"), //
+                        hasSource("GiroKontoauszug42.txt"), //
+                        hasNote("Entgelte vom 01.06.2016 bis 30.06.2016"), //
+                        hasAmount("EUR", 8.50), hasGrossValue("EUR", 8.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check skipped item
         assertThat(results, hasItem(skippedItem( //
@@ -5695,8 +5734,12 @@ public class SBrokerPDFExtractorTest
                         hasSource("GiroKontoauszug43.txt"), hasNote("Lastschrift"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2020-01-31"), hasAmount("EUR", 8.50), //
-                        hasSource("GiroKontoauszug43.txt"), hasNote("Entgelte vom 31.12.2019 bis 31.01.2020"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2020-01-31"), //
+                        hasSource("GiroKontoauszug43.txt"), //
+                        hasNote("Entgelte vom 31.12.2019 bis 31.01.2020"), //
+                        hasAmount("EUR", 8.50), hasGrossValue("EUR", 8.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -5847,8 +5890,12 @@ public class SBrokerPDFExtractorTest
                         hasSource("GiroKontoauszug44.txt"), hasNote("Lastschrift"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2020-07-31"), hasAmount("EUR", 8.50), //
-                        hasSource("GiroKontoauszug44.txt"), hasNote("Entgelte vom 01.07.2020 bis 31.07.2020"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2020-07-31"), //
+                        hasSource("GiroKontoauszug44.txt"), //
+                        hasNote("Entgelte vom 01.07.2020 bis 31.07.2020"), //
+                        hasAmount("EUR", 8.50), hasGrossValue("EUR", 8.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -6557,8 +6604,12 @@ public class SBrokerPDFExtractorTest
                         hasSource("KreditKontoauszug03.txt"), hasNote("ALIEXPRESS.COM, Luxembourg"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2020-02-24"), hasAmount("EUR", 0.58), //
-                        hasSource("KreditKontoauszug03.txt"), hasNote("1,75% für Einsatz der Karte im Ausland"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2020-02-24"), //
+                        hasSource("KreditKontoauszug03.txt"), //
+                        hasNote("1,75% für Einsatz der Karte im Ausland"), //
+                        hasAmount("EUR", 0.58), hasGrossValue("EUR", 0.58), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -6593,8 +6644,12 @@ public class SBrokerPDFExtractorTest
                         hasSource("KreditKontoauszug04.txt"), hasNote("WWW.ALIEXPRESS.COM, LONDON"))));
 
         // assert transaction
-        assertThat(results, hasItem(feeRefund(hasDate("2019-11-05"), hasAmount("EUR", 0.50), //
-                        hasSource("KreditKontoauszug04.txt"), hasNote("1,75% für Einsatz der Karte im Ausland"))));
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2019-11-05"), //
+                        hasSource("KreditKontoauszug04.txt"), //
+                        hasNote("1,75% für Einsatz der Karte im Ausland"), //
+                        hasAmount("EUR", 0.50), hasGrossValue("EUR", 0.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2019-11-05"), hasAmount("EUR", 302.93), //
